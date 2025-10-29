@@ -86,7 +86,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       {/* Create Sprint Form */}
       {showCreateForm && (
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <form onSubmit={handleCreateSprint} className="space-y-4">
+          <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sprint Name
@@ -181,7 +181,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                 <div className="flex space-x-2">
                   {sprint.status === "future" && (
                     <button
-                      onClick={() => handleStartSprint(sprint._id)}
+                      onClick={() => void handleStartSprint(sprint._id)}
                       className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                     >
                       Start Sprint
@@ -189,7 +189,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                   )}
                   {sprint.status === "active" && (
                     <button
-                      onClick={() => handleCompleteSprint(sprint._id)}
+                      onClick={() => void handleCompleteSprint(sprint._id)}
                       className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
                     >
                       Complete Sprint

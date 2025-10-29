@@ -64,7 +64,7 @@ export const {
 } = prosemirrorSync.syncApi<DataModel>({
   checkRead: checkPermissions,
   checkWrite: checkWritePermissions,
-  onSnapshot: async (ctx, id, snapshot, version) => {
+  onSnapshot: async (ctx, id, _snapshot, _version) => {
     // Update the document's updatedAt timestamp when content changes
     const document = await ctx.db.get(id as any);
     if (document) {

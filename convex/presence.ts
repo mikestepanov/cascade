@@ -18,11 +18,10 @@ export const getUserId = query({
 export const heartbeat = mutation({
   args: {
     roomId: v.string(),
-    userId: v.string(),
     sessionId: v.string(),
     interval: v.number(),
   },
-  handler: async (ctx, { roomId, userId, sessionId, interval }) => {
+  handler: async (ctx, { roomId, sessionId, interval }) => {
     const authUserId = await getAuthUserId(ctx);
     if (!authUserId) {
       throw new Error("Not authenticated");

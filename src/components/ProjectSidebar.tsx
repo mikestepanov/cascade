@@ -64,7 +64,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {/* Create Project Form */}
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <form onSubmit={handleCreateProject} className="space-y-3">
+          <form onSubmit={(e) => void handleCreateProject(e)} className="space-y-3">
             <input
               type="text"
               placeholder="Project name..."

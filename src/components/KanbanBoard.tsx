@@ -54,7 +54,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         newStatus,
         newOrder,
       });
-    } catch (error) {
+    } catch {
       toast.error("Failed to update issue status");
     }
 
@@ -79,7 +79,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
               key={state.id}
               className="flex-shrink-0 w-80 bg-gray-50 rounded-lg"
               onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, state.id)}
+              onDrop={(e) => void handleDrop(e, state.id)}
             >
               {/* Column Header */}
               <div className="p-4 border-b border-gray-200 bg-white rounded-t-lg">

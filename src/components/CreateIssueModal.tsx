@@ -7,11 +7,10 @@ import { toast } from "sonner";
 interface CreateIssueModalProps {
   projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
-  defaultStatus?: string;
   onClose: () => void;
 }
 
-export function CreateIssueModal({ projectId, sprintId, defaultStatus, onClose }: CreateIssueModalProps) {
+export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"task" | "bug" | "story" | "epic">("task");
@@ -60,7 +59,7 @@ export function CreateIssueModal({ projectId, sprintId, defaultStatus, onClose }
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Title *

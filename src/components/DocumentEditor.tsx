@@ -43,7 +43,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
       try {
         await updateTitle({ id: documentId, title: titleValue.trim() });
         toast.success("Title updated");
-      } catch (error) {
+      } catch {
         toast.error("Failed to update title");
       }
     }
@@ -52,7 +52,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   const handleTitleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleTitleSave();
+      void handleTitleSave();
     } else if (e.key === "Escape") {
       setIsEditingTitle(false);
     }
@@ -66,7 +66,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           ? "Document is now private"
           : "Document is now public"
       );
-    } catch (error) {
+    } catch {
       toast.error("Failed to update document visibility");
     }
   };
@@ -82,7 +82,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 type="text"
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
-                onBlur={handleTitleSave}
+                onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
                 className="text-2xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
                 autoFocus
@@ -103,7 +103,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
             
             {document.isOwner && (
               <button
-                onClick={handleTogglePublic}
+                onClick={() => void handleTogglePublic()}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   document.isPublic
                     ? "bg-green-100 text-green-800 hover:bg-green-200"
@@ -139,7 +139,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           ) : (
             <div className="text-center py-12">
               <button
-                onClick={() => sync.create({ type: "doc", content: [] })}
+                onClick={() => void sync.create({ type: "doc", content: [] })}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 Initialize Document

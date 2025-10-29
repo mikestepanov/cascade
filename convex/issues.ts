@@ -103,7 +103,7 @@ export const listByProject = query({
       return [];
     }
 
-    let issuesQuery = ctx.db
+    const issuesQuery = ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 

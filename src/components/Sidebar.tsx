@@ -36,7 +36,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       setShowCreateForm(false);
       onSelectDocument(docId);
       toast.success("Document created successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to create document");
     }
   };
@@ -50,7 +50,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
         onSelectDocument(null);
       }
       toast.success("Document deleted successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete document");
     }
   };
@@ -84,7 +84,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       {/* Create Document Form */}
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <form onSubmit={handleCreateDocument} className="space-y-3">
+          <form onSubmit={(e) => void handleCreateDocument(e)} className="space-y-3">
             <input
               type="text"
               placeholder="Document title..."
@@ -176,7 +176,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteDocument(doc._id);
+                        void handleDeleteDocument(doc._id);
                       }}
                       className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all"
                       title="Delete document"
