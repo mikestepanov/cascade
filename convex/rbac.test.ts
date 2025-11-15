@@ -1,0 +1,50 @@
+import { describe, it, expect } from "vitest";
+import { hasMinimumRole } from "./rbac";
+import type { ProjectRole } from "./rbac";
+
+describe("RBAC Utilities", () => {
+  describe("hasMinimumRole", () => {
+    it("should return true when user has exact required role", () => {
+      expect(hasMinimumRole("viewer", "viewer")).toBe(true);
+      expect(hasMinimumRole("editor", "editor")).toBe(true);
+      expect(hasMinimumRole("admin", "admin")).toBe(true);
+    });
+
+    it("should return true when user has higher role than required", () => {
+      expect(hasMinimumRole("editor", "viewer")).toBe(true);
+      expect(hasMinimumRole("admin", "viewer")).toBe(true);
+      expect(hasMinimumRole("admin", "editor")).toBe(true);
+    });
+
+    it("should return false when user has lower role than required", () => {
+      expect(hasMinimumRole("viewer", "editor")).toBe(false);
+      expect(hasMinimumRole("viewer", "admin")).toBe(false);
+      expect(hasMinimumRole("editor", "admin")).toBe(false);
+    });
+
+    it("should return false when user has no role (null)", () => {
+      expect(hasMinimumRole(null, "viewer")).toBe(false);
+      expect(hasMinimumRole(null, "editor")).toBe(false);
+      expect(hasMinimumRole(null, "admin")).toBe(false);
+    });
+
+    it("should handle role hierarchy correctly", () => {
+      const roles: ProjectRole[] = ["viewer", "editor", "admin"];
+
+      // Viewer can only access viewer
+      expect(hasMinimumRole("viewer", "viewer")).toBe(true);
+      expect(hasMinimumRole("viewer", "editor")).toBe(false);
+      expect(hasMinimumRole("viewer", "admin")).toBe(false);
+
+      // Editor can access viewer and editor
+      expect(hasMinimumRole("editor", "viewer")).toBe(true);
+      expect(hasMinimumRole("editor", "editor")).toBe(true);
+      expect(hasMinimumRole("editor", "admin")).toBe(false);
+
+      // Admin can access everything
+      expect(hasMinimumRole("admin", "viewer")).toBe(true);
+      expect(hasMinimumRole("admin", "editor")).toBe(true);
+      expect(hasMinimumRole("admin", "admin")).toBe(true);
+    });
+  });
+});
