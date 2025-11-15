@@ -479,11 +479,76 @@ const applicationTables = {
 
 ## Testing
 
-Currently, the project doesn't have a formal testing setup. When adding tests:
-- Consider Vitest for unit tests (works well with Vite)
-- Use React Testing Library for component tests
-- Test Convex functions with Convex's test framework
-- Mock authentication with test users
+The project uses **Vitest** with **React Testing Library** for frontend testing.
+
+### Setup
+
+Testing infrastructure is already configured:
+- **Vitest 4** - Fast unit test runner
+- **@testing-library/react** - React component testing utilities
+- **@testing-library/jest-dom** - Custom matchers for DOM assertions
+- **@testing-library/user-event** - User interaction simulation
+- **jsdom** - DOM environment for tests
+
+### Running Tests
+
+```bash
+# Run tests in watch mode
+pnpm test
+
+# Run tests with UI
+pnpm test:ui
+
+# Run tests with coverage report
+pnpm test:coverage
+
+# Run tests once (used in CI)
+pnpm test run
+```
+
+### Test File Location
+
+- Place test files next to the code they test
+- Use `.test.ts` or `.test.tsx` extension
+- Example: `src/lib/utils.test.ts` tests `src/lib/utils.ts`
+
+### Example Component Test
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+// Mock Convex hooks
+vi.mock("convex/react", () => ({
+  useQuery: vi.fn(),
+  useMutation: vi.fn(),
+}));
+
+describe("YourComponent", () => {
+  it("should render correctly", () => {
+    render(<YourComponent />);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
+});
+```
+
+### Testing Convex Functions
+
+Convex functions require a different testing approach. See `convex/README.testing.md` for:
+- Setting up `convex-test` package
+- Testing queries and mutations
+- Mocking authentication
+- Testing permissions and access control
+
+### Best Practices
+
+1. **Mock Convex hooks** - Use `vi.mock("convex/react")` to mock useQuery/useMutation
+2. **Test user interactions** - Use `@testing-library/user-event` for realistic interactions
+3. **Test accessibility** - Query by role, label, text (not test IDs)
+4. **Keep tests focused** - One concept per test
+5. **Use descriptive test names** - Describe what should happen
+6. **Clean up** - Automatic cleanup is configured in `src/test/setup.ts`
 
 ## Analytics
 
