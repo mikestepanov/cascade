@@ -1,8 +1,8 @@
-import { query, mutation, action, internalAction } from "./_generated/server";
+import { query, mutation, action, internalAction, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { assertMinimumRole } from "./rbac";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 
 // Create a webhook
 export const create = mutation({
@@ -110,7 +110,7 @@ export const trigger = internalAction({
     payload: v.any(),
   },
   handler: async (ctx, args) => {
-    // Get all active webhooks for this project that listen to this event
+    // Get all active webhooks for this project that listen to this event directly via database
     const webhooks = await ctx.runQuery(internal.webhooks.getActiveWebhooksForEvent, {
       projectId: args.projectId,
       event: args.event,
@@ -151,7 +151,7 @@ export const trigger = internalAction({
 });
 
 // Internal query to get active webhooks for an event
-export const getActiveWebhooksForEvent = query({
+export const getActiveWebhooksForEvent = internalQuery({
   args: {
     projectId: v.id("projects"),
     event: v.string(),
@@ -171,7 +171,7 @@ export const getActiveWebhooksForEvent = query({
 });
 
 // Internal mutation to update last triggered time
-export const updateLastTriggered = mutation({
+export const updateLastTriggered = internalMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, {

@@ -82,7 +82,7 @@ export const update = mutation({
       const existing = await ctx.db
         .query("labels")
         .withIndex("by_project_name", (q) =>
-          q.eq("projectId", label.projectId).eq("name", args.name)
+          q.eq("projectId", label.projectId).eq("name", args.name!)
         )
         .first();
 

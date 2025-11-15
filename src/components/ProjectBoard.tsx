@@ -6,13 +6,14 @@ import { KanbanBoard } from "./KanbanBoard";
 import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { ExportButton } from "./ExportButton";
+import { LabelsManager } from "./LabelsManager";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
 }
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "analytics">("board");
+  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "analytics" | "settings">("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -97,6 +98,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           >
             📊 Analytics
           </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`pb-2 border-b-2 transition-colors ${
+              activeTab === "settings"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            ⚙️ Settings
+          </button>
         </div>
 
         {/* Sprint Selector for Board */}
@@ -134,6 +145,13 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         )}
         {activeTab === "analytics" && (
           <AnalyticsDashboard projectId={projectId} />
+        )}
+        {activeTab === "settings" && (
+          <div className="p-6 overflow-y-auto">
+            <div className="max-w-4xl">
+              <LabelsManager projectId={projectId} />
+            </div>
+          </div>
         )}
       </div>
     </div>

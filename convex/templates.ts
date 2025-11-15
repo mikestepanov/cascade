@@ -55,7 +55,7 @@ export const listByProject = query({
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", args.type)
+          q.eq("projectId", args.projectId).eq("type", args.type!)
         )
         .collect();
     } else {
