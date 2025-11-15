@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Export issues as CSV
@@ -22,7 +22,7 @@ export const exportIssuesCSV = query({
     if (!project) throw new Error("Project not found");
 
     // Get issues
-    let issuesQuery = ctx.db
+    const issuesQuery = ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
@@ -190,7 +190,7 @@ export const exportIssuesJSON = query({
     if (!project) throw new Error("Project not found");
 
     // Get issues with same filtering as CSV export
-    let issuesQuery = ctx.db
+    const issuesQuery = ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
@@ -284,8 +284,8 @@ export const importIssuesJSON = mutation({
           .collect();
 
         const issueNumbers = existingIssues
-          .map((i) => parseInt(i.key.split("-")[1]))
-          .filter((n) => !isNaN(n));
+          .map((i) => parseInt(i.key.split("-")[1], 10))
+          .filter((n) => !Number.isNaN(n));
         const nextNumber = Math.max(0, ...issueNumbers) + 1;
         const issueKey = `${project.key}-${nextNumber}`;
 
@@ -325,10 +325,10 @@ export const importIssuesJSON = mutation({
         });
 
         imported.push(issueKey);
-      } catch (error: any) {
+      } catch (error) {
         errors.push({
           title: issueData.title || "Unknown",
-          error: error.message,
+          error: error instanceof Error ? error.message : "Import failed",
         });
       }
     }
@@ -394,8 +394,8 @@ export const importIssuesCSV = mutation({
           .collect();
 
         const issueNumbers = existingIssues
-          .map((issue) => parseInt(issue.key.split("-")[1]))
-          .filter((n) => !isNaN(n));
+          .map((issue) => parseInt(issue.key.split("-")[1], 10))
+          .filter((n) => !Number.isNaN(n));
         const nextNumber = Math.max(0, ...issueNumbers) + 1;
         const issueKey = `${project.key}-${nextNumber}`;
 
@@ -404,9 +404,9 @@ export const importIssuesCSV = mutation({
           key: issueKey,
           title: values[titleIndex],
           description: descriptionIndex !== -1 ? values[descriptionIndex] : undefined,
-          type: (typeIndex !== -1 && values[typeIndex]) || "task",
+          type: ((typeIndex !== -1 && values[typeIndex]) || "task") as "task" | "bug" | "story" | "epic",
           status: project.workflowStates[0].id,
-          priority: (priorityIndex !== -1 && values[priorityIndex]) || "medium",
+          priority: ((priorityIndex !== -1 && values[priorityIndex]) || "medium") as "lowest" | "low" | "medium" | "high" | "highest",
           reporterId: userId,
           labels:
             labelsIndex !== -1 && values[labelsIndex]
@@ -436,10 +436,10 @@ export const importIssuesCSV = mutation({
         });
 
         imported.push(issueKey);
-      } catch (error: any) {
+      } catch (error) {
         errors.push({
           row: i + 1,
-          error: error.message,
+          error: error instanceof Error ? error.message : "Export failed",
         });
       }
     }

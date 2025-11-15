@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMutation, useQuery } from "convex/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NotificationCenter } from "./NotificationCenter";
-import { useQuery, useMutation } from "convex/react";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -18,12 +18,12 @@ describe("NotificationCenter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock mutations - they're called in order in the component
-    (useMutation as any)
+    (useMutation as vi.Mock)
       .mockReturnValueOnce(mockMarkAsRead)
       .mockReturnValueOnce(mockMarkAllAsRead)
       .mockReturnValueOnce(mockRemove);
     // Default mock for useQuery
-    (useQuery as any).mockReturnValue(undefined);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
   });
 
   afterEach(() => {
@@ -31,7 +31,7 @@ describe("NotificationCenter", () => {
   });
 
   it("should render notification bell button", () => {
-    (useQuery as any).mockReturnValue(undefined);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
 
     render(<NotificationCenter />);
 
@@ -40,7 +40,7 @@ describe("NotificationCenter", () => {
 
   it("should show unread count badge when there are unread notifications", () => {
     // First call is for notifications list, second is for unread count
-    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(5);
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(5);
 
     render(<NotificationCenter />);
 
@@ -49,7 +49,7 @@ describe("NotificationCenter", () => {
 
   it("should not show badge when unread count is 0", () => {
     let callCount = 0;
-    (useQuery as any).mockImplementation(() => {
+    (useQuery as vi.Mock).mockImplementation(() => {
       callCount++;
       return callCount === 1 ? [] : 0; // 1st call: notifications, 2nd call: unreadCount
     });
@@ -60,7 +60,7 @@ describe("NotificationCenter", () => {
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
-    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(150);
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(150);
 
     render(<NotificationCenter />);
 
@@ -69,7 +69,7 @@ describe("NotificationCenter", () => {
 
   it("should open dropdown when bell is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
@@ -81,7 +81,7 @@ describe("NotificationCenter", () => {
 
   it("should show empty state when no notifications", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
@@ -111,7 +111,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now() - 3600000,
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -134,7 +134,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -157,7 +157,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
     mockMarkAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -185,7 +185,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
     mockMarkAllAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -213,7 +213,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(0);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(0);
     mockRemove.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -258,7 +258,7 @@ describe("NotificationCenter", () => {
         createdAt: now - 2 * 60 * 60 * 1000, // 2 hours
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(3);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(3);
 
     render(<NotificationCenter />);
 
@@ -290,7 +290,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(2);
+    (useQuery as vi.Mock).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(2);
 
     render(<NotificationCenter />);
 
@@ -304,7 +304,7 @@ describe("NotificationCenter", () => {
 
   it("should close dropdown when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 

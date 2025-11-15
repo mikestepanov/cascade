@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { Modal } from "./ui/Modal";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { InputField } from "./ui/InputField";
+import { Modal } from "./ui/Modal";
 
 interface AdvancedSearchModalProps {
   isOpen: boolean;

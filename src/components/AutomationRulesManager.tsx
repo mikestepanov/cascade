@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
@@ -11,9 +11,21 @@ interface AutomationRulesManagerProps {
   projectId: Id<"projects">;
 }
 
+type AutomationRule = {
+  _id: Id<"automationRules">;
+  name: string;
+  description?: string;
+  trigger: string;
+  triggerValue?: string;
+  actionType: string;
+  actionValue: string;
+  isActive: boolean;
+  executionCount: number;
+};
+
 export function AutomationRulesManager({ projectId }: AutomationRulesManagerProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingRule, setEditingRule] = useState<any>(null);
+  const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"automationRules"> | null>(null);
 
   // Form state
@@ -44,7 +56,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
     setShowCreateDialog(true);
   };
 
-  const handleEdit = (rule: any) => {
+  const handleEdit = (rule: AutomationRule) => {
     setName(rule.name);
     setDescription(rule.description || "");
     setTrigger(rule.trigger);
@@ -91,8 +103,8 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
       setShowCreateDialog(false);
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save rule");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save rule");
     }
   };
 
@@ -103,8 +115,8 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
         isActive: !currentState,
       });
       toast.success(currentState ? "Rule disabled" : "Rule enabled");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to toggle rule");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to toggle rule");
     }
   };
 
@@ -114,8 +126,8 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
     try {
       await removeRule({ id: deleteConfirm });
       toast.success("Rule deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete rule");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete rule");
     } finally {
       setDeleteConfirm(null);
     }

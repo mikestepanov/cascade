@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BulkOperationsBar } from "./BulkOperationsBar";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { BulkOperationsBar } from "./BulkOperationsBar";
 
 // Mock dependencies
 vi.mock("convex/react", () => ({
@@ -19,7 +20,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("BulkOperationsBar - Component Behavior", () => {
-  const mockProjectId = "project123" as any;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockOnClearSelection = vi.fn();
   const mockWorkflowStates = [
     { id: "todo", name: "To Do" },
@@ -27,8 +28,8 @@ describe("BulkOperationsBar - Component Behavior", () => {
   ];
 
   const mockProject = { _id: mockProjectId, name: "Test" };
-  const mockSprints = [{ _id: "sprint1" as any, name: "Sprint 1" }];
-  const mockMembers = [{ userId: "user1" as any, userName: "John Doe" }];
+  const mockSprints = [{ _id: "sprint1" as Id<"sprints">, name: "Sprint 1" }];
+  const mockMembers = [{ userId: "user1" as Id<"users">, userName: "John Doe" }];
 
   const mockBulkUpdateStatus = vi.fn();
   const mockBulkUpdatePriority = vi.fn();
@@ -43,19 +44,19 @@ describe("BulkOperationsBar - Component Behavior", () => {
     // Component calls useQuery 3 times: project, sprints, members
     // On re-render, it calls them again in the same order
     let queryCallCount = 0;
-    (useQuery as any).mockImplementation(() => {
+    (useQuery as vi.Mock).mockImplementation(() => {
       const results = [mockProject, mockSprints, mockMembers];
       return results[queryCallCount++ % 3];
     });
 
     // Setup mutations - return the first mock for ALL useMutation calls
     // The component creates 5 mutation hooks, but we only test one at a time
-    (useMutation as any).mockReturnValue(mockBulkUpdateStatus);
+    (useMutation as vi.Mock).mockReturnValue(mockBulkUpdateStatus);
   });
 
   describe("Visibility Logic", () => {
     it("should not render when no issues selected", () => {
-      const emptySelection = new Set<any>();
+      const emptySelection = new Set<Id<"issues">>();
 
       const { container } = render(
         <BulkOperationsBar
@@ -70,7 +71,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should render when at least one issue is selected", () => {
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -87,7 +88,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
   describe("Count Display Formatting", () => {
     it("should use singular 'issue' when exactly 1 selected", () => {
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -102,7 +103,11 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should use plural 'issues' when multiple selected", () => {
-      const selection = new Set(["issue1" as any, "issue2" as any, "issue3" as any]);
+      const selection = new Set([
+        "issue1" as Id<"issues">,
+        "issue2" as Id<"issues">,
+        "issue3" as Id<"issues">,
+      ]);
 
       render(
         <BulkOperationsBar
@@ -117,7 +122,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should update count when selection changes", () => {
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       const { rerender } = render(
         <BulkOperationsBar
@@ -130,7 +135,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       expect(screen.getByText("1 issue selected")).toBeInTheDocument();
 
-      const newSelection = new Set(["issue1" as any, "issue2" as any]);
+      const newSelection = new Set(["issue1" as Id<"issues">, "issue2" as Id<"issues">]);
       rerender(
         <BulkOperationsBar
           projectId={mockProjectId}
@@ -147,7 +152,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Clear Selection Logic", () => {
     it("should call onClearSelection when Clear button clicked", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -165,7 +170,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     it("should call onClearSelection after successful status update", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
       mockBulkUpdateStatus.mockResolvedValue({ updated: 1 });
 
       render(
@@ -199,10 +204,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should call onClearSelection after successful delete", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkDelete.mockResolvedValue({ deleted: 1 });
-      (useMutation as any).mockReturnValue(mockBulkDelete);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkDelete);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -217,7 +222,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
 
       // Wait for dialog and find confirm button using within() for reliability
-      const dialog = await screen.findByRole("dialog");
+      const _dialog = await screen.findByRole("dialog");
       expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
 
       // Find Delete button within dialog (not the main Delete button)
@@ -235,11 +240,11 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Assignee Conversion Logic", () => {
     it("should convert 'unassigned' string to null", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
       mockBulkAssign.mockResolvedValue({ updated: 1 });
 
       // Override to return assign mock for all mutations
-      (useMutation as any).mockReturnValue(mockBulkAssign);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkAssign);
 
       render(
         <BulkOperationsBar
@@ -268,10 +273,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should pass user ID as-is when not unassigned", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkAssign.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkAssign);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkAssign);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -301,10 +306,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should convert 'backlog' string to null", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkMoveToSprint);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -333,10 +338,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should pass sprint ID as-is when not backlog", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkMoveToSprint);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -365,7 +370,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Success Message Formatting", () => {
     it("should use singular in status success message", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
       mockBulkUpdateStatus.mockResolvedValue({ updated: 1 });
 
       render(
@@ -389,7 +394,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     it("should use plural in status success message", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any, "issue2" as any]);
+      const selection = new Set(["issue1" as Id<"issues">, "issue2" as Id<"issues">]);
       mockBulkUpdateStatus.mockResolvedValue({ updated: 2 });
 
       render(
@@ -414,10 +419,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should use correct message for priority update", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkUpdatePriority.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkUpdatePriority);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkUpdatePriority);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -441,10 +446,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should use correct message for assign", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkAssign.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkAssign);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkAssign);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -468,10 +473,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should use correct message for move to sprint", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
-      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkMoveToSprint);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -495,10 +500,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should use correct message for delete", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkDelete.mockResolvedValue({ deleted: 1 });
-      (useMutation as any).mockReturnValue(mockBulkDelete);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkDelete);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -529,7 +534,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Error Handling", () => {
     it("should show error toast when status update fails", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
       mockBulkUpdateStatus.mockRejectedValue(new Error("Update failed"));
 
       render(
@@ -554,10 +559,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should show generic error when error has no message", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkUpdatePriority.mockRejectedValue({});
-      (useMutation as any).mockReturnValue(mockBulkUpdatePriority);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkUpdatePriority);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -581,10 +586,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should show correct generic error for each operation type", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkAssign.mockRejectedValue({});
-      (useMutation as any).mockReturnValue(mockBulkAssign);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkAssign);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -607,7 +612,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     it("should NOT call onClearSelection when operation fails", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
       mockBulkUpdateStatus.mockRejectedValue(new Error("Failed"));
 
       render(
@@ -635,7 +640,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Delete Confirmation Dialog", () => {
     it("should show singular message in delete dialog for 1 issue", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -655,7 +660,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     it("should show plural message in delete dialog for multiple issues", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any, "issue2" as any]);
+      const selection = new Set(["issue1" as Id<"issues">, "issue2" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -675,7 +680,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     it("should close dialog when cancel clicked", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -702,10 +707,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should close dialog after successful delete", async () => {
       // Override BEFORE render so component gets the right mock
       mockBulkDelete.mockResolvedValue({ deleted: 1 });
-      (useMutation as any).mockReturnValue(mockBulkDelete);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkDelete);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -735,10 +740,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
     it("should close dialog after failed delete", async () => {
       mockBulkDelete.mockRejectedValue(new Error("Failed"));
       // Override to use delete mock
-      (useMutation as any).mockReturnValue(mockBulkDelete);
+      (useMutation as vi.Mock).mockReturnValue(mockBulkDelete);
 
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any]);
+      const selection = new Set(["issue1" as Id<"issues">]);
 
       render(
         <BulkOperationsBar
@@ -769,7 +774,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
   describe("Set to Array Conversion", () => {
     it("should convert Set to Array when calling mutations", async () => {
       const user = userEvent.setup();
-      const selection = new Set(["issue1" as any, "issue2" as any]);
+      const selection = new Set(["issue1" as Id<"issues">, "issue2" as Id<"issues">]);
       mockBulkUpdateStatus.mockResolvedValue({ updated: 2 });
 
       render(

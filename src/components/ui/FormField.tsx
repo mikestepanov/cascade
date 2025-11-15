@@ -1,8 +1,8 @@
-import {
+import type {
   InputHTMLAttributes,
-  TextareaHTMLAttributes,
-  SelectHTMLAttributes,
   ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
 } from "react";
 
 interface BaseFieldProps {

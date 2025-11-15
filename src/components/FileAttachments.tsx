@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 
@@ -50,8 +50,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
 
         toast.success(`Uploaded ${file.name}`);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to upload file");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to upload file");
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -81,17 +81,17 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
     try {
       await removeAttachment({ issueId, storageId: deleteConfirm });
       toast.success("Attachment removed");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to remove attachment");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to remove attachment");
     } finally {
       setDeleteConfirm(null);
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  const _formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const getFileIcon = (filename: string) => {

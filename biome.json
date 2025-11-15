@@ -5,6 +5,14 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  "overrides": [
+    {
+      "includes": ["convex/_generated/**"],
+      "linter": {
+        "enabled": false
+      }
+    }
+  ],
   "formatter": {
     "enabled": true,
     "indentStyle": "space",

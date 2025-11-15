@@ -1,6 +1,6 @@
-import { mutation, query, internalMutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 export const list = query({
@@ -84,7 +84,7 @@ export const update = mutation({
 
     await assertMinimumRole(ctx, rule.projectId, userId, "admin");
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.description !== undefined) updates.description = args.description;
     if (args.isActive !== undefined) updates.isActive = args.isActive;
@@ -162,7 +162,7 @@ export const executeRules = internalMutation({
             });
             break;
 
-          case "add_label":
+          case "add_label": {
             const currentLabels = issue.labels || [];
             if (!currentLabels.includes(actionParams.label)) {
               await ctx.db.patch(args.issueId, {
@@ -171,6 +171,7 @@ export const executeRules = internalMutation({
               });
             }
             break;
+          }
 
           case "add_comment":
             await ctx.db.insert("issueComments", {
@@ -188,8 +189,8 @@ export const executeRules = internalMutation({
         await ctx.db.patch(rule._id, {
           executionCount: rule.executionCount + 1,
         });
-      } catch (error) {
-        console.error(`Failed to execute automation rule ${rule._id}:`, error);
+      } catch {
+        // Continue with other rules even if action fails
       }
     }
   },

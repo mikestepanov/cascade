@@ -1,6 +1,6 @@
-import { query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { query } from "./_generated/server";
 import { canAccessProject } from "./rbac";
 
 /**
@@ -143,7 +143,7 @@ export const getSprintBurndown = query({
       totalPoints > 0 ? Math.round((completedPoints / totalPoints) * 100) : 0;
 
     // Calculate ideal burndown if sprint has dates
-    let idealBurndown: Array<{ day: number; points: number }> = [];
+    const idealBurndown: Array<{ day: number; points: number }> = [];
     if (sprint.startDate && sprint.endDate) {
       const now = Date.now();
       const totalDays = Math.ceil((sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24));

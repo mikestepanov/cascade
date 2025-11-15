@@ -1,7 +1,7 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface TimeEntriesListProps {
   issueId: Id<"issues">;
@@ -34,8 +34,8 @@ export function TimeEntriesList({ issueId }: TimeEntriesListProps) {
     try {
       await deleteEntry({ id: entryId });
       toast.success("Time entry deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete entry");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete entry");
     }
   };
 

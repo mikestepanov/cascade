@@ -1,11 +1,11 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import type { BlockNoteEditor } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
-import { BlockNoteEditor } from "@blocknote/core";
+import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -81,7 +81,6 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
                 className="text-2xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
-                autoFocus
               />
             ) : (
               <h1

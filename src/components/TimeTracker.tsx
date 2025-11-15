@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
-import { TimeLogModal } from "./TimeLogModal";
+import type { Id } from "../../convex/_generated/dataModel";
 import { TimeEntriesList } from "./TimeEntriesList";
+import { TimeLogModal } from "./TimeLogModal";
 
 interface TimeTrackerProps {
   issueId: Id<"issues">;

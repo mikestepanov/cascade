@@ -1,12 +1,12 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { IssueCard } from "./IssueCard";
-import { CreateIssueModal } from "./CreateIssueModal";
-import { IssueDetailModal } from "./IssueDetailModal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { BulkOperationsBar } from "./BulkOperationsBar";
+import { CreateIssueModal } from "./CreateIssueModal";
+import { IssueCard } from "./IssueCard";
+import { IssueDetailModal } from "./IssueDetailModal";
 
 interface KanbanBoardProps {
   projectId: Id<"projects">;

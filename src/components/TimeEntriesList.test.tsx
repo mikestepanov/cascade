@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMutation, useQuery } from "convex/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
 import { TimeEntriesList } from "./TimeEntriesList";
-import { useQuery, useMutation } from "convex/react";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -20,15 +21,15 @@ vi.mock("sonner", () => ({
 
 describe("TimeEntriesList", () => {
   const mockDeleteEntry = vi.fn();
-  const mockIssueId = "test-issue-id" as any;
+  const mockIssueId = "test-issue-id" as Id<"issues">;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockReturnValue(mockDeleteEntry);
+    (useMutation as vi.Mock).mockReturnValue(mockDeleteEntry);
   });
 
   it("should show loading state when entries are undefined", () => {
-    (useQuery as any).mockReturnValue(undefined);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -52,7 +53,7 @@ describe("TimeEntriesList", () => {
         user: { name: "Jane Smith" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -76,7 +77,7 @@ describe("TimeEntriesList", () => {
         user: { name: "Jane Smith" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -95,7 +96,7 @@ describe("TimeEntriesList", () => {
         user: { name: "John Doe" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -103,7 +104,7 @@ describe("TimeEntriesList", () => {
   });
 
   it("should show empty state when no entries exist", () => {
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -121,7 +122,7 @@ describe("TimeEntriesList", () => {
         user: { name: "John Doe" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
     mockDeleteEntry.mockResolvedValue(undefined);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
@@ -151,7 +152,7 @@ describe("TimeEntriesList", () => {
         user: { name: "Jane" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -170,7 +171,7 @@ describe("TimeEntriesList", () => {
         user: { name: "John" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 
@@ -195,7 +196,7 @@ describe("TimeEntriesList", () => {
         user: { name: "Jane" },
       },
     ];
-    (useQuery as any).mockReturnValue(mockEntries);
+    (useQuery as vi.Mock).mockReturnValue(mockEntries);
 
     render(<TimeEntriesList issueId={mockIssueId} />);
 

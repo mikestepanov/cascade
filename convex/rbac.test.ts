@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { hasMinimumRole } from "./rbac";
+import { describe, expect, it } from "vitest";
 import type { ProjectRole } from "./rbac";
+import { hasMinimumRole } from "./rbac";
 
 describe("RBAC Utilities", () => {
   describe("hasMinimumRole", () => {
@@ -29,7 +29,7 @@ describe("RBAC Utilities", () => {
     });
 
     it("should handle role hierarchy correctly", () => {
-      const roles: ProjectRole[] = ["viewer", "editor", "admin"];
+      const _roles: ProjectRole[] = ["viewer", "editor", "admin"];
 
       // Viewer can only access viewer
       expect(hasMinimumRole("viewer", "viewer")).toBe(true);

@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AutomationRulesManager } from "./AutomationRulesManager";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { AutomationRulesManager } from "./AutomationRulesManager";
 
 // Mock dependencies
 vi.mock("convex/react", () => ({
@@ -19,7 +20,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("AutomationRulesManager - Component Behavior", () => {
-  const mockProjectId = "project123" as any;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockCreateRule = vi.fn();
   const mockUpdateRule = vi.fn();
   const mockRemoveRule = vi.fn();
@@ -30,17 +31,17 @@ describe("AutomationRulesManager - Component Behavior", () => {
     // Setup mutations to return in sequence for the 3 useMutation calls
     // Component creates: createRule, updateRule, removeRule
     let mutationCallCount = 0;
-    (useMutation as any).mockImplementation(() => {
+    (useMutation as vi.Mock).mockImplementation(() => {
       const mocks = [mockCreateRule, mockUpdateRule, mockRemoveRule];
       return mocks[mutationCallCount++ % 3];
     });
 
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
   });
 
   describe("Empty State", () => {
     it("should show empty state message when no rules exist", () => {
-      (useQuery as any).mockReturnValue([]);
+      (useQuery as vi.Mock).mockReturnValue([]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -326,7 +327,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Edit Mode Behavior", () => {
     const existingRule = {
-      _id: "rule1" as any,
+      _id: "rule1" as Id<"automationRules">,
       name: "Existing Rule",
       description: "A description",
       trigger: "priority_changed",
@@ -339,7 +340,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should populate form when Edit clicked", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingRule]);
+      (useQuery as vi.Mock).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -353,7 +354,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show 'Edit Automation Rule' title in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingRule]);
+      (useQuery as vi.Mock).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -364,7 +365,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show 'Update Rule' button in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingRule]);
+      (useQuery as vi.Mock).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -375,7 +376,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should preserve selected trigger and action type in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingRule]);
+      (useQuery as vi.Mock).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -391,7 +392,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should call updateRule instead of createRule when saving in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingRule]);
+      (useQuery as vi.Mock).mockReturnValue([existingRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -408,7 +409,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should handle missing description in edit mode", async () => {
       const user = userEvent.setup();
       const ruleWithoutDescription = { ...existingRule, description: undefined };
-      (useQuery as any).mockReturnValue([ruleWithoutDescription]);
+      (useQuery as vi.Mock).mockReturnValue([ruleWithoutDescription]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -420,7 +421,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should handle missing triggerValue in edit mode", async () => {
       const user = userEvent.setup();
       const ruleWithoutTriggerValue = { ...existingRule, triggerValue: undefined };
-      (useQuery as any).mockReturnValue([ruleWithoutTriggerValue]);
+      (useQuery as vi.Mock).mockReturnValue([ruleWithoutTriggerValue]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -432,7 +433,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Rule Display & Formatting", () => {
     const activeRule = {
-      _id: "rule1" as any,
+      _id: "rule1" as Id<"automationRules">,
       name: "Auto Label High Priority",
       description: "Adds urgent label to high priority items",
       trigger: "priority_changed",
@@ -444,7 +445,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     };
 
     it("should display rule name", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -452,7 +453,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display rule description", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -460,7 +461,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show Active badge when rule is active", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -469,7 +470,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show Inactive badge when rule is not active", () => {
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as any).mockReturnValue([inactiveRule]);
+      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -477,7 +478,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display execution count", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -485,7 +486,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display trigger label correctly", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -493,7 +494,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display action label correctly", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -502,7 +503,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show trigger without arrow when no triggerValue", () => {
       const ruleWithoutValue = { ...activeRule, triggerValue: undefined };
-      (useQuery as any).mockReturnValue([ruleWithoutValue]);
+      (useQuery as vi.Mock).mockReturnValue([ruleWithoutValue]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -513,7 +514,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Toggle Active/Inactive Logic", () => {
     const activeRule = {
-      _id: "rule1" as any,
+      _id: "rule1" as Id<"automationRules">,
       name: "Test Rule",
       trigger: "status_changed",
       actionType: "add_label",
@@ -523,7 +524,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     };
 
     it("should show pause emoji for active rules", () => {
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -532,7 +533,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show play emoji for inactive rules", () => {
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as any).mockReturnValue([inactiveRule]);
+      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -541,7 +542,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should toggle active rule to inactive", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -559,7 +560,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should toggle inactive rule to active", async () => {
       const user = userEvent.setup();
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as any).mockReturnValue([inactiveRule]);
+      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -576,7 +577,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show success toast when disabling rule", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([activeRule]);
+      (useQuery as vi.Mock).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -591,7 +592,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should show success toast when enabling rule", async () => {
       const user = userEvent.setup();
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as any).mockReturnValue([inactiveRule]);
+      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -625,7 +626,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should show success toast and close dialog after update", async () => {
       const user = userEvent.setup();
       const rule = {
-        _id: "rule1" as any,
+        _id: "rule1" as Id<"automationRules">,
         name: "Test",
         trigger: "status_changed",
         actionType: "add_label",
@@ -633,7 +634,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         isActive: true,
         executionCount: 0,
       };
-      (useQuery as any).mockReturnValue([rule]);
+      (useQuery as vi.Mock).mockReturnValue([rule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);

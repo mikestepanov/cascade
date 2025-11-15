@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 import { ImportExportModal } from "./ImportExportModal";
 
 interface ExportButtonProps {

@@ -1,8 +1,8 @@
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { useState } from "react";
-import { Id } from "../../convex/_generated/dataModel";
-import { Card, CardHeader, CardBody } from "./ui/Card";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
+import { Card, CardBody, CardHeader } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
 
 type IssueFilter = "assigned" | "created" | "all";
@@ -202,7 +202,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                   />
                 ) : (
                   <div className="space-y-2">
-                    {myProjects.map((project: any) => (
+                    {myProjects.map((project) => (
                       <div
                         key={project._id}
                         onClick={() => onNavigateToProject?.(project._id)}
@@ -236,7 +236,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                   />
                 ) : (
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                    {recentActivity.map((activity: any) => (
+                    {recentActivity.map((activity) => (
                       <div key={activity._id} className="text-sm">
                         <div className="flex items-start gap-2">
                           <span className="text-lg">{getActionIcon(activity.action)}</span>

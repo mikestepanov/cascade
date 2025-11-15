@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 
@@ -42,8 +42,8 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
       setShowAddDialog(false);
       setSelectedIssueKey("");
       setSearchQuery("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add dependency");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to add dependency");
     }
   };
 
@@ -53,8 +53,8 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
     try {
       await removeLink({ linkId: deleteConfirm });
       toast.success("Dependency removed");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to remove dependency");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to remove dependency");
     } finally {
       setDeleteConfirm(null);
     }
@@ -235,7 +235,6 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type to search..."
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  autoFocus
                 />
               </div>
 

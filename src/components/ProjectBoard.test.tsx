@@ -1,15 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
 import { ProjectBoard } from "./ProjectBoard";
 
 const mockProject = {
-  _id: "project1" as any,
+  _id: "project1" as Id<"projects">,
   name: "Test Project",
   key: "TEST",
   description: "A test project",
   boardType: "scrum" as const,
-  createdBy: "user1" as any,
+  createdBy: "user1" as Id<"users">,
   createdAt: Date.now(),
   updatedAt: Date.now(),
   isPublic: false,
@@ -26,20 +27,20 @@ const mockProject = {
 
 const mockSprints = [
   {
-    _id: "sprint1" as any,
-    projectId: "project1" as any,
+    _id: "sprint1" as Id<"sprints">,
+    projectId: "project1" as Id<"projects">,
     name: "Sprint 1",
     status: "active" as const,
-    createdBy: "user1" as any,
+    createdBy: "user1" as Id<"users">,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
   {
-    _id: "sprint2" as any,
-    projectId: "project1" as any,
+    _id: "sprint2" as Id<"sprints">,
+    projectId: "project1" as Id<"projects">,
     name: "Sprint 2",
     status: "future" as const,
-    createdBy: "user1" as any,
+    createdBy: "user1" as Id<"users">,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
@@ -94,14 +95,14 @@ describe("ProjectBoard", () => {
     vi.clearAllMocks();
     mockUseQuery.mockReturnValue(undefined);
 
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const spinner = document.querySelector(".animate-spin");
     expect(spinner).toBeInTheDocument();
   });
 
   it("should render project header with name and details", () => {
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Test Project")).toBeInTheDocument();
     expect(screen.getByText("A test project")).toBeInTheDocument();
@@ -110,7 +111,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should render all tabs for scrum board", () => {
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
@@ -128,7 +129,7 @@ describe("ProjectBoard", () => {
       return queryCallIndex % 2 === 1 ? { ...mockProject, boardType: "kanban" } : mockSprints;
     });
 
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
@@ -137,7 +138,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should show KanbanBoard by default", () => {
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByTestId("kanban-board")).toBeInTheDocument();
     expect(screen.queryByTestId("sprint-manager")).not.toBeInTheDocument();
@@ -146,7 +147,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to backlog when clicking Backlog tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const backlogTab = screen.getByText("Backlog");
     await user.click(backlogTab);
@@ -157,7 +158,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to sprints view when clicking Sprints tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintsTab = screen.getByText("Sprints");
     await user.click(sprintsTab);
@@ -168,7 +169,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to analytics view when clicking Analytics tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const analyticsTab = screen.getByText("📊 Analytics");
     await user.click(analyticsTab);
@@ -180,7 +181,7 @@ describe("ProjectBoard", () => {
 
   it("should highlight active tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const boardTab = screen.getByText("Board");
     expect(boardTab).toHaveClass("border-blue-500", "text-blue-600");
@@ -193,7 +194,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should show sprint selector for scrum board on Board tab", () => {
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintSelector = screen.getByRole("combobox");
     expect(sprintSelector).toBeInTheDocument();
@@ -206,7 +207,7 @@ describe("ProjectBoard", () => {
 
   it("should not show sprint selector on backlog tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     // Initially on board tab, sprint selector should be visible
     expect(screen.getByRole("combobox")).toBeInTheDocument();
@@ -219,7 +220,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should pass active sprint to KanbanBoard by default", () => {
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const kanbanBoard = screen.getByTestId("kanban-board");
     expect(kanbanBoard).toHaveTextContent("Sprint: sprint1");
@@ -227,7 +228,7 @@ describe("ProjectBoard", () => {
 
   it("should change sprint when selecting from dropdown", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard projectId={"project1" as any} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintSelector = screen.getByRole("combobox");
     await user.selectOptions(sprintSelector, "sprint2");

@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMutation } from "convex/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
 import { TimeLogModal } from "./TimeLogModal";
-import { useQuery, useMutation } from "convex/react";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -21,11 +22,11 @@ vi.mock("sonner", () => ({
 describe("TimeLogModal", () => {
   const mockLogTime = vi.fn();
   const mockOnClose = vi.fn();
-  const mockIssueId = "test-issue-id" as any;
+  const mockIssueId = "test-issue-id" as Id<"issues">;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockReturnValue(mockLogTime);
+    (useMutation as vi.Mock).mockReturnValue(mockLogTime);
   });
 
   it("should render the modal with correct issue name", () => {

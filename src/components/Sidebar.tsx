@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
@@ -91,7 +91,6 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
               value={newDocTitle}
               onChange={(e) => setNewDocTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
             />
             <div className="flex items-center space-x-2">
               <input

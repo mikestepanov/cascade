@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { GlobalSearch } from "./GlobalSearch";
 import { useQuery } from "convex/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { GlobalSearch } from "./GlobalSearch";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -12,7 +12,7 @@ vi.mock("convex/react", () => ({
 describe("GlobalSearch", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -96,7 +96,7 @@ describe("GlobalSearch", () => {
     const mockIssues = [{ _id: "1", key: "TEST-1", title: "Test Issue", type: "task" }];
     const mockDocuments = [{ _id: "2", title: "Test Doc" }];
 
-    (useQuery as any).mockImplementation((queryFn: any) => {
+    (useQuery as vi.Mock).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("issues")) return mockIssues;
       if (queryFn.toString().includes("documents")) return mockDocuments;
       return [];
@@ -169,7 +169,7 @@ describe("GlobalSearch", () => {
 
   it("should show empty state when no results found", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
 
     render(<GlobalSearch />);
 
@@ -197,7 +197,7 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as any).mockImplementation((queryFn: any) => {
+    (useQuery as vi.Mock).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("issues")) return mockIssues;
       return [];
     });
@@ -227,7 +227,7 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as any).mockImplementation((queryFn: any) => {
+    (useQuery as vi.Mock).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("documents")) return mockDocuments;
       return [];
     });
@@ -293,7 +293,7 @@ describe("GlobalSearch", () => {
       { _id: "3", key: "TEST-3", title: "Issue 3", type: "story" },
     ];
 
-    (useQuery as any).mockImplementation((queryFn: any) => {
+    (useQuery as vi.Mock).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("issues")) return mockIssues;
       return [];
     });
@@ -323,14 +323,14 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as any).mockImplementation((queryFn: any) => {
+    (useQuery as vi.Mock).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("issues")) return mockIssues;
       return [];
     });
 
     // Mock window.location
-    delete (window as any).location;
-    window.location = { href: "" } as any;
+    delete (window as unknown as { location: unknown }).location;
+    window.location = { href: "" } as unknown as Location;
 
     render(<GlobalSearch />);
 

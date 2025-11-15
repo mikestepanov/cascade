@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CustomFieldsManager } from "./CustomFieldsManager";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { CustomFieldsManager } from "./CustomFieldsManager";
 
 // Mock dependencies
 vi.mock("convex/react", () => ({
@@ -19,7 +20,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("CustomFieldsManager - Component Behavior", () => {
-  const mockProjectId = "project123" as any;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockCreateField = vi.fn();
   const mockUpdateField = vi.fn();
   const mockRemoveField = vi.fn();
@@ -30,17 +31,17 @@ describe("CustomFieldsManager - Component Behavior", () => {
     // Setup mutations to return in sequence for the 3 useMutation calls
     // Component creates: createField, updateField, removeField
     let mutationCallCount = 0;
-    (useMutation as any).mockImplementation(() => {
+    (useMutation as vi.Mock).mockImplementation(() => {
       const mocks = [mockCreateField, mockUpdateField, mockRemoveField];
       return mocks[mutationCallCount++ % 3];
     });
 
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
   });
 
   describe("Empty State & Loading", () => {
     it("should show loading spinner when fields are undefined", () => {
-      (useQuery as any).mockReturnValue(undefined);
+      (useQuery as vi.Mock).mockReturnValue(undefined);
 
       const { container } = render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -49,7 +50,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     });
 
     it("should show empty state with emoji when no fields exist", () => {
-      (useQuery as any).mockReturnValue([]);
+      (useQuery as vi.Mock).mockReturnValue([]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -58,7 +59,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     });
 
     it("should show 'Add Field' button when not creating", () => {
-      (useQuery as any).mockReturnValue([]);
+      (useQuery as vi.Mock).mockReturnValue([]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -380,7 +381,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
   describe("Edit Mode Behavior", () => {
     const existingField = {
-      _id: "field1" as any,
+      _id: "field1" as Id<"customFields">,
       name: "Customer ID",
       fieldKey: "customer_id",
       fieldType: "text" as const,
@@ -391,7 +392,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should populate form with existing field data when Edit is clicked", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -406,7 +407,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show 'Edit Field' title in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -417,7 +418,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should hide field key input in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -429,7 +430,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should disable field type selector in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -441,7 +442,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show 'Update Field' button in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -457,7 +458,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         fieldType: "select" as const,
         options: ["Option A", "Option B", "Option C"],
       };
-      (useQuery as any).mockReturnValue([selectField]);
+      (useQuery as vi.Mock).mockReturnValue([selectField]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -469,7 +470,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should not require field key validation in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue([existingField]);
+      (useQuery as vi.Mock).mockReturnValue([existingField]);
       mockUpdateField.mockResolvedValue({});
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
@@ -493,13 +494,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
   describe("Field Display & Rendering", () => {
     it("should display field name and key", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Customer ID",
         fieldKey: "customer_id",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -509,13 +510,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show Required badge when field is required", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test Field",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: true,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -524,13 +525,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should not show Required badge when field is optional", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test Field",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -539,14 +540,14 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should display description when present", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
         description: "This is a helpful description",
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -555,13 +556,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should not display description section when absent", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -572,14 +573,14 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should display options as chips for select fields", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Priority",
         fieldKey: "priority",
         fieldType: "select" as const,
         isRequired: false,
         options: ["Low", "Medium", "High"],
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -590,13 +591,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show correct icon for text field", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -605,13 +606,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show correct icon for number field", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "number" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -620,13 +621,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show correct icon for checkbox field", () => {
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "checkbox" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -641,13 +642,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
       confirmSpy.mockReturnValue(false);
 
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -664,13 +665,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
       confirmSpy.mockReturnValue(false);
 
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -686,13 +687,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
       mockRemoveField.mockResolvedValue({});
 
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
@@ -725,13 +726,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show success toast after successful update", async () => {
       const user = userEvent.setup();
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
       mockUpdateField.mockResolvedValue({});
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
@@ -751,13 +752,13 @@ describe("CustomFieldsManager - Component Behavior", () => {
       mockRemoveField.mockResolvedValue({});
 
       const field = {
-        _id: "field1" as any,
+        _id: "field1" as Id<"customFields">,
         name: "Test",
         fieldKey: "test",
         fieldType: "text" as const,
         isRequired: false,
       };
-      (useQuery as any).mockReturnValue([field]);
+      (useQuery as vi.Mock).mockReturnValue([field]);
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 

@@ -1,11 +1,11 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
+import { Modal } from "./ui/Modal";
 
 interface ImportExportModalProps {
   isOpen: boolean;
@@ -63,7 +63,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
         URL.revokeObjectURL(url);
 
         toast.success("Issues exported successfully!");
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to export issues");
       } finally {
         setIsExporting(false);
@@ -92,7 +92,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
         URL.revokeObjectURL(url);
 
         toast.success("Issues exported successfully!");
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to export issues");
       } finally {
         setIsExporting(false);
@@ -137,7 +137,6 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
         );
 
         if (result.errors && result.errors.length > 0) {
-          console.error("Import errors:", result.errors);
         }
 
         setImportFile(null);
@@ -146,8 +145,8 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
       } else {
         toast.error("No issues were imported");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to import issues");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to import issues");
     } finally {
       setIsImporting(false);
     }

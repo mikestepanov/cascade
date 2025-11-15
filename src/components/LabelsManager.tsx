@@ -1,15 +1,15 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ColorPicker } from "./ui/ColorPicker";
-import { EmptyState } from "./ui/EmptyState";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { EmptyState } from "./ui/EmptyState";
 import { InputField } from "./ui/FormField";
-import { Card, CardHeader, CardBody } from "./ui/Card";
+import { Modal } from "./ui/Modal";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;
@@ -50,14 +50,14 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         toast.success("Label created");
       }
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save label");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save label");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const startEdit = (label: any) => {
+  const startEdit = (label: { _id: Id<"labels">; name: string; color: string }) => {
     setEditingId(label._id);
     setName(label.name);
     setColor(label.color);
@@ -70,8 +70,8 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
     try {
       await deleteLabel({ id: deleteConfirm });
       toast.success("Label deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete label");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete label");
     } finally {
       setDeleteConfirm(null);
     }

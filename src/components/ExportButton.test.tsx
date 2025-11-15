@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ExportButton } from "./ExportButton";
 import { useQuery } from "convex/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { ExportButton } from "./ExportButton";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -18,12 +19,12 @@ vi.mock("sonner", () => ({
 }));
 
 describe("ExportButton", () => {
-  const mockProjectId = "project-123" as any;
+  const mockProjectId = "project-123" as Id<"projects">;
   let mockLink: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useQuery as any).mockReturnValue(undefined);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
 
     // Mock URL.createObjectURL and revokeObjectURL
     global.URL.createObjectURL = vi.fn(() => "blob:test-url");
@@ -35,9 +36,9 @@ describe("ExportButton", () => {
       download: "",
       click: vi.fn(),
     };
-    vi.spyOn(document, "createElement").mockReturnValue(mockLink as any);
-    vi.spyOn(document.body, "appendChild").mockReturnValue(mockLink as any);
-    vi.spyOn(document.body, "removeChild").mockReturnValue(mockLink as any);
+    vi.spyOn(document, "createElement").mockReturnValue(mockLink as unknown as Node);
+    vi.spyOn(document.body, "appendChild").mockReturnValue(mockLink as unknown as Node);
+    vi.spyOn(document.body, "removeChild").mockReturnValue(mockLink as unknown as Node);
   });
 
   afterEach(() => {
@@ -62,7 +63,7 @@ describe("ExportButton", () => {
 
   it("should trigger CSV query when button is clicked", async () => {
     const user = userEvent.setup();
-    const mockUseQuery = useQuery as any;
+    const mockUseQuery = useQuery as vi.Mock;
 
     render(<ExportButton projectId={mockProjectId} />);
 
@@ -86,9 +87,9 @@ describe("ExportButton", () => {
   it("should download CSV file when data is ready", async () => {
     const user = userEvent.setup();
     const csvData = "Key,Title,Type\nTEST-1,Test Issue,task";
-    let queryResult: any = undefined;
+    let queryResult: any;
 
-    (useQuery as any).mockImplementation((_, args: any) => {
+    (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
     });
@@ -111,12 +112,12 @@ describe("ExportButton", () => {
   it("should create blob with correct CSV content", async () => {
     const user = userEvent.setup();
     const csvData = "Key,Title\nTEST-1,Issue";
-    let queryResult: any = undefined;
+    let queryResult: any;
 
     const mockBlob = vi.fn();
-    global.Blob = mockBlob as any;
+    global.Blob = mockBlob as unknown as typeof Blob;
 
-    (useQuery as any).mockImplementation((_, args: any) => {
+    (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
     });
@@ -136,7 +137,7 @@ describe("ExportButton", () => {
 
   it("should include sprint filter when sprintId is provided", async () => {
     const user = userEvent.setup();
-    const sprintId = "sprint-456" as any;
+    const sprintId = "sprint-456" as Id<"sprints">;
 
     render(<ExportButton projectId={mockProjectId} sprintId={sprintId} />);
 
@@ -177,9 +178,9 @@ describe("ExportButton", () => {
   it("should generate filename with timestamp", async () => {
     const user = userEvent.setup();
     const csvData = "test,data";
-    let queryResult: any = undefined;
+    let queryResult: any;
 
-    (useQuery as any).mockImplementation((_, args: any) => {
+    (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
     });
@@ -193,7 +194,7 @@ describe("ExportButton", () => {
     rerender(<ExportButton projectId={mockProjectId} />);
 
     await waitFor(() => {
-      const mockLink = (document.createElement as any).mock.results[0].value;
+      const mockLink = (document.createElement as vi.Mock).mock.results[0].value;
       expect(mockLink.download).toMatch(/issues-export-\d{4}-\d{2}-\d{2}\.csv/);
     });
   });
@@ -201,9 +202,9 @@ describe("ExportButton", () => {
   it("should clean up blob URL after download", async () => {
     const user = userEvent.setup();
     const csvData = "test";
-    let queryResult: any = undefined;
+    let queryResult: any;
 
-    (useQuery as any).mockImplementation((_, args: any) => {
+    (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
     });

@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/Button";
-import { SelectField } from "./ui/SelectField";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 
 interface BulkOperationsBarProps {
@@ -23,7 +21,7 @@ export function BulkOperationsBar({
   const [showActions, setShowActions] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const project = useQuery(api.projects.get, { id: projectId });
+  const _project = useQuery(api.projects.get, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
   const members = useQuery(api.projectMembers.list, { projectId });
 
@@ -41,8 +39,8 @@ export function BulkOperationsBar({
       const result = await bulkUpdateStatus({ issueIds, newStatus: statusId });
       toast.success(`Updated ${result.updated} issue(s)`);
       onClearSelection();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update status");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update status");
     }
   };
 
@@ -54,8 +52,8 @@ export function BulkOperationsBar({
       });
       toast.success(`Updated ${result.updated} issue(s)`);
       onClearSelection();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update priority");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update priority");
     }
   };
 
@@ -67,8 +65,8 @@ export function BulkOperationsBar({
       });
       toast.success(`Assigned ${result.updated} issue(s)`);
       onClearSelection();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to assign issues");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to assign issues");
     }
   };
 
@@ -80,8 +78,8 @@ export function BulkOperationsBar({
       });
       toast.success(`Moved ${result.updated} issue(s)`);
       onClearSelection();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to move to sprint");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to move to sprint");
     }
   };
 
@@ -90,8 +88,8 @@ export function BulkOperationsBar({
       const result = await bulkDelete({ issueIds });
       toast.success(`Deleted ${result.deleted} issue(s)`);
       onClearSelection();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete issues");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete issues");
     } finally {
       setDeleteConfirm(false);
     }

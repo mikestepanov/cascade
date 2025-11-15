@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
 import { useQuery } from "convex/react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface MentionInputProps {
   projectId: Id<"projects">;
@@ -38,9 +38,9 @@ export function MentionInput({
     // Adjust textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [value]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -85,7 +85,7 @@ export function MentionInput({
     const atIndex = textBeforeCursor.lastIndexOf("@");
     const beforeMention = textBeforeCursor.substring(0, atIndex);
     const mention = `@[${userName}](${userId})`;
-    const newValue = beforeMention + mention + " " + textAfterCursor;
+    const newValue = `${beforeMention + mention} ${textAfterCursor}`;
 
     onChange(newValue);
     setShowSuggestions(false);
@@ -115,7 +115,7 @@ export function MentionInput({
         e.preventDefault();
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
         break;
-      case "Enter":
+      case "Enter": {
         if (e.shiftKey) return; // Allow Shift+Enter for new line
         e.preventDefault();
         const selectedMember = filteredMembers[selectedIndex];
@@ -123,6 +123,7 @@ export function MentionInput({
           insertMention(selectedMember.userName, selectedMember.userId);
         }
         break;
+      }
       case "Escape":
         e.preventDefault();
         setShowSuggestions(false);
@@ -131,7 +132,7 @@ export function MentionInput({
   };
 
   // Display text with mentions rendered nicely
-  const renderValue = () => {
+  const _renderValue = () => {
     if (!value) return null;
 
     const mentionPattern = /@\[([^\]]+)\]\(([^)]+)\)/g;

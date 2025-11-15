@@ -1,7 +1,7 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 
 interface IssueWatchersProps {
@@ -23,8 +23,8 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
         await watch({ issueId });
         toast.success("Now watching this issue");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update watch status");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update watch status");
     }
   };
 

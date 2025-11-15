@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 export const create = mutation({
@@ -358,11 +358,11 @@ export const update = mutation({
     // Check permissions (requires editor role or higher)
     await assertMinimumRole(ctx, issue.projectId, userId, "editor");
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: Partial<typeof issue> = { updatedAt: Date.now() };
     const now = Date.now();
 
     // Track changes for activity log
-    const changes: Array<{ field: string; oldValue: any; newValue: any }> = [];
+    const changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }> = [];
 
     if (args.title !== undefined && args.title !== issue.title) {
       updates.title = args.title;
@@ -384,8 +384,8 @@ export const update = mutation({
     }
 
     if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
-      updates.assigneeId = args.assigneeId;
-      changes.push({ field: "assignee", oldValue: issue.assigneeId, newValue: args.assigneeId });
+      updates.assigneeId = args.assigneeId ?? undefined;
+      changes.push({ field: "assignee", oldValue: issue.assigneeId, newValue: args.assigneeId ?? undefined });
     }
 
     if (args.labels !== undefined) {
@@ -398,16 +398,16 @@ export const update = mutation({
     }
 
     if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
-      updates.dueDate = args.dueDate;
-      changes.push({ field: "dueDate", oldValue: issue.dueDate, newValue: args.dueDate });
+      updates.dueDate = args.dueDate ?? undefined;
+      changes.push({ field: "dueDate", oldValue: issue.dueDate, newValue: args.dueDate ?? undefined });
     }
 
     if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
-      updates.estimatedHours = args.estimatedHours;
+      updates.estimatedHours = args.estimatedHours ?? undefined;
       changes.push({
         field: "estimatedHours",
         oldValue: issue.estimatedHours,
-        newValue: args.estimatedHours,
+        newValue: args.estimatedHours ?? undefined,
       });
     }
 
@@ -663,7 +663,7 @@ export const bulkAssign = mutation({
       const oldAssignee = issue.assigneeId;
 
       await ctx.db.patch(issueId, {
-        assigneeId: args.assigneeId,
+        assigneeId: args.assigneeId ?? undefined,
         updatedAt: now,
       });
 
@@ -760,7 +760,7 @@ export const bulkMoveToSprint = mutation({
       const oldSprint = issue.sprintId;
 
       await ctx.db.patch(issueId, {
-        sprintId: args.sprintId,
+        sprintId: args.sprintId ?? undefined,
         updatedAt: now,
       });
 

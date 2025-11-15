@@ -1,23 +1,23 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { useState } from "react";
+import { Toaster } from "sonner";
 import { api } from "../convex/_generated/api";
+import type { Id } from "../convex/_generated/dataModel";
+import { CommandPalette, useCommands } from "./components/CommandPalette";
+import { Dashboard } from "./components/Dashboard";
+import { DocumentEditor } from "./components/DocumentEditor";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { GlobalSearch } from "./components/GlobalSearch";
+import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
+import { NotificationCenter } from "./components/NotificationCenter";
+import { ProjectBoard } from "./components/ProjectBoard";
+import { ProjectSidebar } from "./components/ProjectSidebar";
+import { SectionErrorFallback } from "./components/SectionErrorFallback";
+import { Sidebar } from "./components/Sidebar";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
-import { Toaster } from "sonner";
-import { DocumentEditor } from "./components/DocumentEditor";
-import { Sidebar } from "./components/Sidebar";
-import { ProjectSidebar } from "./components/ProjectSidebar";
-import { ProjectBoard } from "./components/ProjectBoard";
-import { Dashboard } from "./components/Dashboard";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { SectionErrorFallback } from "./components/SectionErrorFallback";
-import { NotificationCenter } from "./components/NotificationCenter";
-import { GlobalSearch } from "./components/GlobalSearch";
-import { CommandPalette, useCommands } from "./components/CommandPalette";
-import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
-import { ThemeToggle } from "./components/ThemeToggle";
-import { useState } from "react";
-import { Id } from "../convex/_generated/dataModel";
-import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 
 export default function App() {
   return (

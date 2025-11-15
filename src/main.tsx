@@ -1,9 +1,9 @@
-import { createRoot } from "react-dom/client";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { PostHogProvider } from "posthog-js/react";
+import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { register as registerServiceWorker, promptInstall } from "./lib/serviceWorker";
+import { promptInstall, register as registerServiceWorker } from "./lib/serviceWorker";
 import "./index.css";
 import App from "./App";
 

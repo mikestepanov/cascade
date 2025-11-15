@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface TimeLogModalProps {
   issueId: Id<"issues">;
@@ -22,7 +22,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
     e.preventDefault();
 
     const hoursNum = parseFloat(hours);
-    if (isNaN(hoursNum) || hoursNum <= 0) {
+    if (Number.isNaN(hoursNum) || hoursNum <= 0) {
       toast.error("Please enter valid hours");
       return;
     }
@@ -38,8 +38,8 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
 
       toast.success(`Logged ${hoursNum}h on ${issueName}`);
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to log time");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to log time");
     } finally {
       setIsSubmitting(false);
     }
@@ -87,7 +87,6 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
                 placeholder="e.g., 2.5"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
-                autoFocus
               />
               <p className="text-xs text-gray-500 mt-1">
                 Use decimals for partial hours (e.g., 1.5 for 1 hour 30 minutes)

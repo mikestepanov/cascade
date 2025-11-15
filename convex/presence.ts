@@ -1,9 +1,9 @@
-import { mutation, query } from "./_generated/server";
-import { components } from "./_generated/api";
-import { v } from "convex/values";
-import { Presence } from "@convex-dev/presence";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import { Presence } from "@convex-dev/presence";
+import { v } from "convex/values";
+import { components } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 
 export const presence = new Presence(components.presence);
 

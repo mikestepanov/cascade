@@ -1,15 +1,14 @@
-import {
-  query,
-  mutation,
-  action,
-  internalAction,
-  internalQuery,
-  internalMutation,
-} from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import {
+  internalAction,
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
-import { api, internal } from "./_generated/api";
 
 // Create a webhook
 export const create = mutation({
@@ -81,7 +80,7 @@ export const update = mutation({
     // Only admins can update webhooks
     await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
 
-    const updates: any = {};
+    const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.url !== undefined) updates.url = args.url;
     if (args.events !== undefined) updates.events = args.events;
@@ -149,8 +148,7 @@ export const trigger = internalAction({
         await ctx.runMutation(internal.webhooks.updateLastTriggered, {
           id: webhook._id,
         });
-      } catch (error) {
-        console.error(`Webhook ${webhook._id} failed:`, error);
+      } catch {
         // Continue with other webhooks even if one fails
       }
     }

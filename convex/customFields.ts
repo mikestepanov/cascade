@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Get all custom fields for a project
@@ -100,7 +100,7 @@ export const update = mutation({
 
     await assertMinimumRole(ctx, field.projectId, userId, "admin");
 
-    const updates: any = {};
+    const updates: Partial<typeof field> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.options !== undefined) updates.options = args.options;
     if (args.isRequired !== undefined) updates.isRequired = args.isRequired;
@@ -206,7 +206,7 @@ export const setValue = mutation({
     }
 
     // Validate value based on field type
-    if (field.fieldType === "number" && isNaN(Number(args.value))) {
+    if (field.fieldType === "number" && Number.isNaN(Number(args.value))) {
       throw new Error("Value must be a valid number");
     }
 

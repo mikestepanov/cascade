@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 
 export interface Command {
   id: string;
@@ -56,7 +55,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
   useEffect(() => {
     setSelectedIndex(0);
-  }, [search]);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -133,7 +132,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                   <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
                     {group}
                   </div>
-                  {cmds.map((cmd, cmdIndex) => {
+                  {cmds.map((cmd, _cmdIndex) => {
                     const globalIndex = allFilteredCommands.indexOf(cmd);
                     const isSelected = globalIndex === selectedIndex;
 
@@ -194,8 +193,8 @@ export function useCommands({
   onCreateDocument?: () => void;
   onCreateProject?: () => void;
 }) {
-  const projects = useQuery(api.dashboard.getMyProjects);
-  const documents = useQuery(api.documents.list);
+  const _projects = useQuery(api.dashboard.getMyProjects);
+  const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
 
   const commands: Command[] = [

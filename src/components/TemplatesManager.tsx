@@ -1,14 +1,14 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { EmptyState } from "./ui/EmptyState";
+import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { InputField, TextareaField, SelectField } from "./ui/FormField";
-import { Card, CardHeader, CardBody } from "./ui/Card";
+import { EmptyState } from "./ui/EmptyState";
+import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Modal } from "./ui/Modal";
 
 interface TemplatesManagerProps {
   projectId: Id<"projects">;
@@ -30,7 +30,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const templates = useQuery(api.templates.list, { projectId });
-  const labels = useQuery(api.labels.list, { projectId });
+  const _labels = useQuery(api.labels.list, { projectId });
   const createTemplate = useMutation(api.templates.create);
   const updateTemplate = useMutation(api.templates.update);
   const deleteTemplate = useMutation(api.templates.remove);
@@ -72,14 +72,22 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
         toast.success("Template created");
       }
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save template");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save template");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const startEdit = (template: any) => {
+  const startEdit = (template: {
+    _id: Id<"issueTemplates">;
+    name: string;
+    type: "task" | "bug" | "story" | "epic";
+    titleTemplate: string;
+    descriptionTemplate: string;
+    defaultPriority: "lowest" | "low" | "medium" | "high" | "highest";
+    defaultLabels?: string[];
+  }) => {
     setEditingId(template._id);
     setName(template.name);
     setType(template.type);
@@ -96,8 +104,8 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
     try {
       await deleteTemplate({ id: deleteConfirm });
       toast.success("Template deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete template");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete template");
     } finally {
       setDeleteConfirm(null);
     }

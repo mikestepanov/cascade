@@ -1,11 +1,11 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Button } from "./ui/Button";
-import { MentionInput } from "./MentionInput";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { CommentRenderer } from "./CommentRenderer";
+import { MentionInput } from "./MentionInput";
+import { Button } from "./ui/Button";
 
 interface IssueCommentsProps {
   issueId: Id<"issues">;
@@ -36,8 +36,8 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
       setNewComment("");
       setMentions([]);
       toast.success("Comment added");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add comment");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to add comment");
     } finally {
       setIsSubmitting(false);
     }

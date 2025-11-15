@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMutation, useQuery } from "convex/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
-import { useQuery, useMutation } from "convex/react";
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -26,7 +27,7 @@ vi.mock("./TimeTracker", () => ({
 describe("IssueDetailModal", () => {
   const mockUpdateIssue = vi.fn();
   const mockOnClose = vi.fn();
-  const mockIssueId = "issue-123" as any;
+  const mockIssueId = "issue-123" as Id<"issues">;
 
   const mockIssue = {
     _id: mockIssueId,
@@ -45,11 +46,11 @@ describe("IssueDetailModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockReturnValue(mockUpdateIssue);
+    (useMutation as vi.Mock).mockReturnValue(mockUpdateIssue);
   });
 
   it("should show loading state when issue is undefined", () => {
-    (useQuery as any).mockReturnValue(undefined);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -57,7 +58,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render issue details", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -67,7 +68,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display issue metadata", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -77,7 +78,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display labels", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -86,7 +87,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show correct type icon", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -94,7 +95,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show priority badge with correct color", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -103,7 +104,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render TimeTracker component", () => {
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -112,7 +113,7 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when close button is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -124,7 +125,7 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -139,7 +140,7 @@ describe("IssueDetailModal", () => {
 
   it("should enter edit mode when Edit button is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -152,7 +153,7 @@ describe("IssueDetailModal", () => {
 
   it("should allow editing title and description", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -178,7 +179,7 @@ describe("IssueDetailModal", () => {
 
   it("should call update mutation when Save is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
     mockUpdateIssue.mockResolvedValue(undefined);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
@@ -204,7 +205,7 @@ describe("IssueDetailModal", () => {
 
   it("should exit edit mode when Cancel is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -224,7 +225,7 @@ describe("IssueDetailModal", () => {
 
   it("should show No description provided when description is empty", () => {
     const issueWithoutDescription = { ...mockIssue, description: "" };
-    (useQuery as any).mockReturnValue(issueWithoutDescription);
+    (useQuery as vi.Mock).mockReturnValue(issueWithoutDescription);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -233,7 +234,7 @@ describe("IssueDetailModal", () => {
 
   it("should show Unassigned when no assignee", () => {
     const issueWithoutAssignee = { ...mockIssue, assignee: null };
-    (useQuery as any).mockReturnValue(issueWithoutAssignee);
+    (useQuery as vi.Mock).mockReturnValue(issueWithoutAssignee);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -242,7 +243,7 @@ describe("IssueDetailModal", () => {
 
   it("should not show Labels section when no labels", () => {
     const issueWithoutLabels = { ...mockIssue, labels: [] };
-    (useQuery as any).mockReturnValue(issueWithoutLabels);
+    (useQuery as vi.Mock).mockReturnValue(issueWithoutLabels);
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -251,7 +252,7 @@ describe("IssueDetailModal", () => {
 
   it("should handle save error gracefully", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue(mockIssue);
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
     mockUpdateIssue.mockRejectedValue(new Error("Network error"));
 
     const { toast } = await import("sonner");

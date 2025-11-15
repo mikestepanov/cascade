@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 export const get = query({
   args: { id: v.id("users") },
@@ -33,7 +33,7 @@ export const updateProfile = mutation({
       throw new Error("Not authenticated");
     }
 
-    const updates: any = {};
+    const updates: { name?: string; email?: string; image?: string } = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.email !== undefined) updates.email = args.email;
     if (args.avatar !== undefined) updates.image = args.avatar;

@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CustomFieldValues } from "./CustomFieldValues";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { CustomFieldValues } from "./CustomFieldValues";
 
 // Mock dependencies
 vi.mock("convex/react", () => ({
@@ -18,8 +19,8 @@ vi.mock("sonner", () => ({
 }));
 
 describe("CustomFieldValues - Component Behavior", () => {
-  const mockIssueId = "issue123" as any;
-  const mockProjectId = "project123" as any;
+  const mockIssueId = "issue123" as Id<"issues">;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockSetValue = vi.fn();
   const mockRemoveValue = vi.fn();
 
@@ -29,18 +30,18 @@ describe("CustomFieldValues - Component Behavior", () => {
     // Setup mutations to return in sequence for the 2 useMutation calls
     // Component creates: setValue, removeValue
     let mutationCallCount = 0;
-    (useMutation as any).mockImplementation(() => {
+    (useMutation as vi.Mock).mockImplementation(() => {
       const mocks = [mockSetValue, mockRemoveValue];
       return mocks[mutationCallCount++ % 2];
     });
 
     // Default useQuery setup (tests can override)
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as vi.Mock).mockReturnValue([]);
   });
 
   describe("Empty State & Visibility", () => {
     it("should not render when no custom fields exist", () => {
-      (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce([]);
 
       const { container } = render(
         <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
@@ -50,7 +51,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     });
 
     it("should not render when custom fields is undefined", () => {
-      (useQuery as any).mockReturnValueOnce(undefined).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce([]);
 
       const { container } = render(
         <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
@@ -62,13 +63,13 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should render when custom fields exist", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Customer ID",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -82,13 +83,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -110,13 +111,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockRemoveValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -138,13 +139,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockRemoveValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -164,13 +165,13 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should show 'Set' button when value is not set", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -180,7 +181,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should show 'Edit' button when value is set", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
@@ -188,11 +189,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "Existing Value",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -203,13 +204,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -224,13 +225,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -243,7 +244,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
@@ -251,11 +252,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "Current Value",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -268,13 +269,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -290,13 +291,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -316,13 +317,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -344,13 +345,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -374,7 +375,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
@@ -382,11 +383,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "true",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -400,7 +401,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
@@ -408,11 +409,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "false",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -428,14 +429,14 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -457,14 +458,14 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -487,14 +488,14 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -519,7 +520,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
@@ -528,11 +529,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "Frontend, Database",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -552,13 +553,13 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should display 'Not set' when value is empty", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -568,7 +569,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should display '✓ Yes' for checkbox value 'true'", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
@@ -576,11 +577,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "true",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -590,7 +591,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should display '✗ No' for checkbox value 'false'", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Is Verified",
           fieldType: "checkbox" as const,
           isRequired: false,
@@ -598,11 +599,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "false",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -612,7 +613,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should display URL as clickable link with target blank", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Documentation",
           fieldType: "url" as const,
           isRequired: false,
@@ -620,11 +621,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "https://example.com",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -637,7 +638,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should format date values for display", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Due Date",
           fieldType: "date" as const,
           isRequired: false,
@@ -646,11 +647,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       const testDate = "2025-01-15";
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: testDate,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -661,7 +662,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should display multiselect values as chips", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
@@ -670,11 +671,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "Frontend, Backend",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -686,7 +687,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should trim whitespace in multiselect chip display", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Tags",
           fieldType: "multiselect" as const,
           isRequired: false,
@@ -695,11 +696,11 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       const mockValues = [
         {
-          fieldId: "field1" as any,
+          fieldId: "field1" as Id<"customFields">,
           value: "  Frontend  ,  Backend  ",
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -713,13 +714,13 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should show asterisk for required fields", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Required Field",
           fieldType: "text" as const,
           isRequired: true,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -729,13 +730,13 @@ describe("CustomFieldValues - Component Behavior", () => {
     it("should not show asterisk for optional fields", () => {
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Optional Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -748,13 +749,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockRejectedValue(new Error("Network error"));
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -772,13 +773,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       const user = userEvent.setup();
       const mockFields = [
         {
-          _id: "field1" as any,
+          _id: "field1" as Id<"customFields">,
           name: "Test Field",
           fieldType: "text" as const,
           isRequired: false,
         },
       ];
-      (useQuery as any).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
       mockSetValue.mockRejectedValue(new Error());
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);

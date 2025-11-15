@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Create an issue template
@@ -122,7 +122,7 @@ export const update = mutation({
     // Check if user can edit project
     await assertMinimumRole(ctx, template.projectId, userId, "editor");
 
-    const updates: any = {};
+    const updates: Partial<typeof template> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.titleTemplate !== undefined) updates.titleTemplate = args.titleTemplate;
     if (args.descriptionTemplate !== undefined)

@@ -1,11 +1,11 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { InputField } from "./ui/InputField";
+import { Modal } from "./ui/Modal";
 
 interface CreateProjectFromTemplateProps {
   isOpen: boolean;
@@ -58,8 +58,8 @@ export function CreateProjectFromTemplate({
       onProjectCreated?.(projectId);
       onClose();
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create project");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create project");
     }
   };
 

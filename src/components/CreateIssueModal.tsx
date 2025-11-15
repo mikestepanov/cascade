@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { InputField, TextareaField, SelectField } from "./ui/FormField";
+import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Modal } from "./ui/Modal";
 
 interface CreateIssueModalProps {
   projectId: Id<"projects">;
@@ -74,8 +74,8 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
 
       toast.success("Issue created successfully");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create issue");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create issue");
     } finally {
       setIsSubmitting(false);
     }

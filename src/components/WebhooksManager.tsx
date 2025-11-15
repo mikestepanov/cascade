@@ -1,14 +1,14 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { Modal } from "./ui/Modal";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { EmptyState } from "./ui/EmptyState";
+import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { EmptyState } from "./ui/EmptyState";
 import { InputField } from "./ui/FormField";
-import { Card, CardHeader, CardBody } from "./ui/Card";
+import { Modal } from "./ui/Modal";
 
 interface WebhooksManagerProps {
   projectId: Id<"projects">;
@@ -73,14 +73,20 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
         toast.success("Webhook created");
       }
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save webhook");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save webhook");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const startEdit = (webhook: any) => {
+  const startEdit = (webhook: {
+    _id: Id<"webhooks">;
+    name: string;
+    url: string;
+    secret?: string;
+    events: string[];
+  }) => {
     setEditingId(webhook._id);
     setName(webhook.name);
     setUrl(webhook.url);
@@ -95,8 +101,8 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
     try {
       await deleteWebhook({ id: deleteConfirm });
       toast.success("Webhook deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete webhook");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete webhook");
     } finally {
       setDeleteConfirm(null);
     }

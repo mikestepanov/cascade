@@ -1,14 +1,14 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
-import { TimeTracker } from "./TimeTracker";
-import { FileAttachments } from "./FileAttachments";
-import { IssueWatchers } from "./IssueWatchers";
-import { IssueDependencies } from "./IssueDependencies";
-import { IssueComments } from "./IssueComments";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
+import { FileAttachments } from "./FileAttachments";
+import { IssueComments } from "./IssueComments";
+import { IssueDependencies } from "./IssueDependencies";
+import { IssueWatchers } from "./IssueWatchers";
+import { TimeTracker } from "./TimeTracker";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -42,7 +42,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
       });
       toast.success("Issue updated");
       setIsEditing(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update issue");
     }
   };

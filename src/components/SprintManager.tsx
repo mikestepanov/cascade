@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
@@ -33,8 +33,8 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       setNewSprintGoal("");
       setShowCreateForm(false);
       toast.success("Sprint created successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create sprint");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create sprint");
     }
   };
 
@@ -49,8 +49,8 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         endDate,
       });
       toast.success("Sprint started successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start sprint");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to start sprint");
     }
   };
 
@@ -58,8 +58,8 @@ export function SprintManager({ projectId }: SprintManagerProps) {
     try {
       await completeSprint({ sprintId });
       toast.success("Sprint completed successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to complete sprint");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to complete sprint");
     }
   };
 
@@ -95,7 +95,6 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                 onChange={(e) => setNewSprintName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., Sprint 1"
-                autoFocus
               />
             </div>
             <div>

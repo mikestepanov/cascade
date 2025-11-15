@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);

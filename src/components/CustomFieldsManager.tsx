@@ -1,11 +1,11 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { InputField } from "./ui/FormField";
 import { Card } from "./ui/Card";
+import { InputField } from "./ui/FormField";
 
 interface CustomFieldsManagerProps {
   projectId: Id<"projects">;
@@ -41,7 +41,15 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
     setEditingId(null);
   };
 
-  const handleEdit = (field: any) => {
+  const handleEdit = (field: {
+    _id: Id<"customFields">;
+    name: string;
+    fieldKey: string;
+    fieldType: string;
+    options?: string[];
+    isRequired: boolean;
+    description?: string;
+  }) => {
     setName(field.name);
     setFieldKey(field.fieldKey);
     setFieldType(field.fieldType);
@@ -89,8 +97,8 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
         toast.success("Field created");
       }
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save field");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save field");
     }
   };
 
@@ -102,8 +110,8 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
     try {
       await removeField({ id });
       toast.success("Field deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete field");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete field");
     }
   };
 

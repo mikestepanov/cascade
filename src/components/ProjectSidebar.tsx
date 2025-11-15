@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
@@ -41,8 +41,8 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       setShowCreateForm(false);
       onSelectProject(projectId);
       toast.success("Project created successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create project");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create project");
     }
   };
 
@@ -71,7 +71,6 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
             />
             <input
               type="text"

@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 
 interface CustomFieldValuesProps {
@@ -41,8 +41,8 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
       }
       setEditingFieldId(null);
       setEditValue("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update field");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update field");
     }
   };
 
@@ -51,7 +51,17 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
     setEditValue("");
   };
 
-  const renderFieldInput = (field: any) => {
+  type CustomField = {
+    _id: Id<"customFields">;
+    name: string;
+    fieldKey: string;
+    fieldType: string;
+    options?: string[];
+    isRequired: boolean;
+    description?: string;
+  };
+
+  const renderFieldInput = (field: CustomField) => {
     switch (field.fieldType) {
       case "text":
       case "url":
@@ -160,7 +170,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
     }
   };
 
-  const renderFieldValue = (field: any, value?: string) => {
+  const renderFieldValue = (field: CustomField, value?: string) => {
     if (!value) {
       return <span className="text-gray-400 dark:text-gray-500 italic text-sm">Not set</span>;
     }

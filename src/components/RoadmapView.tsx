@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
+import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
 
 interface RoadmapViewProps {
@@ -64,7 +64,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
     return (daysSinceStart / totalDays) * 100;
   };
 
-  const getDuration = (startDate?: number, endDate?: number) => {
+  const _getDuration = (startDate?: number, endDate?: number) => {
     if (!startDate || !endDate) return 5; // Default width
     const totalDays = Math.floor(
       (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24),

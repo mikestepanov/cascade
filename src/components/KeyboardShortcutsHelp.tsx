@@ -1,5 +1,4 @@
 import { Modal } from "./ui/Modal";
-import { Card, CardBody } from "./ui/Card";
 
 interface KeyboardShortcutsHelpProps {
   isOpen: boolean;

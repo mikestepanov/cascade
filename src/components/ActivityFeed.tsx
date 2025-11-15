@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ActivityFeedProps {
   projectId: Id<"projects">;
@@ -52,7 +52,13 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     }
   };
 
-  const formatActivityMessage = (activity: any) => {
+  const formatActivityMessage = (activity: {
+    action: string;
+    field?: string;
+    oldValue?: string;
+    newValue?: string;
+    issueKey?: string;
+  }) => {
     const { action, field, oldValue, newValue, issueKey } = activity;
 
     if (action === "created") {

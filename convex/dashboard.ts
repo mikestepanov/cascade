@@ -1,6 +1,6 @@
-import { query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({

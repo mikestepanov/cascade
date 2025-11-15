@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
+import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 const applicationTables = {
@@ -163,28 +163,6 @@ const applicationTables = {
   })
     .index("by_project", ["projectId"])
     .index("by_project_name", ["projectId", "name"]),
-
-  notifications: defineTable({
-    userId: v.id("users"),
-    type: v.union(
-      v.literal("issue_assigned"),
-      v.literal("issue_mentioned"),
-      v.literal("issue_commented"),
-      v.literal("issue_status_changed"),
-      v.literal("sprint_started"),
-      v.literal("sprint_ended"),
-    ),
-    title: v.string(),
-    message: v.string(),
-    issueId: v.optional(v.id("issues")),
-    projectId: v.optional(v.id("projects")),
-    sprintId: v.optional(v.id("sprints")),
-    isRead: v.boolean(),
-    createdAt: v.number(),
-  })
-    .index("by_user", ["userId"])
-    .index("by_user_read", ["userId", "isRead"])
-    .index("by_created_at", ["createdAt"]),
 
   timeEntries: defineTable({
     issueId: v.id("issues"),

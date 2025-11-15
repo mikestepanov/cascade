@@ -17,8 +17,6 @@ export function register() {
       navigator.serviceWorker
         .register("/service-worker.js")
         .then((registration) => {
-          console.log("[SW] Registered successfully:", registration.scope);
-
           // Check for updates periodically
           setInterval(
             () => {
@@ -40,13 +38,10 @@ export function register() {
             }
           });
         })
-        .catch((error) => {
-          console.error("[SW] Registration failed:", error);
-        });
+        .catch((_error) => {});
 
       // Handle controller change (new SW activated)
       navigator.serviceWorker.addEventListener("controllerchange", () => {
-        console.log("[SW] Controller changed, reloading page");
         window.location.reload();
       });
     });
@@ -59,9 +54,7 @@ export function unregister() {
       .then((registration) => {
         registration.unregister();
       })
-      .catch((error) => {
-        console.error("[SW] Unregistration failed:", error);
-      });
+      .catch((_error) => {});
   }
 }
 
@@ -152,11 +145,9 @@ export function promptInstall() {
     showInstallPrompt(() => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult: any) => {
+        deferredPrompt.userChoice.then((choiceResult: { outcome: 'accepted' | 'dismissed' }) => {
           if (choiceResult.outcome === "accepted") {
-            console.log("[PWA] User accepted the install prompt");
           } else {
-            console.log("[PWA] User dismissed the install prompt");
           }
           deferredPrompt = null;
         });
@@ -165,7 +156,6 @@ export function promptInstall() {
   });
 
   window.addEventListener("appinstalled", () => {
-    console.log("[PWA] App installed successfully");
     deferredPrompt = null;
   });
 }

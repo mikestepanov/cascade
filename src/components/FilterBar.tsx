@@ -1,19 +1,21 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
+
+type FilterValues = Record<string, unknown>;
 
 interface FilterBarProps {
   projectId: Id<"projects">;
-  onFilterChange: (filters: any) => void;
+  onFilterChange: (filters: FilterValues) => void;
 }
 
 export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [isPublic, setIsPublic] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<any>({});
+  const [activeFilters, setActiveFilters] = useState<FilterValues>({});
 
   const savedFilters = useQuery(api.savedFilters.list, { projectId });
   const createFilter = useMutation(api.savedFilters.create);
@@ -36,12 +38,12 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
       setShowSaveDialog(false);
       setFilterName("");
       setIsPublic(false);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save filter");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save filter");
     }
   };
 
-  const handleLoadFilter = (filters: any) => {
+  const handleLoadFilter = (filters: FilterValues) => {
     setActiveFilters(filters);
     onFilterChange(filters);
     toast.success("Filter applied");
@@ -51,8 +53,8 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
     try {
       await removeFilter({ id });
       toast.success("Filter deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete filter");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete filter");
     }
   };
 
@@ -141,7 +143,6 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                   onChange={(e) => setFilterName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
                   placeholder="e.g., High Priority Bugs"
-                  autoFocus
                 />
               </div>
 

@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Create a new label
@@ -89,7 +89,7 @@ export const update = mutation({
       }
     }
 
-    const updates: any = {};
+    const updates: Partial<typeof label> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.color !== undefined) updates.color = args.color;
 

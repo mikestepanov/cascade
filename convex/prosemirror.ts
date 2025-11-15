@@ -1,8 +1,8 @@
-import { components } from "./_generated/api";
-import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { DataModel, Id } from "./_generated/dataModel";
-import { GenericQueryCtx, GenericMutationCtx } from "convex/server";
+import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
+import type { GenericMutationCtx, GenericQueryCtx } from "convex/server";
+import { components } from "./_generated/api";
+import type { DataModel, Id } from "./_generated/dataModel";
 
 const prosemirrorSync = new ProsemirrorSync(components.prosemirrorSync);
 

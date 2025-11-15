@@ -1,21 +1,21 @@
-import { useState } from "react";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { KanbanBoard } from "./KanbanBoard";
-import { SprintManager } from "./SprintManager";
-import { AnalyticsDashboard } from "./AnalyticsDashboard";
-import { RoadmapView } from "./RoadmapView";
-import { CalendarView } from "./CalendarView";
+import type { Id } from "../../convex/_generated/dataModel";
 import { ActivityFeed } from "./ActivityFeed";
-import { ExportButton } from "./ExportButton";
-import { LabelsManager } from "./LabelsManager";
-import { TemplatesManager } from "./TemplatesManager";
-import { WebhooksManager } from "./WebhooksManager";
+import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { AutomationRulesManager } from "./AutomationRulesManager";
+import { CalendarView } from "./CalendarView";
 import { CustomFieldsManager } from "./CustomFieldsManager";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { ExportButton } from "./ExportButton";
+import { KanbanBoard } from "./KanbanBoard";
+import { LabelsManager } from "./LabelsManager";
+import { RoadmapView } from "./RoadmapView";
 import { SectionErrorFallback } from "./SectionErrorFallback";
+import { SprintManager } from "./SprintManager";
+import { TemplatesManager } from "./TemplatesManager";
+import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -201,35 +201,35 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <div className="max-w-4xl space-y-6">
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Labels Error" />}
-                onError={(error) => console.error("LabelsManager error:", error)}
+                onError={(_error) => {}}
               >
                 <LabelsManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Templates Error" />}
-                onError={(error) => console.error("TemplatesManager error:", error)}
+                onError={(_error) => {}}
               >
                 <TemplatesManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Webhooks Error" />}
-                onError={(error) => console.error("WebhooksManager error:", error)}
+                onError={(_error) => {}}
               >
                 <WebhooksManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Automation Error" />}
-                onError={(error) => console.error("AutomationRulesManager error:", error)}
+                onError={(_error) => {}}
               >
                 <AutomationRulesManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Custom Fields Error" />}
-                onError={(error) => console.error("CustomFieldsManager error:", error)}
+                onError={(_error) => {}}
               >
                 <CustomFieldsManager projectId={projectId} />
               </ErrorBoundary>

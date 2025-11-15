@@ -1,7 +1,7 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { getUserRole, canAccessProject, assertMinimumRole } from "./rbac";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { assertMinimumRole, getUserRole } from "./rbac";
 
 export const create = mutation({
   args: {

@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 
 // Mock Convex hooks
@@ -34,18 +35,18 @@ const mockAnalytics = {
 
 const mockVelocity = {
   velocityData: [
-    { sprintName: "Sprint 1", sprintId: "1" as any, points: 20, issuesCompleted: 10 },
-    { sprintName: "Sprint 2", sprintId: "2" as any, points: 25, issuesCompleted: 12 },
-    { sprintName: "Sprint 3", sprintId: "3" as any, points: 22, issuesCompleted: 11 },
+    { sprintName: "Sprint 1", sprintId: "1" as Id<"sprints">, points: 20, issuesCompleted: 10 },
+    { sprintName: "Sprint 2", sprintId: "2" as Id<"sprints">, points: 25, issuesCompleted: 12 },
+    { sprintName: "Sprint 3", sprintId: "3" as Id<"sprints">, points: 22, issuesCompleted: 11 },
   ],
   averageVelocity: 22,
 };
 
 const mockActivity = [
   {
-    _id: "1" as any,
-    issueId: "issue1" as any,
-    userId: "user1" as any,
+    _id: "1" as Id<"issueActivity">,
+    issueId: "issue1" as Id<"issues">,
+    userId: "user1" as Id<"users">,
     action: "created",
     createdAt: Date.now() - 1000 * 60 * 5, // 5 mins ago
     userName: "Alice",
@@ -54,9 +55,9 @@ const mockActivity = [
     issueTitle: "Test Issue",
   },
   {
-    _id: "2" as any,
-    issueId: "issue2" as any,
-    userId: "user2" as any,
+    _id: "2" as Id<"issueActivity">,
+    issueId: "issue2" as Id<"issues">,
+    userId: "user2" as Id<"users">,
     action: "updated",
     field: "status",
     createdAt: Date.now() - 1000 * 60 * 10, // 10 mins ago
@@ -94,21 +95,21 @@ describe("AnalyticsDashboard", () => {
     vi.clearAllMocks();
     mockUseQuery.mockReturnValue(undefined);
 
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     const spinner = document.querySelector(".animate-spin");
     expect(spinner).toBeInTheDocument();
   });
 
   it("should render dashboard header", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Analytics Dashboard")).toBeInTheDocument();
     expect(screen.getByText(/Project insights, team velocity/i)).toBeInTheDocument();
   });
 
   it("should display key metrics cards", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Total Issues")).toBeInTheDocument();
     expect(screen.getAllByText("25").length).toBeGreaterThan(0);
@@ -124,7 +125,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display chart sections", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Issues by Status")).toBeInTheDocument();
     expect(screen.getByText("Issues by Type")).toBeInTheDocument();
@@ -133,7 +134,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display issues by status chart data", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     // Check that status labels are rendered
     expect(screen.getByText("todo")).toBeInTheDocument();
@@ -147,7 +148,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display issues by type chart data", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Task")).toBeInTheDocument();
     expect(screen.getByText("Bug")).toBeInTheDocument();
@@ -156,7 +157,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display issues by priority chart data", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Highest")).toBeInTheDocument();
     expect(screen.getByText("High")).toBeInTheDocument();
@@ -166,7 +167,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display team velocity chart with sprint names", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Sprint 1")).toBeInTheDocument();
     expect(screen.getByText("Sprint 2")).toBeInTheDocument();
@@ -177,7 +178,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display issues by assignee when data is available", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Issues by Assignee")).toBeInTheDocument();
     expect(screen.getAllByText("Alice").length).toBeGreaterThan(0);
@@ -186,7 +187,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should display recent activity feed", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("Recent Activity")).toBeInTheDocument();
     expect(screen.getAllByText("Alice").length).toBeGreaterThan(0);
@@ -196,7 +197,7 @@ describe("AnalyticsDashboard", () => {
   });
 
   it("should highlight unassigned count when greater than 0", () => {
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     // Find the unassigned metric card
     const unassignedCard = screen.getByText("Unassigned").closest("div.ring-2");
@@ -216,7 +217,7 @@ describe("AnalyticsDashboard", () => {
       return null;
     });
 
-    render(<AnalyticsDashboard projectId={"test" as any} />);
+    render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
     expect(screen.getByText("No completed sprints yet")).toBeInTheDocument();
   });

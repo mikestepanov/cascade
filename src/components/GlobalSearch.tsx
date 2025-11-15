@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 type SearchResult =
   | {
@@ -119,7 +119,6 @@ export function GlobalSearch() {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search issues and documents..."
                   className="w-full pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
-                  autoFocus
                 />
               </div>
             </div>

@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ImportExportModal } from "./ImportExportModal";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Id } from "../../convex/_generated/dataModel";
+import { ImportExportModal } from "./ImportExportModal";
 
 // Mock dependencies
 vi.mock("convex/react", () => ({
@@ -19,15 +20,15 @@ vi.mock("sonner", () => ({
 }));
 
 describe("ImportExportModal - Component Behavior", () => {
-  const mockProjectId = "project123" as any;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockOnClose = vi.fn();
   const mockImportCSV = vi.fn();
   const mockImportJSON = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockReturnValueOnce(mockImportCSV).mockReturnValueOnce(mockImportJSON);
-    (useQuery as any).mockReturnValue(undefined);
+    (useMutation as vi.Mock).mockReturnValueOnce(mockImportCSV).mockReturnValueOnce(mockImportJSON);
+    (useQuery as vi.Mock).mockReturnValue(undefined);
   });
 
   describe("Mode Switching Logic", () => {
@@ -85,7 +86,7 @@ describe("ImportExportModal - Component Behavior", () => {
 
       // First query call returns undefined, second returns empty string
       let queryCallCount = 0;
-      (useQuery as any).mockImplementation(() => {
+      (useQuery as vi.Mock).mockImplementation(() => {
         queryCallCount++;
         return queryCallCount > 1 ? "" : undefined;
       });
@@ -103,7 +104,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       let queryCallCount = 0;
-      (useQuery as any).mockImplementation(() => {
+      (useQuery as vi.Mock).mockImplementation(() => {
         queryCallCount++;
         return queryCallCount > 1 ? "   " : undefined;
       });
@@ -126,14 +127,14 @@ describe("ImportExportModal - Component Behavior", () => {
         download: "",
         click: vi.fn(),
       };
-      vi.spyOn(document, "createElement").mockReturnValue(mockLink as any);
-      vi.spyOn(document.body, "appendChild").mockReturnValue(undefined as any);
-      vi.spyOn(document.body, "removeChild").mockReturnValue(undefined as any);
+      vi.spyOn(document, "createElement").mockReturnValue(mockLink as unknown as HTMLElement);
+      vi.spyOn(document.body, "appendChild").mockReturnValue(undefined as unknown as Node);
+      vi.spyOn(document.body, "removeChild").mockReturnValue(undefined as unknown as Node);
       global.URL.createObjectURL = vi.fn(() => "blob:mock");
       global.URL.revokeObjectURL = vi.fn();
 
       let queryCallCount = 0;
-      (useQuery as any).mockImplementation(() => {
+      (useQuery as vi.Mock).mockImplementation(() => {
         queryCallCount++;
         return queryCallCount > 1 ? "key,title\nTEST-1,Issue" : undefined;
       });
@@ -152,7 +153,7 @@ describe("ImportExportModal - Component Behavior", () => {
   describe("Export Button State", () => {
     it("should show 'Exporting...' text when isExporting is true", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue(undefined); // Keep loading
+      (useQuery as vi.Mock).mockReturnValue(undefined); // Keep loading
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -163,7 +164,7 @@ describe("ImportExportModal - Component Behavior", () => {
 
     it("should disable export button while exporting", async () => {
       const user = userEvent.setup();
-      (useQuery as any).mockReturnValue(undefined);
+      (useQuery as vi.Mock).mockReturnValue(undefined);
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -220,7 +221,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "title\nTest Issue" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -249,7 +250,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -276,7 +277,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -305,7 +306,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "title\nIssue 1" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 1, failed: 0, errors: [] });
 
@@ -341,7 +342,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "title\nIssue 1\nIssue 2" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 5, failed: 0, errors: [] });
 
@@ -374,7 +375,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({
         imported: 8,
@@ -411,7 +412,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 10, failed: 0, errors: [] });
 
@@ -448,7 +449,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 5, errors: [] });
 
@@ -481,7 +482,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockRejectedValue(new Error("Invalid CSV format"));
 
@@ -514,7 +515,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockRejectedValue(new Error());
 
@@ -549,7 +550,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
@@ -582,7 +583,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
@@ -618,7 +619,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 3, failed: 0, errors: [] });
 
@@ -651,7 +652,7 @@ describe("ImportExportModal - Component Behavior", () => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as any;
+      } as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 2, errors: [] });
 

@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 // Log time on an issue
 export const create = mutation({
@@ -138,7 +138,7 @@ export const update = mutation({
     }
 
     const oldHours = entry.hours;
-    const updates: any = {};
+    const updates: Partial<typeof entry> = {};
     if (args.hours !== undefined) updates.hours = args.hours;
     if (args.description !== undefined) updates.description = args.description;
     if (args.date !== undefined) updates.date = args.date;

@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 const filtersValidator = v.object({
@@ -120,7 +120,7 @@ export const update = mutation({
       throw new Error("Not authorized");
     }
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: Partial<typeof filter> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.filters !== undefined) updates.filters = args.filters;
     if (args.isPublic !== undefined) updates.isPublic = args.isPublic;
