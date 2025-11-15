@@ -419,3 +419,33 @@ export const addComment = mutation({
     return commentId;
   },
 });
+
+// Search issues
+export const search = query({
+  args: {
+    query: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const results = await ctx.db
+      .query("issues")
+      .withSearchIndex("search_title", (q) => q.search("title", args.query))
+      .take(args.limit ?? 20);
+
+    // Filter to only issues user has access to
+    const filtered = [];
+    for (const issue of results) {
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
+        filtered.push(issue);
+      } catch {
+        // User doesn't have access, skip this issue
+      }
+    }
+
+    return filtered;
+  },
+});
