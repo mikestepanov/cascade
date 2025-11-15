@@ -6,6 +6,7 @@ import { KanbanBoard } from "./KanbanBoard";
 import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { RoadmapView } from "./RoadmapView";
+import { CalendarView } from "./CalendarView";
 import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
@@ -18,7 +19,7 @@ interface ProjectBoardProps {
 }
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "analytics" | "settings">("board");
+  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "calendar" | "analytics" | "settings">("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -104,6 +105,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             🗺️ Roadmap
           </button>
           <button
+            onClick={() => setActiveTab("calendar")}
+            className={`pb-2 border-b-2 transition-colors ${
+              activeTab === "calendar"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            📅 Calendar
+          </button>
+          <button
             onClick={() => setActiveTab("analytics")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "analytics"
@@ -160,6 +171,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         )}
         {activeTab === "roadmap" && (
           <RoadmapView
+            projectId={projectId}
+            sprintId={selectedSprintId || activeSprint?._id}
+          />
+        )}
+        {activeTab === "calendar" && (
+          <CalendarView
             projectId={projectId}
             sprintId={selectedSprintId || activeSprint?._id}
           />
