@@ -67,7 +67,7 @@ export const listByIssue = query({
           ...entry,
           userName: user?.name ?? "Unknown User",
         };
-      })
+      }),
     );
 
     return enriched.sort((a, b) => b.date - a.date);
@@ -110,7 +110,7 @@ export const listByUser = query({
           issueKey: issue?.key,
           issueTitle: issue?.title,
         };
-      })
+      }),
     );
 
     return enriched.sort((a, b) => b.date - a.date);

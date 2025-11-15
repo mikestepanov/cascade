@@ -22,7 +22,9 @@ interface ProjectBoardProps {
 }
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "calendar" | "activity" | "analytics" | "settings">("board");
+  const [activeTab, setActiveTab] = useState<
+    "board" | "backlog" | "sprints" | "roadmap" | "calendar" | "activity" | "analytics" | "settings"
+  >("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -36,7 +38,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
     );
   }
 
-  const activeSprint = sprints?.find(sprint => sprint.status === "active");
+  const activeSprint = sprints?.find((sprint) => sprint.status === "active");
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -50,7 +52,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <div className="flex items-center space-x-3">
             <ExportButton
               projectId={projectId}
-              sprintId={activeTab === "board" ? (selectedSprintId || activeSprint?._id) : undefined}
+              sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
             <div className="flex items-center space-x-2">
               <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
@@ -154,7 +156,9 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <div className="mt-4">
             <select
               value={selectedSprintId || ""}
-              onChange={(e) => setSelectedSprintId(e.target.value ? e.target.value as Id<"sprints"> : undefined)}
+              onChange={(e) =>
+                setSelectedSprintId(e.target.value ? (e.target.value as Id<"sprints">) : undefined)
+              }
               className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Active Sprint</option>
@@ -171,28 +175,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {activeTab === "board" && (
-          <KanbanBoard
-            projectId={projectId}
-            sprintId={selectedSprintId || activeSprint?._id}
-          />
+          <KanbanBoard projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
         )}
-        {activeTab === "backlog" && (
-          <KanbanBoard projectId={projectId} />
-        )}
-        {activeTab === "sprints" && (
-          <SprintManager projectId={projectId} />
-        )}
+        {activeTab === "backlog" && <KanbanBoard projectId={projectId} />}
+        {activeTab === "sprints" && <SprintManager projectId={projectId} />}
         {activeTab === "roadmap" && (
-          <RoadmapView
-            projectId={projectId}
-            sprintId={selectedSprintId || activeSprint?._id}
-          />
+          <RoadmapView projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
         )}
         {activeTab === "calendar" && (
-          <CalendarView
-            projectId={projectId}
-            sprintId={selectedSprintId || activeSprint?._id}
-          />
+          <CalendarView projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
         )}
         {activeTab === "activity" && (
           <div className="p-6 overflow-y-auto">
@@ -204,9 +195,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             </div>
           </div>
         )}
-        {activeTab === "analytics" && (
-          <AnalyticsDashboard projectId={projectId} />
-        )}
+        {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
         {activeTab === "settings" && (
           <div className="p-6 overflow-y-auto">
             <div className="max-w-4xl space-y-6">

@@ -173,9 +173,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                      {rule.name}
-                    </h4>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{rule.name}</h4>
                     <span
                       className={`text-xs px-2 py-1 rounded ${
                         rule.isActive
@@ -347,7 +345,8 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
                   placeholder='{"label": "auto-resolved"}'
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Examples: {`{"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
+                  Examples:{" "}
+                  {`{"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
                 </p>
               </div>
             </div>

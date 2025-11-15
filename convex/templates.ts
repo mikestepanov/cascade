@@ -11,7 +11,13 @@ export const create = mutation({
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
     descriptionTemplate: v.string(),
-    defaultPriority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    defaultPriority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
     defaultLabels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
@@ -41,7 +47,9 @@ export const create = mutation({
 export const listByProject = query({
   args: {
     projectId: v.id("projects"),
-    type: v.optional(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"))),
+    type: v.optional(
+      v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -55,7 +63,7 @@ export const listByProject = query({
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", args.type!)
+          q.eq("projectId", args.projectId).eq("type", args.type!),
         )
         .collect();
     } else {
@@ -93,7 +101,15 @@ export const update = mutation({
     name: v.optional(v.string()),
     titleTemplate: v.optional(v.string()),
     descriptionTemplate: v.optional(v.string()),
-    defaultPriority: v.optional(v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest"))),
+    defaultPriority: v.optional(
+      v.union(
+        v.literal("lowest"),
+        v.literal("low"),
+        v.literal("medium"),
+        v.literal("high"),
+        v.literal("highest"),
+      ),
+    ),
     defaultLabels: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
@@ -109,7 +125,8 @@ export const update = mutation({
     const updates: any = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.titleTemplate !== undefined) updates.titleTemplate = args.titleTemplate;
-    if (args.descriptionTemplate !== undefined) updates.descriptionTemplate = args.descriptionTemplate;
+    if (args.descriptionTemplate !== undefined)
+      updates.descriptionTemplate = args.descriptionTemplate;
     if (args.defaultPriority !== undefined) updates.defaultPriority = args.defaultPriority;
     if (args.defaultLabels !== undefined) updates.defaultLabels = args.defaultLabels;
 

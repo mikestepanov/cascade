@@ -1,24 +1,38 @@
 // Service Worker Registration Utility
 
+// Extend Navigator interface for iOS standalone mode
+interface NavigatorStandalone extends Navigator {
+  standalone?: boolean;
+}
+
+// Type for beforeinstallprompt event
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export function register() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
       navigator.serviceWorker
-        .register('/service-worker.js')
+        .register("/service-worker.js")
         .then((registration) => {
-          console.log('[SW] Registered successfully:', registration.scope);
+          console.log("[SW] Registered successfully:", registration.scope);
 
           // Check for updates periodically
-          setInterval(() => {
-            registration.update();
-          }, 60 * 60 * 1000); // Check every hour
+          setInterval(
+            () => {
+              registration.update();
+            },
+            60 * 60 * 1000,
+          ); // Check every hour
 
           // Handle updates
-          registration.addEventListener('updatefound', () => {
+          registration.addEventListener("updatefound", () => {
             const newWorker = registration.installing;
             if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
                   // New service worker available
                   showUpdateNotification();
                 }
@@ -27,12 +41,12 @@ export function register() {
           });
         })
         .catch((error) => {
-          console.error('[SW] Registration failed:', error);
+          console.error("[SW] Registration failed:", error);
         });
 
       // Handle controller change (new SW activated)
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[SW] Controller changed, reloading page');
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        console.log("[SW] Controller changed, reloading page");
         window.location.reload();
       });
     });
@@ -40,29 +54,29 @@ export function register() {
 }
 
 export function unregister() {
-  if ('serviceWorker' in navigator) {
+  if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready
       .then((registration) => {
         registration.unregister();
       })
       .catch((error) => {
-        console.error('[SW] Unregistration failed:', error);
+        console.error("[SW] Unregistration failed:", error);
       });
   }
 }
 
 export function clearCache() {
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.controller.postMessage({
-      type: 'CLEAR_CACHE',
+      type: "CLEAR_CACHE",
     });
   }
 }
 
 function showUpdateNotification() {
   // Create a simple banner to notify users of an update
-  const banner = document.createElement('div');
-  banner.id = 'sw-update-banner';
+  const banner = document.createElement("div");
+  banner.id = "sw-update-banner";
   banner.style.cssText = `
     position: fixed;
     bottom: 20px;
@@ -106,14 +120,14 @@ function showUpdateNotification() {
   document.body.appendChild(banner);
 
   // Handle update button click
-  document.getElementById('sw-update-button')?.addEventListener('click', () => {
+  document.getElementById("sw-update-button")?.addEventListener("click", () => {
     if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+      navigator.serviceWorker.controller.postMessage({ type: "SKIP_WAITING" });
     }
   });
 
   // Handle dismiss button click
-  document.getElementById('sw-dismiss-button')?.addEventListener('click', () => {
+  document.getElementById("sw-dismiss-button")?.addEventListener("click", () => {
     banner.remove();
   });
 }
@@ -121,28 +135,28 @@ function showUpdateNotification() {
 // Check if app is running in standalone mode (installed as PWA)
 export function isStandalone(): boolean {
   return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as any).standalone === true
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as NavigatorStandalone).standalone === true
   );
 }
 
 // Prompt user to install PWA
 export function promptInstall() {
-  let deferredPrompt: any = null;
+  let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-  window.addEventListener('beforeinstallprompt', (e) => {
+  window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
-    deferredPrompt = e;
+    deferredPrompt = e as BeforeInstallPromptEvent;
 
     // Show custom install button/banner
     showInstallPrompt(() => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult: any) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('[PWA] User accepted the install prompt');
+          if (choiceResult.outcome === "accepted") {
+            console.log("[PWA] User accepted the install prompt");
           } else {
-            console.log('[PWA] User dismissed the install prompt');
+            console.log("[PWA] User dismissed the install prompt");
           }
           deferredPrompt = null;
         });
@@ -150,8 +164,8 @@ export function promptInstall() {
     });
   });
 
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] App installed successfully');
+  window.addEventListener("appinstalled", () => {
+    console.log("[PWA] App installed successfully");
     deferredPrompt = null;
   });
 }
@@ -161,10 +175,10 @@ function showInstallPrompt(onInstall: () => void) {
   if (isStandalone()) return;
 
   // Check if user has previously dismissed
-  if (localStorage.getItem('pwa-install-dismissed') === 'true') return;
+  if (localStorage.getItem("pwa-install-dismissed") === "true") return;
 
-  const banner = document.createElement('div');
-  banner.id = 'pwa-install-banner';
+  const banner = document.createElement("div");
+  banner.id = "pwa-install-banner";
   banner.style.cssText = `
     position: fixed;
     top: 20px;
@@ -208,13 +222,13 @@ function showInstallPrompt(onInstall: () => void) {
 
   document.body.appendChild(banner);
 
-  document.getElementById('pwa-install-button')?.addEventListener('click', () => {
+  document.getElementById("pwa-install-button")?.addEventListener("click", () => {
     onInstall();
     banner.remove();
   });
 
-  document.getElementById('pwa-dismiss-button')?.addEventListener('click', () => {
-    localStorage.setItem('pwa-install-dismissed', 'true');
+  document.getElementById("pwa-dismiss-button")?.addEventListener("click", () => {
+    localStorage.setItem("pwa-install-dismissed", "true");
     banner.remove();
   });
 }

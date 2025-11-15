@@ -30,12 +30,14 @@ const applicationTables = {
     isPublic: v.boolean(),
     members: v.array(v.id("users")), // Kept for backwards compatibility, deprecated
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
-    workflowStates: v.array(v.object({
-      id: v.string(),
-      name: v.string(),
-      category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
-      order: v.number(),
-    })),
+    workflowStates: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        order: v.number(),
+      }),
+    ),
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -63,7 +65,13 @@ const applicationTables = {
     description: v.optional(v.string()),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     status: v.string(), // References workflow state id
-    priority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    priority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
     assigneeId: v.optional(v.id("users")),
     reporterId: v.id("users"),
     createdAt: v.number(),
@@ -164,7 +172,7 @@ const applicationTables = {
       v.literal("issue_commented"),
       v.literal("issue_status_changed"),
       v.literal("sprint_started"),
-      v.literal("sprint_ended")
+      v.literal("sprint_ended"),
     ),
     title: v.string(),
     message: v.string(),
@@ -196,7 +204,13 @@ const applicationTables = {
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
     descriptionTemplate: v.string(),
-    defaultPriority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    defaultPriority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
     defaultLabels: v.array(v.string()),
     createdBy: v.id("users"),
     createdAt: v.number(),
@@ -223,9 +237,23 @@ const applicationTables = {
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
-      type: v.optional(v.array(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")))),
+      type: v.optional(
+        v.array(
+          v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+        ),
+      ),
       status: v.optional(v.array(v.string())),
-      priority: v.optional(v.array(v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")))),
+      priority: v.optional(
+        v.array(
+          v.union(
+            v.literal("lowest"),
+            v.literal("low"),
+            v.literal("medium"),
+            v.literal("high"),
+            v.literal("highest"),
+          ),
+        ),
+      ),
       assigneeId: v.optional(v.array(v.id("users"))),
       labels: v.optional(v.array(v.string())),
       sprintId: v.optional(v.id("sprints")),
@@ -245,16 +273,20 @@ const applicationTables = {
     category: v.string(), // "software", "marketing", "design", etc.
     icon: v.string(), // Emoji or icon identifier
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
-    workflowStates: v.array(v.object({
-      id: v.string(),
-      name: v.string(),
-      category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
-      order: v.number(),
-    })),
-    defaultLabels: v.array(v.object({
-      name: v.string(),
-      color: v.string(),
-    })),
+    workflowStates: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        order: v.number(),
+      }),
+    ),
+    defaultLabels: v.array(
+      v.object({
+        name: v.string(),
+        color: v.string(),
+      }),
+    ),
     isBuiltIn: v.boolean(), // Built-in templates vs user-created
     createdBy: v.optional(v.id("users")),
     createdAt: v.number(),
@@ -291,7 +323,7 @@ const applicationTables = {
       v.literal("multiselect"),
       v.literal("date"),
       v.literal("checkbox"),
-      v.literal("url")
+      v.literal("url"),
     ),
     options: v.optional(v.array(v.string())), // For select/multiselect types
     isRequired: v.boolean(),

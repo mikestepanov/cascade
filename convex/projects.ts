@@ -71,12 +71,10 @@ export const list = query({
 
     // Get projects where user is a member or creator, or public projects
     const allProjects = await ctx.db.query("projects").collect();
-    
+
     const accessibleProjects = allProjects.filter(
       (project) =>
-        project.isPublic ||
-        project.createdBy === userId ||
-        project.members.includes(userId)
+        project.isPublic || project.createdBy === userId || project.members.includes(userId),
     );
 
     return await Promise.all(
@@ -98,7 +96,7 @@ export const list = query({
           isOwner: project.createdBy === userId,
           userRole, // Add user's role in the project
         };
-      })
+      }),
     );
   },
 });
@@ -108,13 +106,17 @@ export const get = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const project = await ctx.db.get(args.id);
-    
+
     if (!project) {
       return null;
     }
 
     // Check access permissions
-    if (!project.isPublic && project.createdBy !== userId && (!userId || !project.members.includes(userId))) {
+    if (
+      !project.isPublic &&
+      project.createdBy !== userId &&
+      (!userId || !project.members.includes(userId))
+    ) {
       throw new Error("Not authorized to access this project");
     }
 
@@ -137,7 +139,7 @@ export const get = query({
           role: membership.role,
           addedAt: membership.addedAt,
         };
-      })
+      }),
     );
 
     const userRole = userId ? await getUserRole(ctx, project._id, userId) : null;
@@ -156,12 +158,14 @@ export const get = query({
 export const updateWorkflow = mutation({
   args: {
     projectId: v.id("projects"),
-    workflowStates: v.array(v.object({
-      id: v.string(),
-      name: v.string(),
-      category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
-      order: v.number(),
-    })),
+    workflowStates: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        order: v.number(),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -217,9 +221,7 @@ export const addMember = mutation({
     // Check if already a member
     const existingMembership = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", user._id)
-      )
+      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
       .first();
 
     if (existingMembership) {
@@ -274,7 +276,7 @@ export const updateMemberRole = mutation({
     const membership = await ctx.db
       .query("projectMembers")
       .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId)
+        q.eq("projectId", args.projectId).eq("userId", args.memberId),
       )
       .first();
 
@@ -316,7 +318,7 @@ export const removeMember = mutation({
     const membership = await ctx.db
       .query("projectMembers")
       .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId)
+        q.eq("projectId", args.projectId).eq("userId", args.memberId),
       )
       .first();
 

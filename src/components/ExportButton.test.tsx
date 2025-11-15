@@ -67,10 +67,7 @@ describe("ExportButton", () => {
     render(<ExportButton projectId={mockProjectId} />);
 
     // Initially should not query (skip)
-    expect(mockUseQuery).toHaveBeenCalledWith(
-      expect.anything(),
-      "skip"
-    );
+    expect(mockUseQuery).toHaveBeenCalledWith(expect.anything(), "skip");
 
     const button = screen.getByRole("button", { name: /Export CSV/i });
     await user.click(button);
@@ -81,7 +78,7 @@ describe("ExportButton", () => {
         expect.anything(),
         expect.objectContaining({
           projectId: mockProjectId,
-        })
+        }),
       );
     });
   });
@@ -133,10 +130,7 @@ describe("ExportButton", () => {
     rerender(<ExportButton projectId={mockProjectId} />);
 
     await waitFor(() => {
-      expect(mockBlob).toHaveBeenCalledWith(
-        [csvData],
-        { type: "text/csv;charset=utf-8;" }
-      );
+      expect(mockBlob).toHaveBeenCalledWith([csvData], { type: "text/csv;charset=utf-8;" });
     });
   });
 
@@ -155,7 +149,7 @@ describe("ExportButton", () => {
         expect.objectContaining({
           projectId: mockProjectId,
           sprintId: sprintId,
-        })
+        }),
       );
     });
   });
@@ -175,7 +169,7 @@ describe("ExportButton", () => {
         expect.objectContaining({
           projectId: mockProjectId,
           status: status,
-        })
+        }),
       );
     });
   });

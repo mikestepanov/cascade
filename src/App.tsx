@@ -205,12 +205,12 @@ function Content() {
                   {activeView === "dashboard"
                     ? "My Work"
                     : activeView === "documents"
-                    ? selectedDocumentId
-                      ? "Document Editor"
-                      : "Select a document"
-                    : selectedProjectId
-                    ? "Project Board"
-                    : "Select a project"}
+                      ? selectedDocumentId
+                        ? "Document Editor"
+                        : "Select a document"
+                      : selectedProjectId
+                        ? "Project Board"
+                        : "Select a project"}
                 </h1>
               </div>
               <div className="flex items-center gap-3">
@@ -220,10 +220,17 @@ function Content() {
                   title="Open command palette"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                   <span className="hidden sm:inline">Commands</span>
-                  <kbd className="hidden md:inline px-1.5 py-0.5 text-xs bg-white border border-gray-300 rounded">⌘K</kbd>
+                  <kbd className="hidden md:inline px-1.5 py-0.5 text-xs bg-white border border-gray-300 rounded">
+                    ⌘K
+                  </kbd>
                 </button>
                 <button
                   onClick={() => setShowShortcutsHelp(true)}
@@ -231,7 +238,12 @@ function Content() {
                   title="Keyboard shortcuts"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </button>
                 <GlobalSearch />
@@ -266,7 +278,9 @@ function Content() {
                     <div className="flex items-center justify-center h-full text-gray-500">
                       <div className="text-center">
                         <h2 className="text-xl font-medium mb-2">Welcome to your workspace</h2>
-                        <p>Select a document from the sidebar or create a new one to get started.</p>
+                        <p>
+                          Select a document from the sidebar or create a new one to get started.
+                        </p>
                       </div>
                     </div>
                   )
@@ -290,9 +304,7 @@ function Content() {
         <div className="flex items-center justify-center w-full">
           <div className="w-full max-w-md mx-auto p-8">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Collaborative Workspace
-              </h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">Collaborative Workspace</h1>
               <p className="text-lg text-gray-600">
                 Create documents and manage projects together in real-time
               </p>

@@ -55,14 +55,20 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
 
   const getPositionOnTimeline = (date: number) => {
     const issueDate = new Date(date);
-    const totalDays = Math.floor((endDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24));
-    const daysSinceStart = Math.floor((issueDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24));
+    const totalDays = Math.floor(
+      (endDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const daysSinceStart = Math.floor(
+      (issueDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
+    );
     return (daysSinceStart / totalDays) * 100;
   };
 
   const getDuration = (startDate?: number, endDate?: number) => {
     if (!startDate || !endDate) return 5; // Default width
-    const totalDays = Math.floor((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24));
+    const totalDays = Math.floor(
+      (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24),
+    );
     const timelineTotal = Math.floor((endDate - startOfMonth.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max((totalDays / timelineTotal) * 100, 2); // Minimum 2%
   };
@@ -102,9 +108,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Roadmap
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Roadmap</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Visualize issue timeline and dependencies
           </p>
@@ -114,7 +118,9 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
           {/* Epic Filter */}
           <select
             value={filterEpic}
-            onChange={(e) => setFilterEpic(e.target.value === "all" ? "all" : e.target.value as Id<"issues">)}
+            onChange={(e) =>
+              setFilterEpic(e.target.value === "all" ? "all" : (e.target.value as Id<"issues">))
+            }
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Epics</option>
@@ -196,9 +202,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                       {issue.key}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                    {issue.title}
-                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{issue.title}</p>
                 </div>
 
                 {/* Timeline Bar */}
@@ -234,10 +238,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
 
       {/* Issue Detail Modal */}
       {selectedIssue && (
-        <IssueDetailModal
-          issueId={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
-        />
+        <IssueDetailModal issueId={selectedIssue} onClose={() => setSelectedIssue(null)} />
       )}
     </div>
   );

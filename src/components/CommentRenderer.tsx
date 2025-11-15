@@ -17,31 +17,21 @@ export function CommentRenderer({ content, mentions = [] }: CommentRendererProps
     while ((match = mentionPattern.exec(content)) !== null) {
       // Add text before mention
       if (match.index > lastIndex) {
-        parts.push(
-          <span key={`text-${key++}`}>
-            {content.substring(lastIndex, match.index)}
-          </span>
-        );
+        parts.push(<span key={`text-${key++}`}>{content.substring(lastIndex, match.index)}</span>);
       }
 
       // Add highlighted mention
       const userName = match[1];
       const userId = match[2] as Id<"users">;
 
-      parts.push(
-        <MentionBadge key={`mention-${key++}`} userName={userName} userId={userId} />
-      );
+      parts.push(<MentionBadge key={`mention-${key++}`} userName={userName} userId={userId} />);
 
       lastIndex = match.index + match[0].length;
     }
 
     // Add remaining text
     if (lastIndex < content.length) {
-      parts.push(
-        <span key={`text-${key++}`}>
-          {content.substring(lastIndex)}
-        </span>
-      );
+      parts.push(<span key={`text-${key++}`}>{content.substring(lastIndex)}</span>);
     }
 
     return parts.length > 0 ? parts : content;

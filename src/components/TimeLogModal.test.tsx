@@ -30,11 +30,7 @@ describe("TimeLogModal", () => {
 
   it("should render the modal with correct issue name", () => {
     render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123: Fix bug"
-        onClose={mockOnClose}
-      />
+      <TimeLogModal issueId={mockIssueId} issueName="TEST-123: Fix bug" onClose={mockOnClose} />,
     );
 
     expect(screen.getByText(/Log Time on/i)).toBeInTheDocument();
@@ -42,13 +38,7 @@ describe("TimeLogModal", () => {
   });
 
   it("should have hours input with correct step", () => {
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const hoursInput = screen.getByLabelText(/Hours/i) as HTMLInputElement;
     expect(hoursInput).toBeInTheDocument();
@@ -58,13 +48,7 @@ describe("TimeLogModal", () => {
   });
 
   it("should have date input defaulting to today", () => {
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const dateInput = screen.getByLabelText(/Date/i) as HTMLInputElement;
     expect(dateInput).toBeInTheDocument();
@@ -77,13 +61,7 @@ describe("TimeLogModal", () => {
 
   it("should allow entering hours and description", async () => {
     const user = userEvent.setup();
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const hoursInput = screen.getByLabelText(/Hours/i);
     const descriptionInput = screen.getByLabelText(/Description/i);
@@ -100,13 +78,7 @@ describe("TimeLogModal", () => {
     const user = userEvent.setup();
     mockLogTime.mockResolvedValue(undefined);
 
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const hoursInput = screen.getByLabelText(/Hours/i);
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
@@ -120,7 +92,7 @@ describe("TimeLogModal", () => {
         expect.objectContaining({
           issueId: mockIssueId,
           hours: 3,
-        })
+        }),
       );
     });
   });
@@ -129,13 +101,7 @@ describe("TimeLogModal", () => {
     const user = userEvent.setup();
     mockLogTime.mockResolvedValue(undefined);
 
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const hoursInput = screen.getByLabelText(/Hours/i);
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
@@ -151,13 +117,7 @@ describe("TimeLogModal", () => {
 
   it("should close modal when cancel button is clicked", async () => {
     const user = userEvent.setup();
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const cancelButton = screen.getByRole("button", { name: /Cancel/i });
     await user.click(cancelButton);
@@ -167,13 +127,7 @@ describe("TimeLogModal", () => {
 
   it("should not submit when hours input is empty", async () => {
     const user = userEvent.setup();
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
     await user.click(submitButton);
@@ -185,13 +139,7 @@ describe("TimeLogModal", () => {
     const user = userEvent.setup();
     mockLogTime.mockResolvedValue(undefined);
 
-    render(
-      <TimeLogModal
-        issueId={mockIssueId}
-        issueName="TEST-123"
-        onClose={mockOnClose}
-      />
-    );
+    render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
     const hoursInput = screen.getByLabelText(/Hours/i);
     const descriptionInput = screen.getByLabelText(/Description/i);
@@ -208,7 +156,7 @@ describe("TimeLogModal", () => {
           issueId: mockIssueId,
           hours: 2,
           description: "Code review",
-        })
+        }),
       );
     });
   });

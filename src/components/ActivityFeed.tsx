@@ -76,8 +76,8 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
         return oldValue && newValue
           ? `reassigned from ${oldValue} to ${newValue}`
           : newValue
-          ? `assigned to ${newValue}`
-          : "unassigned";
+            ? `assigned to ${newValue}`
+            : "unassigned";
       } else {
         return `updated ${field}`;
       }
@@ -139,7 +139,9 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
         <div
           key={`${activity._id}-${index}`}
           className={`flex gap-4 ${
-            compact ? "py-2" : "p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+            compact
+              ? "py-2"
+              : "p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
           }`}
         >
           {/* Timeline dot */}
@@ -156,7 +158,9 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className={`${compact ? "text-sm" : "text-base"} text-gray-900 dark:text-gray-100`}>
+                <p
+                  className={`${compact ? "text-sm" : "text-base"} text-gray-900 dark:text-gray-100`}
+                >
                   <span className="font-medium">{activity.userName}</span>{" "}
                   <span className={getActionColor(activity.action)}>
                     {formatActivityMessage(activity)}
@@ -175,7 +179,9 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   </p>
                 )}
               </div>
-              <span className={`${compact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex-shrink-0`}>
+              <span
+                className={`${compact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex-shrink-0`}
+              >
                 {formatTimestamp(activity.timestamp)}
               </span>
             </div>

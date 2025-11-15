@@ -83,16 +83,15 @@ export function NotificationCenter() {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
 
           {/* Dropdown Panel */}
           <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-20 max-h-[600px] max-h-[80vh] flex flex-col">
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800 rounded-t-lg">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Notifications
+              </h3>
               {unreadCount && unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
@@ -141,7 +140,9 @@ export function NotificationCenter() {
                                 </p>
                                 {notification.actorName && (
                                   <>
-                                    <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+                                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                                      •
+                                    </span>
                                     <p className="text-xs text-gray-400 dark:text-gray-500">
                                       by {notification.actorName}
                                     </p>

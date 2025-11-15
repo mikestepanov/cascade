@@ -1,21 +1,21 @@
 import { components } from "./_generated/api";
 import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { DataModel } from "./_generated/dataModel";
+import { DataModel, Id } from "./_generated/dataModel";
 import { GenericQueryCtx, GenericMutationCtx } from "convex/server";
 
 const prosemirrorSync = new ProsemirrorSync(components.prosemirrorSync);
 
 async function checkPermissions(
   ctx: GenericQueryCtx<DataModel> | GenericMutationCtx<DataModel>,
-  documentId: string
+  documentId: string,
 ) {
   const userId = await getAuthUserId(ctx);
   if (!userId) {
     throw new Error("Not authenticated");
   }
 
-  const document = await ctx.db.get(documentId as any);
+  const document = await ctx.db.get(documentId as Id<"documents">);
   if (!document) {
     throw new Error("Document not found");
   }
@@ -30,16 +30,13 @@ async function checkPermissions(
   }
 }
 
-async function checkWritePermissions(
-  ctx: GenericMutationCtx<DataModel>,
-  documentId: string
-) {
+async function checkWritePermissions(ctx: GenericMutationCtx<DataModel>, documentId: string) {
   const userId = await getAuthUserId(ctx);
   if (!userId) {
     throw new Error("Not authenticated");
   }
 
-  const document = await ctx.db.get(documentId as any);
+  const document = await ctx.db.get(documentId as Id<"documents">);
   if (!document) {
     throw new Error("Document not found");
   }
@@ -55,22 +52,17 @@ async function checkWritePermissions(
   }
 }
 
-export const {
-  getSnapshot,
-  submitSnapshot,
-  latestVersion,
-  getSteps,
-  submitSteps,
-} = prosemirrorSync.syncApi<DataModel>({
-  checkRead: checkPermissions,
-  checkWrite: checkWritePermissions,
-  onSnapshot: async (ctx, id, _snapshot, _version) => {
-    // Update the document's updatedAt timestamp when content changes
-    const document = await ctx.db.get(id as any);
-    if (document) {
-      await ctx.db.patch(id as any, {
-        updatedAt: Date.now(),
-      });
-    }
-  },
-});
+export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps } =
+  prosemirrorSync.syncApi<DataModel>({
+    checkRead: checkPermissions,
+    checkWrite: checkWritePermissions,
+    onSnapshot: async (ctx, id, _snapshot, _version) => {
+      // Update the document's updatedAt timestamp when content changes
+      const document = await ctx.db.get(id as Id<"documents">);
+      if (document) {
+        await ctx.db.patch(id as Id<"documents">, {
+          updatedAt: Date.now(),
+        });
+      }
+    },
+  });

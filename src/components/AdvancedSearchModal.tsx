@@ -20,7 +20,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
 
   const searchResults = useQuery(
     api.issues.search,
-    searchQuery.length >= 2 ? { query: searchQuery, limit: 50 } : "skip"
+    searchQuery.length >= 2 ? { query: searchQuery, limit: 50 } : "skip",
   );
 
   const filteredResults = searchResults?.filter((issue) => {
@@ -78,12 +78,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Advanced Search"
-      size="large"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Advanced Search" size="large">
       <div className="space-y-6">
         {/* Search Input */}
         <div>
@@ -115,7 +110,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
                     onChange={() => toggleFilter(type, selectedType, setSelectedType)}
                     className="rounded"
                   />
-                  <span className="text-sm capitalize">{getTypeIcon(type)} {type}</span>
+                  <span className="text-sm capitalize">
+                    {getTypeIcon(type)} {type}
+                  </span>
                 </label>
               ))}
             </div>
@@ -168,7 +165,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Results {filteredResults && `(${filteredResults.length})`}
             </h3>
-            {(selectedType.length > 0 || selectedPriority.length > 0 || selectedStatus.length > 0) && (
+            {(selectedType.length > 0 ||
+              selectedPriority.length > 0 ||
+              selectedStatus.length > 0) && (
               <button
                 onClick={() => {
                   setSelectedType([]);
@@ -219,7 +218,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
                           <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
                             {issue.key}
                           </span>
-                          <span className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority)}`}>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority)}`}
+                          >
                             {issue.priority}
                           </span>
                         </div>

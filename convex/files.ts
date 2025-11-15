@@ -70,9 +70,7 @@ export const removeAttachment = mutation({
     }
 
     // Remove from issue attachments array
-    const updatedAttachments = (issue.attachments || []).filter(
-      (id) => id !== args.storageId
-    );
+    const updatedAttachments = (issue.attachments || []).filter((id) => id !== args.storageId);
     await ctx.db.patch(args.issueId, {
       attachments: updatedAttachments,
     });
@@ -129,10 +127,7 @@ export const getIssueAttachments = query({
         const activity = await ctx.db
           .query("issueActivity")
           .filter((q) =>
-            q.and(
-              q.eq(q.field("issueId"), args.issueId),
-              q.eq(q.field("action"), "attached")
-            )
+            q.and(q.eq(q.field("issueId"), args.issueId), q.eq(q.field("action"), "attached")),
           )
           .collect();
 
@@ -145,7 +140,7 @@ export const getIssueAttachments = query({
           uploadedAt: attachActivity?.createdAt || Date.now(),
           uploadedBy: attachActivity?.userId,
         };
-      })
+      }),
     );
 
     return attachmentDetails;

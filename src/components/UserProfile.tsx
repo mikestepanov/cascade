@@ -23,8 +23,8 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
   const userStats = userId
     ? useQuery(api.users.getUserStats, { userId })
     : currentUser
-    ? useQuery(api.users.getUserStats, { userId: currentUser._id })
-    : null;
+      ? useQuery(api.users.getUserStats, { userId: currentUser._id })
+      : null;
   const updateProfile = useMutation(api.users.updateProfile);
 
   const isOwnProfile = !userId || (currentUser && userId === currentUser._id);

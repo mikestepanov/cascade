@@ -21,7 +21,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
   const links = useQuery(api.issueLinks.getForIssue, { issueId });
   const searchResults = useQuery(
     api.issues.search,
-    searchQuery.length >= 2 ? { query: searchQuery, limit: 20 } : "skip"
+    searchQuery.length >= 2 ? { query: searchQuery, limit: 20 } : "skip",
   );
   const createLink = useMutation(api.issueLinks.create);
   const removeLink = useMutation(api.issueLinks.remove);
@@ -213,7 +213,9 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                 </label>
                 <select
                   value={linkType}
-                  onChange={(e) => setLinkType(e.target.value as any)}
+                  onChange={(e) =>
+                    setLinkType(e.target.value as "blocks" | "relates" | "duplicates")
+                  }
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
                 >
                   <option value="blocks">Blocks</option>

@@ -35,11 +35,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard
-            title="Total Issues"
-            value={analytics.totalIssues}
-            icon="📊"
-          />
+          <MetricCard title="Total Issues" value={analytics.totalIssues} icon="📊" />
           <MetricCard
             title="Unassigned"
             value={analytics.unassignedCount}
@@ -52,11 +48,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
             subtitle="points/sprint"
             icon="⚡"
           />
-          <MetricCard
-            title="Completed Sprints"
-            value={velocity.velocityData.length}
-            icon="✅"
-          />
+          <MetricCard title="Completed Sprints" value={velocity.velocityData.length} icon="✅" />
         </div>
 
         {/* Charts Grid */}
@@ -64,12 +56,10 @@ export function AnalyticsDashboard({ projectId }: Props) {
           {/* Issues by Status */}
           <ChartCard title="Issues by Status">
             <BarChart
-              data={Object.entries(analytics.issuesByStatus).map(
-                ([status, count]) => ({
-                  label: status,
-                  value: count,
-                })
-              )}
+              data={Object.entries(analytics.issuesByStatus).map(([status, count]) => ({
+                label: status,
+                value: count,
+              }))}
               color="bg-blue-500"
             />
           </ChartCard>
@@ -138,9 +128,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
         {/* Recent Activity */}
         {recentActivity && recentActivity.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Recent Activity
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-3">
               {recentActivity.map((activity) => (
                 <div
@@ -152,12 +140,10 @@ export function AnalyticsDashboard({ projectId }: Props) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-900">
-                      <span className="font-medium">{activity.userName}</span>{" "}
-                      {activity.action}{" "}
+                      <span className="font-medium">{activity.userName}</span> {activity.action}{" "}
                       {activity.field && (
                         <>
-                          <span className="font-medium">{activity.field}</span>{" "}
-                          on
+                          <span className="font-medium">{activity.field}</span> on
                         </>
                       )}{" "}
                       <span className="font-mono text-xs bg-gray-100 px-1 rounded">
@@ -192,18 +178,12 @@ function MetricCard({
   highlight?: boolean;
 }) {
   return (
-    <div
-      className={`bg-white rounded-lg shadow p-6 ${
-        highlight ? "ring-2 ring-orange-500" : ""
-      }`}
-    >
+    <div className={`bg-white rounded-lg shadow p-6 ${highlight ? "ring-2 ring-orange-500" : ""}`}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
           <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
         </div>
         <div className="text-4xl">{icon}</div>
       </div>
@@ -211,13 +191,7 @@ function MetricCard({
   );
 }
 
-function ChartCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
@@ -250,9 +224,7 @@ function BarChart({
                 minWidth: item.value > 0 ? "2rem" : "0",
               }}
             >
-              <span className="text-xs font-semibold text-white">
-                {item.value}
-              </span>
+              <span className="text-xs font-semibold text-white">{item.value}</span>
             </div>
           </div>
         </div>

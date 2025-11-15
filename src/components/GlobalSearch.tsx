@@ -3,6 +3,22 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 
+type SearchResult =
+  | {
+      _id: Id<"issues">;
+      title: string;
+      key: string;
+      projectId: Id<"projects">;
+      description?: string;
+      type: "issue";
+    }
+  | {
+      _id: Id<"documents">;
+      title: string;
+      description?: string;
+      type: "document";
+    };
+
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -11,11 +27,11 @@ export function GlobalSearch() {
   // Search when query changes
   const issueResults = useQuery(
     api.issues.search,
-    query.length >= 2 ? { query, limit: 10 } : "skip"
+    query.length >= 2 ? { query, limit: 10 } : "skip",
   );
   const documentResults = useQuery(
     api.documents.search,
-    query.length >= 2 ? { query, limit: 10 } : "skip"
+    query.length >= 2 ? { query, limit: 10 } : "skip",
   );
 
   // Keyboard shortcut: Cmd+K or Ctrl+K
@@ -41,15 +57,13 @@ export function GlobalSearch() {
     }
   }, [isOpen]);
 
-  const allResults = [
+  const allResults: SearchResult[] = [
     ...(issueResults?.map((r) => ({ ...r, type: "issue" as const })) ?? []),
     ...(documentResults?.map((r) => ({ ...r, type: "document" as const })) ?? []),
   ];
 
   const filteredResults =
-    activeTab === "all"
-      ? allResults
-      : allResults.filter((r) => r.type === activeTab.slice(0, -1)); // Remove 's' from 'issues'/'documents'
+    activeTab === "all" ? allResults : allResults.filter((r) => r.type === activeTab.slice(0, -1)); // Remove 's' from 'issues'/'documents'
 
   return (
     <>
@@ -162,7 +176,7 @@ export function GlobalSearch() {
                       key={result._id}
                       href={
                         result.type === "issue"
-                          ? `/project/${(result as any).projectId}?issue=${result._id}`
+                          ? `/project/${result.projectId}?issue=${result._id}`
                           : `/document/${result._id}`
                       }
                       onClick={() => setIsOpen(false)}
@@ -172,7 +186,11 @@ export function GlobalSearch() {
                         {/* Icon */}
                         <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-gray-100">
                           {result.type === "issue" ? (
-                            <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg
+                              className="w-5 h-5 text-blue-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
                               <path
                                 fillRule="evenodd"
                                 d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
@@ -180,7 +198,11 @@ export function GlobalSearch() {
                               />
                             </svg>
                           ) : (
-                            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg
+                              className="w-5 h-5 text-green-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
                               <path
                                 fillRule="evenodd"
                                 d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
@@ -194,9 +216,7 @@ export function GlobalSearch() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             {result.type === "issue" && (
-                              <span className="text-xs font-mono text-gray-500">
-                                {(result as any).key}
-                              </span>
+                              <span className="text-xs font-mono text-gray-500">{result.key}</span>
                             )}
                             <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
                               {result.type}
@@ -206,7 +226,7 @@ export function GlobalSearch() {
                             {result.title}
                           </p>
                           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                            {(result as any).description || "No description"}
+                            {result.description || "No description"}
                           </p>
                         </div>
                       </div>

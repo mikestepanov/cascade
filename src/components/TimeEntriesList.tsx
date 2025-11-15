@@ -82,26 +82,17 @@ export function TimeEntriesList({ issueId }: TimeEntriesListProps) {
               {/* Entry Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="font-semibold text-lg text-gray-900">
-                    {entry.hours}h
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {formatDate(entry.date)}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    by {entry.userName}
-                  </span>
+                  <span className="font-semibold text-lg text-gray-900">{entry.hours}h</span>
+                  <span className="text-sm text-gray-500">{formatDate(entry.date)}</span>
+                  <span className="text-xs text-gray-400">by {entry.userName}</span>
                 </div>
 
                 {entry.description && (
-                  <p className="text-sm text-gray-600 mb-2">
-                    {entry.description}
-                  </p>
+                  <p className="text-sm text-gray-600 mb-2">{entry.description}</p>
                 )}
 
                 <p className="text-xs text-gray-400">
-                  Logged on {formatDate(entry.createdAt)} at{" "}
-                  {formatTime(entry.createdAt)}
+                  Logged on {formatDate(entry.createdAt)} at {formatTime(entry.createdAt)}
                 </p>
               </div>
 

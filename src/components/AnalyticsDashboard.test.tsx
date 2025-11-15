@@ -26,9 +26,9 @@ const mockAnalytics = {
     highest: 2,
   },
   issuesByAssignee: {
-    "user1": { count: 10, name: "Alice" },
-    "user2": { count: 8, name: "Bob" },
-    "user3": { count: 2, name: "Charlie" },
+    user1: { count: 10, name: "Alice" },
+    user2: { count: 8, name: "Bob" },
+    user3: { count: 2, name: "Charlie" },
   },
 };
 

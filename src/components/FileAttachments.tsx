@@ -126,9 +126,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          dragOver
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:border-gray-400"
+          dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <input
@@ -141,9 +139,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         />
         <label htmlFor="file-upload" className="cursor-pointer">
           <div className="text-4xl mb-2">📎</div>
-          <p className="text-sm text-gray-600 mb-2">
-            Drag and drop files here, or click to browse
-          </p>
+          <p className="text-sm text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
           <Button
             type="button"
             variant="secondary"
@@ -159,18 +155,14 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">
-            Attachments ({attachments.length})
-          </h4>
+          <h4 className="text-sm font-medium text-gray-700">Attachments ({attachments.length})</h4>
           {attachments.map((attachment) => (
             <div
               key={attachment.storageId}
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <span className="text-2xl flex-shrink-0">
-                  {getFileIcon(attachment.filename)}
-                </span>
+                <span className="text-2xl flex-shrink-0">{getFileIcon(attachment.filename)}</span>
                 <div className="flex-1 min-w-0">
                   <a
                     href={attachment.url || "#"}
@@ -191,12 +183,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   className="p-1 text-gray-600 hover:text-blue-600 rounded"
                   title="Download"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -210,12 +197,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   className="p-1 text-gray-600 hover:text-red-600 rounded"
                   title="Delete"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

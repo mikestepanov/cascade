@@ -64,7 +64,9 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
 
         <div className="pt-4 border-t border-gray-200">
           <p className="text-sm text-gray-600">
-            <strong>Tip:</strong> Press <kbd className="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">⌘ K</kbd> to quickly access all commands and features.
+            <strong>Tip:</strong> Press{" "}
+            <kbd className="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">⌘ K</kbd>{" "}
+            to quickly access all commands and features.
           </p>
         </div>
       </div>

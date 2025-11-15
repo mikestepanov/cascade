@@ -61,11 +61,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   const handleTogglePublic = async () => {
     try {
       await togglePublic({ id: documentId });
-      toast.success(
-        document.isPublic
-          ? "Document is now private"
-          : "Document is now public"
-      );
+      toast.success(document.isPublic ? "Document is now private" : "Document is now public");
     } catch {
       toast.error("Failed to update document visibility");
     }
@@ -100,7 +96,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
           <div className="flex items-center space-x-4">
             <PresenceIndicator roomId={documentId} userId={userId} />
-            
+
             {document.isOwner && (
               <button
                 onClick={() => void handleTogglePublic()}
@@ -131,11 +127,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
             </div>
           ) : sync.editor ? (
-            <BlockNoteView
-              editor={sync.editor}
-              theme="light"
-              className="min-h-96"
-            />
+            <BlockNoteView editor={sync.editor} theme="light" className="min-h-96" />
           ) : (
             <div className="text-center py-12">
               <button

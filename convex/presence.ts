@@ -46,7 +46,7 @@ export const list = query({
           image: user?.image,
           email: user?.email,
         };
-      })
+      }),
     );
     return listWithUserInfo;
   },

@@ -1,4 +1,11 @@
-import { query, mutation, action, internalAction, internalQuery, internalMutation } from "./_generated/server";
+import {
+  query,
+  mutation,
+  action,
+  internalAction,
+  internalQuery,
+  internalMutation,
+} from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { assertMinimumRole } from "./rbac";
@@ -127,7 +134,7 @@ export const trigger = internalAction({
             ...(webhook.secret && {
               "X-Webhook-Signature": await generateSignature(
                 JSON.stringify(args.payload),
-                webhook.secret
+                webhook.secret,
               ),
             }),
           },
@@ -162,11 +169,7 @@ export const getActiveWebhooksForEvent = internalQuery({
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .collect();
 
-    return webhooks.filter(
-      (w) =>
-        w.projectId === args.projectId &&
-        w.events.includes(args.event)
-    );
+    return webhooks.filter((w) => w.projectId === args.projectId && w.events.includes(args.event));
   },
 });
 
@@ -188,13 +191,9 @@ async function generateSignature(payload: string, secret: string): Promise<strin
     encoder.encode(secret),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(payload)
-  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
   return Array.from(new Uint8Array(signature))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

@@ -22,27 +22,21 @@ export const list = query({
     if (onlyUnread) {
       notificationsQuery = ctx.db
         .query("notifications")
-        .withIndex("by_user_read", (q) =>
-          q.eq("userId", userId).eq("isRead", false)
-        );
+        .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false));
     }
 
-    const notifications = await notificationsQuery
-      .order("desc")
-      .take(limit);
+    const notifications = await notificationsQuery.order("desc").take(limit);
 
     // Enrich with actor information
     return await Promise.all(
       notifications.map(async (notification) => {
-        const actor = notification.actorId
-          ? await ctx.db.get(notification.actorId)
-          : null;
+        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
 
         return {
           ...notification,
           actorName: actor?.name,
         };
-      })
+      }),
     );
   },
 });
@@ -56,9 +50,7 @@ export const getUnreadCount = query({
 
     const unread = await ctx.db
       .query("notifications")
-      .withIndex("by_user_read", (q) =>
-        q.eq("userId", userId).eq("isRead", false)
-      )
+      .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
       .collect();
 
     return unread.length;
@@ -92,9 +84,7 @@ export const markAllAsRead = mutation({
 
     const unread = await ctx.db
       .query("notifications")
-      .withIndex("by_user_read", (q) =>
-        q.eq("userId", userId).eq("isRead", false)
-      )
+      .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
       .collect();
 
     for (const notification of unread) {
@@ -186,7 +176,7 @@ export const createBulk = internalMutation({
           isRead: false,
           createdAt: Date.now(),
         });
-      })
+      }),
     );
   },
 });

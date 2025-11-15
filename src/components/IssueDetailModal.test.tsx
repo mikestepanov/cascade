@@ -128,8 +128,8 @@ describe("IssueDetailModal", () => {
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
-    const backdrop = screen.getByText(/TEST-123/i)
-      .closest(".fixed")?.previousSibling as HTMLElement;
+    const backdrop = screen.getByText(/TEST-123/i).closest(".fixed")
+      ?.previousSibling as HTMLElement;
 
     if (backdrop) {
       await user.click(backdrop);
@@ -160,7 +160,9 @@ describe("IssueDetailModal", () => {
     await user.click(editButton);
 
     const titleInput = screen.getByPlaceholderText(/Issue title/i) as HTMLInputElement;
-    const descriptionInput = screen.getByPlaceholderText(/Add a description/i) as HTMLTextAreaElement;
+    const descriptionInput = screen.getByPlaceholderText(
+      /Add a description/i,
+    ) as HTMLTextAreaElement;
 
     expect(titleInput.value).toBe("Fix authentication bug");
     expect(descriptionInput.value).toBe("Users cannot login with valid credentials");

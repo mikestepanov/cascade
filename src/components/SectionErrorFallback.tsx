@@ -11,7 +11,8 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
         <div className="text-red-500 text-4xl mb-3">⚠️</div>
         <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
         <p className="text-gray-600 mb-4">
-          {message || "This section encountered an error. Try reloading or contact support if the problem persists."}
+          {message ||
+            "This section encountered an error. Try reloading or contact support if the problem persists."}
         </p>
         {onRetry && (
           <button

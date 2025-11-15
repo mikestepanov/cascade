@@ -139,7 +139,9 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             >
               <div className="flex items-center gap-1">
                 <div className={`w-2 h-2 rounded-full ${getPriorityColor(issue.priority)}`} />
-                <span className="text-xs truncate flex-1">{getTypeIcon(issue.type)} {issue.title}</span>
+                <span className="text-xs truncate flex-1">
+                  {getTypeIcon(issue.type)} {issue.title}
+                </span>
               </div>
             </button>
           ))}
@@ -149,7 +151,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             </p>
           )}
         </div>
-      </div>
+      </div>,
     );
   }
 
@@ -157,9 +159,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     <div className="flex-1 p-6 overflow-auto">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Calendar View
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar View</h2>
 
         {/* Month Navigation */}
         <div className="flex items-center gap-4">
@@ -168,7 +168,12 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
@@ -238,10 +243,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
 
       {/* Issue Detail Modal */}
       {selectedIssue && (
-        <IssueDetailModal
-          issueId={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
-        />
+        <IssueDetailModal issueId={selectedIssue} onClose={() => setSelectedIssue(null)} />
       )}
     </div>
   );

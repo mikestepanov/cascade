@@ -27,7 +27,10 @@ export function NotificationBell() {
     }
   }, [isOpen]);
 
-  const handleNotificationClick = async (notificationId: Id<"notifications">, issueId?: Id<"issues">) => {
+  const handleNotificationClick = async (
+    notificationId: Id<"notifications">,
+    issueId?: Id<"issues">,
+  ) => {
     await markAsRead({ id: notificationId });
     setIsOpen(false);
 
@@ -77,12 +80,7 @@ export function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -126,9 +124,7 @@ export function NotificationBell() {
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
-                <p className="text-gray-600 dark:text-gray-400 text-center">
-                  No notifications yet
-                </p>
+                <p className="text-gray-600 dark:text-gray-400 text-center">No notifications yet</p>
                 <p className="text-sm text-gray-500 dark:text-gray-500 text-center mt-1">
                   We'll notify you when something happens
                 </p>
@@ -141,9 +137,7 @@ export function NotificationBell() {
                     className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 transition-colors ${
                       !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
                     }`}
-                    onClick={() =>
-                      handleNotificationClick(notification._id, notification.issueId)
-                    }
+                    onClick={() => handleNotificationClick(notification._id, notification.issueId)}
                   >
                     <div className="flex items-start gap-3">
                       <div className="text-2xl flex-shrink-0">

@@ -18,7 +18,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"task" | "bug" | "story" | "epic">("task");
-  const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">("medium");
+  const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">(
+    "medium",
+  );
   const [assigneeId, setAssigneeId] = useState<Id<"users"> | "">("");
   const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +34,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   useEffect(() => {
     if (!selectedTemplate || !templates) return;
 
-    const template = templates.find(t => t._id === selectedTemplate);
+    const template = templates.find((t) => t._id === selectedTemplate);
     if (!template) return;
 
     setType(template.type);
@@ -47,8 +49,8 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
     // Apply default labels if they exist
     if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
       const labelIds = labels
-        .filter(label => template.defaultLabels?.includes(label.name))
-        .map(label => label._id);
+        .filter((label) => template.defaultLabels?.includes(label.name))
+        .map((label) => label._id);
       setSelectedLabels(labelIds);
     }
   }, [selectedTemplate, templates, labels]);
@@ -80,10 +82,8 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   };
 
   const toggleLabel = (labelId: Id<"labels">) => {
-    setSelectedLabels(prev =>
-      prev.includes(labelId)
-        ? prev.filter(id => id !== labelId)
-        : [...prev, labelId]
+    setSelectedLabels((prev) =>
+      prev.includes(labelId) ? prev.filter((id) => id !== labelId) : [...prev, labelId],
     );
   };
 
@@ -103,7 +103,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Use Template (Optional)"
             value={selectedTemplate}
-            onChange={(e) => setSelectedTemplate(e.target.value as any)}
+            onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
           >
             <option value="">Start from scratch</option>
             {templates.map((template) => (
@@ -135,7 +135,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Type"
             value={type}
-            onChange={(e) => setType(e.target.value as any)}
+            onChange={(e) => setType(e.target.value as "task" | "bug" | "story" | "epic")}
           >
             <option value="task">📋 Task</option>
             <option value="bug">🐛 Bug</option>
@@ -146,7 +146,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Priority"
             value={priority}
-            onChange={(e) => setPriority(e.target.value as any)}
+            onChange={(e) =>
+              setPriority(e.target.value as "lowest" | "low" | "medium" | "high" | "highest")
+            }
           >
             <option value="lowest">⬇️ Lowest</option>
             <option value="low">↘️ Low</option>
@@ -159,7 +161,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         <SelectField
           label="Assignee"
           value={assigneeId}
-          onChange={(e) => setAssigneeId(e.target.value as any)}
+          onChange={(e) => setAssigneeId(e.target.value as Id<"users"> | "")}
         >
           <option value="">Unassigned</option>
           {project.members.map((member) => (
@@ -172,9 +174,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         {/* Labels */}
         {labels && labels.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Labels
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Labels</label>
             <div className="flex flex-wrap gap-2">
               {labels.map((label) => (
                 <button
@@ -182,7 +182,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
                   type="button"
                   onClick={() => toggleLabel(label._id)}
                   className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
-                    selectedLabels.includes(label._id) ? "opacity-100 ring-2 ring-offset-2 ring-gray-900" : "opacity-60 hover:opacity-80"
+                    selectedLabels.includes(label._id)
+                      ? "opacity-100 ring-2 ring-offset-2 ring-gray-900"
+                      : "opacity-60 hover:opacity-80"
                   }`}
                   style={{ backgroundColor: label.color }}
                 >

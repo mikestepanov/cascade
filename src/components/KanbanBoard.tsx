@@ -47,11 +47,11 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
   const handleDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
-    
+
     if (!draggedIssue) return;
 
-    const issuesInNewStatus = issues.filter(issue => issue.status === newStatus);
-    const newOrder = Math.max(...issuesInNewStatus.map(i => i.order), -1) + 1;
+    const issuesInNewStatus = issues.filter((issue) => issue.status === newStatus);
+    const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
 
     try {
       await updateIssueStatus({
@@ -117,7 +117,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       <div className="flex space-x-6 px-6 pb-6 min-w-max">
         {workflowStates.map((state) => {
           const stateIssues = issues
-            .filter(issue => issue.status === state.id)
+            .filter((issue) => issue.status === state.id)
             .sort((a, b) => a.order - b.order);
 
           return (
@@ -142,7 +142,12 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                     title="Add issue"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -180,10 +185,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       )}
 
       {selectedIssue && (
-        <IssueDetailModal
-          issueId={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
-        />
+        <IssueDetailModal issueId={selectedIssue} onClose={() => setSelectedIssue(null)} />
       )}
 
       {/* Bulk Operations Bar */}

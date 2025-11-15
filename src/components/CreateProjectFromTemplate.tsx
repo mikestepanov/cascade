@@ -125,7 +125,9 @@ export function CreateProjectFromTemplate({
                         {template.description}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-1 rounded ${getCategoryColor(template.category)}`}>
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${getCategoryColor(template.category)}`}
+                        >
                           {template.category}
                         </span>
                         <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 capitalize">

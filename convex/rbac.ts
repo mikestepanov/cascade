@@ -18,7 +18,7 @@ export type ProjectRole = "admin" | "editor" | "viewer";
 export async function getUserRole(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ): Promise<ProjectRole | null> {
   const project = await ctx.db.get(projectId);
   if (!project) return null;
@@ -31,9 +31,7 @@ export async function getUserRole(
   // Check projectMembers table
   const membership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_project_user", (q) =>
-      q.eq("projectId", projectId).eq("userId", userId)
-    )
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .first();
 
   return membership?.role || null;
@@ -43,10 +41,7 @@ export async function getUserRole(
  * Check if user has at least the specified role
  * Roles hierarchy: viewer < editor < admin
  */
-export function hasMinimumRole(
-  userRole: ProjectRole | null,
-  requiredRole: ProjectRole
-): boolean {
+export function hasMinimumRole(userRole: ProjectRole | null, requiredRole: ProjectRole): boolean {
   if (!userRole) return false;
 
   const roleHierarchy: Record<ProjectRole, number> = {
@@ -64,7 +59,7 @@ export function hasMinimumRole(
 export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
-  userId: Id<"users"> | null
+  userId: Id<"users"> | null,
 ): Promise<boolean> {
   const project = await ctx.db.get(projectId);
   if (!project) return false;
@@ -86,7 +81,7 @@ export async function canAccessProject(
 export async function canEditProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ): Promise<boolean> {
   const role = await getUserRole(ctx, projectId, userId);
   return hasMinimumRole(role, "editor");
@@ -98,7 +93,7 @@ export async function canEditProject(
 export async function canManageProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ): Promise<boolean> {
   const role = await getUserRole(ctx, projectId, userId);
   return hasMinimumRole(role, "admin");
@@ -111,7 +106,7 @@ export async function assertMinimumRole(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users"> | null,
-  requiredRole: ProjectRole
+  requiredRole: ProjectRole,
 ): Promise<void> {
   if (!userId) {
     throw new Error("Not authenticated");
@@ -120,7 +115,7 @@ export async function assertMinimumRole(
   const role = await getUserRole(ctx, projectId, userId);
   if (!hasMinimumRole(role, requiredRole)) {
     throw new Error(
-      `Insufficient permissions. Required role: ${requiredRole}, your role: ${role || "none"}`
+      `Insufficient permissions. Required role: ${requiredRole}, your role: ${role || "none"}`,
     );
   }
 }

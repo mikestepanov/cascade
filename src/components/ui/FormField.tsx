@@ -1,4 +1,9 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, ReactNode } from "react";
+import {
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+  ReactNode,
+} from "react";
 
 interface BaseFieldProps {
   label: string;
@@ -31,7 +36,9 @@ export function InputField({
         {...props}
       />
       {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>}
+      {helpText && !error && (
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>
+      )}
     </div>
   );
 }
@@ -60,7 +67,9 @@ export function TextareaField({
         {...props}
       />
       {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>}
+      {helpText && !error && (
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>
+      )}
     </div>
   );
 }
@@ -94,7 +103,9 @@ export function SelectField({
         {children}
       </select>
       {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>}
+      {helpText && !error && (
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helpText}</p>
+      )}
     </div>
   );
 }

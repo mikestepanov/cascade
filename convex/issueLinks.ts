@@ -27,10 +27,7 @@ export const create = mutation({
       .query("issueLinks")
       .withIndex("by_from_issue", (q) => q.eq("fromIssueId", args.fromIssueId))
       .filter((q) =>
-        q.and(
-          q.eq(q.field("toIssueId"), args.toIssueId),
-          q.eq(q.field("linkType"), args.linkType)
-        )
+        q.and(q.eq(q.field("toIssueId"), args.toIssueId), q.eq(q.field("linkType"), args.linkType)),
       )
       .first();
 
@@ -139,7 +136,7 @@ export const getForIssue = query({
               }
             : null,
         };
-      })
+      }),
     );
 
     const incoming = await Promise.all(
@@ -159,7 +156,7 @@ export const getForIssue = query({
               }
             : null,
         };
-      })
+      }),
     );
 
     return { outgoing, incoming };

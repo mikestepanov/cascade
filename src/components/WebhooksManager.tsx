@@ -103,10 +103,8 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   };
 
   const toggleEvent = (event: string) => {
-    setSelectedEvents(prev =>
-      prev.includes(event)
-        ? prev.filter(e => e !== event)
-        : [...prev, event]
+    setSelectedEvents((prev) =>
+      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
     );
   };
 
@@ -121,7 +119,12 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
               onClick={() => setShowModal(true)}
               leftIcon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               }
             >
@@ -148,11 +151,13 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h4 className="font-medium text-gray-900">{webhook.name}</h4>
-                        <span className={`text-xs px-2 py-0.5 rounded ${
-                          webhook.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-200 text-gray-700"
-                        }`}>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded ${
+                            webhook.isActive
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-200 text-gray-700"
+                          }`}
+                        >
                           {webhook.isActive ? "Active" : "Inactive"}
                         </span>
                       </div>
@@ -182,7 +187,12 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                         size="sm"
                         onClick={() => startEdit(webhook)}
                         leftIcon={
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -199,7 +209,12 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                         size="sm"
                         onClick={() => setDeleteConfirm(webhook._id)}
                         leftIcon={
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"

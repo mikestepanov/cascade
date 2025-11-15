@@ -9,7 +9,13 @@ export const create = mutation({
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    priority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    priority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
     assigneeId: v.optional(v.id("users")),
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
@@ -34,7 +40,7 @@ export const create = mutation({
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
-    
+
     const issueNumber = existingIssues.length + 1;
     const issueKey = `${project.key}-${issueNumber}`;
 
@@ -44,10 +50,12 @@ export const create = mutation({
     // Get max order for the status column
     const issuesInStatus = await ctx.db
       .query("issues")
-      .withIndex("by_project_status", (q) => q.eq("projectId", args.projectId).eq("status", defaultStatus))
+      .withIndex("by_project_status", (q) =>
+        q.eq("projectId", args.projectId).eq("status", defaultStatus),
+      )
       .collect();
-    
-    const maxOrder = Math.max(...issuesInStatus.map(i => i.order), -1);
+
+    const maxOrder = Math.max(...issuesInStatus.map((i) => i.order), -1);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
@@ -83,7 +91,7 @@ export const create = mutation({
 });
 
 export const listByProject = query({
-  args: { 
+  args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
   },
@@ -99,7 +107,11 @@ export const listByProject = query({
     }
 
     // Check access permissions
-    if (!project.isPublic && project.createdBy !== userId && (!userId || !project.members.includes(userId))) {
+    if (
+      !project.isPublic &&
+      project.createdBy !== userId &&
+      (!userId || !project.members.includes(userId))
+    ) {
       return [];
     }
 
@@ -110,9 +122,9 @@ export const listByProject = query({
     const issues = await issuesQuery.collect();
 
     // Filter by sprint if specified
-    const filteredIssues = args.sprintId 
-      ? issues.filter(issue => issue.sprintId === args.sprintId)
-      : issues.filter(issue => !issue.sprintId); // Backlog items
+    const filteredIssues = args.sprintId
+      ? issues.filter((issue) => issue.sprintId === args.sprintId)
+      : issues.filter((issue) => !issue.sprintId); // Backlog items
 
     return await Promise.all(
       filteredIssues.map(async (issue) => {
@@ -122,25 +134,31 @@ export const listByProject = query({
 
         return {
           ...issue,
-          assignee: assignee ? {
-            _id: assignee._id,
-            name: assignee.name || assignee.email || "Unknown",
-            email: assignee.email,
-            image: assignee.image,
-          } : null,
-          reporter: reporter ? {
-            _id: reporter._id,
-            name: reporter.name || reporter.email || "Unknown",
-            email: reporter.email,
-            image: reporter.image,
-          } : null,
-          epic: epic ? {
-            _id: epic._id,
-            key: epic.key,
-            title: epic.title,
-          } : null,
+          assignee: assignee
+            ? {
+                _id: assignee._id,
+                name: assignee.name || assignee.email || "Unknown",
+                email: assignee.email,
+                image: assignee.image,
+              }
+            : null,
+          reporter: reporter
+            ? {
+                _id: reporter._id,
+                name: reporter.name || reporter.email || "Unknown",
+                email: reporter.email,
+                image: reporter.image,
+              }
+            : null,
+          epic: epic
+            ? {
+                _id: epic._id,
+                key: epic.key,
+                title: epic.title,
+              }
+            : null,
         };
-      })
+      }),
     );
   },
 });
@@ -150,7 +168,7 @@ export const get = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const issue = await ctx.db.get(args.id);
-    
+
     if (!issue) {
       return null;
     }
@@ -161,7 +179,11 @@ export const get = query({
     }
 
     // Check access permissions
-    if (!project.isPublic && project.createdBy !== userId && (!userId || !project.members.includes(userId))) {
+    if (
+      !project.isPublic &&
+      project.createdBy !== userId &&
+      (!userId || !project.members.includes(userId))
+    ) {
       throw new Error("Not authorized to access this issue");
     }
 
@@ -181,14 +203,16 @@ export const get = query({
         const author = await ctx.db.get(comment.authorId);
         return {
           ...comment,
-          author: author ? {
-            _id: author._id,
-            name: author.name || author.email || "Unknown",
-            email: author.email,
-            image: author.image,
-          } : null,
+          author: author
+            ? {
+                _id: author._id,
+                name: author.name || author.email || "Unknown",
+                email: author.email,
+                image: author.image,
+              }
+            : null,
         };
-      })
+      }),
     );
 
     // Get activity
@@ -197,40 +221,50 @@ export const get = query({
       .withIndex("by_issue", (q) => q.eq("issueId", args.id))
       .order("desc")
       .take(20)
-      .then(activities => Promise.all(
-        activities.map(async (act) => {
-          const user = await ctx.db.get(act.userId);
-          return {
-            ...act,
-            user: user ? {
-              _id: user._id,
-              name: user.name || user.email || "Unknown",
-              image: user.image,
-            } : null,
-          };
-        })
-      ));
+      .then((activities) =>
+        Promise.all(
+          activities.map(async (act) => {
+            const user = await ctx.db.get(act.userId);
+            return {
+              ...act,
+              user: user
+                ? {
+                    _id: user._id,
+                    name: user.name || user.email || "Unknown",
+                    image: user.image,
+                  }
+                : null,
+            };
+          }),
+        ),
+      );
 
     return {
       ...issue,
       project,
-      assignee: assignee ? {
-        _id: assignee._id,
-        name: assignee.name || assignee.email || "Unknown",
-        email: assignee.email,
-        image: assignee.image,
-      } : null,
-      reporter: reporter ? {
-        _id: reporter._id,
-        name: reporter.name || reporter.email || "Unknown",
-        email: reporter.email,
-        image: reporter.image,
-      } : null,
-      epic: epic ? {
-        _id: epic._id,
-        key: epic.key,
-        title: epic.title,
-      } : null,
+      assignee: assignee
+        ? {
+            _id: assignee._id,
+            name: assignee.name || assignee.email || "Unknown",
+            email: assignee.email,
+            image: assignee.image,
+          }
+        : null,
+      reporter: reporter
+        ? {
+            _id: reporter._id,
+            name: reporter.name || reporter.email || "Unknown",
+            email: reporter.email,
+            image: reporter.image,
+          }
+        : null,
+      epic: epic
+        ? {
+            _id: epic._id,
+            key: epic.key,
+            title: epic.title,
+          }
+        : null,
       comments: commentsWithAuthors,
       activity,
     };
@@ -291,7 +325,15 @@ export const update = mutation({
     issueId: v.id("issues"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
-    priority: v.optional(v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest"))),
+    priority: v.optional(
+      v.union(
+        v.literal("lowest"),
+        v.literal("low"),
+        v.literal("medium"),
+        v.literal("high"),
+        v.literal("highest"),
+      ),
+    ),
     assigneeId: v.optional(v.union(v.id("users"), v.null())),
     labels: v.optional(v.array(v.string())),
     dueDate: v.optional(v.union(v.number(), v.null())),
@@ -329,7 +371,11 @@ export const update = mutation({
 
     if (args.description !== undefined && args.description !== issue.description) {
       updates.description = args.description;
-      changes.push({ field: "description", oldValue: issue.description, newValue: args.description });
+      changes.push({
+        field: "description",
+        oldValue: issue.description,
+        newValue: args.description,
+      });
     }
 
     if (args.priority !== undefined && args.priority !== issue.priority) {
@@ -344,7 +390,11 @@ export const update = mutation({
 
     if (args.labels !== undefined) {
       updates.labels = args.labels;
-      changes.push({ field: "labels", oldValue: issue.labels.join(", "), newValue: args.labels.join(", ") });
+      changes.push({
+        field: "labels",
+        oldValue: issue.labels.join(", "),
+        newValue: args.labels.join(", "),
+      });
     }
 
     if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
@@ -354,10 +404,15 @@ export const update = mutation({
 
     if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
       updates.estimatedHours = args.estimatedHours;
-      changes.push({ field: "estimatedHours", oldValue: issue.estimatedHours, newValue: args.estimatedHours });
+      changes.push({
+        field: "estimatedHours",
+        oldValue: issue.estimatedHours,
+        newValue: args.estimatedHours,
+      });
     }
 
-    if (Object.keys(updates).length > 1) { // More than just updatedAt
+    if (Object.keys(updates).length > 1) {
+      // More than just updatedAt
       await ctx.db.patch(args.issueId, updates);
 
       // Log activities
@@ -424,7 +479,8 @@ export const addComment = mutation({
     // Create notifications for mentioned users
     const author = await ctx.db.get(userId);
     for (const mentionedUserId of mentions) {
-      if (mentionedUserId !== userId) { // Don't notify yourself
+      if (mentionedUserId !== userId) {
+        // Don't notify yourself
         await ctx.db.insert("notifications", {
           userId: mentionedUserId,
           type: "issue_mentioned",
@@ -529,7 +585,13 @@ export const bulkUpdateStatus = mutation({
 export const bulkUpdatePriority = mutation({
   args: {
     issueIds: v.array(v.id("issues")),
-    priority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    priority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

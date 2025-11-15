@@ -58,7 +58,10 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
         titleTemplate: titleTemplate.trim(),
         descriptionTemplate: descriptionTemplate.trim(),
         defaultPriority,
-        defaultLabels: defaultLabels.split(",").map(l => l.trim()).filter(Boolean),
+        defaultLabels: defaultLabels
+          .split(",")
+          .map((l) => l.trim())
+          .filter(Boolean),
       };
 
       if (editingId) {
@@ -102,10 +105,14 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
 
   const getTypeIcon = (type: IssueType) => {
     switch (type) {
-      case "bug": return "🐛";
-      case "story": return "📖";
-      case "epic": return "⚡";
-      default: return "✓";
+      case "bug":
+        return "🐛";
+      case "story":
+        return "📖";
+      case "epic":
+        return "⚡";
+      default:
+        return "✓";
     }
   };
 
@@ -120,7 +127,12 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
               onClick={() => setShowModal(true)}
               leftIcon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               }
             >
@@ -183,7 +195,12 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                         size="sm"
                         onClick={() => startEdit(template)}
                         leftIcon={
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -200,7 +217,12 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                         size="sm"
                         onClick={() => setDeleteConfirm(template._id)}
                         leftIcon={
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"

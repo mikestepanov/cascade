@@ -4,9 +4,21 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { assertMinimumRole } from "./rbac";
 
 const filtersValidator = v.object({
-  type: v.optional(v.array(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")))),
+  type: v.optional(
+    v.array(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"))),
+  ),
   status: v.optional(v.array(v.string())),
-  priority: v.optional(v.array(v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")))),
+  priority: v.optional(
+    v.array(
+      v.union(
+        v.literal("lowest"),
+        v.literal("low"),
+        v.literal("medium"),
+        v.literal("high"),
+        v.literal("highest"),
+      ),
+    ),
+  ),
   assigneeId: v.optional(v.array(v.id("users"))),
   labels: v.optional(v.array(v.string())),
   sprintId: v.optional(v.id("sprints")),
@@ -67,9 +79,7 @@ export const list = query({
     // Get public filters from other users
     const publicFilters = await ctx.db
       .query("savedFilters")
-      .withIndex("by_project_public", (q) =>
-        q.eq("projectId", args.projectId).eq("isPublic", true)
-      )
+      .withIndex("by_project_public", (q) => q.eq("projectId", args.projectId).eq("isPublic", true))
       .filter((q) => q.neq(q.field("userId"), userId))
       .collect();
 
@@ -83,7 +93,7 @@ export const list = query({
           creatorName: creator?.name || "Unknown",
           isOwner: filter.userId === userId,
         };
-      })
+      }),
     );
   },
 });

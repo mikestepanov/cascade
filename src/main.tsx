@@ -21,10 +21,7 @@ const posthogOptions = {
 
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider>
-    <PostHogProvider
-      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-      options={posthogOptions}
-    >
+    <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
       <ConvexAuthProvider client={convex}>
         <App />
       </ConvexAuthProvider>

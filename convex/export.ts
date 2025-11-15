@@ -41,18 +41,12 @@ export const exportIssuesCSV = query({
     // Enrich with user and sprint data
     const enrichedIssues = await Promise.all(
       issues.map(async (issue) => {
-        const assignee = issue.assigneeId
-          ? await ctx.db.get(issue.assigneeId)
-          : null;
+        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
         const reporter = await ctx.db.get(issue.reporterId);
-        const sprint = issue.sprintId
-          ? await ctx.db.get(issue.sprintId)
-          : null;
+        const sprint = issue.sprintId ? await ctx.db.get(issue.sprintId) : null;
 
         // Get status name from workflow
-        const statusState = project.workflowStates.find(
-          (s) => s.id === issue.status
-        );
+        const statusState = project.workflowStates.find((s) => s.id === issue.status);
 
         return {
           key: issue.key,
@@ -66,12 +60,10 @@ export const exportIssuesCSV = query({
           estimatedHours: issue.estimatedHours ?? 0,
           loggedHours: issue.loggedHours ?? 0,
           labels: issue.labels.join(", "),
-          dueDate: issue.dueDate
-            ? new Date(issue.dueDate).toISOString().split("T")[0]
-            : "",
+          dueDate: issue.dueDate ? new Date(issue.dueDate).toISOString().split("T")[0] : "",
           createdAt: new Date(issue.createdAt).toISOString().split("T")[0],
         };
-      })
+      }),
     );
 
     // Convert to CSV
@@ -107,9 +99,7 @@ export const exportIssuesCSV = query({
       issue.createdAt,
     ]);
 
-    const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n"
-    );
+    const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
 
     return csv;
   },
@@ -147,24 +137,24 @@ export const exportAnalytics = query({
       return state?.category === "done";
     }).length;
 
-    const issuesByType = issues.reduce((acc, issue) => {
-      acc[issue.type] = (acc[issue.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const issuesByPriority = issues.reduce((acc, issue) => {
-      acc[issue.priority] = (acc[issue.priority] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const totalEstimated = issues.reduce(
-      (sum, i) => sum + (i.estimatedHours ?? 0),
-      0
+    const issuesByType = issues.reduce(
+      (acc, issue) => {
+        acc[issue.type] = (acc[issue.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
     );
-    const totalLogged = issues.reduce(
-      (sum, i) => sum + (i.loggedHours ?? 0),
-      0
+
+    const issuesByPriority = issues.reduce(
+      (acc, issue) => {
+        acc[issue.priority] = (acc[issue.priority] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
     );
+
+    const totalEstimated = issues.reduce((sum, i) => sum + (i.estimatedHours ?? 0), 0);
+    const totalLogged = issues.reduce((sum, i) => sum + (i.loggedHours ?? 0), 0);
 
     return {
       projectName: project.name,
@@ -217,16 +207,10 @@ export const exportIssuesJSON = query({
     // Enrich with related data
     const enrichedIssues = await Promise.all(
       issues.map(async (issue) => {
-        const assignee = issue.assigneeId
-          ? await ctx.db.get(issue.assigneeId)
-          : null;
+        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
         const reporter = await ctx.db.get(issue.reporterId);
-        const sprint = issue.sprintId
-          ? await ctx.db.get(issue.sprintId)
-          : null;
-        const statusState = project.workflowStates.find(
-          (s) => s.id === issue.status
-        );
+        const sprint = issue.sprintId ? await ctx.db.get(issue.sprintId) : null;
+        const statusState = project.workflowStates.find((s) => s.id === issue.status);
 
         // Get comments
         const comments = await ctx.db
@@ -242,19 +226,23 @@ export const exportIssuesJSON = query({
           sprintName: sprint?.name,
           comments: comments.length,
         };
-      })
+      }),
     );
 
-    return JSON.stringify({
-      project: {
-        name: project.name,
-        key: project.key,
-        description: project.description,
+    return JSON.stringify(
+      {
+        project: {
+          name: project.name,
+          key: project.key,
+          description: project.description,
+        },
+        exportedAt: new Date().toISOString(),
+        totalIssues: enrichedIssues.length,
+        issues: enrichedIssues,
       },
-      exportedAt: new Date().toISOString(),
-      totalIssues: enrichedIssues.length,
-      issues: enrichedIssues,
-    }, null, 2);
+      null,
+      2,
+    );
   },
 });
 
@@ -420,16 +408,19 @@ export const importIssuesCSV = mutation({
           status: project.workflowStates[0].id,
           priority: (priorityIndex !== -1 && values[priorityIndex]) || "medium",
           reporterId: userId,
-          labels: labelsIndex !== -1 && values[labelsIndex]
-            ? values[labelsIndex].split(";").map((l) => l.trim())
-            : [],
-          estimatedHours: estimatedIndex !== -1 && values[estimatedIndex]
-            ? parseFloat(values[estimatedIndex])
-            : undefined,
+          labels:
+            labelsIndex !== -1 && values[labelsIndex]
+              ? values[labelsIndex].split(";").map((l) => l.trim())
+              : [],
+          estimatedHours:
+            estimatedIndex !== -1 && values[estimatedIndex]
+              ? parseFloat(values[estimatedIndex])
+              : undefined,
           loggedHours: 0,
-          dueDate: dueDateIndex !== -1 && values[dueDateIndex]
-            ? new Date(values[dueDateIndex]).getTime()
-            : undefined,
+          dueDate:
+            dueDateIndex !== -1 && values[dueDateIndex]
+              ? new Date(values[dueDateIndex]).getTime()
+              : undefined,
           createdAt: Date.now(),
           updatedAt: Date.now(),
           order: existingIssues.length,

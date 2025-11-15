@@ -113,17 +113,12 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                     {formatDate(comment.createdAt)}
                   </span>
                   {comment.updatedAt > comment.createdAt && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      (edited)
-                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">(edited)</span>
                   )}
                 </div>
 
                 {/* Comment Text with Mentions */}
-                <CommentRenderer
-                  content={comment.content}
-                  mentions={comment.mentions}
-                />
+                <CommentRenderer content={comment.content} mentions={comment.mentions} />
               </div>
             </div>
           ))
@@ -132,9 +127,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Add Comment
-        </h4>
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Comment</h4>
         <MentionInput
           projectId={projectId}
           value={newComment}
@@ -143,11 +136,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
           placeholder="Add a comment... Type @ to mention someone"
         />
         <div className="flex justify-end">
-          <Button
-            onClick={handleSubmit}
-            isLoading={isSubmitting}
-            disabled={!newComment.trim()}
-          >
+          <Button onClick={handleSubmit} isLoading={isSubmitting} disabled={!newComment.trim()}>
             Add Comment
           </Button>
         </div>

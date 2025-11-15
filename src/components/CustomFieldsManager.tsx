@@ -133,16 +133,12 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Custom Fields
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Custom Fields</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Add custom metadata fields to your issues
           </p>
         </div>
-        {!isCreating && (
-          <Button onClick={() => setIsCreating(true)}>+ Add Field</Button>
-        )}
+        {!isCreating && <Button onClick={() => setIsCreating(true)}>+ Add Field</Button>}
       </div>
 
       {/* Create/Edit Form */}
@@ -236,9 +232,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleSave}>
-                {editingId ? "Update Field" : "Create Field"}
-              </Button>
+              <Button onClick={handleSave}>{editingId ? "Update Field" : "Create Field"}</Button>
               <Button onClick={resetForm} variant="secondary">
                 Cancel
               </Button>
@@ -304,11 +298,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleEdit(field)}
-                    variant="secondary"
-                    size="sm"
-                  >
+                  <Button onClick={() => handleEdit(field)} variant="secondary" size="sm">
                     Edit
                   </Button>
                   <Button

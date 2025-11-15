@@ -77,7 +77,7 @@ export const listByProject = query({
           ...sprint,
           issueCount,
         };
-      })
+      }),
     );
   },
 });

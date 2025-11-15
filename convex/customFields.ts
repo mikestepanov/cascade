@@ -38,7 +38,7 @@ export const create = mutation({
       v.literal("multiselect"),
       v.literal("date"),
       v.literal("checkbox"),
-      v.literal("url")
+      v.literal("url"),
     ),
     options: v.optional(v.array(v.string())),
     isRequired: v.boolean(),
@@ -56,7 +56,7 @@ export const create = mutation({
     const existing = await ctx.db
       .query("customFields")
       .withIndex("by_project_key", (q) =>
-        q.eq("projectId", args.projectId).eq("fieldKey", args.fieldKey)
+        q.eq("projectId", args.projectId).eq("fieldKey", args.fieldKey),
       )
       .first();
 
@@ -173,7 +173,7 @@ export const getValuesForIssue = query({
           ...value,
           field,
         };
-      })
+      }),
     );
 
     return enrichedValues.filter((v) => v.field !== null);
@@ -218,14 +218,8 @@ export const setValue = mutation({
       }
     }
 
-    if (
-      (field.fieldType === "select" || field.fieldType === "multiselect") &&
-      field.options
-    ) {
-      const values =
-        field.fieldType === "multiselect"
-          ? args.value.split(",")
-          : [args.value];
+    if ((field.fieldType === "select" || field.fieldType === "multiselect") && field.options) {
+      const values = field.fieldType === "multiselect" ? args.value.split(",") : [args.value];
       for (const val of values) {
         if (!field.options.includes(val.trim())) {
           throw new Error(`Invalid option: ${val}`);
@@ -236,9 +230,7 @@ export const setValue = mutation({
     // Check if value already exists
     const existing = await ctx.db
       .query("customFieldValues")
-      .withIndex("by_issue_field", (q) =>
-        q.eq("issueId", args.issueId).eq("fieldId", args.fieldId)
-      )
+      .withIndex("by_issue_field", (q) => q.eq("issueId", args.issueId).eq("fieldId", args.fieldId))
       .first();
 
     if (existing) {
@@ -288,9 +280,7 @@ export const removeValue = mutation({
 
     const existing = await ctx.db
       .query("customFieldValues")
-      .withIndex("by_issue_field", (q) =>
-        q.eq("issueId", args.issueId).eq("fieldId", args.fieldId)
-      )
+      .withIndex("by_issue_field", (q) => q.eq("issueId", args.issueId).eq("fieldId", args.fieldId))
       .first();
 
     if (existing) {

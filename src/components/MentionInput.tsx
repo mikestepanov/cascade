@@ -31,7 +31,7 @@ export function MentionInput({
   // Filter members based on mention search
   const filteredMembers =
     members?.filter((member) =>
-      member.userName.toLowerCase().includes(mentionSearch.toLowerCase())
+      member.userName.toLowerCase().includes(mentionSearch.toLowerCase()),
     ) || [];
 
   useEffect(() => {
@@ -109,9 +109,7 @@ export function MentionInput({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredMembers.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < filteredMembers.length - 1 ? prev + 1 : prev));
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -192,9 +190,7 @@ export function MentionInput({
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                   {member.userName}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                  {member.role}
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{member.role}</p>
               </div>
             </button>
           ))}

@@ -16,11 +16,7 @@ interface ImportExportModalProps {
 type Mode = "export" | "import";
 type ExportFormat = "csv" | "json";
 
-export function ImportExportModal({
-  isOpen,
-  onClose,
-  projectId,
-}: ImportExportModalProps) {
+export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportModalProps) {
   const [mode, setMode] = useState<Mode>("export");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [importFormat, setImportFormat] = useState<ExportFormat>("csv");
@@ -31,12 +27,12 @@ export function ImportExportModal({
 
   const csvData = useQuery(
     api.export.exportIssuesCSV,
-    isExporting && exportFormat === "csv" ? { projectId } : "skip"
+    isExporting && exportFormat === "csv" ? { projectId } : "skip",
   );
 
   const jsonData = useQuery(
     api.export.exportIssuesJSON,
-    isExporting && exportFormat === "json" ? { projectId } : "skip"
+    isExporting && exportFormat === "json" ? { projectId } : "skip",
   );
 
   const importCSV = useMutation(api.export.importIssuesCSV);
@@ -137,7 +133,7 @@ export function ImportExportModal({
         toast.success(
           `Successfully imported ${result.imported} issue${result.imported > 1 ? "s" : ""}${
             result.failed > 0 ? ` (${result.failed} failed)` : ""
-          }`
+          }`,
         );
 
         if (result.errors && result.errors.length > 0) {
@@ -158,12 +154,7 @@ export function ImportExportModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Import / Export Issues"
-      size="large"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Import / Export Issues" size="large">
       <div className="space-y-6">
         {/* Mode Selection */}
         <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
@@ -207,9 +198,7 @@ export function ImportExportModal({
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">📊</div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
-                        CSV
-                      </div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">CSV</div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         Spreadsheet format
                       </div>
@@ -228,9 +217,7 @@ export function ImportExportModal({
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">📄</div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
-                        JSON
-                      </div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">JSON</div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         Data interchange format
                       </div>
@@ -283,9 +270,7 @@ export function ImportExportModal({
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">📊</div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
-                        CSV
-                      </div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">CSV</div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         Spreadsheet format
                       </div>
@@ -304,9 +289,7 @@ export function ImportExportModal({
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">📄</div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
-                        JSON
-                      </div>
+                      <div className="font-semibold text-gray-900 dark:text-gray-100">JSON</div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         Data interchange format
                       </div>
@@ -340,19 +323,20 @@ export function ImportExportModal({
                   <p className="font-semibold mb-1">Import Requirements</p>
                   <ul className="list-disc list-inside space-y-1 text-yellow-700 dark:text-yellow-300">
                     <li>CSV must have a header row with column names</li>
-                    <li>Required column: <code className="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">title</code></li>
-                    <li>Optional: type, priority, description, labels, estimated hours, due date</li>
+                    <li>
+                      Required column:{" "}
+                      <code className="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">title</code>
+                    </li>
+                    <li>
+                      Optional: type, priority, description, labels, estimated hours, due date
+                    </li>
                     <li>All imported issues will be created in the first workflow state</li>
                   </ul>
                 </div>
               </div>
             </div>
 
-            <Button
-              onClick={handleImport}
-              disabled={!importData || isImporting}
-              className="w-full"
-            >
+            <Button onClick={handleImport} disabled={!importData || isImporting} className="w-full">
               {isImporting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />

@@ -93,12 +93,8 @@ describe("GlobalSearch", () => {
 
   it("should filter by tab selection", async () => {
     const user = userEvent.setup();
-    const mockIssues = [
-      { _id: "1", key: "TEST-1", title: "Test Issue", type: "task" },
-    ];
-    const mockDocuments = [
-      { _id: "2", title: "Test Doc" },
-    ];
+    const mockIssues = [{ _id: "1", key: "TEST-1", title: "Test Issue", type: "task" }];
+    const mockDocuments = [{ _id: "2", title: "Test Doc" }];
 
     (useQuery as any).mockImplementation((queryFn: any) => {
       if (queryFn.toString().includes("issues")) return mockIssues;
@@ -154,7 +150,7 @@ describe("GlobalSearch", () => {
     await waitFor(() => {
       expect(useQuery).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ query: "test" })
+        expect.objectContaining({ query: "test" }),
       );
     });
 
@@ -259,7 +255,8 @@ describe("GlobalSearch", () => {
 
     expect(screen.getByPlaceholderText(/Search issues, documents/i)).toBeInTheDocument();
 
-    const backdrop = screen.getByPlaceholderText(/Search issues, documents/i)
+    const backdrop = screen
+      .getByPlaceholderText(/Search issues, documents/i)
       .closest("[role='dialog']")?.previousSibling as HTMLElement;
 
     if (backdrop) {

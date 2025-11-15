@@ -32,7 +32,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         isPublic: newProjectIsPublic,
         boardType: newProjectBoardType,
       });
-      
+
       setNewProjectName("");
       setNewProjectKey("");
       setNewProjectDescription("");
@@ -51,7 +51,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Projects</h2>
-        
+
         {/* Create Project Button */}
         <button
           onClick={() => setShowCreateForm(true)}
@@ -155,17 +155,13 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900 truncate">
-                        {project.name}
-                      </h3>
+                      <h3 className="font-medium text-gray-900 truncate">{project.name}</h3>
                       <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                         {project.key}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-xs text-gray-500">
-                        {project.issueCount} issues
-                      </span>
+                      <span className="text-xs text-gray-500">{project.issueCount} issues</span>
                       <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">
                         {project.boardType}
                       </span>
@@ -180,9 +176,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400">
-                      by {project.creatorName}
-                    </p>
+                    <p className="text-xs text-gray-400">by {project.creatorName}</p>
                   </div>
                 </div>
               </div>

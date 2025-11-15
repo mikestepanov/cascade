@@ -20,9 +20,7 @@ export const create = mutation({
     // Check if label with same name already exists in project
     const existing = await ctx.db
       .query("labels")
-      .withIndex("by_project_name", (q) =>
-        q.eq("projectId", args.projectId).eq("name", args.name)
-      )
+      .withIndex("by_project_name", (q) => q.eq("projectId", args.projectId).eq("name", args.name))
       .first();
 
     if (existing) {
@@ -82,7 +80,7 @@ export const update = mutation({
       const existing = await ctx.db
         .query("labels")
         .withIndex("by_project_name", (q) =>
-          q.eq("projectId", label.projectId).eq("name", args.name!)
+          q.eq("projectId", label.projectId).eq("name", args.name!),
         )
         .first();
 

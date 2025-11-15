@@ -75,7 +75,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           <select
             onChange={(e) => {
               if (e.target.value) {
-                const selected = savedFilters?.find(f => f._id === e.target.value);
+                const selected = savedFilters?.find((f) => f._id === e.target.value);
                 if (selected) {
                   handleLoadFilter(selected.filters);
                 }
@@ -87,7 +87,8 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
             <option value="">Select a filter...</option>
             {savedFilters?.map((filter) => (
               <option key={filter._id} value={filter._id}>
-                {filter.name} {filter.isPublic && "(Public)"} {!filter.isOwner && `- by ${filter.creatorName}`}
+                {filter.name} {filter.isPublic && "(Public)"}{" "}
+                {!filter.isOwner && `- by ${filter.creatorName}`}
               </option>
             ))}
           </select>

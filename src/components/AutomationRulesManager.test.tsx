@@ -111,7 +111,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       // Leave name empty
-      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"test":"value"}' } });
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), {
+        target: { value: '{"test":"value"}' },
+      });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
@@ -139,7 +141,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "   ");
-      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"test":"value"}' } });
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), {
+        target: { value: '{"test":"value"}' },
+      });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
@@ -167,7 +171,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
-      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "not valid json" } });
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), {
+        target: { value: "not valid json" },
+      });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
@@ -184,7 +190,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
-      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"label":"urgent"}' } });
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), {
+        target: { value: '{"label":"urgent"}' },
+      });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
@@ -217,10 +225,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
-      fireEvent.change(
-        screen.getByPlaceholderText(/auto-resolved/i),
-        { target: { value: '{"data":{"nested":"value"},"array":[1,2,3]}' } }
-      );
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), {
+        target: { value: '{"data":{"nested":"value"},"array":[1,2,3]}' },
+      });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
@@ -237,7 +244,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "  Trimmed Name  ");
+      await user.type(
+        screen.getByPlaceholderText(/Auto-assign high priority bugs/i),
+        "  Trimmed Name  ",
+      );
       fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
@@ -245,7 +255,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         expect(mockCreateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             name: "Trimmed Name",
-          })
+          }),
         );
       });
     });
@@ -266,7 +276,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         expect(mockCreateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             description: undefined,
-          })
+          }),
         );
       });
     });
@@ -287,7 +297,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         expect(mockCreateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             description: undefined,
-          })
+          }),
         );
       });
     });
@@ -308,7 +318,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         expect(mockCreateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             triggerValue: undefined,
-          })
+          }),
         );
       });
     });

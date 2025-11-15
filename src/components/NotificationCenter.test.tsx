@@ -40,9 +40,7 @@ describe("NotificationCenter", () => {
 
   it("should show unread count badge when there are unread notifications", () => {
     // First call is for notifications list, second is for unread count
-    (useQuery as any)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce(5);
+    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(5);
 
     render(<NotificationCenter />);
 
@@ -62,9 +60,7 @@ describe("NotificationCenter", () => {
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
-    (useQuery as any)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce(150);
+    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(150);
 
     render(<NotificationCenter />);
 
@@ -73,9 +69,7 @@ describe("NotificationCenter", () => {
 
   it("should open dropdown when bell is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce(0);
+    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
@@ -87,9 +81,7 @@ describe("NotificationCenter", () => {
 
   it("should show empty state when no notifications", async () => {
     const user = userEvent.setup();
-    (useQuery as any)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce(0);
+    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
@@ -119,9 +111,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now() - 3600000,
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(1);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -144,9 +134,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(1);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -169,9 +157,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(1);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
     mockMarkAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -199,9 +185,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(1);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(1);
     mockMarkAllAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -229,9 +213,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(0);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(0);
     mockRemove.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -276,9 +258,7 @@ describe("NotificationCenter", () => {
         createdAt: now - 2 * 60 * 60 * 1000, // 2 hours
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(3);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(3);
 
     render(<NotificationCenter />);
 
@@ -310,9 +290,7 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any)
-      .mockReturnValueOnce(mockNotifications)
-      .mockReturnValueOnce(2);
+    (useQuery as any).mockReturnValueOnce(mockNotifications).mockReturnValueOnce(2);
 
     render(<NotificationCenter />);
 
@@ -326,9 +304,7 @@ describe("NotificationCenter", () => {
 
   it("should close dropdown when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce(0);
+    (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 

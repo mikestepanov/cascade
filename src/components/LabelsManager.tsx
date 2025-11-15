@@ -88,7 +88,12 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               onClick={() => setShowModal(true)}
               leftIcon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               }
             >
@@ -127,7 +132,12 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                       size="sm"
                       onClick={() => startEdit(label)}
                       leftIcon={
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -144,7 +154,12 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                       size="sm"
                       onClick={() => setDeleteConfirm(label._id)}
                       leftIcon={
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -181,17 +196,11 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
             autoFocus
           />
 
-          <ColorPicker
-            value={color}
-            onChange={setColor}
-            label="Color"
-          />
+          <ColorPicker value={color} onChange={setColor} label="Color" />
 
           {/* Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Preview
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
             <span
               className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
               style={{ backgroundColor: color }}

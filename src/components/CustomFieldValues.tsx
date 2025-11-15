@@ -134,20 +134,14 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                     checked={isSelected}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setEditValue(
-                          [...selectedOptions, option].join(", ")
-                        );
+                        setEditValue([...selectedOptions, option].join(", "));
                       } else {
-                        setEditValue(
-                          selectedOptions.filter((o) => o !== option).join(", ")
-                        );
+                        setEditValue(selectedOptions.filter((o) => o !== option).join(", "));
                       }
                     }}
                     className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {option}
-                  </span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{option}</span>
                 </label>
               );
             })}
@@ -168,11 +162,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
   const renderFieldValue = (field: any, value?: string) => {
     if (!value) {
-      return (
-        <span className="text-gray-400 dark:text-gray-500 italic text-sm">
-          Not set
-        </span>
-      );
+      return <span className="text-gray-400 dark:text-gray-500 italic text-sm">Not set</span>;
     }
 
     switch (field.fieldType) {
@@ -228,19 +218,14 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         const isEditing = editingFieldId === field._id;
 
         return (
-          <div
-            key={field._id}
-            className="border-b border-gray-200 dark:border-gray-700 pb-3"
-          >
+          <div key={field._id} className="border-b border-gray-200 dark:border-gray-700 pb-3">
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {field.name}
                   </label>
-                  {field.isRequired && (
-                    <span className="text-red-500 text-xs">*</span>
-                  )}
+                  {field.isRequired && <span className="text-red-500 text-xs">*</span>}
                 </div>
                 {field.description && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -272,9 +257,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                 </div>
               </div>
             ) : (
-              <div className="mt-1">
-                {renderFieldValue(field, fieldValue?.value)}
-              </div>
+              <div className="mt-1">{renderFieldValue(field, fieldValue?.value)}</div>
             )}
           </div>
         );

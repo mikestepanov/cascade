@@ -20,40 +20,57 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
   const recentActivity = useQuery(api.dashboard.getMyRecentActivity, { limit: 10 });
   const stats = useQuery(api.dashboard.getMyStats);
 
-  const displayIssues = issueFilter === "assigned"
-    ? myIssues
-    : issueFilter === "created"
-    ? myCreatedIssues
-    : [...(myIssues || []), ...(myCreatedIssues || [])];
+  const displayIssues =
+    issueFilter === "assigned"
+      ? myIssues
+      : issueFilter === "created"
+        ? myCreatedIssues
+        : [...(myIssues || []), ...(myCreatedIssues || [])];
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "highest": return "text-red-600 bg-red-100";
-      case "high": return "text-orange-600 bg-orange-100";
-      case "medium": return "text-yellow-600 bg-yellow-100";
-      case "low": return "text-blue-600 bg-blue-100";
-      case "lowest": return "text-gray-600 bg-gray-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "highest":
+        return "text-red-600 bg-red-100";
+      case "high":
+        return "text-orange-600 bg-orange-100";
+      case "medium":
+        return "text-yellow-600 bg-yellow-100";
+      case "low":
+        return "text-blue-600 bg-blue-100";
+      case "lowest":
+        return "text-gray-600 bg-gray-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "bug": return "🐛";
-      case "story": return "📖";
-      case "epic": return "🎯";
-      default: return "📋";
+      case "bug":
+        return "🐛";
+      case "story":
+        return "📖";
+      case "epic":
+        return "🎯";
+      default:
+        return "📋";
     }
   };
 
   const getActionIcon = (action: string) => {
     switch (action) {
-      case "created": return "➕";
-      case "updated": return "✏️";
-      case "commented": return "💬";
-      case "assigned": return "👤";
-      case "moved": return "🔄";
-      default: return "📝";
+      case "created":
+        return "➕";
+      case "updated":
+        return "✏️";
+      case "commented":
+        return "💬";
+      case "assigned":
+        return "👤";
+      case "moved":
+        return "🔄";
+      default:
+        return "📝";
     }
   };
 
@@ -76,7 +93,9 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
           </Card>
           <Card>
             <CardBody className="text-center">
-              <div className="text-3xl font-bold text-green-600">{stats?.completedThisWeek || 0}</div>
+              <div className="text-3xl font-bold text-green-600">
+                {stats?.completedThisWeek || 0}
+              </div>
               <div className="text-sm text-gray-600 mt-1">Completed This Week</div>
             </CardBody>
           </Card>
@@ -98,10 +117,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
           {/* My Issues */}
           <div className="lg:col-span-2">
             <Card>
-              <CardHeader
-                title="My Issues"
-                description="Track your assigned and created issues"
-              />
+              <CardHeader title="My Issues" description="Track your assigned and created issues" />
               <div className="border-b border-gray-200 px-4">
                 <div className="flex gap-4">
                   <button
@@ -150,7 +166,9 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-sm font-mono text-gray-500">{issue.key}</span>
                               <span className="text-lg">{getTypeIcon(issue.type)}</span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority)}`}>
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority)}`}
+                              >
                                 {issue.priority}
                               </span>
                             </div>
@@ -174,10 +192,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
           <div className="space-y-6">
             {/* My Projects */}
             <Card>
-              <CardHeader
-                title="My Projects"
-                description={`${myProjects?.length || 0} projects`}
-              />
+              <CardHeader title="My Projects" description={`${myProjects?.length || 0} projects`} />
               <CardBody>
                 {!myProjects || myProjects.length === 0 ? (
                   <EmptyState
@@ -211,10 +226,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
 
             {/* Recent Activity */}
             <Card>
-              <CardHeader
-                title="Recent Activity"
-                description="Latest updates"
-              />
+              <CardHeader title="Recent Activity" description="Latest updates" />
               <CardBody>
                 {!recentActivity || recentActivity.length === 0 ? (
                   <EmptyState
@@ -230,16 +242,15 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                           <span className="text-lg">{getActionIcon(activity.action)}</span>
                           <div className="flex-1">
                             <div className="text-gray-900">
-                              <span className="font-medium">{activity.userName}</span>
-                              {" "}
-                              <span className="text-gray-600">{activity.action}</span>
-                              {" "}
+                              <span className="font-medium">{activity.userName}</span>{" "}
+                              <span className="text-gray-600">{activity.action}</span>{" "}
                               <span className="font-mono text-xs bg-gray-100 px-1 rounded">
                                 {activity.issueKey}
                               </span>
                             </div>
                             <div className="text-xs text-gray-500 mt-0.5">
-                              {activity.projectName} • {new Date(activity.createdAt).toLocaleDateString()}
+                              {activity.projectName} •{" "}
+                              {new Date(activity.createdAt).toLocaleDateString()}
                             </div>
                           </div>
                         </div>

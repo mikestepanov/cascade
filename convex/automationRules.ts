@@ -130,9 +130,7 @@ export const executeRules = internalMutation({
     // Get active rules for this project and trigger
     const rules = await ctx.db
       .query("automationRules")
-      .withIndex("by_project_active", (q) =>
-        q.eq("projectId", args.projectId).eq("isActive", true)
-      )
+      .withIndex("by_project_active", (q) => q.eq("projectId", args.projectId).eq("isActive", true))
       .filter((q) => q.eq(q.field("trigger"), args.trigger))
       .collect();
 

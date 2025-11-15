@@ -124,9 +124,7 @@ export function IssueCard({
       </div>
 
       {/* Title */}
-      <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">
-        {issue.title}
-      </h4>
+      <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">{issue.title}</h4>
 
       {/* Labels */}
       {issue.labels.length > 0 && (

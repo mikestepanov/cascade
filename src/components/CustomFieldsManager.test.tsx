@@ -185,7 +185,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             fieldKey: "uppercase_key",
-          })
+          }),
         );
       });
     });
@@ -205,7 +205,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             fieldKey: "customer_id_value",
-          })
+          }),
         );
       });
     });
@@ -225,7 +225,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             fieldKey: "field_with_gaps",
-          })
+          }),
         );
       });
     });
@@ -301,7 +301,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             options: ["Low", "Medium", "High"],
-          })
+          }),
         );
       });
     });
@@ -326,7 +326,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             options: ["Option A", "Option B", "Option C"],
-          })
+          }),
         );
       });
     });
@@ -351,7 +351,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             options: ["Valid", "Another Valid"],
-          })
+          }),
         );
       });
     });
@@ -372,7 +372,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
         expect(mockCreateField).toHaveBeenCalledWith(
           expect.objectContaining({
             options: undefined,
-          })
+          }),
         );
       });
     });
@@ -654,7 +654,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
       expect(confirmSpy).toHaveBeenCalledWith(
-        "Are you sure? This will delete all values for this field."
+        "Are you sure? This will delete all values for this field.",
       );
     });
 

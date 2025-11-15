@@ -26,7 +26,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <div>Child component</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText("Child component")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary fallback={<div>Custom error message</div>}>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText("Custom error message")).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary onError={onError}>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(onError).toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     const details = screen.getByText("Error details");
@@ -95,7 +95,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     const reloadButton = screen.getByRole("button", { name: /reload page/i });

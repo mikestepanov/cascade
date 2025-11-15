@@ -50,7 +50,7 @@ export function BulkOperationsBar({
     try {
       const result = await bulkUpdatePriority({
         issueIds,
-        priority: priority as any,
+        priority: priority as "lowest" | "low" | "medium" | "high" | "highest",
       });
       toast.success(`Updated ${result.updated} issue(s)`);
       onClearSelection();
@@ -109,10 +109,7 @@ export function BulkOperationsBar({
               <p className="font-medium">
                 {count} issue{count !== 1 ? "s" : ""} selected
               </p>
-              <button
-                onClick={onClearSelection}
-                className="text-sm underline hover:no-underline"
-              >
+              <button onClick={onClearSelection} className="text-sm underline hover:no-underline">
                 Clear selection
               </button>
             </div>

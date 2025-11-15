@@ -77,7 +77,7 @@ export const getProjectAnalytics = query({
           }
           issuesByAssignee[key].count++;
         }
-      })
+      }),
     );
 
     // Unassigned count
@@ -127,15 +127,10 @@ export const getSprintBurndown = query({
     }
 
     // Calculate total points (using estimatedHours as story points)
-    const totalPoints = sprintIssues.reduce(
-      (sum, issue) => sum + (issue.estimatedHours || 0),
-      0
-    );
+    const totalPoints = sprintIssues.reduce((sum, issue) => sum + (issue.estimatedHours || 0), 0);
 
     // Get done states
-    const doneStates = project.workflowStates
-      .filter((s) => s.category === "done")
-      .map((s) => s.id);
+    const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
 
     const completedPoints = sprintIssues
       .filter((issue) => doneStates.includes(issue.status))
@@ -151,12 +146,8 @@ export const getSprintBurndown = query({
     let idealBurndown: Array<{ day: number; points: number }> = [];
     if (sprint.startDate && sprint.endDate) {
       const now = Date.now();
-      const totalDays = Math.ceil(
-        (sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24)
-      );
-      const daysElapsed = Math.ceil(
-        (now - sprint.startDate) / (1000 * 60 * 60 * 24)
-      );
+      const totalDays = Math.ceil((sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24));
+      const daysElapsed = Math.ceil((now - sprint.startDate) / (1000 * 60 * 60 * 24));
 
       for (let day = 0; day <= totalDays; day++) {
         const remainingIdeal = totalPoints * (1 - day / totalDays);
@@ -169,9 +160,7 @@ export const getSprintBurndown = query({
         remainingPoints,
         progressPercentage,
         totalIssues: sprintIssues.length,
-        completedIssues: sprintIssues.filter((i) =>
-          doneStates.includes(i.status)
-        ).length,
+        completedIssues: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
         idealBurndown,
         daysElapsed,
         totalDays,
@@ -184,8 +173,7 @@ export const getSprintBurndown = query({
       remainingPoints,
       progressPercentage,
       totalIssues: sprintIssues.length,
-      completedIssues: sprintIssues.filter((i) => doneStates.includes(i.status))
-        .length,
+      completedIssues: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
       idealBurndown: [],
       daysElapsed: 0,
       totalDays: 0,
@@ -223,9 +211,7 @@ export const getTeamVelocity = query({
       .take(10); // Last 10 sprints
 
     // Get done states
-    const doneStates = project.workflowStates
-      .filter((s) => s.category === "done")
-      .map((s) => s.id);
+    const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
 
     const velocityData = await Promise.all(
       completedSprints.map(async (sprint) => {
@@ -242,20 +228,15 @@ export const getTeamVelocity = query({
           sprintName: sprint.name,
           sprintId: sprint._id,
           points: completedPoints,
-          issuesCompleted: sprintIssues.filter((i) =>
-            doneStates.includes(i.status)
-          ).length,
+          issuesCompleted: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
         };
-      })
+      }),
     );
 
     // Calculate average velocity
     const avgVelocity =
       velocityData.length > 0
-        ? Math.round(
-            velocityData.reduce((sum, v) => sum + v.points, 0) /
-              velocityData.length
-          )
+        ? Math.round(velocityData.reduce((sum, v) => sum + v.points, 0) / velocityData.length)
         : 0;
 
     return {
@@ -290,10 +271,7 @@ export const getRecentActivity = query({
     const issueIds = projectIssues.map((i) => i._id);
 
     // Get recent activity across all project issues
-    const activities = await ctx.db
-      .query("issueActivity")
-      .order("desc")
-      .take(1000); // Get a large sample
+    const activities = await ctx.db.query("issueActivity").order("desc").take(1000); // Get a large sample
 
     // Filter to only this project's issues
     const projectActivities = activities
@@ -313,7 +291,7 @@ export const getRecentActivity = query({
           issueKey: issue?.key || "Unknown",
           issueTitle: issue?.title || "Unknown",
         };
-      })
+      }),
     );
   },
 });

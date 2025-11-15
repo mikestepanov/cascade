@@ -18,9 +18,7 @@ export const watch = mutation({
     // Check if already watching
     const existing = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) =>
-        q.eq("issueId", args.issueId).eq("userId", userId)
-      )
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
       .first();
 
     if (existing) {
@@ -62,9 +60,7 @@ export const unwatch = mutation({
     // Find watcher record
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) =>
-        q.eq("issueId", args.issueId).eq("userId", userId)
-      )
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
       .first();
 
     if (!watcher) {
@@ -108,7 +104,7 @@ export const getWatchers = query({
           userEmail: user?.email,
           createdAt: watcher.createdAt,
         };
-      })
+      }),
     );
 
     return watchersWithUsers;
@@ -130,9 +126,7 @@ export const isWatching = query({
 
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) =>
-        q.eq("issueId", args.issueId).eq("userId", userId)
-      )
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
       .first();
 
     return !!watcher;
@@ -174,7 +168,7 @@ export const getWatchedIssues = query({
           assignee: assignee ? { name: assignee.name } : null,
           watchedAt: watcher.createdAt,
         };
-      })
+      }),
     );
 
     return issues.filter((issue) => issue !== null);

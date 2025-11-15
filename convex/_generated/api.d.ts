@@ -18,11 +18,7 @@ import type * as prosemirror from "../prosemirror.js";
 import type * as router from "../router.js";
 import type * as sprints from "../sprints.js";
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
+import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -45,10 +41,7 @@ declare const fullApi: ApiFromModules<{
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
-export declare const api: FilterApi<
-  typeof fullApiWithMounts,
-  FunctionReference<any, "public">
->;
+export declare const api: FilterApi<typeof fullApiWithMounts, FunctionReference<any, "public">>;
 export declare const internal: FilterApi<
   typeof fullApiWithMounts,
   FunctionReference<any, "internal">
@@ -57,12 +50,7 @@ export declare const internal: FilterApi<
 export declare const components: {
   prosemirrorSync: {
     lib: {
-      deleteDocument: FunctionReference<
-        "mutation",
-        "internal",
-        { id: string },
-        null
-      >;
+      deleteDocument: FunctionReference<"mutation", "internal", { id: string }, null>;
       deleteSnapshots: FunctionReference<
         "mutation",
         "internal",
@@ -96,12 +84,7 @@ export declare const components: {
           version: number;
         }
       >;
-      latestVersion: FunctionReference<
-        "query",
-        "internal",
-        { id: string },
-        null | number
-      >;
+      latestVersion: FunctionReference<"query", "internal", { id: string }, null | number>;
       submitSnapshot: FunctionReference<
         "mutation",
         "internal",
@@ -133,12 +116,7 @@ export declare const components: {
   };
   presence: {
     public: {
-      disconnect: FunctionReference<
-        "mutation",
-        "internal",
-        { sessionToken: string },
-        null
-      >;
+      disconnect: FunctionReference<"mutation", "internal", { sessionToken: string }, null>;
       heartbeat: FunctionReference<
         "mutation",
         "internal",
@@ -168,12 +146,7 @@ export declare const components: {
         { limit?: number; onlineOnly?: boolean; userId: string },
         Array<{ lastDisconnected: number; online: boolean; roomId: string }>
       >;
-      removeRoom: FunctionReference<
-        "mutation",
-        "internal",
-        { roomId: string },
-        null
-      >;
+      removeRoom: FunctionReference<"mutation", "internal", { roomId: string }, null>;
       removeRoomUser: FunctionReference<
         "mutation",
         "internal",

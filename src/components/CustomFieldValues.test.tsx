@@ -43,7 +43,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       (useQuery as any).mockReturnValueOnce([]).mockReturnValueOnce([]);
 
       const { container } = render(
-        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />
+        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
       );
 
       expect(container.firstChild).toBeNull();
@@ -53,7 +53,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       (useQuery as any).mockReturnValueOnce(undefined).mockReturnValueOnce([]);
 
       const { container } = render(
-        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />
+        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
       );
 
       expect(container.firstChild).toBeNull();

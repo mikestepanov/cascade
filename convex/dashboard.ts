@@ -28,7 +28,7 @@ export const getMyIssues = query({
           reporterName: reporter?.name || "Unknown",
           assigneeName: assignee?.name || "Unassigned",
         };
-      })
+      }),
     );
 
     return enrichedIssues.sort((a, b) => b.updatedAt - a.updatedAt);
@@ -59,7 +59,7 @@ export const getMyCreatedIssues = query({
           projectKey: project?.key || "???",
           assigneeName: assignee?.name || "Unassigned",
         };
-      })
+      }),
     );
 
     return enrichedIssues.sort((a, b) => b.createdAt - a.createdAt);
@@ -100,7 +100,7 @@ export const getMyProjects = query({
           totalIssues: issues.length,
           myIssues: myIssues.length,
         };
-      })
+      }),
     );
 
     return projects.filter((p) => p !== null);
@@ -125,10 +125,7 @@ export const getMyRecentActivity = query({
     const projectIds = memberships.map((m) => m.projectId);
 
     // Get recent activity from those projects
-    const allActivity = await ctx.db
-      .query("issueActivity")
-      .order("desc")
-      .take(100); // Take more to filter
+    const allActivity = await ctx.db.query("issueActivity").order("desc").take(100); // Take more to filter
 
     // Filter to only projects the user has access to
     const accessibleActivity = await Promise.all(
@@ -146,12 +143,10 @@ export const getMyRecentActivity = query({
           projectName: project?.name || "Unknown",
           userName: user?.name || "Unknown",
         };
-      })
+      }),
     );
 
-    return accessibleActivity
-      .filter((a) => a !== null)
-      .slice(0, limit);
+    return accessibleActivity.filter((a) => a !== null).slice(0, limit);
   },
 });
 
@@ -180,32 +175,25 @@ export const getMyStats = query({
 
     // Get all projects to check workflow states
     const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
-    const projects = await Promise.all(
-      projectIds.map(async (id) => await ctx.db.get(id))
-    );
+    const projects = await Promise.all(projectIds.map(async (id) => await ctx.db.get(id)));
 
     // Build a map of projectId -> done workflow states
     const doneStatesMap = new Map<string, Set<string>>();
     projects.forEach((project) => {
       if (!project) return;
       const doneStates = new Set(
-        project.workflowStates
-          .filter((s) => s.category === "done")
-          .map((s) => s.id)
+        project.workflowStates.filter((s) => s.category === "done").map((s) => s.id),
       );
       doneStatesMap.set(project._id, doneStates);
     });
 
     const completedThisWeek = assignedIssues.filter((issue) => {
       const doneStates = doneStatesMap.get(issue.projectId);
-      return (
-        doneStates?.has(issue.status) &&
-        issue.updatedAt >= weekAgo
-      );
+      return doneStates?.has(issue.status) && issue.updatedAt >= weekAgo;
     }).length;
 
     const highPriority = assignedIssues.filter(
-      (i) => i.priority === "high" || i.priority === "highest"
+      (i) => i.priority === "high" || i.priority === "highest",
     ).length;
 
     // Created by me

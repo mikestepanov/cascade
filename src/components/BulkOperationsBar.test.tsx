@@ -63,7 +63,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={emptySelection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(container.firstChild).toBeNull();
@@ -78,7 +78,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(screen.getByText(/selected/i)).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(screen.getByText("1 issue selected")).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(screen.getByText("3 issues selected")).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(screen.getByText("1 issue selected")).toBeInTheDocument();
@@ -137,7 +137,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={newSelection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       expect(screen.getByText("2 issues selected")).toBeInTheDocument();
@@ -155,7 +155,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Clear selection/i));
@@ -174,7 +174,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       // Click Show Actions
@@ -210,7 +210,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       // Click the main Delete button
@@ -247,7 +247,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -279,7 +279,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -312,7 +312,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -344,7 +344,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -374,7 +374,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -398,7 +398,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -425,7 +425,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -452,7 +452,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -479,7 +479,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -506,7 +506,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
@@ -538,7 +538,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -565,7 +565,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -592,7 +592,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -616,7 +616,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
@@ -643,7 +643,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
@@ -663,7 +663,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
@@ -683,7 +683,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
@@ -713,7 +713,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
@@ -746,7 +746,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
@@ -778,7 +778,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
-        />
+        />,
       );
 
       await user.click(screen.getByText(/Show Actions/i));
