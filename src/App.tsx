@@ -7,6 +7,7 @@ import { DocumentEditor } from "./components/DocumentEditor";
 import { Sidebar } from "./components/Sidebar";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { ProjectBoard } from "./components/ProjectBoard";
+import { Dashboard } from "./components/Dashboard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
 import { NotificationCenter } from "./components/NotificationCenter";
@@ -29,7 +30,7 @@ function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [activeView, setActiveView] = useState<"documents" | "projects">("documents");
+  const [activeView, setActiveView] = useState<"dashboard" | "documents" | "projects">("dashboard");
 
   if (loggedInUser === undefined) {
     return (
@@ -43,29 +44,31 @@ function Content() {
     <>
       <Authenticated>
         <div className="flex w-full h-screen">
-          {/* Sidebar */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-64 bg-white border-r border-gray-200">
-                <SectionErrorFallback
-                  title="Sidebar Error"
-                  message="Failed to load sidebar. Please refresh the page."
+          {/* Sidebar - only show for documents and projects views */}
+          {activeView !== "dashboard" && (
+            <ErrorBoundary
+              fallback={
+                <div className="w-64 bg-white border-r border-gray-200">
+                  <SectionErrorFallback
+                    title="Sidebar Error"
+                    message="Failed to load sidebar. Please refresh the page."
+                  />
+                </div>
+              }
+            >
+              {activeView === "documents" ? (
+                <Sidebar
+                  selectedDocumentId={selectedDocumentId}
+                  onSelectDocument={setSelectedDocumentId}
                 />
-              </div>
-            }
-          >
-            {activeView === "documents" ? (
-              <Sidebar
-                selectedDocumentId={selectedDocumentId}
-                onSelectDocument={setSelectedDocumentId}
-              />
-            ) : (
-              <ProjectSidebar
-                selectedProjectId={selectedProjectId}
-                onSelectProject={setSelectedProjectId}
-              />
-            )}
-          </ErrorBoundary>
+              ) : (
+                <ProjectSidebar
+                  selectedProjectId={selectedProjectId}
+                  onSelectProject={setSelectedProjectId}
+                />
+              )}
+            </ErrorBoundary>
+          )}
 
           <div className="flex-1 flex flex-col">
             {/* Header */}
@@ -73,6 +76,20 @@ function Content() {
               <div className="flex items-center space-x-6">
                 {/* View Switcher */}
                 <div className="flex bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => {
+                      setActiveView("dashboard");
+                      setSelectedDocumentId(null);
+                      setSelectedProjectId(null);
+                    }}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeView === "dashboard"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    🏠 Dashboard
+                  </button>
                   <button
                     onClick={() => {
                       setActiveView("documents");
@@ -102,7 +119,9 @@ function Content() {
                 </div>
 
                 <h1 className="text-lg font-medium text-gray-900">
-                  {activeView === "documents"
+                  {activeView === "dashboard"
+                    ? "My Work"
+                    : activeView === "documents"
                     ? selectedDocumentId
                       ? "Document Editor"
                       : "Select a document"
@@ -119,7 +138,7 @@ function Content() {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-hidden">
+            <main className="flex-1 overflow-auto">
               <ErrorBoundary
                 fallback={
                   <SectionErrorFallback
@@ -129,7 +148,14 @@ function Content() {
                   />
                 }
               >
-                {activeView === "documents" ? (
+                {activeView === "dashboard" ? (
+                  <Dashboard
+                    onNavigateToProject={(projectId) => {
+                      setActiveView("projects");
+                      setSelectedProjectId(projectId);
+                    }}
+                  />
+                ) : activeView === "documents" ? (
                   selectedDocumentId ? (
                     <DocumentEditor documentId={selectedDocumentId} />
                   ) : (

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { Modal } from "./ui/Modal";
+import { Button } from "./ui/Button";
+import { InputField, TextareaField, SelectField } from "./ui/FormField";
 
 interface CreateIssueModalProps {
   projectId: Id<"projects">;
@@ -11,19 +14,50 @@ interface CreateIssueModalProps {
 }
 
 export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueModalProps) {
+  const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"task" | "bug" | "story" | "epic">("task");
   const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">("medium");
   const [assigneeId, setAssigneeId] = useState<Id<"users"> | "">("");
+  const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const project = useQuery(api.projects.get, { id: projectId });
+  const templates = useQuery(api.templates.list, { projectId });
+  const labels = useQuery(api.labels.list, { projectId });
   const createIssue = useMutation(api.issues.create);
+
+  // Apply template when selected
+  useEffect(() => {
+    if (!selectedTemplate || !templates) return;
+
+    const template = templates.find(t => t._id === selectedTemplate);
+    if (!template) return;
+
+    setType(template.type);
+    setPriority(template.defaultPriority);
+
+    // Apply title template (simple implementation - replace {description} placeholder)
+    setTitle(template.titleTemplate);
+
+    // Apply description template
+    setDescription(template.descriptionTemplate || "");
+
+    // Apply default labels if they exist
+    if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
+      const labelIds = labels
+        .filter(label => template.defaultLabels?.includes(label.name))
+        .map(label => label._id);
+      setSelectedLabels(labelIds);
+    }
+  }, [selectedTemplate, templates, labels]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
+    setIsSubmitting(true);
     try {
       await createIssue({
         projectId,
@@ -33,131 +67,142 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         priority,
         assigneeId: assigneeId || undefined,
         sprintId,
+        labels: selectedLabels.length > 0 ? selectedLabels : undefined,
       });
 
       toast.success("Issue created successfully");
       onClose();
     } catch (error: any) {
       toast.error(error.message || "Failed to create issue");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const toggleLabel = (labelId: Id<"labels">) => {
+    setSelectedLabels(prev =>
+      prev.includes(labelId)
+        ? prev.filter(id => id !== labelId)
+        : [...prev, labelId]
+    );
   };
 
   if (!project) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Create Issue</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      title="Create Issue"
+      maxWidth="2xl"
+      fullScreenOnMobile={true}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4 p-6">
+        {/* Template Selector */}
+        {templates && templates.length > 0 && (
+          <SelectField
+            label="Use Template (Optional)"
+            value={selectedTemplate}
+            onChange={(e) => setSelectedTemplate(e.target.value as any)}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            <option value="">Start from scratch</option>
+            {templates.map((template) => (
+              <option key={template._id} value={template._id}>
+                {template.name} ({template.type})
+              </option>
+            ))}
+          </SelectField>
+        )}
+
+        <InputField
+          label="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter issue title..."
+          required
+          autoFocus={!selectedTemplate}
+        />
+
+        <TextareaField
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter issue description..."
+          rows={6}
+        />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <SelectField
+            label="Type"
+            value={type}
+            onChange={(e) => setType(e.target.value as any)}
+          >
+            <option value="task">📋 Task</option>
+            <option value="bug">🐛 Bug</option>
+            <option value="story">📖 Story</option>
+            <option value="epic">🎯 Epic</option>
+          </SelectField>
+
+          <SelectField
+            label="Priority"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value as any)}
+          >
+            <option value="lowest">⬇️ Lowest</option>
+            <option value="low">↘️ Low</option>
+            <option value="medium">➡️ Medium</option>
+            <option value="high">↗️ High</option>
+            <option value="highest">⬆️ Highest</option>
+          </SelectField>
         </div>
 
-        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+        <SelectField
+          label="Assignee"
+          value={assigneeId}
+          onChange={(e) => setAssigneeId(e.target.value as any)}
+        >
+          <option value="">Unassigned</option>
+          {project.members.map((member) => (
+            <option key={member._id} value={member._id}>
+              {member.name}
+            </option>
+          ))}
+        </SelectField>
+
+        {/* Labels */}
+        {labels && labels.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title *
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Labels
             </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter issue title..."
-              autoFocus
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Enter issue description..."
-              rows={4}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type
-              </label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="task">Task</option>
-                <option value="bug">Bug</option>
-                <option value="story">Story</option>
-                <option value="epic">Epic</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Priority
-              </label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="lowest">Lowest</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="highest">Highest</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Assignee
-            </label>
-            <select
-              value={assigneeId}
-              onChange={(e) => setAssigneeId(e.target.value as any)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Unassigned</option>
-              {project.members.map((member) => (
-                <option key={member._id} value={member._id}>
-                  {member.name}
-                </option>
+            <div className="flex flex-wrap gap-2">
+              {labels.map((label) => (
+                <button
+                  key={label._id}
+                  type="button"
+                  onClick={() => toggleLabel(label._id)}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
+                    selectedLabels.includes(label._id) ? "opacity-100 ring-2 ring-offset-2 ring-gray-900" : "opacity-60 hover:opacity-80"
+                  }`}
+                  style={{ backgroundColor: label.color }}
+                >
+                  {selectedLabels.includes(label._id) && <span className="mr-1">✓</span>}
+                  {label.name}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
+        )}
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Create Issue
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex gap-3 pt-4">
+          <Button type="submit" isLoading={isSubmitting}>
+            Create Issue
+          </Button>
+          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
