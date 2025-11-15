@@ -5,6 +5,7 @@ import { Id } from "../../convex/_generated/dataModel";
 import { KanbanBoard } from "./KanbanBoard";
 import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
+import { RoadmapView } from "./RoadmapView";
 import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
@@ -17,7 +18,7 @@ interface ProjectBoardProps {
 }
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "analytics" | "settings">("board");
+  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "analytics" | "settings">("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -93,6 +94,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             </button>
           )}
           <button
+            onClick={() => setActiveTab("roadmap")}
+            className={`pb-2 border-b-2 transition-colors ${
+              activeTab === "roadmap"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            🗺️ Roadmap
+          </button>
+          <button
             onClick={() => setActiveTab("analytics")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "analytics"
@@ -146,6 +157,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         )}
         {activeTab === "sprints" && (
           <SprintManager projectId={projectId} />
+        )}
+        {activeTab === "roadmap" && (
+          <RoadmapView
+            projectId={projectId}
+            sprintId={selectedSprintId || activeSprint?._id}
+          />
         )}
         {activeTab === "analytics" && (
           <AnalyticsDashboard projectId={projectId} />
