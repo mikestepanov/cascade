@@ -217,6 +217,27 @@ const applicationTables = {
   })
     .index("by_project", ["projectId"])
     .index("by_active", ["isActive"]),
+
+  savedFilters: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    name: v.string(),
+    filters: v.object({
+      type: v.optional(v.array(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")))),
+      status: v.optional(v.array(v.string())),
+      priority: v.optional(v.array(v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")))),
+      assigneeId: v.optional(v.array(v.id("users"))),
+      labels: v.optional(v.array(v.string())),
+      sprintId: v.optional(v.id("sprints")),
+      epicId: v.optional(v.id("issues")),
+    }),
+    isPublic: v.boolean(), // Whether other team members can use this filter
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"])
+    .index("by_project_public", ["projectId", "isPublic"]),
 };
 
 export default defineSchema({
