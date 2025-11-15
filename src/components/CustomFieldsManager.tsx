@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { Button } from "./ui/Button";
-import { InputField } from "./ui/InputField";
+import { InputField } from "./ui/FormField";
 import { Card } from "./ui/Card";
 
 interface CustomFieldsManagerProps {
