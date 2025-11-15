@@ -238,6 +238,29 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_user", ["userId"])
     .index("by_project_public", ["projectId", "isPublic"]),
+
+  projectTemplates: defineTable({
+    name: v.string(),
+    description: v.string(),
+    category: v.string(), // "software", "marketing", "design", etc.
+    icon: v.string(), // Emoji or icon identifier
+    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    workflowStates: v.array(v.object({
+      id: v.string(),
+      name: v.string(),
+      category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+      order: v.number(),
+    })),
+    defaultLabels: v.array(v.object({
+      name: v.string(),
+      color: v.string(),
+    })),
+    isBuiltIn: v.boolean(), // Built-in templates vs user-created
+    createdBy: v.optional(v.id("users")),
+    createdAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_built_in", ["isBuiltIn"]),
 };
 
 export default defineSchema({
