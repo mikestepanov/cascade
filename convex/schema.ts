@@ -135,6 +135,78 @@ const applicationTables = {
   })
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"]),
+
+  labels: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    color: v.string(), // Hex color code like "#3B82F6"
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_name", ["projectId", "name"]),
+
+  notifications: defineTable({
+    userId: v.id("users"),
+    type: v.union(
+      v.literal("issue_assigned"),
+      v.literal("issue_mentioned"),
+      v.literal("issue_commented"),
+      v.literal("issue_status_changed"),
+      v.literal("sprint_started"),
+      v.literal("sprint_ended")
+    ),
+    title: v.string(),
+    message: v.string(),
+    issueId: v.optional(v.id("issues")),
+    projectId: v.optional(v.id("projects")),
+    sprintId: v.optional(v.id("sprints")),
+    isRead: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_read", ["userId", "isRead"])
+    .index("by_created_at", ["createdAt"]),
+
+  timeEntries: defineTable({
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+    hours: v.number(),
+    description: v.optional(v.string()),
+    date: v.number(), // Timestamp of when work was done
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_user", ["userId"])
+    .index("by_date", ["date"]),
+
+  issueTemplates: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    titleTemplate: v.string(),
+    descriptionTemplate: v.string(),
+    defaultPriority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    defaultLabels: v.array(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_type", ["projectId", "type"]),
+
+  webhooks: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    url: v.string(),
+    events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
+    secret: v.optional(v.string()), // For HMAC signature
+    isActive: v.boolean(),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    lastTriggered: v.optional(v.number()),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"]),
 };
 
 export default defineSchema({
