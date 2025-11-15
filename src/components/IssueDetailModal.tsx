@@ -4,6 +4,8 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { TimeTracker } from "./TimeTracker";
+import { FileAttachments } from "./FileAttachments";
+import { IssueWatchers } from "./IssueWatchers";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -219,6 +221,18 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 estimatedHours={issue.estimatedHours}
                 loggedHours={issue.loggedHours}
               />
+            </div>
+
+            {/* File Attachments */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Attachments</h3>
+              <FileAttachments issueId={issue._id} />
+            </div>
+
+            {/* Issue Watchers */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Watchers</h3>
+              <IssueWatchers issueId={issue._id} />
             </div>
           </div>
         </div>

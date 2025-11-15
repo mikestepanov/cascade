@@ -136,6 +136,15 @@ const applicationTables = {
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"]),
 
+  issueWatchers: defineTable({
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_user", ["userId"])
+    .index("by_issue_user", ["issueId", "userId"]),
+
   labels: defineTable({
     projectId: v.id("projects"),
     name: v.string(),
