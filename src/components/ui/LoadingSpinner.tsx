@@ -1,0 +1,34 @@
+interface LoadingSpinnerProps {
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  message?: string;
+}
+
+export function LoadingSpinner({ size = "md", className = "", message }: LoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: "h-4 w-4 border-2",
+    md: "h-8 w-8 border-2",
+    lg: "h-12 w-12 border-3",
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-3">
+      <div
+        className={`animate-spin rounded-full border-gray-900 border-t-transparent ${sizeClasses[size]} ${className}`}
+        role="status"
+        aria-label="Loading"
+      >
+        <span className="sr-only">Loading...</span>
+      </div>
+      {message && <p className="text-sm text-gray-600">{message}</p>}
+    </div>
+  );
+}
+
+export function LoadingOverlay({ message }: { message?: string }) {
+  return (
+    <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
+      <LoadingSpinner size="lg" message={message} />
+    </div>
+  );
+}

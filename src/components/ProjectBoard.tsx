@@ -9,6 +9,8 @@ import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { WebhooksManager } from "./WebhooksManager";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { SectionErrorFallback } from "./SectionErrorFallback";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -151,9 +153,26 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {activeTab === "settings" && (
           <div className="p-6 overflow-y-auto">
             <div className="max-w-4xl space-y-6">
-              <LabelsManager projectId={projectId} />
-              <TemplatesManager projectId={projectId} />
-              <WebhooksManager projectId={projectId} />
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Labels Error" />}
+                onError={(error) => console.error("LabelsManager error:", error)}
+              >
+                <LabelsManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Templates Error" />}
+                onError={(error) => console.error("TemplatesManager error:", error)}
+              >
+                <TemplatesManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Webhooks Error" />}
+                onError={(error) => console.error("WebhooksManager error:", error)}
+              >
+                <WebhooksManager projectId={projectId} />
+              </ErrorBoundary>
             </div>
           </div>
         )}
