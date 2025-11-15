@@ -54,10 +54,10 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
       />
 
       {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-full max-w-md">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-[calc(100%-2rem)] sm:w-full max-w-md">
         <form onSubmit={handleSubmit}>
           {/* Header */}
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-4 sm:p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Log Time</h2>

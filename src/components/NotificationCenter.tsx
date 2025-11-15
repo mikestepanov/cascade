@@ -89,14 +89,14 @@ export function NotificationCenter() {
           />
 
           {/* Dropdown Panel */}
-          <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-20 max-h-[600px] flex flex-col">
+          <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 z-20 max-h-[600px] max-h-[80vh] flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white rounded-t-lg">
               <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
               {unreadCount && unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-sm text-blue-600 hover:text-blue-700"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Mark all read
                 </button>

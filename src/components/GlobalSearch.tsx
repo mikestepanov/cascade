@@ -82,9 +82,9 @@ export function GlobalSearch() {
           />
 
           {/* Modal */}
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl bg-white rounded-lg shadow-2xl z-50">
+          <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-white rounded-lg shadow-2xl z-50">
             {/* Search Input */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-3 sm:p-4 border-b border-gray-200">
               <div className="relative">
                 <svg
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"

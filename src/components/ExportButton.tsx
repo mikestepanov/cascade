@@ -23,26 +23,37 @@ export function ExportButton({ projectId, sprintId, status }: ExportButtonProps)
   };
 
   // When CSV data is ready, download it
-  if (csvData && isExporting) {
-    // Create blob and download
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
+  if (csvData !== undefined && isExporting) {
+    if (!csvData || csvData.trim().length === 0) {
+      toast.error("No data to export");
+      setIsExporting(false);
+    } else {
+      try {
+        // Create blob and download
+        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
 
-    // Generate filename
-    const timestamp = new Date().toISOString().split("T")[0];
-    const sprintSuffix = sprintId ? "-sprint" : "";
-    const statusSuffix = status ? `-${status}` : "";
-    link.download = `issues-export-${timestamp}${sprintSuffix}${statusSuffix}.csv`;
+        // Generate filename
+        const timestamp = new Date().toISOString().split("T")[0];
+        const sprintSuffix = sprintId ? "-sprint" : "";
+        const statusSuffix = status ? `-${status}` : "";
+        link.download = `issues-export-${timestamp}${sprintSuffix}${statusSuffix}.csv`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
 
-    toast.success("Issues exported successfully!");
-    setIsExporting(false);
+        toast.success("Issues exported successfully!");
+      } catch (error) {
+        toast.error("Failed to export issues");
+        console.error("Export error:", error);
+      } finally {
+        setIsExporting(false);
+      }
+    }
   }
 
   return (
