@@ -16,6 +16,7 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
         </p>
         {onRetry && (
           <button
+            type="button"
             onClick={onRetry}
             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
           >

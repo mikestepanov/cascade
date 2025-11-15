@@ -25,9 +25,10 @@ export function CreateProjectFromTemplate({
   const [description, setDescription] = useState("");
 
   const templates = useQuery(api.projectTemplates.list);
-  const selectedTemplate = selectedTemplateId
-    ? useQuery(api.projectTemplates.get, { id: selectedTemplateId })
-    : null;
+  const selectedTemplate = useQuery(
+    api.projectTemplates.get,
+    selectedTemplateId ? { id: selectedTemplateId } : "skip",
+  );
   const createProject = useMutation(api.projectTemplates.createFromTemplate);
 
   const handleSelectTemplate = (templateId: Id<"projectTemplates">) => {
@@ -111,6 +112,7 @@ export function CreateProjectFromTemplate({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {templates.map((template) => (
                 <button
+                  type="button"
                   key={template._id}
                   onClick={() => handleSelectTemplate(template._id)}
                   className="text-left p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -182,9 +184,9 @@ export function CreateProjectFromTemplate({
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description (Optional)
-              </label>
+              </div>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -203,7 +205,12 @@ export function CreateProjectFromTemplate({
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5 text-green-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -215,7 +222,12 @@ export function CreateProjectFromTemplate({
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5 text-green-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -227,7 +239,12 @@ export function CreateProjectFromTemplate({
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5 text-green-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"

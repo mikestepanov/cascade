@@ -1,5 +1,6 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
+import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -134,6 +135,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
           {/* View Mode Toggle */}
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
+              type="button"
               onClick={() => setViewMode("months")}
               className={`px-3 py-1 rounded ${
                 viewMode === "months"
@@ -144,6 +146,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
               Months
             </button>
             <button
+              type="button"
               onClick={() => setViewMode("weeks")}
               className={`px-3 py-1 rounded ${
                 viewMode === "weeks"
@@ -166,9 +169,9 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
               Issue
             </div>
             <div className="flex-1 grid grid-cols-6">
-              {timelineMonths.map((month, i) => (
+              {timelineMonths.map((month) => (
                 <div
-                  key={i}
+                  key={month.getTime()}
                   className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 border-l border-gray-200 dark:border-gray-700 px-2"
                 >
                   {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
@@ -196,6 +199,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm">{getTypeIcon(issue.type)}</span>
                     <button
+                      type="button"
                       onClick={() => setSelectedIssue(issue._id)}
                       className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-primary dark:hover:text-primary truncate text-left"
                     >
@@ -209,13 +213,17 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                 <div className="flex-1 relative h-8">
                   {issue.dueDate && (
                     <div
+                      role="button"
+                      tabIndex={0}
                       className={`absolute h-6 rounded-full ${getPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
                       style={{
                         left: `${getPositionOnTimeline(issue.dueDate)}%`,
                         width: "5%", // Default width for single date
                       }}
                       onClick={() => setSelectedIssue(issue._id)}
+                      onKeyDown={handleKeyboardClick(() => setSelectedIssue(issue._id))}
                       title={`${issue.title} - Due: ${new Date(issue.dueDate).toLocaleDateString()}`}
+                      aria-label={`View issue ${issue.key}`}
                     >
                       <span className="text-xs text-white font-medium truncate">
                         {issue.assignee?.name.split(" ")[0]}

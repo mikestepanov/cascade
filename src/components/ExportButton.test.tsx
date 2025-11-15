@@ -20,7 +20,6 @@ vi.mock("sonner", () => ({
 
 describe("ExportButton", () => {
   const mockProjectId = "project-123" as Id<"projects">;
-  let mockLink: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,21 +28,28 @@ describe("ExportButton", () => {
     // Mock URL.createObjectURL and revokeObjectURL
     global.URL.createObjectURL = vi.fn(() => "blob:test-url");
     global.URL.revokeObjectURL = vi.fn();
-
-    // Mock document methods
-    mockLink = {
-      href: "",
-      download: "",
-      click: vi.fn(),
-    };
-    vi.spyOn(document, "createElement").mockReturnValue(mockLink as unknown as Node);
-    vi.spyOn(document.body, "appendChild").mockReturnValue(mockLink as unknown as Node);
-    vi.spyOn(document.body, "removeChild").mockReturnValue(mockLink as unknown as Node);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
+
+  const setupDownloadMocks = () => {
+    const mockLink: Partial<HTMLAnchorElement> = {
+      href: "",
+      download: "",
+      click: vi.fn(),
+    };
+    vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+      if (tagName === "a") {
+        return mockLink as HTMLElement;
+      }
+      return document.createElement(tagName);
+    });
+    vi.spyOn(document.body, "appendChild").mockReturnValue(mockLink as Node);
+    vi.spyOn(document.body, "removeChild").mockReturnValue(mockLink as Node);
+    return mockLink;
+  };
 
   it("should render export button", () => {
     render(<ExportButton projectId={mockProjectId} />);
@@ -89,6 +95,8 @@ describe("ExportButton", () => {
     const csvData = "Key,Title,Type\nTEST-1,Test Issue,task";
     let queryResult: any;
 
+    setupDownloadMocks();
+
     (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
@@ -114,8 +122,12 @@ describe("ExportButton", () => {
     const csvData = "Key,Title\nTEST-1,Issue";
     let queryResult: any;
 
-    const mockBlob = vi.fn();
-    global.Blob = mockBlob as unknown as typeof Blob;
+    setupDownloadMocks();
+
+    const mockBlobConstructor = vi.fn().mockImplementation(function (this: Blob) {
+      return this;
+    });
+    global.Blob = mockBlobConstructor as typeof Blob;
 
     (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
@@ -131,7 +143,9 @@ describe("ExportButton", () => {
     rerender(<ExportButton projectId={mockProjectId} />);
 
     await waitFor(() => {
-      expect(mockBlob).toHaveBeenCalledWith([csvData], { type: "text/csv;charset=utf-8;" });
+      expect(mockBlobConstructor).toHaveBeenCalledWith([csvData], {
+        type: "text/csv;charset=utf-8;",
+      });
     });
   });
 
@@ -180,6 +194,8 @@ describe("ExportButton", () => {
     const csvData = "test,data";
     let queryResult: any;
 
+    const mockLink = setupDownloadMocks();
+
     (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;
       return queryResult;
@@ -194,7 +210,6 @@ describe("ExportButton", () => {
     rerender(<ExportButton projectId={mockProjectId} />);
 
     await waitFor(() => {
-      const mockLink = (document.createElement as vi.Mock).mock.results[0].value;
       expect(mockLink.download).toMatch(/issues-export-\d{4}-\d{2}-\d{2}\.csv/);
     });
   });
@@ -203,6 +218,8 @@ describe("ExportButton", () => {
     const user = userEvent.setup();
     const csvData = "test";
     let queryResult: any;
+
+    setupDownloadMocks();
 
     (useQuery as vi.Mock).mockImplementation((_, args: any) => {
       if (args === "skip") return undefined;

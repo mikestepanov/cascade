@@ -132,6 +132,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
         <div className="space-y-1">
           {dayIssues.slice(0, 3).map((issue) => (
             <button
+              type="button"
               key={issue._id}
               onClick={() => setSelectedIssue(issue._id)}
               className="w-full text-left p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -164,10 +165,17 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
         {/* Month Navigation */}
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={previousMonth}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -182,15 +190,23 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
           </h3>
 
           <button
+            type="button"
             onClick={nextMonth}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
           <button
+            type="button"
             onClick={() => setCurrentDate(new Date())}
             className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
           >

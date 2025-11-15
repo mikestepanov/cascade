@@ -84,8 +84,20 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               />
             ) : (
               <h1
+                role={document.isOwner ? "button" : undefined}
+                tabIndex={document.isOwner ? 0 : undefined}
                 className="text-2xl font-bold text-gray-900 cursor-pointer hover:bg-gray-50 rounded px-2 py-1 transition-colors"
                 onClick={document.isOwner ? handleTitleEdit : undefined}
+                onKeyDown={
+                  document.isOwner
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleTitleEdit();
+                        }
+                      }
+                    : undefined
+                }
                 title={document.isOwner ? "Click to edit title" : ""}
               >
                 {document.title}
@@ -98,6 +110,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
             {document.isOwner && (
               <button
+                type="button"
                 onClick={() => void handleTogglePublic()}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   document.isPublic
@@ -130,6 +143,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           ) : (
             <div className="text-center py-12">
               <button
+                type="button"
                 onClick={() => void sync.create({ type: "doc", content: [] })}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >

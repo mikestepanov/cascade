@@ -329,8 +329,7 @@ describe("GlobalSearch", () => {
     });
 
     // Mock window.location
-    delete (window as unknown as { location: unknown }).location;
-    window.location = { href: "" } as unknown as Location;
+    vi.stubGlobal("location", { href: "" });
 
     render(<GlobalSearch />);
 

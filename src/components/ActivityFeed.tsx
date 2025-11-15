@@ -59,7 +59,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     newValue?: string;
     issueKey?: string;
   }) => {
-    const { action, field, oldValue, newValue, issueKey } = activity;
+    const { action, field, oldValue, newValue, issueKey: _issueKey } = activity;
 
     if (action === "created") {
       return "created";
@@ -121,6 +121,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     return (
       <div className="text-center py-12 text-gray-500 dark:text-gray-400">
         <svg
+          aria-hidden="true"
           className="w-16 h-16 mx-auto mb-4 text-gray-400"
           fill="none"
           stroke="currentColor"

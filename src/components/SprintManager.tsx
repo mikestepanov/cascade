@@ -76,6 +76,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900">Sprint Management</h2>
         <button
+          type="button"
           onClick={() => setShowCreateForm(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
@@ -88,7 +89,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sprint Name</label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">Sprint Name</div>
               <input
                 type="text"
                 value={newSprintName}
@@ -98,9 +99,9 @@ export function SprintManager({ projectId }: SprintManagerProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="block text-sm font-medium text-gray-700 mb-1">
                 Sprint Goal (Optional)
-              </label>
+              </div>
               <textarea
                 value={newSprintGoal}
                 onChange={(e) => setNewSprintGoal(e.target.value)}
@@ -169,6 +170,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                 <div className="flex space-x-2">
                   {sprint.status === "future" && (
                     <button
+                      type="button"
                       onClick={() => void handleStartSprint(sprint._id)}
                       className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                     >
@@ -177,6 +179,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                   )}
                   {sprint.status === "active" && (
                     <button
+                      type="button"
                       onClick={() => void handleCompleteSprint(sprint._id)}
                       className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
                     >

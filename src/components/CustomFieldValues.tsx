@@ -232,9 +232,9 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {field.name}
-                  </label>
+                  </div>
                   {field.isRequired && <span className="text-red-500 text-xs">*</span>}
                 </div>
                 {field.description && (

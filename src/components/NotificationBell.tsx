@@ -77,10 +77,17 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       {/* Bell Icon Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          aria-hidden="true"
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -107,6 +114,7 @@ export function NotificationBell() {
             </h3>
             {notifications && notifications.length > 0 && (
               <button
+                type="button"
                 onClick={() => markAllAsRead()}
                 className="text-sm text-primary hover:text-primary-dark font-medium"
               >
@@ -134,10 +142,18 @@ export function NotificationBell() {
                 {notifications.map((notification) => (
                   <div
                     key={notification._id}
+                    role="button"
+                    tabIndex={0}
                     className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 transition-colors ${
                       !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
                     }`}
                     onClick={() => handleNotificationClick(notification._id, notification.issueId)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        void handleNotificationClick(notification._id, notification.issueId);
+                      }
+                    }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="text-2xl flex-shrink-0">
@@ -165,6 +181,7 @@ export function NotificationBell() {
                         </div>
                       </div>
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeNotification({ id: notification._id });
@@ -172,6 +189,7 @@ export function NotificationBell() {
                         className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                       >
                         <svg
+                          aria-hidden="true"
                           className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"

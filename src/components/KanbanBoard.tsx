@@ -103,6 +103,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
           {sprintId ? "Sprint Board" : "Kanban Board"}
         </h2>
         <button
+          type="button"
           onClick={handleToggleSelectionMode}
           className={`px-4 py-2 rounded-lg transition-colors ${
             selectionMode
@@ -137,11 +138,18 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                     </span>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleCreateIssue(state.id)}
                     className="text-gray-400 hover:text-gray-600 p-1"
                     title="Add issue"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      aria-hidden="true"
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

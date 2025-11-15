@@ -19,7 +19,12 @@ const posthogOptions = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
 };
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+createRoot(rootElement).render(
   <ThemeProvider>
     <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
       <ConvexAuthProvider client={convex}>

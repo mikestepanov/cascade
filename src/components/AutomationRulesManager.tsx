@@ -227,6 +227,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
+                    type="button"
                     onClick={() => handleToggle(rule._id, rule.isActive)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                     title={rule.isActive ? "Disable rule" : "Enable rule"}
@@ -234,6 +235,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
                     {rule.isActive ? "⏸️" : "▶️"}
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleEdit(rule)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                     title="Edit rule"
@@ -241,6 +243,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
                     ✏️
                   </button>
                   <button
+                    type="button"
                     onClick={() => setDeleteConfirm(rule._id)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                     title="Delete rule"
@@ -265,9 +268,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
             <div className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Rule Name *
-                </label>
+                </div>
                 <input
                   type="text"
                   value={name}
@@ -279,9 +282,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
-                </label>
+                </div>
                 <input
                   type="text"
                   value={description}
@@ -293,9 +296,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               {/* Trigger */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   When (Trigger) *
-                </label>
+                </div>
                 <select
                   value={trigger}
                   onChange={(e) => setTrigger(e.target.value)}
@@ -311,9 +314,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               {/* Trigger Value */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Trigger Value (Optional)
-                </label>
+                </div>
                 <input
                   type="text"
                   value={triggerValue}
@@ -328,9 +331,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               {/* Action Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Then (Action) *
-                </label>
+                </div>
                 <select
                   value={actionType}
                   onChange={(e) => setActionType(e.target.value)}
@@ -346,9 +349,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               {/* Action Value */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Action Parameters (JSON) *
-                </label>
+                </div>
                 <textarea
                   value={actionValue}
                   onChange={(e) => setActionValue(e.target.value)}

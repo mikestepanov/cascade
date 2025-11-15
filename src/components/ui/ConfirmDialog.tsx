@@ -1,3 +1,5 @@
+import { handleKeyboardClick } from "@/lib/accessibility";
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,9 +46,12 @@ export function ConfirmDialog({
     <>
       {/* Backdrop */}
       <div
+        role="button"
+        tabIndex={0}
         className="fixed inset-0 bg-black bg-opacity-50 z-50 animate-in fade-in duration-200"
         onClick={onClose}
-        aria-hidden="true"
+        onKeyDown={handleKeyboardClick(onClose)}
+        aria-label="Close dialog"
       />
 
       {/* Dialog */}
@@ -77,6 +82,7 @@ export function ConfirmDialog({
 
           <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex gap-3 justify-end rounded-b-lg">
             <button
+              type="button"
               onClick={onClose}
               disabled={isLoading}
               className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
@@ -84,6 +90,7 @@ export function ConfirmDialog({
               {cancelLabel}
             </button>
             <button
+              type="button"
               onClick={handleConfirm}
               disabled={isLoading}
               className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50 ${variantStyles[variant]}`}

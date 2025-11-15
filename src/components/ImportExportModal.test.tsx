@@ -122,14 +122,20 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       // Mock document createElement/appendChild for download
-      const mockLink = {
+      const mockLink: Partial<HTMLAnchorElement> = {
         href: "",
         download: "",
         click: vi.fn(),
       };
-      vi.spyOn(document, "createElement").mockReturnValue(mockLink as unknown as HTMLElement);
-      vi.spyOn(document.body, "appendChild").mockReturnValue(undefined as unknown as Node);
-      vi.spyOn(document.body, "removeChild").mockReturnValue(undefined as unknown as Node);
+      const mockNode = {} as Node;
+      vi.spyOn(document, "createElement").mockImplementation((tagName: string) => {
+        if (tagName === "a") {
+          return mockLink as HTMLElement;
+        }
+        return document.createElement(tagName);
+      });
+      vi.spyOn(document.body, "appendChild").mockReturnValue(mockNode);
+      vi.spyOn(document.body, "removeChild").mockReturnValue(mockNode);
       global.URL.createObjectURL = vi.fn(() => "blob:mock");
       global.URL.revokeObjectURL = vi.fn();
 
@@ -214,14 +220,14 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       // Mock FileReader
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "title\nTest Issue" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -243,14 +249,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should display selected file name and size", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -270,14 +276,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should calculate file size correctly", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
@@ -299,14 +305,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should use singular 'issue' when importing 1 issue", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "title\nIssue 1" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 1, failed: 0, errors: [] });
 
@@ -335,14 +341,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should use plural 'issues' when importing multiple", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "title\nIssue 1\nIssue 2" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 5, failed: 0, errors: [] });
 
@@ -368,14 +374,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should include failure count in success message when some failed", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({
         imported: 8,
@@ -405,14 +411,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should NOT show failure count when all succeeded", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 10, failed: 0, errors: [] });
 
@@ -442,14 +448,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show error when no issues were imported", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 5, errors: [] });
 
@@ -475,14 +481,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show error message when import fails", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockRejectedValue(new Error("Invalid CSV format"));
 
@@ -508,14 +514,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockRejectedValue(new Error());
 
@@ -543,14 +549,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show 'Importing...' text while importing", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
@@ -576,14 +582,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should disable import button while importing", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
@@ -612,14 +618,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should close modal after successful import", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 3, failed: 0, errors: [] });
 
@@ -645,14 +651,14 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should NOT close modal when import fails", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class {
+      global.FileReader = class MockFileReader {
         onload: any;
         readAsText() {
           setTimeout(() => {
             this.onload({ target: { result: "data" } });
           }, 0);
         }
-      } as unknown as typeof FileReader;
+      } as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 2, errors: [] });
 

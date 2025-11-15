@@ -58,12 +58,12 @@ export const listByProject = query({
     // Check if user has access to project
     await assertMinimumRole(ctx, args.projectId, userId, "viewer");
 
-    let templates;
+    let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", args.type!),
+          q.eq("projectId", args.projectId).eq("type", args.type),
         )
         .collect();
     } else {

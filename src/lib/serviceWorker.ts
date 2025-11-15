@@ -145,7 +145,7 @@ export function promptInstall() {
     showInstallPrompt(() => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult: { outcome: 'accepted' | 'dismissed' }) => {
+        deferredPrompt.userChoice.then((choiceResult: { outcome: "accepted" | "dismissed" }) => {
           if (choiceResult.outcome === "accepted") {
           } else {
           }

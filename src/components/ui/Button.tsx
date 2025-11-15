@@ -35,6 +35,7 @@ export function Button({
 
   return (
     <button
+      type="button"
       disabled={disabled || isLoading}
       className={`
         inline-flex items-center justify-center gap-2 font-medium rounded-lg

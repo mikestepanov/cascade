@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { handleKeyboardClick } from "@/lib/accessibility";
 
 interface CardProps {
   children: ReactNode;
@@ -8,12 +9,21 @@ interface CardProps {
 }
 
 export function Card({ children, className = "", hoverable = false, onClick }: CardProps) {
+  const interactiveProps = onClick
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        onClick,
+        onKeyDown: handleKeyboardClick(onClick),
+      }
+    : {};
+
   return (
     <div
       className={`bg-white rounded-lg border border-gray-200 ${
         hoverable ? "hover:shadow-md transition-shadow cursor-pointer" : ""
       } ${className}`}
-      onClick={onClick}
+      {...interactiveProps}
     >
       {children}
     </div>

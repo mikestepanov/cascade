@@ -71,10 +71,14 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
       <div className="flex items-center gap-3 flex-wrap">
         {/* Saved Filters Dropdown */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="savedFilters"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Saved Filters:
           </label>
           <select
+            id="savedFilters"
             onChange={(e) => {
               if (e.target.value) {
                 const selected = savedFilters?.find((f) => f._id === e.target.value);
@@ -99,6 +103,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
         {/* Save Current Filter */}
         {hasActiveFilters && (
           <button
+            type="button"
             onClick={() => setShowSaveDialog(true)}
             className="px-3 py-1.5 bg-primary text-white rounded-lg text-sm hover:bg-primary-hover"
           >
@@ -109,6 +114,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
         {/* Clear Filters */}
         {hasActiveFilters && (
           <button
+            type="button"
             onClick={handleClearFilters}
             className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
           >
@@ -134,9 +140,9 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Filter Name
-                </label>
+                </div>
                 <input
                   type="text"
                   value={filterName}
@@ -161,6 +167,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
               <div className="flex gap-3 justify-end">
                 <button
+                  type="button"
                   onClick={() => {
                     setShowSaveDialog(false);
                     setFilterName("");
@@ -171,6 +178,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleSaveFilter}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover"
                 >
@@ -191,6 +199,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full text-sm"
             >
               <button
+                type="button"
                 onClick={() => handleLoadFilter(filter.filters)}
                 className="hover:text-primary"
               >
@@ -198,6 +207,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               </button>
               {filter.isOwner && (
                 <button
+                  type="button"
                   onClick={() => handleDeleteFilter(filter._id)}
                   className="text-gray-400 hover:text-red-600"
                   title="Delete"

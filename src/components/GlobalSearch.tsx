@@ -69,10 +69,17 @@ export function GlobalSearch() {
     <>
       {/* Search Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          aria-hidden="true"
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -91,8 +98,17 @@ export function GlobalSearch() {
         <>
           {/* Backdrop */}
           <div
+            role="button"
+            tabIndex={0}
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setIsOpen(false);
+              }
+            }}
+            aria-label="Close search"
           />
 
           {/* Modal */}
@@ -101,6 +117,7 @@ export function GlobalSearch() {
             <div className="p-3 sm:p-4 border-b border-gray-200">
               <div className="relative">
                 <svg
+                  aria-hidden="true"
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
                   fill="none"
                   stroke="currentColor"
@@ -126,6 +143,7 @@ export function GlobalSearch() {
             {/* Tabs */}
             <div className="flex gap-4 px-4 pt-2 border-b border-gray-200">
               <button
+                type="button"
                 onClick={() => setActiveTab("all")}
                 className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "all"
@@ -136,6 +154,7 @@ export function GlobalSearch() {
                 All
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("issues")}
                 className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "issues"
@@ -146,6 +165,7 @@ export function GlobalSearch() {
                 Issues
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("documents")}
                 className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "documents"
@@ -186,6 +206,7 @@ export function GlobalSearch() {
                         <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-gray-100">
                           {result.type === "issue" ? (
                             <svg
+                              aria-hidden="true"
                               className="w-5 h-5 text-blue-600"
                               fill="currentColor"
                               viewBox="0 0 20 20"
@@ -198,6 +219,7 @@ export function GlobalSearch() {
                             </svg>
                           ) : (
                             <svg
+                              aria-hidden="true"
                               className="w-5 h-5 text-green-600"
                               fill="currentColor"
                               viewBox="0 0 20 20"

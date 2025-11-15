@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -54,6 +55,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
 
         {/* Create Project Button */}
         <button
+          type="button"
           onClick={() => setShowCreateForm(true)}
           className="w-full px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
         >
@@ -144,12 +146,16 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
             {projects.map((project) => (
               <div
                 key={project._id}
+                role="button"
+                tabIndex={0}
                 className={`group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedProjectId === project._id
                     ? "bg-blue-50 border border-blue-200"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={() => onSelectProject(project._id)}
+                onKeyDown={handleKeyboardClick(() => onSelectProject(project._id))}
+                aria-label={`Select project ${project.name}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">

@@ -68,10 +68,12 @@ export function MentionInput({
   const extractMentions = (text: string) => {
     const mentionPattern = /@\[([^\]]+)\]\(([^)]+)\)/g;
     const mentionIds: Id<"users">[] = [];
-    let match;
+    let match: RegExpExecArray | null;
 
-    while ((match = mentionPattern.exec(text)) !== null) {
+    match = mentionPattern.exec(text);
+    while (match !== null) {
       mentionIds.push(match[2] as Id<"users">);
+      match = mentionPattern.exec(text);
     }
 
     onMentionsChange(mentionIds);
@@ -138,9 +140,10 @@ export function MentionInput({
     const mentionPattern = /@\[([^\]]+)\]\(([^)]+)\)/g;
     const parts = [];
     let lastIndex = 0;
-    let match;
+    let match: RegExpExecArray | null;
 
-    while ((match = mentionPattern.exec(value)) !== null) {
+    match = mentionPattern.exec(value);
+    while (match !== null) {
       // Add text before mention
       if (match.index > lastIndex) {
         parts.push(value.substring(lastIndex, match.index));
@@ -148,6 +151,7 @@ export function MentionInput({
       // Add mention
       parts.push(`@${match[1]}`);
       lastIndex = match.index + match[0].length;
+      match = mentionPattern.exec(value);
     }
 
     // Add remaining text
@@ -175,6 +179,7 @@ export function MentionInput({
         <div className="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
           {filteredMembers.map((member, index) => (
             <button
+              type="button"
               key={member.userId}
               onClick={() => insertMention(member.userName, member.userId)}
               className={`w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 ${

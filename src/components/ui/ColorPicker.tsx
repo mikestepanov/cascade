@@ -24,9 +24,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        {label}
-      </label>
+      <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</div>
       <div className="flex gap-2 flex-wrap items-center">
         {presetColors.map((presetColor) => (
           <button

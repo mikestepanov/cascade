@@ -174,7 +174,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         {/* Labels */}
         {labels && labels.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Labels</label>
+            <div className="block text-sm font-medium text-gray-700 mb-2">Labels</div>
             <div className="flex flex-wrap gap-2">
               {labels.map((label) => (
                 <button

@@ -31,10 +31,17 @@ export function TimeTracker({
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-gray-900">Time Tracking</h3>
           <button
+            type="button"
             onClick={() => setShowLogModal(true)}
             className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              aria-hidden="true"
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -87,11 +94,13 @@ export function TimeTracker({
       {/* Time Entries Toggle */}
       {loggedHours > 0 && (
         <button
+          type="button"
           onClick={() => setShowEntries(!showEntries)}
           className="w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between"
         >
           <span>View Time Entries</span>
           <svg
+            aria-hidden="true"
             className={`w-4 h-4 transition-transform ${showEntries ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"

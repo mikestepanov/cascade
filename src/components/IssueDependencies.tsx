@@ -11,7 +11,7 @@ interface IssueDependenciesProps {
   projectId: Id<"projects">;
 }
 
-export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps) {
+export function IssueDependencies({ issueId, projectId: _projectId }: IssueDependenciesProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [selectedIssueKey, setSelectedIssueKey] = useState("");
   const [linkType, setLinkType] = useState<"blocks" | "relates" | "duplicates">("blocks");
@@ -137,6 +137,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                   )}
                 </div>
                 <button
+                  type="button"
                   onClick={() => setDeleteConfirm(link._id)}
                   className="text-gray-400 hover:text-red-600 p-1"
                   title="Remove dependency"
@@ -178,6 +179,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                   )}
                 </div>
                 <button
+                  type="button"
                   onClick={() => setDeleteConfirm(link._id)}
                   className="text-gray-400 hover:text-red-600 p-1"
                   title="Remove dependency"
@@ -208,9 +210,9 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
             <div className="space-y-4">
               {/* Link Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Relationship Type
-                </label>
+                </div>
                 <select
                   value={linkType}
                   onChange={(e) =>
@@ -226,9 +228,9 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
 
               {/* Search Issues */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Search Issue
-                </label>
+                </div>
                 <input
                   type="text"
                   value={searchQuery}
@@ -245,6 +247,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                     .filter((issue) => issue._id !== issueId)
                     .map((issue) => (
                       <button
+                        type="button"
                         key={issue._id}
                         onClick={() => {
                           setSelectedIssueKey(issue._id);
@@ -278,6 +281,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
               {/* Actions */}
               <div className="flex gap-3 justify-end">
                 <button
+                  type="button"
                   onClick={() => {
                     setShowAddDialog(false);
                     setSelectedIssueKey("");
@@ -288,6 +292,7 @@ export function IssueDependencies({ issueId, projectId }: IssueDependenciesProps
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleAddLink}
                   disabled={!selectedIssueKey}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"

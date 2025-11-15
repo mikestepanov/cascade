@@ -98,9 +98,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Type Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Type
-            </label>
+            </div>
             <div className="space-y-2">
               {["task", "bug", "story", "epic"].map((type) => (
                 <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -120,9 +120,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
 
           {/* Priority Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Priority
-            </label>
+            </div>
             <div className="space-y-2">
               {["highest", "high", "medium", "low", "lowest"].map((priority) => (
                 <label key={priority} className="flex items-center gap-2 cursor-pointer">
@@ -140,9 +140,9 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
 
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Status
-            </label>
+            </div>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {["todo", "in progress", "done", "blocked"].map((status) => (
                 <label key={status} className="flex items-center gap-2 cursor-pointer">
@@ -169,6 +169,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
               selectedPriority.length > 0 ||
               selectedStatus.length > 0) && (
               <button
+                type="button"
                 onClick={() => {
                   setSelectedType([]);
                   setSelectedPriority([]);
@@ -185,6 +186,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
             {searchQuery.length < 2 ? (
               <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <svg
+                  aria-hidden="true"
                   className="w-16 h-16 mx-auto mb-4 text-gray-400"
                   fill="none"
                   stroke="currentColor"
@@ -207,6 +209,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredResults.map((issue) => (
                   <button
+                    type="button"
                     key={issue._id}
                     onClick={() => handleSelectIssue(issue._id)}
                     className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"

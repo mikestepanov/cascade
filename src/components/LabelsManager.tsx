@@ -87,7 +87,13 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
             <Button
               onClick={() => setShowModal(true)}
               leftIcon={
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -133,6 +139,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                       onClick={() => startEdit(label)}
                       leftIcon={
                         <svg
+                          aria-hidden="true"
                           className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
@@ -155,6 +162,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                       onClick={() => setDeleteConfirm(label._id)}
                       leftIcon={
                         <svg
+                          aria-hidden="true"
                           className="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
@@ -200,7 +208,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
 
           {/* Preview */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+            <div className="block text-sm font-medium text-gray-700 mb-2">Preview</div>
             <span
               className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
               style={{ backgroundColor: color }}

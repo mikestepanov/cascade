@@ -5,16 +5,17 @@ interface CommentRendererProps {
   mentions?: Id<"users">[];
 }
 
-export function CommentRenderer({ content, mentions = [] }: CommentRendererProps) {
+export function CommentRenderer({ content, mentions: _mentions = [] }: CommentRendererProps) {
   // Parse the content to find mentions and replace with highlighted spans
   const renderContent = () => {
     const mentionPattern = /@\[([^\]]+)\]\(([^)]+)\)/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
-    let match;
+    let match: RegExpExecArray | null;
     let key = 0;
 
-    while ((match = mentionPattern.exec(content)) !== null) {
+    match = mentionPattern.exec(content);
+    while (match !== null) {
       // Add text before mention
       if (match.index > lastIndex) {
         parts.push(<span key={`text-${key++}`}>{content.substring(lastIndex, match.index)}</span>);
@@ -27,6 +28,7 @@ export function CommentRenderer({ content, mentions = [] }: CommentRendererProps
       parts.push(<MentionBadge key={`mention-${key++}`} userName={userName} userId={userId} />);
 
       lastIndex = match.index + match[0].length;
+      match = mentionPattern.exec(content);
     }
 
     // Add remaining text

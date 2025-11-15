@@ -19,12 +19,15 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
   const [email, setEmail] = useState("");
 
   const currentUser = useQuery(api.users.getCurrent);
-  const viewUser = userId ? useQuery(api.users.get, { id: userId }) : currentUser;
-  const userStats = userId
-    ? useQuery(api.users.getUserStats, { userId })
-    : currentUser
-      ? useQuery(api.users.getUserStats, { userId: currentUser._id })
-      : null;
+  const fetchedViewUser = useQuery(api.users.get, userId ? { id: userId } : "skip");
+  const userStatsForUserId = useQuery(api.users.getUserStats, userId ? { userId } : "skip");
+  const userStatsForCurrent = useQuery(
+    api.users.getUserStats,
+    !userId && currentUser ? { userId: currentUser._id } : "skip",
+  );
+
+  const viewUser = fetchedViewUser || currentUser;
+  const userStats = userId ? userStatsForUserId : userStatsForCurrent;
   const updateProfile = useMutation(api.users.updateProfile);
 
   const isOwnProfile = !userId || (currentUser && userId === currentUser._id);

@@ -362,7 +362,11 @@ export const update = mutation({
     const now = Date.now();
 
     // Track changes for activity log
-    const changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }> = [];
+    const changes: Array<{
+      field: string;
+      oldValue: string | number | null | undefined;
+      newValue: string | number | null | undefined;
+    }> = [];
 
     if (args.title !== undefined && args.title !== issue.title) {
       updates.title = args.title;
@@ -385,7 +389,11 @@ export const update = mutation({
 
     if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
       updates.assigneeId = args.assigneeId ?? undefined;
-      changes.push({ field: "assignee", oldValue: issue.assigneeId, newValue: args.assigneeId ?? undefined });
+      changes.push({
+        field: "assignee",
+        oldValue: issue.assigneeId,
+        newValue: args.assigneeId ?? undefined,
+      });
     }
 
     if (args.labels !== undefined) {
@@ -399,7 +407,11 @@ export const update = mutation({
 
     if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
       updates.dueDate = args.dueDate ?? undefined;
-      changes.push({ field: "dueDate", oldValue: issue.dueDate, newValue: args.dueDate ?? undefined });
+      changes.push({
+        field: "dueDate",
+        oldValue: issue.dueDate,
+        newValue: args.dueDate ?? undefined,
+      });
     }
 
     if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {

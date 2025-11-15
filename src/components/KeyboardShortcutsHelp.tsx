@@ -42,13 +42,13 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
           <div key={section.category}>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">{section.category}</h3>
             <div className="space-y-2">
-              {section.items.map((shortcut, idx) => (
-                <div key={idx} className="flex items-center justify-between py-2">
+              {section.items.map((shortcut) => (
+                <div key={shortcut.description} className="flex items-center justify-between py-2">
                   <span className="text-sm text-gray-700">{shortcut.description}</span>
                   <div className="flex gap-1">
-                    {shortcut.keys.map((key, keyIdx) => (
+                    {shortcut.keys.map((key) => (
                       <kbd
-                        key={keyIdx}
+                        key={key}
                         className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded"
                       >
                         {key}

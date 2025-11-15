@@ -13,6 +13,7 @@ export function ThemeToggle() {
     <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
       {themes.map((t) => (
         <button
+          type="button"
           key={t.value}
           onClick={() => setTheme(t.value)}
           className={`px-2 py-1 rounded-md text-sm transition-colors ${

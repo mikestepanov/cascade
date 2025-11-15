@@ -211,8 +211,8 @@ function BarChart({
 
   return (
     <div className="h-full flex flex-col justify-end space-y-2">
-      {data.map((item, idx) => (
-        <div key={idx} className="flex items-center gap-2">
+      {data.map((item) => (
+        <div key={item.label} className="flex items-center gap-2">
           <div className="w-24 text-sm text-gray-700 truncate" title={item.label}>
             {item.label}
           </div>

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -86,7 +87,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
+      <div
+        role="button"
+        tabIndex={0}
+        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        onClick={onClose}
+        onKeyDown={handleKeyboardClick(onClose)}
+        aria-label="Close modal"
+      />
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
@@ -104,8 +112,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 </div>
               </div>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <svg
+                aria-hidden="true"
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -132,6 +146,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 <div className="flex items-start justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">{issue.title}</h2>
                   <button
+                    type="button"
                     onClick={handleEdit}
                     className="text-sm text-blue-600 hover:text-blue-700"
                   >
@@ -162,12 +177,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             {isEditing && (
               <div className="flex space-x-2">
                 <button
+                  type="button"
                   onClick={handleSave}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                   Save
                 </button>
                 <button
+                  type="button"
                   onClick={() => setIsEditing(false)}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
                 >

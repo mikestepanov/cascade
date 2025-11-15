@@ -4,6 +4,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+import { useId } from "react";
 
 interface BaseFieldProps {
   label: string;
@@ -20,14 +21,22 @@ export function InputField({
   helpText,
   required,
   className = "",
+  id: providedId,
   ...props
 }: InputFieldProps) {
+  const generatedId = useId();
+  const id = providedId || generatedId;
+
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
         {label} {required && <span className="text-red-500 dark:text-red-400">*</span>}
       </label>
       <input
+        id={id}
         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
           error
             ? "border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500"
@@ -51,14 +60,22 @@ export function TextareaField({
   helpText,
   required,
   className = "",
+  id: providedId,
   ...props
 }: TextareaFieldProps) {
+  const generatedId = useId();
+  const id = providedId || generatedId;
+
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
         {label} {required && <span className="text-red-500 dark:text-red-400">*</span>}
       </label>
       <textarea
+        id={id}
         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
           error
             ? "border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500"
@@ -85,14 +102,22 @@ export function SelectField({
   required,
   children,
   className = "",
+  id: providedId,
   ...props
 }: SelectFieldProps) {
+  const generatedId = useId();
+  const id = providedId || generatedId;
+
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        htmlFor={id}
+        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      >
         {label} {required && <span className="text-red-500 dark:text-red-400">*</span>}
       </label>
       <select
+        id={id}
         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
           error
             ? "border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500"

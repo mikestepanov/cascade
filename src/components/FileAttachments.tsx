@@ -122,6 +122,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
     <div className="space-y-4">
       {/* Upload Area */}
       <div
+        role="region"
+        aria-label="File upload area"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -183,7 +185,13 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   className="p-1 text-gray-600 hover:text-blue-600 rounded"
                   title="Download"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    aria-hidden="true"
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -193,11 +201,18 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   </svg>
                 </a>
                 <button
+                  type="button"
                   onClick={() => setDeleteConfirm(attachment.storageId)}
                   className="p-1 text-gray-600 hover:text-red-600 rounded"
                   title="Delete"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    aria-hidden="true"
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

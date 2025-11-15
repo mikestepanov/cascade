@@ -124,7 +124,13 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
             <Button
               onClick={() => setShowModal(true)}
               leftIcon={
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -194,6 +200,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                         onClick={() => startEdit(webhook)}
                         leftIcon={
                           <svg
+                            aria-hidden="true"
                             className="w-4 h-4"
                             fill="none"
                             stroke="currentColor"
@@ -216,6 +223,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                         onClick={() => setDeleteConfirm(webhook._id)}
                         leftIcon={
                           <svg
+                            aria-hidden="true"
                             className="w-4 h-4"
                             fill="none"
                             stroke="currentColor"
@@ -278,9 +286,9 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="block text-sm font-medium text-gray-700 mb-2">
               Events to Subscribe <span className="text-red-500">*</span>
-            </label>
+            </div>
             <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
               {AVAILABLE_EVENTS.map((event) => (
                 <label key={event.value} className="flex items-center gap-2 cursor-pointer">

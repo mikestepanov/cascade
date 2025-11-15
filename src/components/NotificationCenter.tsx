@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -60,10 +61,17 @@ export function NotificationCenter() {
     <div className="relative">
       {/* Notification Bell Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          aria-hidden="true"
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -83,7 +91,14 @@ export function NotificationCenter() {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div
+            role="button"
+            tabIndex={0}
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+            onKeyDown={handleKeyboardClick(() => setIsOpen(false))}
+            aria-label="Close notifications"
+          />
 
           {/* Dropdown Panel */}
           <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-20 max-h-[600px] max-h-[80vh] flex flex-col">
@@ -94,6 +109,7 @@ export function NotificationCenter() {
               </h3>
               {unreadCount && unreadCount > 0 && (
                 <button
+                  type="button"
                   onClick={handleMarkAllAsRead}
                   className="text-sm text-primary hover:text-primary-dark font-medium"
                 >
@@ -155,11 +171,17 @@ export function NotificationCenter() {
                             <div className="flex gap-1">
                               {!notification.isRead && (
                                 <button
+                                  type="button"
                                   onClick={() => handleMarkAsRead(notification._id)}
                                   className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded"
                                   title="Mark as read"
                                 >
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <svg
+                                    aria-hidden="true"
+                                    className="w-4 h-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
                                     <path
                                       fillRule="evenodd"
                                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -169,11 +191,17 @@ export function NotificationCenter() {
                                 </button>
                               )}
                               <button
+                                type="button"
                                 onClick={() => handleDelete(notification._id)}
                                 className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
                                 title="Delete"
                               >
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <svg
+                                  aria-hidden="true"
+                                  className="w-4 h-4"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
                                   <path
                                     fillRule="evenodd"
                                     d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"

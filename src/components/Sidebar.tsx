@@ -74,6 +74,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
         {/* Create Document Button */}
         <button
+          type="button"
           onClick={() => setShowCreateForm(true)}
           className="w-full px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
         >
@@ -140,12 +141,20 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
             {displayedDocuments.map((doc) => (
               <div
                 key={doc._id}
+                role="button"
+                tabIndex={0}
                 className={`group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedDocumentId === doc._id
                     ? "bg-blue-50 border border-blue-200"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={() => onSelectDocument(doc._id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelectDocument(doc._id);
+                  }
+                }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -169,6 +178,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                   </div>
                   {doc.isOwner && (
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
@@ -176,7 +186,12 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                       className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all"
                       title="Delete document"
                     >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <svg
+                        aria-hidden="true"
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
                         <path
                           fillRule="evenodd"
                           d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 102 0v3a1 1 0 11-2 0V9zm4 0a1 1 0 10-2 0v3a1 1 0 102 0V9z"

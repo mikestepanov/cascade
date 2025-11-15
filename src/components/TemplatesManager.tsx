@@ -134,7 +134,13 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
             <Button
               onClick={() => setShowModal(true)}
               leftIcon={
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -185,9 +191,9 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                       )}
                       {template.defaultLabels && template.defaultLabels.length > 0 && (
                         <div className="flex gap-1 mt-2">
-                          {template.defaultLabels.map((label, idx) => (
+                          {template.defaultLabels.map((label) => (
                             <span
-                              key={idx}
+                              key={label}
                               className="text-xs px-2 py-0.5 bg-white border border-gray-300 rounded"
                             >
                               {label}
@@ -204,6 +210,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                         onClick={() => startEdit(template)}
                         leftIcon={
                           <svg
+                            aria-hidden="true"
                             className="w-4 h-4"
                             fill="none"
                             stroke="currentColor"
@@ -226,6 +233,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                         onClick={() => setDeleteConfirm(template._id)}
                         leftIcon={
                           <svg
+                            aria-hidden="true"
                             className="w-4 h-4"
                             fill="none"
                             stroke="currentColor"

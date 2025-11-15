@@ -160,6 +160,7 @@ function Content() {
                 {/* View Switcher */}
                 <div className="flex bg-gray-100 rounded-lg p-1">
                   <button
+                    type="button"
                     onClick={() => {
                       setActiveView("dashboard");
                       setSelectedDocumentId(null);
@@ -174,6 +175,7 @@ function Content() {
                     🏠 Dashboard
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       setActiveView("documents");
                       setSelectedProjectId(null);
@@ -187,6 +189,7 @@ function Content() {
                     📄 Documents
                   </button>
                   <button
+                    type="button"
                     onClick={() => {
                       setActiveView("projects");
                       setSelectedDocumentId(null);
@@ -215,11 +218,18 @@ function Content() {
               </div>
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
                   onClick={() => setShowCommandPalette(true)}
                   className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                   title="Open command palette"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    aria-hidden="true"
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -233,11 +243,18 @@ function Content() {
                   </kbd>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowShortcutsHelp(true)}
                   className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   title="Keyboard shortcuts"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

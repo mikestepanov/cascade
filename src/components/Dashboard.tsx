@@ -121,6 +121,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
               <div className="border-b border-gray-200 px-4">
                 <div className="flex gap-4">
                   <button
+                    type="button"
                     onClick={() => setIssueFilter("assigned")}
                     className={`pb-2 px-2 border-b-2 transition-colors ${
                       issueFilter === "assigned"
@@ -131,6 +132,7 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                     Assigned ({myIssues?.length || 0})
                   </button>
                   <button
+                    type="button"
                     onClick={() => setIssueFilter("created")}
                     className={`pb-2 px-2 border-b-2 transition-colors ${
                       issueFilter === "created"
@@ -158,7 +160,15 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                     {displayIssues.map((issue) => (
                       <div
                         key={issue._id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onNavigateToProject?.(issue.projectId)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onNavigateToProject?.(issue.projectId);
+                          }
+                        }}
                         className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                       >
                         <div className="flex items-start justify-between">
@@ -205,7 +215,15 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                     {myProjects.map((project) => (
                       <div
                         key={project._id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onNavigateToProject?.(project._id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onNavigateToProject?.(project._id);
+                          }
+                        }}
                         className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                       >
                         <div className="flex items-center justify-between mb-1">

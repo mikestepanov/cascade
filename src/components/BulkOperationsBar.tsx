@@ -107,7 +107,11 @@ export function BulkOperationsBar({
               <p className="font-medium">
                 {count} issue{count !== 1 ? "s" : ""} selected
               </p>
-              <button onClick={onClearSelection} className="text-sm underline hover:no-underline">
+              <button
+                type="button"
+                onClick={onClearSelection}
+                className="text-sm underline hover:no-underline"
+              >
                 Clear selection
               </button>
             </div>
@@ -115,6 +119,7 @@ export function BulkOperationsBar({
             {/* Actions */}
             <div className="flex items-center gap-2 flex-wrap">
               <button
+                type="button"
                 onClick={() => setShowActions(!showActions)}
                 className="px-4 py-2 bg-white text-primary rounded hover:bg-gray-100 transition-colors font-medium"
               >
@@ -122,6 +127,7 @@ export function BulkOperationsBar({
               </button>
 
               <button
+                type="button"
                 onClick={() => setDeleteConfirm(true)}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
               >
@@ -136,7 +142,7 @@ export function BulkOperationsBar({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Status */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Change Status</label>
+                  <div className="block text-sm font-medium mb-2">Change Status</div>
                   <select
                     onChange={(e) => e.target.value && handleUpdateStatus(e.target.value)}
                     className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
@@ -155,7 +161,7 @@ export function BulkOperationsBar({
 
                 {/* Priority */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Change Priority</label>
+                  <div className="block text-sm font-medium mb-2">Change Priority</div>
                   <select
                     onChange={(e) => e.target.value && handleUpdatePriority(e.target.value)}
                     className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
@@ -174,7 +180,7 @@ export function BulkOperationsBar({
 
                 {/* Assignee */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Assign To</label>
+                  <div className="block text-sm font-medium mb-2">Assign To</div>
                   <select
                     onChange={(e) => e.target.value && handleAssign(e.target.value)}
                     className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
@@ -194,7 +200,7 @@ export function BulkOperationsBar({
 
                 {/* Sprint */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Move to Sprint</label>
+                  <div className="block text-sm font-medium mb-2">Move to Sprint</div>
                   <select
                     onChange={(e) => e.target.value && handleMoveToSprint(e.target.value)}
                     className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"

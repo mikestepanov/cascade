@@ -68,6 +68,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {/* Tabs */}
         <div className="flex space-x-6">
           <button
+            type="button"
             onClick={() => setActiveTab("board")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "board"
@@ -78,6 +79,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             Board
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("backlog")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "backlog"
@@ -89,6 +91,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </button>
           {project.boardType === "scrum" && (
             <button
+              type="button"
               onClick={() => setActiveTab("sprints")}
               className={`pb-2 border-b-2 transition-colors ${
                 activeTab === "sprints"
@@ -100,6 +103,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             </button>
           )}
           <button
+            type="button"
             onClick={() => setActiveTab("roadmap")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "roadmap"
@@ -110,6 +114,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             🗺️ Roadmap
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("calendar")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "calendar"
@@ -120,6 +125,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             📅 Calendar
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("activity")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "activity"
@@ -130,6 +136,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             🔔 Activity
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("analytics")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "analytics"
@@ -140,6 +147,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             📊 Analytics
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("settings")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "settings"

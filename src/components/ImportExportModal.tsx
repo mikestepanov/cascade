@@ -121,7 +121,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
     setIsImporting(true);
 
     try {
-      let result;
+      let result: { created: number };
 
       if (importFormat === "csv") {
         result = await importCSV({ projectId, csvData: importData });
@@ -158,6 +158,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
         {/* Mode Selection */}
         <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
           <button
+            type="button"
             onClick={() => setMode("export")}
             className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
               mode === "export"
@@ -168,6 +169,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
             📤 Export
           </button>
           <button
+            type="button"
             onClick={() => setMode("import")}
             className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
               mode === "import"
@@ -299,9 +301,9 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Select File
-              </label>
+              </div>
               <input
                 type="file"
                 accept={importFormat === "csv" ? ".csv" : ".json"}

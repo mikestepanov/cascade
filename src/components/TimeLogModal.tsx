@@ -1,6 +1,7 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -48,7 +49,14 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
+      <div
+        role="button"
+        tabIndex={0}
+        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        onClick={onClose}
+        onKeyDown={handleKeyboardClick(onClose)}
+        aria-label="Close modal"
+      />
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-[calc(100%-2rem)] sm:w-full max-w-md">
@@ -61,7 +69,13 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
                 <p className="text-sm text-gray-500 mt-1">{issueName}</p>
               </div>
               <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -77,7 +91,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
           <div className="p-6 space-y-4">
             {/* Hours Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Hours Worked *</label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">Hours Worked *</div>
               <input
                 type="number"
                 step="0.25"
@@ -95,7 +109,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
 
             {/* Date Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">Date</div>
               <input
                 type="date"
                 value={date}
@@ -108,9 +122,9 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
 
             {/* Description Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="block text-sm font-medium text-gray-700 mb-1">
                 Description (Optional)
-              </label>
+              </div>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

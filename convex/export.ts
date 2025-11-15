@@ -261,7 +261,7 @@ export const importIssuesJSON = mutation({
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
-    let data;
+    let data: unknown;
     try {
       data = JSON.parse(args.jsonData);
     } catch {
@@ -404,9 +404,18 @@ export const importIssuesCSV = mutation({
           key: issueKey,
           title: values[titleIndex],
           description: descriptionIndex !== -1 ? values[descriptionIndex] : undefined,
-          type: ((typeIndex !== -1 && values[typeIndex]) || "task") as "task" | "bug" | "story" | "epic",
+          type: ((typeIndex !== -1 && values[typeIndex]) || "task") as
+            | "task"
+            | "bug"
+            | "story"
+            | "epic",
           status: project.workflowStates[0].id,
-          priority: ((priorityIndex !== -1 && values[priorityIndex]) || "medium") as "lowest" | "low" | "medium" | "high" | "highest",
+          priority: ((priorityIndex !== -1 && values[priorityIndex]) || "medium") as
+            | "lowest"
+            | "low"
+            | "medium"
+            | "high"
+            | "highest",
           reporterId: userId,
           labels:
             labelsIndex !== -1 && values[labelsIndex]

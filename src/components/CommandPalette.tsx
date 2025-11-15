@@ -83,22 +83,39 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
     <>
       {/* Backdrop */}
       <div
+        role="button"
+        tabIndex={0}
         className="fixed inset-0 bg-black bg-opacity-50 z-50"
         onClick={onClose}
-        aria-hidden="true"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClose();
+          }
+        }}
+        aria-label="Close command palette"
       />
 
       {/* Command Palette */}
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
         <div
+          role="dialog"
+          aria-label="Command palette"
           className="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
         >
           {/* Search Input */}
           <div className="p-4 border-b border-gray-200">
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -138,6 +155,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
                     return (
                       <button
+                        type="button"
                         key={cmd.id}
                         onClick={() => {
                           cmd.action();

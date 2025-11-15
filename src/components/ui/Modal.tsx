@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { handleKeyboardClick } from "@/lib/accessibility";
 
 interface ModalProps {
   isOpen: boolean;
@@ -32,9 +33,12 @@ export function Modal({
     <>
       {/* Backdrop */}
       <div
+        role="button"
+        tabIndex={0}
         className="fixed inset-0 bg-black bg-opacity-50 z-40 animate-in fade-in duration-200"
         onClick={onClose}
-        aria-hidden="true"
+        onKeyDown={handleKeyboardClick(onClose)}
+        aria-label="Close modal"
       />
 
       {/* Modal */}
@@ -58,11 +62,18 @@ export function Modal({
                 {title}
               </h2>
               <button
+                type="button"
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Close modal"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  aria-hidden="true"
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

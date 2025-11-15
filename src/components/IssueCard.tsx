@@ -31,7 +31,7 @@ export function IssueCard({
   isSelected = false,
   onToggleSelect,
 }: IssueCardProps) {
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (selectionMode && onToggleSelect) {
       e.stopPropagation();
       onToggleSelect(issue._id);
@@ -95,9 +95,17 @@ export function IssueCard({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       draggable={!selectionMode}
       onDragStart={selectionMode ? undefined : onDragStart}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick(e);
+        }
+      }}
       className={`bg-white p-3 rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
         isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20" : "border-gray-200"
       }`}

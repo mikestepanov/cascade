@@ -176,9 +176,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Field Type {!editingId && <span className="text-red-500">*</span>}
-              </label>
+              </div>
               <select
                 value={fieldType}
                 onChange={(e) => setFieldType(e.target.value as FieldType)}
@@ -197,9 +197,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
 
             {(fieldType === "select" || fieldType === "multiselect") && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Options (comma-separated)
-                </label>
+                </div>
                 <input
                   type="text"
                   value={options}
@@ -211,9 +211,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description
-              </label>
+              </div>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
