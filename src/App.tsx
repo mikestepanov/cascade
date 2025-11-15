@@ -9,6 +9,8 @@ import { ProjectSidebar } from "./components/ProjectSidebar";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
+import { NotificationCenter } from "./components/NotificationCenter";
+import { GlobalSearch } from "./components/GlobalSearch";
 import { useState } from "react";
 import { Id } from "../convex/_generated/dataModel";
 
@@ -109,7 +111,11 @@ function Content() {
                     : "Select a project"}
                 </h1>
               </div>
-              <SignOutButton />
+              <div className="flex items-center gap-3">
+                <GlobalSearch />
+                <NotificationCenter />
+                <SignOutButton />
+              </div>
             </header>
 
             {/* Main Content */}
