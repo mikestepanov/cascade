@@ -12,6 +12,7 @@ import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { WebhooksManager } from "./WebhooksManager";
+import { AutomationRulesManager } from "./AutomationRulesManager";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { SectionErrorFallback } from "./SectionErrorFallback";
 
@@ -227,6 +228,13 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 onError={(error) => console.error("WebhooksManager error:", error)}
               >
                 <WebhooksManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Automation Error" />}
+                onError={(error) => console.error("AutomationRulesManager error:", error)}
+              >
+                <AutomationRulesManager projectId={projectId} />
               </ErrorBoundary>
             </div>
           </div>

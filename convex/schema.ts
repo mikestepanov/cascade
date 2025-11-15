@@ -261,6 +261,24 @@ const applicationTables = {
   })
     .index("by_category", ["category"])
     .index("by_built_in", ["isBuiltIn"]),
+
+  automationRules: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+    trigger: v.string(), // Trigger type: "status_changed", "assignee_changed", etc.
+    triggerValue: v.optional(v.string()), // Optional trigger value (e.g., specific status)
+    actionType: v.string(), // Action: "set_assignee", "add_label", "send_notification", etc.
+    actionValue: v.string(), // Action value/params as JSON string
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    executionCount: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"])
+    .index("by_project_active", ["projectId", "isActive"]),
 };
 
 export default defineSchema({
