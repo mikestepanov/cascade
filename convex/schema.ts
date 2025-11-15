@@ -28,7 +28,7 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     isPublic: v.boolean(),
-    members: v.array(v.id("users")),
+    members: v.array(v.id("users")), // Kept for backwards compatibility, deprecated
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
     workflowStates: v.array(v.object({
       id: v.string(),
@@ -44,6 +44,17 @@ const applicationTables = {
       searchField: "name",
       filterFields: ["isPublic", "createdBy"],
     }),
+
+  projectMembers: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    addedBy: v.id("users"),
+    addedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"])
+    .index("by_project_user", ["projectId", "userId"]),
 
   issues: defineTable({
     projectId: v.id("projects"),

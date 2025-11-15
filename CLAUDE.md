@@ -424,11 +424,37 @@ npx convex deploy --cmd 'pnpm run build'
    - Use `getAuthUserId(ctx)` for current user
    - Throw errors for unauthenticated access
 
-2. **Authorization:**
-   - Validate ownership before updates/deletes
-   - Check project membership for team features
-   - Filter queries based on user permissions
-   - Never trust client-side data
+2. **Authorization & RBAC (Role-Based Access Control):**
+   - **Roles:** admin, editor, viewer
+   - **Hierarchy:** viewer < editor < admin
+   - **Project creator:** Always has admin role
+   - **Permission checks:** Use RBAC utilities from `convex/rbac.ts`
+
+   **RBAC Utilities:**
+   ```typescript
+   import { assertMinimumRole, getUserRole, canEditProject } from "./rbac";
+
+   // In a mutation/query
+   await assertMinimumRole(ctx, projectId, userId, "editor"); // Throws if insufficient
+   const role = await getUserRole(ctx, projectId, userId); // Returns role or null
+   const canEdit = await canEditProject(ctx, projectId, userId); // Boolean
+   ```
+
+   **Role Permissions:**
+   - **Viewer:** Read-only access, can comment
+   - **Editor:** Can create/edit/delete issues, sprints, documents
+   - **Admin:** Full control - manage settings, members, workflow, delete project
+
+   **Database Tables:**
+   - `projectMembers`: Maps users to projects with roles
+   - Fields: projectId, userId, role, addedBy, addedAt
+   - Indexed by project, user, and project+user combination
+
+   **Member Management:**
+   - Use `addMember` mutation with role parameter
+   - Use `updateMemberRole` to change roles (admin only)
+   - Use `removeMember` to remove members (admin only)
+   - Project creator's role cannot be changed
 
 3. **Data Validation:**
    - Use Convex validators (`v.string()`, `v.id()`, etc.)

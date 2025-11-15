@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { assertMinimumRole } from "./rbac";
 
 export const create = mutation({
   args: {
@@ -24,10 +25,8 @@ export const create = mutation({
       throw new Error("Project not found");
     }
 
-    // Check if user can create issues in this project
-    if (!project.isPublic && project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to create issues in this project");
-    }
+    // Check if user can create issues (requires editor role or higher)
+    await assertMinimumRole(ctx, args.projectId, userId, "editor");
 
     // Generate issue key
     const existingIssues = await ctx.db
@@ -259,10 +258,8 @@ export const updateStatus = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (!project.isPublic && project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to update this issue");
-    }
+    // Check permissions (requires editor role or higher)
+    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
 
     const oldStatus = issue.status;
     const now = Date.now();
@@ -315,10 +312,8 @@ export const update = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (!project.isPublic && project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to update this issue");
-    }
+    // Check permissions (requires editor role or higher)
+    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
 
     const updates: any = { updatedAt: Date.now() };
     const now = Date.now();
@@ -401,10 +396,8 @@ export const addComment = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (!project.isPublic && project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to comment on this issue");
-    }
+    // Check permissions (any role can comment, even viewers)
+    await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
 
     const now = Date.now();
     const commentId = await ctx.db.insert("issueComments", {
