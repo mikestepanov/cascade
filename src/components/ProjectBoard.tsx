@@ -5,6 +5,7 @@ import { Id } from "../../convex/_generated/dataModel";
 import { KanbanBoard } from "./KanbanBoard";
 import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
+import { ExportButton } from "./ExportButton";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -36,13 +37,19 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
             <p className="text-gray-600">{project.description}</p>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
-              {project.key}
-            </span>
-            <span className="text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded">
-              {project.boardType}
-            </span>
+          <div className="flex items-center space-x-3">
+            <ExportButton
+              projectId={projectId}
+              sprintId={activeTab === "board" ? (selectedSprintId || activeSprint?._id) : undefined}
+            />
+            <div className="flex items-center space-x-2">
+              <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
+                {project.key}
+              </span>
+              <span className="text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded">
+                {project.boardType}
+              </span>
+            </div>
           </div>
         </div>
 

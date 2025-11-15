@@ -5,6 +5,7 @@ import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { IssueCard } from "./IssueCard";
 import { CreateIssueModal } from "./CreateIssueModal";
+import { IssueDetailModal } from "./IssueDetailModal";
 
 interface KanbanBoardProps {
   projectId: Id<"projects">;
@@ -15,6 +16,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [createIssueStatus, setCreateIssueStatus] = useState<string>("");
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
+  const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
   const project = useQuery(api.projects.get, { id: projectId });
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
@@ -109,6 +111,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                     key={issue._id}
                     issue={issue}
                     onDragStart={(e) => handleDragStart(e, issue._id)}
+                    onClick={() => setSelectedIssue(issue._id)}
                   />
                 ))}
               </div>
@@ -126,6 +129,13 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
             setShowCreateIssue(false);
             setCreateIssueStatus("");
           }}
+        />
+      )}
+
+      {selectedIssue && (
+        <IssueDetailModal
+          issueId={selectedIssue}
+          onClose={() => setSelectedIssue(null)}
         />
       )}
     </div>
