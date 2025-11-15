@@ -237,10 +237,35 @@ export function ComponentName({ prop }: { prop: Type }) {
    - Avoid prop drilling with composition
 
 3. **Error Handling:**
+   - **Error Boundaries:** App uses React Error Boundaries to prevent crashes
    - Use try/catch with Convex mutations
    - Display errors with Sonner toast notifications
    - Show loading states during async operations
    - Handle null/undefined from queries gracefully
+
+   **Error Boundary Usage:**
+   ```typescript
+   import { ErrorBoundary } from "@/components/ErrorBoundary";
+   import { SectionErrorFallback } from "@/components/SectionErrorFallback";
+
+   // Wrap sections that might error
+   <ErrorBoundary
+     fallback={<SectionErrorFallback title="Section Error" />}
+     onError={(error, errorInfo) => console.error(error)}
+   >
+     <YourComponent />
+   </ErrorBoundary>
+   ```
+
+   **Error Boundary Locations:**
+   - App-level: Wraps entire application (App.tsx:17)
+   - Sidebar: Prevents sidebar errors from crashing app (App.tsx:45)
+   - Main content: Isolates editor/board errors (App.tsx:117)
+
+   **Custom Error Fallbacks:**
+   - Use `SectionErrorFallback` for consistent error UI
+   - Provide custom fallback for specialized sections
+   - Include retry functionality when appropriate
 
 ## Development Workflows
 

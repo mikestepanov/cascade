@@ -7,15 +7,19 @@ import { DocumentEditor } from "./components/DocumentEditor";
 import { Sidebar } from "./components/Sidebar";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { ProjectBoard } from "./components/ProjectBoard";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { SectionErrorFallback } from "./components/SectionErrorFallback";
 import { useState } from "react";
 import { Id } from "../convex/_generated/dataModel";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      <Toaster />
-      <Content />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen flex bg-gray-50">
+        <Toaster />
+        <Content />
+      </div>
+    </ErrorBoundary>
   );
 }
 
@@ -38,17 +42,28 @@ function Content() {
       <Authenticated>
         <div className="flex w-full h-screen">
           {/* Sidebar */}
-          {activeView === "documents" ? (
-            <Sidebar
-              selectedDocumentId={selectedDocumentId}
-              onSelectDocument={setSelectedDocumentId}
-            />
-          ) : (
-            <ProjectSidebar
-              selectedProjectId={selectedProjectId}
-              onSelectProject={setSelectedProjectId}
-            />
-          )}
+          <ErrorBoundary
+            fallback={
+              <div className="w-64 bg-white border-r border-gray-200">
+                <SectionErrorFallback
+                  title="Sidebar Error"
+                  message="Failed to load sidebar. Please refresh the page."
+                />
+              </div>
+            }
+          >
+            {activeView === "documents" ? (
+              <Sidebar
+                selectedDocumentId={selectedDocumentId}
+                onSelectDocument={setSelectedDocumentId}
+              />
+            ) : (
+              <ProjectSidebar
+                selectedProjectId={selectedProjectId}
+                onSelectProject={setSelectedProjectId}
+              />
+            )}
+          </ErrorBoundary>
 
           <div className="flex-1 flex flex-col">
             {/* Header */}
@@ -99,27 +114,37 @@ function Content() {
 
             {/* Main Content */}
             <main className="flex-1 overflow-hidden">
-              {activeView === "documents" ? (
-                selectedDocumentId ? (
-                  <DocumentEditor documentId={selectedDocumentId} />
+              <ErrorBoundary
+                fallback={
+                  <SectionErrorFallback
+                    title="Content Error"
+                    message="Failed to load this section. Please try selecting a different item."
+                    onRetry={() => window.location.reload()}
+                  />
+                }
+              >
+                {activeView === "documents" ? (
+                  selectedDocumentId ? (
+                    <DocumentEditor documentId={selectedDocumentId} />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      <div className="text-center">
+                        <h2 className="text-xl font-medium mb-2">Welcome to your workspace</h2>
+                        <p>Select a document from the sidebar or create a new one to get started.</p>
+                      </div>
+                    </div>
+                  )
+                ) : selectedProjectId ? (
+                  <ProjectBoard projectId={selectedProjectId} />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-500">
                     <div className="text-center">
-                      <h2 className="text-xl font-medium mb-2">Welcome to your workspace</h2>
-                      <p>Select a document from the sidebar or create a new one to get started.</p>
+                      <h2 className="text-xl font-medium mb-2">Welcome to project management</h2>
+                      <p>Select a project from the sidebar or create a new one to get started.</p>
                     </div>
                   </div>
-                )
-              ) : selectedProjectId ? (
-                <ProjectBoard projectId={selectedProjectId} />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                  <div className="text-center">
-                    <h2 className="text-xl font-medium mb-2">Welcome to project management</h2>
-                    <p>Select a project from the sidebar or create a new one to get started.</p>
-                  </div>
-                </div>
-              )}
+                )}
+              </ErrorBoundary>
             </main>
           </div>
         </div>
