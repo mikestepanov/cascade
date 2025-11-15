@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { TimeTracker } from "./TimeTracker";
 import { FileAttachments } from "./FileAttachments";
 import { IssueWatchers } from "./IssueWatchers";
+import { IssueComments } from "./IssueComments";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -233,6 +234,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-3">Watchers</h3>
               <IssueWatchers issueId={issue._id} />
+            </div>
+
+            {/* Comments */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Comments</h3>
+              <IssueComments issueId={issue._id} projectId={issue.projectId} />
             </div>
           </div>
         </div>

@@ -380,6 +380,7 @@ export const addComment = mutation({
   args: {
     issueId: v.id("issues"),
     content: v.string(),
+    mentions: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -401,10 +402,13 @@ export const addComment = mutation({
     await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
 
     const now = Date.now();
+    const mentions = args.mentions || [];
+
     const commentId = await ctx.db.insert("issueComments", {
       issueId: args.issueId,
       authorId: userId,
       content: args.content,
+      mentions,
       createdAt: now,
       updatedAt: now,
     });
@@ -416,6 +420,23 @@ export const addComment = mutation({
       action: "commented",
       createdAt: now,
     });
+
+    // Create notifications for mentioned users
+    const author = await ctx.db.get(userId);
+    for (const mentionedUserId of mentions) {
+      if (mentionedUserId !== userId) { // Don't notify yourself
+        await ctx.db.insert("notifications", {
+          userId: mentionedUserId,
+          type: "issue_mentioned",
+          title: "You were mentioned",
+          message: `${author?.name || "Someone"} mentioned you in ${issue.key}`,
+          issueId: args.issueId,
+          projectId: issue.projectId,
+          isRead: false,
+          createdAt: now,
+        });
+      }
+    }
 
     return commentId;
   },

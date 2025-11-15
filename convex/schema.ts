@@ -94,6 +94,7 @@ const applicationTables = {
     issueId: v.id("issues"),
     authorId: v.id("users"),
     content: v.string(),
+    mentions: v.array(v.id("users")), // User IDs mentioned in comment
     createdAt: v.number(),
     updatedAt: v.number(),
   })
