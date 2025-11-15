@@ -7,6 +7,7 @@ import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { RoadmapView } from "./RoadmapView";
 import { CalendarView } from "./CalendarView";
+import { ActivityFeed } from "./ActivityFeed";
 import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
@@ -19,7 +20,7 @@ interface ProjectBoardProps {
 }
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "calendar" | "analytics" | "settings">("board");
+  const [activeTab, setActiveTab] = useState<"board" | "backlog" | "sprints" | "roadmap" | "calendar" | "activity" | "analytics" | "settings">("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -115,6 +116,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             📅 Calendar
           </button>
           <button
+            onClick={() => setActiveTab("activity")}
+            className={`pb-2 border-b-2 transition-colors ${
+              activeTab === "activity"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            🔔 Activity
+          </button>
+          <button
             onClick={() => setActiveTab("analytics")}
             className={`pb-2 border-b-2 transition-colors ${
               activeTab === "analytics"
@@ -180,6 +191,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             projectId={projectId}
             sprintId={selectedSprintId || activeSprint?._id}
           />
+        )}
+        {activeTab === "activity" && (
+          <div className="p-6 overflow-y-auto">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+                Project Activity
+              </h2>
+              <ActivityFeed projectId={projectId} />
+            </div>
+          </div>
         )}
         {activeTab === "analytics" && (
           <AnalyticsDashboard projectId={projectId} />
