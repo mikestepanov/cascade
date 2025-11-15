@@ -22,6 +22,8 @@ describe("NotificationCenter", () => {
       .mockReturnValueOnce(mockMarkAsRead)
       .mockReturnValueOnce(mockMarkAllAsRead)
       .mockReturnValueOnce(mockRemove);
+    // Default mock for useQuery
+    (useQuery as any).mockReturnValue(undefined);
   });
 
   afterEach(() => {
@@ -37,10 +39,10 @@ describe("NotificationCenter", () => {
   });
 
   it("should show unread count badge when there are unread notifications", () => {
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("getUnreadCount")) return 5;
-      return [];
-    });
+    // First call is for notifications list, second is for unread count
+    (useQuery as any)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(5);
 
     render(<NotificationCenter />);
 
@@ -48,9 +50,10 @@ describe("NotificationCenter", () => {
   });
 
   it("should not show badge when unread count is 0", () => {
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("getUnreadCount")) return 0;
-      return [];
+    let callCount = 0;
+    (useQuery as any).mockImplementation(() => {
+      callCount++;
+      return callCount === 1 ? [] : 0; // 1st call: notifications, 2nd call: unreadCount
     });
 
     render(<NotificationCenter />);
@@ -59,10 +62,9 @@ describe("NotificationCenter", () => {
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("getUnreadCount")) return 150;
-      return [];
-    });
+    (useQuery as any)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(150);
 
     render(<NotificationCenter />);
 
@@ -71,19 +73,23 @@ describe("NotificationCenter", () => {
 
   it("should open dropdown when bell is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as any)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(screen.getByText(/Notifications/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Notifications/i })).toBeInTheDocument();
   });
 
   it("should show empty state when no notifications", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as any)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
@@ -113,11 +119,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now() - 3600000,
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      if (queryFn.toString().includes("getUnreadCount")) return 1;
-      return [];
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -140,10 +144,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      return 1;
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(1);
 
     render(<NotificationCenter />);
 
@@ -166,10 +169,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      return 1;
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(1);
     mockMarkAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -197,11 +199,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      if (queryFn.toString().includes("getUnreadCount")) return 1;
-      return [];
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(1);
     mockMarkAllAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -229,10 +229,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      return 0;
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(0);
     mockRemove.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -277,10 +276,9 @@ describe("NotificationCenter", () => {
         createdAt: now - 2 * 60 * 60 * 1000, // 2 hours
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      return 3;
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(3);
 
     render(<NotificationCenter />);
 
@@ -312,10 +310,9 @@ describe("NotificationCenter", () => {
         createdAt: Date.now(),
       },
     ];
-    (useQuery as any).mockImplementation((queryFn: any) => {
-      if (queryFn.toString().includes("list")) return mockNotifications;
-      return 2;
-    });
+    (useQuery as any)
+      .mockReturnValueOnce(mockNotifications)
+      .mockReturnValueOnce(2);
 
     render(<NotificationCenter />);
 
@@ -329,20 +326,26 @@ describe("NotificationCenter", () => {
 
   it("should close dropdown when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as any).mockReturnValue([]);
+    (useQuery as any)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(screen.getByText(/Notifications/i)).toBeInTheDocument();
+    const heading = screen.getByRole("heading", { name: /Notifications/i });
+    expect(heading).toBeInTheDocument();
 
-    const backdrop = screen.getByText(/Notifications/i).parentElement?.previousSibling as HTMLElement;
-    await user.click(backdrop);
+    // Click backdrop (the fixed overlay before the dropdown)
+    const backdrop = heading.closest(".absolute")?.previousSibling as HTMLElement;
+    if (backdrop) {
+      await user.click(backdrop);
+    }
 
     await waitFor(() => {
-      expect(screen.queryByText(/Notifications/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: /Notifications/i })).not.toBeInTheDocument();
     });
   });
 });
