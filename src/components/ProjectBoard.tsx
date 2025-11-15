@@ -13,6 +13,7 @@ import { LabelsManager } from "./LabelsManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { WebhooksManager } from "./WebhooksManager";
 import { AutomationRulesManager } from "./AutomationRulesManager";
+import { CustomFieldsManager } from "./CustomFieldsManager";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { SectionErrorFallback } from "./SectionErrorFallback";
 
@@ -235,6 +236,13 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 onError={(error) => console.error("AutomationRulesManager error:", error)}
               >
                 <AutomationRulesManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Custom Fields Error" />}
+                onError={(error) => console.error("CustomFieldsManager error:", error)}
+              >
+                <CustomFieldsManager projectId={projectId} />
               </ErrorBoundary>
             </div>
           </div>

@@ -279,6 +279,38 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_active", ["isActive"])
     .index("by_project_active", ["projectId", "isActive"]),
+
+  customFields: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    fieldKey: v.string(), // Unique key like "customer_id"
+    fieldType: v.union(
+      v.literal("text"),
+      v.literal("number"),
+      v.literal("select"),
+      v.literal("multiselect"),
+      v.literal("date"),
+      v.literal("checkbox"),
+      v.literal("url")
+    ),
+    options: v.optional(v.array(v.string())), // For select/multiselect types
+    isRequired: v.boolean(),
+    description: v.optional(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_key", ["projectId", "fieldKey"]),
+
+  customFieldValues: defineTable({
+    issueId: v.id("issues"),
+    fieldId: v.id("customFields"),
+    value: v.string(), // Stored as string, parsed based on field type
+    updatedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_field", ["fieldId"])
+    .index("by_issue_field", ["issueId", "fieldId"]),
 };
 
 export default defineSchema({

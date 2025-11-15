@@ -8,6 +8,7 @@ import { FileAttachments } from "./FileAttachments";
 import { IssueWatchers } from "./IssueWatchers";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueComments } from "./IssueComments";
+import { CustomFieldValues } from "./CustomFieldValues";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -241,6 +242,11 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-3">Dependencies</h3>
               <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
+            </div>
+
+            {/* Custom Fields */}
+            <div>
+              <CustomFieldValues issueId={issue._id} projectId={issue.projectId} />
             </div>
 
             {/* Comments */}
