@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { IssueCard } from "./IssueCard";
 import { CreateIssueModal } from "./CreateIssueModal";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { BulkOperationsBar } from "./BulkOperationsBar";
 
 interface KanbanBoardProps {
   projectId: Id<"projects">;
@@ -17,6 +18,8 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [createIssueStatus, setCreateIssueStatus] = useState<string>("");
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIssueIds, setSelectedIssueIds] = useState<Set<Id<"issues">>>(new Set());
 
   const project = useQuery(api.projects.get, { id: projectId });
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
@@ -68,9 +71,50 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     setShowCreateIssue(true);
   };
 
+  const handleToggleSelect = (issueId: Id<"issues">) => {
+    setSelectedIssueIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(issueId)) {
+        newSet.delete(issueId);
+      } else {
+        newSet.add(issueId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIssueIds(new Set());
+    setSelectionMode(false);
+  };
+
+  const handleToggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    if (selectionMode) {
+      setSelectedIssueIds(new Set());
+    }
+  };
+
   return (
     <div className="flex-1 overflow-x-auto">
-      <div className="flex space-x-6 p-6 min-w-max">
+      {/* Header with bulk operations toggle */}
+      <div className="px-6 pt-6 pb-2 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {sprintId ? "Sprint Board" : "Kanban Board"}
+        </h2>
+        <button
+          onClick={handleToggleSelectionMode}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            selectionMode
+              ? "bg-primary text-white"
+              : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+          }`}
+        >
+          {selectionMode ? "Exit Selection Mode" : "Select Multiple"}
+        </button>
+      </div>
+
+      <div className="flex space-x-6 px-6 pb-6 min-w-max">
         {workflowStates.map((state) => {
           const stateIssues = issues
             .filter(issue => issue.status === state.id)
@@ -111,7 +155,10 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                     key={issue._id}
                     issue={issue}
                     onDragStart={(e) => handleDragStart(e, issue._id)}
-                    onClick={() => setSelectedIssue(issue._id)}
+                    onClick={() => !selectionMode && setSelectedIssue(issue._id)}
+                    selectionMode={selectionMode}
+                    isSelected={selectedIssueIds.has(issue._id)}
+                    onToggleSelect={handleToggleSelect}
                   />
                 ))}
               </div>
@@ -136,6 +183,16 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         <IssueDetailModal
           issueId={selectedIssue}
           onClose={() => setSelectedIssue(null)}
+        />
+      )}
+
+      {/* Bulk Operations Bar */}
+      {selectionMode && (
+        <BulkOperationsBar
+          projectId={projectId}
+          selectedIssueIds={selectedIssueIds}
+          onClearSelection={handleClearSelection}
+          workflowStates={workflowStates}
         />
       )}
     </div>

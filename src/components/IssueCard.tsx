@@ -18,9 +18,34 @@ interface IssueCardProps {
   issue: Issue;
   onDragStart: (e: React.DragEvent) => void;
   onClick?: () => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (issueId: Id<"issues">) => void;
 }
 
-export function IssueCard({ issue, onDragStart, onClick }: IssueCardProps) {
+export function IssueCard({
+  issue,
+  onDragStart,
+  onClick,
+  selectionMode = false,
+  isSelected = false,
+  onToggleSelect,
+}: IssueCardProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    if (selectionMode && onToggleSelect) {
+      e.stopPropagation();
+      onToggleSelect(issue._id);
+    } else if (onClick) {
+      onClick();
+    }
+  };
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleSelect) {
+      onToggleSelect(issue._id);
+    }
+  };
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "bug":
@@ -70,14 +95,26 @@ export function IssueCard({ issue, onDragStart, onClick }: IssueCardProps) {
 
   return (
     <div
-      draggable
-      onDragStart={onDragStart}
-      onClick={onClick}
-      className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      draggable={!selectionMode}
+      onDragStart={selectionMode ? undefined : onDragStart}
+      onClick={handleClick}
+      className={`bg-white p-3 rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
+        isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20" : "border-gray-200"
+      }`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-2">
+          {/* Checkbox in selection mode */}
+          {selectionMode && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={handleCheckboxClick}
+              onClick={handleCheckboxClick}
+              className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+            />
+          )}
           <span className="text-sm">{getTypeIcon(issue.type)}</span>
           <span className="text-xs text-gray-500 font-mono">{issue.key}</span>
         </div>

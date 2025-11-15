@@ -450,3 +450,336 @@ export const search = query({
     return filtered;
   },
 });
+
+// Bulk Operations
+
+export const bulkUpdateStatus = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+    newStatus: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const now = Date.now();
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      // Check permissions
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+      } catch {
+        continue; // Skip issues user doesn't have access to
+      }
+
+      const oldStatus = issue.status;
+
+      await ctx.db.patch(issueId, {
+        status: args.newStatus,
+        updatedAt: now,
+      });
+
+      // Log activity
+      if (oldStatus !== args.newStatus) {
+        await ctx.db.insert("issueActivity", {
+          issueId,
+          userId,
+          action: "updated",
+          field: "status",
+          oldValue: oldStatus,
+          newValue: args.newStatus,
+          createdAt: now,
+        });
+      }
+
+      results.push(issueId);
+    }
+
+    return { updated: results.length };
+  },
+});
+
+export const bulkUpdatePriority = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+    priority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const now = Date.now();
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+      } catch {
+        continue;
+      }
+
+      const oldPriority = issue.priority;
+
+      await ctx.db.patch(issueId, {
+        priority: args.priority,
+        updatedAt: now,
+      });
+
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId,
+        action: "updated",
+        field: "priority",
+        oldValue: oldPriority,
+        newValue: args.priority,
+        createdAt: now,
+      });
+
+      results.push(issueId);
+    }
+
+    return { updated: results.length };
+  },
+});
+
+export const bulkAssign = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+    assigneeId: v.union(v.id("users"), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const now = Date.now();
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+      } catch {
+        continue;
+      }
+
+      const oldAssignee = issue.assigneeId;
+
+      await ctx.db.patch(issueId, {
+        assigneeId: args.assigneeId,
+        updatedAt: now,
+      });
+
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId,
+        action: "updated",
+        field: "assignee",
+        oldValue: oldAssignee ? String(oldAssignee) : "",
+        newValue: args.assigneeId ? String(args.assigneeId) : "",
+        createdAt: now,
+      });
+
+      results.push(issueId);
+    }
+
+    return { updated: results.length };
+  },
+});
+
+export const bulkAddLabels = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+    labels: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const now = Date.now();
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+      } catch {
+        continue;
+      }
+
+      // Merge existing labels with new labels (avoid duplicates)
+      const updatedLabels = Array.from(new Set([...issue.labels, ...args.labels]));
+
+      await ctx.db.patch(issueId, {
+        labels: updatedLabels,
+        updatedAt: now,
+      });
+
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId,
+        action: "updated",
+        field: "labels",
+        oldValue: issue.labels.join(", "),
+        newValue: updatedLabels.join(", "),
+        createdAt: now,
+      });
+
+      results.push(issueId);
+    }
+
+    return { updated: results.length };
+  },
+});
+
+export const bulkMoveToSprint = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+    sprintId: v.union(v.id("sprints"), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const now = Date.now();
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+      } catch {
+        continue;
+      }
+
+      const oldSprint = issue.sprintId;
+
+      await ctx.db.patch(issueId, {
+        sprintId: args.sprintId,
+        updatedAt: now,
+      });
+
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId,
+        action: "updated",
+        field: "sprint",
+        oldValue: oldSprint ? String(oldSprint) : "",
+        newValue: args.sprintId ? String(args.sprintId) : "",
+        createdAt: now,
+      });
+
+      results.push(issueId);
+    }
+
+    return { updated: results.length };
+  },
+});
+
+export const bulkDelete = mutation({
+  args: {
+    issueIds: v.array(v.id("issues")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const results = [];
+
+    for (const issueId of args.issueIds) {
+      const issue = await ctx.db.get(issueId);
+      if (!issue) continue;
+
+      try {
+        await assertMinimumRole(ctx, issue.projectId, userId, "admin");
+      } catch {
+        continue; // Only admins can delete
+      }
+
+      // Delete related data
+      const comments = await ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+        .collect();
+
+      for (const comment of comments) {
+        await ctx.db.delete(comment._id);
+      }
+
+      const activities = await ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+        .collect();
+
+      for (const activity of activities) {
+        await ctx.db.delete(activity._id);
+      }
+
+      const links = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
+        .collect();
+
+      for (const link of links) {
+        await ctx.db.delete(link._id);
+      }
+
+      const backlinks = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
+        .collect();
+
+      for (const link of backlinks) {
+        await ctx.db.delete(link._id);
+      }
+
+      const watchers = await ctx.db
+        .query("issueWatchers")
+        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+        .collect();
+
+      for (const watcher of watchers) {
+        await ctx.db.delete(watcher._id);
+      }
+
+      const timeEntries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+        .collect();
+
+      for (const entry of timeEntries) {
+        await ctx.db.delete(entry._id);
+      }
+
+      // Finally delete the issue
+      await ctx.db.delete(issueId);
+      results.push(issueId);
+    }
+
+    return { deleted: results.length };
+  },
+});
