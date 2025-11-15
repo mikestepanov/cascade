@@ -15,6 +15,9 @@ This document provides comprehensive guidance for AI assistants working on the C
 - Document-to-project linking
 - Full-text search capabilities
 - Live presence indicators
+- Analytics dashboard with charts and metrics
+- Role-based access control (RBAC)
+- Team velocity tracking and burndown charts
 
 ## Tech Stack
 
@@ -460,6 +463,43 @@ npx convex deploy --cmd 'pnpm run build'
    - Use Convex validators (`v.string()`, `v.id()`, etc.)
    - Runtime validation happens automatically
    - TypeScript provides compile-time safety
+
+### Analytics & Metrics
+
+The project includes a comprehensive analytics dashboard for tracking project and team performance.
+
+**Available Analytics:**
+- **Project Overview:** Total issues, unassigned count, team velocity
+- **Issue Distribution:** By status, type, priority, and assignee
+- **Sprint Burndown:** Track sprint progress with ideal vs. actual burndown
+- **Team Velocity:** Historical velocity across completed sprints
+- **Recent Activity:** Timeline of project activity and changes
+
+**Analytics Queries** (`convex/analytics.ts`):
+```typescript
+// Get project analytics overview
+const analytics = useQuery(api.analytics.getProjectAnalytics, { projectId });
+
+// Get sprint burndown data
+const burndown = useQuery(api.analytics.getSprintBurndown, { sprintId });
+
+// Get team velocity history
+const velocity = useQuery(api.analytics.getTeamVelocity, { projectId });
+
+// Get recent activity
+const activity = useQuery(api.analytics.getRecentActivity, { projectId, limit: 10 });
+```
+
+**Accessing the Dashboard:**
+- Navigate to a project
+- Click the "📊 Analytics" tab
+- View charts, metrics, and team performance
+
+**Metrics Calculated:**
+- **Story Points:** Uses `estimatedHours` field as story points
+- **Completion:** Issues in "done" category workflow states
+- **Velocity:** Average points completed per sprint
+- **Burndown:** Ideal vs. actual progress over sprint duration
 
 ### Common Tasks
 
