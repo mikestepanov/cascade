@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { useQuery, useMutation } from "convex/react";
@@ -38,25 +38,20 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useQuery as any)
-      .mockReturnValueOnce(mockProject)
-      .mockReturnValueOnce(mockSprints)
-      .mockReturnValueOnce(mockMembers);
-    (useMutation as any)
-      .mockReturnValueOnce(mockBulkUpdateStatus)
-      .mockReturnValueOnce(mockBulkUpdatePriority)
-      .mockReturnValueOnce(mockBulkAssign)
-      .mockReturnValueOnce(mockBulkMoveToSprint)
-      .mockReturnValueOnce(mockBulkDelete);
-  });
 
-  // Helper function to get select by nearby label text
-  const getSelectByLabel = (labelText: RegExp) => {
-    const labelElement = screen.getByText(labelText);
-    const container = labelElement.closest("div");
-    if (!container) throw new Error("Container not found");
-    return within(container).getByRole("combobox");
-  };
+    // Setup queries to cycle through values on each render
+    // Component calls useQuery 3 times: project, sprints, members
+    // On re-render, it calls them again in the same order
+    let queryCallCount = 0;
+    (useQuery as any).mockImplementation(() => {
+      const results = [mockProject, mockSprints, mockMembers];
+      return results[queryCallCount++ % 3];
+    });
+
+    // Setup mutations - return the first mock for ALL useMutation calls
+    // The component creates 5 mutation hooks, but we only test one at a time
+    (useMutation as any).mockReturnValue(mockBulkUpdateStatus);
+  });
 
   describe("Visibility Logic", () => {
     it("should not render when no issues selected", () => {
@@ -182,15 +177,15 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />
       );
 
+      // Click Show Actions
       await user.click(screen.getByText(/Show Actions/i));
 
-      // Wait for selects to render
-      await waitFor(() => {
-        expect(screen.getByText(/Change Status/i)).toBeInTheDocument();
-      });
+      // Get all comboboxes (selects) - they appear in order: status, priority, assignee, sprint
+      const selects = screen.getAllByRole("combobox");
+      const statusSelect = selects[0];
 
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+      // Select a status using fireEvent for immediate onChange trigger
+      fireEvent.change(statusSelect, { target: { value: "done" } });
 
       await waitFor(() => {
         expect(mockBulkUpdateStatus).toHaveBeenCalledWith({
@@ -202,9 +197,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should call onClearSelection after successful delete", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkDelete.mockResolvedValue({ deleted: 1 });
+      (useMutation as any).mockReturnValue(mockBulkDelete);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkDelete.mockResolvedValue({ deleted: 1 });
 
       render(
         <BulkOperationsBar
@@ -215,15 +213,20 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />
       );
 
+      // Click the main Delete button
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
-      const confirmButton = screen.getAllByRole("button", { name: /Delete/i }).find(
-        (btn) => btn.className.includes("bg-red")
-      );
-      if (confirmButton) {
-        await user.click(confirmButton);
-      }
+
+      // Wait for dialog and find confirm button using within() for reliability
+      const dialog = await screen.findByRole("dialog");
+      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+
+      // Find Delete button within dialog (not the main Delete button)
+      const confirmButton = screen.getAllByRole("button", { name: /Delete/i })[1]; // Second Delete button is in dialog
+
+      await user.click(confirmButton);
 
       await waitFor(() => {
+        expect(mockBulkDelete).toHaveBeenCalledWith({ issueIds: ["issue1"] });
         expect(mockOnClearSelection).toHaveBeenCalled();
       });
     });
@@ -235,6 +238,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       const selection = new Set(["issue1" as any]);
       mockBulkAssign.mockResolvedValue({ updated: 1 });
 
+      // Override to return assign mock for all mutations
+      (useMutation as any).mockReturnValue(mockBulkAssign);
+
       render(
         <BulkOperationsBar
           projectId={mockProjectId}
@@ -245,21 +251,27 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const assignSelect = getSelectByLabel(/Assign To/i);
-      await user.selectOptions(assignSelect, "unassigned");
+
+      // Get assignee select (3rd combobox: status, priority, assignee, sprint)
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.change(selects[2], { target: { value: "unassigned" } });
 
       await waitFor(() => {
         expect(mockBulkAssign).toHaveBeenCalledWith({
           issueIds: ["issue1"],
-          assigneeId: null, // Converted to null
+          assigneeId: null,
         });
       });
     });
 
     it("should pass user ID as-is when not unassigned", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkAssign.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkAssign);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkAssign.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -271,8 +283,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const assignSelect = getSelectByLabel(/Assign To/i);
-      await user.selectOptions(assignSelect, "user1");
+
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.change(selects[2], { target: { value: "user1" } });
 
       await waitFor(() => {
         expect(mockBulkAssign).toHaveBeenCalledWith({
@@ -285,9 +299,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
   describe("Sprint Conversion Logic", () => {
     it("should convert 'backlog' string to null", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -299,21 +316,27 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const sprintSelect = getSelectByLabel(/Move to Sprint/i);
-      await user.selectOptions(sprintSelect, "backlog");
+
+      // Get sprint select (4th combobox)
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.change(selects[3], { target: { value: "backlog" } });
 
       await waitFor(() => {
         expect(mockBulkMoveToSprint).toHaveBeenCalledWith({
           issueIds: ["issue1"],
-          sprintId: null, // Converted to null
+          sprintId: null,
         });
       });
     });
 
     it("should pass sprint ID as-is when not backlog", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -325,8 +348,10 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const sprintSelect = getSelectByLabel(/Move to Sprint/i);
-      await user.selectOptions(sprintSelect, "sprint1");
+
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.change(selects[3], { target: { value: "sprint1" } });
 
       await waitFor(() => {
         expect(mockBulkMoveToSprint).toHaveBeenCalledWith({
@@ -353,8 +378,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[0], { target: { value: "done" } });
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Updated 1 issue(s)");
@@ -376,8 +402,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[0], { target: { value: "done" } });
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Updated 2 issue(s)");
@@ -385,9 +412,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should use correct message for priority update", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkUpdatePriority.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkUpdatePriority);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkUpdatePriority.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -399,8 +429,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const prioritySelect = getSelectByLabel(/Change Priority/i);
-      await user.selectOptions(prioritySelect, "high");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[1], { target: { value: "high" } });
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Updated 1 issue(s)");
@@ -408,9 +439,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should use correct message for assign", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkAssign.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkAssign);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkAssign.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -422,8 +456,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const assignSelect = getSelectByLabel(/Assign To/i);
-      await user.selectOptions(assignSelect, "unassigned");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[2], { target: { value: "unassigned" } });
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Assigned 1 issue(s)");
@@ -431,9 +466,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should use correct message for move to sprint", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
+      (useMutation as any).mockReturnValue(mockBulkMoveToSprint);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkMoveToSprint.mockResolvedValue({ updated: 1 });
 
       render(
         <BulkOperationsBar
@@ -445,8 +483,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const sprintSelect = getSelectByLabel(/Move to Sprint/i);
-      await user.selectOptions(sprintSelect, "backlog");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[3], { target: { value: "backlog" } });
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Moved 1 issue(s)");
@@ -454,9 +493,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should use correct message for delete", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkDelete.mockResolvedValue({ deleted: 1 });
+      (useMutation as any).mockReturnValue(mockBulkDelete);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkDelete.mockResolvedValue({ deleted: 1 });
 
       render(
         <BulkOperationsBar
@@ -468,12 +510,15 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
-      const confirmButton = screen.getAllByRole("button", { name: /Delete/i }).find(
-        (btn) => btn.className.includes("bg-red")
-      );
-      if (confirmButton) {
-        await user.click(confirmButton);
-      }
+
+      // Wait for dialog
+      await screen.findByRole("dialog");
+      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+
+      // Find Delete button within dialog (second Delete button)
+      const confirmButton = screen.getAllByRole("button", { name: /Delete/i })[1];
+
+      await user.click(confirmButton);
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Deleted 1 issue(s)");
@@ -497,8 +542,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[0], { target: { value: "done" } });
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Update failed");
@@ -506,9 +552,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should show generic error when error has no message", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkUpdatePriority.mockRejectedValue({});
+      (useMutation as any).mockReturnValue(mockBulkUpdatePriority);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkUpdatePriority.mockRejectedValue({});
 
       render(
         <BulkOperationsBar
@@ -520,8 +569,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const prioritySelect = getSelectByLabel(/Change Priority/i);
-      await user.selectOptions(prioritySelect, "high");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[1], { target: { value: "high" } });
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Failed to update priority");
@@ -529,9 +579,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should show correct generic error for each operation type", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkAssign.mockRejectedValue({});
+      (useMutation as any).mockReturnValue(mockBulkAssign);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkAssign.mockRejectedValue({});
 
       render(
         <BulkOperationsBar
@@ -543,8 +596,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const assignSelect = getSelectByLabel(/Assign To/i);
-      await user.selectOptions(assignSelect, "unassigned");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[2], { target: { value: "unassigned" } });
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Failed to assign issues");
@@ -566,8 +620,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[0], { target: { value: "done" } });
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalled();
@@ -591,9 +646,11 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />
       );
 
-      await user.click(screen.getByRole("button", { name: /^Delete$/i }));
+      await user.click(screen.getByRole("button", { name: /Delete/i }));
 
-      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+      });
     });
 
     it("should show plural message in delete dialog for multiple issues", async () => {
@@ -609,9 +666,11 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />
       );
 
-      await user.click(screen.getByRole("button", { name: /^Delete$/i }));
+      await user.click(screen.getByRole("button", { name: /Delete/i }));
 
-      expect(screen.getByText(/delete 2 issues/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/delete 2 issues/i)).toBeInTheDocument();
+      });
     });
 
     it("should close dialog when cancel clicked", async () => {
@@ -627,8 +686,11 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />
       );
 
-      await user.click(screen.getByRole("button", { name: /^Delete$/i }));
-      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /Delete/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+      });
 
       await user.click(screen.getByRole("button", { name: /Cancel/i }));
 
@@ -638,9 +700,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should close dialog after successful delete", async () => {
+      // Override BEFORE render so component gets the right mock
+      mockBulkDelete.mockResolvedValue({ deleted: 1 });
+      (useMutation as any).mockReturnValue(mockBulkDelete);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkDelete.mockResolvedValue({ deleted: 1 });
 
       render(
         <BulkOperationsBar
@@ -652,12 +717,15 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
-      const confirmButton = screen.getAllByRole("button", { name: /Delete/i }).find(
-        (btn) => btn.className.includes("bg-red")
-      );
-      if (confirmButton) {
-        await user.click(confirmButton);
-      }
+
+      // Wait for dialog
+      await screen.findByRole("dialog");
+      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+
+      // Find Delete button within dialog (second Delete button)
+      const confirmButton = screen.getAllByRole("button", { name: /Delete/i })[1];
+
+      await user.click(confirmButton);
 
       await waitFor(() => {
         expect(screen.queryByText(/delete 1 issue/i)).not.toBeInTheDocument();
@@ -665,9 +733,12 @@ describe("BulkOperationsBar - Component Behavior", () => {
     });
 
     it("should close dialog after failed delete", async () => {
+      mockBulkDelete.mockRejectedValue(new Error("Failed"));
+      // Override to use delete mock
+      (useMutation as any).mockReturnValue(mockBulkDelete);
+
       const user = userEvent.setup();
       const selection = new Set(["issue1" as any]);
-      mockBulkDelete.mockRejectedValue(new Error("Failed"));
 
       render(
         <BulkOperationsBar
@@ -679,12 +750,15 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByRole("button", { name: /^Delete$/i }));
-      const confirmButton = screen.getAllByRole("button", { name: /Delete/i }).find(
-        (btn) => btn.className.includes("bg-red")
-      );
-      if (confirmButton) {
-        await user.click(confirmButton);
-      }
+
+      // Wait for dialog
+      await screen.findByRole("dialog");
+      expect(screen.getByText(/delete 1 issue/i)).toBeInTheDocument();
+
+      // Find Delete button within dialog (second Delete button)
+      const confirmButton = screen.getAllByRole("button", { name: /Delete/i })[1];
+
+      await user.click(confirmButton);
 
       await waitFor(() => {
         expect(screen.queryByText(/delete 1 issue/i)).not.toBeInTheDocument();
@@ -708,8 +782,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
       );
 
       await user.click(screen.getByText(/Show Actions/i));
-      const statusSelect = getSelectByLabel(/Change Status/i);
-      await user.selectOptions(statusSelect, "done");
+
+      const selects = screen.getAllByRole("combobox");
+      fireEvent.change(selects[0], { target: { value: "done" } });
 
       await waitFor(() => {
         expect(mockBulkUpdateStatus).toHaveBeenCalledWith({

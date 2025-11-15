@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AutomationRulesManager } from "./AutomationRulesManager";
 import { useQuery, useMutation } from "convex/react";
@@ -26,10 +26,15 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any)
-      .mockReturnValueOnce(mockCreateRule)
-      .mockReturnValueOnce(mockUpdateRule)
-      .mockReturnValueOnce(mockRemoveRule);
+
+    // Setup mutations to return in sequence for the 3 useMutation calls
+    // Component creates: createRule, updateRule, removeRule
+    let mutationCallCount = 0;
+    (useMutation as any).mockImplementation(() => {
+      const mocks = [mockCreateRule, mockUpdateRule, mockRemoveRule];
+      return mocks[mutationCallCount++ % 3];
+    });
+
     (useQuery as any).mockReturnValue([]);
   });
 
@@ -85,7 +90,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       // Open dialog and fill form
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Old Name");
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Old Name");
 
       // Close dialog
       await user.click(screen.getByRole("button", { name: /Cancel/i }));
@@ -94,7 +99,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
 
       // Form should be empty
-      expect(screen.getByLabelText(/Rule Name/i)).toHaveValue("");
+      expect(screen.getByPlaceholderText(/Auto-assign high priority bugs/i)).toHaveValue("");
     });
   });
 
@@ -106,8 +111,8 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
       // Leave name empty
-      await user.type(screen.getByLabelText(/Action Parameters/i), '{"test":"value"}');
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"test":"value"}' } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockCreateRule).not.toHaveBeenCalled();
@@ -119,9 +124,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test Rule");
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
       // Leave actionValue empty
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockCreateRule).not.toHaveBeenCalled();
@@ -133,9 +138,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "   ");
-      await user.type(screen.getByLabelText(/Action Parameters/i), '{"test":"value"}');
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "   ");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"test":"value"}' } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
     });
@@ -146,9 +151,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test Rule");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "   ");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "   " } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
     });
@@ -161,9 +166,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test Rule");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "not valid json");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "not valid json" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalled();
@@ -178,9 +183,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test Rule");
-      await user.type(screen.getByLabelText(/Action Parameters/i), '{"label":"urgent"}');
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: '{"label":"urgent"}' } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalled();
@@ -195,9 +200,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test Rule");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test Rule");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalled();
@@ -211,12 +216,12 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
-      await user.type(
-        screen.getByLabelText(/Action Parameters/i),
-        '{"data":{"nested":"value"},"array":[1,2,3]}'
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
+      fireEvent.change(
+        screen.getByPlaceholderText(/auto-resolved/i),
+        { target: { value: '{"data":{"nested":"value"},"array":[1,2,3]}' } }
       );
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalled();
@@ -232,9 +237,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "  Trimmed Name  ");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "  Trimmed Name  ");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalledWith(
@@ -252,10 +257,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
       // Leave description empty
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalledWith(
@@ -273,10 +278,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
-      await user.type(screen.getByLabelText(/Description/i), "   ");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
+      await user.type(screen.getByPlaceholderText(/Optional description/i), "   ");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalledWith(
@@ -294,10 +299,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
       // Leave trigger value empty
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(mockCreateRule).toHaveBeenCalledWith(
@@ -366,8 +371,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByTitle(/Edit rule/i));
 
-      const triggerSelect = screen.getByLabelText(/When \(Trigger\)/i) as HTMLSelectElement;
-      const actionSelect = screen.getByLabelText(/Then \(Action\)/i) as HTMLSelectElement;
+      const selects = screen.getAllByRole("combobox");
+      const triggerSelect = selects[0] as HTMLSelectElement;
+      const actionSelect = selects[1] as HTMLSelectElement;
 
       expect(triggerSelect.value).toBe("priority_changed");
       expect(actionSelect.value).toBe("send_notification");
@@ -398,7 +404,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByTitle(/Edit rule/i));
 
-      expect(screen.getByLabelText(/Description/i)).toHaveValue("");
+      expect(screen.getByPlaceholderText(/Optional description/i)).toHaveValue("");
     });
 
     it("should handle missing triggerValue in edit mode", async () => {
@@ -410,7 +416,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await user.click(screen.getByTitle(/Edit rule/i));
 
-      expect(screen.getByLabelText(/Trigger Value/i)).toHaveValue("");
+      expect(screen.getByPlaceholderText(/specific status/i)).toHaveValue("");
     });
   });
 
@@ -596,9 +602,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Rule created");
@@ -638,9 +644,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Duplicate rule name");
@@ -654,9 +660,9 @@ describe("AutomationRulesManager - Component Behavior", () => {
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
-      await user.type(screen.getByLabelText(/Rule Name/i), "Test");
-      await user.type(screen.getByLabelText(/Action Parameters/i), "{}");
-      await user.click(screen.getByRole("button", { name: /Create Rule$/i }));
+      await user.type(screen.getByPlaceholderText(/Auto-assign high priority bugs/i), "Test");
+      fireEvent.change(screen.getByPlaceholderText(/auto-resolved/i), { target: { value: "{}" } });
+      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Failed to save rule");

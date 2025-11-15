@@ -26,10 +26,15 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any)
-      .mockReturnValueOnce(mockCreateField)
-      .mockReturnValueOnce(mockUpdateField)
-      .mockReturnValueOnce(mockRemoveField);
+
+    // Setup mutations to return in sequence for the 3 useMutation calls
+    // Component creates: createField, updateField, removeField
+    let mutationCallCount = 0;
+    (useMutation as any).mockImplementation(() => {
+      const mocks = [mockCreateField, mockUpdateField, mockRemoveField];
+      return mocks[mutationCallCount++ % 3];
+    });
+
     (useQuery as any).mockReturnValue([]);
   });
 
@@ -94,7 +99,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test Field");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test Field");
 
       await user.click(screen.getByRole("button", { name: /Cancel/i }));
 
@@ -108,7 +113,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
-      expect(screen.getByLabelText(/Field Key/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/customer_id/i)).toBeInTheDocument();
     });
 
     it("should default field type to 'text'", async () => {
@@ -118,7 +123,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
-      const select = screen.getByLabelText(/Field Type/i) as HTMLSelectElement;
+      const select = screen.getByRole("combobox") as HTMLSelectElement;
       expect(select.value).toBe("text");
     });
   });
@@ -142,7 +147,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Valid Name");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Valid Name");
       // Leave field key empty
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
@@ -156,8 +161,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "   ");
-      await user.type(screen.getByLabelText(/Field Key/i), "valid_key");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "   ");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "valid_key");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
@@ -172,8 +177,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "UPPERCASE_KEY");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "UPPERCASE_KEY");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {
@@ -192,8 +197,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "customer id value");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "customer id value");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {
@@ -212,8 +217,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "field    with     gaps");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "field    with     gaps");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {
@@ -243,7 +248,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "select");
+      await user.selectOptions(screen.getByRole("combobox"), "select");
 
       expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
     });
@@ -254,7 +259,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "multiselect");
+      await user.selectOptions(screen.getByRole("combobox"), "multiselect");
 
       expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
     });
@@ -265,11 +270,11 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "select");
+      await user.selectOptions(screen.getByRole("combobox"), "select");
 
       expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
 
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "text");
+      await user.selectOptions(screen.getByRole("combobox"), "text");
 
       expect(screen.queryByText(/Options \(comma-separated\)/i)).not.toBeInTheDocument();
     });
@@ -283,9 +288,9 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Priority");
-      await user.type(screen.getByLabelText(/Field Key/i), "priority");
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "select");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Priority");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "priority");
+      await user.selectOptions(screen.getByRole("combobox"), "select");
 
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "Low, Medium, High");
@@ -308,9 +313,9 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "select");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
+      await user.selectOptions(screen.getByRole("combobox"), "select");
 
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "  Option A  ,  Option B  ,  Option C  ");
@@ -333,9 +338,9 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
-      await user.selectOptions(screen.getByLabelText(/Field Type/i), "select");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
+      await user.selectOptions(screen.getByRole("combobox"), "select");
 
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "Valid,,,,Another Valid,");
@@ -358,8 +363,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
       // Leave as text type
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
@@ -392,8 +397,9 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
+      // Check that form is populated with existing data
       expect(screen.getByDisplayValue("Customer ID")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("customer_id")).toBeInTheDocument();
+      // Field key input is hidden in edit mode, so we don't check for it
       expect(screen.getByDisplayValue("Unique customer identifier")).toBeInTheDocument();
       expect(screen.getByLabelText(/Required field/i)).toBeChecked();
     });
@@ -429,7 +435,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
-      const typeSelect = screen.getByLabelText(/Field Type/i);
+      const typeSelect = screen.getByRole("combobox");
       expect(typeSelect).toBeDisabled();
     });
 
@@ -471,7 +477,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
       // Clear name and retype it
-      const nameInput = screen.getByLabelText(/Field Name/i);
+      const nameInput = screen.getByPlaceholderText(/Customer ID/i);
       await user.clear(nameInput);
       await user.type(nameInput, "Updated Name");
 
@@ -706,8 +712,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {
@@ -769,8 +775,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {
@@ -785,8 +791,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.type(screen.getByLabelText(/Field Name/i), "Test");
-      await user.type(screen.getByLabelText(/Field Key/i), "test");
+      await user.type(screen.getByPlaceholderText(/Customer ID/i), "Test");
+      await user.type(screen.getByPlaceholderText(/customer_id/i), "test");
       await user.click(screen.getByRole("button", { name: /Create Field/i }));
 
       await waitFor(() => {

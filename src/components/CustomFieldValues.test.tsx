@@ -25,9 +25,17 @@ describe("CustomFieldValues - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any)
-      .mockReturnValueOnce(mockSetValue)
-      .mockReturnValueOnce(mockRemoveValue);
+
+    // Setup mutations to return in sequence for the 2 useMutation calls
+    // Component creates: setValue, removeValue
+    let mutationCallCount = 0;
+    (useMutation as any).mockImplementation(() => {
+      const mocks = [mockSetValue, mockRemoveValue];
+      return mocks[mutationCallCount++ % 2];
+    });
+
+    // Default useQuery setup (tests can override)
+    (useQuery as any).mockReturnValue([]);
   });
 
   describe("Empty State & Visibility", () => {
