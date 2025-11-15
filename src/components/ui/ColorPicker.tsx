@@ -24,7 +24,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         {label}
       </label>
       <div className="flex gap-2 flex-wrap items-center">
@@ -33,8 +33,8 @@ export function ColorPicker({
             key={presetColor}
             type="button"
             onClick={() => onChange(presetColor)}
-            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 ${
-              value === presetColor ? "ring-2 ring-offset-2 ring-gray-900 scale-110" : ""
+            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:focus:ring-gray-100 ${
+              value === presetColor ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110" : ""
             }`}
             style={{ backgroundColor: presetColor }}
             title={presetColor}
@@ -46,11 +46,11 @@ export function ColorPicker({
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-8 h-8 rounded cursor-pointer border border-gray-300"
+            className="w-8 h-8 rounded cursor-pointer border border-gray-300 dark:border-gray-600"
             title="Custom color"
             aria-label="Custom color picker"
           />
-          <span className="absolute -bottom-5 left-0 text-xs text-gray-500 whitespace-nowrap">
+          <span className="absolute -bottom-5 left-0 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
             Custom
           </span>
         </div>
