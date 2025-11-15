@@ -14,6 +14,7 @@ import { NotificationCenter } from "./components/NotificationCenter";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { useState } from "react";
 import { Id } from "../convex/_generated/dataModel";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
@@ -234,6 +235,7 @@ function Content() {
                   </svg>
                 </button>
                 <GlobalSearch />
+                <ThemeToggle />
                 <NotificationCenter />
                 <SignOutButton />
               </div>
