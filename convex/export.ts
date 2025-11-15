@@ -1,4 +1,4 @@
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { assertMinimumRole } from "./rbac";
@@ -179,6 +179,284 @@ export const exportAnalytics = query({
       totalSprints: sprints.length,
       completedSprints: sprints.filter((s) => s.status === "completed").length,
       exportedAt: new Date().toISOString(),
+    };
+  },
+});
+
+// Export issues as JSON
+export const exportIssuesJSON = query({
+  args: {
+    projectId: v.id("projects"),
+    sprintId: v.optional(v.id("sprints")),
+    status: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new Error("Project not found");
+
+    // Get issues with same filtering as CSV export
+    let issuesQuery = ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+
+    let issues = await issuesQuery.collect();
+
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+
+    if (args.status) {
+      issues = issues.filter((i) => i.status === args.status);
+    }
+
+    // Enrich with related data
+    const enrichedIssues = await Promise.all(
+      issues.map(async (issue) => {
+        const assignee = issue.assigneeId
+          ? await ctx.db.get(issue.assigneeId)
+          : null;
+        const reporter = await ctx.db.get(issue.reporterId);
+        const sprint = issue.sprintId
+          ? await ctx.db.get(issue.sprintId)
+          : null;
+        const statusState = project.workflowStates.find(
+          (s) => s.id === issue.status
+        );
+
+        // Get comments
+        const comments = await ctx.db
+          .query("issueComments")
+          .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+          .collect();
+
+        return {
+          ...issue,
+          statusName: statusState?.name ?? issue.status,
+          assigneeName: assignee?.name,
+          reporterName: reporter?.name,
+          sprintName: sprint?.name,
+          comments: comments.length,
+        };
+      })
+    );
+
+    return JSON.stringify({
+      project: {
+        name: project.name,
+        key: project.key,
+        description: project.description,
+      },
+      exportedAt: new Date().toISOString(),
+      totalIssues: enrichedIssues.length,
+      issues: enrichedIssues,
+    }, null, 2);
+  },
+});
+
+// Import issues from JSON
+export const importIssuesJSON = mutation({
+  args: {
+    projectId: v.id("projects"),
+    jsonData: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new Error("Project not found");
+
+    let data;
+    try {
+      data = JSON.parse(args.jsonData);
+    } catch {
+      throw new Error("Invalid JSON format");
+    }
+
+    if (!data.issues || !Array.isArray(data.issues)) {
+      throw new Error("JSON must contain an 'issues' array");
+    }
+
+    const imported = [];
+    const errors = [];
+
+    for (const issueData of data.issues) {
+      try {
+        // Get the next issue number for this project
+        const existingIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+          .collect();
+
+        const issueNumbers = existingIssues
+          .map((i) => parseInt(i.key.split("-")[1]))
+          .filter((n) => !isNaN(n));
+        const nextNumber = Math.max(0, ...issueNumbers) + 1;
+        const issueKey = `${project.key}-${nextNumber}`;
+
+        // Validate required fields
+        if (!issueData.title) {
+          throw new Error("Missing required field: title");
+        }
+
+        // Create the issue
+        const issueId = await ctx.db.insert("issues", {
+          projectId: args.projectId,
+          key: issueKey,
+          title: issueData.title,
+          description: issueData.description || undefined,
+          type: issueData.type || "task",
+          status: issueData.status || project.workflowStates[0].id,
+          priority: issueData.priority || "medium",
+          reporterId: userId,
+          assigneeId: issueData.assigneeId || undefined,
+          labels: issueData.labels || [],
+          estimatedHours: issueData.estimatedHours || undefined,
+          loggedHours: 0,
+          dueDate: issueData.dueDate || undefined,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          order: existingIssues.length,
+          linkedDocuments: [],
+          attachments: [],
+        });
+
+        // Log activity
+        await ctx.db.insert("issueActivity", {
+          issueId,
+          userId,
+          action: "created",
+          createdAt: Date.now(),
+        });
+
+        imported.push(issueKey);
+      } catch (error: any) {
+        errors.push({
+          title: issueData.title || "Unknown",
+          error: error.message,
+        });
+      }
+    }
+
+    return {
+      imported: imported.length,
+      failed: errors.length,
+      errors: errors.slice(0, 10), // Return first 10 errors
+    };
+  },
+});
+
+// Import issues from CSV
+export const importIssuesCSV = mutation({
+  args: {
+    projectId: v.id("projects"),
+    csvData: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) throw new Error("Project not found");
+
+    // Parse CSV
+    const lines = args.csvData.trim().split("\n");
+    if (lines.length < 2) {
+      throw new Error("CSV must have at least a header row and one data row");
+    }
+
+    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+    const titleIndex = headers.indexOf("title");
+
+    if (titleIndex === -1) {
+      throw new Error("CSV must contain a 'title' column");
+    }
+
+    const typeIndex = headers.indexOf("type");
+    const priorityIndex = headers.indexOf("priority");
+    const descriptionIndex = headers.indexOf("description");
+    const labelsIndex = headers.indexOf("labels");
+    const estimatedIndex = headers.indexOf("estimated hours");
+    const dueDateIndex = headers.indexOf("due date");
+
+    const imported = [];
+    const errors = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      try {
+        const values = lines[i].split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
+
+        if (!values[titleIndex]) {
+          throw new Error("Title is required");
+        }
+
+        // Get the next issue number
+        const existingIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+          .collect();
+
+        const issueNumbers = existingIssues
+          .map((issue) => parseInt(issue.key.split("-")[1]))
+          .filter((n) => !isNaN(n));
+        const nextNumber = Math.max(0, ...issueNumbers) + 1;
+        const issueKey = `${project.key}-${nextNumber}`;
+
+        const issueId = await ctx.db.insert("issues", {
+          projectId: args.projectId,
+          key: issueKey,
+          title: values[titleIndex],
+          description: descriptionIndex !== -1 ? values[descriptionIndex] : undefined,
+          type: (typeIndex !== -1 && values[typeIndex]) || "task",
+          status: project.workflowStates[0].id,
+          priority: (priorityIndex !== -1 && values[priorityIndex]) || "medium",
+          reporterId: userId,
+          labels: labelsIndex !== -1 && values[labelsIndex]
+            ? values[labelsIndex].split(";").map((l) => l.trim())
+            : [],
+          estimatedHours: estimatedIndex !== -1 && values[estimatedIndex]
+            ? parseFloat(values[estimatedIndex])
+            : undefined,
+          loggedHours: 0,
+          dueDate: dueDateIndex !== -1 && values[dueDateIndex]
+            ? new Date(values[dueDateIndex]).getTime()
+            : undefined,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          order: existingIssues.length,
+          linkedDocuments: [],
+          attachments: [],
+        });
+
+        await ctx.db.insert("issueActivity", {
+          issueId,
+          userId,
+          action: "created",
+          createdAt: Date.now(),
+        });
+
+        imported.push(issueKey);
+      } catch (error: any) {
+        errors.push({
+          row: i + 1,
+          error: error.message,
+        });
+      }
+    }
+
+    return {
+      imported: imported.length,
+      failed: errors.length,
+      errors: errors.slice(0, 10),
     };
   },
 });
