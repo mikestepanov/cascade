@@ -7,6 +7,8 @@ import { SprintManager } from "./SprintManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { ExportButton } from "./ExportButton";
 import { LabelsManager } from "./LabelsManager";
+import { TemplatesManager } from "./TemplatesManager";
+import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -148,8 +150,10 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         )}
         {activeTab === "settings" && (
           <div className="p-6 overflow-y-auto">
-            <div className="max-w-4xl">
+            <div className="max-w-4xl space-y-6">
               <LabelsManager projectId={projectId} />
+              <TemplatesManager projectId={projectId} />
+              <WebhooksManager projectId={projectId} />
             </div>
           </div>
         )}
