@@ -311,6 +311,22 @@ const applicationTables = {
     .index("by_issue", ["issueId"])
     .index("by_field", ["fieldId"])
     .index("by_issue_field", ["issueId", "fieldId"]),
+
+  notifications: defineTable({
+    userId: v.id("users"),
+    type: v.string(), // "mention", "assigned", "comment", "status_change", etc.
+    title: v.string(),
+    message: v.string(),
+    issueId: v.optional(v.id("issues")),
+    projectId: v.optional(v.id("projects")),
+    documentId: v.optional(v.id("documents")),
+    actorId: v.optional(v.id("users")), // Who triggered the notification
+    isRead: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_read", ["userId", "isRead"])
+    .index("by_user_created", ["userId", "createdAt"]),
 };
 
 export default defineSchema({

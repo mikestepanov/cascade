@@ -31,7 +31,19 @@ export const list = query({
       .order("desc")
       .take(limit);
 
-    return notifications;
+    // Enrich with actor information
+    return await Promise.all(
+      notifications.map(async (notification) => {
+        const actor = notification.actorId
+          ? await ctx.db.get(notification.actorId)
+          : null;
+
+        return {
+          ...notification,
+          actorName: actor?.name,
+        };
+      })
+    );
   },
 });
 
@@ -113,21 +125,20 @@ export const remove = mutation({
 export const create = internalMutation({
   args: {
     userId: v.id("users"),
-    type: v.union(
-      v.literal("issue_assigned"),
-      v.literal("issue_mentioned"),
-      v.literal("issue_commented"),
-      v.literal("issue_status_changed"),
-      v.literal("sprint_started"),
-      v.literal("sprint_ended")
-    ),
+    type: v.string(),
     title: v.string(),
     message: v.string(),
     issueId: v.optional(v.id("issues")),
     projectId: v.optional(v.id("projects")),
-    sprintId: v.optional(v.id("sprints")),
+    documentId: v.optional(v.id("documents")),
+    actorId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
+    // Don't create notification if user is the actor
+    if (args.actorId === args.userId) {
+      return;
+    }
+
     await ctx.db.insert("notifications", {
       userId: args.userId,
       type: args.type,
@@ -135,9 +146,47 @@ export const create = internalMutation({
       message: args.message,
       issueId: args.issueId,
       projectId: args.projectId,
-      sprintId: args.sprintId,
+      documentId: args.documentId,
+      actorId: args.actorId,
       isRead: false,
       createdAt: Date.now(),
     });
+  },
+});
+
+// Helper to create notifications for multiple users
+export const createBulk = internalMutation({
+  args: {
+    userIds: v.array(v.id("users")),
+    type: v.string(),
+    title: v.string(),
+    message: v.string(),
+    issueId: v.optional(v.id("issues")),
+    projectId: v.optional(v.id("projects")),
+    documentId: v.optional(v.id("documents")),
+    actorId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    await Promise.all(
+      args.userIds.map((userId) => {
+        // Don't create notification if user is the actor
+        if (args.actorId === userId) {
+          return Promise.resolve();
+        }
+
+        return ctx.db.insert("notifications", {
+          userId,
+          type: args.type,
+          title: args.title,
+          message: args.message,
+          issueId: args.issueId,
+          projectId: args.projectId,
+          documentId: args.documentId,
+          actorId: args.actorId,
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      })
+    );
   },
 });
