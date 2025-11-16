@@ -24,4 +24,7 @@ dist-ssr
 *.sw?
 
 # Ignored for the template, you probably want to remove it:
-package-lock.jsoncoverage/
+package-lock.json
+
+# Test coverage
+coverage/
