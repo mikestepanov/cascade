@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
+import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 const applicationTables = {
@@ -28,14 +28,16 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     isPublic: v.boolean(),
-    members: v.array(v.id("users")),
+    members: v.array(v.id("users")), // Kept for backwards compatibility, deprecated
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
-    workflowStates: v.array(v.object({
-      id: v.string(),
-      name: v.string(),
-      category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
-      order: v.number(),
-    })),
+    workflowStates: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        order: v.number(),
+      }),
+    ),
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -45,6 +47,17 @@ const applicationTables = {
       filterFields: ["isPublic", "createdBy"],
     }),
 
+  projectMembers: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    addedBy: v.id("users"),
+    addedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"])
+    .index("by_project_user", ["projectId", "userId"]),
+
   issues: defineTable({
     projectId: v.id("projects"),
     key: v.string(), // Issue key like "PROJ-123"
@@ -52,7 +65,13 @@ const applicationTables = {
     description: v.optional(v.string()),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     status: v.string(), // References workflow state id
-    priority: v.union(v.literal("lowest"), v.literal("low"), v.literal("medium"), v.literal("high"), v.literal("highest")),
+    priority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
     assigneeId: v.optional(v.id("users")),
     reporterId: v.id("users"),
     createdAt: v.number(),
@@ -83,6 +102,7 @@ const applicationTables = {
     issueId: v.id("issues"),
     authorId: v.id("users"),
     content: v.string(),
+    mentions: v.array(v.id("users")), // User IDs mentioned in comment
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -124,6 +144,199 @@ const applicationTables = {
   })
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"]),
+
+  issueWatchers: defineTable({
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_user", ["userId"])
+    .index("by_issue_user", ["issueId", "userId"]),
+
+  labels: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    color: v.string(), // Hex color code like "#3B82F6"
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_name", ["projectId", "name"]),
+
+  timeEntries: defineTable({
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+    hours: v.number(),
+    description: v.optional(v.string()),
+    date: v.number(), // Timestamp of when work was done
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_user", ["userId"])
+    .index("by_date", ["date"]),
+
+  issueTemplates: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    titleTemplate: v.string(),
+    descriptionTemplate: v.string(),
+    defaultPriority: v.union(
+      v.literal("lowest"),
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high"),
+      v.literal("highest"),
+    ),
+    defaultLabels: v.array(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_type", ["projectId", "type"]),
+
+  webhooks: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    url: v.string(),
+    events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
+    secret: v.optional(v.string()), // For HMAC signature
+    isActive: v.boolean(),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    lastTriggered: v.optional(v.number()),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"]),
+
+  savedFilters: defineTable({
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+    name: v.string(),
+    filters: v.object({
+      type: v.optional(
+        v.array(
+          v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+        ),
+      ),
+      status: v.optional(v.array(v.string())),
+      priority: v.optional(
+        v.array(
+          v.union(
+            v.literal("lowest"),
+            v.literal("low"),
+            v.literal("medium"),
+            v.literal("high"),
+            v.literal("highest"),
+          ),
+        ),
+      ),
+      assigneeId: v.optional(v.array(v.id("users"))),
+      labels: v.optional(v.array(v.string())),
+      sprintId: v.optional(v.id("sprints")),
+      epicId: v.optional(v.id("issues")),
+    }),
+    isPublic: v.boolean(), // Whether other team members can use this filter
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_user", ["userId"])
+    .index("by_project_public", ["projectId", "isPublic"]),
+
+  projectTemplates: defineTable({
+    name: v.string(),
+    description: v.string(),
+    category: v.string(), // "software", "marketing", "design", etc.
+    icon: v.string(), // Emoji or icon identifier
+    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    workflowStates: v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        order: v.number(),
+      }),
+    ),
+    defaultLabels: v.array(
+      v.object({
+        name: v.string(),
+        color: v.string(),
+      }),
+    ),
+    isBuiltIn: v.boolean(), // Built-in templates vs user-created
+    createdBy: v.optional(v.id("users")),
+    createdAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_built_in", ["isBuiltIn"]),
+
+  automationRules: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+    trigger: v.string(), // Trigger type: "status_changed", "assignee_changed", etc.
+    triggerValue: v.optional(v.string()), // Optional trigger value (e.g., specific status)
+    actionType: v.string(), // Action: "set_assignee", "add_label", "send_notification", etc.
+    actionValue: v.string(), // Action value/params as JSON string
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    executionCount: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"])
+    .index("by_project_active", ["projectId", "isActive"]),
+
+  customFields: defineTable({
+    projectId: v.id("projects"),
+    name: v.string(),
+    fieldKey: v.string(), // Unique key like "customer_id"
+    fieldType: v.union(
+      v.literal("text"),
+      v.literal("number"),
+      v.literal("select"),
+      v.literal("multiselect"),
+      v.literal("date"),
+      v.literal("checkbox"),
+      v.literal("url"),
+    ),
+    options: v.optional(v.array(v.string())), // For select/multiselect types
+    isRequired: v.boolean(),
+    description: v.optional(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_key", ["projectId", "fieldKey"]),
+
+  customFieldValues: defineTable({
+    issueId: v.id("issues"),
+    fieldId: v.id("customFields"),
+    value: v.string(), // Stored as string, parsed based on field type
+    updatedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_field", ["fieldId"])
+    .index("by_issue_field", ["issueId", "fieldId"]),
+
+  notifications: defineTable({
+    userId: v.id("users"),
+    type: v.string(), // "mention", "assigned", "comment", "status_change", etc.
+    title: v.string(),
+    message: v.string(),
+    issueId: v.optional(v.id("issues")),
+    projectId: v.optional(v.id("projects")),
+    documentId: v.optional(v.id("documents")),
+    actorId: v.optional(v.id("users")), // Who triggered the notification
+    isRead: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_read", ["userId", "isRead"])
+    .index("by_user_created", ["userId", "createdAt"]),
 };
 
 export default defineSchema({

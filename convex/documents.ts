@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 export const create = mutation({
   args: {
@@ -49,7 +49,7 @@ export const list = query({
 
     // Combine and add creator info
     const allDocuments = [...privateDocuments, ...publicDocuments];
-    
+
     return await Promise.all(
       allDocuments.map(async (doc) => {
         const creator = await ctx.db.get(doc.createdBy);
@@ -58,7 +58,7 @@ export const list = query({
           creatorName: creator?.name || creator?.email || "Unknown",
           isOwner: doc.createdBy === userId,
         };
-      })
+      }),
     );
   },
 });
@@ -68,7 +68,7 @@ export const get = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const document = await ctx.db.get(args.id);
-    
+
     if (!document) {
       return null;
     }
@@ -173,15 +173,11 @@ export const search = query({
 
     const results = await ctx.db
       .query("documents")
-      .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query)
-      )
+      .withSearchIndex("search_title", (q) => q.search("title", args.query))
       .collect();
 
     // Filter results based on access permissions
-    const accessibleResults = results.filter(
-      (doc) => doc.isPublic || doc.createdBy === userId
-    );
+    const accessibleResults = results.filter((doc) => doc.isPublic || doc.createdBy === userId);
 
     return await Promise.all(
       accessibleResults.map(async (doc) => {
@@ -191,7 +187,7 @@ export const search = query({
           creatorName: creator?.name || creator?.email || "Unknown",
           isOwner: doc.createdBy === userId,
         };
-      })
+      }),
     );
   },
 });

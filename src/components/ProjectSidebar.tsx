@@ -1,8 +1,9 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { handleKeyboardClick } from "@/lib/accessibility";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
@@ -32,7 +33,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         isPublic: newProjectIsPublic,
         boardType: newProjectBoardType,
       });
-      
+
       setNewProjectName("");
       setNewProjectKey("");
       setNewProjectDescription("");
@@ -41,8 +42,8 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       setShowCreateForm(false);
       onSelectProject(projectId);
       toast.success("Project created successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create project");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create project");
     }
   };
 
@@ -51,9 +52,10 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Projects</h2>
-        
+
         {/* Create Project Button */}
         <button
+          type="button"
           onClick={() => setShowCreateForm(true)}
           className="w-full px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
         >
@@ -71,7 +73,6 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
             />
             <input
               type="text"
@@ -145,27 +146,27 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
             {projects.map((project) => (
               <div
                 key={project._id}
+                role="button"
+                tabIndex={0}
                 className={`group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedProjectId === project._id
                     ? "bg-blue-50 border border-blue-200"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={() => onSelectProject(project._id)}
+                onKeyDown={handleKeyboardClick(() => onSelectProject(project._id))}
+                aria-label={`Select project ${project.name}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900 truncate">
-                        {project.name}
-                      </h3>
+                      <h3 className="font-medium text-gray-900 truncate">{project.name}</h3>
                       <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                         {project.key}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-xs text-gray-500">
-                        {project.issueCount} issues
-                      </span>
+                      <span className="text-xs text-gray-500">{project.issueCount} issues</span>
                       <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">
                         {project.boardType}
                       </span>
@@ -180,9 +181,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400">
-                      by {project.creatorName}
-                    </p>
+                    <p className="text-xs text-gray-400">by {project.creatorName}</p>
                   </div>
                 </div>
               </div>

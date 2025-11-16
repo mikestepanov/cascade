@@ -1,11 +1,11 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import type { BlockNoteEditor } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
-import { BlockNoteEditor } from "@blocknote/core";
+import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -61,11 +61,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   const handleTogglePublic = async () => {
     try {
       await togglePublic({ id: documentId });
-      toast.success(
-        document.isPublic
-          ? "Document is now private"
-          : "Document is now public"
-      );
+      toast.success(document.isPublic ? "Document is now private" : "Document is now public");
     } catch {
       toast.error("Failed to update document visibility");
     }
@@ -85,12 +81,23 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
                 className="text-2xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
-                autoFocus
               />
             ) : (
               <h1
+                role={document.isOwner ? "button" : undefined}
+                tabIndex={document.isOwner ? 0 : undefined}
                 className="text-2xl font-bold text-gray-900 cursor-pointer hover:bg-gray-50 rounded px-2 py-1 transition-colors"
                 onClick={document.isOwner ? handleTitleEdit : undefined}
+                onKeyDown={
+                  document.isOwner
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleTitleEdit();
+                        }
+                      }
+                    : undefined
+                }
                 title={document.isOwner ? "Click to edit title" : ""}
               >
                 {document.title}
@@ -100,9 +107,10 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
           <div className="flex items-center space-x-4">
             <PresenceIndicator roomId={documentId} userId={userId} />
-            
+
             {document.isOwner && (
               <button
+                type="button"
                 onClick={() => void handleTogglePublic()}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   document.isPublic
@@ -131,14 +139,11 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
             </div>
           ) : sync.editor ? (
-            <BlockNoteView
-              editor={sync.editor}
-              theme="light"
-              className="min-h-96"
-            />
+            <BlockNoteView editor={sync.editor} theme="light" className="min-h-96" />
           ) : (
             <div className="text-center py-12">
               <button
+                type="button"
                 onClick={() => void sync.create({ type: "doc", content: [] })}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >

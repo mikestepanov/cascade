@@ -1,8 +1,11 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { showSuccess, showError } from "@/lib/toast";
+import { formatDate } from "@/lib/dates";
+import { getStatusColor } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { toast } from "sonner";
+import type { Id } from "../../convex/_generated/dataModel";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
@@ -32,15 +35,15 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       setNewSprintName("");
       setNewSprintGoal("");
       setShowCreateForm(false);
-      toast.success("Sprint created successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create sprint");
+      showSuccess("Sprint created successfully");
+    } catch (error) {
+      showError(error, "Failed to create sprint");
     }
   };
 
   const handleStartSprint = async (sprintId: Id<"sprints">) => {
     const startDate = Date.now();
-    const endDate = startDate + (14 * 24 * 60 * 60 * 1000); // 2 weeks
+    const endDate = startDate + 14 * 24 * 60 * 60 * 1000; // 2 weeks
 
     try {
       await startSprint({
@@ -48,25 +51,25 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         startDate,
         endDate,
       });
-      toast.success("Sprint started successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start sprint");
+      showSuccess("Sprint started successfully");
+    } catch (error) {
+      showError(error, "Failed to start sprint");
     }
   };
 
   const handleCompleteSprint = async (sprintId: Id<"sprints">) => {
     try {
       await completeSprint({ sprintId });
-      toast.success("Sprint completed successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to complete sprint");
+      showSuccess("Sprint completed successfully");
+    } catch (error) {
+      showError(error, "Failed to complete sprint");
     }
   };
 
   if (!sprints) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -76,6 +79,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900">Sprint Management</h2>
         <button
+          type="button"
           onClick={() => setShowCreateForm(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
@@ -88,22 +92,19 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Sprint Name
-              </label>
+              <div className="block text-sm font-medium text-gray-700 mb-1">Sprint Name</div>
               <input
                 type="text"
                 value={newSprintName}
                 onChange={(e) => setNewSprintName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., Sprint 1"
-                autoFocus
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="block text-sm font-medium text-gray-700 mb-1">
                 Sprint Goal (Optional)
-              </label>
+              </div>
               <textarea
                 value={newSprintGoal}
                 onChange={(e) => setNewSprintGoal(e.target.value)}
@@ -143,44 +144,27 @@ export function SprintManager({ projectId }: SprintManagerProps) {
           </div>
         ) : (
           sprints.map((sprint) => (
-            <div
-              key={sprint._id}
-              className="bg-white border border-gray-200 rounded-lg p-4"
-            >
+            <div key={sprint._id} className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {sprint.name}
-                    </h3>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        sprint.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : sprint.status === "completed"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
+                    <h3 className="text-lg font-medium text-gray-900">{sprint.name}</h3>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(sprint.status)}`}>
                       {sprint.status}
                     </span>
-                    <span className="text-sm text-gray-500">
-                      {sprint.issueCount} issues
-                    </span>
+                    <span className="text-sm text-gray-500">{sprint.issueCount} issues</span>
                   </div>
-                  {sprint.goal && (
-                    <p className="text-gray-600 mb-2">{sprint.goal}</p>
-                  )}
+                  {sprint.goal && <p className="text-gray-600 mb-2">{sprint.goal}</p>}
                   {sprint.startDate && sprint.endDate && (
                     <p className="text-sm text-gray-500">
-                      {new Date(sprint.startDate).toLocaleDateString()} -{" "}
-                      {new Date(sprint.endDate).toLocaleDateString()}
+                      {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
                     </p>
                   )}
                 </div>
                 <div className="flex space-x-2">
                   {sprint.status === "future" && (
                     <button
+                      type="button"
                       onClick={() => void handleStartSprint(sprint._id)}
                       className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                     >
@@ -189,6 +173,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                   )}
                   {sprint.status === "active" && (
                     <button
+                      type="button"
                       onClick={() => void handleCompleteSprint(sprint._id)}
                       className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
                     >
