@@ -174,7 +174,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               <span
                 className={`${compact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex-shrink-0`}
               >
-                {formatRelativeTime(activity.timestamp)}
+                {formatRelativeTime(activity.createdAt)}
               </span>
             </div>
           </div>

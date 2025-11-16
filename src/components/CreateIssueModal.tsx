@@ -119,7 +119,6 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter issue title..."
           required
-          autoFocus={!selectedTemplate}
         />
 
         <TextareaField
