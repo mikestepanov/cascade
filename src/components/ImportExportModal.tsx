@@ -121,7 +121,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
     setIsImporting(true);
 
     try {
-      let result: { created: number };
+      let result: { imported: number; failed: number; errors?: string[] };
 
       if (importFormat === "csv") {
         result = await importCSV({ projectId, csvData: importData });

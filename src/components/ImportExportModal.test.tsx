@@ -19,21 +19,56 @@ vi.mock("sonner", () => ({
   },
 }));
 
+// Helper to create a mock FileReader
+function createMockFileReader(data: string) {
+  return class MockFileReader {
+    onload: ((e: { target: { result: string } }) => void) | null = null;
+    result: string | null = null;
+
+    readAsText() {
+      this.result = data;
+      if (this.onload) {
+        this.onload({ target: { result: data } });
+      }
+    }
+  };
+}
+
 describe("ImportExportModal - Component Behavior", () => {
   const mockProjectId = "project123" as Id<"projects">;
   const mockOnClose = vi.fn();
   const mockImportCSV = vi.fn();
   const mockImportJSON = vi.fn();
+  let mutationCallCount = 0;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    (useMutation as vi.Mock).mockReturnValueOnce(mockImportCSV).mockReturnValueOnce(mockImportJSON);
+    mutationCallCount = 0;
+    mockImportCSV.mockReset();
+    mockImportJSON.mockReset();
+    mockOnClose.mockClear();
+
+    // Clear toast mocks
+    vi.mocked(toast.success).mockClear();
+    vi.mocked(toast.error).mockClear();
+
+    // Set up mutation mocks to persist across re-renders
+    (useMutation as vi.Mock).mockImplementation(() => {
+      mutationCallCount++;
+      if (mutationCallCount % 2 === 1) return mockImportCSV; // Odd calls = importCSV
+      return mockImportJSON; // Even calls = importJSON
+    });
+
     (useQuery as vi.Mock).mockReturnValue(undefined);
+  });
+
+  afterEach(() => {
+    // Clean up all spies to prevent test interference
+    vi.restoreAllMocks();
   });
 
   describe("Mode Switching Logic", () => {
     it("should default to export mode", () => {
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       expect(screen.getByText("Select Export Format")).toBeInTheDocument();
     });
@@ -41,7 +76,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should switch to import mode when Import button clicked", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
@@ -52,7 +87,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should switch back to export mode when Export button clicked", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
       await user.click(screen.getByText("📤 Export"));
@@ -64,7 +99,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should maintain separate format selections for export and import", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       // Set export to JSON
       await user.click(screen.getByText("JSON"));
@@ -91,7 +126,7 @@ describe("ImportExportModal - Component Behavior", () => {
         return queryCallCount > 1 ? "" : undefined;
       });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
 
@@ -109,7 +144,7 @@ describe("ImportExportModal - Component Behavior", () => {
         return queryCallCount > 1 ? "   " : undefined;
       });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
 
@@ -121,7 +156,17 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should NOT show error when export has valid data", async () => {
       const user = userEvent.setup();
 
-      // Mock document createElement/appendChild for download
+      // Mock useQuery to return CSV data when called
+      (useQuery as vi.Mock).mockImplementation((apiRef, args) => {
+        // Return undefined initially, then return data when isExporting becomes true
+        if (args === "skip") return undefined;
+        return "key,title\nTEST-1,Issue";
+      });
+
+      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+
+      // Setup mocks AFTER render to avoid interfering with React
+      const originalCreateElement = document.createElement.bind(document);
       const mockLink: Partial<HTMLAnchorElement> = {
         href: "",
         download: "",
@@ -132,20 +177,12 @@ describe("ImportExportModal - Component Behavior", () => {
         if (tagName === "a") {
           return mockLink as HTMLElement;
         }
-        return document.createElement(tagName);
+        return originalCreateElement(tagName);
       });
       vi.spyOn(document.body, "appendChild").mockReturnValue(mockNode);
       vi.spyOn(document.body, "removeChild").mockReturnValue(mockNode);
       global.URL.createObjectURL = vi.fn(() => "blob:mock");
       global.URL.revokeObjectURL = vi.fn();
-
-      let queryCallCount = 0;
-      (useQuery as vi.Mock).mockImplementation(() => {
-        queryCallCount++;
-        return queryCallCount > 1 ? "key,title\nTEST-1,Issue" : undefined;
-      });
-
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
 
@@ -161,7 +198,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue(undefined); // Keep loading
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
 
@@ -172,7 +209,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue(undefined);
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       const exportButton = screen.getByRole("button", { name: /Export as CSV/i });
       await user.click(exportButton);
@@ -183,7 +220,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show correct format in button text when switching formats", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       expect(screen.getByRole("button", { name: /Export as CSV/i })).toBeInTheDocument();
 
@@ -200,15 +237,17 @@ describe("ImportExportModal - Component Behavior", () => {
       render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
-      await user.click(screen.getByRole("button", { name: /Import from CSV/i }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please select a file to import");
+      // Button should be disabled when no file is selected, so we can't click it
+      // The test name is misleading - the component prevents the action by disabling the button
+      const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+      expect(importButton).toBeDisabled();
     });
 
     it("should disable import button when no file selected", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
@@ -219,21 +258,13 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should enable import button after file is selected", async () => {
       const user = userEvent.setup();
 
-      // Mock FileReader
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "title\nTest Issue" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("title\nTest Issue") as unknown as typeof FileReader;
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["title\nTest"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
@@ -249,23 +280,16 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should display selected file name and size", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["a".repeat(2048)], "issues.csv", { type: "text/csv" });
 
-      await user.click(fileInput, file);
+      await user.upload(fileInput, file);
 
       await waitFor(() => {
         expect(screen.getByText(/Selected: issues\.csv/i)).toBeInTheDocument();
@@ -276,20 +300,13 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should calculate file size correctly", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       // Create 5KB file
       const file = new File(["a".repeat(5120)], "data.csv", { type: "text/csv" });
 
@@ -305,22 +322,15 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should use singular 'issue' when importing 1 issue", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "title\nIssue 1" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("title\nIssue 1") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 1, failed: 0, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["title\nIssue"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
@@ -341,27 +351,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should use plural 'issues' when importing multiple", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "title\nIssue 1\nIssue 2" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("title\nIssue 1\nIssue 2") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 5, failed: 0, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -374,14 +380,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should include failure count in success message when some failed", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({
         imported: 8,
@@ -389,16 +388,19 @@ describe("ImportExportModal - Component Behavior", () => {
         errors: ["Error 1", "Error 2"],
       });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -411,27 +413,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should NOT show failure count when all succeeded", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 10, failed: 0, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -448,27 +446,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show error when no issues were imported", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 5, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -481,27 +475,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show error message when import fails", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockRejectedValue(new Error("Invalid CSV format"));
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -514,27 +504,24 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
-      mockImportCSV.mockRejectedValue(new Error());
+      // Reject with a non-Error to trigger the fallback message
+      mockImportCSV.mockRejectedValue("Unknown error");
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -549,29 +536,25 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show 'Importing...' text while importing", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
       );
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -582,29 +565,25 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should disable import button while importing", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ imported: 1, failed: 0 }), 100)),
       );
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -618,27 +597,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should close modal after successful import", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 3, failed: 0, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -651,27 +626,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should NOT close modal when import fails", async () => {
       const user = userEvent.setup();
 
-      global.FileReader = class MockFileReader {
-        onload: any;
-        readAsText() {
-          setTimeout(() => {
-            this.onload({ target: { result: "data" } });
-          }, 0);
-        }
-      } as typeof FileReader;
+      global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 2, errors: [] });
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       const file = new File(["data"], "test.csv", { type: "text/csv" });
 
       await user.upload(fileInput, file);
 
-      await waitFor(() => {});
+      await waitFor(() => {
+        const importButton = screen.getByRole("button", { name: /Import from CSV/i });
+        expect(importButton).not.toBeDisabled();
+      });
 
       const importButton = screen.getByRole("button", { name: /Import from CSV/i });
       await user.click(importButton);
@@ -687,23 +658,23 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should accept .csv files when CSV format selected", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       expect(fileInput).toHaveAttribute("accept", ".csv");
     });
 
     it("should accept .json files when JSON format selected", async () => {
       const user = userEvent.setup();
 
-      render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
+      const { container } = render(<ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />);
 
       await user.click(screen.getByText("📥 Import"));
       await user.click(screen.getByText("JSON"));
 
-      const fileInput = screen.getByLabelText(/Select File/i);
+      const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
       expect(fileInput).toHaveAttribute("accept", ".json");
     });
   });

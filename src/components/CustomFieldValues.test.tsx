@@ -24,6 +24,16 @@ describe("CustomFieldValues - Component Behavior", () => {
   const mockSetValue = vi.fn();
   const mockRemoveValue = vi.fn();
 
+  // Helper to setup useQuery mocks that persist across re-renders
+  const setupQueries = (customFieldsData: unknown, fieldValuesData: unknown) => {
+    let callCount = 0;
+    (useQuery as vi.Mock).mockImplementation(() => {
+      // First call is customFields, second is fieldValues
+      // Pattern repeats for re-renders
+      return callCount++ % 2 === 0 ? customFieldsData : fieldValuesData;
+    });
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -35,13 +45,13 @@ describe("CustomFieldValues - Component Behavior", () => {
       return mocks[mutationCallCount++ % 2];
     });
 
-    // Default useQuery setup (tests can override)
-    (useQuery as vi.Mock).mockReturnValue([]);
+    // Default: no custom fields
+    setupQueries([], []);
   });
 
   describe("Empty State & Visibility", () => {
     it("should not render when no custom fields exist", () => {
-      (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce([]);
+      setupQueries([], []);
 
       const { container } = render(
         <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
@@ -51,7 +61,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     });
 
     it("should not render when custom fields is undefined", () => {
-      (useQuery as vi.Mock).mockReturnValueOnce(undefined).mockReturnValueOnce([]);
+      setupQueries(undefined, []);
 
       const { container } = render(
         <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
@@ -69,7 +79,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -89,7 +99,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -117,7 +127,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockRemoveValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -145,7 +155,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockRemoveValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -171,7 +181,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -193,7 +203,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "Existing Value",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -210,7 +220,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -231,7 +241,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -256,7 +266,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "Current Value",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -275,7 +285,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -297,7 +307,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -323,7 +333,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -351,7 +361,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -387,7 +397,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "true",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -413,7 +423,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "false",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -436,7 +446,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -465,7 +475,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -495,7 +505,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           options: ["Frontend", "Backend", "Database"],
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -533,7 +543,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "Frontend, Database",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -559,7 +569,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -581,7 +591,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "true",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -603,7 +613,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "false",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -625,7 +635,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "https://example.com",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -651,7 +661,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: testDate,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -675,7 +685,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "Frontend, Backend",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -700,7 +710,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           value: "  Frontend  ,  Backend  ",
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce(mockValues);
+      setupQueries(mockFields, mockValues);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -720,7 +730,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: true,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -736,7 +746,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
@@ -755,7 +765,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
+      setupQueries(mockFields, []);
       mockSetValue.mockRejectedValue(new Error("Network error"));
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
@@ -779,8 +789,9 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      (useQuery as vi.Mock).mockReturnValueOnce(mockFields).mockReturnValueOnce([]);
-      mockSetValue.mockRejectedValue(new Error());
+      setupQueries(mockFields, []);
+      // Reject with a non-Error to trigger the fallback message
+      mockSetValue.mockRejectedValue("Unknown error");
 
       render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 

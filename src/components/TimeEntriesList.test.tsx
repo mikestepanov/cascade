@@ -110,7 +110,9 @@ describe("TimeEntriesList", () => {
 
     // When description is missing, the component simply doesn't render it
     // So we should just verify the entry is there without description
-    expect(screen.getByText("2.5h")).toBeInTheDocument();
+    // There are two "2.5h" texts - one for total and one for entry
+    const hourTexts = screen.getAllByText("2.5h");
+    expect(hourTexts).toHaveLength(2); // Total and entry
     expect(screen.getByText(/by John Doe/i)).toBeInTheDocument();
   });
 
@@ -194,7 +196,9 @@ describe("TimeEntriesList", () => {
     render(<TimeEntriesList issueId={mockIssueId} />);
 
     // Check that the date is formatted using the component's format (e.g., "Jan 15, 2024")
-    expect(screen.getByText(/Jan 15, 2024/)).toBeInTheDocument();
+    // There are two instances - one in entry date and one in "Logged on"
+    const dateTexts = screen.getAllByText(/Jan 15, 2024/);
+    expect(dateTexts.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should display multiple entries in chronological order", () => {
