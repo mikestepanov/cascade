@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { InputField } from "./ui/FormField";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface CustomFieldsManagerProps {
   projectId: Id<"projects">;
@@ -62,7 +63,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
 
   const handleSave = async () => {
     if (!name.trim() || (!editingId && !fieldKey.trim())) {
-      toast.error("Please fill in all required fields");
+      showError("Please fill in all required fields");
       return;
     }
 
@@ -83,7 +84,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
           isRequired,
           description: description || undefined,
         });
-        toast.success("Field updated");
+        showSuccess("Field updated");
       } else {
         await createField({
           projectId,
@@ -94,11 +95,11 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
           isRequired,
           description: description || undefined,
         });
-        toast.success("Field created");
+        showSuccess("Field created");
       }
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save field");
+      showError(error, "Failed to save field");
     }
   };
 
@@ -109,9 +110,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
 
     try {
       await removeField({ id });
-      toast.success("Field deleted");
+      showSuccess("Field deleted");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete field");
+      showError(error, "Failed to delete field");
     }
   };
 
@@ -252,7 +253,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Fields List */}
       {!customFields ? (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+          <LoadingSpinner />
         </div>
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">

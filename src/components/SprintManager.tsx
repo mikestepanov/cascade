@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError } from "@/lib/toast";
+import { formatDate } from "@/lib/dates";
+import { getStatusColor } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
@@ -32,9 +35,9 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       setNewSprintName("");
       setNewSprintGoal("");
       setShowCreateForm(false);
-      toast.success("Sprint created successfully");
+      showSuccess("Sprint created successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create sprint");
+      showError(error, "Failed to create sprint");
     }
   };
 
@@ -48,25 +51,25 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         startDate,
         endDate,
       });
-      toast.success("Sprint started successfully");
+      showSuccess("Sprint started successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to start sprint");
+      showError(error, "Failed to start sprint");
     }
   };
 
   const handleCompleteSprint = async (sprintId: Id<"sprints">) => {
     try {
       await completeSprint({ sprintId });
-      toast.success("Sprint completed successfully");
+      showSuccess("Sprint completed successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to complete sprint");
+      showError(error, "Failed to complete sprint");
     }
   };
 
   if (!sprints) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -146,15 +149,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">{sprint.name}</h3>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        sprint.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : sprint.status === "completed"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(sprint.status)}`}>
                       {sprint.status}
                     </span>
                     <span className="text-sm text-gray-500">{sprint.issueCount} issues</span>
@@ -162,8 +157,7 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                   {sprint.goal && <p className="text-gray-600 mb-2">{sprint.goal}</p>}
                   {sprint.startDate && sprint.endDate && (
                     <p className="text-sm text-gray-500">
-                      {new Date(sprint.startDate).toLocaleDateString()} -{" "}
-                      {new Date(sprint.endDate).toLocaleDateString()}
+                      {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
                     </p>
                   )}
                 </div>

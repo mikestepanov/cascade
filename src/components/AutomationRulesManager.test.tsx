@@ -666,7 +666,8 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockRejectedValue(new Error());
+      // Reject with a non-Error object to trigger the fallback message
+      mockCreateRule.mockRejectedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 

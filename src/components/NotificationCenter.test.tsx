@@ -10,6 +10,11 @@ vi.mock("convex/react", () => ({
   useMutation: vi.fn(),
 }));
 
+// Mock accessibility utilities
+vi.mock("@/lib/accessibility", () => ({
+  handleKeyboardClick: vi.fn((callback) => callback),
+}));
+
 describe("NotificationCenter", () => {
   const mockMarkAsRead = vi.fn();
   const mockMarkAllAsRead = vi.fn();
@@ -48,15 +53,13 @@ describe("NotificationCenter", () => {
   });
 
   it("should not show badge when unread count is 0", () => {
-    let callCount = 0;
-    (useQuery as vi.Mock).mockImplementation(() => {
-      callCount++;
-      return callCount === 1 ? [] : 0; // 1st call: notifications, 2nd call: unreadCount
-    });
+    (useQuery as vi.Mock).mockReturnValueOnce([]).mockReturnValueOnce(0);
 
     render(<NotificationCenter />);
 
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    // Badge should not be visible at all when count is 0
+    const badge = document.querySelector(".bg-red-500");
+    expect(badge).not.toBeInTheDocument();
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
@@ -118,8 +121,10 @@ describe("NotificationCenter", () => {
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(screen.getByText(/Issue assigned/i)).toBeInTheDocument();
-    expect(screen.getByText(/New comment/i)).toBeInTheDocument();
+    expect(screen.getByText("Issue assigned")).toBeInTheDocument();
+    expect(screen.getByText("New comment")).toBeInTheDocument();
+    expect(screen.getByText("You were assigned to TEST-123")).toBeInTheDocument();
+    expect(screen.getByText("Someone commented on your issue")).toBeInTheDocument();
   });
 
   it("should highlight unread notifications", async () => {
@@ -141,8 +146,11 @@ describe("NotificationCenter", () => {
     const button = screen.getByRole("button");
     await user.click(button);
 
-    const notification = screen.getByText(/Unread/i).closest("div");
-    expect(notification?.className).toContain("bg-blue-50");
+    // Find the notification container by traversing up from the title
+    const titleElement = screen.getByText("Unread");
+    // The notification div is a few levels up - it has the bg-blue-50 class
+    const notificationDiv = titleElement.closest(".bg-blue-50");
+    expect(notificationDiv).toBeInTheDocument();
   });
 
   it("should call markAsRead when mark as read button is clicked", async () => {
@@ -165,7 +173,7 @@ describe("NotificationCenter", () => {
     const bellButton = screen.getByRole("button");
     await user.click(bellButton);
 
-    const markReadButton = screen.getByTitle(/Mark as read/i);
+    const markReadButton = screen.getByTitle("Mark as read");
     await user.click(markReadButton);
 
     await waitFor(() => {
@@ -193,7 +201,7 @@ describe("NotificationCenter", () => {
     const bellButton = screen.getByRole("button");
     await user.click(bellButton);
 
-    const markAllButton = screen.getByText(/Mark all read/i);
+    const markAllButton = screen.getByText("Mark all read");
     await user.click(markAllButton);
 
     await waitFor(() => {
@@ -221,7 +229,7 @@ describe("NotificationCenter", () => {
     const bellButton = screen.getByRole("button");
     await user.click(bellButton);
 
-    const deleteButton = screen.getByTitle(/Delete/i);
+    const deleteButton = screen.getByTitle("Delete");
     await user.click(deleteButton);
 
     await waitFor(() => {
@@ -265,9 +273,9 @@ describe("NotificationCenter", () => {
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(screen.getByText(/Just now/i)).toBeInTheDocument();
-    expect(screen.getByText(/5m ago/i)).toBeInTheDocument();
-    expect(screen.getByText(/2h ago/i)).toBeInTheDocument();
+    expect(screen.getByText("Just now")).toBeInTheDocument();
+    expect(screen.getByText("5m ago")).toBeInTheDocument();
+    expect(screen.getByText("2h ago")).toBeInTheDocument();
   });
 
   it("should show correct icon for notification type", async () => {

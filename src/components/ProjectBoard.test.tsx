@@ -74,6 +74,7 @@ vi.mock("./AnalyticsDashboard", () => ({
 
 vi.mock("convex/react", () => ({
   useQuery: mockUseQuery,
+  useMutation: vi.fn(() => vi.fn()),
 }));
 
 // Module-level counter that persists across re-renders

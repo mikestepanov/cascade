@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError } from "@/lib/toast";
+import { toggleInArray } from "@/lib/array-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -72,19 +73,17 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         labels: selectedLabels.length > 0 ? selectedLabels : undefined,
       });
 
-      toast.success("Issue created successfully");
+      showSuccess("Issue created successfully");
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create issue");
+      showError(error, "Failed to create issue");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const toggleLabel = (labelId: Id<"labels">) => {
-    setSelectedLabels((prev) =>
-      prev.includes(labelId) ? prev.filter((id) => id !== labelId) : [...prev, labelId],
-    );
+    setSelectedLabels((prev) => toggleInArray(prev, labelId));
   };
 
   if (!project) return null;

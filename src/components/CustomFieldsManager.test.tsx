@@ -787,7 +787,8 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
-      mockCreateField.mockRejectedValue(new Error());
+      // Reject with a non-Error object to trigger the fallback message
+      mockCreateField.mockRejectedValue({});
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 

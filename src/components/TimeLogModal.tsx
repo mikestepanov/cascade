@@ -1,7 +1,8 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { showSuccess, showError } from "@/lib/toast";
+import { getTodayString } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -14,7 +15,7 @@ interface TimeLogModalProps {
 export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps) {
   const [hours, setHours] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(getTodayString());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const logTime = useMutation(api.timeEntries.create);
@@ -24,7 +25,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
 
     const hoursNum = parseFloat(hours);
     if (Number.isNaN(hoursNum) || hoursNum <= 0) {
-      toast.error("Please enter valid hours");
+      showError("Please enter valid hours");
       return;
     }
 
@@ -37,10 +38,10 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
         date: new Date(date).getTime(),
       });
 
-      toast.success(`Logged ${hoursNum}h on ${issueName}`);
+      showSuccess(`Logged ${hoursNum}h on ${issueName}`);
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to log time");
+      showError(error, "Failed to log time");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,7 +115,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                max={new Date().toISOString().split("T")[0]}
+                max={getTodayString()}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />

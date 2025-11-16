@@ -1,9 +1,12 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
+import { formatDate } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -38,7 +41,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
   if (!project || !issues) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -74,24 +77,20 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
     return Math.max((totalDays / timelineTotal) * 100, 2); // Minimum 2%
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "bg-red-500";
-      case "high":
-        return "bg-orange-500";
-      case "medium":
-        return "bg-yellow-500";
-      case "low":
-        return "bg-blue-500";
-      case "lowest":
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
+  const getRoadmapPriorityColor = (priority: string) => {
+    // Map priority to full background colors for roadmap bars
+    const colorMap: Record<string, string> = {
+      highest: "bg-red-500",
+      high: "bg-orange-500",
+      medium: "bg-yellow-500",
+      low: "bg-blue-500",
+      lowest: "bg-gray-500",
+    };
+    return colorMap[priority] || "bg-gray-500";
   };
 
-  const getTypeIcon = (type: string) => {
+  const _getTypeIcon = (type: string) => {
+    // Removed - using getTypeIcon from utilities
     switch (type) {
       case "bug":
         return "🐛";
@@ -215,14 +214,14 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                     <div
                       role="button"
                       tabIndex={0}
-                      className={`absolute h-6 rounded-full ${getPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
+                      className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
                       style={{
                         left: `${getPositionOnTimeline(issue.dueDate)}%`,
                         width: "5%", // Default width for single date
                       }}
                       onClick={() => setSelectedIssue(issue._id)}
                       onKeyDown={handleKeyboardClick(() => setSelectedIssue(issue._id))}
-                      title={`${issue.title} - Due: ${new Date(issue.dueDate).toLocaleDateString()}`}
+                      title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
                       aria-label={`View issue ${issue.key}`}
                     >
                       <span className="text-xs text-white font-medium truncate">

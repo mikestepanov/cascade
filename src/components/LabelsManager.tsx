@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -44,14 +44,14 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
     try {
       if (editingId) {
         await updateLabel({ id: editingId, name: name.trim(), color });
-        toast.success("Label updated");
+        showSuccess("Label updated");
       } else {
         await createLabel({ projectId, name: name.trim(), color });
-        toast.success("Label created");
+        showSuccess("Label created");
       }
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save label");
+      showError(error, "Failed to save label");
     } finally {
       setIsSubmitting(false);
     }
@@ -69,9 +69,9 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
 
     try {
       await deleteLabel({ id: deleteConfirm });
-      toast.success("Label deleted");
+      showSuccess("Label deleted");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete label");
+      showError(error, "Failed to delete label");
     } finally {
       setDeleteConfirm(null);
     }

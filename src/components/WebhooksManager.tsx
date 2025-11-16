@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError } from "@/lib/toast";
+import { toggleInArray } from "@/lib/array-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -52,7 +53,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
     e.preventDefault();
 
     if (selectedEvents.length === 0) {
-      toast.error("Select at least one event");
+      showError("Select at least one event");
       return;
     }
 
@@ -67,14 +68,14 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
 
       if (editingId) {
         await updateWebhook({ id: editingId, ...webhookData });
-        toast.success("Webhook updated");
+        showSuccess("Webhook updated");
       } else {
         await createWebhook({ projectId, ...webhookData });
-        toast.success("Webhook created");
+        showSuccess("Webhook created");
       }
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save webhook");
+      showError(error, "Failed to save webhook");
     } finally {
       setIsSubmitting(false);
     }
@@ -100,18 +101,16 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
 
     try {
       await deleteWebhook({ id: deleteConfirm });
-      toast.success("Webhook deleted");
+      showSuccess("Webhook deleted");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete webhook");
+      showError(error, "Failed to delete webhook");
     } finally {
       setDeleteConfirm(null);
     }
   };
 
   const toggleEvent = (event: string) => {
-    setSelectedEvents((prev) =>
-      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
-    );
+    setSelectedEvents((prev) => toggleInArray(prev, event));
   };
 
   return (

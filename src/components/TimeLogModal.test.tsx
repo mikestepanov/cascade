@@ -11,12 +11,20 @@ vi.mock("convex/react", () => ({
   useMutation: vi.fn(),
 }));
 
-// Mock sonner toast
-vi.mock("sonner", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+// Mock toast utilities
+vi.mock("@/lib/toast", () => ({
+  showSuccess: vi.fn(),
+  showError: vi.fn(),
+}));
+
+// Mock date utilities
+vi.mock("@/lib/dates", () => ({
+  getTodayString: vi.fn(() => new Date().toISOString().split("T")[0]),
+}));
+
+// Mock accessibility utilities
+vi.mock("@/lib/accessibility", () => ({
+  handleKeyboardClick: vi.fn((callback) => callback),
 }));
 
 describe("TimeLogModal", () => {
@@ -34,14 +42,14 @@ describe("TimeLogModal", () => {
       <TimeLogModal issueId={mockIssueId} issueName="TEST-123: Fix bug" onClose={mockOnClose} />,
     );
 
-    expect(screen.getByText(/Log Time on/i)).toBeInTheDocument();
-    expect(screen.getByText(/TEST-123: Fix bug/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Log Time" })).toBeInTheDocument();
+    expect(screen.getByText("TEST-123: Fix bug")).toBeInTheDocument();
   });
 
   it("should have hours input with correct step", () => {
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const hoursInput = screen.getByLabelText(/Hours/i) as HTMLInputElement;
+    const hoursInput = screen.getByPlaceholderText(/e.g., 2.5/i) as HTMLInputElement;
     expect(hoursInput).toBeInTheDocument();
     expect(hoursInput.type).toBe("number");
     expect(hoursInput.step).toBe("0.25");
@@ -51,7 +59,10 @@ describe("TimeLogModal", () => {
   it("should have date input defaulting to today", () => {
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const dateInput = screen.getByLabelText(/Date/i) as HTMLInputElement;
+    // Find date input by type attribute
+    const inputs = screen.getAllByDisplayValue(/\d{4}-\d{2}-\d{2}/);
+    const dateInput = inputs.find((input) => (input as HTMLInputElement).type === "date") as HTMLInputElement;
+
     expect(dateInput).toBeInTheDocument();
     expect(dateInput.type).toBe("date");
 
@@ -64,8 +75,8 @@ describe("TimeLogModal", () => {
     const user = userEvent.setup();
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const hoursInput = screen.getByLabelText(/Hours/i);
-    const descriptionInput = screen.getByLabelText(/Description/i);
+    const hoursInput = screen.getByPlaceholderText(/e.g., 2.5/i);
+    const descriptionInput = screen.getByPlaceholderText(/What did you work on?/i);
 
     await user.clear(hoursInput);
     await user.type(hoursInput, "2.5");
@@ -81,7 +92,7 @@ describe("TimeLogModal", () => {
 
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const hoursInput = screen.getByLabelText(/Hours/i);
+    const hoursInput = screen.getByPlaceholderText(/e.g., 2.5/i);
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
 
     await user.clear(hoursInput);
@@ -104,7 +115,7 @@ describe("TimeLogModal", () => {
 
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const hoursInput = screen.getByLabelText(/Hours/i);
+    const hoursInput = screen.getByPlaceholderText(/e.g., 2.5/i);
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
 
     await user.clear(hoursInput);
@@ -142,8 +153,8 @@ describe("TimeLogModal", () => {
 
     render(<TimeLogModal issueId={mockIssueId} issueName="TEST-123" onClose={mockOnClose} />);
 
-    const hoursInput = screen.getByLabelText(/Hours/i);
-    const descriptionInput = screen.getByLabelText(/Description/i);
+    const hoursInput = screen.getByPlaceholderText(/e.g., 2.5/i);
+    const descriptionInput = screen.getByPlaceholderText(/What did you work on?/i);
     const submitButton = screen.getByRole("button", { name: /Log Time/i });
 
     await user.clear(hoursInput);

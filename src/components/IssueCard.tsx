@@ -1,4 +1,5 @@
 import type { Id } from "../../convex/_generated/dataModel";
+import { getTypeIcon, getPriorityColor, getPriorityIcon } from "@/lib/issue-utils";
 
 interface Issue {
   _id: Id<"issues">;
@@ -44,52 +45,6 @@ export function IssueCard({
     e.stopPropagation();
     if (onToggleSelect) {
       onToggleSelect(issue._id);
-    }
-  };
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "bug":
-        return "🐛";
-      case "story":
-        return "📖";
-      case "epic":
-        return "⚡";
-      default:
-        return "✓";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "text-red-600";
-      case "high":
-        return "text-orange-600";
-      case "medium":
-        return "text-yellow-600";
-      case "low":
-        return "text-blue-600";
-      case "lowest":
-        return "text-gray-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "↑↑";
-      case "high":
-        return "↑";
-      case "medium":
-        return "→";
-      case "low":
-        return "↓";
-      case "lowest":
-        return "↓↓";
-      default:
-        return "→";
     }
   };
 

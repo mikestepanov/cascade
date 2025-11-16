@@ -11,17 +11,60 @@ vi.mock("convex/react", () => ({
   useMutation: vi.fn(),
 }));
 
-// Mock sonner toast
-vi.mock("sonner", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+// Mock toast utilities
+vi.mock("@/lib/toast", () => ({
+  showSuccess: vi.fn(),
+  showError: vi.fn(),
 }));
 
-// Mock TimeTracker component
+// Mock accessibility utilities
+vi.mock("@/lib/accessibility", () => ({
+  handleKeyboardClick: vi.fn((callback) => callback),
+}));
+
+// Mock issue utilities
+vi.mock("@/lib/issue-utils", () => ({
+  getTypeIcon: vi.fn((type: string) => {
+    const icons = { bug: "🐛", task: "✓", story: "📖", epic: "🎯" };
+    return icons[type as keyof typeof icons] || "📄";
+  }),
+  getPriorityColor: vi.fn((priority: string, type: string) => {
+    if (type === "badge") {
+      const colors = {
+        urgent: "bg-red-100 text-red-800",
+        high: "bg-orange-100 text-orange-800",
+        medium: "bg-yellow-100 text-yellow-800",
+        low: "bg-green-100 text-green-800",
+      };
+      return colors[priority as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    }
+    return "";
+  }),
+}));
+
+// Mock child components
 vi.mock("./TimeTracker", () => ({
   TimeTracker: ({ issueKey }: any) => <div>TimeTracker for {issueKey}</div>,
+}));
+
+vi.mock("./CustomFieldValues", () => ({
+  CustomFieldValues: () => <div>CustomFieldValues</div>,
+}));
+
+vi.mock("./FileAttachments", () => ({
+  FileAttachments: () => <div>FileAttachments</div>,
+}));
+
+vi.mock("./IssueComments", () => ({
+  IssueComments: () => <div>IssueComments</div>,
+}));
+
+vi.mock("./IssueDependencies", () => ({
+  IssueDependencies: () => <div>IssueDependencies</div>,
+}));
+
+vi.mock("./IssueWatchers", () => ({
+  IssueWatchers: () => <div>IssueWatchers</div>,
 }));
 
 describe("IssueDetailModal", () => {
@@ -54,7 +97,8 @@ describe("IssueDetailModal", () => {
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
-    expect(screen.getByRole("generic")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("should render issue details", () => {
@@ -100,7 +144,8 @@ describe("IssueDetailModal", () => {
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
     const priorityBadge = screen.getByText("high");
-    expect(priorityBadge.className).toContain("text-orange-600");
+    expect(priorityBadge.className).toContain("bg-orange-100");
+    expect(priorityBadge.className).toContain("text-orange-800");
   });
 
   it("should render TimeTracker component", () => {
@@ -129,13 +174,10 @@ describe("IssueDetailModal", () => {
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
-    const backdrop = screen.getByText(/TEST-123/i).closest(".fixed")
-      ?.previousSibling as HTMLElement;
+    const backdrop = screen.getByLabelText("Close modal");
+    await user.click(backdrop);
 
-    if (backdrop) {
-      await user.click(backdrop);
-      expect(mockOnClose).toHaveBeenCalled();
-    }
+    expect(mockOnClose).toHaveBeenCalled();
   });
 
   it("should enter edit mode when Edit button is clicked", async () => {
@@ -255,7 +297,7 @@ describe("IssueDetailModal", () => {
     (useQuery as vi.Mock).mockReturnValue(mockIssue);
     mockUpdateIssue.mockRejectedValue(new Error("Network error"));
 
-    const { toast } = await import("sonner");
+    const { showError } = await import("@/lib/toast");
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
@@ -270,7 +312,7 @@ describe("IssueDetailModal", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Failed to update issue");
+      expect(showError).toHaveBeenCalledWith(expect.any(Error), "Failed to update issue");
     });
   });
 });

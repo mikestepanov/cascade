@@ -1,6 +1,8 @@
 import { useQuery } from "convex/react";
+import { formatRelativeTime } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface ActivityFeedProps {
   projectId: Id<"projects">;
@@ -92,27 +94,10 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     }
   };
 
-  const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-
-    return date.toLocaleDateString();
-  };
-
   if (!activities) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-gray-100"></div>
+        <LoadingSpinner size="sm" />
       </div>
     );
   }
@@ -189,7 +174,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               <span
                 className={`${compact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex-shrink-0`}
               >
-                {formatTimestamp(activity.timestamp)}
+                {formatRelativeTime(activity.timestamp)}
               </span>
             </div>
           </div>

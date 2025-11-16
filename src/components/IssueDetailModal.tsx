@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
+import { showSuccess, showError } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -10,6 +11,7 @@ import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -28,7 +30,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <LoadingSpinner />
         </div>
       </div>
     );
@@ -41,10 +43,10 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
         title: title || undefined,
         description: description || undefined,
       });
-      toast.success("Issue updated");
+      showSuccess("Issue updated");
       setIsEditing(false);
-    } catch (_error) {
-      toast.error("Failed to update issue");
+    } catch (error) {
+      showError(error, "Failed to update issue");
     }
   };
 
@@ -52,36 +54,6 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
     setTitle(issue.title);
     setDescription(issue.description || "");
     setIsEditing(true);
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "bug":
-        return "🐛";
-      case "story":
-        return "📖";
-      case "epic":
-        return "⚡";
-      default:
-        return "✓";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "text-red-600 bg-red-50";
-      case "high":
-        return "text-orange-600 bg-orange-50";
-      case "medium":
-        return "text-yellow-600 bg-yellow-50";
-      case "low":
-        return "text-blue-600 bg-blue-50";
-      case "lowest":
-        return "text-gray-600 bg-gray-50";
-      default:
-        return "text-gray-600 bg-gray-50";
-    }
   };
 
   return (
@@ -106,7 +78,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-500 font-mono">{issue.key}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority)}`}>
+                  <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}>
                     {issue.priority}
                   </span>
                 </div>
