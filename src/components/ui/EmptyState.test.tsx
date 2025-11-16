@@ -1,0 +1,394 @@
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { EmptyState } from "./EmptyState";
+
+describe("EmptyState", () => {
+  describe("Basic Rendering", () => {
+    it("should render icon and title", () => {
+      render(<EmptyState icon="📦" title="No Items" />);
+
+      expect(screen.getByText("📦")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "No Items" })).toBeInTheDocument();
+    });
+
+    it("should render description when provided", () => {
+      render(
+        <EmptyState
+          icon="📝"
+          title="No Data"
+          description="There are no items to display"
+        />,
+      );
+
+      expect(screen.getByText("There are no items to display")).toBeInTheDocument();
+    });
+
+    it("should not render description when not provided", () => {
+      const { container } = render(<EmptyState icon="📦" title="Empty" />);
+
+      const description = container.querySelector("p");
+      expect(description).not.toBeInTheDocument();
+    });
+
+    it("should render action button when provided", () => {
+      const action = {
+        label: "Create New",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="➕" title="Empty" action={action} />);
+
+      expect(screen.getByRole("button", { name: "Create New" })).toBeInTheDocument();
+    });
+
+    it("should not render action button when not provided", () => {
+      render(<EmptyState icon="📦" title="Empty" />);
+
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("should render children when provided", () => {
+      render(
+        <EmptyState icon="📦" title="Empty">
+          <div data-testid="custom-content">Custom Content</div>
+        </EmptyState>,
+      );
+
+      expect(screen.getByTestId("custom-content")).toBeInTheDocument();
+      expect(screen.getByText("Custom Content")).toBeInTheDocument();
+    });
+  });
+
+  describe("Action Button Interactions", () => {
+    it("should call onClick when action button is clicked", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const action = {
+        label: "Add Item",
+        onClick,
+      };
+
+      render(<EmptyState icon="➕" title="Empty" action={action} />);
+
+      const button = screen.getByRole("button", { name: "Add Item" });
+      await user.click(button);
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("should call onClick multiple times when clicked multiple times", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const action = {
+        label: "Click Me",
+        onClick,
+      };
+
+      render(<EmptyState icon="🔘" title="Empty" action={action} />);
+
+      const button = screen.getByRole("button", { name: "Click Me" });
+      await user.click(button);
+      await user.click(button);
+      await user.click(button);
+
+      expect(onClick).toHaveBeenCalledTimes(3);
+    });
+
+    it("should have type='button' on action button", () => {
+      const action = {
+        label: "Action",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="📦" title="Empty" action={action} />);
+
+      const button = screen.getByRole("button", { name: "Action" });
+      expect(button).toHaveAttribute("type", "button");
+    });
+  });
+
+  describe("Props Combinations", () => {
+    it("should work with only required props (icon and title)", () => {
+      render(<EmptyState icon="🎯" title="Minimal State" />);
+
+      expect(screen.getByText("🎯")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Minimal State" })).toBeInTheDocument();
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("should work with icon, title, and description", () => {
+      render(
+        <EmptyState
+          icon="📊"
+          title="No Data"
+          description="Start by adding some items"
+        />,
+      );
+
+      expect(screen.getByText("📊")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "No Data" })).toBeInTheDocument();
+      expect(screen.getByText("Start by adding some items")).toBeInTheDocument();
+    });
+
+    it("should work with icon, title, and action", () => {
+      const action = {
+        label: "Get Started",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="🚀" title="Ready to Begin" action={action} />);
+
+      expect(screen.getByText("🚀")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Ready to Begin" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Get Started" })).toBeInTheDocument();
+    });
+
+    it("should work with all props", () => {
+      const action = {
+        label: "Create",
+        onClick: vi.fn(),
+      };
+
+      render(
+        <EmptyState
+          icon="✨"
+          title="All Props"
+          description="Testing all properties"
+          action={action}
+        >
+          <div>Custom children</div>
+        </EmptyState>,
+      );
+
+      expect(screen.getByText("✨")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "All Props" })).toBeInTheDocument();
+      expect(screen.getByText("Testing all properties")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
+      expect(screen.getByText("Custom children")).toBeInTheDocument();
+    });
+
+    it("should work with children but no action", () => {
+      render(
+        <EmptyState icon="🎨" title="Custom Children">
+          <button type="button">Custom Button</button>
+        </EmptyState>,
+      );
+
+      expect(screen.getByRole("button", { name: "Custom Button" })).toBeInTheDocument();
+    });
+  });
+
+  describe("Edge Cases", () => {
+    it("should handle empty string icon", () => {
+      render(<EmptyState icon="" title="No Icon" />);
+
+      expect(screen.getByRole("heading", { name: "No Icon" })).toBeInTheDocument();
+    });
+
+    it("should handle empty string title", () => {
+      render(<EmptyState icon="📦" title="" />);
+
+      expect(screen.getByRole("heading")).toHaveTextContent("");
+    });
+
+    it("should handle empty string description", () => {
+      const { container } = render(<EmptyState icon="📦" title="Empty" description="" />);
+
+      // Empty string is falsy in conditional, so paragraph won't render
+      const paragraph = container.querySelector("p");
+      expect(paragraph).not.toBeInTheDocument();
+    });
+
+    it("should handle very long title", () => {
+      const longTitle = "A".repeat(200);
+      render(<EmptyState icon="📦" title={longTitle} />);
+
+      expect(screen.getByRole("heading")).toHaveTextContent(longTitle);
+    });
+
+    it("should handle very long description", () => {
+      const longDesc = "B".repeat(500);
+      render(<EmptyState icon="📦" title="Title" description={longDesc} />);
+
+      expect(screen.getByText(longDesc)).toBeInTheDocument();
+    });
+
+    it("should handle special characters in title", () => {
+      render(<EmptyState icon="⚠️" title="Error: <script>alert('xss')</script>" />);
+
+      expect(
+        screen.getByRole("heading", { name: "Error: <script>alert('xss')</script>" }),
+      ).toBeInTheDocument();
+    });
+
+    it("should handle special characters in description", () => {
+      const specialChars = "Special chars: <>&\"'";
+      render(
+        <EmptyState
+          icon="📦"
+          title="Title"
+          description={specialChars}
+        />,
+      );
+
+      expect(screen.getByText(specialChars)).toBeInTheDocument();
+    });
+
+    it("should handle various emoji icons", () => {
+      render(<EmptyState icon="🎉🎊🎈" title="Multiple Emojis" />);
+
+      expect(screen.getByText("🎉🎊🎈")).toBeInTheDocument();
+    });
+
+    it("should handle empty action label", () => {
+      const action = {
+        label: "",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="📦" title="Empty" action={action} />);
+
+      const button = screen.getByRole("button");
+      expect(button).toHaveTextContent("");
+    });
+  });
+
+  describe("Styling and Classes", () => {
+    it("should have proper heading level", () => {
+      render(<EmptyState icon="📦" title="Heading Test" />);
+
+      const heading = screen.getByRole("heading", { level: 3 });
+      expect(heading).toHaveTextContent("Heading Test");
+    });
+
+    it("should apply animation classes to icon", () => {
+      const { container } = render(<EmptyState icon="📦" title="Test" />);
+
+      const iconDiv = container.querySelector(".animate-in");
+      expect(iconDiv).toBeInTheDocument();
+      expect(iconDiv).toHaveClass("fade-in");
+      expect(iconDiv).toHaveClass("duration-500");
+    });
+
+    it("should apply max-width to description", () => {
+      const { container } = render(
+        <EmptyState icon="📦" title="Test" description="Description text" />,
+      );
+
+      const paragraph = container.querySelector("p");
+      expect(paragraph).toHaveClass("max-w-sm");
+      expect(paragraph).toHaveClass("mx-auto");
+    });
+
+    it("should apply button styling", () => {
+      const action = {
+        label: "Button",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="📦" title="Test" action={action} />);
+
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("inline-flex");
+      expect(button).toHaveClass("bg-blue-600");
+      expect(button).toHaveClass("text-white");
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("should have semantic heading structure", () => {
+      render(<EmptyState icon="📦" title="Accessible Title" />);
+
+      expect(screen.getByRole("heading", { level: 3, name: "Accessible Title" })).toBeInTheDocument();
+    });
+
+    it("should have accessible button when action is provided", () => {
+      const action = {
+        label: "Accessible Action",
+        onClick: vi.fn(),
+      };
+
+      render(<EmptyState icon="📦" title="Test" action={action} />);
+
+      const button = screen.getByRole("button", { name: "Accessible Action" });
+      expect(button).toBeInTheDocument();
+      expect(button).toHaveAttribute("type", "button");
+    });
+
+    it("should support keyboard interaction on action button", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const action = {
+        label: "Keyboard Test",
+        onClick,
+      };
+
+      render(<EmptyState icon="📦" title="Test" action={action} />);
+
+      const button = screen.getByRole("button", { name: "Keyboard Test" });
+      button.focus();
+      await user.keyboard("{Enter}");
+
+      expect(onClick).toHaveBeenCalled();
+    });
+  });
+
+  describe("Real-world Scenarios", () => {
+    it("should display empty state for no search results", () => {
+      const action = {
+        label: "Clear Filters",
+        onClick: vi.fn(),
+      };
+
+      render(
+        <EmptyState
+          icon="🔍"
+          title="No Results Found"
+          description="Try adjusting your search criteria"
+          action={action}
+        />,
+      );
+
+      expect(screen.getByText("🔍")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "No Results Found" })).toBeInTheDocument();
+      expect(screen.getByText("Try adjusting your search criteria")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Clear Filters" })).toBeInTheDocument();
+    });
+
+    it("should display empty state for new project", () => {
+      const action = {
+        label: "Create First Task",
+        onClick: vi.fn(),
+      };
+
+      render(
+        <EmptyState
+          icon="🎯"
+          title="No Tasks Yet"
+          description="Get started by creating your first task"
+          action={action}
+        />,
+      );
+
+      expect(screen.getByText("🎯")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "No Tasks Yet" })).toBeInTheDocument();
+      expect(screen.getByText("Get started by creating your first task")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Create First Task" })).toBeInTheDocument();
+    });
+
+    it("should display empty state with custom content", () => {
+      render(
+        <EmptyState icon="📂" title="Empty Folder">
+          <div className="mt-4">
+            <p>You can drag and drop files here</p>
+            <button type="button">Browse Files</button>
+          </div>
+        </EmptyState>,
+      );
+
+      expect(screen.getByText("You can drag and drop files here")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Browse Files" })).toBeInTheDocument();
+    });
+  });
+});
