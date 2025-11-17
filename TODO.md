@@ -52,7 +52,7 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 | Priority | Feature | Impact | Effort | Status |
 |----------|---------|--------|--------|--------|
 | ✅ P0 | Loading Skeletons & Optimistic UI | High | 1 week | **✅ COMPLETE** |
-| ✅ P0 | Email Notifications | Critical | 2-3 weeks | **✅ 85% Complete** |
+| ✅ P0 | Email Notifications | Critical | 2-3 weeks | **✅ 100% COMPLETE** |
 | 🔥 P0 | Onboarding Flow | High | 2 weeks | Not Started |
 | ✅ P1 | Backend Testing (Phases 1-5) | High | 4 weeks | **✅ COMPLETE** |
 | ✅ P1 | Quick Wins (all 6 items) | High | 1 week | **✅ 100% COMPLETE** |
@@ -152,9 +152,9 @@ Replace all loading spinners with skeleton screens and implement optimistic UI u
 
 **Impact:** ⭐⭐⭐⭐⭐ Critical for retention
 **Effort:** 🟡 Medium (2-3 weeks)
-**Status:** 🟢 **85% Complete** - Core functionality implemented, digests and unsubscribe pending
+**Status:** ✅ **100% COMPLETE** - All features implemented including digests and unsubscribe
 
-**Completed:** 2025-11-17
+**Completed:** 2025-01-17
 
 #### What & Why
 Users need to be notified outside the app. Currently only in-app notifications exist. Email is critical for:
@@ -181,9 +181,8 @@ Users need to be notified outside the app. Currently only in-app notifications e
   - [x] `sendCommentEmail()` - Comment notifications
   - [x] `sendNotificationEmail()` - Unified dispatcher
   - [x] `convex/email/helpers.ts` - Helper to trigger from mutations
+  - [x] `sendDigestEmail()` - Daily/weekly digest emails ✅
   - [ ] `sendStatusChangeEmail()` - Status change notifications (future)
-  - [ ] `sendDailyDigest()` - Daily digest (future)
-  - [ ] `sendWeeklyDigest()` - Weekly digest (future)
 
 - [x] **Create notification preferences table** ✅
   - [x] `convex/schema.ts` - Added `notificationPreferences` table
@@ -200,12 +199,12 @@ Users need to be notified outside the app. Currently only in-app notifications e
   - [x] Emails sent via scheduler (non-blocking)
   - [x] Automatic preference checking before sending
 
-- [ ] **Create scheduled jobs for digests** (Future - Phase 2)
-  - [ ] Daily digest cron (runs every morning)
-  - [ ] Weekly digest cron (runs on configured day)
-  - [ ] Query users with digest enabled
-  - [ ] Generate digest summary
-  - [ ] Send digest emails
+- [x] **Create scheduled jobs for digests** ✅
+  - [x] Daily digest cron (runs every morning)
+  - [x] Weekly digest cron (runs on configured day)
+  - [x] Query users with digest enabled
+  - [x] Generate digest summary
+  - [x] Send digest emails
 
 **Frontend (React):**
 - [x] **Create notification preferences UI** ✅
@@ -225,18 +224,20 @@ Users need to be notified outside the app. Currently only in-app notifications e
   - [ ] Add "Notifications" tab
   - [ ] Integrate `NotificationPreferences` component
 
-- [ ] **Add unsubscribe functionality** (Future - Phase 2)
-  - [ ] Create unsubscribe page (`/unsubscribe/:token`)
-  - [ ] Generate unsubscribe tokens
-  - [ ] One-click unsubscribe from digest emails
+- [x] **Add unsubscribe functionality** ✅
+  - [x] Create unsubscribe page (`/unsubscribe?token=xxx`)
+  - [x] Generate unsubscribe tokens
+  - [x] One-click unsubscribe from all emails
+  - [x] Token expiration (30 days)
+  - [x] Unsubscribe links in all email templates
 
 **Email Templates:**
 - [x] **Create React Email templates** ✅
   - [x] `emails/_components/Layout.tsx` - Base layout with branding
-  - [x] `emails/MentionEmail.tsx` - @mention notification
-  - [x] `emails/AssignmentEmail.tsx` - Assignment notification
-  - [x] `emails/CommentEmail.tsx` - Comment notification
-  - [ ] `emails/DigestEmail.tsx` - Daily/weekly digest (future)
+  - [x] `emails/MentionEmail.tsx` - @mention notification (with unsubscribe)
+  - [x] `emails/AssignmentEmail.tsx` - Assignment notification (with unsubscribe)
+  - [x] `emails/CommentEmail.tsx` - Comment notification (with unsubscribe)
+  - [x] `emails/DigestEmail.tsx` - Daily/weekly digest (with unsubscribe) ✅
   - [ ] `emails/WelcomeEmail.tsx` - Welcome email (future)
 
 **Documentation:**
@@ -252,10 +253,12 @@ Users need to be notified outside the app. Currently only in-app notifications e
 ✅ Provider-agnostic (easy to switch from Resend to SendPulse)
 ✅ Non-blocking email sending (via scheduler)
 ✅ Automatic preference checking
+✅ Daily/weekly digest emails with scheduled cron jobs
+✅ One-click unsubscribe functionality
+✅ Unsubscribe links in all email templates
+✅ Token-based secure unsubscribe system
 
 **What's Left (Optional/Phase 2):**
-- Daily/weekly digest emails
-- Unsubscribe tokens and page
 - Settings page integration
 - Email open/click tracking
 - A/B testing for emails
@@ -274,23 +277,29 @@ Users need to be notified outside the app. Currently only in-app notifications e
 - [x] `convex/email/sendpulse.ts` - SendPulse stub
 - [x] `convex/email/index.ts` - Main entry point
 - [x] `convex/email/notifications.ts` - Email notification actions
+- [x] `convex/email/digests.ts` - Digest cron actions ✅
 - [x] `convex/email/helpers.ts` - Helper functions
 - [x] `convex/email/README.md` - Documentation
+- [x] `convex/email/SETUP.md` - Comprehensive setup guide ✅
 - [x] `convex/notificationPreferences.ts` - Preferences CRUD
+- [x] `convex/unsubscribe.ts` - Unsubscribe token system ✅
+- [x] `convex/crons.ts` - Digest cron jobs ✅
 - [x] `emails/_components/Layout.tsx` - Base email layout
-- [x] `emails/MentionEmail.tsx` - Mention template
-- [x] `emails/AssignmentEmail.tsx` - Assignment template
-- [x] `emails/CommentEmail.tsx` - Comment template
+- [x] `emails/MentionEmail.tsx` - Mention template (with unsubscribe)
+- [x] `emails/AssignmentEmail.tsx` - Assignment template (with unsubscribe)
+- [x] `emails/CommentEmail.tsx` - Comment template (with unsubscribe)
+- [x] `emails/DigestEmail.tsx` - Digest template ✅
 - [x] `src/components/NotificationPreferences.tsx` - Settings UI
+- [x] `src/components/UnsubscribePage.tsx` - Unsubscribe UI ✅
 - [x] `.env.example` - Environment variable docs
-- [ ] `convex/crons.ts` - Digest cron jobs (future)
 - [ ] `src/components/UserSettings.tsx` - Settings page (future)
 
 #### Files Modified
-- [x] `convex/schema.ts` - Added notificationPreferences table
+- [x] `convex/schema.ts` - Added notificationPreferences and unsubscribeTokens tables
 - [x] `convex/issues.ts` - Hooked email into addComment and update
+- [x] `convex/notifications.ts` - Added listForDigest internal query
+- [x] `convex/users.ts` - Added listWithDigestPreference internal query
 - [x] `package.json` - Added resend, @react-email packages
-- `convex/notifications.ts` - Hook in email notifications
 #### External Services Required
 - Email service (Resend recommended)
   - Free tier: 3,000 emails/month

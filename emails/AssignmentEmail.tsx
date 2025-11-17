@@ -4,7 +4,7 @@
  * Sent when a user is assigned to an issue
  */
 
-import { Button, Heading, Link, Section, Text } from "@react-email/components";
+import { Button, Heading, Hr, Link, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { EmailLayout } from "./_components/Layout";
 
@@ -17,6 +17,7 @@ interface AssignmentEmailProps {
   issueUrl: string;
   projectName: string;
   dueDate?: string;
+  unsubscribeUrl: string;
 }
 
 export function AssignmentEmail({
@@ -28,6 +29,7 @@ export function AssignmentEmail({
   issueUrl,
   projectName,
   dueDate,
+  unsubscribeUrl,
 }: AssignmentEmailProps) {
   const preview = `You were assigned to ${issueKey}: ${issueTitle}`;
 
@@ -90,6 +92,22 @@ export function AssignmentEmail({
           {issueUrl}
         </Link>
       </Text>
+
+      {/* Unsubscribe */}
+      <Hr style={divider} />
+      <Section style={unsubscribeSection}>
+        <Text style={unsubscribeText}>
+          You received this email because you were assigned to this issue. You can{" "}
+          <Link href={unsubscribeUrl} style={link}>
+            change your notification preferences
+          </Link>{" "}
+          or{" "}
+          <Link href={unsubscribeUrl} style={link}>
+            unsubscribe
+          </Link>{" "}
+          anytime.
+        </Text>
+      </Section>
     </EmailLayout>
   );
 }
@@ -164,6 +182,23 @@ const button = {
   textAlign: "center" as const,
   display: "inline-block",
   padding: "12px 32px",
+};
+
+const divider = {
+  borderColor: "#e5e7eb",
+  margin: "24px 0",
+};
+
+const unsubscribeSection = {
+  margin: "16px 0 0",
+};
+
+const unsubscribeText = {
+  color: "#6b7280",
+  fontSize: "12px",
+  lineHeight: "16px",
+  textAlign: "center" as const,
+  margin: "0",
 };
 
 export default AssignmentEmail;

@@ -4,7 +4,7 @@
  * Sent when a user is @mentioned in an issue, comment, or document
  */
 
-import { Button, Heading, Link, Section, Text } from "@react-email/components";
+import { Button, Heading, Hr, Link, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { EmailLayout } from "./_components/Layout";
 
@@ -15,6 +15,7 @@ interface MentionEmailProps {
   commentText?: string;
   issueUrl: string;
   projectName: string;
+  unsubscribeUrl: string;
 }
 
 export function MentionEmail({
@@ -24,6 +25,7 @@ export function MentionEmail({
   commentText,
   issueUrl,
   projectName,
+  unsubscribeUrl,
 }: MentionEmailProps) {
   const preview = `${mentionedByName} mentioned you in ${issueKey}`;
 
@@ -67,6 +69,22 @@ export function MentionEmail({
           {issueUrl}
         </Link>
       </Text>
+
+      {/* Unsubscribe */}
+      <Hr style={divider} />
+      <Section style={unsubscribeSection}>
+        <Text style={unsubscribeText}>
+          You received this email because you were mentioned. You can{" "}
+          <Link href={unsubscribeUrl} style={link}>
+            change your notification preferences
+          </Link>{" "}
+          or{" "}
+          <Link href={unsubscribeUrl} style={link}>
+            unsubscribe
+          </Link>{" "}
+          anytime.
+        </Text>
+      </Section>
     </EmailLayout>
   );
 }
@@ -160,6 +178,23 @@ const button = {
   textAlign: "center" as const,
   display: "inline-block",
   padding: "12px 32px",
+};
+
+const divider = {
+  borderColor: "#e5e7eb",
+  margin: "24px 0",
+};
+
+const unsubscribeSection = {
+  margin: "16px 0 0",
+};
+
+const unsubscribeText = {
+  color: "#6b7280",
+  fontSize: "12px",
+  lineHeight: "16px",
+  textAlign: "center" as const,
+  margin: "0",
 };
 
 // Default export for React Email CLI
