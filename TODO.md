@@ -6,6 +6,12 @@
 
 This document serves as the comprehensive roadmap for Cascade development, prioritizing features based on user impact, competitive analysis, and technical feasibility.
 
+> **📌 Looking for setup instructions?** See [HUMAN_TODO.md](./HUMAN_TODO.md) for all manual setup tasks including:
+> - Email provider configuration (Resend/SendPulse)
+> - Environment variables template
+> - Backend testing setup
+> - Production deployment checklist
+
 ---
 
 ## 📊 Current State Summary
