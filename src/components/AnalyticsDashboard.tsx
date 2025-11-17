@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Skeleton, SkeletonStatCard } from "./ui/Skeleton";
 
 interface Props {
   projectId: Id<"projects">;
@@ -16,8 +17,42 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
   if (!analytics || !velocity) {
     return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="p-6 overflow-y-auto h-full bg-gray-50">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Header Skeleton */}
+          <div>
+            <Skeleton className="h-8 w-64 mb-2" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+
+          {/* Metric Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+            <SkeletonStatCard />
+          </div>
+
+          {/* Charts Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg shadow p-6">
+              <Skeleton className="h-6 w-48 mb-4" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <Skeleton className="h-6 w-48 mb-4" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <Skeleton className="h-6 w-48 mb-4" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <Skeleton className="h-6 w-48 mb-4" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

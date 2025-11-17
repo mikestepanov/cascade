@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/dates";
 import { getStatusColor } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { SkeletonProjectCard } from "./ui/Skeleton";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
@@ -68,8 +68,15 @@ export function SprintManager({ projectId }: SprintManagerProps) {
 
   if (!sprints) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Sprint Management</h2>
+        </div>
+        <div className="space-y-4">
+          <SkeletonProjectCard />
+          <SkeletonProjectCard />
+          <SkeletonProjectCard />
+        </div>
       </div>
     );
   }

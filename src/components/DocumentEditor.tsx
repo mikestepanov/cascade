@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
+import { Skeleton, SkeletonText } from "./ui/Skeleton";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
@@ -27,8 +28,28 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   if (!document || !userId) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex flex-col h-full bg-white">
+        {/* Document Header Skeleton */}
+        <div className="border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex items-center space-x-4">
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+        </div>
+
+        {/* Editor Skeleton */}
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-4xl mx-auto p-6">
+            <SkeletonText lines={8} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -135,9 +156,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
       <div className="flex-1 overflow-auto">
         <div className="max-w-4xl mx-auto p-6">
           {sync.isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
+            <SkeletonText lines={8} />
           ) : sync.editor ? (
             <BlockNoteView editor={sync.editor} theme="light" className="min-h-96" />
           ) : (

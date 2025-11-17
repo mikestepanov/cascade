@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Skeleton } from "./ui/Skeleton";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -40,8 +40,20 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
 
   if (!project || !issues) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
+      <div className="flex-1 overflow-auto p-6">
+        <div className="mb-6">
+          <Skeleton className="h-8 w-48 mb-2" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="space-y-4">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
+        </div>
       </div>
     );
   }

@@ -2,7 +2,7 @@ import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { SkeletonList } from "./ui/Skeleton";
 
 interface ActivityFeedProps {
   projectId: Id<"projects">;
@@ -95,11 +95,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   };
 
   if (!activities) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <LoadingSpinner size="sm" />
-      </div>
-    );
+    return <SkeletonList items={5} />;
   }
 
   if (activities.length === 0) {
