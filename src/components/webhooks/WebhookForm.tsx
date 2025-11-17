@@ -58,7 +58,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
       setSelectedEvents([]);
     }
     setIsSubmitting(false);
-  }, [webhook, isOpen]);
+  }, [webhook]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

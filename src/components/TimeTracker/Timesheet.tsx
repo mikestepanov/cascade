@@ -1,15 +1,15 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Clock, DollarSign, Edit, Trash2 } from "lucide-react";
+import { Calendar, DollarSign, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeEntries.getCurrentWeekTimesheet);
-  const updateEntry = useMutation(api.timeEntries.update);
+  const _updateEntry = useMutation(api.timeEntries.update);
   const deleteEntry = useMutation(api.timeEntries.remove);
 
-  const [editingEntry, setEditingEntry] = useState<string | null>(null);
+  const [_editingEntry, _setEditingEntry] = useState<string | null>(null);
 
   if (!timesheet) {
     return (
@@ -50,7 +50,7 @@ export function Timesheet() {
     try {
       await deleteEntry({ id: entryId as any });
       toast.success("Time entry deleted");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete entry");
     }
   };

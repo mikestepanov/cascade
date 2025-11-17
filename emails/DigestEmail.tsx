@@ -5,7 +5,6 @@
  */
 
 import { Button, Heading, Hr, Link, Section, Text } from "@react-email/components";
-import * as React from "react";
 import { EmailLayout } from "./_components/Layout";
 
 interface DigestItem {

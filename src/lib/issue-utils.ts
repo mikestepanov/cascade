@@ -111,7 +111,6 @@ export function getTypeLabel(type: string): string {
       return "📖 Story";
     case "epic":
       return "🎯 Epic";
-    case "task":
     default:
       return "📋 Task";
   }

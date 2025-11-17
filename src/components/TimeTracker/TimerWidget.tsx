@@ -54,7 +54,7 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
     try {
       await startTimer({ issueId });
       toast.success("Timer started");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to start timer");
     }
   };
@@ -66,7 +66,7 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
       setShowStopDialog(false);
       setBillable(true);
       setHourlyRate(undefined);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to stop timer");
     }
   };

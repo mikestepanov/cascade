@@ -8,7 +8,6 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
-import { Button } from "./ui/Button";
 
 export function NotificationPreferences() {
   const preferences = useQuery(api.notificationPreferences.get);

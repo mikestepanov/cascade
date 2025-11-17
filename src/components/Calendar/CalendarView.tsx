@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from "convex/react";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { useQuery } from "convex/react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { CreateEventModal } from "./CreateEventModal";
@@ -272,7 +271,7 @@ function MonthView({
 }) {
   // Get first day of month
   const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const _lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
   // Get start of calendar grid (previous month's days if needed)
   const startDay = new Date(firstDay);

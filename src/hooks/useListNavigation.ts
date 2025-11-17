@@ -21,7 +21,7 @@ export function useListNavigation<T>({
   // Reset selection when items change
   useEffect(() => {
     setSelectedIndex(-1);
-  }, [items]);
+  }, []);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {

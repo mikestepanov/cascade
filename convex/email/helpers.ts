@@ -39,8 +39,7 @@ export async function sendEmailNotification(
   // Get user email
   const user = await ctx.db.get(userId);
   if (!user || !("email" in user) || !user.email) {
-    console.warn("User has no email address:", userId);
-    return;
+    return; // User has no email address
   }
 
   // Get actor name
@@ -55,15 +54,13 @@ export async function sendEmailNotification(
   // Get issue details
   const issue = await ctx.db.get(issueId);
   if (!issue) {
-    console.warn("Issue not found:", issueId);
-    return;
+    return; // Issue not found
   }
 
   // Get project details
   const project = await ctx.db.get(issue.projectId);
   if (!project) {
-    console.warn("Project not found:", issue.projectId);
-    return;
+    return; // Project not found
   }
 
   // Schedule email to be sent (using action)

@@ -94,7 +94,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [historyStack, redoStack]); // Re-bind when history changes
+  }, [handleRedo, handleUndo]); // Re-bind when history changes
 
   const handleDragStart = (e: React.DragEvent, issueId: Id<"issues">) => {
     setDraggedIssue(issueId);

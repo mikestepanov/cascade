@@ -5,7 +5,6 @@
  */
 
 import { Button, Heading, Hr, Link, Section, Text } from "@react-email/components";
-import * as React from "react";
 import { EmailLayout } from "./_components/Layout";
 
 interface MentionEmailProps {
@@ -118,7 +117,7 @@ const issueBox = {
   margin: "16px 0",
 };
 
-const issueKey = {
+const _issueKey = {
   color: "#6b7280",
   fontSize: "12px",
   fontWeight: "600",
@@ -126,7 +125,7 @@ const issueKey = {
   textTransform: "uppercase" as const,
 };
 
-const issueTitle = {
+const _issueTitle = {
   color: "#111827",
   fontSize: "18px",
   fontWeight: "600",
@@ -155,7 +154,7 @@ const commentLabel = {
   textTransform: "uppercase" as const,
 };
 
-const commentText = {
+const _commentText = {
   color: "#374151",
   fontSize: "14px",
   lineHeight: "20px",

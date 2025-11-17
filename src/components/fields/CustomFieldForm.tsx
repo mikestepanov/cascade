@@ -55,7 +55,7 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
       setIsRequired(false);
       setDescription("");
     }
-  }, [field, isOpen]);
+  }, [field]);
 
   const handleSave = async () => {
     if (!name.trim() || (!field && !fieldKey.trim())) {

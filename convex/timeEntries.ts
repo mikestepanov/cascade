@@ -335,7 +335,10 @@ export const getProjectBilling = query({
     // Get all time entries for these issues
     const allEntriesArrays = await Promise.all(
       issueIds.map((issueId) =>
-        ctx.db.query("timeEntries").withIndex("by_issue", (q) => q.eq("issueId", issueId)).collect(),
+        ctx.db
+          .query("timeEntries")
+          .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+          .collect(),
       ),
     );
     let allEntries = allEntriesArrays.flat();

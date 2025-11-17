@@ -59,7 +59,7 @@ export function TemplateForm({ projectId, template, isOpen, onClose }: TemplateF
       setDefaultLabels("");
     }
     setIsSubmitting(false);
-  }, [template, isOpen]);
+  }, [template]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -52,7 +52,7 @@ function Content() {
   const [showWelcomeTour, setShowWelcomeTour] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const createSampleProject = useMutation(api.onboarding.createSampleProject);
-  const projects = useQuery(api.projects.list, {});
+  const _projects = useQuery(api.projects.list, {});
 
   // Check if user is new and should see onboarding
   useEffect(() => {
@@ -209,7 +209,7 @@ function Content() {
                       toast.success("Sample project created! Let's take a quick tour.");
                       setActiveView("projects");
                       setSelectedProjectId(projectId as Id<"projects">);
-                    } catch (error) {
+                    } catch (_error) {
                       toast.error("Failed to create sample project");
                     }
                   }}

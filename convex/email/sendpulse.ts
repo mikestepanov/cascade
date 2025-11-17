@@ -13,12 +13,6 @@
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 export class SendPulseProvider implements EmailProvider {
-  constructor() {
-    // TODO: Initialize SendPulse client
-    // const apiUserId = process.env.SENDPULSE_ID;
-    // const apiSecret = process.env.SENDPULSE_SECRET;
-  }
-
   isConfigured(): boolean {
     // return !!process.env.SENDPULSE_ID && !!process.env.SENDPULSE_SECRET;
     return false;

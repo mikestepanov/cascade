@@ -18,8 +18,6 @@ export const sendDailyDigests = internalAction({
       frequency: "daily",
     });
 
-    console.log(`Sending daily digests to ${users.length} users`);
-
     // Send digest to each user
     const results = await Promise.allSettled(
       users.map((user) =>
@@ -30,10 +28,8 @@ export const sendDailyDigests = internalAction({
       ),
     );
 
-    // Log results
     const successful = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
-    console.log(`Daily digest results: ${successful} sent, ${failed} failed`);
 
     return { sent: successful, failed };
   },
@@ -50,8 +46,6 @@ export const sendWeeklyDigests = internalAction({
       frequency: "weekly",
     });
 
-    console.log(`Sending weekly digests to ${users.length} users`);
-
     // Send digest to each user
     const results = await Promise.allSettled(
       users.map((user) =>
@@ -62,10 +56,8 @@ export const sendWeeklyDigests = internalAction({
       ),
     );
 
-    // Log results
     const successful = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
-    console.log(`Weekly digest results: ${successful} sent, ${failed} failed`);
 
     return { sent: successful, failed };
   },

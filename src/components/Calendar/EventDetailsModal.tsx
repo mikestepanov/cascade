@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Clock, Edit, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
+import { Calendar, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";

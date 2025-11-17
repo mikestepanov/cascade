@@ -169,7 +169,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       // Mock useQuery to return CSV data when called
-      (useQuery as vi.Mock).mockImplementation((apiRef, args) => {
+      (useQuery as vi.Mock).mockImplementation((_apiRef, args) => {
         // Return undefined initially, then return data when isExporting becomes true
         if (args === "skip") return undefined;
         return "key,title\nTEST-1,Issue";
