@@ -41,7 +41,6 @@ export function isEmailConfigured(): boolean {
  */
 export async function sendEmail(params: EmailSendParams): Promise<EmailSendResult> {
   if (!provider.isConfigured()) {
-    console.warn("Email provider not configured - email not sent");
     return {
       id: "not-configured",
       success: false,

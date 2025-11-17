@@ -61,10 +61,6 @@ export const sendMentionEmail = internalAction({
       text: `${mentionedByName} mentioned you in ${issueKey}: ${issueTitle}\n\nView: ${issueUrl}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
-    if (!result.success) {
-      console.error("Failed to send mention email:", result.error);
-    }
-
     return result;
   },
 });
@@ -129,10 +125,6 @@ export const sendAssignmentEmail = internalAction({
       text: `${assignedByName} assigned you to ${issueKey}: ${issueTitle}\n\nView: ${issueUrl}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
-    if (!result.success) {
-      console.error("Failed to send assignment email:", result.error);
-    }
-
     return result;
   },
 });
@@ -182,10 +174,6 @@ export const sendCommentEmail = internalAction({
       html,
       text: `${commenterName} commented on ${issueKey}: ${issueTitle}\n\n"${commentText}"\n\nView: ${issueUrl}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
-
-    if (!result.success) {
-      console.error("Failed to send comment email:", result.error);
-    }
 
     return result;
   },
@@ -269,8 +257,7 @@ export const sendNotificationEmail = internalAction({
         });
 
       default:
-        console.warn("Unknown notification type:", type);
-        return { success: false, error: "Unknown notification type" };
+        return { success: false, error: `Unknown notification type: ${type}` };
     }
   },
 });
@@ -289,8 +276,7 @@ export const sendDigestEmail = internalAction({
     // Get user details
     const user = await ctx.runQuery(internal.users.get, { id: userId });
     if (!user?.email) {
-      console.warn("No email found for user:", userId);
-      return { success: false, error: "No email found" };
+      return { success: false, error: "No email found" }; // User has no email address
     }
 
     // Calculate time range
@@ -309,7 +295,6 @@ export const sendDigestEmail = internalAction({
 
     // If no notifications, optionally skip sending (or send empty digest)
     if (notifications.length === 0) {
-      console.log(`No notifications for ${frequency} digest for user ${userId}`);
       return { success: true, id: "no-notifications" };
     }
 
@@ -355,10 +340,6 @@ export const sendDigestEmail = internalAction({
       html,
       text: `Your ${frequency} digest:\n\n${items.map((i: any) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
-
-    if (!result.success) {
-      console.error("Failed to send digest email:", result.error);
-    }
 
     return result;
   },

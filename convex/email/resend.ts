@@ -27,11 +27,10 @@ export class ResendProvider implements EmailProvider {
 
   async send(params: EmailSendParams): Promise<EmailSendResult> {
     if (!this.client) {
-      console.error("Resend is not configured. Set RESEND_API_KEY environment variable.");
       return {
         id: "not-configured",
         success: false,
-        error: "Email provider not configured",
+        error: "Email provider not configured. Set RESEND_API_KEY environment variable.",
       };
     }
 
@@ -46,7 +45,6 @@ export class ResendProvider implements EmailProvider {
       });
 
       if (result.error) {
-        console.error("Resend error:", result.error);
         return {
           id: "",
           success: false,
@@ -59,7 +57,6 @@ export class ResendProvider implements EmailProvider {
         success: true,
       };
     } catch (error) {
-      console.error("Failed to send email via Resend:", error);
       return {
         id: "",
         success: false,
