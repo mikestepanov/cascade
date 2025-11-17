@@ -83,6 +83,7 @@ const applicationTables = {
     dueDate: v.optional(v.number()),
     estimatedHours: v.optional(v.number()),
     loggedHours: v.optional(v.number()),
+    storyPoints: v.optional(v.number()),
     labels: v.array(v.string()),
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),

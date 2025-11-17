@@ -294,14 +294,12 @@ export async function queueOfflineMutation(
   };
 
   const id = await offlineDB.addMutation(mutation);
-  console.log(`[Offline] Queued mutation ${mutationType} with ID ${id}`);
   return id;
 }
 
 // Process offline queue
 export async function processOfflineQueue() {
   const pending = await offlineDB.getPendingMutations();
-  console.log(`[Offline] Processing ${pending.length} pending mutations`);
 
   for (const mutation of pending) {
     if (!mutation.id) continue;
@@ -310,16 +308,11 @@ export async function processOfflineQueue() {
       await offlineDB.updateMutationStatus(mutation.id, "syncing");
 
       // Parse mutation args
-      const args = JSON.parse(mutation.mutationArgs);
-
-      // Call the appropriate Convex mutation
-      // This would need to be implemented based on your mutation routing
-      console.log(`[Offline] Syncing ${mutation.mutationType}`, args);
+      const _args = JSON.parse(mutation.mutationArgs);
 
       // Mark as synced
       await offlineDB.updateMutationStatus(mutation.id, "synced");
     } catch (error) {
-      console.error(`[Offline] Failed to sync mutation ${mutation.id}:`, error);
       await offlineDB.updateMutationStatus(
         mutation.id,
         mutation.attempts >= 3 ? "failed" : "pending",

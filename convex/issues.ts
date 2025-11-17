@@ -22,6 +22,7 @@ export const create = mutation({
     labels: v.optional(v.array(v.id("labels"))),
     estimatedHours: v.optional(v.number()),
     dueDate: v.optional(v.number()),
+    storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -79,6 +80,7 @@ export const create = mutation({
       attachments: [],
       estimatedHours: args.estimatedHours,
       dueDate: args.dueDate,
+      storyPoints: args.storyPoints,
       order: maxOrder + 1,
     });
 
@@ -342,6 +344,7 @@ export const update = mutation({
     labels: v.optional(v.array(v.string())),
     dueDate: v.optional(v.union(v.number(), v.null())),
     estimatedHours: v.optional(v.union(v.number(), v.null())),
+    storyPoints: v.optional(v.union(v.number(), v.null())),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -436,6 +439,15 @@ export const update = mutation({
         field: "estimatedHours",
         oldValue: issue.estimatedHours,
         newValue: args.estimatedHours ?? undefined,
+      });
+    }
+
+    if (args.storyPoints !== undefined && args.storyPoints !== issue.storyPoints) {
+      updates.storyPoints = args.storyPoints ?? undefined;
+      changes.push({
+        field: "storyPoints",
+        oldValue: issue.storyPoints,
+        newValue: args.storyPoints ?? undefined,
       });
     }
 

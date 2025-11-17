@@ -126,15 +126,18 @@ export const getSprintBurndown = query({
       throw new Error("Project not found");
     }
 
-    // Calculate total points (using estimatedHours as story points)
-    const totalPoints = sprintIssues.reduce((sum, issue) => sum + (issue.estimatedHours || 0), 0);
+    // Calculate total points (using storyPoints, fallback to estimatedHours)
+    const totalPoints = sprintIssues.reduce(
+      (sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0),
+      0,
+    );
 
     // Get done states
     const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
 
     const completedPoints = sprintIssues
       .filter((issue) => doneStates.includes(issue.status))
-      .reduce((sum, issue) => sum + (issue.estimatedHours || 0), 0);
+      .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
 
     const remainingPoints = totalPoints - completedPoints;
 
@@ -222,7 +225,7 @@ export const getTeamVelocity = query({
 
         const completedPoints = sprintIssues
           .filter((issue) => doneStates.includes(issue.status))
-          .reduce((sum, issue) => sum + (issue.estimatedHours || 0), 0);
+          .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
 
         return {
           sprintName: sprint.name,

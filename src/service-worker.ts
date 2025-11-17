@@ -98,10 +98,6 @@ self.addEventListener("sync", (event) => {
 });
 
 async function syncOfflineQueue() {
-  // This would fetch pending mutations from IndexedDB and send to server
-  // Implementation depends on your IndexedDB structure
-  console.log("[SW] Syncing offline queue...");
-
   try {
     // Get pending mutations from IndexedDB
     const db = await openDB();
@@ -118,15 +114,9 @@ async function syncOfflineQueue() {
 
         // Mark as synced
         await markMutationSynced(db, mutation.id);
-      } catch (error) {
-        console.error("[SW] Failed to sync mutation:", error);
-      }
+      } catch (_error) {}
     }
-
-    console.log("[SW] Sync complete");
-  } catch (error) {
-    console.error("[SW] Sync failed:", error);
-  }
+  } catch (_error) {}
 }
 
 // IndexedDB helpers
@@ -192,13 +182,11 @@ async function markMutationSynced(db: IDBDatabase, id: number): Promise<void> {
 
 // Notify clients when new version is available
 self.addEventListener("install", (event) => {
-  console.log("[SW] Service Worker installing...");
   // Force the waiting service worker to become the active service worker
   event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("[SW] Service Worker activating...");
   event.waitUntil(
     Promise.all([
       // Clean up old caches

@@ -24,6 +24,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   );
   const [assigneeId, setAssigneeId] = useState<Id<"users"> | "">("");
   const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
+  const [storyPoints, setStoryPoints] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -71,6 +72,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         assigneeId: assigneeId || undefined,
         sprintId,
         labels: selectedLabels.length > 0 ? selectedLabels : undefined,
+        storyPoints: storyPoints ? Number.parseFloat(storyPoints) : undefined,
       });
 
       showSuccess("Issue created successfully");
@@ -168,6 +170,16 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             </option>
           ))}
         </SelectField>
+
+        <InputField
+          label="Story Points"
+          type="number"
+          value={storyPoints}
+          onChange={(e) => setStoryPoints(e.target.value)}
+          placeholder="Enter story points (optional)"
+          min="0"
+          step="0.5"
+        />
 
         {/* Labels */}
         {labels && labels.length > 0 && (

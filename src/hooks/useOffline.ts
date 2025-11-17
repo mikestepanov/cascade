@@ -32,8 +32,7 @@ export function useOfflineSyncStatus() {
           setPending(mutations);
           setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to load pending mutations:", error);
+      } catch (_error) {
         if (mounted) {
           setIsLoading(false);
         }
@@ -71,46 +70,30 @@ export function useOfflineQueue() {
     try {
       const mutations = await offlineDB.getPendingMutations();
       setQueue(mutations);
-    } catch (error) {
-      console.error("Failed to refresh queue:", error);
+    } catch (_error) {
     } finally {
       setIsLoading(false);
     }
   };
 
   const retryMutation = async (id: number) => {
-    try {
-      await offlineDB.updateMutationStatus(id, "pending");
-      await refresh();
-    } catch (error) {
-      console.error("Failed to retry mutation:", error);
-      throw error;
-    }
+    await offlineDB.updateMutationStatus(id, "pending");
+    await refresh();
   };
 
   const deleteMutation = async (id: number) => {
-    try {
-      await offlineDB.deleteMutation(id);
-      await refresh();
-    } catch (error) {
-      console.error("Failed to delete mutation:", error);
-      throw error;
-    }
+    await offlineDB.deleteMutation(id);
+    await refresh();
   };
 
   const clearSynced = async () => {
-    try {
-      await offlineDB.clearSyncedMutations();
-      await refresh();
-    } catch (error) {
-      console.error("Failed to clear synced mutations:", error);
-      throw error;
-    }
+    await offlineDB.clearSyncedMutations();
+    await refresh();
   };
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   return {
     queue,

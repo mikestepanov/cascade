@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, ExternalLink, Github, RefreshCw, Trash2, Wifi, WifiOff } from "lucide-react";
+import { Calendar, Github, RefreshCw, Trash2, Wifi, WifiOff } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
@@ -110,9 +110,8 @@ function GitHubIntegration() {
     try {
       await disconnectGitHub();
       toast.success("GitHub disconnected successfully");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to disconnect GitHub");
-      console.error(error);
     } finally {
       setIsDisconnecting(false);
     }
@@ -189,9 +188,8 @@ function LinkedRepositories() {
     try {
       await unlinkRepo({ repositoryId: repoId });
       toast.success("Repository unlinked");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to unlink repository");
-      console.error(error);
     }
   };
 
@@ -283,9 +281,8 @@ function GoogleCalendarIntegration() {
     try {
       await disconnectGoogle();
       toast.success("Google Calendar disconnected successfully");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to disconnect Google Calendar");
-      console.error(error);
     } finally {
       setIsDisconnecting(false);
     }
@@ -306,9 +303,8 @@ function GoogleCalendarIntegration() {
         syncEnabled: !calendarConnection.syncEnabled,
       });
       toast.success(`Sync ${!calendarConnection.syncEnabled ? "enabled" : "disabled"}`);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update sync settings");
-      console.error(error);
     } finally {
       setIsSaving(false);
     }
@@ -321,9 +317,8 @@ function GoogleCalendarIntegration() {
         syncDirection: direction,
       });
       toast.success("Sync direction updated");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update sync direction");
-      console.error(error);
     } finally {
       setIsSaving(false);
     }

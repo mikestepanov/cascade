@@ -216,6 +216,10 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 <span className="text-sm text-gray-500">Reporter:</span>
                 <p className="font-medium">{issue.reporter?.name || "Unknown"}</p>
               </div>
+              <div>
+                <span className="text-sm text-gray-500">Story Points:</span>
+                <p className="font-medium">{issue.storyPoints ?? "Not set"}</p>
+              </div>
             </div>
 
             {/* Labels */}

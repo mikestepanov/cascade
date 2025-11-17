@@ -13,6 +13,7 @@ interface Issue {
     image?: string;
   } | null;
   labels: string[];
+  storyPoints?: number;
 }
 
 interface IssueCardProps {
@@ -125,6 +126,12 @@ export function IssueCard({
             </div>
           )}
         </div>
+        {issue.storyPoints !== undefined && (
+          <div className="flex items-center space-x-1 text-xs text-gray-600">
+            <span className="font-medium">{issue.storyPoints}</span>
+            <span>pts</span>
+          </div>
+        )}
       </div>
     </div>
   );
