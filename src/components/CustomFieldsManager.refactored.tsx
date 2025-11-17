@@ -36,7 +36,6 @@ type CustomField = {
 export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
   const [showFormDialog, setShowFormDialog] = useState(false);
   const [editingField, setEditingField] = useState<CustomField | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<Id<"customFields"> | null>(null);
 
   const customFields = useQuery(api.customFields.list, { projectId });
   const removeField = useMutation(api.customFields.remove);

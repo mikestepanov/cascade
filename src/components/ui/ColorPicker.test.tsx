@@ -62,7 +62,7 @@ describe("ColorPicker", () => {
     });
 
     it("should apply correct background color to preset buttons", () => {
-      const { container } = render(<ColorPicker value="#EF4444" onChange={vi.fn()} />);
+      render(<ColorPicker value="#EF4444" onChange={vi.fn()} />);
 
       DEFAULT_PRESET_COLORS.forEach((color) => {
         const button = screen.getByLabelText(`Select color ${color}`);

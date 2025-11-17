@@ -102,7 +102,7 @@ describe("CommentRenderer", () => {
   describe("MentionBadge", () => {
     it("should render mention badge with correct styling", () => {
       const content = "Hello @[User](user-123)";
-      const { container } = render(<CommentRenderer content={content} />);
+      render(<CommentRenderer content={content} />);
 
       const badge = screen.getByText("@User");
       expect(badge).toHaveClass("inline-flex");
