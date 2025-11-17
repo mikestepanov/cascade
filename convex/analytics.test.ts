@@ -86,14 +86,16 @@ describe("Analytics", () => {
       // Move issues to different states
       if (inProgressState) {
         await t.mutation(api.issues.updateStatus, {
-          id: issue2,
-          status: inProgressState.id,
+          issueId: issue2,
+          newStatus: inProgressState.id,
+          newOrder: 0,
         });
       }
       if (doneState) {
         await t.mutation(api.issues.updateStatus, {
-          id: issue3,
-          status: doneState.id,
+          issueId: issue3,
+          newStatus: doneState.id,
+          newOrder: 0,
         });
       }
 
@@ -302,8 +304,9 @@ describe("Analytics", () => {
       // Complete one issue
       if (doneState) {
         await t.mutation(api.issues.updateStatus, {
-          id: issue1,
-          status: doneState.id,
+          issueId: issue1,
+          newStatus: doneState.id,
+          newOrder: 0,
         });
       }
 
@@ -449,8 +452,9 @@ describe("Analytics", () => {
       });
       if (doneState) {
         await t.mutation(api.issues.updateStatus, {
-          id: issue1,
-          status: doneState.id,
+          issueId: issue1,
+          newStatus: doneState.id,
+          newOrder: 0,
         });
       }
       await t.mutation(api.sprints.completeSprint, { sprintId: sprint1Id });
@@ -470,8 +474,9 @@ describe("Analytics", () => {
       });
       if (doneState) {
         await t.mutation(api.issues.updateStatus, {
-          id: issue2,
-          status: doneState.id,
+          issueId: issue2,
+          newStatus: doneState.id,
+          newOrder: 0,
         });
       }
       await t.mutation(api.sprints.completeSprint, { sprintId: sprint2Id });
@@ -582,8 +587,9 @@ describe("Analytics", () => {
       // Complete one issue
       if (doneState) {
         await t.mutation(api.issues.updateStatus, {
-          id: completedIssue,
-          status: doneState.id,
+          issueId: completedIssue,
+          newStatus: doneState.id,
+          newOrder: 0,
         });
       }
 

@@ -20,6 +20,8 @@ export const create = mutation({
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
     labels: v.optional(v.array(v.id("labels"))),
+    estimatedHours: v.optional(v.number()),
+    dueDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -75,6 +77,8 @@ export const create = mutation({
       epicId: args.epicId,
       linkedDocuments: [],
       attachments: [],
+      estimatedHours: args.estimatedHours,
+      dueDate: args.dueDate,
       order: maxOrder + 1,
     });
 
