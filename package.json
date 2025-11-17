@@ -16,7 +16,11 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "check": "pnpm run typecheck && pnpm run lint:check && pnpm run test run",
+    "test:convex": "vitest --config vitest.convex.config.ts",
+    "test:convex:ui": "vitest --config vitest.convex.config.ts --ui",
+    "test:convex:coverage": "vitest --config vitest.convex.config.ts --coverage",
+    "test:all": "pnpm run test run && pnpm run test:convex run",
+    "check": "pnpm run typecheck && pnpm run lint:check && pnpm run test:all",
     "preview": "vite preview"
   },
   "dependencies": {
