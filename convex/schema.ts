@@ -556,7 +556,7 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_host_status", ["hostId", "status"]),
 
-  // External calendar connections (Google, Outlook) - Future feature
+  // External calendar connections (Google, Outlook)
   calendarConnections: defineTable({
     userId: v.id("users"),
     provider: v.union(v.literal("google"), v.literal("outlook")),
@@ -580,6 +580,113 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_provider", ["provider"])
     .index("by_user_provider", ["userId", "provider"]),
+
+  // GitHub Integration
+  githubConnections: defineTable({
+    userId: v.id("users"),
+    githubUserId: v.string(), // GitHub user ID
+    githubUsername: v.string(), // GitHub username
+    // OAuth tokens
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.optional(v.number()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_github_user", ["githubUserId"]),
+
+  githubRepositories: defineTable({
+    projectId: v.id("projects"),
+    repoOwner: v.string(), // Repository owner (org or user)
+    repoName: v.string(), // Repository name
+    repoFullName: v.string(), // "owner/repo"
+    repoId: v.string(), // GitHub repository ID
+    // Settings
+    syncPRs: v.boolean(), // Sync pull requests
+    syncIssues: v.boolean(), // Sync GitHub issues (optional)
+    autoLinkCommits: v.boolean(), // Auto-link commits that mention issue keys
+    // Metadata
+    linkedBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_repo_id", ["repoId"])
+    .index("by_repo_full_name", ["repoFullName"]),
+
+  githubPullRequests: defineTable({
+    issueId: v.optional(v.id("issues")), // Linked Cascade issue
+    projectId: v.id("projects"),
+    repositoryId: v.id("githubRepositories"),
+    // GitHub PR data
+    prNumber: v.number(),
+    prId: v.string(), // GitHub PR ID
+    title: v.string(),
+    body: v.optional(v.string()),
+    state: v.union(v.literal("open"), v.literal("closed"), v.literal("merged")),
+    mergedAt: v.optional(v.number()),
+    closedAt: v.optional(v.number()),
+    // Author
+    authorUsername: v.string(),
+    authorAvatarUrl: v.optional(v.string()),
+    // Links
+    htmlUrl: v.string(), // GitHub PR URL
+    // Status checks
+    checksStatus: v.optional(
+      v.union(v.literal("pending"), v.literal("success"), v.literal("failure")),
+    ),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_project", ["projectId"])
+    .index("by_repository", ["repositoryId"])
+    .index("by_pr_id", ["prId"])
+    .index("by_repository_pr_number", ["repositoryId", "prNumber"]),
+
+  githubCommits: defineTable({
+    issueId: v.optional(v.id("issues")), // Auto-linked via commit message
+    projectId: v.id("projects"),
+    repositoryId: v.id("githubRepositories"),
+    // GitHub commit data
+    sha: v.string(), // Commit SHA
+    message: v.string(),
+    authorUsername: v.string(),
+    authorAvatarUrl: v.optional(v.string()),
+    htmlUrl: v.string(), // GitHub commit URL
+    committedAt: v.number(),
+    // Metadata
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_project", ["projectId"])
+    .index("by_repository", ["repositoryId"])
+    .index("by_sha", ["sha"]),
+
+  // Offline sync queue
+  offlineSyncQueue: defineTable({
+    userId: v.id("users"),
+    mutationType: v.string(), // e.g., "issues.update", "issues.create"
+    mutationArgs: v.string(), // JSON string of mutation arguments
+    status: v.union(
+      v.literal("pending"), // Waiting to be synced
+      v.literal("syncing"), // Currently syncing
+      v.literal("completed"), // Successfully synced
+      v.literal("failed"), // Failed to sync (will retry)
+    ),
+    attempts: v.number(), // Number of sync attempts
+    lastAttempt: v.optional(v.number()),
+    error: v.optional(v.string()), // Error message if failed
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_user_status", ["userId", "status"]),
 };
 
 export default defineSchema({
