@@ -353,6 +353,24 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "isRead"])
     .index("by_user_created", ["userId", "createdAt"]),
+
+  notificationPreferences: defineTable({
+    userId: v.id("users"),
+    // Master toggles
+    emailEnabled: v.boolean(), // Master switch for all email notifications
+    // Individual notification type preferences
+    emailMentions: v.boolean(), // Send email when @mentioned
+    emailAssignments: v.boolean(), // Send email when assigned to issue
+    emailComments: v.boolean(), // Send email for comments on my issues
+    emailStatusChanges: v.boolean(), // Send email for status changes on watched issues
+    // Digest preferences
+    emailDigest: v.union(v.literal("none"), v.literal("daily"), v.literal("weekly")),
+    digestDay: v.optional(v.string()), // "monday", "tuesday", etc. (for weekly digest)
+    digestTime: v.optional(v.string()), // "09:00", "17:00", etc. (24h format)
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
 };
 
 export default defineSchema({
