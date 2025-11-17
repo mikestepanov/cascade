@@ -59,8 +59,8 @@ export function AssignmentEmail({
 
       {/* Issue Info */}
       <Section style={issueBox}>
-        <Text style={issueKey}>{issueKey}</Text>
-        <Heading style={issueTitle}>{issueTitle}</Heading>
+        <Text style={issueKeyStyle}>{issueKey}</Text>
+        <Heading style={issueTitleStyle}>{issueTitle}</Heading>
 
         <Section style={metadata}>
           <Text style={metadataItem}>
@@ -142,7 +142,7 @@ const issueBox = {
   margin: "16px 0",
 };
 
-const _issueKey = {
+const issueKeyStyle = {
   color: "#6b7280",
   fontSize: "12px",
   fontWeight: "600",
@@ -150,7 +150,7 @@ const _issueKey = {
   textTransform: "uppercase" as const,
 };
 
-const _issueTitle = {
+const issueTitleStyle = {
   color: "#111827",
   fontSize: "18px",
   fontWeight: "600",

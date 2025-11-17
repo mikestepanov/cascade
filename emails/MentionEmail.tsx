@@ -42,8 +42,8 @@ export function MentionEmail({
 
       {/* Issue Info */}
       <Section style={issueBox}>
-        <Text style={issueKey}>{issueKey}</Text>
-        <Heading style={issueTitle}>{issueTitle}</Heading>
+        <Text style={issueKeyStyle}>{issueKey}</Text>
+        <Heading style={issueTitleStyle}>{issueTitle}</Heading>
         <Text style={projectBadge}>{projectName}</Text>
       </Section>
 
@@ -51,7 +51,7 @@ export function MentionEmail({
       {commentText && (
         <Section style={commentBox}>
           <Text style={commentLabel}>Comment:</Text>
-          <Text style={commentText}>{commentText}</Text>
+          <Text style={commentTextStyle}>{commentText}</Text>
         </Section>
       )}
 
@@ -117,7 +117,7 @@ const issueBox = {
   margin: "16px 0",
 };
 
-const _issueKey = {
+const issueKeyStyle = {
   color: "#6b7280",
   fontSize: "12px",
   fontWeight: "600",
@@ -125,7 +125,7 @@ const _issueKey = {
   textTransform: "uppercase" as const,
 };
 
-const _issueTitle = {
+const issueTitleStyle = {
   color: "#111827",
   fontSize: "18px",
   fontWeight: "600",
@@ -154,7 +154,7 @@ const commentLabel = {
   textTransform: "uppercase" as const,
 };
 
-const _commentText = {
+const commentTextStyle = {
   color: "#374151",
   fontSize: "14px",
   lineHeight: "20px",

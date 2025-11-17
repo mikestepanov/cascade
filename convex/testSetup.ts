@@ -14,52 +14,28 @@
  * ```
  */
 
-import analytics from "./analytics";
-import attachments from "./attachments";
-import auth from "./auth";
-import automationRules from "./automationRules";
-import customFields from "./customFields";
-import dashboard from "./dashboard";
-import documents from "./documents";
-import files from "./files";
-import issueLinks from "./issueLinks";
-import issues from "./issues";
-import labels from "./labels";
-import notifications from "./notifications";
-import presence from "./presence";
-import projects from "./projects";
-import projectTemplates from "./projectTemplates";
-import prosemirror from "./prosemirror";
-import savedFilters from "./savedFilters";
-import sprints from "./sprints";
-import templates from "./templates";
-import timeEntries from "./timeEntries";
-import users from "./users";
-import watchers from "./watchers";
-import webhooks from "./webhooks";
-
 export const modules = {
-  analytics,
-  attachments,
-  auth,
-  automationRules,
-  customFields,
-  dashboard,
-  documents,
-  files,
-  issues,
-  issueLinks,
-  labels,
-  notifications,
-  presence,
-  projects,
-  projectTemplates,
-  prosemirror,
-  savedFilters,
-  sprints,
-  templates,
-  timeEntries,
-  users,
-  watchers,
-  webhooks,
+  analytics: () => import("./analytics"),
+  attachments: () => import("./attachments"),
+  auth: () => import("./auth"),
+  automationRules: () => import("./automationRules"),
+  customFields: () => import("./customFields"),
+  dashboard: () => import("./dashboard"),
+  documents: () => import("./documents"),
+  files: () => import("./files"),
+  issueLinks: () => import("./issueLinks"),
+  issues: () => import("./issues"),
+  labels: () => import("./labels"),
+  notifications: () => import("./notifications"),
+  presence: () => import("./presence"),
+  projects: () => import("./projects"),
+  projectTemplates: () => import("./projectTemplates"),
+  prosemirror: () => import("./prosemirror"),
+  savedFilters: () => import("./savedFilters"),
+  sprints: () => import("./sprints"),
+  templates: () => import("./templates"),
+  timeEntries: () => import("./timeEntries"),
+  users: () => import("./users"),
+  watchers: () => import("./watchers"),
+  webhooks: () => import("./webhooks"),
 };
