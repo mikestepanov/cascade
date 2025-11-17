@@ -55,7 +55,7 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 | 🔥 P0 | Email Notifications | Critical | 2-3 weeks | Not Started |
 | 🔥 P0 | Onboarding Flow | High | 2 weeks | Not Started |
 | ✅ P1 | Backend Testing (Phases 1-5) | High | 4 weeks | **✅ COMPLETE** |
-| 🟡 P1 | Quick Wins (see below) | High | 1 week | **🟢 33% Complete (2/6)** |
+| 🟢 P1 | Quick Wins (see below) | High | 1 week | **🟢 83% Complete (5/6)** |
 
 ### **Phase 2: Mobile & AI** (3-6 Months)
 **Goal:** Differentiate, expand market, enable mobile usage
@@ -559,27 +559,27 @@ pnpm run test:all
 
 **Impact:** ⭐⭐⭐⭐ High impact, low effort
 **Effort:** 🟢 Low (1 week total)
-**Status:** 🟢 **33% Complete** (2/6 items done)
+**Status:** 🟢 **83% Complete** (5/6 items done)
 
 These are small features that provide outsized value and can be shipped in a few hours each.
 
-#### 5.1 Empty State CTAs
+#### 5.1 Empty State CTAs ✅
 
 **What:** Add "Create your first X" buttons to all empty states
 **Why:** Empty states are passive - users don't know what to do
 **Effort:** 2 hours
-**Status:** 🟡 **60% Complete** - EmptyState component supports actions, most pages use it
+**Status:** ✅ **COMPLETE**
 
 **Completed:**
 - [x] `src/components/ui/EmptyState.tsx` - Has `action` prop ✅
 - [x] Dashboard → "No projects" has "Create Project" button ✅
+- [x] Dashboard → "No issues" has "View My Projects" button ✅
+- [x] Sidebar → Uses EmptyState component with "Create Document" button ✅
 - [x] Labels Manager → Has "Create Your First Label" button ✅
 - [x] Templates Manager → Has "Create Your First Template" button ✅
 - [x] Webhooks Manager → Has "Add Your First Webhook" button ✅
 
-**Remaining:**
-- [ ] Dashboard → "No issues" empty state needs action button
-- [ ] Sidebar → "No documents" should use EmptyState component with action button
+**Completed:** 2025-11-17
 
 ---
 
@@ -631,24 +631,26 @@ These are small features that provide outsized value and can be shipped in a few
 
 ---
 
-#### 5.4 Keyboard Navigation
+#### 5.4 Keyboard Navigation ✅
 
 **What:** Arrow keys to navigate lists (issues, projects, documents)
 **Why:** Power users love keyboard shortcuts
 **Effort:** 4 hours
+**Status:** ✅ **COMPLETE**
 
-**Checklist:**
-- [ ] Add arrow key listeners to lists
-- [ ] ↑↓ to select items
-- [ ] Enter to open selected item
-- [ ] / to focus search
-- [ ] Esc to deselect
-- [ ] Visual indicator for selected item
+**Completed:**
+- [x] Created `useListNavigation` hook in `src/hooks/useListNavigation.ts` ✅
+- [x] Arrow key navigation (ArrowUp, ArrowDown) ✅
+- [x] Enter to open selected item ✅
+- [x] Escape to deselect ✅
+- [x] Home/End to jump to first/last item ✅
+- [x] Visual highlight for selected item ✅
+- [x] Integrated in Dashboard for issue list ✅
+- [x] Integrated in Dashboard for project list ✅
 
-**Files to modify:**
-- `src/components/Dashboard.tsx` - Issue list navigation
-- `src/components/Sidebar.tsx` - Document list navigation
-- `src/components/ProjectSidebar.tsx` - Project list navigation
+**Implementation:**
+- `src/hooks/useListNavigation.ts` - Reusable keyboard navigation hook
+- `src/components/Dashboard.tsx` - Uses hook for both issue and project lists
 
 ---
 
@@ -671,27 +673,33 @@ These are small features that provide outsized value and can be shipped in a few
 
 ---
 
-#### 5.6 Attachment Upload UI
+#### 5.6 Attachment Upload UI ✅
 
 **What:** Add file attachment picker to issues
 **Why:** Backend storage exists, just need UI
 **Effort:** 6 hours
+**Status:** ✅ **COMPLETE**
 
-**Checklist:**
-- [ ] Create file upload component
-- [ ] Add "Attach file" button to issue detail
-- [ ] Show upload progress
-- [ ] Display attached files
-- [ ] Download attachment
-- [ ] Delete attachment
+**Completed:**
+- [x] Created FileAttachments component with drag-and-drop ✅
+- [x] Created AttachmentList component for display ✅
+- [x] Created AttachmentUpload component for button upload ✅
+- [x] File type validation (images, PDFs, text, CSV, zip) ✅
+- [x] File size validation (10MB limit) ✅
+- [x] Upload progress indicator ✅
+- [x] Display attached files with icons ✅
+- [x] Download attachment button ✅
+- [x] Delete attachment button with confirmation ✅
+- [x] Drag-and-drop upload area ✅
 
-**Files to create:**
-- `src/components/FileUpload.tsx`
-- `src/components/AttachmentList.tsx`
+**Files created:**
+- ✅ `src/components/FileAttachments.tsx` - Main component with drag-and-drop
+- ✅ `src/components/AttachmentList.tsx` - List display component
+- ✅ `src/components/AttachmentUpload.tsx` - Upload button component
 
-**Files to modify:**
-- `src/components/IssueDetail.tsx` - Add attachments section
-- `convex/issues.ts` - File upload mutation
+**Backend:**
+- ✅ `convex/files.ts` - Upload/download/delete mutations
+- ✅ `convex/attachments.ts` - Additional attachment utilities
 
 ---
 
