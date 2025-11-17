@@ -225,8 +225,16 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                     title="No issues found"
                     description={
                       issueFilter === "assigned"
-                        ? "You don't have any assigned issues"
-                        : "You haven't created any issues yet"
+                        ? "You don't have any assigned issues. Visit a project to get started."
+                        : "You haven't created any issues yet. Visit a project to create one."
+                    }
+                    action={
+                      onNavigateToProjects
+                        ? {
+                            label: "View My Projects",
+                            onClick: onNavigateToProjects,
+                          }
+                        : undefined
                     }
                   />
                 ) : (
