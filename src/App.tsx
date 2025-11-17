@@ -17,6 +17,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
+import { CalendarView } from "./components/Calendar/CalendarView";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
@@ -39,7 +40,7 @@ function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [activeView, setActiveView] = useState<"dashboard" | "documents" | "projects" | "timesheet">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "documents" | "projects" | "timesheet" | "calendar">("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
@@ -126,6 +127,12 @@ function Content() {
       meta: true,
       handler: () => setActiveView("timesheet"),
       description: "Go to timesheet",
+    },
+    {
+      key: "5",
+      meta: true,
+      handler: () => setActiveView("calendar"),
+      description: "Go to calendar",
     },
     {
       key: "?",
@@ -226,7 +233,7 @@ function Content() {
 
         <div className="flex w-full h-screen">
           {/* Sidebar - only show for documents and projects views */}
-          {activeView !== "dashboard" && activeView !== "timesheet" && (
+          {activeView !== "dashboard" && activeView !== "timesheet" && activeView !== "calendar" && (
             <ErrorBoundary
               fallback={
                 <div className="w-64 bg-white border-r border-gray-200">
@@ -317,6 +324,21 @@ function Content() {
                   >
                     ⏱️ Timesheet
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView("calendar");
+                      setSelectedDocumentId(null);
+                      setSelectedProjectId(null);
+                    }}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeView === "calendar"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    📅 Calendar
+                  </button>
                 </div>
 
                 <h1 className="text-lg font-medium text-gray-900">
@@ -328,9 +350,11 @@ function Content() {
                         : "Select a document"
                       : activeView === "timesheet"
                         ? "Weekly Timesheet"
-                        : selectedProjectId
-                          ? "Project Board"
-                          : "Select a project"}
+                        : activeView === "calendar"
+                          ? "Calendar"
+                          : selectedProjectId
+                            ? "Project Board"
+                            : "Select a project"}
                 </h1>
               </div>
               <div className="flex items-center gap-3">
@@ -422,6 +446,8 @@ function Content() {
                   )
                 ) : activeView === "timesheet" ? (
                   <Timesheet />
+                ) : activeView === "calendar" ? (
+                  <CalendarView />
                 ) : selectedProjectId ? (
                   <ProjectBoard projectId={selectedProjectId} />
                 ) : (
