@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useListNavigation } from "../hooks/useListNavigation";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
 import {
@@ -33,6 +34,20 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
       : issueFilter === "created"
         ? myCreatedIssues
         : [...(myIssues || []), ...(myCreatedIssues || [])];
+
+  // Keyboard navigation for issue list
+  const issueNavigation = useListNavigation({
+    items: displayIssues || [],
+    onSelect: (issue) => onNavigateToProject?.(issue.projectId),
+    enabled: !!displayIssues && displayIssues.length > 0,
+  });
+
+  // Keyboard navigation for projects list
+  const projectNavigation = useListNavigation({
+    items: myProjects || [],
+    onSelect: (project) => onNavigateToProject?.(project._id),
+    enabled: !!myProjects && myProjects.length > 0,
+  });
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -215,7 +230,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                     }
                   />
                 ) : (
-                  <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                  <div ref={issueNavigation.listRef} className="space-y-2 max-h-[600px] overflow-y-auto">
                     {displayIssues.map((issue, index) => (
                       <div
                         key={issue._id}
@@ -228,7 +243,8 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                             onNavigateToProject?.(issue.projectId);
                           }
                         }}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up"
+                        {...issueNavigation.getItemProps(index)}
+                        className={`p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-start justify-between">
@@ -286,7 +302,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                     }
                   />
                 ) : (
-                  <div className="space-y-2">
+                  <div ref={projectNavigation.listRef} className="space-y-2">
                     {myProjects.map((project, index) => (
                       <div
                         key={project._id}
@@ -299,7 +315,8 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                             onNavigateToProject?.(project._id);
                           }
                         }}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up"
+                        {...projectNavigation.getItemProps(index)}
+                        className={`p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up ${projectNavigation.getItemProps(index).className}`}
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-center justify-between mb-1">
