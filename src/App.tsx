@@ -28,7 +28,7 @@ import { SignOutButton } from "./SignOutButton";
 export default function App() {
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex bg-gray-50">
+      <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
         <Toaster />
         <Content />
       </div>
@@ -45,6 +45,7 @@ function Content() {
   >("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Onboarding state
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
@@ -234,14 +235,23 @@ function Content() {
         {/* Onboarding Checklist (sticky widget) */}
         <OnboardingChecklist />
 
-        <div className="flex w-full h-screen">
+        <div className="flex w-full min-h-screen">
+          {/* Mobile Sidebar Backdrop */}
+          {isMobileSidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+              onClick={() => setIsMobileSidebarOpen(false)}
+              aria-label="Close sidebar"
+            />
+          )}
+
           {/* Sidebar - only show for documents and projects views */}
           {activeView !== "dashboard" &&
             activeView !== "timesheet" &&
             activeView !== "calendar" && (
               <ErrorBoundary
                 fallback={
-                  <div className="w-64 bg-white border-r border-gray-200">
+                  <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
                     <SectionErrorFallback
                       title="Sidebar Error"
                       message="Failed to load sidebar. Please refresh the page."
@@ -249,28 +259,70 @@ function Content() {
                   </div>
                 }
               >
-                <div data-tour={activeView === "documents" ? "sidebar" : ""}>
+                <div
+                  data-tour={activeView === "documents" ? "sidebar" : ""}
+                  className={`
+                    fixed lg:relative inset-y-0 left-0 z-40 lg:z-auto
+                    transform transition-transform duration-200 ease-in-out
+                    ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+                  `}
+                >
                   {activeView === "documents" ? (
                     <Sidebar
                       selectedDocumentId={selectedDocumentId}
-                      onSelectDocument={setSelectedDocumentId}
+                      onSelectDocument={(id) => {
+                        setSelectedDocumentId(id);
+                        setIsMobileSidebarOpen(false);
+                      }}
                     />
                   ) : (
                     <ProjectSidebar
                       selectedProjectId={selectedProjectId}
-                      onSelectProject={setSelectedProjectId}
+                      onSelectProject={(id) => {
+                        setSelectedProjectId(id);
+                        setIsMobileSidebarOpen(false);
+                      }}
                     />
                   )}
                 </div>
               </ErrorBoundary>
             )}
 
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             {/* Header */}
-            <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <div className="flex items-center space-x-6">
+            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
+              <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
+                {/* Mobile Hamburger Menu */}
+                {activeView !== "dashboard" &&
+                  activeView !== "timesheet" &&
+                  activeView !== "calendar" && (
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                      className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      aria-label="Toggle sidebar menu"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h16"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 {/* View Switcher */}
-                <div className="flex bg-gray-100 rounded-lg p-1">
+                <nav
+                  className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 overflow-x-auto"
+                  aria-label="Main navigation"
+                >
                   <button
                     type="button"
                     onClick={() => {
@@ -278,13 +330,16 @@ function Content() {
                       setSelectedDocumentId(null);
                       setSelectedProjectId(null);
                     }}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                       activeView === "dashboard"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
+                    aria-label="Dashboard"
+                    aria-current={activeView === "dashboard" ? "page" : undefined}
                   >
-                    🏠 Dashboard
+                    <span className="sm:hidden" aria-hidden="true">🏠</span>
+                    <span className="hidden sm:inline">Dashboard</span>
                   </button>
                   <button
                     type="button"
@@ -292,13 +347,16 @@ function Content() {
                       setActiveView("documents");
                       setSelectedProjectId(null);
                     }}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                       activeView === "documents"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
+                    aria-label="Documents"
+                    aria-current={activeView === "documents" ? "page" : undefined}
                   >
-                    📄 Documents
+                    <span className="sm:hidden" aria-hidden="true">📄</span>
+                    <span className="hidden sm:inline">Documents</span>
                   </button>
                   <button
                     type="button"
@@ -306,13 +364,16 @@ function Content() {
                       setActiveView("projects");
                       setSelectedDocumentId(null);
                     }}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                       activeView === "projects"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
+                    aria-label="Projects"
+                    aria-current={activeView === "projects" ? "page" : undefined}
                   >
-                    📋 Projects
+                    <span className="sm:hidden" aria-hidden="true">📋</span>
+                    <span className="hidden sm:inline">Projects</span>
                   </button>
                   <button
                     type="button"
@@ -321,13 +382,16 @@ function Content() {
                       setSelectedDocumentId(null);
                       setSelectedProjectId(null);
                     }}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                       activeView === "timesheet"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
+                    aria-label="Timesheet"
+                    aria-current={activeView === "timesheet" ? "page" : undefined}
                   >
-                    ⏱️ Timesheet
+                    <span className="sm:hidden" aria-hidden="true">⏱️</span>
+                    <span className="hidden sm:inline">Timesheet</span>
                   </button>
                   <button
                     type="button"
@@ -336,17 +400,20 @@ function Content() {
                       setSelectedDocumentId(null);
                       setSelectedProjectId(null);
                     }}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                       activeView === "calendar"
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
+                    aria-label="Calendar"
+                    aria-current={activeView === "calendar" ? "page" : undefined}
                   >
-                    📅 Calendar
+                    <span className="sm:hidden" aria-hidden="true">📅</span>
+                    <span className="hidden sm:inline">Calendar</span>
                   </button>
-                </div>
+                </nav>
 
-                <h1 className="text-lg font-medium text-gray-900">
+                <h1 className="hidden md:block text-base lg:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
                   {activeView === "dashboard"
                     ? "My Work"
                     : activeView === "documents"
@@ -362,12 +429,12 @@ function Content() {
                             : "Select a project"}
                 </h1>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowCommandPalette(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  title="Open command palette"
+                  className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  aria-label="Open command palette"
                   data-tour="command-palette"
                 >
                   <svg
@@ -385,15 +452,15 @@ function Content() {
                     />
                   </svg>
                   <span className="hidden sm:inline">Commands</span>
-                  <kbd className="hidden md:inline px-1.5 py-0.5 text-xs bg-white border border-gray-300 rounded">
+                  <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
                     ⌘K
                   </kbd>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowShortcutsHelp(true)}
-                  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="Keyboard shortcuts"
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  aria-label="Keyboard shortcuts"
                 >
                   <svg
                     aria-hidden="true"
@@ -419,7 +486,7 @@ function Content() {
 
             {/* Main Content */}
             <main
-              className="flex-1 overflow-auto"
+              className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900"
               data-tour={activeView === "dashboard" ? "dashboard" : ""}
             >
               <ErrorBoundary
@@ -443,9 +510,11 @@ function Content() {
                   selectedDocumentId ? (
                     <DocumentEditor documentId={selectedDocumentId} />
                   ) : (
-                    <div className="flex items-center justify-center h-full text-gray-500">
+                    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
                       <div className="text-center">
-                        <h2 className="text-xl font-medium mb-2">Welcome to your workspace</h2>
+                        <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+                          Welcome to your workspace
+                        </h2>
                         <p>
                           Select a document from the sidebar or create a new one to get started.
                         </p>
@@ -459,9 +528,11 @@ function Content() {
                 ) : selectedProjectId ? (
                   <ProjectBoard projectId={selectedProjectId} />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
                     <div className="text-center">
-                      <h2 className="text-xl font-medium mb-2">Welcome to project management</h2>
+                      <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+                        Welcome to project management
+                      </h2>
                       <p>Select a project from the sidebar or create a new one to get started.</p>
                     </div>
                   </div>
@@ -476,11 +547,13 @@ function Content() {
       </Authenticated>
 
       <Unauthenticated>
-        <div className="flex items-center justify-center w-full">
-          <div className="w-full max-w-md mx-auto p-8">
+        <div className="flex items-center justify-center w-full p-4">
+          <div className="w-full max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">Collaborative Workspace</h1>
-              <p className="text-lg text-gray-600">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Collaborative Workspace
+              </h1>
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
                 Create documents and manage projects together in real-time
               </p>
             </div>

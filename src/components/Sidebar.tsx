@@ -58,10 +58,10 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
   };
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-screen">
+    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Documents</h2>
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h2>
 
         {/* Search */}
         <div className="mb-4">
@@ -70,7 +70,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
             placeholder="Search documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+            aria-label="Search documents"
           />
         </div>
 
@@ -78,7 +79,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
         <button
           type="button"
           onClick={() => setShowCreateForm(true)}
-          className="w-full px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="w-full px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+          aria-label="Create new document"
         >
           + New Document
         </button>
@@ -86,14 +88,15 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
       {/* Create Document Form */}
       {showCreateForm && (
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <form onSubmit={(e) => void handleCreateDocument(e)} className="space-y-3">
             <input
               type="text"
               placeholder="Document title..."
               value={newDocTitle}
               onChange={(e) => setNewDocTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              aria-label="Document title"
             />
             <div className="flex items-center space-x-2">
               <input
@@ -103,14 +106,14 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                 onChange={(e) => setNewDocIsPublic(e.target.checked)}
                 className="rounded"
               />
-              <label htmlFor="isPublic" className="text-sm text-gray-700">
+              <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
                 Make public
               </label>
             </div>
             <div className="flex space-x-2">
               <button
                 type="submit"
-                className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+                className="flex-1 px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm hover:bg-blue-700 dark:hover:bg-blue-600"
               >
                 Create
               </button>
@@ -121,7 +124,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                   setNewDocTitle("");
                   setNewDocIsPublic(false);
                 }}
-                className="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-400"
+                className="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm hover:bg-gray-400 dark:hover:bg-gray-600"
               >
                 Cancel
               </button>
@@ -163,8 +166,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                 tabIndex={0}
                 className={`group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedDocumentId === doc._id
-                    ? "bg-blue-50 border border-blue-200"
-                    : "hover:bg-gray-50"
+                    ? "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700"
+                    : "hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`}
                 onClick={() => onSelectDocument(doc._id)}
                 onKeyDown={(e) => {
@@ -176,21 +179,21 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">{doc.title}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{doc.title}</h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500">by {doc.creatorName}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">by {doc.creatorName}</span>
                       {doc.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400">
                           Public
                         </span>
                       )}
                       {doc.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-400">
                           Owner
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                       {new Date(doc.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -201,8 +204,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all"
-                      title="Delete document"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
+                      aria-label="Delete document"
                     >
                       <svg
                         aria-hidden="true"
