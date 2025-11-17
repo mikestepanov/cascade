@@ -15,6 +15,7 @@ import { ProjectSidebar } from "./components/ProjectSidebar";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
 import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
@@ -409,6 +410,9 @@ function Content() {
             </main>
           </div>
         </div>
+
+        {/* Global Timer Widget - always visible for authenticated users */}
+        <TimerWidget />
       </Authenticated>
 
       <Unauthenticated>
