@@ -47,4 +47,19 @@ describe("RBAC Utilities", () => {
       expect(hasMinimumRole("admin", "admin")).toBe(true);
     });
   });
+
+  // TODO: Backend function tests require convex-test setup
+  // The following tests need additional configuration to work in the vitest environment:
+  // - getUserRole (requires database access)
+  // - canAccessProject (requires database access)
+  // - canEditProject (requires database access)
+  // - canManageProject (requires database access)
+  // - assertMinimumRole (requires database access)
+  //
+  // Convex backend testing requires either:
+  // 1. A different test runner that supports Node.js native APIs
+  // 2. Additional vitest/jsdom configuration
+  // 3. Alternative mocking approach for database context
+  //
+  // For comprehensive backend testing, see the test plan document for recommended approach.
 });

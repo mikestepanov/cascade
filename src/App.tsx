@@ -287,6 +287,7 @@ function Content() {
                       setActiveView("projects");
                       setSelectedProjectId(projectId);
                     }}
+                    onNavigateToProjects={() => setActiveView("projects")}
                   />
                 ) : activeView === "documents" ? (
                   selectedDocumentId ? (

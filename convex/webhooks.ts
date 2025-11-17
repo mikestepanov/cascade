@@ -124,32 +124,54 @@ export const trigger = internalAction({
 
     // Trigger each webhook
     for (const webhook of webhooks) {
+      const requestPayload = JSON.stringify({
+        event: args.event,
+        payload: args.payload,
+        timestamp: Date.now(),
+      });
+
+      // Create execution log
+      const executionId = await ctx.runMutation(internal.webhooks.createExecution, {
+        webhookId: webhook._id,
+        event: args.event,
+        requestPayload,
+      });
+
       try {
-        await fetch(webhook.url, {
+        const response = await fetch(webhook.url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-Webhook-Event": args.event,
             ...(webhook.secret && {
-              "X-Webhook-Signature": await generateSignature(
-                JSON.stringify(args.payload),
-                webhook.secret,
-              ),
+              "X-Webhook-Signature": await generateSignature(requestPayload, webhook.secret),
             }),
           },
-          body: JSON.stringify({
-            event: args.event,
-            payload: args.payload,
-            timestamp: Date.now(),
-          }),
+          body: requestPayload,
+        });
+
+        const responseBody = await response.text();
+
+        // Update execution log with success
+        await ctx.runMutation(internal.webhooks.updateExecution, {
+          id: executionId,
+          status: response.ok ? "success" : "failed",
+          responseStatus: response.status,
+          responseBody: responseBody.substring(0, 1000), // Limit to 1000 chars
+          error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
         });
 
         // Update last triggered time
         await ctx.runMutation(internal.webhooks.updateLastTriggered, {
           id: webhook._id,
         });
-      } catch {
-        // Continue with other webhooks even if one fails
+      } catch (error) {
+        // Update execution log with failure
+        await ctx.runMutation(internal.webhooks.updateExecution, {
+          id: executionId,
+          status: "failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
   },
@@ -177,6 +199,267 @@ export const updateLastTriggered = internalMutation({
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, {
       lastTriggered: Date.now(),
+    });
+  },
+});
+
+// Query webhook executions for a webhook
+export const listExecutions = query({
+  args: {
+    webhookId: v.id("webhooks"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const webhook = await ctx.db.get(args.webhookId);
+    if (!webhook) throw new Error("Webhook not found");
+
+    // Only admins can view webhook logs
+    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+
+    const executions = await ctx.db
+      .query("webhookExecutions")
+      .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
+      .order("desc")
+      .take(args.limit || 50);
+
+    return executions;
+  },
+});
+
+// Test webhook (sends ping event)
+export const test = mutation({
+  args: { id: v.id("webhooks") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const webhook = await ctx.db.get(args.id);
+    if (!webhook) throw new Error("Webhook not found");
+
+    // Only admins can test webhooks
+    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+
+    // Schedule the test webhook delivery
+    await ctx.scheduler.runAfter(0, internal.webhooks.deliverTestWebhook, {
+      webhookId: args.id,
+    });
+
+    return { success: true };
+  },
+});
+
+// Internal action to deliver test webhook
+export const deliverTestWebhook = internalAction({
+  args: { webhookId: v.id("webhooks") },
+  handler: async (ctx, args) => {
+    const webhook = await ctx.runQuery(internal.webhooks.getWebhookById, {
+      id: args.webhookId,
+    });
+    if (!webhook) return;
+
+    const requestPayload = JSON.stringify({
+      event: "ping",
+      payload: { message: "Test webhook from Cascade" },
+      timestamp: Date.now(),
+    });
+
+    // Create execution log
+    const executionId = await ctx.runMutation(internal.webhooks.createExecution, {
+      webhookId: webhook._id,
+      event: "ping",
+      requestPayload,
+    });
+
+    try {
+      const response = await fetch(webhook.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Webhook-Event": "ping",
+          ...(webhook.secret && {
+            "X-Webhook-Signature": await generateSignature(requestPayload, webhook.secret),
+          }),
+        },
+        body: requestPayload,
+      });
+
+      const responseBody = await response.text();
+
+      // Update execution log
+      await ctx.runMutation(internal.webhooks.updateExecution, {
+        id: executionId,
+        status: response.ok ? "success" : "failed",
+        responseStatus: response.status,
+        responseBody: responseBody.substring(0, 1000),
+        error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
+      });
+    } catch (error) {
+      await ctx.runMutation(internal.webhooks.updateExecution, {
+        id: executionId,
+        status: "failed",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+});
+
+// Internal query to get webhook by ID
+export const getWebhookById = internalQuery({
+  args: { id: v.id("webhooks") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+// Internal mutation to create execution log
+export const createExecution = internalMutation({
+  args: {
+    webhookId: v.id("webhooks"),
+    event: v.string(),
+    requestPayload: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("webhookExecutions", {
+      webhookId: args.webhookId,
+      event: args.event,
+      requestPayload: args.requestPayload,
+      status: "retrying",
+      attempts: 1,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+// Internal mutation to update execution log
+export const updateExecution = internalMutation({
+  args: {
+    id: v.id("webhookExecutions"),
+    status: v.union(v.literal("success"), v.literal("failed")),
+    responseStatus: v.optional(v.number()),
+    responseBody: v.optional(v.string()),
+    error: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      status: args.status,
+      responseStatus: args.responseStatus,
+      responseBody: args.responseBody,
+      error: args.error,
+      completedAt: Date.now(),
+    });
+  },
+});
+
+// Retry failed webhook execution
+export const retryExecution = mutation({
+  args: { id: v.id("webhookExecutions") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const execution = await ctx.db.get(args.id);
+    if (!execution) throw new Error("Execution not found");
+
+    const webhook = await ctx.db.get(execution.webhookId);
+    if (!webhook) throw new Error("Webhook not found");
+
+    // Only admins can retry webhooks
+    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+
+    // Schedule the retry
+    await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {
+      executionId: args.id,
+      webhookId: webhook._id,
+    });
+
+    return { success: true };
+  },
+});
+
+// Internal action to retry webhook delivery
+export const retryWebhookDelivery = internalAction({
+  args: {
+    executionId: v.id("webhookExecutions"),
+    webhookId: v.id("webhooks"),
+  },
+  handler: async (ctx, args) => {
+    const execution = await ctx.runQuery(internal.webhooks.getExecutionById, {
+      id: args.executionId,
+    });
+    if (!execution) return;
+
+    const webhook = await ctx.runQuery(internal.webhooks.getWebhookById, {
+      id: args.webhookId,
+    });
+    if (!webhook) return;
+
+    try {
+      const response = await fetch(webhook.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Webhook-Event": execution.event,
+          ...(webhook.secret && {
+            "X-Webhook-Signature": await generateSignature(
+              execution.requestPayload,
+              webhook.secret,
+            ),
+          }),
+        },
+        body: execution.requestPayload,
+      });
+
+      const responseBody = await response.text();
+
+      // Update execution log
+      await ctx.runMutation(internal.webhooks.incrementExecutionAttempt, {
+        id: args.executionId,
+        status: response.ok ? "success" : "failed",
+        responseStatus: response.status,
+        responseBody: responseBody.substring(0, 1000),
+        error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
+      });
+    } catch (error) {
+      await ctx.runMutation(internal.webhooks.incrementExecutionAttempt, {
+        id: args.executionId,
+        status: "failed",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+});
+
+// Internal query to get execution by ID
+export const getExecutionById = internalQuery({
+  args: { id: v.id("webhookExecutions") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+// Internal mutation to increment execution attempt
+export const incrementExecutionAttempt = internalMutation({
+  args: {
+    id: v.id("webhookExecutions"),
+    status: v.union(v.literal("success"), v.literal("failed")),
+    responseStatus: v.optional(v.number()),
+    responseBody: v.optional(v.string()),
+    error: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const execution = await ctx.db.get(args.id);
+    if (!execution) return;
+
+    await ctx.db.patch(args.id, {
+      status: args.status,
+      responseStatus: args.responseStatus,
+      responseBody: args.responseBody,
+      error: args.error,
+      attempts: execution.attempts + 1,
+      completedAt: Date.now(),
     });
   },
 });

@@ -210,6 +210,22 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_active", ["isActive"]),
 
+  webhookExecutions: defineTable({
+    webhookId: v.id("webhooks"),
+    event: v.string(), // Event that triggered: "issue.created", etc.
+    status: v.union(v.literal("success"), v.literal("failed"), v.literal("retrying")),
+    requestPayload: v.string(), // JSON string of the request body
+    responseStatus: v.optional(v.number()), // HTTP status code
+    responseBody: v.optional(v.string()), // Response from webhook endpoint
+    error: v.optional(v.string()), // Error message if failed
+    attempts: v.number(), // Number of delivery attempts
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_webhook", ["webhookId"])
+    .index("by_webhook_created", ["webhookId", "createdAt"])
+    .index("by_status", ["status"]),
+
   savedFilters: defineTable({
     projectId: v.id("projects"),
     userId: v.id("users"),

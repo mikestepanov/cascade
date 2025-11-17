@@ -2,16 +2,24 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useListNavigation } from "../hooks/useListNavigation";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
+import {
+  SkeletonStatCard,
+  SkeletonList,
+  SkeletonProjectCard,
+  SkeletonText,
+} from "./ui/Skeleton";
 
 type IssueFilter = "assigned" | "created" | "all";
 
 interface DashboardProps {
   onNavigateToProject?: (projectId: Id<"projects">) => void;
+  onNavigateToProjects?: () => void;
 }
 
-export function Dashboard({ onNavigateToProject }: DashboardProps) {
+export function Dashboard({ onNavigateToProject, onNavigateToProjects }: DashboardProps) {
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -26,6 +34,20 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
       : issueFilter === "created"
         ? myCreatedIssues
         : [...(myIssues || []), ...(myCreatedIssues || [])];
+
+  // Keyboard navigation for issue list
+  const issueNavigation = useListNavigation({
+    items: displayIssues || [],
+    onSelect: (issue) => onNavigateToProject?.(issue.projectId),
+    enabled: !!displayIssues && displayIssues.length > 0,
+  });
+
+  // Keyboard navigation for projects list
+  const projectNavigation = useListNavigation({
+    items: myProjects || [],
+    onSelect: (project) => onNavigateToProject?.(project._id),
+    enabled: !!myProjects && myProjects.length > 0,
+  });
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -83,34 +105,83 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
           <p className="text-gray-600 mt-1">Your personal dashboard and activity center</p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Enhanced with visual hierarchy */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardBody className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{stats?.assignedToMe || 0}</div>
-              <div className="text-sm text-gray-600 mt-1">Assigned to Me</div>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody className="text-center">
-              <div className="text-3xl font-bold text-green-600">
-                {stats?.completedThisWeek || 0}
-              </div>
-              <div className="text-sm text-gray-600 mt-1">Completed This Week</div>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody className="text-center">
-              <div className="text-3xl font-bold text-orange-600">{stats?.highPriority || 0}</div>
-              <div className="text-sm text-gray-600 mt-1">High Priority</div>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody className="text-center">
-              <div className="text-3xl font-bold text-purple-600">{stats?.createdByMe || 0}</div>
-              <div className="text-sm text-gray-600 mt-1">Created by Me</div>
-            </CardBody>
-          </Card>
+          {!stats ? (
+            /* Loading skeletons */
+            <>
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+            </>
+          ) : (
+            <>
+              {/* Assigned to Me */}
+              <Card className="bg-gradient-to-br from-blue-50 to-white border-l-4 border-blue-500 animate-fade-in">
+                <CardBody className="text-center">
+                  <div className="text-sm font-medium text-blue-700 mb-2">ASSIGNED TO ME</div>
+                  <div className="text-4xl font-bold text-blue-600">{stats.assignedToMe || 0}</div>
+                  <div className="text-xs text-blue-600 mt-2">Active tasks</div>
+                </CardBody>
+              </Card>
+
+              {/* Completed This Week */}
+              <Card className="bg-gradient-to-br from-green-50 to-white border-l-4 border-green-500 animate-fade-in">
+                <CardBody className="text-center">
+                  <div className="text-sm font-medium text-green-700 mb-2">COMPLETED</div>
+                  <div className="text-4xl font-bold text-green-600">
+                    {stats.completedThisWeek || 0}
+                  </div>
+                  <div className="text-xs text-green-600 mt-2">This week</div>
+                </CardBody>
+              </Card>
+
+              {/* High Priority - Warning state */}
+              <Card
+                className={`border-l-4 animate-fade-in ${
+                  (stats.highPriority || 0) > 0
+                    ? "bg-gradient-to-br from-orange-50 to-white border-orange-500"
+                    : "bg-gradient-to-br from-gray-50 to-white border-gray-300"
+                }`}
+              >
+                <CardBody className="text-center">
+                  <div
+                    className={`text-sm font-medium mb-2 ${
+                      (stats.highPriority || 0) > 0 ? "text-orange-700" : "text-gray-600"
+                    }`}
+                  >
+                    HIGH PRIORITY
+                  </div>
+                  <div
+                    className={`text-4xl font-bold ${
+                      (stats.highPriority || 0) > 0 ? "text-orange-600" : "text-gray-400"
+                    }`}
+                  >
+                    {stats.highPriority || 0}
+                  </div>
+                  <div
+                    className={`text-xs mt-2 ${
+                      (stats.highPriority || 0) > 0 ? "text-orange-600" : "text-gray-500"
+                    }`}
+                  >
+                    {(stats.highPriority || 0) > 0 ? "Needs attention" : "All clear"}
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Created by Me */}
+              <Card className="bg-gradient-to-br from-purple-50 to-white border-l-4 border-purple-500 animate-fade-in">
+                <CardBody className="text-center">
+                  <div className="text-sm font-medium text-purple-700 mb-2">CREATED</div>
+                  <div className="text-4xl font-bold text-purple-600">
+                    {stats.createdByMe || 0}
+                  </div>
+                  <div className="text-xs text-purple-600 mt-2">Total issues</div>
+                </CardBody>
+              </Card>
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -145,7 +216,10 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                 </div>
               </div>
               <CardBody>
-                {!displayIssues || displayIssues.length === 0 ? (
+                {!displayIssues ? (
+                  /* Loading skeleton */
+                  <SkeletonList items={5} />
+                ) : displayIssues.length === 0 ? (
                   <EmptyState
                     icon="📭"
                     title="No issues found"
@@ -156,8 +230,8 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                     }
                   />
                 ) : (
-                  <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                    {displayIssues.map((issue) => (
+                  <div ref={issueNavigation.listRef} className="space-y-2 max-h-[600px] overflow-y-auto">
+                    {displayIssues.map((issue, index) => (
                       <div
                         key={issue._id}
                         role="button"
@@ -169,7 +243,9 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                             onNavigateToProject?.(issue.projectId);
                           }
                         }}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                        {...issueNavigation.getItemProps(index)}
+                        className={`p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
+                        style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -204,15 +280,30 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
             <Card>
               <CardHeader title="My Projects" description={`${myProjects?.length || 0} projects`} />
               <CardBody>
-                {!myProjects || myProjects.length === 0 ? (
+                {!myProjects ? (
+                  /* Loading skeleton */
+                  <div className="space-y-2">
+                    <SkeletonProjectCard />
+                    <SkeletonProjectCard />
+                    <SkeletonProjectCard />
+                  </div>
+                ) : myProjects.length === 0 ? (
                   <EmptyState
                     icon="📂"
                     title="No projects"
                     description="You're not a member of any projects yet"
+                    action={
+                      onNavigateToProjects
+                        ? {
+                            label: "Go to Projects",
+                            onClick: onNavigateToProjects,
+                          }
+                        : undefined
+                    }
                   />
                 ) : (
-                  <div className="space-y-2">
-                    {myProjects.map((project) => (
+                  <div ref={projectNavigation.listRef} className="space-y-2">
+                    {myProjects.map((project, index) => (
                       <div
                         key={project._id}
                         role="button"
@@ -224,7 +315,9 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                             onNavigateToProject?.(project._id);
                           }
                         }}
-                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                        {...projectNavigation.getItemProps(index)}
+                        className={`p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-all hover:shadow-md animate-slide-up ${projectNavigation.getItemProps(index).className}`}
+                        style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-center justify-between mb-1">
                           <h4 className="font-medium text-gray-900">{project.name}</h4>
@@ -242,11 +335,18 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
               </CardBody>
             </Card>
 
-            {/* Recent Activity */}
+            {/* Recent Activity - Enhanced */}
             <Card>
               <CardHeader title="Recent Activity" description="Latest updates" />
               <CardBody>
-                {!recentActivity || recentActivity.length === 0 ? (
+                {!recentActivity ? (
+                  /* Loading skeleton */
+                  <div className="space-y-3">
+                    <SkeletonText lines={2} />
+                    <SkeletonText lines={2} />
+                    <SkeletonText lines={2} />
+                  </div>
+                ) : recentActivity.length === 0 ? (
                   <EmptyState
                     icon="📊"
                     title="No activity"
@@ -254,21 +354,35 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                   />
                 ) : (
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                    {recentActivity.map((activity) => (
-                      <div key={activity._id} className="text-sm">
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg">{getActionIcon(activity.action)}</span>
-                          <div className="flex-1">
-                            <div className="text-gray-900">
-                              <span className="font-medium">{activity.userName}</span>{" "}
-                              <span className="text-gray-600">{activity.action}</span>{" "}
-                              <span className="font-mono text-xs bg-gray-100 px-1 rounded">
+                    {recentActivity.map((activity, activityIndex) => (
+                      <div key={activity._id} className="relative animate-slide-up" style={{ animationDelay: `${activityIndex * 50}ms` }}>
+                        {/* Timeline connector */}
+                        {activityIndex < recentActivity.length - 1 && (
+                          <div className="absolute left-4 top-8 bottom-0 w-px bg-gray-200"></div>
+                        )}
+
+                        <div className="flex items-start gap-3">
+                          {/* Icon circle with background */}
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center relative z-10">
+                            <span className="text-sm">{getActionIcon(activity.action)}</span>
+                          </div>
+
+                          <div className="flex-1 min-w-0 pb-4">
+                            <div className="text-sm">
+                              <span className="font-medium text-gray-900">
+                                {activity.userName}
+                              </span>{" "}
+                              <span className="text-gray-600">{activity.action}</span>
+                            </div>
+                            <div className="mt-1">
+                              <span className="inline-block font-mono text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
                                 {activity.issueKey}
                               </span>
                             </div>
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {activity.projectName} •{" "}
-                              {new Date(activity.createdAt).toLocaleDateString()}
+                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                              <span>{activity.projectName}</span>
+                              <span>•</span>
+                              <span>{new Date(activity.createdAt).toLocaleDateString()}</span>
                             </div>
                           </div>
                         </div>

@@ -61,7 +61,7 @@ export function IssueCard({
           handleClick(e);
         }
       }}
-      className={`bg-white p-3 rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
+      className={`bg-white p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
         isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20" : "border-gray-200"
       }`}
     >

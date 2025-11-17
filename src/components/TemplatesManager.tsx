@@ -161,6 +161,10 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
               icon="📋"
               title="No templates yet"
               description="Create templates to speed up issue creation"
+              action={{
+                label: "Create Your First Template",
+                onClick: () => setShowModal(true),
+              }}
             />
           ) : (
             <div className="space-y-3">
