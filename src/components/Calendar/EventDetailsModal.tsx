@@ -1,9 +1,9 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { X, Calendar, Clock, MapPin, Link as LinkIcon, Trash2, Edit } from "lucide-react";
-import { toast } from "sonner";
+import { useMutation, useQuery } from "convex/react";
+import { Calendar, Clock, Edit, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -106,9 +106,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 {event.status}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {event.title}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{event.title}</h2>
           </div>
           <button
             onClick={onClose}
@@ -146,9 +144,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             </div>
             <div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Organizer</div>
-              <div className="font-medium text-gray-900 dark:text-white">
-                {event.organizerName}
-              </div>
+              <div className="font-medium text-gray-900 dark:text-white">{event.organizerName}</div>
               {event.organizerEmail && (
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   {event.organizerEmail}
@@ -175,9 +171,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
               <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
               <div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">Location</div>
-                <div className="font-medium text-gray-900 dark:text-white">
-                  {event.location}
-                </div>
+                <div className="font-medium text-gray-900 dark:text-white">{event.location}</div>
               </div>
             </div>
           )}
@@ -203,9 +197,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           {/* Notes */}
           {event.notes && (
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Notes
-              </div>
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes</div>
               <div className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
                 {event.notes}
               </div>
@@ -217,9 +209,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Recurring event
-                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Recurring event</span>
               </div>
             </div>
           )}

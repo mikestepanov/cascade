@@ -1,5 +1,5 @@
+import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
 import type { Id } from "../../convex/_generated/dataModel";
-import { getTypeIcon, getPriorityColor, getPriorityIcon } from "@/lib/issue-utils";
 
 interface Issue {
   _id: Id<"issues">;

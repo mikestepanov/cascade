@@ -22,8 +22,8 @@ import customFields from "./customFields";
 import dashboard from "./dashboard";
 import documents from "./documents";
 import files from "./files";
-import issues from "./issues";
 import issueLinks from "./issueLinks";
+import issues from "./issues";
 import labels from "./labels";
 import notifications from "./notifications";
 import presence from "./presence";
@@ -39,27 +39,27 @@ import watchers from "./watchers";
 import webhooks from "./webhooks";
 
 export const modules = {
-	analytics,
-	attachments,
-	auth,
-	automationRules,
-	customFields,
-	dashboard,
-	documents,
-	files,
-	issues,
-	issueLinks,
-	labels,
-	notifications,
-	presence,
-	projects,
-	projectTemplates,
-	prosemirror,
-	savedFilters,
-	sprints,
-	templates,
-	timeEntries,
-	users,
-	watchers,
-	webhooks,
+  analytics,
+  attachments,
+  auth,
+  automationRules,
+  customFields,
+  dashboard,
+  documents,
+  files,
+  issues,
+  issueLinks,
+  labels,
+  notifications,
+  presence,
+  projects,
+  projectTemplates,
+  prosemirror,
+  savedFilters,
+  sprints,
+  templates,
+  timeEntries,
+  users,
+  watchers,
+  webhooks,
 };

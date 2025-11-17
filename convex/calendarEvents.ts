@@ -1,6 +1,6 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -307,10 +307,7 @@ export const getUpcoming = query({
       .query("calendarEvents")
       .withIndex("by_start_time")
       .filter((q) =>
-        q.and(
-          q.gte(q.field("startTime"), now),
-          q.lte(q.field("startTime"), sevenDaysFromNow),
-        ),
+        q.and(q.gte(q.field("startTime"), now), q.lte(q.field("startTime"), sevenDaysFromNow)),
       )
       .collect();
 
@@ -322,9 +319,7 @@ export const getUpcoming = query({
     );
 
     // Limit results
-    const limitedEvents = args.limit
-      ? visibleEvents.slice(0, args.limit)
-      : visibleEvents;
+    const limitedEvents = args.limit ? visibleEvents.slice(0, args.limit) : visibleEvents;
 
     // Enrich with organizer details
     const enrichedEvents = await Promise.all(

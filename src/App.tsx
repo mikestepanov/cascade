@@ -1,8 +1,9 @@
-import { Authenticated, Unauthenticated, useQuery, useMutation } from "convex/react";
-import { useState, useEffect } from "react";
+import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
+import { CalendarView } from "./components/Calendar/CalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
 import { DocumentEditor } from "./components/DocumentEditor";
@@ -10,6 +11,9 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
 import { NotificationCenter } from "./components/NotificationCenter";
+import { OnboardingChecklist } from "./components/Onboarding/Checklist";
+import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
+import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
@@ -17,13 +21,9 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
-import { CalendarView } from "./components/Calendar/CalendarView";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
-import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
-import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
-import { OnboardingChecklist } from "./components/Onboarding/Checklist";
 
 export default function App() {
   return (
@@ -40,7 +40,9 @@ function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [activeView, setActiveView] = useState<"dashboard" | "documents" | "projects" | "timesheet" | "calendar">("dashboard");
+  const [activeView, setActiveView] = useState<
+    "dashboard" | "documents" | "projects" | "timesheet" | "calendar"
+  >("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
@@ -194,7 +196,8 @@ function Content() {
                 Welcome to Cascade! 🎉
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Would you like us to create a sample project with demo issues to help you explore Cascade?
+                Would you like us to create a sample project with demo issues to help you explore
+                Cascade?
               </p>
               <div className="flex gap-3">
                 <button
@@ -233,32 +236,34 @@ function Content() {
 
         <div className="flex w-full h-screen">
           {/* Sidebar - only show for documents and projects views */}
-          {activeView !== "dashboard" && activeView !== "timesheet" && activeView !== "calendar" && (
-            <ErrorBoundary
-              fallback={
-                <div className="w-64 bg-white border-r border-gray-200">
-                  <SectionErrorFallback
-                    title="Sidebar Error"
-                    message="Failed to load sidebar. Please refresh the page."
-                  />
+          {activeView !== "dashboard" &&
+            activeView !== "timesheet" &&
+            activeView !== "calendar" && (
+              <ErrorBoundary
+                fallback={
+                  <div className="w-64 bg-white border-r border-gray-200">
+                    <SectionErrorFallback
+                      title="Sidebar Error"
+                      message="Failed to load sidebar. Please refresh the page."
+                    />
+                  </div>
+                }
+              >
+                <div data-tour={activeView === "documents" ? "sidebar" : ""}>
+                  {activeView === "documents" ? (
+                    <Sidebar
+                      selectedDocumentId={selectedDocumentId}
+                      onSelectDocument={setSelectedDocumentId}
+                    />
+                  ) : (
+                    <ProjectSidebar
+                      selectedProjectId={selectedProjectId}
+                      onSelectProject={setSelectedProjectId}
+                    />
+                  )}
                 </div>
-              }
-            >
-              <div data-tour={activeView === "documents" ? "sidebar" : ""}>
-                {activeView === "documents" ? (
-                  <Sidebar
-                    selectedDocumentId={selectedDocumentId}
-                    onSelectDocument={setSelectedDocumentId}
-                  />
-                ) : (
-                  <ProjectSidebar
-                    selectedProjectId={selectedProjectId}
-                    onSelectProject={setSelectedProjectId}
-                  />
-                )}
-              </div>
-            </ErrorBoundary>
-          )}
+              </ErrorBoundary>
+            )}
 
           <div className="flex-1 flex flex-col">
             {/* Header */}
@@ -413,7 +418,10 @@ function Content() {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto" data-tour={activeView === "dashboard" ? "dashboard" : ""}>
+            <main
+              className="flex-1 overflow-auto"
+              data-tour={activeView === "dashboard" ? "dashboard" : ""}
+            >
               <ErrorBoundary
                 fallback={
                   <SectionErrorFallback

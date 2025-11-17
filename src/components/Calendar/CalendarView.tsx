@@ -1,9 +1,9 @@
+import { useMutation, useQuery } from "convex/react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
@@ -78,16 +78,10 @@ export function CalendarView() {
               Today
             </button>
             <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrevious}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
+              <button onClick={handlePrevious} className="p-1 hover:bg-gray-100 rounded">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button
-                onClick={handleNext}
-                className="p-1 hover:bg-gray-100 rounded"
-              >
+              <button onClick={handleNext} className="p-1 hover:bg-gray-100 rounded">
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
@@ -133,11 +127,7 @@ export function CalendarView() {
       {/* Calendar Grid */}
       <div className="flex-1 overflow-auto">
         {viewMode === "week" ? (
-          <WeekView
-            startDate={startDate}
-            events={events || []}
-            onEventClick={setSelectedEventId}
-          />
+          <WeekView startDate={startDate} events={events || []} onEventClick={setSelectedEventId} />
         ) : (
           <MonthView
             currentDate={currentDate}
@@ -149,17 +139,11 @@ export function CalendarView() {
 
       {/* Modals */}
       {showCreateModal && (
-        <CreateEventModal
-          onClose={() => setShowCreateModal(false)}
-          defaultDate={currentDate}
-        />
+        <CreateEventModal onClose={() => setShowCreateModal(false)} defaultDate={currentDate} />
       )}
 
       {selectedEventId && (
-        <EventDetailsModal
-          eventId={selectedEventId}
-          onClose={() => setSelectedEventId(null)}
-        />
+        <EventDetailsModal eventId={selectedEventId} onClose={() => setSelectedEventId(null)} />
       )}
     </div>
   );
@@ -215,8 +199,17 @@ function WeekView({
           {/* Time Column */}
           <div className="border-r border-gray-200">
             {hours.map((hour) => (
-              <div key={hour} className="h-16 border-b border-gray-200 px-2 py-1 text-xs text-gray-500">
-                {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
+              <div
+                key={hour}
+                className="h-16 border-b border-gray-200 px-2 py-1 text-xs text-gray-500"
+              >
+                {hour === 0
+                  ? "12 AM"
+                  : hour < 12
+                    ? `${hour} AM`
+                    : hour === 12
+                      ? "12 PM"
+                      : `${hour - 12} PM`}
               </div>
             ))}
           </div>
@@ -225,10 +218,7 @@ function WeekView({
           {days.map((day, dayIdx) => (
             <div key={dayIdx} className="border-r border-gray-200 relative">
               {hours.map((hour) => (
-                <div
-                  key={hour}
-                  className="h-16 border-b border-gray-200"
-                />
+                <div key={hour} className="h-16 border-b border-gray-200" />
               ))}
 
               {/* Events for this day */}
@@ -237,8 +227,7 @@ function WeekView({
                 .map((event) => {
                   const startHour = new Date(event.startTime).getHours();
                   const startMinute = new Date(event.startTime).getMinutes();
-                  const duration =
-                    (event.endTime - event.startTime) / (1000 * 60); // minutes
+                  const duration = (event.endTime - event.startTime) / (1000 * 60); // minutes
 
                   const top = (startHour + startMinute / 60) * 64; // 64px per hour
                   const height = (duration / 60) * 64;
@@ -301,7 +290,10 @@ function MonthView({
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="p-2 text-center text-xs font-medium text-gray-500 border-l border-gray-200 first:border-l-0">
+          <div
+            key={day}
+            className="p-2 text-center text-xs font-medium text-gray-500 border-l border-gray-200 first:border-l-0"
+          >
             {day}
           </div>
         ))}
@@ -312,9 +304,7 @@ function MonthView({
         {days.map((day, idx) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
-          const dayEvents = events.filter((event) =>
-            isSameDay(new Date(event.startTime), day),
-          );
+          const dayEvents = events.filter((event) => isSameDay(new Date(event.startTime), day));
 
           return (
             <div
@@ -350,9 +340,7 @@ function MonthView({
                   </button>
                 ))}
                 {dayEvents.length > 3 && (
-                  <div className="text-xs text-gray-500 px-1">
-                    +{dayEvents.length - 3} more
-                  </div>
+                  <div className="text-xs text-gray-500 px-1">+{dayEvents.length - 3} more</div>
                 )}
               </div>
             </div>

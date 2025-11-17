@@ -93,20 +93,14 @@ export const listWithDigestPreference = internalQuery({
   },
   handler: async (ctx, args) => {
     // Get all notification preferences where digest matches frequency and email is enabled
-    const prefs = await ctx.db
-      .query("notificationPreferences")
-      .collect();
+    const prefs = await ctx.db.query("notificationPreferences").collect();
 
     const filtered = prefs.filter(
-      (pref) =>
-        pref.emailEnabled &&
-        pref.emailDigest === args.frequency
+      (pref) => pref.emailEnabled && pref.emailDigest === args.frequency,
     );
 
     // Get user details for each preference
-    const users = await Promise.all(
-      filtered.map((pref) => ctx.db.get(pref.userId))
-    );
+    const users = await Promise.all(filtered.map((pref) => ctx.db.get(pref.userId)));
 
     // Filter out null users (in case user was deleted)
     return users.filter((user): user is NonNullable<typeof user> => user !== null);

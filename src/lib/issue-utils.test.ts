@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  getTypeIcon,
   getPriorityColor,
-  getPriorityIcon,
   getPriorityEmoji,
-  getTypeLabel,
+  getPriorityIcon,
   getStatusColor,
+  getTypeIcon,
+  getTypeLabel,
 } from "./issue-utils";
 
 describe("issue-utils", () => {
@@ -65,21 +65,15 @@ describe("issue-utils", () => {
 
     describe("bg variant", () => {
       it("should return correct color for highest priority", () => {
-        expect(getPriorityColor("highest", "bg")).toBe(
-          "bg-red-100 text-red-800",
-        );
+        expect(getPriorityColor("highest", "bg")).toBe("bg-red-100 text-red-800");
       });
 
       it("should return correct color for high priority", () => {
-        expect(getPriorityColor("high", "bg")).toBe(
-          "bg-orange-100 text-orange-800",
-        );
+        expect(getPriorityColor("high", "bg")).toBe("bg-orange-100 text-orange-800");
       });
 
       it("should return correct color for medium priority", () => {
-        expect(getPriorityColor("medium", "bg")).toBe(
-          "bg-yellow-100 text-yellow-800",
-        );
+        expect(getPriorityColor("medium", "bg")).toBe("bg-yellow-100 text-yellow-800");
       });
 
       it("should return correct color for low priority", () => {
@@ -87,47 +81,33 @@ describe("issue-utils", () => {
       });
 
       it("should return correct color for lowest priority", () => {
-        expect(getPriorityColor("lowest", "bg")).toBe(
-          "bg-gray-100 text-gray-800",
-        );
+        expect(getPriorityColor("lowest", "bg")).toBe("bg-gray-100 text-gray-800");
       });
 
       it("should default to lowest for unknown priority", () => {
-        expect(getPriorityColor("unknown", "bg")).toBe(
-          "bg-gray-100 text-gray-800",
-        );
+        expect(getPriorityColor("unknown", "bg")).toBe("bg-gray-100 text-gray-800");
       });
     });
 
     describe("badge variant", () => {
       it("should return correct color for highest priority", () => {
-        expect(getPriorityColor("highest", "badge")).toBe(
-          "text-red-600 bg-red-50",
-        );
+        expect(getPriorityColor("highest", "badge")).toBe("text-red-600 bg-red-50");
       });
 
       it("should return correct color for high priority", () => {
-        expect(getPriorityColor("high", "badge")).toBe(
-          "text-orange-600 bg-orange-50",
-        );
+        expect(getPriorityColor("high", "badge")).toBe("text-orange-600 bg-orange-50");
       });
 
       it("should return correct color for medium priority", () => {
-        expect(getPriorityColor("medium", "badge")).toBe(
-          "text-yellow-600 bg-yellow-50",
-        );
+        expect(getPriorityColor("medium", "badge")).toBe("text-yellow-600 bg-yellow-50");
       });
 
       it("should return correct color for low priority", () => {
-        expect(getPriorityColor("low", "badge")).toBe(
-          "text-blue-600 bg-blue-50",
-        );
+        expect(getPriorityColor("low", "badge")).toBe("text-blue-600 bg-blue-50");
       });
 
       it("should return correct color for lowest priority", () => {
-        expect(getPriorityColor("lowest", "badge")).toBe(
-          "text-gray-600 bg-gray-50",
-        );
+        expect(getPriorityColor("lowest", "badge")).toBe("text-gray-600 bg-gray-50");
       });
     });
   });

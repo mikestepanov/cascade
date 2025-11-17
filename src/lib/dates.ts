@@ -54,10 +54,7 @@ export function getTodayString(): string {
 /**
  * Format a date with custom locale options
  */
-export function formatDateCustom(
-  timestamp: number,
-  options: Intl.DateTimeFormatOptions,
-): string {
+export function formatDateCustom(timestamp: number, options: Intl.DateTimeFormatOptions): string {
   return new Date(timestamp).toLocaleDateString("en-US", options);
 }
 

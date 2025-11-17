@@ -1,5 +1,5 @@
-import { Button } from "../ui/Button";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 
 interface WebhookCardProps {
   webhook: {
@@ -27,9 +27,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
             <h4 className="font-medium text-gray-900">{webhook.name}</h4>
             <span
               className={`text-xs px-2 py-0.5 rounded ${
-                webhook.isActive
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-200 text-gray-700"
+                webhook.isActive ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700"
               }`}
             >
               {webhook.isActive ? "Active" : "Inactive"}

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useMutation } from "convex/react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -24,12 +24,7 @@ interface AutomationRuleFormProps {
  * Extracted form component for creating/editing automation rules
  * Separated from AutomationRulesManager for better reusability
  */
-export function AutomationRuleForm({
-  projectId,
-  rule,
-  isOpen,
-  onClose,
-}: AutomationRuleFormProps) {
+export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: AutomationRuleFormProps) {
   const [name, setName] = useState(rule?.name || "");
   const [description, setDescription] = useState(rule?.description || "");
   const [trigger, setTrigger] = useState(rule?.trigger || "status_changed");

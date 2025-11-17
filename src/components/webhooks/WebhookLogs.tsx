@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
@@ -92,7 +92,9 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                       {getStatusBadge(execution.status)}
                       <span className="text-sm font-medium text-gray-900">{execution.event}</span>
                       {execution.responseStatus && (
-                        <span className="text-xs text-gray-500">HTTP {execution.responseStatus}</span>
+                        <span className="text-xs text-gray-500">
+                          HTTP {execution.responseStatus}
+                        </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 /**
  * Availability Slots - Manage when users are available for bookings
@@ -37,9 +37,7 @@ export const setDayAvailability = mutation({
     // Check if slot already exists for this day
     const existing = await ctx.db
       .query("availabilitySlots")
-      .withIndex("by_user_day", (q) =>
-        q.eq("userId", userId).eq("dayOfWeek", args.dayOfWeek),
-      )
+      .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", args.dayOfWeek))
       .first();
 
     if (existing) {
@@ -81,13 +79,7 @@ export const setDefaultWorkingHours = mutation({
     const endTime = args.endTime || "17:00";
 
     const workdays: Array<
-      | "monday"
-      | "tuesday"
-      | "wednesday"
-      | "thursday"
-      | "friday"
-      | "saturday"
-      | "sunday"
+      "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
     > = ["monday", "tuesday", "wednesday", "thursday", "friday"];
 
     for (const day of workdays) {

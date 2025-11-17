@@ -33,12 +33,7 @@ export function useAsyncMutation<TArgs extends unknown[], TResult>(
   mutationFn: (...args: TArgs) => Promise<TResult>,
   options: UseAsyncMutationOptions<TResult> = {},
 ): UseAsyncMutationReturn<TArgs, TResult> {
-  const {
-    onSuccess,
-    onError,
-    showErrorToast = true,
-    errorMessage = "Operation failed",
-  } = options;
+  const { onSuccess, onError, showErrorToast = true, errorMessage = "Operation failed" } = options;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

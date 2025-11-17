@@ -148,9 +148,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                 Required column:{" "}
                 <code className="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">title</code>
               </li>
-              <li>
-                Optional: type, priority, description, labels, estimated hours, due date
-              </li>
+              <li>Optional: type, priority, description, labels, estimated hours, due date</li>
               <li>All imported issues will be created in the first workflow state</li>
             </ul>
           </div>

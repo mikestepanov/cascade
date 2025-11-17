@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
+import { Calendar, Clock, DollarSign, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Clock, DollarSign, Edit, Trash2, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeEntries.getCurrentWeekTimesheet);
@@ -110,8 +110,7 @@ export function Timesheet() {
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-4">
         {weekDays.map((day) => {
-          const isToday =
-            day.date.toDateString() === new Date().toDateString();
+          const isToday = day.date.toDateString() === new Date().toDateString();
           const dayHours = day.entries.reduce((sum: number, e: any) => sum + e.hours, 0);
 
           return (
@@ -128,9 +127,7 @@ export function Timesheet() {
                 <div className="font-semibold text-gray-900 dark:text-white">
                   {day.date.toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {day.date.getDate()}
-                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{day.date.getDate()}</div>
                 {dayHours > 0 && (
                   <div className="text-xs font-medium text-blue-600 mt-1">
                     {formatHours(dayHours)}h

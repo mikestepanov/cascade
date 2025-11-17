@@ -6,8 +6,8 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 // Default preferences for new users
 export const DEFAULT_PREFERENCES = {

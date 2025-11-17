@@ -8,9 +8,7 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div className={cn("animate-pulse bg-gray-200 dark:bg-gray-700 rounded", className)} />
-  );
+  return <div className={cn("animate-pulse bg-gray-200 dark:bg-gray-700 rounded", className)} />;
 }
 
 /**
@@ -36,22 +34,13 @@ export function SkeletonCard({ className }: SkeletonProps) {
 /**
  * Skeleton for text lines with varying widths
  */
-export function SkeletonText({
-  lines = 3,
-  className,
-}: {
-  lines?: number;
-  className?: string;
-}) {
+export function SkeletonText({ lines = 3, className }: { lines?: number; className?: string }) {
   return (
     <div className={cn("space-y-2", className)}>
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
           key={i}
-          className={cn(
-            "h-4",
-            i === lines - 1 ? "w-4/5" : i % 2 === 0 ? "w-full" : "w-11/12",
-          )}
+          className={cn("h-4", i === lines - 1 ? "w-4/5" : i % 2 === 0 ? "w-full" : "w-11/12")}
         />
       ))}
     </div>

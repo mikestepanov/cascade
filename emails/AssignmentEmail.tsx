@@ -33,20 +33,22 @@ export function AssignmentEmail({
 }: AssignmentEmailProps) {
   const preview = `You were assigned to ${issueKey}: ${issueTitle}`;
 
-  const priorityEmoji = {
-    highest: "🔴",
-    high: "🟠",
-    medium: "🟡",
-    low: "🟢",
-    lowest: "⚪",
-  }[issuePriority] || "⚪";
+  const priorityEmoji =
+    {
+      highest: "🔴",
+      high: "🟠",
+      medium: "🟡",
+      low: "🟢",
+      lowest: "⚪",
+    }[issuePriority] || "⚪";
 
-  const typeEmoji = {
-    task: "✓",
-    bug: "🐛",
-    story: "📖",
-    epic: "🎯",
-  }[issueType] || "✓";
+  const typeEmoji =
+    {
+      task: "✓",
+      bug: "🐛",
+      story: "📖",
+      epic: "🎯",
+    }[issueType] || "✓";
 
   return (
     <EmailLayout preview={preview}>

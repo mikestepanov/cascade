@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
-import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
-import { showSuccess, showError } from "@/lib/toast";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -109,7 +109,9 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-500 font-mono">{issue.key}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}
+                  >
                     {issue.priority}
                   </span>
                 </div>

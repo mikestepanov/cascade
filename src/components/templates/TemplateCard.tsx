@@ -1,5 +1,5 @@
-import { Button } from "../ui/Button";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 
 type IssueType = "task" | "bug" | "story" | "epic";
 type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";

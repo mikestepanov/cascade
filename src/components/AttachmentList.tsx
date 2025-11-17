@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -99,7 +99,12 @@ function AttachmentItem({
           </svg>
         </a>
         {canEdit && (
-          <Button variant="ghost" size="sm" onClick={onRemove} className="text-red-600 hover:text-red-800">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onRemove}
+            className="text-red-600 hover:text-red-800"
+          >
             <svg
               aria-hidden="true"
               className="w-5 h-5"

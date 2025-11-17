@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { LoadingSpinner, LoadingOverlay } from "./LoadingSpinner";
+import { describe, expect, it } from "vitest";
+import { LoadingOverlay, LoadingSpinner } from "./LoadingSpinner";
 
 describe("LoadingSpinner", () => {
   describe("Basic Rendering", () => {
@@ -126,13 +126,7 @@ describe("LoadingSpinner", () => {
     });
 
     it("should work with all props", () => {
-      render(
-        <LoadingSpinner
-          size="sm"
-          className="text-blue-500"
-          message="Processing..."
-        />,
-      );
+      render(<LoadingSpinner size="sm" className="text-blue-500" message="Processing..." />);
 
       const spinner = screen.getByRole("status");
       expect(spinner).toHaveClass("h-4");
@@ -198,10 +192,7 @@ describe("LoadingSpinner", () => {
     it("should maintain accessibility with custom className", () => {
       render(<LoadingSpinner className="custom" />);
 
-      expect(screen.getByRole("status")).toHaveAttribute(
-        "aria-label",
-        "Loading",
-      );
+      expect(screen.getByRole("status")).toHaveAttribute("aria-label", "Loading");
     });
   });
 

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { Play, Square, Clock, DollarSign } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { Clock, DollarSign, Play, Square } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface TimerWidgetProps {
   issueId?: Id<"issues">;
@@ -164,11 +164,15 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
                     Hourly Rate (optional)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                      $
+                    </span>
                     <input
                       type="number"
                       value={hourlyRate ?? ""}
-                      onChange={(e) => setHourlyRate(e.target.value ? parseFloat(e.target.value) : undefined)}
+                      onChange={(e) =>
+                        setHourlyRate(e.target.value ? parseFloat(e.target.value) : undefined)
+                      }
                       placeholder="Use project default"
                       className="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       step="0.01"

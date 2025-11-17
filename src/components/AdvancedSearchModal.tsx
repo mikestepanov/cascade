@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";

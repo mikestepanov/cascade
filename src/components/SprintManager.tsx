@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { showSuccess, showError } from "@/lib/toast";
 import { formatDate } from "@/lib/dates";
 import { getStatusColor } from "@/lib/issue-utils";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { SkeletonProjectCard } from "./ui/Skeleton";
@@ -156,7 +156,9 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-lg font-medium text-gray-900">{sprint.name}</h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(sprint.status)}`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(sprint.status)}`}
+                    >
                       {sprint.status}
                     </span>
                     <span className="text-sm text-gray-500">{sprint.issueCount} issues</span>

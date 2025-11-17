@@ -1,8 +1,8 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
-import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
 import { formatDate } from "@/lib/dates";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";

@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -92,7 +92,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Step {step} of 4
             </span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round((step / 4) * 100)}% complete</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {Math.round((step / 4) * 100)}% complete
+            </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
@@ -105,7 +107,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         {/* Step 1: Project Name & Key */}
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Your First Project</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Create Your First Project
+            </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Let's start by giving your project a name and a unique key.
             </p>
@@ -142,7 +146,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                 maxLength={10}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                2-10 uppercase letters. This will prefix your issue keys (e.g., {projectKey || "KEY"}-123)
+                2-10 uppercase letters. This will prefix your issue keys (e.g.,{" "}
+                {projectKey || "KEY"}-123)
               </p>
             </div>
 
@@ -164,7 +169,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         {/* Step 2: Board Type */}
         {step === 2 && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Choose Your Board Type</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Choose Your Board Type
+            </h2>
             <p className="text-gray-600 dark:text-gray-400">
               How do you want to organize your work? You can change this later.
             </p>
@@ -180,7 +187,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               >
                 <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">📊 Kanban</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Continuous flow of work through columns. Great for ongoing projects and support teams.
+                  Continuous flow of work through columns. Great for ongoing projects and support
+                  teams.
                 </p>
                 <ul className="mt-3 text-xs text-gray-500 dark:text-gray-500 space-y-1">
                   <li>✓ No time constraints</li>
@@ -199,7 +207,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               >
                 <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">🏃 Scrum</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Work in sprints with defined goals. Great for product development and fixed deadlines.
+                  Work in sprints with defined goals. Great for product development and fixed
+                  deadlines.
                 </p>
                 <ul className="mt-3 text-xs text-gray-500 dark:text-gray-500 space-y-1">
                   <li>✓ Sprint planning</li>
@@ -214,15 +223,20 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         {/* Step 3: Workflow States */}
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Customize Your Workflow</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Customize Your Workflow
+            </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              These are the stages your issues will move through. You can customize them now or use the defaults.
+              These are the stages your issues will move through. You can customize them now or use
+              the defaults.
             </p>
 
             <div className="space-y-3">
               {workflowStates.map((state, index) => (
                 <div key={state.id} className="flex items-center gap-3">
-                  <span className="text-gray-500 dark:text-gray-400 font-mono text-sm w-6">{index + 1}.</span>
+                  <span className="text-gray-500 dark:text-gray-400 font-mono text-sm w-6">
+                    {index + 1}.
+                  </span>
                   <input
                     type="text"
                     value={state.name}
@@ -242,7 +256,11 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                           : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                     }`}
                   >
-                    {state.category === "todo" ? "To Do" : state.category === "inprogress" ? "In Progress" : "Done"}
+                    {state.category === "todo"
+                      ? "To Do"
+                      : state.category === "inprogress"
+                        ? "In Progress"
+                        : "Done"}
                   </span>
                 </div>
               ))}
@@ -271,8 +289,12 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         {/* Step 4: Summary & Create */}
         {step === 4 && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Ready to Create! 🎉</h2>
-            <p className="text-gray-600 dark:text-gray-400">Here's a summary of your new project:</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Ready to Create! 🎉
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Here's a summary of your new project:
+            </p>
 
             <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 space-y-3">
               <div>
@@ -303,7 +325,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Click "Create Project" and we'll set everything up for you. You can start adding issues right away!
+              Click "Create Project" and we'll set everything up for you. You can start adding
+              issues right away!
             </p>
           </div>
         )}

@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { CommentRenderer } from "./CommentRenderer";
+import { describe, expect, it } from "vitest";
 import type { Id } from "../../convex/_generated/dataModel";
+import { CommentRenderer } from "./CommentRenderer";
 
 describe("CommentRenderer", () => {
   describe("Plain Text Rendering", () => {
@@ -50,8 +50,7 @@ describe("CommentRenderer", () => {
     });
 
     it("should render multiple mentions", () => {
-      const content =
-        "@[Alice](user-1) and @[Bob](user-2) are working on this";
+      const content = "@[Alice](user-1) and @[Bob](user-2) are working on this";
       render(<CommentRenderer content={content} />);
 
       expect(screen.getByText("@Alice")).toBeInTheDocument();
@@ -130,8 +129,7 @@ describe("CommentRenderer", () => {
 
   describe("Mixed Content", () => {
     it("should render text before and after mentions", () => {
-      const content =
-        "Hey @[Alice](user-1), can you help @[Bob](user-2) with this?";
+      const content = "Hey @[Alice](user-1), can you help @[Bob](user-2) with this?";
       render(<CommentRenderer content={content} />);
 
       expect(screen.getByText("Hey")).toBeInTheDocument();
@@ -196,9 +194,7 @@ describe("CommentRenderer", () => {
       const content = "Email me @ test@example.com";
       render(<CommentRenderer content={content} />);
 
-      expect(
-        screen.getByText("Email me @ test@example.com"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Email me @ test@example.com")).toBeInTheDocument();
     });
 
     it("should handle consecutive mentions without spacing", () => {
@@ -223,9 +219,7 @@ describe("CommentRenderer", () => {
   describe("Mentions Prop", () => {
     it("should accept mentions array (though not currently used in rendering)", () => {
       const mentions = ["user-1", "user-2"] as Id<"users">[];
-      render(
-        <CommentRenderer content="Test @[User](user-1)" mentions={mentions} />,
-      );
+      render(<CommentRenderer content="Test @[User](user-1)" mentions={mentions} />);
 
       expect(screen.getByText("@User")).toBeInTheDocument();
     });

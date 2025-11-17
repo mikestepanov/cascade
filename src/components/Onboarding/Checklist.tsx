@@ -1,7 +1,7 @@
+import { useMutation, useQuery } from "convex/react";
+import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { X, Check, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ChecklistItem {
   id: string;
@@ -95,7 +95,10 @@ export function OnboardingChecklist() {
               <ChevronUp className="w-4 h-4 text-gray-500" />
             )}
           </button>
-          <button onClick={handleDismiss} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+          <button
+            onClick={handleDismiss}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+          >
             <X className="w-4 h-4 text-gray-500" />
           </button>
         </div>

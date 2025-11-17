@@ -5,11 +5,11 @@
  */
 
 import { render } from "@react-email/render";
-import { internalAction } from "../_generated/server";
 import { v } from "convex/values";
-import { sendEmail } from "./index";
-import type { Id } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import { internalAction } from "../_generated/server";
+import { sendEmail } from "./index";
 
 /**
  * Send a mention notification email
@@ -26,7 +26,8 @@ export const sendMentionEmail = internalAction({
     projectName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { to, userId, mentionedByName, issueKey, issueTitle, commentText, projectName, issueId } = args;
+    const { to, userId, mentionedByName, issueKey, issueTitle, commentText, projectName, issueId } =
+      args;
 
     // Generate issue URL and unsubscribe URL
     const appUrl = process.env.APP_URL || "http://localhost:5173";
@@ -151,7 +152,8 @@ export const sendCommentEmail = internalAction({
     projectName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { to, userId, commenterName, issueKey, issueTitle, issueId, commentText, projectName } = args;
+    const { to, userId, commenterName, issueKey, issueTitle, issueId, commentText, projectName } =
+      args;
 
     const appUrl = process.env.APP_URL || "http://localhost:5173";
     const issueUrl = `${appUrl}/issues/${issueId}`;
@@ -211,7 +213,20 @@ export const sendNotificationEmail = internalAction({
     commentText: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { to, userId, type, actorName, issueId, issueKey, issueTitle, issueType, issuePriority, projectName, dueDate, commentText } = args;
+    const {
+      to,
+      userId,
+      type,
+      actorName,
+      issueId,
+      issueKey,
+      issueTitle,
+      issueType,
+      issuePriority,
+      projectName,
+      dueDate,
+      commentText,
+    } = args;
 
     // Send appropriate email based on type
     switch (type) {
@@ -280,9 +295,10 @@ export const sendDigestEmail = internalAction({
 
     // Calculate time range
     const now = Date.now();
-    const timeRange = frequency === "daily"
-      ? 24 * 60 * 60 * 1000 // 24 hours
-      : 7 * 24 * 60 * 60 * 1000; // 7 days
+    const timeRange =
+      frequency === "daily"
+        ? 24 * 60 * 60 * 1000 // 24 hours
+        : 7 * 24 * 60 * 60 * 1000; // 7 days
     const startTime = now - timeRange;
 
     // Get notifications from the time range

@@ -3,12 +3,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { TemplateCard } from "./templates/TemplateCard";
+import { TemplateForm } from "./templates/TemplateForm";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { TemplateForm } from "./templates/TemplateForm";
-import { TemplateCard } from "./templates/TemplateCard";
 
 interface TemplatesManagerProps {
   projectId: Id<"projects">;

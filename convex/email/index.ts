@@ -14,9 +14,7 @@ import { SendPulseProvider } from "./sendpulse";
 // ============================================================
 // Environment-based switching (change via EMAIL_PROVIDER env var):
 const provider: EmailProvider =
-  process.env.EMAIL_PROVIDER === "sendpulse"
-    ? new SendPulseProvider()
-    : new ResendProvider(); // Default
+  process.env.EMAIL_PROVIDER === "sendpulse" ? new SendPulseProvider() : new ResendProvider(); // Default
 
 // Or manually set one provider for all environments:
 // const provider: EmailProvider = new ResendProvider();

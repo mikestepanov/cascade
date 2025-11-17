@@ -96,7 +96,9 @@ describe("GlobalSearch", () => {
 
   it("should filter by tab selection", async () => {
     const user = userEvent.setup();
-    const mockIssues = [{ _id: "1", key: "TEST-1", title: "Test Issue", type: "task", projectId: "proj-1" }];
+    const mockIssues = [
+      { _id: "1", key: "TEST-1", title: "Test Issue", type: "task", projectId: "proj-1" },
+    ];
     const mockDocuments = [{ _id: "2", title: "Test Doc" }];
 
     // Component calls useQuery twice per render: first for issues, second for documents

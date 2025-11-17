@@ -4,10 +4,10 @@
  * Generates secure tokens for unsubscribe links
  */
 
-import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 /**
  * Generate a unique unsubscribe token for a user

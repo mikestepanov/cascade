@@ -1,7 +1,7 @@
-import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Id } from "./_generated/dataModel";
+import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 /**
  * Get onboarding status for current user
@@ -205,7 +205,8 @@ export const createSampleProject = mutation({
       },
       {
         title: "Create demo video for landing page",
-        description: "Record a 2-minute walkthrough showing key features:\n- Creating a project\n- Adding issues\n- Collaborating with team\n- Real-time updates",
+        description:
+          "Record a 2-minute walkthrough showing key features:\n- Creating a project\n- Adding issues\n- Collaborating with team\n- Real-time updates",
         type: "task",
         status: "done",
         priority: "medium",
@@ -214,7 +215,8 @@ export const createSampleProject = mutation({
       },
       {
         title: "Design new logo and branding",
-        description: "Current logo is placeholder. Need professional branding that reflects modern, collaborative nature of the product.",
+        description:
+          "Current logo is placeholder. Need professional branding that reflects modern, collaborative nature of the product.",
         type: "task",
         status: "todo",
         priority: "low",
@@ -313,7 +315,8 @@ export const createSampleProject = mutation({
       },
       {
         issueIndex: 7, // Filter story
-        content: "This would be super helpful! Right now I have to filter twice which is annoying. +1 for this feature.",
+        content:
+          "This would be super helpful! Right now I have to filter twice which is annoying. +1 for this feature.",
       },
     ];
 
@@ -323,7 +326,9 @@ export const createSampleProject = mutation({
         authorId: userId,
         content,
         mentions,
-        createdAt: Date.now() - (5 - commentsData.indexOf({ issueIndex, content, mentions })) * 30 * 60 * 1000, // 30 min intervals
+        createdAt:
+          Date.now() -
+          (5 - commentsData.indexOf({ issueIndex, content, mentions })) * 30 * 60 * 1000, // 30 min intervals
         updatedAt: Date.now(),
       });
     }

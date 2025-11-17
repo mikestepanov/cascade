@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
-import { showSuccess, showError } from "@/lib/toast";
+import { useEffect, useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { FormDialog } from "../ui/FormDialog";
@@ -26,12 +26,7 @@ interface CustomFieldFormProps {
  * Extracted form component for creating/editing custom fields
  * Separated from CustomFieldsManager for better reusability
  */
-export function CustomFieldForm({
-  projectId,
-  field,
-  isOpen,
-  onClose,
-}: CustomFieldFormProps) {
+export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFieldFormProps) {
   const [name, setName] = useState("");
   const [fieldKey, setFieldKey] = useState("");
   const [fieldType, setFieldType] = useState<FieldType>("text");

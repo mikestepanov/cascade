@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Card, CardHeader, CardBody } from "./Card";
 import { Button } from "./Button";
+import { Card, CardBody, CardHeader } from "./Card";
 
 interface EntityCardProps {
   title: string;

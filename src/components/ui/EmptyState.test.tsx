@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { EmptyState } from "./EmptyState";
 
 describe("EmptyState", () => {
@@ -13,13 +13,7 @@ describe("EmptyState", () => {
     });
 
     it("should render description when provided", () => {
-      render(
-        <EmptyState
-          icon="📝"
-          title="No Data"
-          description="There are no items to display"
-        />,
-      );
+      render(<EmptyState icon="📝" title="No Data" description="There are no items to display" />);
 
       expect(screen.getByText("There are no items to display")).toBeInTheDocument();
     });
@@ -118,13 +112,7 @@ describe("EmptyState", () => {
     });
 
     it("should work with icon, title, and description", () => {
-      render(
-        <EmptyState
-          icon="📊"
-          title="No Data"
-          description="Start by adding some items"
-        />,
-      );
+      render(<EmptyState icon="📊" title="No Data" description="Start by adding some items" />);
 
       expect(screen.getByText("📊")).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "No Data" })).toBeInTheDocument();
@@ -224,13 +212,7 @@ describe("EmptyState", () => {
 
     it("should handle special characters in description", () => {
       const specialChars = "Special chars: <>&\"'";
-      render(
-        <EmptyState
-          icon="📦"
-          title="Title"
-          description={specialChars}
-        />,
-      );
+      render(<EmptyState icon="📦" title="Title" description={specialChars} />);
 
       expect(screen.getByText(specialChars)).toBeInTheDocument();
     });
@@ -300,7 +282,9 @@ describe("EmptyState", () => {
     it("should have semantic heading structure", () => {
       render(<EmptyState icon="📦" title="Accessible Title" />);
 
-      expect(screen.getByRole("heading", { level: 3, name: "Accessible Title" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { level: 3, name: "Accessible Title" }),
+      ).toBeInTheDocument();
     });
 
     it("should have accessible button when action is provided", () => {

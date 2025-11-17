@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useQuery } from "convex/react";
+import { Clock, DollarSign, Download, TrendingUp, Users } from "lucide-react";
+import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { DollarSign, Clock, Users, TrendingUp, Download } from "lucide-react";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface BillingReportProps {
   projectId: Id<"projects">;
@@ -40,9 +40,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
     );
   }
 
-  const utilizationRate = billing.totalHours > 0
-    ? (billing.billableHours / billing.totalHours) * 100
-    : 0;
+  const utilizationRate =
+    billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -55,22 +54,16 @@ export function BillingReport({ projectId }: BillingReportProps) {
     return hours.toFixed(2);
   };
 
-  const averageRate = billing.billableHours > 0
-    ? billing.totalRevenue / billing.billableHours
-    : 0;
+  const averageRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
 
-  const sortedUsers = Object.entries(billing.byUser).sort(
-    ([, a], [, b]) => b.revenue - a.revenue
-  );
+  const sortedUsers = Object.entries(billing.byUser).sort(([, a], [, b]) => b.revenue - a.revenue);
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Billing Report
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Billing Report</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {project.name} {project.clientName && `• ${project.clientName}`}
           </p>
@@ -85,9 +78,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
             <option value="month">Last 30 days</option>
             <option value="all">All time</option>
           </select>
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -130,9 +121,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
             <TrendingUp className="w-4 h-4" />
             Utilization Rate
           </div>
-          <div className="text-3xl font-bold text-purple-600">
-            {utilizationRate.toFixed(0)}%
-          </div>
+          <div className="text-3xl font-bold text-purple-600">{utilizationRate.toFixed(0)}%</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {billing.nonBillableHours.toFixed(2)}h non-billable
           </div>
@@ -143,12 +132,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
             <DollarSign className="w-4 h-4" />
             Avg Hourly Rate
           </div>
-          <div className="text-3xl font-bold text-orange-600">
-            {formatCurrency(averageRate)}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            per billable hour
-          </div>
+          <div className="text-3xl font-bold text-orange-600">{formatCurrency(averageRate)}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">per billable hour</div>
         </div>
       </div>
 
@@ -156,9 +141,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-gray-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Team Breakdown
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Team Breakdown</h3>
         </div>
 
         {sortedUsers.length === 0 ? (
@@ -168,20 +151,14 @@ export function BillingReport({ projectId }: BillingReportProps) {
         ) : (
           <div className="space-y-3">
             {sortedUsers.map(([userName, stats]) => {
-              const userUtilization = stats.hours > 0
-                ? (stats.billableHours / stats.hours) * 100
-                : 0;
+              const userUtilization =
+                stats.hours > 0 ? (stats.billableHours / stats.hours) * 100 : 0;
 
               return (
-                <div
-                  key={userName}
-                  className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
-                >
+                <div key={userName} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {userName}
-                      </div>
+                      <div className="font-medium text-gray-900 dark:text-white">{userName}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
                         {formatHours(stats.billableHours)} / {formatHours(stats.hours)} hours (
                         {userUtilization.toFixed(0)}% billable)
@@ -191,9 +168,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                       <div className="text-lg font-bold text-green-600">
                         {formatCurrency(stats.revenue)}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        revenue
-                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">revenue</div>
                     </div>
                   </div>
 
@@ -214,28 +189,20 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Quick Stats */}
       <div className="mt-6 grid grid-cols-3 gap-4 text-center">
         <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            {billing.entries}
-          </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Time Entries
-          </div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{billing.entries}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Time Entries</div>
         </div>
         <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
             {Object.keys(billing.byUser).length}
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Team Members
-          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Team Members</div>
         </div>
         <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
             {averageRate > 0 ? formatCurrency(averageRate) : "N/A"}
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Blended Rate
-          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">Blended Rate</div>
         </div>
       </div>
     </div>

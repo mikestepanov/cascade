@@ -430,11 +430,7 @@ const applicationTables = {
     projectId: v.optional(v.id("projects")), // Link to project
     issueId: v.optional(v.id("issues")), // Link to issue
     // Status
-    status: v.union(
-      v.literal("confirmed"),
-      v.literal("tentative"),
-      v.literal("cancelled"),
-    ),
+    status: v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
     // Recurrence
     isRecurring: v.boolean(),
     recurrenceRule: v.optional(v.string()), // RRULE format (e.g., "FREQ=WEEKLY;BYDAY=MO,WE,FR")

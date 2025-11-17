@@ -70,8 +70,8 @@ export function DigestEmail({
         <>
           <Text style={summaryText}>
             You have <strong>{items.length}</strong> notification
-            {items.length !== 1 ? "s" : ""} from the past {frequency === "daily" ? "24 hours" : "week"}
-            :
+            {items.length !== 1 ? "s" : ""} from the past{" "}
+            {frequency === "daily" ? "24 hours" : "week"}:
           </Text>
 
           {/* Digest Items */}

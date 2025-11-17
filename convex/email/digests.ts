@@ -4,8 +4,8 @@
  * Sends daily and weekly digest emails to users who have opted in
  */
 
-import { internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { internalAction } from "../_generated/server";
 
 /**
  * Send daily digest emails to all users who have opted in
@@ -26,8 +26,8 @@ export const sendDailyDigests = internalAction({
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "daily",
-        })
-      )
+        }),
+      ),
     );
 
     // Log results
@@ -58,8 +58,8 @@ export const sendWeeklyDigests = internalAction({
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "weekly",
-        })
-      )
+        }),
+      ),
     );
 
     // Log results

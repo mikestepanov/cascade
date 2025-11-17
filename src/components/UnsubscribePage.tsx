@@ -74,9 +74,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Successfully Unsubscribed
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Successfully Unsubscribed</h2>
             <p className="text-gray-600 mb-6">
               You have been unsubscribed from all email notifications.
             </p>

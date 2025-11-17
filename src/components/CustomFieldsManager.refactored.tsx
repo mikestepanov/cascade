@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { CustomFieldCard } from "./fields/CustomFieldCard";
+import { CustomFieldForm } from "./fields/CustomFieldForm";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
-import { CustomFieldForm } from "./fields/CustomFieldForm";
-import { CustomFieldCard } from "./fields/CustomFieldCard";
 
 interface CustomFieldsManagerProps {
   projectId: Id<"projects">;
@@ -73,9 +73,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Custom Fields
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Custom Fields</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Add custom metadata fields to your issues
           </p>

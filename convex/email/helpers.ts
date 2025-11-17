@@ -4,9 +4,9 @@
  * Helper functions to trigger email notifications from mutations
  */
 
-import type { MutationCtx } from "../_generated/server";
-import type { Id } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import type { MutationCtx } from "../_generated/server";
 
 /**
  * Send email notification after creating in-app notification

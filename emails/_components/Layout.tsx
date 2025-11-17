@@ -16,7 +16,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-import * as React from "react";
+import type * as React from "react";
 
 interface EmailLayoutProps {
   preview: string;
@@ -49,9 +49,7 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
                 Manage notification preferences
               </Link>
             </Text>
-            <Text style={footerText}>
-              © 2025 Cascade. All rights reserved.
-            </Text>
+            <Text style={footerText}>© 2025 Cascade. All rights reserved.</Text>
           </Section>
         </Container>
       </Body>

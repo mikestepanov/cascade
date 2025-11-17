@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Id } from "../../../convex/_generated/dataModel";
-import { X, Calendar, Clock, MapPin, Users, Link as LinkIcon } from "lucide-react";
+import { Calendar, Clock, Link as LinkIcon, MapPin, Users, X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface CreateEventModalProps {
   onClose: () => void;
@@ -23,9 +23,7 @@ export function CreateEventModal({
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState(
-    defaultDate.toISOString().split("T")[0],
-  );
+  const [startDate, setStartDate] = useState(defaultDate.toISOString().split("T")[0]);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
   const [allDay, setAllDay] = useState(false);
@@ -34,9 +32,7 @@ export function CreateEventModal({
   );
   const [location, setLocation] = useState("");
   const [meetingUrl, setMeetingUrl] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | undefined>(
-    projectId,
-  );
+  const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | undefined>(projectId);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,9 +78,7 @@ export function CreateEventModal({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Create Event
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Event</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
@@ -184,9 +178,7 @@ export function CreateEventModal({
                 onChange={(e) => setAllDay(e.target.checked)}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                All day event
-              </span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">All day event</span>
             </label>
           </div>
 

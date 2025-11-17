@@ -1,6 +1,6 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 /**
  * Booking Pages - Cal.com-style booking page management
@@ -203,12 +203,7 @@ export const remove = mutation({
     const activeBookings = await ctx.db
       .query("bookings")
       .withIndex("by_booking_page", (q) => q.eq("bookingPageId", args.id))
-      .filter((q) =>
-        q.or(
-          q.eq(q.field("status"), "pending"),
-          q.eq(q.field("status"), "confirmed"),
-        ),
-      )
+      .filter((q) => q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "confirmed")))
       .collect();
 
     if (activeBookings.length > 0) {

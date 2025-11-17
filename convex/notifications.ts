@@ -191,7 +191,7 @@ export const listForDigest = internalQuery({
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_user_created", (q) =>
-        q.eq("userId", args.userId).gte("createdAt", args.startTime)
+        q.eq("userId", args.userId).gte("createdAt", args.startTime),
       )
       .order("desc")
       .collect();

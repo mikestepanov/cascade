@@ -194,9 +194,7 @@ export function NotificationPreferences() {
 
       {/* Digest Emails */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-          Email Digests
-        </h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Email Digests</h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Receive a summary of activity instead of individual emails
         </p>

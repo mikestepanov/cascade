@@ -1,6 +1,6 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 /**
  * Bookings - Handle meeting bookings via booking pages
@@ -36,9 +36,7 @@ export const createBooking = mutation({
     const now = Date.now();
     const hoursUntilMeeting = (args.startTime - now) / (1000 * 60 * 60);
     if (hoursUntilMeeting < page.minimumNotice) {
-      throw new Error(
-        `This meeting requires at least ${page.minimumNotice} hours notice`,
-      );
+      throw new Error(`This meeting requires at least ${page.minimumNotice} hours notice`);
     }
 
     // Check if slot is still available
@@ -47,10 +45,7 @@ export const createBooking = mutation({
       .withIndex("by_host", (q) => q.eq("hostId", page.userId))
       .filter((q) =>
         q.and(
-          q.or(
-            q.eq(q.field("status"), "pending"),
-            q.eq(q.field("status"), "confirmed"),
-          ),
+          q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "confirmed")),
           q.or(
             // New booking starts during existing booking
             q.and(
@@ -60,10 +55,7 @@ export const createBooking = mutation({
             // New booking ends during existing booking
             q.and(q.lt(q.field("startTime"), endTime), q.gte(q.field("endTime"), endTime)),
             // New booking completely contains existing booking
-            q.and(
-              q.gte(q.field("startTime"), args.startTime),
-              q.lte(q.field("endTime"), endTime),
-            ),
+            q.and(q.gte(q.field("startTime"), args.startTime), q.lte(q.field("endTime"), endTime)),
           ),
         ),
       )
@@ -145,14 +137,12 @@ export const getAvailableSlots = query({
       "thursday",
       "friday",
       "saturday",
-    ];
+    ] as const;
     const dayOfWeek = dayNames[date.getDay()];
 
     const availability = await ctx.db
       .query("availabilitySlots")
-      .withIndex("by_user_day", (q) =>
-        q.eq("userId", page.userId).eq("dayOfWeek", dayOfWeek as any),
-      )
+      .withIndex("by_user_day", (q) => q.eq("userId", page.userId).eq("dayOfWeek", dayOfWeek))
       .first();
 
     if (!availability || !availability.isActive) return [];
@@ -166,10 +156,7 @@ export const getAvailableSlots = query({
       .withIndex("by_host", (q) => q.eq("hostId", page.userId))
       .filter((q) =>
         q.and(
-          q.or(
-            q.eq(q.field("status"), "pending"),
-            q.eq(q.field("status"), "confirmed"),
-          ),
+          q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "confirmed")),
           q.gte(q.field("startTime"), dayStart),
           q.lt(q.field("startTime"), dayEnd),
         ),
@@ -184,7 +171,7 @@ export const getAvailableSlots = query({
     const [startHour, startMinute] = availability.startTime.split(":").map(Number);
     const [endHour, endMinute] = availability.endTime.split(":").map(Number);
 
-    let currentTime = new Date(args.date);
+    const currentTime = new Date(args.date);
     currentTime.setHours(startHour, startMinute, 0, 0);
 
     const endTime = new Date(args.date);
@@ -235,21 +222,15 @@ export const listMyBookings = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    let bookings;
-
-    if (args.status) {
-      bookings = await ctx.db
-        .query("bookings")
-        .withIndex("by_host_status", (q) =>
-          q.eq("hostId", userId).eq("status", args.status),
-        )
-        .collect();
-    } else {
-      bookings = await ctx.db
-        .query("bookings")
-        .withIndex("by_host", (q) => q.eq("hostId", userId))
-        .collect();
-    }
+    const bookings = args.status
+      ? await ctx.db
+          .query("bookings")
+          .withIndex("by_host_status", (q) => q.eq("hostId", userId).eq("status", args.status))
+          .collect()
+      : await ctx.db
+          .query("bookings")
+          .withIndex("by_host", (q) => q.eq("hostId", userId))
+          .collect();
 
     // Enrich with booking page details
     const enrichedBookings = await Promise.all(

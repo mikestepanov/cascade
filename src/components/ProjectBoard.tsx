@@ -16,8 +16,8 @@ import { SectionErrorFallback } from "./SectionErrorFallback";
 import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { BillingReport } from "./TimeTracker/BillingReport";
-import { WebhooksManager } from "./WebhooksManager";
 import { SkeletonText } from "./ui/Skeleton";
+import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -25,7 +25,15 @@ interface ProjectBoardProps {
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<
-    "board" | "backlog" | "sprints" | "roadmap" | "calendar" | "activity" | "analytics" | "billing" | "settings"
+    | "board"
+    | "backlog"
+    | "sprints"
+    | "roadmap"
+    | "calendar"
+    | "activity"
+    | "analytics"
+    | "billing"
+    | "settings"
   >("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 

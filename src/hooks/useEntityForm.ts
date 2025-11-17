@@ -5,9 +5,7 @@ import type { Id } from "../../convex/_generated/dataModel";
  * Reusable hook for managing entity forms (create/edit pattern)
  * Eliminates boilerplate code across all "Manager" components
  */
-export function useEntityForm<T extends Record<string, unknown>>(
-  defaultValues: T,
-) {
+export function useEntityForm<T extends Record<string, unknown>>(defaultValues: T) {
   const [formData, setFormData] = useState<T>(defaultValues);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<Id<string> | null>(null);

@@ -362,7 +362,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                   <div
                     key={issue._id}
                     className="animate-scale-in"
-                    style={{ animationDelay: `${(columnIndex * 100) + (issueIndex * 50)}ms` }}
+                    style={{ animationDelay: `${columnIndex * 100 + issueIndex * 50}ms` }}
                   >
                     <IssueCard
                       issue={issue}
