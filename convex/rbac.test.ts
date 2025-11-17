@@ -1,5 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
+import type { Id } from "./_generated/dataModel";
 import type { ProjectRole } from "./rbac";
 import { hasMinimumRole } from "./rbac";
 import schema from "./schema";
@@ -104,7 +105,7 @@ describe("RBAC Utilities", () => {
       const t = convexTest(schema, modules);
 
       const userId = await createTestUser(t);
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       const role = await t.run(async (ctx) => {
         const { getUserRole } = await import("./rbac");

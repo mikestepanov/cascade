@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestUser } from "./test-utils";
 import { modules } from "./testSetup";
@@ -173,7 +174,7 @@ describe("Projects", () => {
       const userId = await createTestUser(t);
       t.withIdentity({ subject: userId });
 
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
       const project = await t.query(api.projects.get, { id: fakeId });
       expect(project).toBeNull();
     });
