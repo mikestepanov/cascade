@@ -150,6 +150,10 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
               icon="🔗"
               title="No webhooks configured"
               description="Add webhooks to integrate with external services"
+              action={{
+                label: "Add Your First Webhook",
+                onClick: () => setShowModal(true),
+              }}
             />
           ) : (
             <div className="space-y-3">

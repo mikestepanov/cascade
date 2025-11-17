@@ -15,9 +15,10 @@ type IssueFilter = "assigned" | "created" | "all";
 
 interface DashboardProps {
   onNavigateToProject?: (projectId: Id<"projects">) => void;
+  onNavigateToProjects?: () => void;
 }
 
-export function Dashboard({ onNavigateToProject }: DashboardProps) {
+export function Dashboard({ onNavigateToProject, onNavigateToProjects }: DashboardProps) {
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -275,6 +276,14 @@ export function Dashboard({ onNavigateToProject }: DashboardProps) {
                     icon="📂"
                     title="No projects"
                     description="You're not a member of any projects yet"
+                    action={
+                      onNavigateToProjects
+                        ? {
+                            label: "Go to Projects",
+                            onClick: onNavigateToProjects,
+                          }
+                        : undefined
+                    }
                   />
                 ) : (
                   <div className="space-y-2">

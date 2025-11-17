@@ -114,6 +114,10 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               icon="🏷️"
               title="No labels yet"
               description="Create labels to organize your issues"
+              action={{
+                label: "Create Your First Label",
+                onClick: () => setShowModal(true),
+              }}
             />
           ) : (
             <div className="space-y-2">
