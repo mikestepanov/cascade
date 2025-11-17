@@ -6,7 +6,7 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 
 // Default preferences for new users
 export const DEFAULT_PREFERENCES = {
@@ -148,7 +148,7 @@ export const createDefault = internalMutation({
 /**
  * Check if user should receive email for a specific notification type
  */
-export const shouldSendEmail = internalMutation({
+export const shouldSendEmail = internalQuery({
   args: {
     userId: v.id("users"),
     type: v.string(), // "mention", "assigned", "comment", "status_change"

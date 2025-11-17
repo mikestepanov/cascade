@@ -27,7 +27,7 @@ export async function sendEmailNotification(
   const { userId, type, issueId, actorId, commentText } = params;
 
   // Check if user wants email for this notification type
-  const shouldSend = await ctx.runMutation(internal.notificationPreferences.shouldSendEmail, {
+  const shouldSend = await ctx.runQuery(internal.notificationPreferences.shouldSendEmail, {
     userId,
     type,
   });
