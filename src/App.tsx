@@ -17,6 +17,7 @@ import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
+import { Settings } from "./components/Settings";
 import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
@@ -41,7 +42,7 @@ function Content() {
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
   const [activeView, setActiveView] = useState<
-    "dashboard" | "documents" | "projects" | "timesheet" | "calendar"
+    "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings"
   >("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
@@ -257,7 +258,8 @@ function Content() {
           {/* Sidebar - only show for documents and projects views */}
           {activeView !== "dashboard" &&
             activeView !== "timesheet" &&
-            activeView !== "calendar" && (
+            activeView !== "calendar" &&
+            activeView !== "settings" && (
               <ErrorBoundary
                 fallback={
                   <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -304,7 +306,8 @@ function Content() {
                 {/* Mobile Hamburger Menu */}
                 {activeView !== "dashboard" &&
                   activeView !== "timesheet" &&
-                  activeView !== "calendar" && (
+                  activeView !== "calendar" &&
+                  activeView !== "settings" && (
                     <button
                       type="button"
                       onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
@@ -430,6 +433,26 @@ function Content() {
                     </span>
                     <span className="hidden sm:inline">Calendar</span>
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView("settings");
+                      setSelectedDocumentId(null);
+                      setSelectedProjectId(null);
+                    }}
+                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                      activeView === "settings"
+                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                    }`}
+                    aria-label="Settings"
+                    aria-current={activeView === "settings" ? "page" : undefined}
+                  >
+                    <span className="sm:hidden" aria-hidden="true">
+                      ⚙️
+                    </span>
+                    <span className="hidden sm:inline">Settings</span>
+                  </button>
                 </nav>
 
                 <h1 className="hidden md:block text-base lg:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -443,9 +466,11 @@ function Content() {
                         ? "Weekly Timesheet"
                         : activeView === "calendar"
                           ? "Calendar"
-                          : selectedProjectId
-                            ? "Project Board"
-                            : "Select a project"}
+                          : activeView === "settings"
+                            ? "Settings"
+                            : selectedProjectId
+                              ? "Project Board"
+                              : "Select a project"}
                 </h1>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -544,6 +569,8 @@ function Content() {
                   <Timesheet />
                 ) : activeView === "calendar" ? (
                   <CalendarView />
+                ) : activeView === "settings" ? (
+                  <Settings />
                 ) : selectedProjectId ? (
                   <ProjectBoard projectId={selectedProjectId} />
                 ) : (
