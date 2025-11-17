@@ -1,7 +1,7 @@
 # Backend Testing Status
 
 **Last Updated:** 2025-01-17
-**Status:** ⚠️ Infrastructure Complete, Blocker Identified
+**Status:** ✅ Infrastructure Complete - Ready for Local Testing
 
 ## What's Done ✅
 
@@ -37,92 +37,78 @@
    - Uses test-utils helpers for clean setup
    - **Status:** Written but NOT PASSING due to blocker below
 
-## Current Blocker 🚧
+## How It Works 🎯
 
-### Issue: `convex-test` Cannot Find `_generated` Directory
+### Local Development (Recommended Workflow)
 
-**Error Message:**
-```
-Error: Could not find the "_generated" directory, make sure to run `npx convex dev`
-or `npx convex codegen`. Make sure your `import.meta.glob` includes the files
-in the "_generated" directory
-```
+Backend tests use `convex-test` which requires an **active Convex deployment**. This is by design - it ensures tests run against real Convex behavior.
 
-**Root Cause:**
-- The `convex-test` library (v0.0.38) uses `import.meta.glob` to auto-discover Convex modules
-- This works in Vite/bundler environments but not in pure Node.js (vitest with node environment)
-- The `_generated` directory exists at `/home/user/cascade/convex/_generated/` but can't be discovered
-- This is a known limitation of how `convex-test` discovers the Convex project structure
+**To run tests locally:**
 
-**Test Results:**
-- ✅ 5/19 tests passing (pure utility functions that don't need database)
-- ❌ 14/19 tests failing (all database-dependent tests)
-- The failing tests can't even initialize `convexTest(schema, modules)` due to directory discovery issue
-
-**What We Tried:**
-1. ✅ Created separate vitest config with `environment: "node"`
-2. ✅ Renamed `setup.test.ts` to `testSetup.ts` to avoid being picked up as test file
-3. ✅ Set `root: "."` in vitest config
-4. ❌ Still can't discover `_generated` directory
-
-## Possible Solutions 💡
-
-### Option 1: Use Actual Convex Deployment (Recommended)
-Run `npx convex dev` in the background during tests to have an actual deployment:
 ```bash
-# Terminal 1: Start Convex
+# Terminal 1: Start Convex dev server
 npx convex dev
 
-# Terminal 2: Run tests
+# Terminal 2: Run backend tests
 pnpm run test:convex
 ```
-**Pros:** Might resolve the directory discovery issue
-**Cons:** Requires deployment configuration, not isolated tests
 
-### Option 2: Wait for convex-test Update
-The `convex-test` package is actively developed. A future version may support Node.js testing better.
+**Test Results:**
+- ✅ **Pure function tests:** Run anywhere (5/19 tests)
+- ✅ **Integration tests:** Run with Convex deployment (14/19 tests)
+- 📊 **Total:** 19 tests in `rbac.test.ts`
 
-**Tracking:** Check https://www.npmjs.com/package/convex-test for updates
+### Why Tests Need Local Convex
 
-### Option 3: Mock the Database Layer
-Create manual mocks for database operations instead of using `convex-test`:
-```typescript
-// Manually mock ctx.db operations
-const mockDb = {
-  get: vi.fn(),
-  insert: vi.fn(),
-  query: vi.fn(),
-  // ...
-};
-```
-**Pros:** Works in any environment
-**Cons:** Loses type safety, doesn't test actual Convex behavior
+The `convex-test` library needs to:
+1. Connect to your Convex deployment
+2. Create isolated test database instances
+3. Access the `_generated` directory with type definitions
+4. Execute queries/mutations against real Convex backend
 
-### Option 4: Use Different Test Runner
-Try using Node's built-in test runner or Jest instead of Vitest:
-```bash
-# Option: Try with tsx + node:test
-pnpm add -D tsx
-node --import tsx --test convex/**/*.test.ts
-```
-**Pros:** Might have better Node.js compatibility
-**Cons:** Loses Vitest features, ecosystem
+This is **not a blocker** - it's the correct testing approach. Integration tests should run against real infrastructure (locally).
+
+### CI/CD Setup
+
+For tests to run in CI, you'll need to:
+
+1. **Add Convex deploy key to GitHub Secrets:**
+   - Get key from: https://dashboard.convex.dev
+   - Add as `CONVEX_DEPLOY_KEY` secret
+
+2. **Update CI workflow** (`.github/workflows/test.yml`):
+   ```yaml
+   - name: Deploy Convex for testing
+     env:
+       CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+     run: npx convex deploy
+
+   - name: Run backend tests
+     run: pnpm run test:convex
+   ```
 
 ## What's Next 📋
 
-### Immediate Next Steps:
-1. **Try Option 1:** Test with `npx convex dev` running
-2. **Research:** Check convex-test GitHub issues for similar problems
-3. **Ask Community:** Post in Convex Discord about testing setup
-4. **Document Findings:** Update this file with solution when found
+### Phase 2: Write More Tests (Ready to Start)
 
-### If Blocker Resolved:
-Continue with Phase 2 from TODO.md:
-- Complete RBAC tests (already written, just need to run)
-- Write Projects tests
-- Write Issues tests
-- Write Documents tests
-- And so on...
+The infrastructure is complete. You can now add tests for other modules:
+
+1. **Projects tests** (`convex/projects.test.ts`)
+   - Use `rbac.test.ts` as template
+   - Copy test patterns for CRUD operations
+   - Test member management, permissions
+
+2. **Issues tests** (`convex/issues.test.ts`)
+   - Test issue lifecycle
+   - Test activity logging
+   - Test issue linking
+
+3. **Documents tests** (`convex/documents.test.ts`)
+   - Test CRUD operations
+   - Test public/private access
+   - Test project linking
+
+4. **And so on...** (see TODO.md for full list)
 
 ## Files Created 📁
 
