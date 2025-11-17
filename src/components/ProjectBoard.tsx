@@ -65,87 +65,102 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex space-x-6">
-          <button
-            type="button"
-            onClick={() => setActiveTab("board")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "board"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Board
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("backlog")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "backlog"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Backlog
-          </button>
-          {project.boardType === "scrum" && (
+        {/* Tabs - Visually grouped by function */}
+        <div className="flex items-center">
+          {/* Primary Workflow Tabs */}
+          <div className="flex space-x-6">
             <button
               type="button"
-              onClick={() => setActiveTab("sprints")}
+              onClick={() => setActiveTab("board")}
               className={`pb-2 border-b-2 transition-colors ${
-                activeTab === "sprints"
+                activeTab === "board"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              Sprints
+              Board
             </button>
-          )}
-          <button
-            type="button"
-            onClick={() => setActiveTab("roadmap")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "roadmap"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            🗺️ Roadmap
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("calendar")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "calendar"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            📅 Calendar
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("activity")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "activity"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            🔔 Activity
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("analytics")}
-            className={`pb-2 border-b-2 transition-colors ${
-              activeTab === "analytics"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            📊 Analytics
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("backlog")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "backlog"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Backlog
+            </button>
+            {project.boardType === "scrum" && (
+              <button
+                type="button"
+                onClick={() => setActiveTab("sprints")}
+                className={`pb-2 border-b-2 transition-colors ${
+                  activeTab === "sprints"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Sprints
+              </button>
+            )}
+          </div>
+
+          {/* Visual Separator */}
+          <div className="h-6 w-px bg-gray-300 mx-6"></div>
+
+          {/* Analysis & Views Tabs */}
+          <div className="flex space-x-6">
+            <button
+              type="button"
+              onClick={() => setActiveTab("roadmap")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "roadmap"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Roadmap
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("calendar")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "calendar"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Calendar
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("activity")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "activity"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Activity
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("analytics")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "analytics"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Analytics
+            </button>
+          </div>
+
+          {/* Spacer to push Settings to the right */}
+          <div className="flex-1"></div>
+
+          {/* Settings Tab - Separated */}
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
@@ -205,42 +220,69 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         )}
         {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
         {activeTab === "settings" && (
-          <div className="p-6 overflow-y-auto">
-            <div className="max-w-4xl space-y-6">
-              <ErrorBoundary
-                fallback={<SectionErrorFallback title="Labels Error" />}
-                onError={(_error) => {}}
-              >
-                <LabelsManager projectId={projectId} />
-              </ErrorBoundary>
+          <div className="p-6 overflow-y-auto bg-gray-50">
+            <div className="max-w-5xl mx-auto space-y-8">
+              {/* Project Basics Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Project Basics</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Configure fundamental project settings and templates
+                </p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ErrorBoundary
+                    fallback={<SectionErrorFallback title="Labels Error" />}
+                    onError={(_error) => {}}
+                  >
+                    <LabelsManager projectId={projectId} />
+                  </ErrorBoundary>
 
-              <ErrorBoundary
-                fallback={<SectionErrorFallback title="Templates Error" />}
-                onError={(_error) => {}}
-              >
-                <TemplatesManager projectId={projectId} />
-              </ErrorBoundary>
+                  <ErrorBoundary
+                    fallback={<SectionErrorFallback title="Templates Error" />}
+                    onError={(_error) => {}}
+                  >
+                    <TemplatesManager projectId={projectId} />
+                  </ErrorBoundary>
+                </div>
+              </div>
 
-              <ErrorBoundary
-                fallback={<SectionErrorFallback title="Webhooks Error" />}
-                onError={(_error) => {}}
-              >
-                <WebhooksManager projectId={projectId} />
-              </ErrorBoundary>
+              {/* Integrations & Automation Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  Integrations & Automation
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Connect external services and automate workflows
+                </p>
+                <div className="space-y-6">
+                  <ErrorBoundary
+                    fallback={<SectionErrorFallback title="Webhooks Error" />}
+                    onError={(_error) => {}}
+                  >
+                    <WebhooksManager projectId={projectId} />
+                  </ErrorBoundary>
 
-              <ErrorBoundary
-                fallback={<SectionErrorFallback title="Automation Error" />}
-                onError={(_error) => {}}
-              >
-                <AutomationRulesManager projectId={projectId} />
-              </ErrorBoundary>
+                  <ErrorBoundary
+                    fallback={<SectionErrorFallback title="Automation Error" />}
+                    onError={(_error) => {}}
+                  >
+                    <AutomationRulesManager projectId={projectId} />
+                  </ErrorBoundary>
+                </div>
+              </div>
 
-              <ErrorBoundary
-                fallback={<SectionErrorFallback title="Custom Fields Error" />}
-                onError={(_error) => {}}
-              >
-                <CustomFieldsManager projectId={projectId} />
-              </ErrorBoundary>
+              {/* Advanced Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Advanced</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Customize your project with additional metadata fields
+                </p>
+                <ErrorBoundary
+                  fallback={<SectionErrorFallback title="Custom Fields Error" />}
+                  onError={(_error) => {}}
+                >
+                  <CustomFieldsManager projectId={projectId} />
+                </ErrorBoundary>
+              </div>
             </div>
           </div>
         )}
