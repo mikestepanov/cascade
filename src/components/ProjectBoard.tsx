@@ -16,6 +16,7 @@ import { SectionErrorFallback } from "./SectionErrorFallback";
 import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { WebhooksManager } from "./WebhooksManager";
+import { SkeletonText } from "./ui/Skeleton";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -32,8 +33,20 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
   if (!project) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex flex-col h-full bg-white">
+        <div className="border-b border-gray-200 p-6">
+          <div className="space-y-4">
+            <SkeletonText lines={2} />
+            <div className="flex space-x-6">
+              <SkeletonText lines={1} className="w-32" />
+              <SkeletonText lines={1} className="w-32" />
+              <SkeletonText lines={1} className="w-32" />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 p-6">
+          <SkeletonText lines={4} />
+        </div>
       </div>
     );
   }

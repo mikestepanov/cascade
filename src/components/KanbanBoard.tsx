@@ -7,6 +7,7 @@ import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
 import { IssueCard } from "./IssueCard";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { SkeletonKanbanCard, SkeletonText } from "./ui/Skeleton";
 
 interface KanbanBoardProps {
   projectId: Id<"projects">;
@@ -27,8 +28,30 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
   if (!project || !issues) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex-1 overflow-x-auto">
+        {/* Header skeleton */}
+        <div className="px-6 pt-6 pb-2 flex items-center justify-between">
+          <SkeletonText lines={1} className="w-32" />
+          <SkeletonText lines={1} className="w-32" />
+        </div>
+
+        {/* Kanban columns skeleton */}
+        <div className="flex space-x-6 px-6 pb-6 min-w-max">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex-shrink-0 w-80 bg-gray-50 rounded-lg">
+              {/* Column header skeleton */}
+              <div className="p-4 border-b border-gray-200 bg-white rounded-t-lg">
+                <SkeletonText lines={1} className="w-24" />
+              </div>
+              {/* Column cards skeleton */}
+              <div className="p-2 space-y-2 min-h-96">
+                <SkeletonKanbanCard />
+                <SkeletonKanbanCard />
+                <SkeletonKanbanCard />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -116,7 +139,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       </div>
 
       <div className="flex space-x-6 px-6 pb-6 min-w-max">
-        {workflowStates.map((state) => {
+        {workflowStates.map((state, columnIndex) => {
           const stateIssues = issues
             .filter((issue) => issue.status === state.id)
             .sort((a, b) => a.order - b.order);
@@ -124,7 +147,8 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
           return (
             <div
               key={state.id}
-              className="flex-shrink-0 w-80 bg-gray-50 rounded-lg"
+              className="flex-shrink-0 w-80 bg-gray-50 rounded-lg animate-slide-up"
+              style={{ animationDelay: `${columnIndex * 100}ms` }}
               onDragOver={handleDragOver}
               onDrop={(e) => void handleDrop(e, state.id)}
             >
@@ -163,16 +187,21 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
               {/* Issues */}
               <div className="p-2 space-y-2 min-h-96">
-                {stateIssues.map((issue) => (
-                  <IssueCard
+                {stateIssues.map((issue, issueIndex) => (
+                  <div
                     key={issue._id}
-                    issue={issue}
-                    onDragStart={(e) => handleDragStart(e, issue._id)}
-                    onClick={() => !selectionMode && setSelectedIssue(issue._id)}
-                    selectionMode={selectionMode}
-                    isSelected={selectedIssueIds.has(issue._id)}
-                    onToggleSelect={handleToggleSelect}
-                  />
+                    className="animate-scale-in"
+                    style={{ animationDelay: `${(columnIndex * 100) + (issueIndex * 50)}ms` }}
+                  >
+                    <IssueCard
+                      issue={issue}
+                      onDragStart={(e) => handleDragStart(e, issue._id)}
+                      onClick={() => !selectionMode && setSelectedIssue(issue._id)}
+                      selectionMode={selectionMode}
+                      isSelected={selectedIssueIds.has(issue._id)}
+                      onToggleSelect={handleToggleSelect}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
