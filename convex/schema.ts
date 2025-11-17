@@ -407,6 +407,183 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  // Calendar & Scheduling (Agency Features)
+  calendarEvents: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    startTime: v.number(), // Unix timestamp
+    endTime: v.number(), // Unix timestamp
+    allDay: v.boolean(),
+    location: v.optional(v.string()),
+    eventType: v.union(
+      v.literal("meeting"), // Team or client meetings
+      v.literal("deadline"), // Project deadlines
+      v.literal("timeblock"), // Focus time blocks
+      v.literal("personal"), // Personal events
+    ),
+    // Attendees
+    organizerId: v.id("users"),
+    attendeeIds: v.array(v.id("users")), // Internal team members
+    externalAttendees: v.optional(v.array(v.string())), // External emails
+    // Links
+    projectId: v.optional(v.id("projects")), // Link to project
+    issueId: v.optional(v.id("issues")), // Link to issue
+    // Status
+    status: v.union(
+      v.literal("confirmed"),
+      v.literal("tentative"),
+      v.literal("cancelled"),
+    ),
+    // Recurrence
+    isRecurring: v.boolean(),
+    recurrenceRule: v.optional(v.string()), // RRULE format (e.g., "FREQ=WEEKLY;BYDAY=MO,WE,FR")
+    // Meeting details
+    meetingUrl: v.optional(v.string()), // Zoom, Meet, etc.
+    notes: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_organizer", ["organizerId"])
+    .index("by_project", ["projectId"])
+    .index("by_issue", ["issueId"])
+    .index("by_start_time", ["startTime"])
+    .index("by_status", ["status"])
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["organizerId", "projectId", "status"],
+    }),
+
+  // User availability for booking (Cal.com-style)
+  availabilitySlots: defineTable({
+    userId: v.id("users"),
+    dayOfWeek: v.union(
+      v.literal("monday"),
+      v.literal("tuesday"),
+      v.literal("wednesday"),
+      v.literal("thursday"),
+      v.literal("friday"),
+      v.literal("saturday"),
+      v.literal("sunday"),
+    ),
+    startTime: v.string(), // 24h format like "09:00"
+    endTime: v.string(), // 24h format like "17:00"
+    isActive: v.boolean(),
+    timezone: v.string(), // IANA timezone like "America/New_York"
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_day", ["userId", "dayOfWeek"])
+    .index("by_active", ["isActive"]),
+
+  // Booking pages (Cal.com-style)
+  bookingPages: defineTable({
+    userId: v.id("users"),
+    slug: v.string(), // Unique URL slug like "john-doe" or "team-discovery"
+    title: v.string(), // e.g., "30 Minute Discovery Call"
+    description: v.optional(v.string()),
+    duration: v.number(), // Duration in minutes
+    // Availability settings
+    bufferTimeBefore: v.number(), // Minutes before meeting
+    bufferTimeAfter: v.number(), // Minutes after meeting
+    minimumNotice: v.number(), // Minimum hours notice required
+    maxBookingsPerDay: v.optional(v.number()),
+    // Meeting settings
+    location: v.union(
+      v.literal("phone"),
+      v.literal("zoom"),
+      v.literal("meet"),
+      v.literal("teams"),
+      v.literal("in-person"),
+      v.literal("custom"),
+    ),
+    locationDetails: v.optional(v.string()), // Phone number, Zoom link, address, etc.
+    // Questions for booker
+    questions: v.optional(
+      v.array(
+        v.object({
+          label: v.string(),
+          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          required: v.boolean(),
+        }),
+      ),
+    ),
+    // Settings
+    isActive: v.boolean(),
+    requiresConfirmation: v.boolean(), // Manual approval
+    color: v.string(), // Calendar color hex
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_slug", ["slug"])
+    .index("by_active", ["isActive"]),
+
+  // Scheduled bookings
+  bookings: defineTable({
+    bookingPageId: v.id("bookingPages"),
+    hostId: v.id("users"), // Person being booked
+    // Booker information
+    bookerName: v.string(),
+    bookerEmail: v.string(),
+    bookerPhone: v.optional(v.string()),
+    bookerAnswers: v.optional(v.string()), // JSON string of question answers
+    // Meeting details
+    startTime: v.number(), // Unix timestamp
+    endTime: v.number(), // Unix timestamp
+    timezone: v.string(), // Booker's timezone
+    location: v.string(),
+    locationDetails: v.optional(v.string()),
+    // Status
+    status: v.union(
+      v.literal("pending"), // Awaiting confirmation
+      v.literal("confirmed"),
+      v.literal("cancelled"),
+      v.literal("completed"),
+    ),
+    cancelledBy: v.optional(v.union(v.literal("host"), v.literal("booker"))),
+    cancellationReason: v.optional(v.string()),
+    // Links to created event
+    calendarEventId: v.optional(v.id("calendarEvents")),
+    // Reminders
+    reminderSent: v.boolean(),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_booking_page", ["bookingPageId"])
+    .index("by_host", ["hostId"])
+    .index("by_email", ["bookerEmail"])
+    .index("by_start_time", ["startTime"])
+    .index("by_status", ["status"])
+    .index("by_host_status", ["hostId", "status"]),
+
+  // External calendar connections (Google, Outlook) - Future feature
+  calendarConnections: defineTable({
+    userId: v.id("users"),
+    provider: v.union(v.literal("google"), v.literal("outlook")),
+    providerAccountId: v.string(), // Email/account ID from provider
+    // OAuth tokens (encrypted in production)
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.optional(v.number()),
+    // Settings
+    syncEnabled: v.boolean(),
+    syncDirection: v.union(
+      v.literal("import"), // Only import from external calendar
+      v.literal("export"), // Only export to external calendar
+      v.literal("bidirectional"), // Two-way sync
+    ),
+    lastSyncAt: v.optional(v.number()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_provider", ["provider"])
+    .index("by_user_provider", ["userId", "provider"]),
 };
 
 export default defineSchema({
