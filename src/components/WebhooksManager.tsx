@@ -10,6 +10,7 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
 import { InputField } from "./ui/FormField";
 import { Modal } from "./ui/Modal";
+import { WebhookLogs } from "./webhooks/WebhookLogs";
 
 interface WebhooksManagerProps {
   projectId: Id<"projects">;
@@ -33,11 +34,13 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"webhooks"> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [logsWebhookId, setLogsWebhookId] = useState<Id<"webhooks"> | null>(null);
 
   const webhooks = useQuery(api.webhooks.listByProject, { projectId });
   const createWebhook = useMutation(api.webhooks.create);
   const updateWebhook = useMutation(api.webhooks.update);
   const deleteWebhook = useMutation(api.webhooks.remove);
+  const testWebhook = useMutation(api.webhooks.test);
 
   const resetForm = () => {
     setName("");
@@ -111,6 +114,15 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
 
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) => toggleInArray(prev, event));
+  };
+
+  const handleTest = async (webhookId: Id<"webhooks">) => {
+    try {
+      await testWebhook({ id: webhookId });
+      showSuccess("Test webhook sent! Check logs for results.");
+    } catch (error) {
+      showError(error, "Failed to send test webhook");
+    }
   };
 
   return (
@@ -197,6 +209,16 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                     </div>
 
                     <div className="flex gap-2 ml-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setLogsWebhookId(webhook._id)}
+                      >
+                        View Logs
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleTest(webhook._id)}>
+                        Test
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -331,6 +353,15 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
         variant="danger"
         confirmLabel="Delete"
       />
+
+      {/* Webhook Logs Modal */}
+      {logsWebhookId && (
+        <WebhookLogs
+          webhookId={logsWebhookId}
+          isOpen={!!logsWebhookId}
+          onClose={() => setLogsWebhookId(null)}
+        />
+      )}
     </>
   );
 }
