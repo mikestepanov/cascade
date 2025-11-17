@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestProject, createTestUser } from "./test-utils";
 import { modules } from "./testSetup";
@@ -124,7 +125,7 @@ describe("Sprints", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       await expect(async () => {
         await t.mutation(api.sprints.create, {
@@ -249,7 +250,7 @@ describe("Sprints", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       const sprints = await t.query(api.sprints.listByProject, {
         projectId: fakeProjectId,
@@ -418,7 +419,7 @@ describe("Sprints", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"sprints">;
 
       await expect(async () => {
         await t.mutation(api.sprints.startSprint, {
@@ -553,7 +554,7 @@ describe("Sprints", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"sprints">;
 
       await expect(async () => {
         await t.mutation(api.sprints.completeSprint, { sprintId: fakeSprintId });

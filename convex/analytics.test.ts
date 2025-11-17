@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestProject, createTestUser } from "./test-utils";
 import { modules } from "./testSetup";
@@ -63,7 +64,7 @@ describe("Analytics", () => {
       const doneState = project?.workflowStates.find((s) => s.name === "Done");
 
       // Create issues in different states
-      const issue1 = await t.mutation(api.issues.create, {
+      const _issue1 = await t.mutation(api.issues.create, {
         projectId,
         title: "Issue 1",
         type: "task",
@@ -205,7 +206,7 @@ describe("Analytics", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       await expect(async () => {
         await t.query(api.analytics.getProjectAnalytics, {
@@ -289,7 +290,7 @@ describe("Analytics", () => {
         sprintId,
         estimatedHours: 5,
       });
-      const issue2 = await t.mutation(api.issues.create, {
+      const _issue2 = await t.mutation(api.issues.create, {
         projectId,
         title: "Task 2",
         type: "task",
@@ -411,7 +412,7 @@ describe("Analytics", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeSprintId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"sprints">;
 
       await expect(async () => {
         await t.query(api.analytics.getSprintBurndown, {
@@ -626,7 +627,7 @@ describe("Analytics", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as any;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       await expect(async () => {
         await t.query(api.analytics.getTeamVelocity, {
