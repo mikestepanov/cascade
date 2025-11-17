@@ -51,11 +51,11 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 
 | Priority | Feature | Impact | Effort | Status |
 |----------|---------|--------|--------|--------|
-| 🔥 P0 | Loading Skeletons & Optimistic UI | High | 1 week | Not Started |
+| ✅ P0 | Loading Skeletons & Optimistic UI | High | 1 week | **✅ COMPLETE** |
 | 🔥 P0 | Email Notifications | Critical | 2-3 weeks | Not Started |
 | 🔥 P0 | Onboarding Flow | High | 2 weeks | Not Started |
 | ✅ P1 | Backend Testing (Phases 1-5) | High | 4 weeks | **✅ COMPLETE** |
-| 🟡 P1 | Quick Wins (see below) | High | 1 week | Not Started |
+| 🟡 P1 | Quick Wins (see below) | High | 1 week | **🟢 33% Complete (2/6)** |
 
 ### **Phase 2: Mobile & AI** (3-6 Months)
 **Goal:** Differentiate, expand market, enable mobile usage
@@ -89,7 +89,7 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 
 **Impact:** ⭐⭐⭐⭐⭐ Makes app feel 10x faster
 **Effort:** 🟢 Low (1 week)
-**Status:** ❌ Not Started
+**Status:** ✅ **COMPLETE** (Completed 2025-01-17)
 
 #### What & Why
 Replace all loading spinners with skeleton screens and implement optimistic UI updates for instant feedback. Users perceive performance as equally important as actual performance.
@@ -559,7 +559,7 @@ pnpm run test:all
 
 **Impact:** ⭐⭐⭐⭐ High impact, low effort
 **Effort:** 🟢 Low (1 week total)
-**Status:** ❌ Not Started
+**Status:** 🟢 **33% Complete** (2/6 items done)
 
 These are small features that provide outsized value and can be shipped in a few hours each.
 
@@ -568,62 +568,66 @@ These are small features that provide outsized value and can be shipped in a few
 **What:** Add "Create your first X" buttons to all empty states
 **Why:** Empty states are passive - users don't know what to do
 **Effort:** 2 hours
+**Status:** 🟡 **60% Complete** - EmptyState component supports actions, most pages use it
 
-**Checklist:**
-- [ ] Dashboard empty state → "Create your first project" button
-- [ ] Project board empty state → "Create your first issue" button
-- [ ] Document list empty state → "Create your first document" button
-- [ ] Labels empty state → "Add your first label" button
-- [ ] Templates empty state → "Create a template" button
+**Completed:**
+- [x] `src/components/ui/EmptyState.tsx` - Has `action` prop ✅
+- [x] Dashboard → "No projects" has "Create Project" button ✅
+- [x] Labels Manager → Has "Create Your First Label" button ✅
+- [x] Templates Manager → Has "Create Your First Template" button ✅
+- [x] Webhooks Manager → Has "Add Your First Webhook" button ✅
 
-**Files to modify:**
-- `src/components/ui/EmptyState.tsx` - Add `action` prop
+**Remaining:**
+- [ ] Dashboard → "No issues" empty state needs action button
+- [ ] Sidebar → "No documents" should use EmptyState component with action button
 
 ---
 
-#### 5.2 Webhook Logs/History UI
+#### 5.2 Webhook Logs/History UI ✅
 
 **What:** Show webhook delivery history and status
 **Why:** Backend tracks webhook events, but no way to see if they succeeded
 **Effort:** 4 hours
+**Status:** ✅ **COMPLETE**
 
-**Checklist:**
-- [ ] Create `WebhookLogs.tsx` component
-- [ ] Query webhook executions from backend
-- [ ] Show delivery status (success, failed, retrying)
-- [ ] Show request/response data
-- [ ] Show error messages
-- [ ] Add "Retry" button for failed deliveries
-- [ ] Add "Test webhook" button (sends ping event)
+**Completed:**
+- [x] Created `WebhookLogs.tsx` component ✅
+- [x] Query webhook executions from backend ✅
+- [x] Show delivery status (success, failed, retrying) ✅
+- [x] Show request/response data with expandable details ✅
+- [x] Show error messages ✅
+- [x] Add "Retry" button for failed deliveries ✅
+- [x] Add "Test webhook" button (sends ping event) ✅
+- [x] Integrated into `WebhooksManager.tsx` with "View Logs" button ✅
 
-**Files to create:**
-- `src/components/webhooks/WebhookLogs.tsx`
+**Files created:**
+- ✅ `src/components/webhooks/WebhookLogs.tsx`
 
-**Files to modify:**
-- `src/components/WebhooksManager.tsx` - Add "View logs" button
-- `convex/webhooks.ts` - Add `listExecutions` query
+**Files modified:**
+- ✅ `src/components/WebhooksManager.tsx` - "View Logs" button (line 215-218)
+- ✅ `convex/webhooks.ts` - Already has `listExecutions` query (line 207-230)
 
 ---
 
-#### 5.3 Export to CSV
+#### 5.3 Export to CSV ✅
 
 **What:** Add CSV export in addition to JSON
 **Why:** Users want to open exports in Excel
 **Effort:** 3 hours
+**Status:** ✅ **COMPLETE**
 
-**Checklist:**
-- [ ] Create CSV formatter utility (`src/lib/csv.ts`)
-- [ ] Add CSV option to export dropdown
-- [ ] Generate CSV with headers
-- [ ] Handle nested data (flatten)
-- [ ] Download as `.csv` file
+**Completed:**
+- [x] CSV formatter implemented in backend ✅
+- [x] CSV/JSON format selection in UI ✅
+- [x] Generate CSV with headers ✅
+- [x] Handle nested data (flattened) ✅
+- [x] Download as `.csv` file ✅
+- [x] CSV import also supported ✅
 
-**Files to create:**
-- `src/lib/csv.ts` - CSV formatting utilities
-
-**Files to modify:**
-- `src/components/ExportButton.tsx` - Add CSV option
-- `convex/export.ts` - Add `exportToCSV` mutation
+**Files created/modified:**
+- ✅ `src/components/ImportExportModal.tsx` - Full CSV/JSON import/export UI
+- ✅ `convex/export.ts` - `exportIssuesCSV` and `importIssuesCSV` functions
+- ✅ `src/components/ExportButton.tsx` - Opens ImportExportModal
 
 ---
 
