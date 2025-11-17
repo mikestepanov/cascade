@@ -268,7 +268,13 @@ export const importIssuesJSON = mutation({
       throw new Error("Invalid JSON format");
     }
 
-    if (!data.issues || !Array.isArray(data.issues)) {
+    // Type guard and validation
+    if (
+      !data ||
+      typeof data !== "object" ||
+      !("issues" in data) ||
+      !Array.isArray(data.issues)
+    ) {
       throw new Error("JSON must contain an 'issues' array");
     }
 

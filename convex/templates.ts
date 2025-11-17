@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
@@ -60,10 +61,11 @@ export const listByProject = query({
 
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
+      const templateType = args.type; // Store in variable for type narrowing
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", args.type),
+          q.eq("projectId", args.projectId).eq("type", templateType),
         )
         .collect();
     } else {
