@@ -380,6 +380,18 @@ const applicationTables = {
   })
     .index("by_token", ["token"])
     .index("by_user", ["userId"]),
+
+  userOnboarding: defineTable({
+    userId: v.id("users"),
+    onboardingCompleted: v.boolean(),
+    onboardingStep: v.optional(v.number()), // Current step (0-5)
+    sampleProjectCreated: v.boolean(), // Whether sample project was generated
+    tourShown: v.boolean(), // Whether welcome tour was shown
+    wizardCompleted: v.boolean(), // Whether project wizard was completed
+    checklistDismissed: v.boolean(), // Whether checklist was dismissed
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
 };
 
 export default defineSchema({
