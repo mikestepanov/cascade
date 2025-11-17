@@ -1,0 +1,196 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+
+/**
+ * Availability Slots - Manage when users are available for bookings
+ * Cal.com-style availability management
+ */
+
+// Set availability for a specific day
+export const setDayAvailability = mutation({
+  args: {
+    dayOfWeek: v.union(
+      v.literal("monday"),
+      v.literal("tuesday"),
+      v.literal("wednesday"),
+      v.literal("thursday"),
+      v.literal("friday"),
+      v.literal("saturday"),
+      v.literal("sunday"),
+    ),
+    startTime: v.string(), // "09:00"
+    endTime: v.string(), // "17:00"
+    timezone: v.string(), // "America/New_York"
+    isActive: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Validate time format (HH:MM)
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(args.startTime) || !timeRegex.test(args.endTime)) {
+      throw new Error("Invalid time format. Use HH:MM (24-hour)");
+    }
+
+    // Check if slot already exists for this day
+    const existing = await ctx.db
+      .query("availabilitySlots")
+      .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", args.dayOfWeek))
+      .first();
+
+    if (existing) {
+      // Update existing slot
+      await ctx.db.patch(existing._id, {
+        startTime: args.startTime,
+        endTime: args.endTime,
+        timezone: args.timezone,
+        isActive: args.isActive ?? true,
+      });
+      return existing._id;
+    } else {
+      // Create new slot
+      return await ctx.db.insert("availabilitySlots", {
+        userId,
+        dayOfWeek: args.dayOfWeek,
+        startTime: args.startTime,
+        endTime: args.endTime,
+        timezone: args.timezone,
+        isActive: args.isActive ?? true,
+        createdAt: Date.now(),
+      });
+    }
+  },
+});
+
+// Set default working hours (Mon-Fri 9-5)
+export const setDefaultWorkingHours = mutation({
+  args: {
+    timezone: v.string(),
+    startTime: v.optional(v.string()), // Default "09:00"
+    endTime: v.optional(v.string()), // Default "17:00"
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const startTime = args.startTime || "09:00";
+    const endTime = args.endTime || "17:00";
+
+    const workdays: Array<
+      "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+    > = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+
+    for (const day of workdays) {
+      // Check if slot exists
+      const existing = await ctx.db
+        .query("availabilitySlots")
+        .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", day))
+        .first();
+
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          startTime,
+          endTime,
+          timezone: args.timezone,
+          isActive: true,
+        });
+      } else {
+        await ctx.db.insert("availabilitySlots", {
+          userId,
+          dayOfWeek: day,
+          startTime,
+          endTime,
+          timezone: args.timezone,
+          isActive: true,
+          createdAt: Date.now(),
+        });
+      }
+    }
+  },
+});
+
+// Get user's availability schedule
+export const getMyAvailability = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const slots = await ctx.db
+      .query("availabilitySlots")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    return slots.sort((a, b) => {
+      const dayOrder = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+      ];
+      return dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
+    });
+  },
+});
+
+// Get another user's availability (for booking)
+export const getUserAvailability = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const slots = await ctx.db
+      .query("availabilitySlots")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    return slots.sort((a, b) => {
+      const dayOrder = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+      ];
+      return dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
+    });
+  },
+});
+
+// Toggle availability on/off
+export const toggleSlot = mutation({
+  args: {
+    slotId: v.id("availabilitySlots"),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const slot = await ctx.db.get(args.slotId);
+    if (!slot) throw new Error("Slot not found");
+    if (slot.userId !== userId) throw new Error("Not authorized");
+
+    await ctx.db.patch(args.slotId, { isActive: args.isActive });
+  },
+});
+
+// Delete an availability slot
+export const removeSlot = mutation({
+  args: { slotId: v.id("availabilitySlots") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const slot = await ctx.db.get(args.slotId);
+    if (!slot) throw new Error("Slot not found");
+    if (slot.userId !== userId) throw new Error("Not authorized");
+
+    await ctx.db.delete(args.slotId);
+  },
+});

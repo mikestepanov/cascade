@@ -79,9 +79,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           </div>
 
           {rule.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              {rule.description}
-            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{rule.description}</p>
           )}
 
           <div className="flex items-center gap-4 text-sm">

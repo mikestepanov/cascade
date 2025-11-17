@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 
 // Get notifications for current user
 export const list = query({
@@ -176,6 +176,37 @@ export const createBulk = internalMutation({
           isRead: false,
           createdAt: Date.now(),
         });
+      }),
+    );
+  },
+});
+
+// Internal query to get notifications for digest emails
+export const listForDigest = internalQuery({
+  args: {
+    userId: v.id("users"),
+    startTime: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const notifications = await ctx.db
+      .query("notifications")
+      .withIndex("by_user_created", (q) =>
+        q.eq("userId", args.userId).gte("createdAt", args.startTime),
+      )
+      .order("desc")
+      .collect();
+
+    // Enrich with actor information and issue details
+    return await Promise.all(
+      notifications.map(async (notification) => {
+        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
+        const issue = notification.issueId ? await ctx.db.get(notification.issueId) : null;
+
+        return {
+          ...notification,
+          actorName: actor?.name,
+          issueKey: issue?.key,
+        };
       }),
     );
   },

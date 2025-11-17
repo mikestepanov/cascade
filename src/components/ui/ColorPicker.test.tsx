@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { ColorPicker } from "./ColorPicker";
 
 const DEFAULT_PRESET_COLORS = [
@@ -81,13 +81,7 @@ describe("ColorPicker", () => {
 
     it("should use custom preset colors when provided", () => {
       const customColors = ["#000000", "#FFFFFF", "#FF0000"];
-      render(
-        <ColorPicker
-          value="#000000"
-          onChange={vi.fn()}
-          presetColors={customColors}
-        />,
-      );
+      render(<ColorPicker value="#000000" onChange={vi.fn()} presetColors={customColors} />);
 
       customColors.forEach((color) => {
         expect(screen.getByLabelText(`Select color ${color}`)).toBeInTheDocument();
@@ -130,7 +124,7 @@ describe("ColorPicker", () => {
     it("should update highlight when value changes", () => {
       const { rerender } = render(<ColorPicker value="#EF4444" onChange={vi.fn()} />);
 
-      let selectedButton = screen.getByLabelText("Select color #EF4444");
+      const selectedButton = screen.getByLabelText("Select color #EF4444");
       expect(selectedButton).toHaveClass("scale-110");
 
       // Change value
@@ -337,17 +331,16 @@ describe("ColorPicker", () => {
 
     it("should handle single preset color", () => {
       const onChange = vi.fn();
-      render(
-        <ColorPicker value="#FF0000" onChange={onChange} presetColors={["#FF0000"]} />,
-      );
+      render(<ColorPicker value="#FF0000" onChange={onChange} presetColors={["#FF0000"]} />);
 
       const buttons = screen.getAllByRole("button");
       expect(buttons).toHaveLength(1);
     });
 
     it("should handle many preset colors", () => {
-      const manyColors = Array.from({ length: 20 }, (_, i) =>
-        `#${i.toString(16).padStart(6, "0")}`
+      const manyColors = Array.from(
+        { length: 20 },
+        (_, i) => `#${i.toString(16).padStart(6, "0")}`,
       );
 
       render(<ColorPicker value="#000000" onChange={vi.fn()} presetColors={manyColors} />);
@@ -398,9 +391,7 @@ describe("ColorPicker", () => {
       expect(onChange).toHaveBeenCalledWith("#3B82F6");
 
       // Rerender with new value
-      rerender(
-        <ColorPicker value="#3B82F6" onChange={onChange} label="Theme Color" />,
-      );
+      rerender(<ColorPicker value="#3B82F6" onChange={onChange} label="Theme Color" />);
 
       // New color should be selected
       const selectedButton = screen.getByLabelText("Select color #3B82F6");

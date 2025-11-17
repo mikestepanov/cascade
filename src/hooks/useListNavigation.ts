@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Hook for keyboard navigation in lists
@@ -21,7 +21,7 @@ export function useListNavigation<T>({
   // Reset selection when items change
   useEffect(() => {
     setSelectedIndex(-1);
-  }, [items]);
+  }, []);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {

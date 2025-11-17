@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
-import { getTypeIcon, getPriorityColor } from "@/lib/issue-utils";
-import { showSuccess, showError } from "@/lib/toast";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -11,7 +11,7 @@ import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Skeleton } from "./ui/Skeleton";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -28,11 +28,42 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
   if (!issue) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6">
-          <LoadingSpinner />
+      <>
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
+
+        {/* Modal Skeleton */}
+        <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
+            {/* Header Skeleton */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6">
+              <div className="flex items-center space-x-3">
+                <Skeleton className="h-8 w-8 rounded" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="p-6 space-y-6">
+              <Skeleton className="h-8 w-3/4" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -78,7 +109,9 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-500 font-mono">{issue.key}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}
+                  >
                     {issue.priority}
                   </span>
                 </div>

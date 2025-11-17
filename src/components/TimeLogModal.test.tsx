@@ -61,7 +61,9 @@ describe("TimeLogModal", () => {
 
     // Find date input by type attribute
     const inputs = screen.getAllByDisplayValue(/\d{4}-\d{2}-\d{2}/);
-    const dateInput = inputs.find((input) => (input as HTMLInputElement).type === "date") as HTMLInputElement;
+    const dateInput = inputs.find(
+      (input) => (input as HTMLInputElement).type === "date",
+    ) as HTMLInputElement;
 
     expect(dateInput).toBeInTheDocument();
     expect(dateInput.type).toBe("date");

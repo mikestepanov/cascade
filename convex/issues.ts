@@ -20,6 +20,8 @@ export const create = mutation({
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
     labels: v.optional(v.array(v.id("labels"))),
+    estimatedHours: v.optional(v.number()),
+    dueDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -75,6 +77,8 @@ export const create = mutation({
       epicId: args.epicId,
       linkedDocuments: [],
       attachments: [],
+      estimatedHours: args.estimatedHours,
+      dueDate: args.dueDate,
       order: maxOrder + 1,
     });
 
@@ -394,6 +398,18 @@ export const update = mutation({
         oldValue: issue.assigneeId,
         newValue: args.assigneeId ?? undefined,
       });
+
+      // Send assignment email notification if assigned to someone new
+      if (args.assigneeId && args.assigneeId !== userId) {
+        // Import email helper dynamically to avoid circular deps
+        const { sendEmailNotification } = await import("./email/helpers");
+        await sendEmailNotification(ctx, {
+          userId: args.assigneeId,
+          type: "assigned",
+          issueId: args.issueId,
+          actorId: userId,
+        });
+      }
     }
 
     if (args.labels !== undefined) {
@@ -490,6 +506,8 @@ export const addComment = mutation({
 
     // Create notifications for mentioned users
     const author = await ctx.db.get(userId);
+    const { sendEmailNotification } = await import("./email/helpers");
+
     for (const mentionedUserId of mentions) {
       if (mentionedUserId !== userId) {
         // Don't notify yourself
@@ -503,7 +521,39 @@ export const addComment = mutation({
           isRead: false,
           createdAt: now,
         });
+
+        // Send mention email
+        await sendEmailNotification(ctx, {
+          userId: mentionedUserId,
+          type: "mention",
+          issueId: args.issueId,
+          actorId: userId,
+          commentText: args.content,
+        });
       }
+    }
+
+    // Notify issue reporter about comment (if not the commenter)
+    if (issue.reporterId !== userId) {
+      await ctx.db.insert("notifications", {
+        userId: issue.reporterId,
+        type: "issue_comment",
+        title: "New comment",
+        message: `${author?.name || "Someone"} commented on ${issue.key}`,
+        issueId: args.issueId,
+        projectId: issue.projectId,
+        isRead: false,
+        createdAt: now,
+      });
+
+      // Send comment email to reporter
+      await sendEmailNotification(ctx, {
+        userId: issue.reporterId,
+        type: "comment",
+        issueId: args.issueId,
+        actorId: userId,
+        commentText: args.content,
+      });
     }
 
     return commentId;

@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { showSuccess, showError } from "@/lib/toast";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { InputField } from "./ui/FormField";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { SkeletonList } from "./ui/Skeleton";
 
 interface CustomFieldsManagerProps {
   projectId: Id<"projects">;
@@ -252,9 +252,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
 
       {/* Fields List */}
       {!customFields ? (
-        <div className="flex items-center justify-center py-8">
-          <LoadingSpinner />
-        </div>
+        <SkeletonList items={3} />
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-4xl mb-3">📋</div>

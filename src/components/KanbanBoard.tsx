@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -14,6 +14,17 @@ interface KanbanBoardProps {
   sprintId?: Id<"sprints">;
 }
 
+interface BoardAction {
+  issueId: Id<"issues">;
+  oldStatus: string;
+  newStatus: string;
+  oldOrder: number;
+  newOrder: number;
+  issueTitle: string; // For toast message
+}
+
+const MAX_HISTORY_SIZE = 10;
+
 export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [createIssueStatus, setCreateIssueStatus] = useState<string>("");
@@ -21,6 +32,10 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIssueIds, setSelectedIssueIds] = useState<Set<Id<"issues">>>(new Set());
+
+  // Undo/Redo state
+  const [historyStack, setHistoryStack] = useState<BoardAction[]>([]);
+  const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
 
   const project = useQuery(api.projects.get, { id: projectId });
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
@@ -58,6 +73,29 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
   const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
 
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd (Mac) or Ctrl (Windows/Linux)
+      const isMod = e.metaKey || e.ctrlKey;
+
+      // Ctrl+Z or Cmd+Z → Undo
+      if (isMod && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+
+      // Ctrl+Shift+Z or Cmd+Shift+Z → Redo
+      if (isMod && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleRedo, handleUndo]); // Re-bind when history changes
+
   const handleDragStart = (e: React.DragEvent, issueId: Id<"issues">) => {
     setDraggedIssue(issueId);
     e.dataTransfer.effectAllowed = "move";
@@ -73,8 +111,28 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
     if (!draggedIssue) return;
 
+    // Find the dragged issue to get its current state
+    const issue = issues.find((i) => i._id === draggedIssue);
+    if (!issue) return;
+
+    // If dropping in same column, do nothing
+    if (issue.status === newStatus) {
+      setDraggedIssue(null);
+      return;
+    }
+
     const issuesInNewStatus = issues.filter((issue) => issue.status === newStatus);
     const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
+
+    // Save to history before making the change
+    const action: BoardAction = {
+      issueId: draggedIssue,
+      oldStatus: issue.status,
+      newStatus,
+      oldOrder: issue.order,
+      newOrder,
+      issueTitle: issue.title,
+    };
 
     try {
       await updateIssueStatus({
@@ -82,11 +140,73 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         newStatus,
         newOrder,
       });
+
+      // Add to history and clear redo stack (new action invalidates redo)
+      setHistoryStack((prev) => [...prev, action].slice(-MAX_HISTORY_SIZE));
+      setRedoStack([]);
     } catch {
       toast.error("Failed to update issue status");
     }
 
     setDraggedIssue(null);
+  };
+
+  const handleUndo = async () => {
+    if (historyStack.length === 0) {
+      toast.info("Nothing to undo");
+      return;
+    }
+
+    // Pop the last action from history
+    const lastAction = historyStack[historyStack.length - 1];
+    const newHistory = historyStack.slice(0, -1);
+
+    try {
+      // Revert the action (swap old/new)
+      await updateIssueStatus({
+        issueId: lastAction.issueId,
+        newStatus: lastAction.oldStatus,
+        newOrder: lastAction.oldOrder,
+      });
+
+      // Update stacks
+      setHistoryStack(newHistory);
+      setRedoStack((prev) => [...prev, lastAction].slice(-MAX_HISTORY_SIZE));
+
+      // Show toast
+      toast.success(`Undid move of "${lastAction.issueTitle}"`);
+    } catch {
+      toast.error("Failed to undo");
+    }
+  };
+
+  const handleRedo = async () => {
+    if (redoStack.length === 0) {
+      toast.info("Nothing to redo");
+      return;
+    }
+
+    // Pop the last action from redo stack
+    const lastRedo = redoStack[redoStack.length - 1];
+    const newRedoStack = redoStack.slice(0, -1);
+
+    try {
+      // Re-apply the action
+      await updateIssueStatus({
+        issueId: lastRedo.issueId,
+        newStatus: lastRedo.newStatus,
+        newOrder: lastRedo.newOrder,
+      });
+
+      // Update stacks
+      setRedoStack(newRedoStack);
+      setHistoryStack((prev) => [...prev, lastRedo].slice(-MAX_HISTORY_SIZE));
+
+      // Show toast
+      toast.success(`Redid move of "${lastRedo.issueTitle}"`);
+    } catch {
+      toast.error("Failed to redo");
+    }
   };
 
   const handleCreateIssue = (status: string) => {
@@ -120,22 +240,73 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
   return (
     <div className="flex-1 overflow-x-auto">
-      {/* Header with bulk operations toggle */}
+      {/* Header with bulk operations toggle and undo/redo buttons */}
       <div className="px-6 pt-6 pb-2 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {sprintId ? "Sprint Board" : "Kanban Board"}
         </h2>
-        <button
-          type="button"
-          onClick={handleToggleSelectionMode}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            selectionMode
-              ? "bg-primary text-white"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-          }`}
-        >
-          {selectionMode ? "Exit Selection Mode" : "Select Multiple"}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Undo/Redo buttons */}
+          <div className="flex items-center gap-1 mr-4">
+            <button
+              type="button"
+              onClick={handleUndo}
+              disabled={historyStack.length === 0}
+              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Undo (Ctrl+Z)"
+            >
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={handleRedo}
+              disabled={redoStack.length === 0}
+              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Redo (Ctrl+Shift+Z)"
+            >
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Selection mode toggle */}
+          <button
+            type="button"
+            onClick={handleToggleSelectionMode}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              selectionMode
+                ? "bg-primary text-white"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            {selectionMode ? "Exit Selection Mode" : "Select Multiple"}
+          </button>
+        </div>
       </div>
 
       <div className="flex space-x-6 px-6 pb-6 min-w-max">
@@ -191,7 +362,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
                   <div
                     key={issue._id}
                     className="animate-scale-in"
-                    style={{ animationDelay: `${(columnIndex * 100) + (issueIndex * 50)}ms` }}
+                    style={{ animationDelay: `${columnIndex * 100 + issueIndex * 50}ms` }}
                   >
                     <IssueCard
                       issue={issue}

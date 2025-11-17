@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
-import { Modal } from "./ui/Modal";
 import { ExportPanel } from "./import-export/ExportPanel";
 import { ImportPanel } from "./import-export/ImportPanel";
+import { Modal } from "./ui/Modal";
 
 interface ImportExportModalProps {
   isOpen: boolean;

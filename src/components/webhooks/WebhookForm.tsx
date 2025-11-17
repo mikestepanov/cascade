@@ -1,7 +1,7 @@
 import { useMutation } from "convex/react";
-import { useState, useEffect } from "react";
-import { showSuccess, showError } from "@/lib/toast";
+import { useEffect, useState } from "react";
 import { toggleInArray } from "@/lib/array-utils";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
@@ -58,7 +58,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
       setSelectedEvents([]);
     }
     setIsSubmitting(false);
-  }, [webhook, isOpen]);
+  }, [webhook]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

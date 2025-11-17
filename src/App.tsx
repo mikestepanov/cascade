@@ -1,8 +1,9 @@
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { useState } from "react";
-import { Toaster } from "sonner";
+import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
+import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
+import { CalendarView } from "./components/Calendar/CalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
 import { DocumentEditor } from "./components/DocumentEditor";
@@ -10,11 +11,16 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
 import { NotificationCenter } from "./components/NotificationCenter";
+import { OnboardingChecklist } from "./components/Onboarding/Checklist";
+import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
+import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
 import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { TimerWidget } from "./components/TimeTracker/TimerWidget";
+import { Timesheet } from "./components/TimeTracker/Timesheet";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
@@ -34,9 +40,33 @@ function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [activeView, setActiveView] = useState<"dashboard" | "documents" | "projects">("dashboard");
+  const [activeView, setActiveView] = useState<
+    "dashboard" | "documents" | "projects" | "timesheet" | "calendar"
+  >("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+
+  // Onboarding state
+  const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
+  const [showSampleProjectModal, setShowSampleProjectModal] = useState(false);
+  const [showWelcomeTour, setShowWelcomeTour] = useState(false);
+  const [showProjectWizard, setShowProjectWizard] = useState(false);
+  const createSampleProject = useMutation(api.onboarding.createSampleProject);
+  const _projects = useQuery(api.projects.list, {});
+
+  // Check if user is new and should see onboarding
+  useEffect(() => {
+    if (loggedInUser && onboardingStatus !== undefined) {
+      // If no onboarding record exists, this is a brand new user
+      if (!onboardingStatus) {
+        // Show sample project offer modal
+        setShowSampleProjectModal(true);
+      } else if (!onboardingStatus.tourShown && !showSampleProjectModal) {
+        // Show welcome tour if they haven't seen it
+        setShowWelcomeTour(true);
+      }
+    }
+  }, [loggedInUser, onboardingStatus, showSampleProjectModal]);
 
   // Build commands for command palette
   const commands = useCommands({
@@ -95,6 +125,18 @@ function Content() {
       description: "Go to projects",
     },
     {
+      key: "4",
+      meta: true,
+      handler: () => setActiveView("timesheet"),
+      description: "Go to timesheet",
+    },
+    {
+      key: "5",
+      meta: true,
+      handler: () => setActiveView("calendar"),
+      description: "Go to calendar",
+    },
+    {
       key: "?",
       shift: true,
       handler: () => setShowShortcutsHelp(true),
@@ -126,32 +168,102 @@ function Content() {
           onClose={() => setShowShortcutsHelp(false)}
         />
 
+        {/* Onboarding Components */}
+        {showWelcomeTour && (
+          <WelcomeTour
+            onComplete={() => setShowWelcomeTour(false)}
+            onSkip={() => setShowWelcomeTour(false)}
+          />
+        )}
+
+        {showProjectWizard && (
+          <ProjectWizard
+            onComplete={(projectId) => {
+              setShowProjectWizard(false);
+              setActiveView("projects");
+              setSelectedProjectId(projectId as Id<"projects">);
+              toast.success("Project created successfully!");
+            }}
+            onCancel={() => setShowProjectWizard(false)}
+          />
+        )}
+
+        {/* Sample Project Offer Modal */}
+        {showSampleProjectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Welcome to Cascade! 🎉
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Would you like us to create a sample project with demo issues to help you explore
+                Cascade?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    try {
+                      const projectId = await createSampleProject();
+                      setShowSampleProjectModal(false);
+                      setShowWelcomeTour(true); // Start tour after creating sample project
+                      toast.success("Sample project created! Let's take a quick tour.");
+                      setActiveView("projects");
+                      setSelectedProjectId(projectId as Id<"projects">);
+                    } catch (_error) {
+                      toast.error("Failed to create sample project");
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+                >
+                  Yes, show me around!
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSampleProjectModal(false);
+                    setShowProjectWizard(true); // Show project wizard instead
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  I'll start from scratch
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Onboarding Checklist (sticky widget) */}
+        <OnboardingChecklist />
+
         <div className="flex w-full h-screen">
           {/* Sidebar - only show for documents and projects views */}
-          {activeView !== "dashboard" && (
-            <ErrorBoundary
-              fallback={
-                <div className="w-64 bg-white border-r border-gray-200">
-                  <SectionErrorFallback
-                    title="Sidebar Error"
-                    message="Failed to load sidebar. Please refresh the page."
-                  />
+          {activeView !== "dashboard" &&
+            activeView !== "timesheet" &&
+            activeView !== "calendar" && (
+              <ErrorBoundary
+                fallback={
+                  <div className="w-64 bg-white border-r border-gray-200">
+                    <SectionErrorFallback
+                      title="Sidebar Error"
+                      message="Failed to load sidebar. Please refresh the page."
+                    />
+                  </div>
+                }
+              >
+                <div data-tour={activeView === "documents" ? "sidebar" : ""}>
+                  {activeView === "documents" ? (
+                    <Sidebar
+                      selectedDocumentId={selectedDocumentId}
+                      onSelectDocument={setSelectedDocumentId}
+                    />
+                  ) : (
+                    <ProjectSidebar
+                      selectedProjectId={selectedProjectId}
+                      onSelectProject={setSelectedProjectId}
+                    />
+                  )}
                 </div>
-              }
-            >
-              {activeView === "documents" ? (
-                <Sidebar
-                  selectedDocumentId={selectedDocumentId}
-                  onSelectDocument={setSelectedDocumentId}
-                />
-              ) : (
-                <ProjectSidebar
-                  selectedProjectId={selectedProjectId}
-                  onSelectProject={setSelectedProjectId}
-                />
-              )}
-            </ErrorBoundary>
-          )}
+              </ErrorBoundary>
+            )}
 
           <div className="flex-1 flex flex-col">
             {/* Header */}
@@ -202,6 +314,36 @@ function Content() {
                   >
                     📋 Projects
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView("timesheet");
+                      setSelectedDocumentId(null);
+                      setSelectedProjectId(null);
+                    }}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeView === "timesheet"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    ⏱️ Timesheet
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView("calendar");
+                      setSelectedDocumentId(null);
+                      setSelectedProjectId(null);
+                    }}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeView === "calendar"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    📅 Calendar
+                  </button>
                 </div>
 
                 <h1 className="text-lg font-medium text-gray-900">
@@ -211,9 +353,13 @@ function Content() {
                       ? selectedDocumentId
                         ? "Document Editor"
                         : "Select a document"
-                      : selectedProjectId
-                        ? "Project Board"
-                        : "Select a project"}
+                      : activeView === "timesheet"
+                        ? "Weekly Timesheet"
+                        : activeView === "calendar"
+                          ? "Calendar"
+                          : selectedProjectId
+                            ? "Project Board"
+                            : "Select a project"}
                 </h1>
               </div>
               <div className="flex items-center gap-3">
@@ -222,6 +368,7 @@ function Content() {
                   onClick={() => setShowCommandPalette(true)}
                   className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                   title="Open command palette"
+                  data-tour="command-palette"
                 >
                   <svg
                     aria-hidden="true"
@@ -271,7 +418,10 @@ function Content() {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto">
+            <main
+              className="flex-1 overflow-auto"
+              data-tour={activeView === "dashboard" ? "dashboard" : ""}
+            >
               <ErrorBoundary
                 fallback={
                   <SectionErrorFallback
@@ -302,6 +452,10 @@ function Content() {
                       </div>
                     </div>
                   )
+                ) : activeView === "timesheet" ? (
+                  <Timesheet />
+                ) : activeView === "calendar" ? (
+                  <CalendarView />
                 ) : selectedProjectId ? (
                   <ProjectBoard projectId={selectedProjectId} />
                 ) : (
@@ -316,6 +470,9 @@ function Content() {
             </main>
           </div>
         </div>
+
+        {/* Global Timer Widget - always visible for authenticated users */}
+        <TimerWidget />
       </Authenticated>
 
       <Unauthenticated>

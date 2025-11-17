@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Card, CardHeader, CardBody } from "./Card";
+import { describe, expect, it, vi } from "vitest";
+import { Card, CardBody, CardHeader } from "./Card";
 
 describe("Card", () => {
   describe("Basic Rendering", () => {
@@ -281,12 +281,7 @@ describe("CardHeader", () => {
     });
 
     it("should render action when provided", () => {
-      render(
-        <CardHeader
-          title="Title"
-          action={<button type="button">Action</button>}
-        />,
-      );
+      render(<CardHeader title="Title" action={<button type="button">Action</button>} />);
 
       expect(screen.getByRole("button", { name: "Action" })).toBeInTheDocument();
     });
@@ -294,9 +289,7 @@ describe("CardHeader", () => {
 
   describe("Description", () => {
     it("should have correct styling on description", () => {
-      const { container } = render(
-        <CardHeader title="Title" description="Desc" />,
-      );
+      const { container } = render(<CardHeader title="Title" description="Desc" />);
 
       const description = container.querySelector("p");
       expect(description).toHaveClass("text-sm");
@@ -388,9 +381,7 @@ describe("CardHeader", () => {
     });
 
     it("should work with title and action", () => {
-      render(
-        <CardHeader title="Title" action={<button type="button">Act</button>} />,
-      );
+      render(<CardHeader title="Title" action={<button type="button">Act</button>} />);
 
       expect(screen.getByText("Title")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Act" })).toBeInTheDocument();
@@ -398,11 +389,7 @@ describe("CardHeader", () => {
 
     it("should work with all props", () => {
       render(
-        <CardHeader
-          title="Full"
-          description="Desc"
-          action={<button type="button">Act</button>}
-        />,
+        <CardHeader title="Full" description="Desc" action={<button type="button">Act</button>} />,
       );
 
       expect(screen.getByText("Full")).toBeInTheDocument();
@@ -443,9 +430,7 @@ describe("CardBody", () => {
     });
 
     it("should combine custom className with default padding", () => {
-      const { container } = render(
-        <CardBody className="bg-gray-50">Content</CardBody>,
-      );
+      const { container } = render(<CardBody className="bg-gray-50">Content</CardBody>);
 
       const body = container.firstChild;
       expect(body).toHaveClass("p-4");
@@ -490,10 +475,7 @@ describe("Card Component Integration", () => {
 
     render(
       <Card hoverable onClick={onClick}>
-        <CardHeader
-          title="Clickable Card"
-          action={<button type="button">Edit</button>}
-        />
+        <CardHeader title="Clickable Card" action={<button type="button">Edit</button>} />
         <CardBody>Content</CardBody>
       </Card>,
     );

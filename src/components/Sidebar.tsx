@@ -3,6 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { EmptyState } from "./ui/EmptyState";
+import { SkeletonList } from "./ui/Skeleton";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
@@ -131,11 +133,27 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       {/* Documents List */}
       <div className="flex-1 overflow-y-auto">
         {displayedDocuments === undefined ? (
-          <div className="p-4 text-center text-gray-500">Loading...</div>
-        ) : displayedDocuments.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
-            {searchQuery.trim() ? "No documents found" : "No documents yet"}
+          <div className="p-4">
+            <SkeletonList items={5} />
           </div>
+        ) : displayedDocuments.length === 0 ? (
+          <EmptyState
+            icon="📄"
+            title={searchQuery.trim() ? "No documents found" : "No documents yet"}
+            description={
+              searchQuery.trim()
+                ? "Try a different search term"
+                : "Create your first document to get started"
+            }
+            action={
+              !searchQuery.trim()
+                ? {
+                    label: "Create Document",
+                    onClick: () => setShowCreateForm(true),
+                  }
+                : undefined
+            }
+          />
         ) : (
           <div className="p-2">
             {displayedDocuments.map((doc) => (

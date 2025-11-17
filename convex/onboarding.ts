@@ -1,0 +1,445 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
+
+/**
+ * Get onboarding status for current user
+ */
+export const getOnboardingStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    return onboarding;
+  },
+});
+
+/**
+ * Update onboarding progress
+ */
+export const updateOnboardingStatus = mutation({
+  args: {
+    onboardingCompleted: v.optional(v.boolean()),
+    onboardingStep: v.optional(v.number()),
+    sampleProjectCreated: v.optional(v.boolean()),
+    tourShown: v.optional(v.boolean()),
+    wizardCompleted: v.optional(v.boolean()),
+    checklistDismissed: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const existing = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        ...args,
+        updatedAt: Date.now(),
+      });
+    } else {
+      // Create initial onboarding record
+      await ctx.db.insert("userOnboarding", {
+        userId,
+        onboardingCompleted: args.onboardingCompleted ?? false,
+        onboardingStep: args.onboardingStep ?? 0,
+        sampleProjectCreated: args.sampleProjectCreated ?? false,
+        tourShown: args.tourShown ?? false,
+        wizardCompleted: args.wizardCompleted ?? false,
+        checklistDismissed: args.checklistDismissed ?? false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+
+/**
+ * Create a sample project with demo data for new users
+ */
+export const createSampleProject = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Check if sample project already exists
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (onboarding?.sampleProjectCreated) {
+      throw new Error("Sample project already created");
+    }
+
+    // Create sample project
+    const projectId = await ctx.db.insert("projects", {
+      name: "Sample Project",
+      key: "SAMPLE",
+      description:
+        "Welcome to Cascade! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
+      createdBy: userId,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      isPublic: false,
+      members: [userId], // Deprecated but kept for backwards compat
+      boardType: "kanban",
+      workflowStates: [
+        { id: "todo", name: "To Do", category: "todo" as const, order: 0 },
+        { id: "inprogress", name: "In Progress", category: "inprogress" as const, order: 1 },
+        { id: "done", name: "Done", category: "done" as const, order: 2 },
+      ],
+    });
+
+    // Add user as project admin
+    await ctx.db.insert("projectMembers", {
+      projectId,
+      userId,
+      role: "admin",
+      addedBy: userId,
+      addedAt: Date.now(),
+    });
+
+    // Create labels
+    await ctx.db.insert("labels", {
+      projectId,
+      name: "urgent",
+      color: "#EF4444", // Red
+      createdBy: userId,
+      createdAt: Date.now(),
+    });
+
+    await ctx.db.insert("labels", {
+      projectId,
+      name: "needs-review",
+      color: "#F59E0B", // Orange
+      createdBy: userId,
+      createdAt: Date.now(),
+    });
+
+    // Create active sprint
+    const sprintId = await ctx.db.insert("sprints", {
+      projectId,
+      name: "Sprint 1",
+      goal: "Learn Cascade basics and explore features",
+      startDate: Date.now(),
+      endDate: Date.now() + 14 * 24 * 60 * 60 * 1000, // 2 weeks from now
+      status: "active",
+      createdBy: userId,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    // Create sample issues
+    const issues: {
+      title: string;
+      description: string;
+      type: "task" | "bug" | "story" | "epic";
+      status: string;
+      priority: "lowest" | "low" | "medium" | "high" | "highest";
+      labels: string[];
+      order: number;
+    }[] = [
+      // Bugs
+      {
+        title: "Fix login page styling on mobile",
+        description:
+          "The login button is cut off on mobile devices. Need to make it responsive.\n\n**Steps to reproduce:**\n1. Open login page on mobile\n2. Notice button is cut off\n\n**Expected:** Button should be fully visible",
+        type: "bug",
+        status: "todo",
+        priority: "high",
+        labels: ["urgent"],
+        order: 0,
+      },
+      {
+        title: "Dashboard loading spinner stuck",
+        description: "Sometimes the loading spinner doesn't go away after data loads.",
+        type: "bug",
+        status: "inprogress",
+        priority: "medium",
+        labels: [],
+        order: 0,
+      },
+      {
+        title: "Export button not working in Firefox",
+        description:
+          "The CSV export button throws an error in Firefox browser. Works fine in Chrome.\n\n**Error:** `ReferenceError: AbortController is not defined`",
+        type: "bug",
+        status: "todo",
+        priority: "low",
+        labels: [],
+        order: 1,
+      },
+
+      // Tasks
+      {
+        title: "Update documentation for new features",
+        description:
+          "We've added several new features that aren't documented yet:\n- Email notifications\n- Kanban undo/redo\n- File attachments\n\nNeed to update the user guide.",
+        type: "task",
+        status: "todo",
+        priority: "medium",
+        labels: ["needs-review"],
+        order: 2,
+      },
+      {
+        title: "Set up CI/CD pipeline",
+        description:
+          "Configure GitHub Actions to:\n- Run tests on every PR\n- Deploy to staging on merge to main\n- Deploy to production on release tags",
+        type: "task",
+        status: "inprogress",
+        priority: "high",
+        labels: [],
+        order: 1,
+      },
+      {
+        title: "Create demo video for landing page",
+        description:
+          "Record a 2-minute walkthrough showing key features:\n- Creating a project\n- Adding issues\n- Collaborating with team\n- Real-time updates",
+        type: "task",
+        status: "done",
+        priority: "medium",
+        labels: [],
+        order: 0,
+      },
+      {
+        title: "Design new logo and branding",
+        description:
+          "Current logo is placeholder. Need professional branding that reflects modern, collaborative nature of the product.",
+        type: "task",
+        status: "todo",
+        priority: "low",
+        labels: [],
+        order: 3,
+      },
+
+      // Stories
+      {
+        title: "As a user, I want to filter issues by multiple labels",
+        description:
+          "**User Story:**\nAs a project manager, I want to filter issues by multiple labels at once, so that I can find specific combinations like 'urgent' AND 'frontend'.\n\n**Acceptance Criteria:**\n- [ ] User can select multiple labels in filter\n- [ ] Issues are filtered with AND logic (must have all selected labels)\n- [ ] Filter persists when navigating away and back\n- [ ] Clear all filters button works",
+        type: "story",
+        status: "todo",
+        priority: "medium",
+        labels: [],
+        order: 4,
+      },
+      {
+        title: "As a developer, I want to link commits to issues",
+        description:
+          "**User Story:**\nAs a developer, I want to link my git commits to issues, so that the team can see what code changes relate to each issue.\n\n**Acceptance Criteria:**\n- [ ] Support `Fixes #SAMPLE-123` syntax in commits\n- [ ] Show linked commits in issue detail\n- [ ] Auto-close issue when PR is merged\n- [ ] Integration with GitHub/GitLab",
+        type: "story",
+        status: "todo",
+        priority: "high",
+        labels: [],
+        order: 5,
+      },
+
+      // Epic
+      {
+        title: "Mobile App Development",
+        description:
+          "Build native mobile apps for iOS and Android to make Cascade accessible on the go.\n\n**Scope:**\n- React Native setup\n- Core features: view projects, issues, documents\n- Push notifications for mentions and assignments\n- Offline mode with sync\n- App store submission\n\n**Timeline:** 12 weeks",
+        type: "epic",
+        status: "todo",
+        priority: "medium",
+        labels: [],
+        order: 6,
+      },
+    ];
+
+    const createdIssues: Id<"issues">[] = [];
+    for (const issue of issues) {
+      const issueId = await ctx.db.insert("issues", {
+        projectId,
+        key: `SAMPLE-${createdIssues.length + 1}`,
+        title: issue.title,
+        description: issue.description,
+        type: issue.type,
+        status: issue.status,
+        priority: issue.priority,
+        assigneeId: userId, // Assign first few to user
+        reporterId: userId,
+        createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000, // Stagger creation times
+        updatedAt: Date.now(),
+        labels: issue.labels,
+        sprintId: issue.type !== "epic" ? sprintId : undefined, // Don't add epic to sprint
+        linkedDocuments: [],
+        attachments: [],
+        order: issue.order,
+      });
+      createdIssues.push(issueId);
+
+      // Add activity log
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId,
+        action: "created",
+        createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000,
+      });
+    }
+
+    // Add sample comments on a few issues
+    const commentsData = [
+      {
+        issueIndex: 0, // First bug
+        content:
+          "I can reproduce this on iOS Safari. Looks like the flex container isn't wrapping properly. Will investigate the CSS.",
+      },
+      {
+        issueIndex: 1, // Second bug
+        content:
+          "Found the issue - we're not handling the loading state correctly when the query returns null. Fix coming soon.",
+      },
+      {
+        issueIndex: 4, // CI/CD task
+        content:
+          "GitHub Actions workflow is set up! Just need to add the deployment secrets and we're good to go. 🚀",
+      },
+      {
+        issueIndex: 5, // Demo video task
+        content:
+          "Video is live! Check it out: https://youtube.com/... Got great feedback from the team. @you might want to review the script.",
+        mentions: [userId],
+      },
+      {
+        issueIndex: 7, // Filter story
+        content:
+          "This would be super helpful! Right now I have to filter twice which is annoying. +1 for this feature.",
+      },
+    ];
+
+    for (const { issueIndex, content, mentions = [] } of commentsData) {
+      await ctx.db.insert("issueComments", {
+        issueId: createdIssues[issueIndex],
+        authorId: userId,
+        content,
+        mentions,
+        createdAt:
+          Date.now() -
+          (5 - commentsData.indexOf({ issueIndex, content, mentions })) * 30 * 60 * 1000, // 30 min intervals
+        updatedAt: Date.now(),
+      });
+    }
+
+    // Update onboarding status
+    await ctx.db.insert("userOnboarding", {
+      userId,
+      onboardingCompleted: false,
+      onboardingStep: 1,
+      sampleProjectCreated: true,
+      tourShown: false,
+      wizardCompleted: false,
+      checklistDismissed: false,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return projectId;
+  },
+});
+
+/**
+ * Delete sample project (for users who want to start fresh)
+ */
+export const deleteSampleProject = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Find sample project
+    const project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
+      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .first();
+
+    if (!project) {
+      throw new Error("Sample project not found");
+    }
+
+    // Delete all related data (issues, comments, sprints, etc.)
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+
+    for (const issue of issues) {
+      // Delete comments
+      const comments = await ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const comment of comments) {
+        await ctx.db.delete(comment._id);
+      }
+
+      // Delete activity
+      const activities = await ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const activity of activities) {
+        await ctx.db.delete(activity._id);
+      }
+
+      // Delete issue
+      await ctx.db.delete(issue._id);
+    }
+
+    // Delete sprints
+    const sprints = await ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const sprint of sprints) {
+      await ctx.db.delete(sprint._id);
+    }
+
+    // Delete labels
+    const labels = await ctx.db
+      .query("labels")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const label of labels) {
+      await ctx.db.delete(label._id);
+    }
+
+    // Delete project members
+    const members = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const member of members) {
+      await ctx.db.delete(member._id);
+    }
+
+    // Delete project
+    await ctx.db.delete(project._id);
+
+    // Update onboarding status
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (onboarding) {
+      await ctx.db.patch(onboarding._id, {
+        sampleProjectCreated: false,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});

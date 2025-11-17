@@ -1,8 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import {
-  handleKeyboardClick,
-  handleKeyboardClickWithEvent,
-} from "./accessibility";
+import { describe, expect, it, vi } from "vitest";
+import { handleKeyboardClick, handleKeyboardClickWithEvent } from "./accessibility";
 
 describe("accessibility utilities", () => {
   describe("handleKeyboardClick", () => {
@@ -152,8 +149,7 @@ describe("accessibility utilities", () => {
         expect(e.key).toBeDefined();
       });
 
-      const keyboardHandler =
-        handleKeyboardClickWithEvent<HTMLDivElement>(handler);
+      const keyboardHandler = handleKeyboardClickWithEvent<HTMLDivElement>(handler);
 
       const event = {
         key: "Enter",
@@ -167,8 +163,7 @@ describe("accessibility utilities", () => {
 
     it("should work with generic type parameter", () => {
       const handler = vi.fn();
-      const keyboardHandler =
-        handleKeyboardClickWithEvent<HTMLButtonElement>(handler);
+      const keyboardHandler = handleKeyboardClickWithEvent<HTMLButtonElement>(handler);
 
       const event = {
         key: "Enter",
@@ -205,13 +200,11 @@ describe("accessibility utilities", () => {
 
     it("should handle handler that modifies event", () => {
       let eventKey = "";
-      const handler = vi.fn(
-        (e: React.KeyboardEvent | React.MouseEvent) => {
-          if ("key" in e) {
-            eventKey = e.key;
-          }
-        },
-      );
+      const handler = vi.fn((e: React.KeyboardEvent | React.MouseEvent) => {
+        if ("key" in e) {
+          eventKey = e.key;
+        }
+      });
 
       const keyboardHandler = handleKeyboardClickWithEvent(handler);
 
@@ -254,12 +247,10 @@ describe("accessibility utilities", () => {
     });
 
     it("should support event delegation pattern", () => {
-      const handleClick = vi.fn(
-        (e: React.MouseEvent | React.KeyboardEvent) => {
-          // Can access event target
-          expect(e).toBeDefined();
-        },
-      );
+      const handleClick = vi.fn((e: React.MouseEvent | React.KeyboardEvent) => {
+        // Can access event target
+        expect(e).toBeDefined();
+      });
 
       const onKeyDown = handleKeyboardClickWithEvent(handleClick);
 

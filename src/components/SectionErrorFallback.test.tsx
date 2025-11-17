@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { SectionErrorFallback } from "./SectionErrorFallback";
 
 describe("SectionErrorFallback", () => {
@@ -14,18 +14,11 @@ describe("SectionErrorFallback", () => {
     it("should render provided title", () => {
       render(<SectionErrorFallback title="Something went wrong" />);
 
-      expect(
-        screen.getByRole("heading", { name: "Something went wrong" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Something went wrong" })).toBeInTheDocument();
     });
 
     it("should render custom message when provided", () => {
-      render(
-        <SectionErrorFallback
-          title="Error"
-          message="Custom error message"
-        />,
-      );
+      render(<SectionErrorFallback title="Error" message="Custom error message" />);
 
       expect(screen.getByText("Custom error message")).toBeInTheDocument();
     });
@@ -33,29 +26,21 @@ describe("SectionErrorFallback", () => {
     it("should render default message when no custom message provided", () => {
       render(<SectionErrorFallback title="Error" />);
 
-      expect(
-        screen.getByText(/This section encountered an error/i),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Try reloading or contact support/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/This section encountered an error/i)).toBeInTheDocument();
+      expect(screen.getByText(/Try reloading or contact support/i)).toBeInTheDocument();
     });
 
     it("should not render retry button when onRetry not provided", () => {
       render(<SectionErrorFallback title="Error" />);
 
-      expect(
-        screen.queryByRole("button", { name: /try again/i }),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /try again/i })).not.toBeInTheDocument();
     });
 
     it("should render retry button when onRetry is provided", () => {
       const onRetry = vi.fn();
       render(<SectionErrorFallback title="Error" onRetry={onRetry} />);
 
-      expect(
-        screen.getByRole("button", { name: /try again/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
     });
   });
 
@@ -123,9 +108,7 @@ describe("SectionErrorFallback", () => {
       render(<SectionErrorFallback title="Error" message="" />);
 
       // Empty string is falsy, so it should show default message
-      expect(
-        screen.getByText(/This section encountered an error/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/This section encountered an error/i)).toBeInTheDocument();
     });
 
     it("should handle very long title", () => {
@@ -153,16 +136,9 @@ describe("SectionErrorFallback", () => {
     });
 
     it("should handle special characters in message", () => {
-      render(
-        <SectionErrorFallback
-          title="Error"
-          message="Message with <tags> & symbols"
-        />,
-      );
+      render(<SectionErrorFallback title="Error" message="Message with <tags> & symbols" />);
 
-      expect(
-        screen.getByText("Message with <tags> & symbols"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Message with <tags> & symbols")).toBeInTheDocument();
     });
   });
 
@@ -176,9 +152,7 @@ describe("SectionErrorFallback", () => {
     });
 
     it("should work with title and message", () => {
-      render(
-        <SectionErrorFallback title="Error" message="Details here" />,
-      );
+      render(<SectionErrorFallback title="Error" message="Details here" />);
 
       expect(screen.getByRole("heading", { name: "Error" })).toBeInTheDocument();
       expect(screen.getByText("Details here")).toBeInTheDocument();
@@ -197,11 +171,7 @@ describe("SectionErrorFallback", () => {
     it("should work with all props provided", () => {
       const onRetry = vi.fn();
       render(
-        <SectionErrorFallback
-          title="Complete Error"
-          message="Full details"
-          onRetry={onRetry}
-        />,
+        <SectionErrorFallback title="Complete Error" message="Full details" onRetry={onRetry} />,
       );
 
       expect(screen.getByRole("heading", { name: "Complete Error" })).toBeInTheDocument();

@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getErrorMessage,
-  showSuccess,
-  showError,
   showCreated,
-  showUpdated,
   showDeleted,
+  showError,
   showFailedOperation,
+  showSuccess,
+  showUpdated,
 } from "./toast";
 
 // Mock the sonner toast module
@@ -150,18 +150,9 @@ describe("toast utilities", () => {
       showCreated("Document");
 
       expect(toast.success).toHaveBeenCalledTimes(3);
-      expect(toast.success).toHaveBeenNthCalledWith(
-        1,
-        "Issue created successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        2,
-        "Sprint created successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        3,
-        "Document created successfully",
-      );
+      expect(toast.success).toHaveBeenNthCalledWith(1, "Issue created successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(2, "Sprint created successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(3, "Document created successfully");
     });
 
     it("should handle lowercase entity names", () => {
@@ -184,18 +175,9 @@ describe("toast utilities", () => {
       showUpdated("Settings");
 
       expect(toast.success).toHaveBeenCalledTimes(3);
-      expect(toast.success).toHaveBeenNthCalledWith(
-        1,
-        "Issue updated successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        2,
-        "Sprint updated successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        3,
-        "Settings updated successfully",
-      );
+      expect(toast.success).toHaveBeenNthCalledWith(1, "Issue updated successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(2, "Sprint updated successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(3, "Settings updated successfully");
     });
   });
 
@@ -213,18 +195,9 @@ describe("toast utilities", () => {
       showDeleted("Attachment");
 
       expect(toast.success).toHaveBeenCalledTimes(3);
-      expect(toast.success).toHaveBeenNthCalledWith(
-        1,
-        "Issue deleted successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        2,
-        "Comment deleted successfully",
-      );
-      expect(toast.success).toHaveBeenNthCalledWith(
-        3,
-        "Attachment deleted successfully",
-      );
+      expect(toast.success).toHaveBeenNthCalledWith(1, "Issue deleted successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(2, "Comment deleted successfully");
+      expect(toast.success).toHaveBeenNthCalledWith(3, "Attachment deleted successfully");
     });
   });
 

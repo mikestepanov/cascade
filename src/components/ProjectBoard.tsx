@@ -15,8 +15,9 @@ import { RoadmapView } from "./RoadmapView";
 import { SectionErrorFallback } from "./SectionErrorFallback";
 import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
-import { WebhooksManager } from "./WebhooksManager";
+import { BillingReport } from "./TimeTracker/BillingReport";
 import { SkeletonText } from "./ui/Skeleton";
+import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
   projectId: Id<"projects">;
@@ -24,7 +25,15 @@ interface ProjectBoardProps {
 
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<
-    "board" | "backlog" | "sprints" | "roadmap" | "calendar" | "activity" | "analytics" | "settings"
+    | "board"
+    | "backlog"
+    | "sprints"
+    | "roadmap"
+    | "calendar"
+    | "activity"
+    | "analytics"
+    | "billing"
+    | "settings"
   >("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
@@ -168,6 +177,17 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             >
               Analytics
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("billing")}
+              className={`pb-2 border-b-2 transition-colors ${
+                activeTab === "billing"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              💰 Billing
+            </button>
           </div>
 
           {/* Spacer to push Settings to the right */}
@@ -232,6 +252,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
         )}
         {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
+        {activeTab === "billing" && <BillingReport projectId={projectId} />}
         {activeTab === "settings" && (
           <div className="p-6 overflow-y-auto bg-gray-50">
             <div className="max-w-5xl mx-auto space-y-8">

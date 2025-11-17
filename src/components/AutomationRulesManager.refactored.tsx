@@ -3,11 +3,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { AutomationRuleCard } from "./automation/AutomationRuleCard";
+import { AutomationRuleForm } from "./automation/AutomationRuleForm";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { AutomationRuleForm } from "./automation/AutomationRuleForm";
-import { AutomationRuleCard } from "./automation/AutomationRuleCard";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;

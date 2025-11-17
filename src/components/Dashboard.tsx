@@ -5,12 +5,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
-import {
-  SkeletonStatCard,
-  SkeletonList,
-  SkeletonProjectCard,
-  SkeletonText,
-} from "./ui/Skeleton";
+import { SkeletonList, SkeletonProjectCard, SkeletonStatCard, SkeletonText } from "./ui/Skeleton";
 
 type IssueFilter = "assigned" | "created" | "all";
 
@@ -174,9 +169,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
               <Card className="bg-gradient-to-br from-purple-50 to-white border-l-4 border-purple-500 animate-fade-in">
                 <CardBody className="text-center">
                   <div className="text-sm font-medium text-purple-700 mb-2">CREATED</div>
-                  <div className="text-4xl font-bold text-purple-600">
-                    {stats.createdByMe || 0}
-                  </div>
+                  <div className="text-4xl font-bold text-purple-600">{stats.createdByMe || 0}</div>
                   <div className="text-xs text-purple-600 mt-2">Total issues</div>
                 </CardBody>
               </Card>
@@ -225,12 +218,23 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                     title="No issues found"
                     description={
                       issueFilter === "assigned"
-                        ? "You don't have any assigned issues"
-                        : "You haven't created any issues yet"
+                        ? "You don't have any assigned issues. Visit a project to get started."
+                        : "You haven't created any issues yet. Visit a project to create one."
+                    }
+                    action={
+                      onNavigateToProjects
+                        ? {
+                            label: "View My Projects",
+                            onClick: onNavigateToProjects,
+                          }
+                        : undefined
                     }
                   />
                 ) : (
-                  <div ref={issueNavigation.listRef} className="space-y-2 max-h-[600px] overflow-y-auto">
+                  <div
+                    ref={issueNavigation.listRef}
+                    className="space-y-2 max-h-[600px] overflow-y-auto"
+                  >
                     {displayIssues.map((issue, index) => (
                       <div
                         key={issue._id}
@@ -355,7 +359,11 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                 ) : (
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
                     {recentActivity.map((activity, activityIndex) => (
-                      <div key={activity._id} className="relative animate-slide-up" style={{ animationDelay: `${activityIndex * 50}ms` }}>
+                      <div
+                        key={activity._id}
+                        className="relative animate-slide-up"
+                        style={{ animationDelay: `${activityIndex * 50}ms` }}
+                      >
                         {/* Timeline connector */}
                         {activityIndex < recentActivity.length - 1 && (
                           <div className="absolute left-4 top-8 bottom-0 w-px bg-gray-200"></div>
@@ -369,9 +377,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
 
                           <div className="flex-1 min-w-0 pb-4">
                             <div className="text-sm">
-                              <span className="font-medium text-gray-900">
-                                {activity.userName}
-                              </span>{" "}
+                              <span className="font-medium text-gray-900">{activity.userName}</span>{" "}
                               <span className="text-gray-600">{activity.action}</span>
                             </div>
                             <div className="mt-1">

@@ -1,11 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import {
-  toggleInArray,
-  createToggleHandler,
-  unique,
-  arraysEqual,
-  chunk,
-} from "./array-utils";
+import { describe, expect, it, vi } from "vitest";
+import { arraysEqual, chunk, createToggleHandler, toggleInArray, unique } from "./array-utils";
 
 describe("array-utils", () => {
   describe("toggleInArray", () => {
