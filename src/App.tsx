@@ -202,6 +202,7 @@ function Content() {
               </p>
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={async () => {
                     try {
                       const projectId = await createSampleProject();
@@ -219,6 +220,7 @@ function Content() {
                   Yes, show me around!
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setShowSampleProjectModal(false);
                     setShowProjectWizard(true); // Show project wizard instead
@@ -239,8 +241,15 @@ function Content() {
           {/* Mobile Sidebar Backdrop */}
           {isMobileSidebarOpen && (
             <div
+              role="button"
+              tabIndex={0}
               className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
               onClick={() => setIsMobileSidebarOpen(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setIsMobileSidebarOpen(false);
+                }
+              }}
               aria-label="Close sidebar"
             />
           )}
@@ -338,7 +347,9 @@ function Content() {
                     aria-label="Dashboard"
                     aria-current={activeView === "dashboard" ? "page" : undefined}
                   >
-                    <span className="sm:hidden" aria-hidden="true">🏠</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      🏠
+                    </span>
                     <span className="hidden sm:inline">Dashboard</span>
                   </button>
                   <button
@@ -355,7 +366,9 @@ function Content() {
                     aria-label="Documents"
                     aria-current={activeView === "documents" ? "page" : undefined}
                   >
-                    <span className="sm:hidden" aria-hidden="true">📄</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      📄
+                    </span>
                     <span className="hidden sm:inline">Documents</span>
                   </button>
                   <button
@@ -372,7 +385,9 @@ function Content() {
                     aria-label="Projects"
                     aria-current={activeView === "projects" ? "page" : undefined}
                   >
-                    <span className="sm:hidden" aria-hidden="true">📋</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      📋
+                    </span>
                     <span className="hidden sm:inline">Projects</span>
                   </button>
                   <button
@@ -390,7 +405,9 @@ function Content() {
                     aria-label="Timesheet"
                     aria-current={activeView === "timesheet" ? "page" : undefined}
                   >
-                    <span className="sm:hidden" aria-hidden="true">⏱️</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      ⏱️
+                    </span>
                     <span className="hidden sm:inline">Timesheet</span>
                   </button>
                   <button
@@ -408,7 +425,9 @@ function Content() {
                     aria-label="Calendar"
                     aria-current={activeView === "calendar" ? "page" : undefined}
                   >
-                    <span className="sm:hidden" aria-hidden="true">📅</span>
+                    <span className="sm:hidden" aria-hidden="true">
+                      📅
+                    </span>
                     <span className="hidden sm:inline">Calendar</span>
                   </button>
                 </nav>

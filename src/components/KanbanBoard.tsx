@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -41,37 +41,64 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
   const updateIssueStatus = useMutation(api.issues.updateStatus);
 
-  if (!project || !issues) {
-    return (
-      <div className="flex-1 overflow-x-auto">
-        {/* Header skeleton */}
-        <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between">
-          <SkeletonText lines={1} className="w-32" />
-          <SkeletonText lines={1} className="w-32" />
-        </div>
+  // Undo/Redo handlers wrapped in useCallback
+  const handleUndo = useCallback(async () => {
+    if (historyStack.length === 0) {
+      toast.info("Nothing to undo");
+      return;
+    }
 
-        {/* Kanban columns skeleton */}
-        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex-shrink-0 w-72 sm:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              {/* Column header skeleton */}
-              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-t-lg">
-                <SkeletonText lines={1} className="w-24" />
-              </div>
-              {/* Column cards skeleton */}
-              <div className="p-2 space-y-2 min-h-96">
-                <SkeletonKanbanCard />
-                <SkeletonKanbanCard />
-                <SkeletonKanbanCard />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+    // Pop the last action from history
+    const lastAction = historyStack[historyStack.length - 1];
+    const newHistory = historyStack.slice(0, -1);
 
-  const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
+    try {
+      // Revert the action (swap old/new)
+      await updateIssueStatus({
+        issueId: lastAction.issueId,
+        newStatus: lastAction.oldStatus,
+        newOrder: lastAction.oldOrder,
+      });
+
+      // Update stacks
+      setHistoryStack(newHistory);
+      setRedoStack((prev) => [...prev, lastAction].slice(-MAX_HISTORY_SIZE));
+
+      // Show toast
+      toast.success(`Undid move of "${lastAction.issueTitle}"`);
+    } catch {
+      toast.error("Failed to undo");
+    }
+  }, [historyStack, updateIssueStatus]);
+
+  const handleRedo = useCallback(async () => {
+    if (redoStack.length === 0) {
+      toast.info("Nothing to redo");
+      return;
+    }
+
+    // Pop the last action from redo stack
+    const lastRedo = redoStack[redoStack.length - 1];
+    const newRedoStack = redoStack.slice(0, -1);
+
+    try {
+      // Re-apply the action
+      await updateIssueStatus({
+        issueId: lastRedo.issueId,
+        newStatus: lastRedo.newStatus,
+        newOrder: lastRedo.newOrder,
+      });
+
+      // Update stacks
+      setRedoStack(newRedoStack);
+      setHistoryStack((prev) => [...prev, lastRedo].slice(-MAX_HISTORY_SIZE));
+
+      // Show toast
+      toast.success(`Redid move of "${lastRedo.issueTitle}"`);
+    } catch {
+      toast.error("Failed to redo");
+    }
+  }, [redoStack, updateIssueStatus]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
@@ -94,7 +121,42 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleRedo, handleUndo]); // Re-bind when history changes
+  }, [handleRedo, handleUndo]);
+
+  if (!project || !issues) {
+    return (
+      <div className="flex-1 overflow-x-auto">
+        {/* Header skeleton */}
+        <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between">
+          <SkeletonText lines={1} className="w-32" />
+          <SkeletonText lines={1} className="w-32" />
+        </div>
+
+        {/* Kanban columns skeleton */}
+        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-72 sm:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg"
+            >
+              {/* Column header skeleton */}
+              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-t-lg">
+                <SkeletonText lines={1} className="w-24" />
+              </div>
+              {/* Column cards skeleton */}
+              <div className="p-2 space-y-2 min-h-96">
+                <SkeletonKanbanCard />
+                <SkeletonKanbanCard />
+                <SkeletonKanbanCard />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
 
   const handleDragStart = (e: React.DragEvent, issueId: Id<"issues">) => {
     setDraggedIssue(issueId);
@@ -149,64 +211,6 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     }
 
     setDraggedIssue(null);
-  };
-
-  const handleUndo = async () => {
-    if (historyStack.length === 0) {
-      toast.info("Nothing to undo");
-      return;
-    }
-
-    // Pop the last action from history
-    const lastAction = historyStack[historyStack.length - 1];
-    const newHistory = historyStack.slice(0, -1);
-
-    try {
-      // Revert the action (swap old/new)
-      await updateIssueStatus({
-        issueId: lastAction.issueId,
-        newStatus: lastAction.oldStatus,
-        newOrder: lastAction.oldOrder,
-      });
-
-      // Update stacks
-      setHistoryStack(newHistory);
-      setRedoStack((prev) => [...prev, lastAction].slice(-MAX_HISTORY_SIZE));
-
-      // Show toast
-      toast.success(`Undid move of "${lastAction.issueTitle}"`);
-    } catch {
-      toast.error("Failed to undo");
-    }
-  };
-
-  const handleRedo = async () => {
-    if (redoStack.length === 0) {
-      toast.info("Nothing to redo");
-      return;
-    }
-
-    // Pop the last action from redo stack
-    const lastRedo = redoStack[redoStack.length - 1];
-    const newRedoStack = redoStack.slice(0, -1);
-
-    try {
-      // Re-apply the action
-      await updateIssueStatus({
-        issueId: lastRedo.issueId,
-        newStatus: lastRedo.newStatus,
-        newOrder: lastRedo.newOrder,
-      });
-
-      // Update stacks
-      setRedoStack(newRedoStack);
-      setHistoryStack((prev) => [...prev, lastRedo].slice(-MAX_HISTORY_SIZE));
-
-      // Show toast
-      toast.success(`Redid move of "${lastRedo.issueTitle}"`);
-    } catch {
-      toast.error("Failed to redo");
-    }
   };
 
   const handleCreateIssue = (status: string) => {
@@ -308,9 +312,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
             <span className="hidden sm:inline">
               {selectionMode ? "Exit Selection Mode" : "Select Multiple"}
             </span>
-            <span className="sm:hidden">
-              {selectionMode ? "Exit" : "Select"}
-            </span>
+            <span className="sm:hidden">{selectionMode ? "Exit" : "Select"}</span>
           </button>
         </div>
       </div>
@@ -333,7 +335,9 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
               <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-t-lg">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center space-x-2 min-w-0">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{state.name}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {state.name}
+                    </h3>
                     <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full flex-shrink-0">
                       {stateIssues.length}
                     </span>

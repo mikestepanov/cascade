@@ -96,8 +96,12 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">My Work</h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Your personal dashboard and activity center</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+            My Work
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
+            Your personal dashboard and activity center
+          </p>
         </div>
 
         {/* Stats Cards - Enhanced with visual hierarchy */}
@@ -115,8 +119,12 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
               {/* Assigned to Me */}
               <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 dark:to-gray-800 border-l-4 border-blue-500 dark:border-blue-400 animate-fade-in">
                 <CardBody className="text-center">
-                  <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-2">ASSIGNED TO ME</div>
-                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">{stats.assignedToMe || 0}</div>
+                  <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-2">
+                    ASSIGNED TO ME
+                  </div>
+                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+                    {stats.assignedToMe || 0}
+                  </div>
                   <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">Active tasks</div>
                 </CardBody>
               </Card>
@@ -124,7 +132,9 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
               {/* Completed This Week */}
               <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900/20 dark:to-gray-800 border-l-4 border-green-500 dark:border-green-400 animate-fade-in">
                 <CardBody className="text-center">
-                  <div className="text-sm font-medium text-green-700 dark:text-green-400 mb-2">COMPLETED</div>
+                  <div className="text-sm font-medium text-green-700 dark:text-green-400 mb-2">
+                    COMPLETED
+                  </div>
                   <div className="text-4xl font-bold text-green-600 dark:text-green-400">
                     {stats.completedThisWeek || 0}
                   </div>
@@ -143,21 +153,27 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                 <CardBody className="text-center">
                   <div
                     className={`text-sm font-medium mb-2 ${
-                      (stats.highPriority || 0) > 0 ? "text-orange-700 dark:text-orange-400" : "text-gray-600 dark:text-gray-400"
+                      (stats.highPriority || 0) > 0
+                        ? "text-orange-700 dark:text-orange-400"
+                        : "text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     HIGH PRIORITY
                   </div>
                   <div
                     className={`text-4xl font-bold ${
-                      (stats.highPriority || 0) > 0 ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"
+                      (stats.highPriority || 0) > 0
+                        ? "text-orange-600 dark:text-orange-400"
+                        : "text-gray-400 dark:text-gray-500"
                     }`}
                   >
                     {stats.highPriority || 0}
                   </div>
                   <div
                     className={`text-xs mt-2 ${
-                      (stats.highPriority || 0) > 0 ? "text-orange-600 dark:text-orange-400" : "text-gray-500 dark:text-gray-400"
+                      (stats.highPriority || 0) > 0
+                        ? "text-orange-600 dark:text-orange-400"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {(stats.highPriority || 0) > 0 ? "Needs attention" : "All clear"}
@@ -168,9 +184,15 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
               {/* Created by Me */}
               <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/20 dark:to-gray-800 border-l-4 border-purple-500 dark:border-purple-400 animate-fade-in">
                 <CardBody className="text-center">
-                  <div className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-2">CREATED</div>
-                  <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">{stats.createdByMe || 0}</div>
-                  <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Total issues</div>
+                  <div className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-2">
+                    CREATED
+                  </div>
+                  <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+                    {stats.createdByMe || 0}
+                  </div>
+                  <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">
+                    Total issues
+                  </div>
                 </CardBody>
               </Card>
             </>
@@ -256,15 +278,21 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-mono text-gray-500 dark:text-gray-400">{issue.key}</span>
-                              <span className="text-lg" aria-hidden="true">{getTypeIcon(issue.type)}</span>
+                              <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                                {issue.key}
+                              </span>
+                              <span className="text-lg" aria-hidden="true">
+                                {getTypeIcon(issue.type)}
+                              </span>
                               <span
                                 className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority)}`}
                               >
                                 {issue.priority}
                               </span>
                             </div>
-                            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">{issue.title}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                              {issue.title}
+                            </h4>
                             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                               <span>{issue.projectName}</span>
                               <span>•</span>
@@ -326,7 +354,9 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-center justify-between mb-1 gap-2">
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">{project.name}</h4>
+                          <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {project.name}
+                          </h4>
                           <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 rounded capitalize flex-shrink-0">
                             {project.role}
                           </span>
@@ -374,13 +404,19 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                         <div className="flex items-start gap-3">
                           {/* Icon circle with background */}
                           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center relative z-10">
-                            <span className="text-sm" aria-hidden="true">{getActionIcon(activity.action)}</span>
+                            <span className="text-sm" aria-hidden="true">
+                              {getActionIcon(activity.action)}
+                            </span>
                           </div>
 
                           <div className="flex-1 min-w-0 pb-4">
                             <div className="text-sm">
-                              <span className="font-medium text-gray-900 dark:text-gray-100">{activity.userName}</span>{" "}
-                              <span className="text-gray-600 dark:text-gray-400">{activity.action}</span>
+                              <span className="font-medium text-gray-900 dark:text-gray-100">
+                                {activity.userName}
+                              </span>{" "}
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {activity.action}
+                              </span>
                             </div>
                             <div className="mt-1">
                               <span className="inline-block font-mono text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">

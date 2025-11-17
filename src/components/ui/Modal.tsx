@@ -55,10 +55,14 @@ export function Modal({
               : "rounded-lg m-4 sm:m-0"
           } shadow-xl w-full ${maxWidthClasses[maxWidth]} animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-200`}
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
         >
           {title && (
             <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex items-center justify-between rounded-t-lg z-10">
-              <h2 id="modal-title" className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2
+                id="modal-title"
+                className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+              >
                 {title}
               </h2>
               <button

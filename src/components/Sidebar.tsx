@@ -179,9 +179,13 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{doc.title}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {doc.title}
+                    </h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">by {doc.creatorName}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        by {doc.creatorName}
+                      </span>
                       {doc.isPublic && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400">
                           Public
