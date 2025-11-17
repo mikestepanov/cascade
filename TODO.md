@@ -52,10 +52,10 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 | Priority | Feature | Impact | Effort | Status |
 |----------|---------|--------|--------|--------|
 | ✅ P0 | Loading Skeletons & Optimistic UI | High | 1 week | **✅ COMPLETE** |
-| 🔥 P0 | Email Notifications | Critical | 2-3 weeks | Not Started |
+| ✅ P0 | Email Notifications | Critical | 2-3 weeks | **✅ 85% Complete** |
 | 🔥 P0 | Onboarding Flow | High | 2 weeks | Not Started |
 | ✅ P1 | Backend Testing (Phases 1-5) | High | 4 weeks | **✅ COMPLETE** |
-| 🟢 P1 | Quick Wins (see below) | High | 1 week | **🟢 83% Complete (5/6)** |
+| ✅ P1 | Quick Wins (all 6 items) | High | 1 week | **✅ 100% COMPLETE** |
 
 ### **Phase 2: Mobile & AI** (3-6 Months)
 **Goal:** Differentiate, expand market, enable mobile usage
@@ -574,7 +574,7 @@ pnpm run test:all
 
 **Impact:** ⭐⭐⭐⭐ High impact, low effort
 **Effort:** 🟢 Low (1 week total)
-**Status:** 🟢 **83% Complete** (5/6 items done)
+**Status:** ✅ **100% COMPLETE** (6/6 items done)
 
 These are small features that provide outsized value and can be shipped in a few hours each.
 
@@ -669,22 +669,28 @@ These are small features that provide outsized value and can be shipped in a few
 
 ---
 
-#### 5.5 Undo/Redo for Boards
+#### 5.5 Undo/Redo for Boards ✅
 
 **What:** Ctrl+Z to undo drag-and-drop actions
 **Why:** Easy to accidentally drag to wrong column
 **Effort:** 6 hours
+**Status:** ✅ **COMPLETE**
 
-**Checklist:**
-- [ ] Implement action history stack
-- [ ] Track board mutations (status change, reorder)
-- [ ] Ctrl+Z to undo
-- [ ] Ctrl+Shift+Z to redo
-- [ ] Show "Undo" toast notification
-- [ ] Limit history to last 10 actions
+**Completed:**
+- [x] Implement action history stack (max 10 actions) ✅
+- [x] Track board mutations (issueId, oldStatus, newStatus, oldOrder, newOrder) ✅
+- [x] Ctrl+Z (Cmd+Z on Mac) to undo ✅
+- [x] Ctrl+Shift+Z (Cmd+Shift+Z) to redo ✅
+- [x] Toast notifications showing what was undone/redone ✅
+- [x] Undo/Redo buttons in board header ✅
+- [x] Disabled state when nothing to undo/redo ✅
+- [x] Redo stack cleared when making new moves ✅
+- [x] Skip same-column drops ✅
 
-**Files to modify:**
-- `src/components/KanbanBoard.tsx` - Add undo/redo
+**Implementation:**
+- `src/components/KanbanBoard.tsx` - Full undo/redo with keyboard shortcuts and UI buttons
+
+**Completed:** 2025-11-17
 
 ---
 
