@@ -8,7 +8,9 @@
  * @module
  */
 
+import type * as analytics from "../analytics.js";
 import type * as auth from "../auth.js";
+import type * as automationRules from "../automationRules.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as issues from "../issues.js";
@@ -17,6 +19,7 @@ import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
 import type * as router from "../router.js";
 import type * as sprints from "../sprints.js";
+import type * as webhooks from "../webhooks.js";
 
 import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
 
@@ -29,7 +32,9 @@ import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  analytics: typeof analytics;
   auth: typeof auth;
+  automationRules: typeof automationRules;
   documents: typeof documents;
   http: typeof http;
   issues: typeof issues;
@@ -38,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   prosemirror: typeof prosemirror;
   router: typeof router;
   sprints: typeof sprints;
+  webhooks: typeof webhooks;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
