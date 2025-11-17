@@ -38,6 +38,10 @@ const applicationTables = {
         order: v.number(),
       }),
     ),
+    // Agency features
+    defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
+    clientName: v.optional(v.string()), // Client name for agency work
+    budget: v.optional(v.number()), // Project budget in currency
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -170,11 +174,22 @@ const applicationTables = {
     hours: v.number(),
     description: v.optional(v.string()),
     date: v.number(), // Timestamp of when work was done
+    billable: v.boolean(), // For agency billing - is this billable to client?
+    hourlyRate: v.optional(v.number()), // Override project rate if needed
     createdAt: v.number(),
   })
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"])
     .index("by_date", ["date"]),
+
+  activeTimers: defineTable({
+    userId: v.id("users"),
+    issueId: v.id("issues"),
+    startedAt: v.number(),
+    description: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_issue", ["issueId"]),
 
   issueTemplates: defineTable({
     projectId: v.id("projects"),
