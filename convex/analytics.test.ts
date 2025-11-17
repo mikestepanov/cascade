@@ -661,7 +661,7 @@ describe("Analytics", () => {
 
       // Update issue (generates more activity)
       await t.mutation(api.issues.update, {
-        id: issueId,
+        issueId: issueId,
         title: "Updated Issue",
       });
 

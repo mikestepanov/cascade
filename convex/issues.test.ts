@@ -279,7 +279,8 @@ describe("Issues", () => {
 
       await t.mutation(api.issues.updateStatus, {
         issueId,
-        status: "inprogress",
+        newStatus: "inprogress",
+        newOrder: 0,
       });
 
       const issue = await t.query(api.issues.get, { id: issueId });
@@ -316,7 +317,8 @@ describe("Issues", () => {
       await expect(async () => {
         await t.mutation(api.issues.updateStatus, {
           issueId,
-          status: "invalid_status",
+          newStatus: "invalid_status",
+          newOrder: 0,
         });
       }).rejects.toThrow();
     });
@@ -445,7 +447,7 @@ describe("Issues", () => {
 
       await t.mutation(api.issues.bulkUpdateStatus, {
         issueIds: [issue1Id, issue2Id],
-        status: "done",
+        newStatus: "done",
       });
 
       const issue1 = await t.query(api.issues.get, { id: issue1Id });
@@ -545,7 +547,7 @@ describe("Issues", () => {
       await expect(async () => {
         await t.mutation(api.issues.bulkUpdateStatus, {
           issueIds: [issueId],
-          status: "done",
+          newStatus: "done",
         });
       }).rejects.toThrow("Insufficient permissions");
     });
@@ -578,7 +580,6 @@ describe("Issues", () => {
       });
 
       const results = await t.query(api.issues.search, {
-        projectId,
         query: "login",
       });
 

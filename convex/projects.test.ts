@@ -422,8 +422,8 @@ describe("Projects", () => {
 
         await t.mutation(api.projects.updateMemberRole, {
           projectId,
-          userId: memberId,
-          role: "editor",
+          memberId: memberId,
+          newRole: "editor",
         });
 
         // Verify role was updated
@@ -458,7 +458,7 @@ describe("Projects", () => {
 
         await t.mutation(api.projects.removeMember, {
           projectId,
-          userId: memberId,
+          memberId: memberId,
         });
 
         // Verify member was removed
@@ -483,7 +483,7 @@ describe("Projects", () => {
         await expect(async () => {
           await t.mutation(api.projects.removeMember, {
             projectId,
-            userId: creatorId,
+            memberId: creatorId,
           });
         }).rejects.toThrow();
       });

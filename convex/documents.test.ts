@@ -50,7 +50,6 @@ describe("Documents", () => {
       const docId = await t.mutation(api.documents.create, {
         title: "Project Document",
         isPublic: false,
-        projectId,
       });
 
       const doc = await t.query(api.documents.get, { id: docId });
@@ -159,7 +158,6 @@ describe("Documents", () => {
       const docId = await t.mutation(api.documents.create, {
         title: "Project Doc",
         isPublic: false,
-        projectId,
       });
 
       // Access as project member
