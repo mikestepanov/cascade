@@ -1,7 +1,7 @@
 # Cascade - Product Roadmap & TODO
 
 > **Last Updated:** 2025-01-17
-> **Version:** 1.0
+> **Version:** 1.1
 > **Status:** Active Development
 
 This document serves as the comprehensive roadmap for Cascade development, prioritizing features based on user impact, competitive analysis, and technical feasibility.
@@ -26,15 +26,22 @@ This document serves as the comprehensive roadmap for Cascade development, prior
 - ✅ Analytics dashboard with charts
 - ✅ Import/Export (JSON)
 - ✅ Dark/light theme
+- ✅ Frontend testing infrastructure (Vitest + React Testing Library)
+- ✅ `convex-test` package installed (v0.0.38)
+- ✅ Backend testing documentation (convex/README.testing.md)
 
 ### 🔴 Critical Gaps
+- ❌ **Backend testing infrastructure NOT configured** (~2% coverage, only 1/28 modules has tests)
 - ❌ Email notifications (in-app only)
 - ❌ Mobile-responsive design
 - ❌ Document version history
 - ❌ Offline mode
 - ❌ Loading skeletons (just spinners)
-- ❌ Backend testing (frontend only)
 - ❌ SSO/SAML (basic auth only)
+
+### 📦 Backend Modules Status (28 total)
+**With Tests (1):** rbac.ts (partial - only pure functions)
+**No Tests (27):** documents, projects, issues, sprints, analytics, notifications, webhooks, automationRules, customFields, labels, savedFilters, templates, projectTemplates, watchers, timeEntries, users, files, attachments, export, dashboard, auth, presence, prosemirror, http, router, schema
 
 ---
 
@@ -426,147 +433,162 @@ Currently users are dropped into an empty dashboard with no guidance. Research s
 
 ---
 
-### 4. Backend Testing (P1)
+### 4. Backend Testing Infrastructure (P1)
 
 **Impact:** ⭐⭐⭐⭐ Prevents catastrophic bugs
-**Effort:** 🟡 Medium (4 weeks, can run parallel)
-**Status:** ❌ Not Started
+**Effort:** 🟡 Medium (4 weeks, can run parallel with other tasks)
+**Status:** 🟡 **In Progress** (infrastructure exists but not configured)
 
-#### What & Why
-Currently **zero backend tests**. Frontend has tests, but backend mutations/queries are untested. This is a ticking time bomb - backend bugs corrupt data and are hard to rollback.
+#### Current State (As of Investigation)
+- ✅ `convex-test` package installed (v0.0.38)
+- ✅ Comprehensive testing guide at `convex/README.testing.md`
+- ✅ One test file exists: `convex/rbac.test.ts` (66 lines)
+- ⚠️ Only tests pure utility function `hasMinimumRole()` (5 test cases, 23 assertions)
+- ❌ **NO tests for database-dependent functions** (getUserRole, canAccessProject, etc.)
+- ❌ **NO separate vitest config for Convex** (current config uses jsdom for React)
+- ❌ **NO test setup file** (`convex/setup.test.ts` doesn't exist)
+- ❌ **NO test npm script** for running Convex tests separately
+- ❌ **27 out of 28 backend modules completely untested**
+
+**Test Coverage:** ~2% (only hasMinimumRole function)
+
+#### Why Tests Don't Run
+The existing `rbac.test.ts` includes TODO comments (lines 51-64) explaining the blocker:
+- Current vitest config uses `jsdom` environment (for React components)
+- Convex tests need `node` environment with access to Convex test utilities
+- Database-dependent functions can't run without proper test infrastructure
 
 #### Implementation Checklist
 
-**Setup:**
-- [ ] **Install Convex test utilities**
-  - [ ] `pnpm add -D convex-test`
-  - [ ] Create `convex/test-utils.ts` with helpers
-  - [ ] Set up test database (separate from dev)
+**Phase 1: Infrastructure Setup** (Week 1)
+- [ ] **Create separate Convex test config** (`vitest.convex.config.ts`)
+  ```typescript
+  import { defineConfig } from "vitest/config";
 
-- [ ] **Configure test runner**
-  - [ ] Update `package.json` scripts
-  - [ ] `"test:convex": "vitest run --config convex/vitest.config.ts"`
-  - [ ] Create `convex/vitest.config.ts`
-  - [ ] Set up mock authentication
+  export default defineConfig({
+    test: {
+      globals: true,
+      environment: "node", // Key difference from frontend config
+      include: ["convex/**/*.test.ts"],
+      exclude: ["convex/_generated/**"],
+    },
+  });
+  ```
 
-**Test Coverage Plan (80%+ coverage goal):**
+- [ ] **Create test setup file** (`convex/setup.test.ts`)
+  - [ ] Export all backend modules for testing
+  - [ ] Create test helper utilities
+  - [ ] Create mock user factory
+  - [ ] Create mock project factory
+  - [ ] Create authentication helpers
 
-- [ ] **Authentication tests** (`convex/auth.test.ts`)
-  - [ ] Test user signup
-  - [ ] Test user login
-  - [ ] Test session creation
-  - [ ] Test logout
-  - [ ] Test unauthenticated access (should fail)
+- [ ] **Add test scripts to package.json**
+  - [ ] `"test:convex": "vitest --config vitest.convex.config.ts"`
+  - [ ] `"test:convex:ui": "vitest --config vitest.convex.config.ts --ui"`
+  - [ ] `"test:convex:coverage": "vitest --config vitest.convex.config.ts --coverage"`
+  - [ ] Update `"test:all"` to run both frontend and backend tests
+  - [ ] Update `"check"` script to include backend tests
 
-- [ ] **RBAC tests** (`convex/rbac.test.ts`)
-  - [ ] Test role assignment (admin, editor, viewer)
-  - [ ] Test permission checks (`assertMinimumRole`)
-  - [ ] Test viewer can't edit (should throw)
-  - [ ] Test editor can edit
-  - [ ] Test admin can delete
-  - [ ] Test non-member access (should fail)
+- [ ] **Create test utilities** (`convex/test-utils.ts`)
+  - [ ] `createTestUser(t, userData)` - Helper to create test users
+  - [ ] `createTestProject(t, userId, projectData)` - Helper to create test projects
+  - [ ] `authenticateAs(t, userId)` - Helper to set authentication context
+  - [ ] `expectThrowsAsync(fn, errorMessage)` - Helper for testing errors
 
+**Phase 2: Complete RBAC Tests** (Week 1-2) - Use as reference example
+- [ ] **Finish `convex/rbac.test.ts`**
+  - [ ] Test `getUserRole()` with database
+    - [ ] Returns "admin" for project creator
+    - [ ] Returns correct role from projectMembers table
+    - [ ] Returns null for non-members
+    - [ ] Returns null for non-existent project
+  - [ ] Test `canAccessProject()`
+    - [ ] Public projects accessible to all
+    - [ ] Private projects require membership
+    - [ ] Unauthenticated users can't access private projects
+  - [ ] Test `canEditProject()`
+    - [ ] Editors can edit
+    - [ ] Admins can edit
+    - [ ] Viewers cannot edit
+  - [ ] Test `canManageProject()`
+    - [ ] Only admins can manage
+    - [ ] Editors and viewers cannot
+  - [ ] Test `assertMinimumRole()`
+    - [ ] Throws for insufficient permissions
+    - [ ] Throws for unauthenticated users
+    - [ ] Passes for sufficient permissions
+
+**Phase 3: Core Module Tests** (Week 2-3) - Critical path first
 - [ ] **Projects tests** (`convex/projects.test.ts`)
-  - [ ] Test project creation
-  - [ ] Test project update
-  - [ ] Test project deletion (owner only)
-  - [ ] Test add member
-  - [ ] Test remove member
-  - [ ] Test update member role
-  - [ ] Test project key uniqueness
-  - [ ] Test public vs private projects
+  - [ ] Project CRUD operations (create, read, update, delete)
+  - [ ] Member management (add, remove, update role)
+  - [ ] Project key uniqueness validation
+  - [ ] Public vs private access control
+  - [ ] Creator gets admin role automatically
+  - [ ] Non-admin cannot delete project
 
 - [ ] **Issues tests** (`convex/issues.test.ts`)
-  - [ ] Test issue creation
-  - [ ] Test issue update
-  - [ ] Test issue deletion
-  - [ ] Test issue assignment
-  - [ ] Test status transitions
-  - [ ] Test issue linking (blocks, relates)
-  - [ ] Test epic hierarchy
-  - [ ] Test activity logging
+  - [ ] Issue CRUD operations
+  - [ ] Issue assignment and reassignment
+  - [ ] Status transitions
+  - [ ] Activity logging (verify all changes are logged)
+  - [ ] Issue linking (blocks, relates, duplicates)
+  - [ ] Epic hierarchy
+  - [ ] Permission checks (can't edit issues in projects you're not a member of)
 
 - [ ] **Documents tests** (`convex/documents.test.ts`)
-  - [ ] Test document creation
-  - [ ] Test document update
-  - [ ] Test document deletion
-  - [ ] Test document-project linking
-  - [ ] Test public/private access
+  - [ ] Document CRUD operations
+  - [ ] Document-project linking
+  - [ ] Public/private access control
+  - [ ] Creator-only deletion
+  - [ ] Search functionality
 
+- [ ] **Authentication tests** (`convex/auth.test.ts`)
+  - [ ] User creation
+  - [ ] Session management
+  - [ ] Unauthenticated access prevention
+  - [ ] User deletion
+
+**Phase 4: Extended Features Tests** (Week 3-4)
 - [ ] **Sprints tests** (`convex/sprints.test.ts`)
-  - [ ] Test sprint creation
-  - [ ] Test sprint start/end
-  - [ ] Test issue assignment to sprint
-  - [ ] Test sprint completion
-  - [ ] Test velocity calculation
-
-- [ ] **Automation tests** (`convex/automationRules.test.ts`)
-  - [ ] Test rule creation
-  - [ ] Test rule execution
-  - [ ] Test trigger conditions
-  - [ ] Test actions (set assignee, priority, etc.)
-  - [ ] Test execution tracking
-
-- [ ] **Webhooks tests** (`convex/webhooks.test.ts`)
-  - [ ] Test webhook creation
-  - [ ] Test webhook trigger
-  - [ ] Test event filtering
-  - [ ] Test signature generation
-  - [ ] Test active/inactive toggle
-
-- [ ] **Notifications tests** (`convex/notifications.test.ts`)
-  - [ ] Test mention detection
-  - [ ] Test notification creation
-  - [ ] Test notification read/unread
-  - [ ] Test notification preferences
-
 - [ ] **Analytics tests** (`convex/analytics.test.ts`)
-  - [ ] Test issue distribution calculations
-  - [ ] Test velocity calculation
-  - [ ] Test burndown chart data
-  - [ ] Test team performance metrics
+- [ ] **Notifications tests** (`convex/notifications.test.ts`)
+- [ ] **Automation tests** (`convex/automationRules.test.ts`)
+- [ ] **Webhooks tests** (`convex/webhooks.test.ts`)
 
-**Integration Tests:**
-- [ ] **Complex workflows** (`convex/workflows.test.ts`)
-  - [ ] Test full issue lifecycle (create → assign → comment → complete)
-  - [ ] Test sprint workflow (create sprint → add issues → start → complete)
-  - [ ] Test automation workflow (create rule → trigger → verify action)
-  - [ ] Test bulk operations (update 100 issues at once)
-
-**Performance Tests:**
-- [ ] **Load tests** (`convex/performance.test.ts`)
-  - [ ] Test 1000 issues in project (should load in <1s)
-  - [ ] Test 100 concurrent users
-  - [ ] Test large document (10MB of content)
-  - [ ] Test N+1 query patterns (should be batched)
-
-**CI/CD Integration:**
-- [ ] **GitHub Actions workflow** (`.github/workflows/test.yml`)
-  - [ ] Run tests on every PR
-  - [ ] Run tests on push to main
-  - [ ] Block merge if tests fail
-  - [ ] Report coverage to CodeCov
-
-- [ ] **Pre-commit hook** (Husky)
-  - [ ] Run tests before commit
-  - [ ] Run linter before commit
-  - [ ] Block commit if tests fail
+**Phase 5: CI/CD Integration** (Week 4)
+- [ ] **Update existing CI workflow** (`.github/workflows/test.yml` if exists)
+  - [ ] Run backend tests in CI
+  - [ ] Fail build if tests fail
+  - [ ] Generate coverage reports
+  - [ ] Parallel test execution (frontend + backend)
 
 #### Files to Create
-- `convex/test-utils.ts` - Test helpers
-- `convex/vitest.config.ts` - Test configuration
-- `convex/*.test.ts` - Test files (one per module)
-- `.github/workflows/test.yml` - CI workflow
+- `vitest.convex.config.ts` - Convex test configuration
+- `convex/setup.test.ts` - Module exports for testing
+- `convex/test-utils.ts` - Test helper utilities
+- `convex/projects.test.ts` - Projects module tests
+- `convex/issues.test.ts` - Issues module tests
+- `convex/documents.test.ts` - Documents module tests
+- `convex/auth.test.ts` - Authentication tests
+- `convex/sprints.test.ts` - Sprints module tests
+- `convex/analytics.test.ts` - Analytics module tests
+- `convex/notifications.test.ts` - Notifications module tests
+- `convex/automationRules.test.ts` - Automation tests
+- `convex/webhooks.test.ts` - Webhooks module tests
 
-#### Dependencies
-- `convex-test` - Convex testing utilities
-- `vitest` - Already installed for frontend
+#### Files to Modify
+- `package.json` - Add Convex test scripts
+- `convex/rbac.test.ts` - Complete existing tests (remove TODO section)
+- `.github/workflows/test.yml` - Add backend tests to CI (if workflow exists)
 
 #### Success Metrics
-- Backend code coverage > 80%
-- All mutations have tests
-- All queries have tests
-- Zero data corruption bugs in production
+- ✅ Backend code coverage > 80%
+- ✅ All 28 backend modules have at least basic tests
+- ✅ All critical mutations (create, update, delete) have tests
+- ✅ All permission checks have tests
+- ✅ Tests run in CI/CD pipeline
+- ✅ Zero data corruption bugs in production after deployment
 
 ---
 
