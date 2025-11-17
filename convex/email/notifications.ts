@@ -7,7 +7,6 @@
 import { render } from "@react-email/render";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
-import type { Id } from "../_generated/dataModel";
 import { internalAction } from "../_generated/server";
 import { sendEmail } from "./index";
 
@@ -311,7 +310,7 @@ export const sendDigestEmail = internalAction({
     const { DigestEmail } = await import("../../emails/DigestEmail");
 
     // Format notifications into digest items
-    const items = notifications.map((n: any) => ({
+    const items = notifications.map((n) => ({
       type: n.type,
       issueKey: n.issueKey || "Unknown",
       issueTitle: n.title,
@@ -338,7 +337,7 @@ export const sendDigestEmail = internalAction({
       to: user.email,
       subject: `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`,
       html,
-      text: `Your ${frequency} digest:\n\n${items.map((i: any) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
+      text: `Your ${frequency} digest:\n\n${items.map((i) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
     return result;

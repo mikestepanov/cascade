@@ -333,14 +333,12 @@ export const getProjectBilling = query({
     const issueIds = issues.map((i) => i._id);
 
     // Get all time entries for these issues
-    let allEntries: any[] = [];
-    for (const issueId of issueIds) {
-      const entries = await ctx.db
-        .query("timeEntries")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-      allEntries.push(...entries);
-    }
+    const allEntriesArrays = await Promise.all(
+      issueIds.map((issueId) =>
+        ctx.db.query("timeEntries").withIndex("by_issue", (q) => q.eq("issueId", issueId)).collect(),
+      ),
+    );
+    let allEntries = allEntriesArrays.flat();
 
     // Filter by date range if provided
     if (args.startDate || args.endDate) {
@@ -432,7 +430,7 @@ export const getCurrentWeekTimesheet = query({
     );
 
     // Group by day
-    const byDay: Record<string, any[]> = {};
+    const byDay: Record<string, typeof enriched> = {};
     for (const entry of enriched) {
       const date = new Date(entry.date);
       const dayKey = date.toISOString().split("T")[0];
