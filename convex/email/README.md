@@ -39,21 +39,33 @@ Already installed:
 - `@react-email/components` - Email UI components
 - `@react-email/render` - Render React to HTML
 
-### 2. Configure Environment Variables
+### 2. Choose an Email Provider
 
-Add to your Convex environment variables (Dashboard → Settings → Environment Variables):
-
+**Option A: Resend (Default)**
+1. Sign up at [https://resend.com](https://resend.com)
+2. Get your API key from Dashboard → API Keys
+3. Set environment variables:
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxx
-RESEND_FROM_EMAIL=Cascade <notifications@yourdomain.com>  # Optional
-APP_URL=https://yourdomain.com  # For email links
+RESEND_FROM_EMAIL=Cascade <notifications@yourdomain.com>
+APP_URL=https://yourdomain.com
 ```
 
-**Getting a Resend API key:**
-1. Sign up at [https://resend.com](https://resend.com)
-2. Verify your domain (or use resend.dev for testing)
-3. Generate an API key
-4. Free tier: 3,000 emails/month
+**Option B: SendPulse**
+1. Sign up at [https://sendpulse.com](https://sendpulse.com)
+2. Get API credentials from Settings → API
+3. Set environment variables:
+```bash
+EMAIL_PROVIDER=sendpulse
+SENDPULSE_ID=your_id
+SENDPULSE_SECRET=your_secret
+SENDPULSE_FROM_EMAIL=Cascade <notifications@yourdomain.com>
+APP_URL=https://yourdomain.com
+```
+
+**Option C: Use different providers in different environments**
+- Set different env vars in development vs production Convex environments
+- Provider switches automatically based on `EMAIL_PROVIDER`
 
 ### 3. Deploy Schema Changes
 

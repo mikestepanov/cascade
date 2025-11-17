@@ -12,13 +12,13 @@ import { SendPulseProvider } from "./sendpulse";
 // ============================================================
 // SWITCH PROVIDER HERE
 // ============================================================
-// Environment-based switching (recommended for dev/prod):
+// Environment-based switching (change via EMAIL_PROVIDER env var):
 const provider: EmailProvider =
   process.env.EMAIL_PROVIDER === "sendpulse"
     ? new SendPulseProvider()
-    : new ResendProvider(); // Default to Resend
+    : new ResendProvider(); // Default
 
-// Manual switching (if you prefer one provider everywhere):
+// Or manually set one provider for all environments:
 // const provider: EmailProvider = new ResendProvider();
 // const provider: EmailProvider = new SendPulseProvider();
 // ============================================================
