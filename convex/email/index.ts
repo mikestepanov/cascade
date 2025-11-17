@@ -7,22 +7,20 @@
 
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 import { ResendProvider } from "./resend";
-// import { SendPulseProvider } from "./sendpulse";
+import { SendPulseProvider } from "./sendpulse";
 
 // ============================================================
 // SWITCH PROVIDER HERE
 // ============================================================
-// Change this line to switch between providers:
-const provider: EmailProvider = new ResendProvider();
+// Environment-based switching (recommended for dev/prod):
+const provider: EmailProvider =
+  process.env.EMAIL_PROVIDER === "sendpulse"
+    ? new SendPulseProvider()
+    : new ResendProvider(); // Default to Resend
 
-// For SendPulse (when implemented):
+// Manual switching (if you prefer one provider everywhere):
+// const provider: EmailProvider = new ResendProvider();
 // const provider: EmailProvider = new SendPulseProvider();
-
-// For environment-based switching:
-// const provider: EmailProvider =
-//   process.env.EMAIL_PROVIDER === "sendpulse"
-//     ? new SendPulseProvider()
-//     : new ResendProvider();
 // ============================================================
 
 /**
