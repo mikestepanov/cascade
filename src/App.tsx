@@ -13,7 +13,9 @@ import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { OnboardingChecklist } from "./components/Onboarding/Checklist";
+import { OnboardingTour } from "./components/Onboarding/OnboardingTour";
 import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
+import { WelcomeModal } from "./components/Onboarding/WelcomeModal";
 import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ProjectSidebar } from "./components/ProjectSidebar";
@@ -24,6 +26,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
 import { ModalBackdrop } from "./components/ui/ModalBackdrop";
+import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { type KeySequence, useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
@@ -31,10 +34,14 @@ import { SignOutButton } from "./SignOutButton";
 export default function App() {
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
-        <Toaster />
-        <Content />
-      </div>
+      <OnboardingProvider>
+        <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+          <Toaster />
+          <Content />
+          <WelcomeModal />
+          <OnboardingTour />
+        </div>
+      </OnboardingProvider>
     </ErrorBoundary>
   );
 }
