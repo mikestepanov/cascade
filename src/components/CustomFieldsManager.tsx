@@ -5,6 +5,9 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
+import { Checkbox } from "./ui/form/Checkbox";
+import { Input } from "./ui/form/Input";
+import { Textarea } from "./ui/form/Textarea";
 import { InputField } from "./ui/FormField";
 import { SkeletonList } from "./ui/Skeleton";
 
@@ -197,48 +200,28 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             </div>
 
             {(fieldType === "select" || fieldType === "multiselect") && (
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Options (comma-separated)
-                </div>
-                <input
-                  type="text"
-                  value={options}
-                  onChange={(e) => setOptions(e.target.value)}
-                  placeholder="Option 1, Option 2, Option 3"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
-                />
-              </div>
+              <Input
+                label="Options (comma-separated)"
+                type="text"
+                value={options}
+                onChange={(e) => setOptions(e.target.value)}
+                placeholder="Option 1, Option 2, Option 3"
+              />
             )}
 
-            <div>
-              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Description
-              </div>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={2}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
-                placeholder="Optional description..."
-              />
-            </div>
+            <Textarea
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+              placeholder="Optional description..."
+            />
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isRequired"
-                checked={isRequired}
-                onChange={(e) => setIsRequired(e.target.checked)}
-                className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-              <label
-                htmlFor="isRequired"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Required field
-              </label>
-            </div>
+            <Checkbox
+              label="Required field"
+              checked={isRequired}
+              onChange={(e) => setIsRequired(e.target.checked)}
+            />
 
             <div className="flex gap-3">
               <Button onClick={handleSave}>{editingId ? "Update Field" : "Create Field"}</Button>

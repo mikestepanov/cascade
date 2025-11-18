@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 export interface Command {
@@ -113,14 +114,14 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                   />
                 </svg>
               </div>
-              <input
+              <Input
                 ref={inputRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a command or search..."
-                className="w-full pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
+                className="pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
               />
             </div>
           </div>
