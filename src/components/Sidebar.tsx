@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { EmptyState } from "./ui/EmptyState";
 import { SkeletonList } from "./ui/Skeleton";
+import { Input, Checkbox } from "./ui/form";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
@@ -65,12 +66,11 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
         {/* Search */}
         <div className="mb-4">
-          <input
+          <Input
             type="text"
             placeholder="Search documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             aria-label="Search documents"
           />
         </div>
@@ -90,26 +90,18 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <form onSubmit={(e) => void handleCreateDocument(e)} className="space-y-3">
-            <input
+            <Input
               type="text"
               placeholder="Document title..."
               value={newDocTitle}
               onChange={(e) => setNewDocTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               aria-label="Document title"
             />
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="isPublic"
-                checked={newDocIsPublic}
-                onChange={(e) => setNewDocIsPublic(e.target.checked)}
-                className="rounded"
-              />
-              <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
-                Make public
-              </label>
-            </div>
+            <Checkbox
+              label="Make public"
+              checked={newDocIsPublic}
+              onChange={(e) => setNewDocIsPublic(e.target.checked)}
+            />
             <div className="flex space-x-2">
               <button
                 type="submit"

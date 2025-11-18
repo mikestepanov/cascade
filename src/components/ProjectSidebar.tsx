@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Input, Select, Textarea, Checkbox } from "./ui/form";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
@@ -67,48 +68,37 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <form onSubmit={(e) => void handleCreateProject(e)} className="space-y-3">
-            <input
+            <Input
               type="text"
               placeholder="Project name..."
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             />
-            <input
+            <Input
               type="text"
               placeholder="Project key (e.g., PROJ)"
               value={newProjectKey}
               onChange={(e) => setNewProjectKey(e.target.value.toUpperCase())}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               maxLength={10}
             />
-            <textarea
+            <Textarea
               placeholder="Description (optional)..."
               value={newProjectDescription}
               onChange={(e) => setNewProjectDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none"
               rows={2}
             />
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="isPublic"
-                checked={newProjectIsPublic}
-                onChange={(e) => setNewProjectIsPublic(e.target.checked)}
-                className="rounded"
-              />
-              <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
-                Make public
-              </label>
-            </div>
-            <select
+            <Checkbox
+              label="Make public"
+              checked={newProjectIsPublic}
+              onChange={(e) => setNewProjectIsPublic(e.target.checked)}
+            />
+            <Select
               value={newProjectBoardType}
               onChange={(e) => setNewProjectBoardType(e.target.value as "kanban" | "scrum")}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
             >
               <option value="kanban">Kanban Board</option>
               <option value="scrum">Scrum Board</option>
-            </select>
+            </Select>
             <div className="flex space-x-2">
               <button
                 type="submit"
