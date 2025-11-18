@@ -63,18 +63,14 @@ describe("CreateIssueModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useMutation as vi.Mock).mockReturnValue(mockCreateIssue);
-    (useQuery as vi.Mock).mockImplementation((apiFunction: any) => {
-      if (apiFunction.toString().includes("projects.get")) {
-        return mockProject;
-      }
-      if (apiFunction.toString().includes("templates.list")) {
-        return mockTemplates;
-      }
-      if (apiFunction.toString().includes("labels.list")) {
-        return mockLabels;
-      }
-      return undefined;
-    });
+    // Mock useQuery to return values in order:
+    // 1st call: api.projects.get -> mockProject
+    // 2nd call: api.templates.list -> mockTemplates
+    // 3rd call: api.labels.list -> mockLabels
+    (useQuery as vi.Mock)
+      .mockReturnValueOnce(mockProject)
+      .mockReturnValueOnce(mockTemplates)
+      .mockReturnValueOnce(mockLabels);
   });
 
   it("should render story points input field", () => {
@@ -100,6 +96,14 @@ describe("CreateIssueModal", () => {
   it("should create issue with story points", async () => {
     const user = userEvent.setup();
     mockCreateIssue.mockResolvedValue("new-issue-id");
+
+    // Use mockImplementation to handle re-renders from user interactions
+    let callCount = 0;
+    (useQuery as vi.Mock).mockImplementation(() => {
+      callCount++;
+      const callIndex = (callCount - 1) % 3; // Cycle through 3 queries
+      return [mockProject, mockTemplates, mockLabels][callIndex];
+    });
 
     render(<CreateIssueModal projectId={mockProjectId} onClose={mockOnClose} />);
 
