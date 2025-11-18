@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState<"integrations" | "offline" | "preferences">(
+  const [activeTab, setActiveTab] = useState<"integrations" | "apikeys" | "offline" | "preferences">(
     "integrations",
   );
 
@@ -36,6 +37,20 @@ export function Settings() {
               `}
             >
               Integrations
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("apikeys")}
+              className={`
+                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                ${
+                  activeTab === "apikeys"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                }
+              `}
+            >
+              API Keys
             </button>
             <button
               type="button"
@@ -71,6 +86,7 @@ export function Settings() {
         {/* Tab Content */}
         <div>
           {activeTab === "integrations" && <IntegrationsTab />}
+          {activeTab === "apikeys" && <ApiKeysManager />}
           {activeTab === "offline" && <OfflineTab />}
           {activeTab === "preferences" && <PreferencesTab />}
         </div>
