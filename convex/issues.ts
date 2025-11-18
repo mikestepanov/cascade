@@ -321,6 +321,28 @@ export const get = query({
   },
 });
 
+/**
+ * Get issue by key (e.g., "PROJ-123")
+ * Used by REST API for looking up issues by their human-readable key
+ */
+export const getByKey = query({
+  args: { key: v.string() },
+  handler: async (ctx, args) => {
+    // Find issue by key
+    const issues = await ctx.db.query("issues").collect();
+    const issue = issues.find(i => i.key === args.key);
+
+    if (!issue) {
+      return null;
+    }
+
+    // Use the existing get query to return full issue data
+    return ctx.db.query("issues")
+      .filter(q => q.eq(q.field("_id"), issue._id))
+      .first();
+  },
+});
+
 export const listSubtasks = query({
   args: { parentId: v.id("issues") },
   handler: async (ctx, args) => {

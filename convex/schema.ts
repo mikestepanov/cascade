@@ -790,6 +790,55 @@ const applicationTables = {
     .index("by_operation", ["operation"])
     .index("by_created_at", ["createdAt"])
     .index("by_user_created", ["userId", "createdAt"]),
+
+  // REST API Keys (for CLI and external integrations)
+  apiKeys: defineTable({
+    userId: v.id("users"),
+    name: v.string(), // User-friendly name: "My CLI Tool", "GitHub Actions", etc.
+    keyHash: v.string(), // SHA-256 hash of the API key
+    keyPrefix: v.string(), // First 8 chars for display: "sk_casc_AbCdEfGh..."
+    // Permissions & Scopes
+    scopes: v.array(v.string()), // e.g., ["issues:read", "issues:write", "projects:read"]
+    // Optional project restriction
+    projectId: v.optional(v.id("projects")), // If set, key only works for this project
+    // Rate limiting
+    rateLimit: v.number(), // Requests per minute (default: 100)
+    // Status
+    isActive: v.boolean(),
+    lastUsedAt: v.optional(v.number()),
+    usageCount: v.number(), // Total API calls made with this key
+    // Expiration
+    expiresAt: v.optional(v.number()), // Optional expiration timestamp
+    // Metadata
+    createdAt: v.number(),
+    revokedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_key_hash", ["keyHash"])
+    .index("by_active", ["isActive"])
+    .index("by_user_active", ["userId", "isActive"]),
+
+  // API usage logs (for monitoring and rate limiting)
+  apiUsageLogs: defineTable({
+    apiKeyId: v.id("apiKeys"),
+    userId: v.id("users"),
+    // Request details
+    method: v.string(), // GET, POST, PATCH, DELETE
+    endpoint: v.string(), // e.g., "/api/issues"
+    statusCode: v.number(), // HTTP status code
+    responseTime: v.number(), // Milliseconds
+    // Request metadata
+    userAgent: v.optional(v.string()),
+    ipAddress: v.optional(v.string()),
+    // Errors
+    error: v.optional(v.string()),
+    // Timestamp
+    createdAt: v.number(),
+  })
+    .index("by_api_key", ["apiKeyId"])
+    .index("by_user", ["userId"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_api_key_created", ["apiKeyId", "createdAt"]),
 };
 
 export default defineSchema({
