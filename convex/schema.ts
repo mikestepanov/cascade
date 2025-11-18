@@ -839,6 +839,32 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_created_at", ["createdAt"])
     .index("by_api_key_created", ["apiKeyId", "createdAt"]),
+
+  // Pumble Integration (Team Chat)
+  pumbleWebhooks: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Optional: link to specific project
+    name: v.string(), // User-friendly name: "Team Notifications", "Bug Reports Channel"
+    webhookUrl: v.string(), // Pumble incoming webhook URL
+    // Event subscriptions
+    events: v.array(v.string()), // e.g., ["issue.created", "issue.updated", "issue.assigned"]
+    // Settings
+    isActive: v.boolean(),
+    sendMentions: v.boolean(), // Send when user is @mentioned
+    sendAssignments: v.boolean(), // Send when assigned to issue
+    sendStatusChanges: v.boolean(), // Send when issue status changes
+    // Stats
+    messagesSent: v.number(),
+    lastMessageAt: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"])
+    .index("by_user_active", ["userId", "isActive"]),
 };
 
 export default defineSchema({

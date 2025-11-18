@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
+import { PumbleIntegration } from "./Settings/PumbleIntegration";
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
 
@@ -100,6 +101,7 @@ function IntegrationsTab() {
     <div className="space-y-6">
       <GitHubIntegration />
       <GoogleCalendarIntegration />
+      <PumbleIntegration />
     </div>
   );
 }
