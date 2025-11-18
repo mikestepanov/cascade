@@ -135,7 +135,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Type"
             value={type}
-            onChange={(e) => setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")}
+            onChange={(e) =>
+              setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")
+            }
           >
             <option value="task">📋 Task</option>
             <option value="bug">🐛 Bug</option>

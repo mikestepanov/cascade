@@ -18,7 +18,13 @@ interface ImportExportModalProps {
 type Mode = "export" | "import";
 type ExportFormat = "csv" | "json";
 
-export function ImportExportModal({ isOpen, onClose, projectId, sprintId, status }: ImportExportModalProps) {
+export function ImportExportModal({
+  isOpen,
+  onClose,
+  projectId,
+  sprintId,
+  status,
+}: ImportExportModalProps) {
   const [mode, setMode] = useState<Mode>("export");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [importFormat, setImportFormat] = useState<ExportFormat>("csv");

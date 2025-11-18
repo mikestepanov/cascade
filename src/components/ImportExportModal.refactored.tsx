@@ -24,7 +24,13 @@ type Mode = "export" | "import";
  * - Each panel testable in isolation
  * - Clearer separation of concerns
  */
-export function ImportExportModal({ isOpen, onClose, projectId, sprintId, status }: ImportExportModalProps) {
+export function ImportExportModal({
+  isOpen,
+  onClose,
+  projectId,
+  sprintId,
+  status,
+}: ImportExportModalProps) {
   const [mode, setMode] = useState<Mode>("export");
 
   const handleImportComplete = () => {

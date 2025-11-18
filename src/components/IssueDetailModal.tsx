@@ -111,11 +111,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
   };
 
   // Calculate sub-task progress
-  const completedSubtasks = subtasks?.filter((st) => {
-    const project = issue.projectId;
-    // Assuming done states have category "done" - you may need to fetch this
-    return st.status === "done" || st.status === "completed";
-  }).length || 0;
+  const completedSubtasks =
+    subtasks?.filter((st) => {
+      const project = issue.projectId;
+      // Assuming done states have category "done" - you may need to fetch this
+      return st.status === "done" || st.status === "completed";
+    }).length || 0;
   const totalSubtasks = subtasks?.length || 0;
 
   return (
@@ -391,9 +392,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-gray-500">
-                              {subtask.key}
-                            </span>
+                            <span className="text-xs font-mono text-gray-500">{subtask.key}</span>
                             <span className="text-sm text-gray-900">{subtask.title}</span>
                           </div>
                           {subtask.assignee && (

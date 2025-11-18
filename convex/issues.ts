@@ -8,7 +8,13 @@ export const create = mutation({
     projectId: v.id("projects"),
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"), v.literal("subtask")),
+    type: v.union(
+      v.literal("task"),
+      v.literal("bug"),
+      v.literal("story"),
+      v.literal("epic"),
+      v.literal("subtask"),
+    ),
     priority: v.union(
       v.literal("lowest"),
       v.literal("low"),
@@ -49,7 +55,9 @@ export const create = mutation({
 
       // Prevent sub-tasks of sub-tasks (only 1 level deep)
       if (parentIssue.parentId) {
-        throw new Error("Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+        throw new Error(
+          "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.",
+        );
       }
 
       // Prevent epics from being parents (optional - remove if you want epics to have sub-tasks)

@@ -67,7 +67,13 @@ const applicationTables = {
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"), v.literal("subtask")),
+    type: v.union(
+      v.literal("task"),
+      v.literal("bug"),
+      v.literal("story"),
+      v.literal("epic"),
+      v.literal("subtask"),
+    ),
     status: v.string(), // References workflow state id
     priority: v.union(
       v.literal("lowest"),

@@ -22,7 +22,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
-import { useKeyboardShortcuts, useKeyboardShortcutsWithSequences, type KeySequence } from "./hooks/useKeyboardShortcuts";
+import { type KeySequence, useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
 

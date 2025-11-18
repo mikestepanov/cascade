@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 export interface KeyboardShortcut {
   key: string;
@@ -32,9 +32,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[], enabled = tr
       // Skip if typing in input/textarea/contenteditable (unless shortcut is global)
       const target = e.target as HTMLElement;
       const isTyping =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable;
+        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
 
       for (const shortcut of shortcuts) {
         // Skip non-global shortcuts when typing
@@ -81,9 +79,7 @@ export function useKeyboardShortcutsWithSequences(
       // Skip if typing in input/textarea/contenteditable
       const target = e.target as HTMLElement;
       const isTyping =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable;
+        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
 
       const key = e.key.toLowerCase();
       const now = Date.now();
@@ -91,9 +87,7 @@ export function useKeyboardShortcutsWithSequences(
       // Check for sequences (like g+h)
       if (lastKeyPressed && now - lastKeyTime < SEQUENCE_TIMEOUT) {
         const sequenceKey = `${lastKeyPressed}+${key}`;
-        const sequence = sequences.find(
-          (s) => s.keys.join("+") === sequenceKey,
-        );
+        const sequence = sequences.find((s) => s.keys.join("+") === sequenceKey);
 
         if (sequence) {
           if (sequence.preventDefault !== false) {
