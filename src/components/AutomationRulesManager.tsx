@@ -7,6 +7,7 @@ import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
+import { Input, Select, Textarea } from "./ui/form";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;
@@ -280,103 +281,69 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
               <div className="space-y-4">
                 {/* Name */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Rule Name *
-                  </div>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                    placeholder="Auto-assign high priority bugs"
-                  />
-                </div>
+                <Input
+                  label="Rule Name *"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Auto-assign high priority bugs"
+                />
 
                 {/* Description */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Description
-                  </div>
-                  <input
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                    placeholder="Optional description"
-                  />
-                </div>
+                <Input
+                  label="Description"
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Optional description"
+                />
 
                 {/* Trigger */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    When (Trigger) *
-                  </div>
-                  <select
-                    value={trigger}
-                    onChange={(e) => setTrigger(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  >
-                    <option value="status_changed">Status Changed</option>
-                    <option value="assignee_changed">Assignee Changed</option>
-                    <option value="priority_changed">Priority Changed</option>
-                    <option value="issue_created">Issue Created</option>
-                    <option value="label_added">Label Added</option>
-                  </select>
-                </div>
+                <Select
+                  label="When (Trigger) *"
+                  value={trigger}
+                  onChange={(e) => setTrigger(e.target.value)}
+                >
+                  <option value="status_changed">Status Changed</option>
+                  <option value="assignee_changed">Assignee Changed</option>
+                  <option value="priority_changed">Priority Changed</option>
+                  <option value="issue_created">Issue Created</option>
+                  <option value="label_added">Label Added</option>
+                </Select>
 
                 {/* Trigger Value */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Trigger Value (Optional)
-                  </div>
-                  <input
-                    type="text"
-                    value={triggerValue}
-                    onChange={(e) => setTriggerValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                    placeholder="e.g., 'done' for specific status"
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Leave empty to trigger on any value change
-                  </p>
-                </div>
+                <Input
+                  label="Trigger Value (Optional)"
+                  type="text"
+                  value={triggerValue}
+                  onChange={(e) => setTriggerValue(e.target.value)}
+                  placeholder="e.g., 'done' for specific status"
+                  helperText="Leave empty to trigger on any value change"
+                />
 
                 {/* Action Type */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Then (Action) *
-                  </div>
-                  <select
-                    value={actionType}
-                    onChange={(e) => setActionType(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  >
-                    <option value="set_assignee">Set Assignee</option>
-                    <option value="set_priority">Set Priority</option>
-                    <option value="add_label">Add Label</option>
-                    <option value="add_comment">Add Comment</option>
-                    <option value="send_notification">Send Notification</option>
-                  </select>
-                </div>
+                <Select
+                  label="Then (Action) *"
+                  value={actionType}
+                  onChange={(e) => setActionType(e.target.value)}
+                >
+                  <option value="set_assignee">Set Assignee</option>
+                  <option value="set_priority">Set Priority</option>
+                  <option value="add_label">Add Label</option>
+                  <option value="add_comment">Add Comment</option>
+                  <option value="send_notification">Send Notification</option>
+                </Select>
 
                 {/* Action Value */}
-                <div>
-                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Action Parameters (JSON) *
-                  </div>
-                  <textarea
-                    value={actionValue}
-                    onChange={(e) => setActionValue(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm dark:bg-gray-700 dark:text-gray-100"
-                    placeholder='{"label": "auto-resolved"}'
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Examples:{" "}
-                    {`{"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
-                  </p>
-                </div>
+                <Textarea
+                  label="Action Parameters (JSON) *"
+                  value={actionValue}
+                  onChange={(e) => setActionValue(e.target.value)}
+                  rows={3}
+                  className="font-mono text-sm"
+                  placeholder='{"label": "auto-resolved"}'
+                  helperText={`Examples: {"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
+                />
               </div>
 
               {/* Actions */}
