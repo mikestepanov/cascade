@@ -6,6 +6,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;
@@ -259,128 +260,141 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
       {/* Create/Edit Dialog */}
       {showCreateDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              {editingRule ? "Edit Automation Rule" : "Create Automation Rule"}
-            </h3>
+        <>
+          <ModalBackdrop
+            onClick={() => {
+              setShowCreateDialog(false);
+              resetForm();
+            }}
+            zIndex="z-50"
+            animated={false}
+          />
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                {editingRule ? "Edit Automation Rule" : "Create Automation Rule"}
+              </h3>
 
-            <div className="space-y-4">
-              {/* Name */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Rule Name *
+              <div className="space-y-4">
+                {/* Name */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Rule Name *
+                  </div>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+                    placeholder="Auto-assign high priority bugs"
+                  />
                 </div>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="Auto-assign high priority bugs"
-                />
+
+                {/* Description */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Description
+                  </div>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+                    placeholder="Optional description"
+                  />
+                </div>
+
+                {/* Trigger */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    When (Trigger) *
+                  </div>
+                  <select
+                    value={trigger}
+                    onChange={(e) => setTrigger(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+                  >
+                    <option value="status_changed">Status Changed</option>
+                    <option value="assignee_changed">Assignee Changed</option>
+                    <option value="priority_changed">Priority Changed</option>
+                    <option value="issue_created">Issue Created</option>
+                    <option value="label_added">Label Added</option>
+                  </select>
+                </div>
+
+                {/* Trigger Value */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Trigger Value (Optional)
+                  </div>
+                  <input
+                    type="text"
+                    value={triggerValue}
+                    onChange={(e) => setTriggerValue(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+                    placeholder="e.g., 'done' for specific status"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Leave empty to trigger on any value change
+                  </p>
+                </div>
+
+                {/* Action Type */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Then (Action) *
+                  </div>
+                  <select
+                    value={actionType}
+                    onChange={(e) => setActionType(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+                  >
+                    <option value="set_assignee">Set Assignee</option>
+                    <option value="set_priority">Set Priority</option>
+                    <option value="add_label">Add Label</option>
+                    <option value="add_comment">Add Comment</option>
+                    <option value="send_notification">Send Notification</option>
+                  </select>
+                </div>
+
+                {/* Action Value */}
+                <div>
+                  <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Action Parameters (JSON) *
+                  </div>
+                  <textarea
+                    value={actionValue}
+                    onChange={(e) => setActionValue(e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm dark:bg-gray-700 dark:text-gray-100"
+                    placeholder='{"label": "auto-resolved"}'
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Examples:{" "}
+                    {`{"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
+                  </p>
+                </div>
               </div>
 
-              {/* Description */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Description
-                </div>
-                <input
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="Optional description"
-                />
-              </div>
-
-              {/* Trigger */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  When (Trigger) *
-                </div>
-                <select
-                  value={trigger}
-                  onChange={(e) => setTrigger(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6">
+                <Button
+                  onClick={() => {
+                    setShowCreateDialog(false);
+                    resetForm();
+                  }}
+                  variant="secondary"
                 >
-                  <option value="status_changed">Status Changed</option>
-                  <option value="assignee_changed">Assignee Changed</option>
-                  <option value="priority_changed">Priority Changed</option>
-                  <option value="issue_created">Issue Created</option>
-                  <option value="label_added">Label Added</option>
-                </select>
+                  Cancel
+                </Button>
+                <Button onClick={handleSave}>{editingRule ? "Update" : "Create"} Rule</Button>
               </div>
-
-              {/* Trigger Value */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Trigger Value (Optional)
-                </div>
-                <input
-                  type="text"
-                  value={triggerValue}
-                  onChange={(e) => setTriggerValue(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="e.g., 'done' for specific status"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Leave empty to trigger on any value change
-                </p>
-              </div>
-
-              {/* Action Type */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Then (Action) *
-                </div>
-                <select
-                  value={actionType}
-                  onChange={(e) => setActionType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                >
-                  <option value="set_assignee">Set Assignee</option>
-                  <option value="set_priority">Set Priority</option>
-                  <option value="add_label">Add Label</option>
-                  <option value="add_comment">Add Comment</option>
-                  <option value="send_notification">Send Notification</option>
-                </select>
-              </div>
-
-              {/* Action Value */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Action Parameters (JSON) *
-                </div>
-                <textarea
-                  value={actionValue}
-                  onChange={(e) => setActionValue(e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm dark:bg-gray-700 dark:text-gray-100"
-                  placeholder='{"label": "auto-resolved"}'
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Examples:{" "}
-                  {`{"label": "urgent"}  {"priority": "high"}  {"comment": "Auto comment"}`}
-                </p>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                onClick={() => {
-                  setShowCreateDialog(false);
-                  resetForm();
-                }}
-                variant="secondary"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSave}>{editingRule ? "Update" : "Create"} Rule</Button>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Delete Confirmation */}

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useListNavigation } from "../hooks/useListNavigation";
+import { getPriorityColor, getTypeIcon } from "../lib/issue-utils";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
 import { SkeletonList, SkeletonProjectCard, SkeletonStatCard, SkeletonText } from "./ui/Skeleton";
@@ -43,36 +44,6 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
     onSelect: (project) => onNavigateToProject?.(project._id),
     enabled: !!myProjects && myProjects.length > 0,
   });
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "text-red-600 bg-red-100";
-      case "high":
-        return "text-orange-600 bg-orange-100";
-      case "medium":
-        return "text-yellow-600 bg-yellow-100";
-      case "low":
-        return "text-blue-600 bg-blue-100";
-      case "lowest":
-        return "text-gray-600 bg-gray-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "bug":
-        return "🐛";
-      case "story":
-        return "📖";
-      case "epic":
-        return "🎯";
-      default:
-        return "📋";
-    }
-  };
 
   const getActionIcon = (action: string) => {
     switch (action) {
@@ -285,7 +256,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                                 {getTypeIcon(issue.type)}
                               </span>
                               <span
-                                className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority)}`}
+                                className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority, "bg")}`}
                               >
                                 {issue.priority}
                               </span>

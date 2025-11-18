@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
@@ -201,8 +202,13 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
       {/* Add Dependency Dialog */}
       {showAddDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
+        <>
+          <ModalBackdrop onClick={() => setShowAddDialog(false)} zIndex="z-50" animated={false} />
+          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
               Add Dependency
             </h3>
@@ -302,7 +308,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Delete Confirmation */}

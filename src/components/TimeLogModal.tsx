@@ -1,10 +1,10 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { getTodayString } from "@/lib/dates";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface TimeLogModalProps {
   issueId: Id<"issues">;
@@ -50,14 +50,7 @@ export function TimeLogModal({ issueId, issueName, onClose }: TimeLogModalProps)
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close modal"
-      />
+      <ModalBackdrop onClick={onClose} animated={false} />
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-[calc(100%-2rem)] sm:w-full max-w-md">

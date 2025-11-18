@@ -1,4 +1,4 @@
-import { handleKeyboardClick } from "@/lib/accessibility";
+import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -45,14 +45,7 @@ export function ConfirmDialog({
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 animate-in fade-in duration-200"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close dialog"
-      />
+      <ModalBackdrop onClick={onClose} zIndex="z-50" />
 
       {/* Dialog */}
       <div

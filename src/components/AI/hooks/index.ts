@@ -2,8 +2,7 @@
  * AI Hooks - Business logic extraction
  */
 
-export { useAIChat } from "./useAIChat";
 export type { UseAIChatOptions, UseAIChatReturn } from "./useAIChat";
-
-export { useAISuggestions } from "./useAISuggestions";
+export { useAIChat } from "./useAIChat";
 export type { UseAISuggestionsOptions, UseAISuggestionsReturn } from "./useAISuggestions";
+export { useAISuggestions } from "./useAISuggestions";

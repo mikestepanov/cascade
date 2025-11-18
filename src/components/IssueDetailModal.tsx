@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -11,6 +10,7 @@ import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Skeleton } from "./ui/Skeleton";
 
 interface IssueDetailModalProps {
@@ -34,7 +34,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
     return (
       <>
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
+        <ModalBackdrop onClick={onClose} animated={false} />
 
         {/* Modal Skeleton */}
         <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
@@ -63,7 +63,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
               </div>
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
@@ -127,14 +127,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close modal"
-      />
+      <ModalBackdrop onClick={onClose} animated={false} />
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
@@ -236,26 +229,28 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             )}
 
             {/* Metadata */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div>
-                <span className="text-sm text-gray-500">Status:</span>
-                <p className="font-medium">{issue.status}</p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Status:</span>
+                <p className="font-medium dark:text-white">{issue.status}</p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Type:</span>
-                <p className="font-medium capitalize">{issue.type}</p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Type:</span>
+                <p className="font-medium capitalize dark:text-white">{issue.type}</p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Assignee:</span>
-                <p className="font-medium">{issue.assignee?.name || "Unassigned"}</p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Assignee:</span>
+                <p className="font-medium dark:text-white">
+                  {issue.assignee?.name || "Unassigned"}
+                </p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Reporter:</span>
-                <p className="font-medium">{issue.reporter?.name || "Unknown"}</p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Reporter:</span>
+                <p className="font-medium dark:text-white">{issue.reporter?.name || "Unknown"}</p>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Story Points:</span>
-                <p className="font-medium">{issue.storyPoints ?? "Not set"}</p>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Story Points:</span>
+                <p className="font-medium dark:text-white">{issue.storyPoints ?? "Not set"}</p>
               </div>
             </div>
 

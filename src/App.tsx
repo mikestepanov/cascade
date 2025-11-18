@@ -23,6 +23,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
+import { ModalBackdrop } from "./components/ui/ModalBackdrop";
 import { type KeySequence, useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
@@ -55,8 +56,7 @@ function Content() {
     api.ai.queries.getProjectSuggestions,
     selectedProjectId ? { projectId: selectedProjectId } : "skip",
   );
-  const unreadAISuggestions =
-    aiSuggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
+  const unreadAISuggestions = aiSuggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
 
   // Onboarding state
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
@@ -339,17 +339,11 @@ function Content() {
         <div className="flex w-full min-h-screen">
           {/* Mobile Sidebar Backdrop */}
           {isMobileSidebarOpen && (
-            <div
-              role="button"
-              tabIndex={0}
-              className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+            <ModalBackdrop
               onClick={() => setIsMobileSidebarOpen(false)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  setIsMobileSidebarOpen(false);
-                }
-              }}
-              aria-label="Close sidebar"
+              zIndex="z-30"
+              className="lg:hidden"
+              animated={false}
             />
           )}
 

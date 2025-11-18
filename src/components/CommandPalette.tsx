@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 export interface Command {
   id: string;
@@ -82,19 +83,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-50"
-        onClick={onClose}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onClose();
-          }
-        }}
-        aria-label="Close command palette"
-      />
+      <ModalBackdrop onClick={onClose} zIndex="z-50" animated={false} />
 
       {/* Command Palette */}
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">

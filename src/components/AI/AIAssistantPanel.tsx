@@ -7,6 +7,7 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ErrorBoundary } from "../ErrorBoundary";
+import { ModalBackdrop } from "../ui/ModalBackdrop";
 import { AIChat } from "./AIChat";
 import { AIErrorFallback } from "./AIErrorFallback";
 import { AISuggestionsPanel } from "./AISuggestionsPanel";
@@ -43,14 +44,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
   return (
     <>
       {/* Backdrop */}
-      {isOpen && (
-        <button
-          type="button"
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity cursor-default"
-          onClick={onClose}
-          aria-label="Close AI assistant"
-        />
-      )}
+      {isOpen && <ModalBackdrop onClick={onClose} animated={false} />}
 
       {/* Panel */}
       <div

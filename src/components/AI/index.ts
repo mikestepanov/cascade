@@ -2,26 +2,24 @@
  * AI Components - Public exports
  */
 
+export type { AIAssistantButtonProps } from "./AIAssistantButton";
+export { AIAssistantButton } from "./AIAssistantButton";
 // Main components
 export { AIAssistantPanel } from "./AIAssistantPanel";
-export { AIAssistantButton } from "./AIAssistantButton";
-export type { AIAssistantButtonProps } from "./AIAssistantButton";
 export { AIChat } from "./AIChat";
-export { AISuggestionsPanel } from "./AISuggestionsPanel";
+export type { AIErrorFallbackProps } from "./AIErrorFallback";
 
 // Error handling
 export { AIErrorFallback } from "./AIErrorFallback";
-export type { AIErrorFallbackProps } from "./AIErrorFallback";
-
-// Configuration and types
-export { AI_CONFIG, SUGGESTION_METADATA, SUGGESTION_TYPES, AI_SHORTCUTS } from "./config";
+export { AISuggestionsPanel } from "./AISuggestionsPanel";
 export type { SuggestionType } from "./config";
-
-// Hooks (for advanced usage)
-export { useAIChat, useAISuggestions } from "./hooks";
+// Configuration and types
+export { AI_CONFIG, AI_SHORTCUTS, SUGGESTION_METADATA, SUGGESTION_TYPES } from "./config";
 export type {
   UseAIChatOptions,
   UseAIChatReturn,
   UseAISuggestionsOptions,
   UseAISuggestionsReturn,
 } from "./hooks";
+// Hooks (for advanced usage)
+export { useAIChat, useAISuggestions } from "./hooks";

@@ -43,11 +43,13 @@ export function AIAssistantButton({
         .join(" ")
     : "bottom-6 right-6 sm:bottom-8 sm:right-8";
 
-  const tooltipText = unreadCount > 0
-    ? `AI Assistant (${keyboardShortcut}) - ${unreadCount} new suggestion${unreadCount > 1 ? "s" : ""}`
-    : `AI Assistant (${keyboardShortcut})`;
+  const tooltipText =
+    unreadCount > 0
+      ? `AI Assistant (${keyboardShortcut}) - ${unreadCount} new suggestion${unreadCount > 1 ? "s" : ""}`
+      : `AI Assistant (${keyboardShortcut})`;
 
-  const ariaLabel = unreadCount > 0 ? `Open AI Assistant (${unreadCount} unread)` : "Open AI Assistant";
+  const ariaLabel =
+    unreadCount > 0 ? `Open AI Assistant (${unreadCount} unread)` : "Open AI Assistant";
 
   const displayCount =
     unreadCount > AI_CONFIG.badge.maxCount ? `${AI_CONFIG.badge.maxCount}+` : unreadCount;

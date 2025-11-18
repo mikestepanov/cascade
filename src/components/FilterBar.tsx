@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 type FilterValues = Record<string, unknown>;
 
@@ -132,8 +133,13 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
       {/* Save Filter Dialog */}
       {showSaveDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+        <>
+          <ModalBackdrop onClick={() => setShowSaveDialog(false)} zIndex="z-50" animated={false} />
+          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
               Save Filter
             </h3>
@@ -187,7 +193,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* My Filters List (if any saved) */}

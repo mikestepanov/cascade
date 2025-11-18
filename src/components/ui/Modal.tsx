@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
+import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ModalProps {
   isOpen: boolean;
@@ -32,14 +32,7 @@ export function Modal({
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 animate-in fade-in duration-200"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close modal"
-      />
+      <ModalBackdrop onClick={onClose} />
 
       {/* Modal */}
       <div

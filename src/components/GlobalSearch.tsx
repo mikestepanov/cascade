@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 type SearchResult =
   | {
@@ -97,19 +98,7 @@ export function GlobalSearch() {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsOpen(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setIsOpen(false);
-              }
-            }}
-            aria-label="Close search"
-          />
+          <ModalBackdrop onClick={() => setIsOpen(false)} animated={false} />
 
           {/* Modal */}
           <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-white rounded-lg shadow-2xl z-50">
