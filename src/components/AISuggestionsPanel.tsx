@@ -1,5 +1,6 @@
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Skeleton } from "./ui/Skeleton";
@@ -27,8 +28,9 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
     setIsGenerating(true);
     try {
       await generateInsights({ projectId });
-    } catch (error) {
-      console.error("Failed to generate insights:", error);
+      toast.success("AI insights generated successfully!");
+    } catch {
+      toast.error("Failed to generate insights. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -73,22 +75,24 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Action Bar */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+      <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
         <button
           type="button"
           onClick={handleGenerateInsights}
           disabled={isGenerating}
-          className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 touch-manipulation"
         >
           {isGenerating ? (
             <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Analyzing Project...</span>
+              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="hidden sm:inline">Analyzing Project...</span>
+              <span className="sm:hidden">Analyzing...</span>
             </>
           ) : (
             <>
               <span>✨</span>
-              <span>Generate AI Insights</span>
+              <span className="hidden sm:inline">Generate AI Insights</span>
+              <span className="sm:hidden">Generate Insights</span>
             </>
           )}
         </button>
@@ -143,7 +147,7 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
       </div>
 
       {/* Suggestions List */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4">
         {!suggestions ? (
           <div className="space-y-3">
             <Skeleton className="h-24 w-full" />
@@ -151,13 +155,13 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
             <Skeleton className="h-24 w-full" />
           </div>
         ) : suggestions.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-center">
+          <div className="flex items-center justify-center h-full text-center px-4">
             <div>
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No Suggestions Yet
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
                 Click "Generate AI Insights" to analyze your project and get AI-powered
                 recommendations.
               </p>
@@ -168,7 +172,7 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
             {suggestions.map((suggestion) => (
               <div
                 key={suggestion._id}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start gap-3">
                   <div className="text-2xl flex-shrink-0">
@@ -210,14 +214,14 @@ export function AISuggestionsPanel({ projectId }: AISuggestionsPanelProps) {
                         <button
                           type="button"
                           onClick={() => acceptSuggestion({ suggestionId: suggestion._id })}
-                          className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                          className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors touch-manipulation"
                         >
                           ✓ Accept
                         </button>
                         <button
                           type="button"
                           onClick={() => dismissSuggestion({ suggestionId: suggestion._id })}
-                          className="px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+                          className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors touch-manipulation"
                         >
                           ✗ Dismiss
                         </button>

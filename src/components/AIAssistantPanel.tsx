@@ -14,6 +14,7 @@ interface AIAssistantPanelProps {
 export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPanelProps) {
   const [activeTab, setActiveTab] = useState<"chat" | "suggestions">("chat");
   const [currentChatId, setCurrentChatId] = useState<Id<"aiChats"> | undefined>();
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const chats = useQuery(api.ai.queries.getUserChats, projectId ? { projectId } : {});
   const suggestions = useQuery(
@@ -22,6 +23,15 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
   );
 
   const unreadSuggestions = suggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
+
+  const handleTabChange = (tab: "chat" | "suggestions") => {
+    if (tab === activeTab) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setActiveTab(tab);
+      setIsAnimating(false);
+    }, 150);
+  };
 
   return (
     <>
@@ -37,8 +47,8 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
 
       {/* Panel */}
       <div
-        className={`fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed right-0 top-0 h-full w-full sm:w-[480px] md:w-[520px] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-all duration-300 ${
+          isOpen ? "translate-x-0 ease-out" : "translate-x-full ease-in"
         }`}
       >
         {/* Header */}
@@ -74,7 +84,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <button
             type="button"
-            onClick={() => setActiveTab("chat")}
+            onClick={() => handleTabChange("chat")}
             className={`flex-1 px-4 py-3 font-medium text-sm transition-colors ${
               activeTab === "chat"
                 ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-gray-900"
@@ -90,7 +100,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("suggestions")}
+            onClick={() => handleTabChange("suggestions")}
             className={`flex-1 px-4 py-3 font-medium text-sm transition-colors relative ${
               activeTab === "suggestions"
                 ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-gray-900"
@@ -108,11 +118,21 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
 
         {/* Content */}
         <div className="h-[calc(100vh-140px)] overflow-hidden">
-          {activeTab === "chat" ? (
-            <AIChat projectId={projectId} chatId={currentChatId} onChatCreated={setCurrentChatId} />
-          ) : (
-            <AISuggestionsPanel projectId={projectId} />
-          )}
+          <div
+            className={`transition-opacity duration-150 ${
+              isAnimating ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            {activeTab === "chat" ? (
+              <AIChat
+                projectId={projectId}
+                chatId={currentChatId}
+                onChatCreated={setCurrentChatId}
+              />
+            ) : (
+              <AISuggestionsPanel projectId={projectId} />
+            )}
+          </div>
         </div>
       </div>
     </>

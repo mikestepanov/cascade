@@ -126,7 +126,7 @@ export const addMessage = mutation({
 
     // Auto-generate title from first user message if chat title is "New Chat"
     if (chat.title === "New Chat" && args.role === "user") {
-      const truncated = args.content.length > 50 ? args.content.slice(0, 50) + "..." : args.content;
+      const truncated = args.content.length > 50 ? `${args.content.slice(0, 50)}...` : args.content;
       await ctx.db.patch(args.chatId, {
         title: truncated,
       });
