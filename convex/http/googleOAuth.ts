@@ -1,0 +1,315 @@
+import { httpAction } from "../_generated/server";
+import { api } from "../_generated/api";
+
+/**
+ * Google OAuth Integration
+ *
+ * Handles OAuth flow for Google Calendar integration
+ *
+ * Flow:
+ * 1. User clicks "Connect Google" → GET /google/auth (initiates OAuth)
+ * 2. Google redirects back → GET /google/callback (exchanges code for token)
+ * 3. Save tokens to database → User is connected
+ */
+
+// OAuth configuration (will be in environment variables)
+const getGoogleOAuthConfig = () => {
+  // In production, these come from environment variables
+  // For now, return placeholder - user needs to set these up
+  return {
+    clientId: process.env.GOOGLE_CLIENT_ID || "",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    redirectUri: process.env.SITE_URL ? `${process.env.SITE_URL}/google/callback` : "http://localhost:5173/google/callback",
+    scopes: [
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/calendar.events",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ].join(" "),
+  };
+};
+
+/**
+ * Initiate Google OAuth flow
+ * GET /google/auth
+ */
+export const initiateAuth = httpAction(async (ctx, request) => {
+  const config = getGoogleOAuthConfig();
+
+  if (!config.clientId) {
+    return new Response(
+      JSON.stringify({
+        error: "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  // Build OAuth authorization URL
+  const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  authUrl.searchParams.set("client_id", config.clientId);
+  authUrl.searchParams.set("redirect_uri", config.redirectUri);
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("scope", config.scopes);
+  authUrl.searchParams.set("access_type", "offline"); // Get refresh token
+  authUrl.searchParams.set("prompt", "consent"); // Force consent to get refresh token
+
+  // Redirect user to Google OAuth page
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: authUrl.toString(),
+    },
+  });
+});
+
+/**
+ * Handle OAuth callback from Google
+ * GET /google/callback?code=xxx
+ */
+export const handleCallback = httpAction(async (ctx, request) => {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const error = url.searchParams.get("error");
+
+  if (error) {
+    // User denied access or error occurred
+    return new Response(
+      `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Google Calendar - Error</title>
+          <style>
+            body { font-family: system-ui; max-width: 600px; margin: 100px auto; padding: 20px; text-align: center; }
+            .error { background: #fee; border: 1px solid #fcc; padding: 20px; border-radius: 8px; }
+          </style>
+        </head>
+        <body>
+          <div class="error">
+            <h1>❌ Connection Failed</h1>
+            <p>Failed to connect to Google Calendar: ${error}</p>
+            <button onclick="window.close()">Close Window</button>
+          </div>
+        </body>
+      </html>
+      `,
+      {
+        status: 400,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
+  }
+
+  if (!code) {
+    return new Response("Missing authorization code", { status: 400 });
+  }
+
+  const config = getGoogleOAuthConfig();
+
+  try {
+    // Exchange authorization code for tokens
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        code,
+        client_id: config.clientId,
+        client_secret: config.clientSecret,
+        redirect_uri: config.redirectUri,
+        grant_type: "authorization_code",
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.text();
+      console.error("Token exchange failed:", errorData);
+      throw new Error("Failed to exchange authorization code");
+    }
+
+    const tokens = await tokenResponse.json();
+    const { access_token, refresh_token, expires_in } = tokens;
+
+    // Get user info from Google
+    const userInfoResponse = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    const userInfo = await userInfoResponse.json();
+    const email = userInfo.email;
+
+    // Calculate expiration time
+    const expiresAt = expires_in ? Date.now() + expires_in * 1000 : undefined;
+
+    // Save connection to database
+    // Note: In production, you'd want to authenticate the Convex user here
+    // For now, we'll return the data and let the frontend save it
+    await ctx.runMutation(api.googleCalendar.connectGoogle, {
+      providerAccountId: email,
+      accessToken: access_token,
+      refreshToken: refresh_token,
+      expiresAt,
+    });
+
+    // Return success page
+    return new Response(
+      `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Google Calendar - Connected</title>
+          <style>
+            body { font-family: system-ui; max-width: 600px; margin: 100px auto; padding: 20px; text-align: center; }
+            .success { background: #efe; border: 1px solid #cfc; padding: 20px; border-radius: 8px; }
+            button { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+            button:hover { background: #2563eb; }
+          </style>
+        </head>
+        <body>
+          <div class="success">
+            <h1>✅ Connected Successfully</h1>
+            <p>Your Google Calendar has been connected to Cascade.</p>
+            <p><strong>${email}</strong></p>
+            <button onclick="window.close()">Close Window</button>
+            <script>
+              // Auto-close after 3 seconds
+              setTimeout(() => {
+                window.opener?.location.reload();
+                window.close();
+              }, 3000);
+            </script>
+          </div>
+        </body>
+      </html>
+      `,
+      {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
+  } catch (error) {
+    console.error("OAuth callback error:", error);
+    return new Response(
+      `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Google Calendar - Error</title>
+          <style>
+            body { font-family: system-ui; max-width: 600px; margin: 100px auto; padding: 20px; text-align: center; }
+            .error { background: #fee; border: 1px solid #fcc; padding: 20px; border-radius: 8px; }
+          </style>
+        </head>
+        <body>
+          <div class="error">
+            <h1>❌ Connection Failed</h1>
+            <p>An error occurred while connecting to Google Calendar.</p>
+            <p>Please try again or contact support if the problem persists.</p>
+            <button onclick="window.close()">Close Window</button>
+          </div>
+        </body>
+      </html>
+      `,
+      {
+        status: 500,
+        headers: { "Content-Type": "text/html" },
+      }
+    );
+  }
+});
+
+/**
+ * Trigger manual sync
+ * POST /google/sync
+ */
+export const triggerSync = httpAction(async (ctx, request) => {
+  try {
+    // Get user's Google Calendar connection
+    const connection = await ctx.runQuery(api.googleCalendar.getConnection);
+
+    if (!connection) {
+      return new Response(
+        JSON.stringify({ error: "Not connected to Google Calendar" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!connection.syncEnabled) {
+      return new Response(
+        JSON.stringify({ error: "Sync is disabled" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Fetch events from Google Calendar API
+    const eventsResponse = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${new Date().toISOString()}&maxResults=100`,
+      {
+        headers: {
+          Authorization: `Bearer ${connection.accessToken}`,
+        },
+      }
+    );
+
+    if (!eventsResponse.ok) {
+      throw new Error("Failed to fetch Google Calendar events");
+    }
+
+    const data = await eventsResponse.json();
+    const events = data.items || [];
+
+    // Transform Google Calendar events to Cascade format
+    const cascadeEvents = events.map((event: any) => ({
+      googleEventId: event.id,
+      title: event.summary || "Untitled Event",
+      description: event.description,
+      startTime: new Date(event.start.dateTime || event.start.date).getTime(),
+      endTime: new Date(event.end.dateTime || event.end.date).getTime(),
+      allDay: !!event.start.date, // If date instead of dateTime, it's all-day
+      location: event.location,
+      attendees: event.attendees?.map((a: any) => a.email) || [],
+    }));
+
+    // Sync events to Cascade
+    const result = await ctx.runMutation(api.googleCalendar.syncFromGoogle, {
+      connectionId: connection._id,
+      events: cascadeEvents,
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        imported: result.imported,
+        message: `Successfully imported ${result.imported} events from Google Calendar`,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    console.error("Sync error:", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error instanceof Error ? error.message : "Sync failed",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+});

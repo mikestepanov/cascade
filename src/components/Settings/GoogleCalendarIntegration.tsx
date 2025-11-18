@@ -34,9 +34,31 @@ export function GoogleCalendarIntegration() {
   };
 
   const handleConnect = () => {
-    toast.info("Google OAuth not yet implemented. Please set up OAuth in convex/auth.config.ts");
-    // TODO: Implement Google OAuth flow
-    // window.location.href = "/auth/google";
+    // Open OAuth flow in popup window
+    const width = 600;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    const popup = window.open(
+      "/google/auth",
+      "Google Calendar OAuth",
+      `width=${width},height=${height},left=${left},top=${top},popup=yes`
+    );
+
+    if (!popup) {
+      toast.error("Please allow popups to connect to Google Calendar");
+      return;
+    }
+
+    // Listen for popup close (successful auth will reload the page)
+    const checkPopup = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(checkPopup);
+        // Popup closed, connection may have been established
+        // The popup auto-reloads the opener on success
+      }
+    }, 500);
   };
 
   const handleToggleSync = async () => {
