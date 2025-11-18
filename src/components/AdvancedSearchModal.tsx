@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -18,18 +18,32 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
   const [selectedType, setSelectedType] = useState<string[]>([]);
   const [selectedPriority, setSelectedPriority] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [offset, setOffset] = useState(0);
+  const LIMIT = 50;
 
-  const searchResults = useQuery(
+  // Reset offset when query or filters change
+  useEffect(() => {
+    setOffset(0);
+  }, [searchQuery, selectedType, selectedPriority, selectedStatus]);
+
+  // Use server-side filtering
+  const searchResult = useQuery(
     api.issues.search,
-    searchQuery.length >= 2 ? { query: searchQuery, limit: 50 } : "skip",
+    searchQuery.length >= 2
+      ? {
+          query: searchQuery,
+          limit: LIMIT,
+          offset,
+          type: selectedType.length > 0 ? selectedType : undefined,
+          priority: selectedPriority.length > 0 ? selectedPriority : undefined,
+          status: selectedStatus.length > 0 ? selectedStatus : undefined,
+        }
+      : "skip",
   );
 
-  const filteredResults = searchResults?.filter((issue) => {
-    if (selectedType.length > 0 && !selectedType.includes(issue.type)) return false;
-    if (selectedPriority.length > 0 && !selectedPriority.includes(issue.priority)) return false;
-    if (selectedStatus.length > 0 && !selectedStatus.includes(issue.status)) return false;
-    return true;
-  });
+  const results = searchResult?.results ?? [];
+  const total = searchResult?.total ?? 0;
+  const hasMore = searchResult?.hasMore ?? false;
 
   const handleSelectIssue = (issueId: Id<"issues">) => {
     onSelectIssue(issueId);
@@ -38,6 +52,11 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
     setSelectedType([]);
     setSelectedPriority([]);
     setSelectedStatus([]);
+    setOffset(0);
+  };
+
+  const handleLoadMore = () => {
+    setOffset(offset + LIMIT);
   };
 
   const toggleFilter = (value: string, array: string[], setter: (arr: string[]) => void) => {
@@ -134,7 +153,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Results {filteredResults && `(${filteredResults.length})`}
+              Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
             </h3>
             {(selectedType.length > 0 ||
               selectedPriority.length > 0 ||
@@ -153,7 +172,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
             )}
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg max-h-96 overflow-y-auto">
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             {searchQuery.length < 2 ? (
               <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <svg
@@ -172,40 +191,55 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
                 </svg>
                 <p>Start typing to search issues</p>
               </div>
-            ) : !filteredResults || filteredResults.length === 0 ? (
+            ) : results.length === 0 ? (
               <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p>No issues found matching your criteria</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredResults.map((issue) => (
-                  <button
-                    type="button"
-                    key={issue._id}
-                    onClick={() => handleSelectIssue(issue._id)}
-                    className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl flex-shrink-0">{getTypeIcon(issue.type)}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
-                            {issue.key}
-                          </span>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority, "bg")}`}
-                          >
-                            {issue.priority}
-                          </span>
+              <>
+                <div className="max-h-96 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+                  {results.map((issue) => (
+                    <button
+                      type="button"
+                      key={issue._id}
+                      onClick={() => handleSelectIssue(issue._id)}
+                      className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-xl flex-shrink-0">{getTypeIcon(issue.type)}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                              {issue.key}
+                            </span>
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority, "bg")}`}
+                            >
+                              {issue.priority}
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {issue.title}
+                          </h4>
                         </div>
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {issue.title}
-                        </h4>
                       </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    >
+                      Load More ({total - results.length} remaining)
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

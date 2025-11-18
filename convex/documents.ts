@@ -160,15 +160,24 @@ export const deleteDocument = mutation({
 });
 
 export const search = query({
-  args: { query: v.string() },
+  args: {
+    query: v.string(),
+    limit: v.optional(v.number()),
+    offset: v.optional(v.number()),
+    projectId: v.optional(v.id("projects")),
+    createdBy: v.optional(v.union(v.id("users"), v.literal("me"))),
+    isPublic: v.optional(v.boolean()),
+    dateFrom: v.optional(v.number()),
+    dateTo: v.optional(v.number()),
+  },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return { results: [], total: 0, hasMore: false };
     }
 
     if (!args.query.trim()) {
-      return [];
+      return { results: [], total: 0, hasMore: false };
     }
 
     const results = await ctx.db
@@ -176,18 +185,79 @@ export const search = query({
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
       .collect();
 
-    // Filter results based on access permissions
-    const accessibleResults = results.filter((doc) => doc.isPublic || doc.createdBy === userId);
+    // Filter results based on access permissions and advanced filters
+    const filtered = [];
+    for (const doc of results) {
+      // Check access permissions
+      if (!doc.isPublic && doc.createdBy !== userId) {
+        continue;
+      }
 
-    return await Promise.all(
-      accessibleResults.map(async (doc) => {
+      // Apply project filter
+      if (args.projectId && doc.projectId !== args.projectId) {
+        continue;
+      }
+
+      // Apply creator filter
+      if (args.createdBy) {
+        if (args.createdBy === "me" && doc.createdBy !== userId) {
+          continue;
+        } else if (args.createdBy !== "me" && doc.createdBy !== args.createdBy) {
+          continue;
+        }
+      }
+
+      // Apply public/private filter
+      if (args.isPublic !== undefined && doc.isPublic !== args.isPublic) {
+        continue;
+      }
+
+      // Apply date range filter (createdAt)
+      if (args.dateFrom && doc.createdAt < args.dateFrom) {
+        continue;
+      }
+      if (args.dateTo && doc.createdAt > args.dateTo) {
+        continue;
+      }
+
+      filtered.push(doc);
+    }
+
+    const total = filtered.length;
+    const offset = args.offset ?? 0;
+    const limit = args.limit ?? 20;
+
+    // Apply pagination
+    const paginatedResults = filtered.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    // Enrich with creator and project data
+    const enrichedResults = await Promise.all(
+      paginatedResults.map(async (doc) => {
         const creator = await ctx.db.get(doc.createdBy);
+        const project = doc.projectId ? await ctx.db.get(doc.projectId) : null;
+
         return {
           ...doc,
           creatorName: creator?.name || creator?.email || "Unknown",
           isOwner: doc.createdBy === userId,
+          project: project
+            ? {
+                _id: project._id,
+                name: project.name,
+                key: project.key,
+              }
+            : null,
         };
       }),
     );
+
+    return {
+      results: enrichedResults,
+      total,
+      hasMore,
+      offset,
+      limit,
+    };
   },
 });

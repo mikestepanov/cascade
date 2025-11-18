@@ -438,12 +438,12 @@ describe("Documents", () => {
         isPublic: false,
       });
 
-      const results = await t.query(api.documents.search, {
+      const searchResult = await t.query(api.documents.search, {
         query: "document",
       });
 
-      expect(results).toHaveLength(2);
-      const titles = results.map((d) => d.title);
+      expect(searchResult.results).toHaveLength(2);
+      const titles = searchResult.results.map((d) => d.title);
       expect(titles).toContain("Product Requirements Document");
       expect(titles).toContain("Technical Design Document");
       expect(titles).not.toContain("Meeting Notes");
@@ -469,13 +469,13 @@ describe("Documents", () => {
       });
 
       // User 2 searches for "document"
-      const results = await t.query(api.documents.search, {
+      const searchResult = await t.query(api.documents.search, {
         query: "document",
       });
 
       // Should only find User 2's document and the public one
-      expect(results.length).toBeGreaterThanOrEqual(1);
-      const titles = results.map((d) => d.title);
+      expect(searchResult.results.length).toBeGreaterThanOrEqual(1);
+      const titles = searchResult.results.map((d) => d.title);
       expect(titles).toContain("User 2 Public Document");
     });
 

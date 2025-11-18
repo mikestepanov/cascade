@@ -1,5 +1,6 @@
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import Fuse from "fuse.js";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Input } from "./ui/form/Input";
@@ -25,15 +26,18 @@ export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "issues" | "documents">("all");
+  const [issueOffset, setIssueOffset] = useState(0);
+  const [documentOffset, setDocumentOffset] = useState(0);
+  const LIMIT = 20;
 
   // Search when query changes
-  const issueResults = useQuery(
+  const issueSearchResult = useQuery(
     api.issues.search,
-    query.length >= 2 ? { query, limit: 10 } : "skip",
+    query.length >= 2 ? { query, limit: LIMIT, offset: issueOffset } : "skip",
   );
-  const documentResults = useQuery(
+  const documentSearchResult = useQuery(
     api.documents.search,
-    query.length >= 2 ? { query, limit: 10 } : "skip",
+    query.length >= 2 ? { query, limit: LIMIT, offset: documentOffset } : "skip",
   );
 
   // Keyboard shortcut: Cmd+K or Ctrl+K
@@ -52,20 +56,70 @@ export function GlobalSearch() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Reset query when closing
+  // Reset query and offsets when closing
   useEffect(() => {
     if (!isOpen) {
       setQuery("");
+      setIssueOffset(0);
+      setDocumentOffset(0);
     }
   }, [isOpen]);
 
+  // Reset offsets when query changes
+  useEffect(() => {
+    setIssueOffset(0);
+    setDocumentOffset(0);
+  }, [query]);
+
+  const issueResults = issueSearchResult?.results ?? [];
+  const documentResults = documentSearchResult?.results ?? [];
+  const issueTotal = issueSearchResult?.total ?? 0;
+  const documentTotal = documentSearchResult?.total ?? 0;
+  const issueHasMore = issueSearchResult?.hasMore ?? false;
+  const documentHasMore = documentSearchResult?.hasMore ?? false;
+
+  // Apply fuzzy matching for better typo tolerance
+  const fuzzyIssues = query.length >= 2 ? issueResults : [];
+  const fuzzyDocuments = query.length >= 2 ? documentResults : [];
+
   const allResults: SearchResult[] = [
-    ...(issueResults?.map((r) => ({ ...r, type: "issue" as const })) ?? []),
-    ...(documentResults?.map((r) => ({ ...r, type: "document" as const })) ?? []),
+    ...(fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? []),
+    ...(fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? []),
   ];
 
   const filteredResults =
-    activeTab === "all" ? allResults : allResults.filter((r) => r.type === activeTab.slice(0, -1)); // Remove 's' from 'issues'/'documents'
+    activeTab === "all"
+      ? allResults
+      : activeTab === "issues"
+        ? fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? []
+        : fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? [];
+
+  const totalCount =
+    activeTab === "all"
+      ? issueTotal + documentTotal
+      : activeTab === "issues"
+        ? issueTotal
+        : documentTotal;
+
+  const hasMore =
+    activeTab === "all"
+      ? issueHasMore || documentHasMore
+      : activeTab === "issues"
+        ? issueHasMore
+        : documentHasMore;
+
+  const handleLoadMore = () => {
+    if (activeTab === "all" || activeTab === "issues") {
+      if (issueHasMore) {
+        setIssueOffset(issueOffset + LIMIT);
+      }
+    }
+    if (activeTab === "all" || activeTab === "documents") {
+      if (documentHasMore) {
+        setDocumentOffset(documentOffset + LIMIT);
+      }
+    }
+  };
 
   return (
     <>
@@ -131,7 +185,7 @@ export function GlobalSearch() {
               </div>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs with counts */}
             <div className="flex gap-4 px-4 pt-2 border-b border-gray-200">
               <button
                 type="button"
@@ -142,7 +196,7 @@ export function GlobalSearch() {
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                All
+                All {query.length >= 2 && <span className="text-xs">({issueTotal + documentTotal})</span>}
               </button>
               <button
                 type="button"
@@ -153,7 +207,7 @@ export function GlobalSearch() {
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Issues
+                Issues {query.length >= 2 && <span className="text-xs">({issueTotal})</span>}
               </button>
               <button
                 type="button"
@@ -164,7 +218,7 @@ export function GlobalSearch() {
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Documents
+                Documents {query.length >= 2 && <span className="text-xs">({documentTotal})</span>}
               </button>
             </div>
 
@@ -180,71 +234,86 @@ export function GlobalSearch() {
                   <p>No results found</p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100">
-                  {filteredResults.map((result) => (
-                    <a
-                      key={result._id}
-                      href={
-                        result.type === "issue"
-                          ? `/project/${result.projectId}?issue=${result._id}`
-                          : `/document/${result._id}`
-                      }
-                      onClick={() => setIsOpen(false)}
-                      className="block p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Icon */}
-                        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-gray-100">
-                          {result.type === "issue" ? (
-                            <svg
-                              aria-hidden="true"
-                              className="w-5 h-5 text-blue-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              aria-hidden="true"
-                              className="w-5 h-5 text-green-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            {result.type === "issue" && (
-                              <span className="text-xs font-mono text-gray-500">{result.key}</span>
+                <>
+                  <div className="divide-y divide-gray-100">
+                    {filteredResults.map((result) => (
+                      <a
+                        key={result._id}
+                        href={
+                          result.type === "issue"
+                            ? `/project/${result.projectId}?issue=${result._id}`
+                            : `/document/${result._id}`
+                        }
+                        onClick={() => setIsOpen(false)}
+                        className="block p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Icon */}
+                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-gray-100">
+                            {result.type === "issue" ? (
+                              <svg
+                                aria-hidden="true"
+                                className="w-5 h-5 text-blue-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                aria-hidden="true"
+                                className="w-5 h-5 text-green-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
                             )}
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                              {result.type}
-                            </span>
                           </div>
-                          <p className="text-sm font-medium text-gray-900 mt-1 truncate">
-                            {result.title}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                            {result.description || "No description"}
-                          </p>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              {result.type === "issue" && (
+                                <span className="text-xs font-mono text-gray-500">{result.key}</span>
+                              )}
+                              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                                {result.type}
+                              </span>
+                            </div>
+                            <p className="text-sm font-medium text-gray-900 mt-1 truncate">
+                              {result.title}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                              {result.description || "No description"}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+                      </a>
+                    ))}
+                  </div>
+
+                  {/* Load More Button */}
+                  {hasMore && (
+                    <div className="p-4 border-t border-gray-100">
+                      <button
+                        type="button"
+                        onClick={handleLoadMore}
+                        className="w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                      >
+                        Load More ({totalCount - filteredResults.length} remaining)
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

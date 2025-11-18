@@ -692,33 +692,186 @@ export const addComment = mutation({
   },
 });
 
-// Search issues
+// Search issues with advanced filters and pagination
 export const search = query({
   args: {
     query: v.string(),
     limit: v.optional(v.number()),
+    offset: v.optional(v.number()),
+    projectId: v.optional(v.id("projects")),
+    assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
+    reporterId: v.optional(v.id("users")),
+    type: v.optional(v.array(v.string())),
+    status: v.optional(v.array(v.string())),
+    priority: v.optional(v.array(v.string())),
+    labels: v.optional(v.array(v.string())),
+    sprintId: v.optional(v.union(v.id("sprints"), v.literal("backlog"), v.literal("none"))),
+    epicId: v.optional(v.union(v.id("issues"), v.literal("none"))),
+    dateFrom: v.optional(v.number()),
+    dateTo: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
+    if (!userId) return { results: [], total: 0, hasMore: false };
 
-    const results = await ctx.db
+    // Get search results
+    const searchResults = await ctx.db
       .query("issues")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .take(args.limit ?? 20);
+      .collect();
 
-    // Filter to only issues user has access to
+    // Filter to only issues user has access to and apply advanced filters
     const filtered = [];
-    for (const issue of results) {
+    for (const issue of searchResults) {
+      // Check access permissions
       try {
         await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
-        filtered.push(issue);
       } catch {
-        // User doesn't have access, skip this issue
+        continue; // User doesn't have access, skip this issue
       }
+
+      // Apply project filter
+      if (args.projectId && issue.projectId !== args.projectId) {
+        continue;
+      }
+
+      // Apply assignee filter
+      if (args.assigneeId) {
+        if (args.assigneeId === "unassigned" && issue.assigneeId) {
+          continue;
+        } else if (args.assigneeId === "me" && issue.assigneeId !== userId) {
+          continue;
+        } else if (
+          args.assigneeId !== "unassigned" &&
+          args.assigneeId !== "me" &&
+          issue.assigneeId !== args.assigneeId
+        ) {
+          continue;
+        }
+      }
+
+      // Apply reporter filter
+      if (args.reporterId && issue.reporterId !== args.reporterId) {
+        continue;
+      }
+
+      // Apply type filter
+      if (args.type && args.type.length > 0 && !args.type.includes(issue.type)) {
+        continue;
+      }
+
+      // Apply status filter
+      if (args.status && args.status.length > 0 && !args.status.includes(issue.status)) {
+        continue;
+      }
+
+      // Apply priority filter
+      if (args.priority && args.priority.length > 0 && !args.priority.includes(issue.priority)) {
+        continue;
+      }
+
+      // Apply labels filter (issue must have ALL specified labels)
+      if (args.labels && args.labels.length > 0) {
+        const hasAllLabels = args.labels.every((label) => issue.labels.includes(label));
+        if (!hasAllLabels) {
+          continue;
+        }
+      }
+
+      // Apply sprint filter
+      if (args.sprintId) {
+        if (args.sprintId === "backlog" && issue.sprintId) {
+          continue;
+        } else if (args.sprintId === "none" && issue.sprintId) {
+          continue;
+        } else if (
+          args.sprintId !== "backlog" &&
+          args.sprintId !== "none" &&
+          issue.sprintId !== args.sprintId
+        ) {
+          continue;
+        }
+      }
+
+      // Apply epic filter
+      if (args.epicId) {
+        if (args.epicId === "none" && issue.epicId) {
+          continue;
+        } else if (args.epicId !== "none" && issue.epicId !== args.epicId) {
+          continue;
+        }
+      }
+
+      // Apply date range filter (createdAt)
+      if (args.dateFrom && issue.createdAt < args.dateFrom) {
+        continue;
+      }
+      if (args.dateTo && issue.createdAt > args.dateTo) {
+        continue;
+      }
+
+      filtered.push(issue);
     }
 
-    return filtered;
+    const total = filtered.length;
+    const offset = args.offset ?? 0;
+    const limit = args.limit ?? 20;
+
+    // Apply pagination
+    const paginatedResults = filtered.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    // Enrich with user and project data
+    const enrichedResults = await Promise.all(
+      paginatedResults.map(async (issue) => {
+        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+        const reporter = await ctx.db.get(issue.reporterId);
+        const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
+        const project = await ctx.db.get(issue.projectId);
+
+        return {
+          ...issue,
+          assignee: assignee
+            ? {
+                _id: assignee._id,
+                name: assignee.name || assignee.email || "Unknown",
+                email: assignee.email,
+                image: assignee.image,
+              }
+            : null,
+          reporter: reporter
+            ? {
+                _id: reporter._id,
+                name: reporter.name || reporter.email || "Unknown",
+                email: reporter.email,
+                image: reporter.image,
+              }
+            : null,
+          epic: epic
+            ? {
+                _id: epic._id,
+                key: epic.key,
+                title: epic.title,
+              }
+            : null,
+          project: project
+            ? {
+                _id: project._id,
+                name: project.name,
+                key: project.key,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return {
+      results: enrichedResults,
+      total,
+      hasMore,
+      offset,
+      limit,
+    };
   },
 });
 
