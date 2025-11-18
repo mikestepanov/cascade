@@ -1,6 +1,10 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { BarChart } from "./Analytics/BarChart";
+import { ChartCard } from "./Analytics/ChartCard";
+import { MetricCard } from "./Analytics/MetricCard";
+import { RecentActivity } from "./Analytics/RecentActivity";
 import { Skeleton, SkeletonStatCard } from "./ui/Skeleton";
 
 interface Props {
@@ -161,109 +165,8 @@ export function AnalyticsDashboard({ projectId }: Props) {
         )}
 
         {/* Recent Activity */}
-        {recentActivity && recentActivity.length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-            <div className="space-y-3">
-              {recentActivity.map((activity) => (
-                <div
-                  key={activity._id}
-                  className="flex items-start gap-3 text-sm border-b border-gray-100 pb-3 last:border-0"
-                >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
-                    {activity.userName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-900">
-                      <span className="font-medium">{activity.userName}</span> {activity.action}{" "}
-                      {activity.field && (
-                        <>
-                          <span className="font-medium">{activity.field}</span> on
-                        </>
-                      )}{" "}
-                      <span className="font-mono text-xs bg-gray-100 px-1 rounded">
-                        {activity.issueKey}
-                      </span>
-                    </p>
-                    <p className="text-gray-500 text-xs mt-1">
-                      {new Date(activity.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <RecentActivity activities={recentActivity} />
       </div>
-    </div>
-  );
-}
-
-function MetricCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  highlight,
-}: {
-  title: string;
-  value: number;
-  subtitle?: string;
-  icon: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className={`bg-white rounded-lg shadow p-6 ${highlight ? "ring-2 ring-orange-500" : ""}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-          {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
-        </div>
-        <div className="text-4xl">{icon}</div>
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-      <div className="h-64">{children}</div>
-    </div>
-  );
-}
-
-function BarChart({
-  data,
-  color,
-}: {
-  data: Array<{ label: string; value: number }>;
-  color: string;
-}) {
-  const maxValue = Math.max(...data.map((d) => d.value), 1);
-
-  return (
-    <div className="h-full flex flex-col justify-end space-y-2">
-      {data.map((item) => (
-        <div key={item.label} className="flex items-center gap-2">
-          <div className="w-24 text-sm text-gray-700 truncate" title={item.label}>
-            {item.label}
-          </div>
-          <div className="flex-1 bg-gray-100 rounded-full h-6 relative">
-            <div
-              className={`${color} h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
-              style={{
-                width: `${(item.value / maxValue) * 100}%`,
-                minWidth: item.value > 0 ? "2rem" : "0",
-              }}
-            >
-              <span className="text-xs font-semibold text-white">{item.value}</span>
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
