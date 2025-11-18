@@ -88,13 +88,13 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         </div>
 
         {/* Tabs - Visually grouped by function */}
-        <div className="flex items-center">
+        <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch">
           {/* Primary Workflow Tabs */}
-          <div className="flex space-x-6">
+          <div className="flex space-x-4 sm:space-x-6">
             <button
               type="button"
               onClick={() => setActiveTab("board")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "board"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -105,7 +105,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("backlog")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "backlog"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -117,7 +117,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               <button
                 type="button"
                 onClick={() => setActiveTab("sprints")}
-                className={`pb-2 border-b-2 transition-colors ${
+                className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                   activeTab === "sprints"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700"
@@ -129,14 +129,14 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
 
           {/* Visual Separator */}
-          <div className="h-6 w-px bg-gray-300 mx-6"></div>
+          <div className="hidden lg:block h-6 w-px bg-gray-300 mx-4 sm:mx-6"></div>
 
           {/* Analysis & Views Tabs */}
-          <div className="flex space-x-6">
+          <div className="flex space-x-4 sm:space-x-6 flex-shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("roadmap")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "roadmap"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -147,7 +147,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("calendar")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "calendar"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -158,7 +158,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("activity")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "activity"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -169,7 +169,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("analytics")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "analytics"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -180,7 +180,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("billing")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === "billing"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -197,7 +197,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`pb-2 border-b-2 transition-colors ${
+            className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === "settings"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"

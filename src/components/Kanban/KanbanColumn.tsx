@@ -57,7 +57,7 @@ export function KanbanColumn({
 
   return (
     <div
-      className="flex-shrink-0 w-72 sm:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg animate-slide-up"
+      className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, state.id)}
@@ -74,7 +74,7 @@ export function KanbanColumn({
           <button
             type="button"
             onClick={() => onCreateIssue(state.id)}
-            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1 flex-shrink-0"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2.5 sm:p-3 flex-shrink-0"
             aria-label={`Add issue to ${state.name}`}
           >
             <svg

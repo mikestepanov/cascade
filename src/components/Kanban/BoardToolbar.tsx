@@ -33,7 +33,7 @@ export function BoardToolbar({
             type="button"
             onClick={onUndo}
             disabled={historyStack.length === 0}
-            className="p-1.5 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 sm:p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Undo (Ctrl+Z)"
           >
             <svg
@@ -55,7 +55,7 @@ export function BoardToolbar({
             type="button"
             onClick={onRedo}
             disabled={redoStack.length === 0}
-            className="p-1.5 sm:p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 sm:p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Redo (Ctrl+Shift+Z)"
           >
             <svg

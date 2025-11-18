@@ -142,7 +142,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       maxWidth="2xl"
       fullScreenOnMobile={true}
     >
-      <form onSubmit={handleSubmit} className="space-y-4 p-6">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
         {/* Template Selector */}
         {templates && templates.length > 0 && (
           <SelectField

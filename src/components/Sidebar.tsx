@@ -59,7 +59,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
   };
 
   return (
-    <div className="w-full sm:w-96 lg:w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-full sm:w-72 lg:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h2>
@@ -200,7 +200,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
+                      className="sm:opacity-0 sm:group-hover:opacity-100 p-2.5 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
                       aria-label="Delete document"
                     >
                       <svg

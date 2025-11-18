@@ -133,7 +133,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         </div>
 
         {/* Kanban columns skeleton */}
-        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
+        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -255,7 +255,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         onToggleSelectionMode={handleToggleSelectionMode}
       />
 
-      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
+      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
         {workflowStates.map((state, columnIndex) => (
           <KanbanColumn
             key={state.id}
