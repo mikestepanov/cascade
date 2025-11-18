@@ -22,7 +22,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget } from "./components/TimeTracker/TimerWidget";
 import { Timesheet } from "./components/TimeTracker/Timesheet";
-import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useKeyboardShortcuts, useKeyboardShortcutsWithSequences, type KeySequence } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
 
@@ -84,30 +84,32 @@ function Content() {
     onCreateProject: undefined, // Will be set contextually
   });
 
-  // Global keyboard shortcuts
-  useKeyboardShortcuts([
+  // Global keyboard shortcuts (regular shortcuts)
+  const shortcuts = [
+    // Command palette (Cmd/Ctrl+K)
     {
       key: "k",
-      meta: true, // Cmd on Mac
-      handler: () => setShowCommandPalette(true),
-      description: "Open command palette",
-    },
-    {
-      key: "k",
-      ctrl: true, // Ctrl on Windows/Linux
-      handler: () => setShowCommandPalette(true),
-      description: "Open command palette",
-    },
-    {
-      key: "d",
       meta: true,
-      handler: () => {
-        setActiveView("dashboard");
-        setSelectedDocumentId(null);
-        setSelectedProjectId(null);
-      },
-      description: "Go to dashboard",
+      handler: () => setShowCommandPalette(true),
+      description: "Open command palette",
+      global: true,
     },
+    {
+      key: "k",
+      ctrl: true,
+      handler: () => setShowCommandPalette(true),
+      description: "Open command palette",
+      global: true,
+    },
+    // Help (?)
+    {
+      key: "?",
+      shift: true,
+      handler: () => setShowShortcutsHelp(true),
+      description: "Show keyboard shortcuts",
+      global: true,
+    },
+    // Quick navigation (Cmd/Ctrl+number)
     {
       key: "1",
       meta: true,
@@ -138,13 +140,82 @@ function Content() {
       handler: () => setActiveView("calendar"),
       description: "Go to calendar",
     },
+    // Single-key actions (only when not typing)
     {
-      key: "?",
-      shift: true,
-      handler: () => setShowShortcutsHelp(true),
-      description: "Show keyboard shortcuts",
+      key: "c",
+      handler: () => {
+        // Trigger create issue event
+        const event = new CustomEvent("cascade:create-issue");
+        window.dispatchEvent(event);
+      },
+      description: "Create new issue",
     },
-  ]);
+    {
+      key: "d",
+      handler: () => {
+        // Trigger create document event
+        const event = new CustomEvent("cascade:create-document");
+        window.dispatchEvent(event);
+      },
+      description: "Create new document",
+    },
+    {
+      key: "p",
+      handler: () => {
+        // Trigger create project event
+        const event = new CustomEvent("cascade:create-project");
+        window.dispatchEvent(event);
+      },
+      description: "Create new project",
+    },
+  ];
+
+  // Key sequences (G+key for navigation, Linear-style)
+  const sequences: KeySequence[] = [
+    {
+      keys: ["g", "h"],
+      handler: () => {
+        setActiveView("dashboard");
+        setSelectedDocumentId(null);
+        setSelectedProjectId(null);
+      },
+      description: "Go to home",
+    },
+    {
+      keys: ["g", "b"],
+      handler: () => {
+        setActiveView("projects");
+        setSelectedDocumentId(null);
+      },
+      description: "Go to board",
+    },
+    {
+      keys: ["g", "d"],
+      handler: () => {
+        setActiveView("documents");
+        setSelectedProjectId(null);
+      },
+      description: "Go to documents",
+    },
+    {
+      keys: ["g", "t"],
+      handler: () => setActiveView("timesheet"),
+      description: "Go to timesheet",
+    },
+    {
+      keys: ["g", "c"],
+      handler: () => setActiveView("calendar"),
+      description: "Go to calendar",
+    },
+    {
+      keys: ["g", "s"],
+      handler: () => setActiveView("settings"),
+      description: "Go to settings",
+    },
+  ];
+
+  // Register shortcuts with sequence support
+  useKeyboardShortcutsWithSequences(shortcuts, sequences);
 
   if (loggedInUser === undefined) {
     return (
