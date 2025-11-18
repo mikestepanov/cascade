@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toggleInArray } from "@/lib/array-utils";
 import { showError, showSuccess } from "@/lib/toast";
@@ -26,11 +26,14 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
   const [storyPoints, setStoryPoints] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
 
   const project = useQuery(api.projects.get, { id: projectId });
   const templates = useQuery(api.templates.list, { projectId });
   const labels = useQuery(api.labels.list, { projectId });
   const createIssue = useMutation(api.issues.create);
+  const generateSuggestions = useAction(api.ai.actions.generateIssueSuggestions);
 
   // Apply template when selected
   useEffect(() => {
@@ -88,6 +91,47 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
     setSelectedLabels((prev) => toggleInArray(prev, labelId));
   };
 
+  const handleGenerateAISuggestions = async () => {
+    if (!title.trim()) {
+      showError(new Error("Please enter a title first"), "Title required");
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    try {
+      const suggestions = await generateSuggestions({
+        projectId,
+        issueTitle: title,
+        issueDescription: description || undefined,
+        suggestionTypes: ["description", "priority", "labels"],
+      });
+
+      // Apply AI suggestions
+      if (suggestions.description && !description.trim()) {
+        setDescription(suggestions.description);
+      }
+
+      if (suggestions.priority) {
+        setPriority(suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest");
+      }
+
+      if (suggestions.labels && Array.isArray(suggestions.labels) && labels) {
+        const suggestedLabelIds = labels
+          .filter((label) => suggestions.labels.includes(label.name))
+          .map((label) => label._id);
+        setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
+      }
+
+      setShowAISuggestions(true);
+      showSuccess("AI suggestions applied!");
+    } catch (error) {
+      console.error("AI suggestion error:", error);
+      showError(error, "Failed to generate AI suggestions. Make sure AI provider is configured.");
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
   if (!project) return null;
 
   return (
@@ -122,6 +166,34 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           placeholder="Enter issue title..."
           required
         />
+
+        {/* AI Suggestions Button */}
+        <div className="flex items-center gap-2 pb-2">
+          <button
+            type="button"
+            onClick={handleGenerateAISuggestions}
+            disabled={!title.trim() || isGeneratingAI}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {isGeneratingAI ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <span>✨</span>
+                <span>Get AI Suggestions</span>
+              </>
+            )}
+          </button>
+          {showAISuggestions && (
+            <span className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+              <span>✓</span>
+              <span>AI suggestions applied</span>
+            </span>
+          )}
+        </div>
 
         <TextareaField
           label="Description"

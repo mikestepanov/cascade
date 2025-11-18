@@ -696,6 +696,100 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
     .index("by_user_status", ["userId", "status"]),
+
+  // AI Integration
+  aiChats: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Link chat to specific project for context
+    title: v.string(), // Auto-generated from first message or user-provided
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_user_created", ["userId", "createdAt"]),
+
+  aiMessages: defineTable({
+    chatId: v.id("aiChats"),
+    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    content: v.string(),
+    // Context provided to AI (for debugging and transparency)
+    contextData: v.optional(
+      v.object({
+        issueIds: v.optional(v.array(v.id("issues"))),
+        documentIds: v.optional(v.array(v.id("documents"))),
+        sprintIds: v.optional(v.array(v.id("sprints"))),
+      }),
+    ),
+    // AI response metadata
+    modelUsed: v.optional(v.string()), // e.g., "claude-3-5-sonnet-20241022"
+    tokensUsed: v.optional(v.number()),
+    responseTime: v.optional(v.number()), // Milliseconds
+    createdAt: v.number(),
+  })
+    .index("by_chat", ["chatId"])
+    .index("by_chat_created", ["chatId", "createdAt"]),
+
+  aiSuggestions: defineTable({
+    userId: v.id("users"),
+    projectId: v.id("projects"),
+    suggestionType: v.union(
+      v.literal("issue_description"), // AI-generated issue description
+      v.literal("issue_priority"), // AI-suggested priority
+      v.literal("issue_labels"), // AI-suggested labels
+      v.literal("issue_assignee"), // AI-suggested assignee
+      v.literal("sprint_planning"), // AI sprint planning suggestions
+      v.literal("risk_detection"), // AI-detected project risks
+      v.literal("insight"), // General AI insights
+    ),
+    targetId: v.optional(v.string()), // ID of issue/sprint being suggested for
+    suggestion: v.string(), // The AI suggestion content
+    reasoning: v.optional(v.string()), // Why AI made this suggestion
+    // User actions
+    accepted: v.optional(v.boolean()), // Did user accept the suggestion?
+    dismissed: v.optional(v.boolean()),
+    // Metadata
+    modelUsed: v.string(),
+    confidence: v.optional(v.number()), // 0-1 confidence score
+    createdAt: v.number(),
+    respondedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_type", ["suggestionType"])
+    .index("by_project_type", ["projectId", "suggestionType"])
+    .index("by_target", ["targetId"]),
+
+  aiUsage: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")),
+    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    model: v.string(),
+    operation: v.union(
+      v.literal("chat"), // AI chat conversation
+      v.literal("suggestion"), // AI suggestion generation
+      v.literal("automation"), // AI automation task
+      v.literal("analysis"), // AI analytics/insights
+    ),
+    // Token usage
+    promptTokens: v.number(),
+    completionTokens: v.number(),
+    totalTokens: v.number(),
+    // Cost estimation (optional, based on provider pricing)
+    estimatedCost: v.optional(v.number()), // In USD cents
+    // Performance
+    responseTime: v.number(), // Milliseconds
+    success: v.boolean(),
+    errorMessage: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_provider", ["provider"])
+    .index("by_operation", ["operation"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_user_created", ["userId", "createdAt"]),
 };
 
 export default defineSchema({

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
+import { AIAssistantPanel } from "./components/AIAssistantPanel";
 import { CalendarView } from "./components/Calendar/CalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
@@ -47,6 +48,7 @@ function Content() {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // Onboarding state
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
@@ -107,6 +109,23 @@ function Content() {
       shift: true,
       handler: () => setShowShortcutsHelp(true),
       description: "Show keyboard shortcuts",
+      global: true,
+    },
+    // AI Assistant (Cmd/Ctrl+Shift+A)
+    {
+      key: "a",
+      meta: true,
+      shift: true,
+      handler: () => setShowAIAssistant(!showAIAssistant),
+      description: "Toggle AI assistant",
+      global: true,
+    },
+    {
+      key: "a",
+      ctrl: true,
+      shift: true,
+      handler: () => setShowAIAssistant(!showAIAssistant),
+      description: "Toggle AI assistant",
       global: true,
     },
     // Quick navigation (Cmd/Ctrl+number)
@@ -661,6 +680,26 @@ function Content() {
 
         {/* Global Timer Widget - always visible for authenticated users */}
         <TimerWidget />
+
+        {/* AI Assistant Panel */}
+        <AIAssistantPanel
+          projectId={selectedProjectId || undefined}
+          isOpen={showAIAssistant}
+          onClose={() => setShowAIAssistant(false)}
+        />
+
+        {/* AI Assistant Floating Button */}
+        {!showAIAssistant && (
+          <button
+            type="button"
+            onClick={() => setShowAIAssistant(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30"
+            title="AI Assistant (Cmd/Ctrl+Shift+A)"
+            aria-label="Open AI Assistant"
+          >
+            <span className="text-2xl">🤖</span>
+          </button>
+        )}
       </Authenticated>
 
       <Unauthenticated>
