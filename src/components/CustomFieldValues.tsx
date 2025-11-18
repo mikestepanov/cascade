@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Checkbox } from "./ui/form/Checkbox";
+import { Input } from "./ui/form/Input";
+import { Select } from "./ui/form/Select";
 
 interface CustomFieldValuesProps {
   issueId: Id<"issues">;
@@ -66,57 +69,47 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
       case "text":
       case "url":
         return (
-          <input
+          <Input
             type={field.fieldType === "url" ? "url" : "text"}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
             placeholder={field.description || `Enter ${field.name.toLowerCase()}...`}
           />
         );
 
       case "number":
         return (
-          <input
+          <Input
             type="number"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
             placeholder="Enter number..."
           />
         );
 
       case "date":
         return (
-          <input
+          <Input
             type="date"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
           />
         );
 
       case "checkbox":
         return (
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={editValue === "true"}
-              onChange={(e) => setEditValue(e.target.checked ? "true" : "false")}
-              className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-            />
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              {field.description || "Check to enable"}
-            </span>
-          </div>
+          <Checkbox
+            label={field.description || "Check to enable"}
+            checked={editValue === "true"}
+            onChange={(e) => setEditValue(e.target.checked ? "true" : "false")}
+          />
         );
 
       case "select":
         return (
-          <select
+          <Select
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="">Select an option...</option>
             {field.options?.map((option: string) => (
@@ -124,7 +117,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                 {option}
               </option>
             ))}
-          </select>
+          </Select>
         );
 
       case "multiselect":
@@ -138,21 +131,18 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
               const isSelected = selectedOptions.includes(option);
 
               return (
-                <label key={option} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setEditValue([...selectedOptions, option].join(", "));
-                      } else {
-                        setEditValue(selectedOptions.filter((o) => o !== option).join(", "));
-                      }
-                    }}
-                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{option}</span>
-                </label>
+                <Checkbox
+                  key={option}
+                  label={option}
+                  checked={isSelected}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setEditValue([...selectedOptions, option].join(", "));
+                    } else {
+                      setEditValue(selectedOptions.filter((o) => o !== option).join(", "));
+                    }
+                  }}
+                />
               );
             })}
           </div>
@@ -160,11 +150,10 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
       default:
         return (
-          <input
+          <Input
             type="text"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
           />
         );
     }

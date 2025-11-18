@@ -10,6 +10,8 @@ import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
+import { Checkbox } from "./ui/form/Checkbox";
+import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Skeleton } from "./ui/Skeleton";
 
@@ -170,11 +172,11 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             {/* Title */}
             <div>
               {isEditing ? (
-                <input
+                <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full text-2xl font-bold border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="text-2xl font-bold"
                   placeholder="Issue title"
                 />
               ) : (
@@ -335,12 +337,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 {/* Create sub-task form */}
                 {isCreatingSubtask && (
                   <div className="mb-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
-                    <input
+                    <Input
                       type="text"
                       value={subtaskTitle}
                       onChange={(e) => setSubtaskTitle(e.target.value)}
                       placeholder="Sub-task title..."
-                      className="w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="mb-2"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           handleCreateSubtask();
@@ -381,14 +383,13 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                         key={subtask._id}
                         className="flex items-start gap-2 p-2 rounded hover:bg-gray-50 group"
                       >
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={subtask.status === "done" || subtask.status === "completed"}
                           onChange={() => {
                             // Toggle sub-task completion
                             // You can implement this later with a mutation
                           }}
-                          className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="mt-1"
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
