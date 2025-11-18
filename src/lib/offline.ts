@@ -245,12 +245,23 @@ export class OfflineStatusManager {
     this.notifyListeners();
 
     // Trigger sync when coming back online
-    if ("serviceWorker" in navigator && "sync" in (ServiceWorkerRegistration as any).prototype) {
+    if ("serviceWorker" in navigator && this.hasSyncManager()) {
       navigator.serviceWorker.ready.then((registration) => {
-        return (registration as any).sync.register("sync-mutations");
+        // Background Sync API - not in standard TypeScript libs
+        interface SyncManager {
+          register(tag: string): Promise<void>;
+        }
+        interface ServiceWorkerRegistrationWithSync extends ServiceWorkerRegistration {
+          sync: SyncManager;
+        }
+        return (registration as ServiceWorkerRegistrationWithSync).sync.register("sync-mutations");
       });
     }
   };
+
+  private hasSyncManager(): boolean {
+    return "sync" in ServiceWorkerRegistration.prototype;
+  }
 
   private handleOffline = () => {
     this._isOnline = false;

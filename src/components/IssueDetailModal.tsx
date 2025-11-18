@@ -38,31 +38,36 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
         {/* Modal Skeleton */}
         <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
+          <div
+            role="status"
+            aria-busy="true"
+            className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
+          >
+            <span className="sr-only">Loading...</span>
             {/* Header Skeleton */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6">
               <div className="flex items-center space-x-3">
-                <Skeleton className="h-8 w-8 rounded" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-8 rounded" />
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-16" />
+                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-24" />
+                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-16" />
                 </div>
               </div>
             </div>
 
             {/* Content Skeleton */}
             <div className="p-6 space-y-6">
-              <Skeleton className="h-8 w-3/4" />
+              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-8 w-3/4" />
               <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
               </div>
               <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
               </div>
             </div>
           </div>

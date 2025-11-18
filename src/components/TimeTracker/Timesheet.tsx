@@ -3,6 +3,7 @@ import { Calendar, DollarSign, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeEntries.getCurrentWeekTimesheet);
@@ -44,11 +45,11 @@ export function Timesheet() {
     return days;
   };
 
-  const handleDelete = async (entryId: string) => {
+  const handleDelete = async (entryId: Id<"timeEntries">) => {
     if (!confirm("Delete this time entry?")) return;
 
     try {
-      await deleteEntry({ id: entryId as any });
+      await deleteEntry({ id: entryId });
       toast.success("Time entry deleted");
     } catch (_error) {
       toast.error("Failed to delete entry");

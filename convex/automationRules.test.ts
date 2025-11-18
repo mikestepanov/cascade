@@ -616,11 +616,10 @@ describe("Automation Rules", () => {
       });
 
       // Check if comment was added
-      const comments = await t.run(async (ctx: any) => {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
+      const comments = await t.run(async (ctx) => {
         return await ctx.db
           .query("issueComments")
-          .withIndex("by_issue", (q: any) => q.eq("issueId", issueId)) // eslint-disable-line @typescript-eslint/no-explicit-any
+          .withIndex("by_issue", (q) => q.eq("issueId", issueId))
           .collect();
       });
       expect(comments).toHaveLength(1);
