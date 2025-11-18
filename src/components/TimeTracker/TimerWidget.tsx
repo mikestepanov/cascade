@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Input } from "../../ui/form/Input";
 
 interface TimerWidgetProps {
   issueId?: Id<"issues">;
@@ -74,12 +75,12 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
   // If no timer is running and we're on an issue page, show start button
   if (!activeTimer && issueId) {
     return (
-      <div className="fixed bottom-6 left-6 z-40">
+      <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40">
         <button
           onClick={handleStart}
-          className="flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
         >
-          <Play className="w-5 h-5" />
+          <Play className="w-4 h-4 sm:w-5 sm:h-5" />
           <span className="font-medium">Start Timer</span>
         </button>
       </div>
@@ -90,7 +91,7 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
   if (activeTimer) {
     return (
       <>
-        <div className="fixed bottom-6 left-6 z-40 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 min-w-[300px]">
+        <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-3 sm:p-4 min-w-[250px] sm:min-w-[300px] max-w-[calc(100vw-2rem)]">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Clock className="w-4 h-4" />
@@ -101,14 +102,14 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
             </div>
           </div>
 
-          <div className="mb-3">
-            <div className="text-2xl font-mono font-bold text-gray-900 dark:text-white">
+          <div className="mb-2 sm:mb-3">
+            <div className="text-xl sm:text-2xl font-mono font-bold text-gray-900 dark:text-white">
               {formatElapsed(elapsed)}
             </div>
           </div>
 
-          <div className="mb-3">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <div className="mb-2 sm:mb-3">
+            <div className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
               {activeTimer.issueKey}
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
@@ -127,8 +128,8 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
 
         {/* Stop Dialog */}
         {showStopDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Stop Timer & Log Time
               </h3>
@@ -164,24 +165,22 @@ export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps)
                     Hourly Rate (optional)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
                       $
                     </span>
-                    <input
+                    <Input
                       type="number"
                       value={hourlyRate ?? ""}
                       onChange={(e) =>
                         setHourlyRate(e.target.value ? parseFloat(e.target.value) : undefined)
                       }
                       placeholder="Use project default"
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="pl-8"
                       step="0.01"
                       min="0"
+                      helperText="Leave blank to use project default rate"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Leave blank to use project default rate
-                  </p>
                 </div>
               )}
 

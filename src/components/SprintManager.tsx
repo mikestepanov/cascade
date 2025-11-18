@@ -5,6 +5,8 @@ import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Input } from "./ui/form/Input";
+import { Textarea } from "./ui/form/Textarea";
 import { SkeletonProjectCard } from "./ui/Skeleton";
 
 interface SprintManagerProps {
@@ -98,28 +100,20 @@ export function SprintManager({ projectId }: SprintManagerProps) {
       {showCreateForm && (
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
-            <div>
-              <div className="block text-sm font-medium text-gray-700 mb-1">Sprint Name</div>
-              <input
-                type="text"
-                value={newSprintName}
-                onChange={(e) => setNewSprintName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g., Sprint 1"
-              />
-            </div>
-            <div>
-              <div className="block text-sm font-medium text-gray-700 mb-1">
-                Sprint Goal (Optional)
-              </div>
-              <textarea
-                value={newSprintGoal}
-                onChange={(e) => setNewSprintGoal(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                placeholder="What do you want to achieve in this sprint?"
-                rows={2}
-              />
-            </div>
+            <Input
+              label="Sprint Name"
+              type="text"
+              value={newSprintName}
+              onChange={(e) => setNewSprintName(e.target.value)}
+              placeholder="e.g., Sprint 1"
+            />
+            <Textarea
+              label="Sprint Goal (Optional)"
+              value={newSprintGoal}
+              onChange={(e) => setNewSprintGoal(e.target.value)}
+              placeholder="What do you want to achieve in this sprint?"
+              rows={2}
+            />
             <div className="flex space-x-2">
               <button
                 type="submit"

@@ -5,6 +5,8 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
+import { Input, Select } from "./ui/form";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
@@ -201,44 +203,39 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
       {/* Add Dependency Dialog */}
       {showAddDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
+        <>
+          <ModalBackdrop onClick={() => setShowAddDialog(false)} zIndex="z-50" animated={false} />
+          <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
               Add Dependency
             </h3>
 
             <div className="space-y-4">
               {/* Link Type */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Relationship Type
-                </div>
-                <select
-                  value={linkType}
-                  onChange={(e) =>
-                    setLinkType(e.target.value as "blocks" | "relates" | "duplicates")
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                >
-                  <option value="blocks">Blocks</option>
-                  <option value="relates">Relates to</option>
-                  <option value="duplicates">Duplicates</option>
-                </select>
-              </div>
+              <Select
+                label="Relationship Type"
+                value={linkType}
+                onChange={(e) =>
+                  setLinkType(e.target.value as "blocks" | "relates" | "duplicates")
+                }
+              >
+                <option value="blocks">Blocks</option>
+                <option value="relates">Relates to</option>
+                <option value="duplicates">Duplicates</option>
+              </Select>
 
               {/* Search Issues */}
-              <div>
-                <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Search Issue
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Type to search..."
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100"
-                />
-              </div>
+              <Input
+                label="Search Issue"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Type to search..."
+              />
 
               {/* Search Results */}
               {searchResults && searchResults.length > 0 && (
@@ -302,7 +299,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Delete Confirmation */}

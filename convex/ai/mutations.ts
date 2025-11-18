@@ -1,0 +1,264 @@
+/**
+ * AI Mutations - Create chats, add messages, track usage
+ */
+
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { mutation } from "../_generated/server";
+
+/**
+ * Create a new AI chat
+ */
+export const createChat = mutation({
+  args: {
+    title: v.optional(v.string()),
+    projectId: v.optional(v.id("projects")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const now = Date.now();
+
+    const chatId = await ctx.db.insert("aiChats", {
+      userId,
+      projectId: args.projectId,
+      title: args.title || "New Chat",
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return chatId;
+  },
+});
+
+/**
+ * Update chat title
+ */
+export const updateChatTitle = mutation({
+  args: {
+    chatId: v.id("aiChats"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat || chat.userId !== userId) {
+      throw new Error("Chat not found or unauthorized");
+    }
+
+    await ctx.db.patch(args.chatId, {
+      title: args.title,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Delete a chat and all its messages
+ */
+export const deleteChat = mutation({
+  args: {
+    chatId: v.id("aiChats"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat || chat.userId !== userId) {
+      throw new Error("Chat not found or unauthorized");
+    }
+
+    // Delete all messages
+    const messages = await ctx.db
+      .query("aiMessages")
+      .withIndex("by_chat", (q) => q.eq("chatId", args.chatId))
+      .collect();
+
+    for (const message of messages) {
+      await ctx.db.delete(message._id);
+    }
+
+    // Delete chat
+    await ctx.db.delete(args.chatId);
+  },
+});
+
+/**
+ * Add a message to a chat
+ */
+export const addMessage = mutation({
+  args: {
+    chatId: v.id("aiChats"),
+    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    content: v.string(),
+    modelUsed: v.optional(v.string()),
+    tokensUsed: v.optional(v.number()),
+    responseTime: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Verify chat ownership
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat || chat.userId !== userId) {
+      throw new Error("Chat not found or unauthorized");
+    }
+
+    const messageId = await ctx.db.insert("aiMessages", {
+      chatId: args.chatId,
+      role: args.role,
+      content: args.content,
+      modelUsed: args.modelUsed,
+      tokensUsed: args.tokensUsed,
+      responseTime: args.responseTime,
+      createdAt: Date.now(),
+    });
+
+    // Update chat's updatedAt
+    await ctx.db.patch(args.chatId, {
+      updatedAt: Date.now(),
+    });
+
+    // Auto-generate title from first user message if chat title is "New Chat"
+    if (chat.title === "New Chat" && args.role === "user") {
+      const truncated = args.content.length > 50 ? `${args.content.slice(0, 50)}...` : args.content;
+      await ctx.db.patch(args.chatId, {
+        title: truncated,
+      });
+    }
+
+    return messageId;
+  },
+});
+
+/**
+ * Create an AI suggestion
+ */
+export const createSuggestion = mutation({
+  args: {
+    userId: v.id("users"),
+    projectId: v.id("projects"),
+    suggestionType: v.union(
+      v.literal("issue_description"),
+      v.literal("issue_priority"),
+      v.literal("issue_labels"),
+      v.literal("issue_assignee"),
+      v.literal("sprint_planning"),
+      v.literal("risk_detection"),
+      v.literal("insight"),
+    ),
+    targetId: v.optional(v.string()),
+    suggestion: v.string(),
+    reasoning: v.optional(v.string()),
+    modelUsed: v.string(),
+    confidence: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const suggestionId = await ctx.db.insert("aiSuggestions", {
+      userId: args.userId,
+      projectId: args.projectId,
+      suggestionType: args.suggestionType,
+      targetId: args.targetId,
+      suggestion: args.suggestion,
+      reasoning: args.reasoning,
+      modelUsed: args.modelUsed,
+      confidence: args.confidence,
+      createdAt: Date.now(),
+    });
+
+    return suggestionId;
+  },
+});
+
+/**
+ * Accept an AI suggestion
+ */
+export const acceptSuggestion = mutation({
+  args: {
+    suggestionId: v.id("aiSuggestions"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const suggestion = await ctx.db.get(args.suggestionId);
+    if (!suggestion) throw new Error("Suggestion not found");
+
+    await ctx.db.patch(args.suggestionId, {
+      accepted: true,
+      dismissed: false,
+      respondedAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Dismiss an AI suggestion
+ */
+export const dismissSuggestion = mutation({
+  args: {
+    suggestionId: v.id("aiSuggestions"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const suggestion = await ctx.db.get(args.suggestionId);
+    if (!suggestion) throw new Error("Suggestion not found");
+
+    await ctx.db.patch(args.suggestionId, {
+      accepted: false,
+      dismissed: true,
+      respondedAt: Date.now(),
+    });
+  },
+});
+
+/**
+ * Track AI usage
+ */
+export const trackUsage = mutation({
+  args: {
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")),
+    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    model: v.string(),
+    operation: v.union(
+      v.literal("chat"),
+      v.literal("suggestion"),
+      v.literal("automation"),
+      v.literal("analysis"),
+    ),
+    promptTokens: v.number(),
+    completionTokens: v.number(),
+    totalTokens: v.number(),
+    estimatedCost: v.optional(v.number()),
+    responseTime: v.number(),
+    success: v.boolean(),
+    errorMessage: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const usageId = await ctx.db.insert("aiUsage", {
+      userId: args.userId,
+      projectId: args.projectId,
+      provider: args.provider,
+      model: args.model,
+      operation: args.operation,
+      promptTokens: args.promptTokens,
+      completionTokens: args.completionTokens,
+      totalTokens: args.totalTokens,
+      estimatedCost: args.estimatedCost,
+      responseTime: args.responseTime,
+      success: args.success,
+      errorMessage: args.errorMessage,
+      createdAt: Date.now(),
+    });
+
+    return usageId;
+  },
+});

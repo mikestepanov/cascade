@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toggleInArray } from "@/lib/array-utils";
 import { showError, showSuccess } from "@/lib/toast";
@@ -18,18 +18,22 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState<"task" | "bug" | "story" | "epic">("task");
+  const [type, setType] = useState<"task" | "bug" | "story" | "epic" | "subtask">("task");
   const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">(
     "medium",
   );
   const [assigneeId, setAssigneeId] = useState<Id<"users"> | "">("");
   const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
+  const [storyPoints, setStoryPoints] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
 
   const project = useQuery(api.projects.get, { id: projectId });
   const templates = useQuery(api.templates.list, { projectId });
   const labels = useQuery(api.labels.list, { projectId });
   const createIssue = useMutation(api.issues.create);
+  const generateSuggestions = useAction(api.ai.actions.generateIssueSuggestions);
 
   // Apply template when selected
   useEffect(() => {
@@ -71,6 +75,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         assigneeId: assigneeId || undefined,
         sprintId,
         labels: selectedLabels.length > 0 ? selectedLabels : undefined,
+        storyPoints: storyPoints ? Number.parseFloat(storyPoints) : undefined,
       });
 
       showSuccess("Issue created successfully");
@@ -84,6 +89,47 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
 
   const toggleLabel = (labelId: Id<"labels">) => {
     setSelectedLabels((prev) => toggleInArray(prev, labelId));
+  };
+
+  const handleGenerateAISuggestions = async () => {
+    if (!title.trim()) {
+      showError(new Error("Please enter a title first"), "Title required");
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    try {
+      const suggestions = await generateSuggestions({
+        projectId,
+        issueTitle: title,
+        issueDescription: description || undefined,
+        suggestionTypes: ["description", "priority", "labels"],
+      });
+
+      // Apply AI suggestions
+      if (suggestions.description && !description.trim()) {
+        setDescription(suggestions.description);
+      }
+
+      if (suggestions.priority) {
+        setPriority(suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest");
+      }
+
+      if (suggestions.labels && Array.isArray(suggestions.labels) && labels) {
+        const suggestedLabelIds = labels
+          .filter((label) => suggestions.labels.includes(label.name))
+          .map((label) => label._id);
+        setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
+      }
+
+      setShowAISuggestions(true);
+      showSuccess("AI suggestions applied!");
+    } catch (error) {
+      console.error("AI suggestion error:", error);
+      showError(error, "Failed to generate AI suggestions. Make sure AI provider is configured.");
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   if (!project) return null;
@@ -121,6 +167,34 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           required
         />
 
+        {/* AI Suggestions Button */}
+        <div className="flex items-center gap-2 pb-2">
+          <button
+            type="button"
+            onClick={handleGenerateAISuggestions}
+            disabled={!title.trim() || isGeneratingAI}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {isGeneratingAI ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <span>✨</span>
+                <span>Get AI Suggestions</span>
+              </>
+            )}
+          </button>
+          {showAISuggestions && (
+            <span className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+              <span>✓</span>
+              <span>AI suggestions applied</span>
+            </span>
+          )}
+        </div>
+
         <TextareaField
           label="Description"
           value={description}
@@ -133,12 +207,15 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Type"
             value={type}
-            onChange={(e) => setType(e.target.value as "task" | "bug" | "story" | "epic")}
+            onChange={(e) =>
+              setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")
+            }
           >
             <option value="task">📋 Task</option>
             <option value="bug">🐛 Bug</option>
             <option value="story">📖 Story</option>
             <option value="epic">🎯 Epic</option>
+            <option value="subtask">🔸 Sub-task</option>
           </SelectField>
 
           <SelectField
@@ -168,6 +245,16 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             </option>
           ))}
         </SelectField>
+
+        <InputField
+          label="Story Points"
+          type="number"
+          value={storyPoints}
+          onChange={(e) => setStoryPoints(e.target.value)}
+          placeholder="Enter story points (optional)"
+          min="0"
+          step="0.5"
+        />
 
         {/* Labels */}
         {labels && labels.length > 0 && (

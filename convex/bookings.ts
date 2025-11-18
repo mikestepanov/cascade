@@ -226,7 +226,9 @@ export const listMyBookings = query({
       ? await ctx.db
           .query("bookings")
           .withIndex("by_host_status", (q) =>
-            q.eq("hostId", userId).eq("status", args.status as "pending" | "confirmed" | "cancelled" | "completed")
+            q
+              .eq("hostId", userId)
+              .eq("status", args.status as "pending" | "confirmed" | "cancelled" | "completed"),
           )
           .collect()
       : await ctx.db

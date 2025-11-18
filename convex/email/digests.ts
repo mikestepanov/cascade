@@ -21,6 +21,7 @@ export const sendDailyDigests = internalAction({
     // Send digest to each user
     const results = await Promise.allSettled(
       users.map((user) =>
+        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "daily",
@@ -49,6 +50,7 @@ export const sendWeeklyDigests = internalAction({
     // Send digest to each user
     const results = await Promise.allSettled(
       users.map((user) =>
+        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "weekly",

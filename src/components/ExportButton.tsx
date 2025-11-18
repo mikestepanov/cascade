@@ -8,7 +8,7 @@ interface ExportButtonProps {
   status?: string;
 }
 
-export function ExportButton({ projectId }: ExportButtonProps) {
+export function ExportButton({ projectId, sprintId, status }: ExportButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -39,6 +39,8 @@ export function ExportButton({ projectId }: ExportButtonProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         projectId={projectId}
+        sprintId={sprintId}
+        status={status}
       />
     </>
   );

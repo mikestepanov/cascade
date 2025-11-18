@@ -1,6 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestUser } from "./test-utils";
@@ -522,15 +522,12 @@ describe("Notifications", () => {
       const actorId = await createTestUser(t, { name: "Actor" });
 
       // Call internal mutation directly
-      await t.run(async (ctx) => {
-        const { create } = await import("./notifications");
-        await create(ctx, {
-          userId,
-          type: "issue_assigned",
-          title: "Issue assigned",
-          message: "You have been assigned to an issue",
-          actorId,
-        });
+      await t.mutation(internal.notifications.create, {
+        userId,
+        type: "issue_assigned",
+        title: "Issue assigned",
+        message: "You have been assigned to an issue",
+        actorId,
       });
 
       // Verify notification was created
@@ -547,15 +544,12 @@ describe("Notifications", () => {
       const userId = await createTestUser(t);
 
       // Call internal mutation with userId === actorId
-      await t.run(async (ctx) => {
-        const { create } = await import("./notifications");
-        await create(ctx, {
-          userId,
-          type: "test",
-          title: "Test",
-          message: "Test",
-          actorId: userId,
-        });
+      await t.mutation(internal.notifications.create, {
+        userId,
+        type: "test",
+        title: "Test",
+        message: "Test",
+        actorId: userId,
       });
 
       // Verify no notification was created
@@ -573,15 +567,12 @@ describe("Notifications", () => {
       const actor = await createTestUser(t, { name: "Actor" });
 
       // Call internal bulk mutation
-      await t.run(async (ctx) => {
-        const { createBulk } = await import("./notifications");
-        await createBulk(ctx, {
-          userIds: [user1, user2, user3],
-          type: "project_update",
-          title: "Project updated",
-          message: "The project has been updated",
-          actorId: actor,
-        });
+      await t.mutation(internal.notifications.createBulk, {
+        userIds: [user1, user2, user3],
+        type: "project_update",
+        title: "Project updated",
+        message: "The project has been updated",
+        actorId: actor,
       });
 
       // Verify all users got notifications
@@ -605,15 +596,12 @@ describe("Notifications", () => {
       const actor = await createTestUser(t, { name: "Actor" });
 
       // Include actor in recipients
-      await t.run(async (ctx) => {
-        const { createBulk } = await import("./notifications");
-        await createBulk(ctx, {
-          userIds: [user1, user2, actor],
-          type: "test",
-          title: "Test",
-          message: "Test",
-          actorId: actor,
-        });
+      await t.mutation(internal.notifications.createBulk, {
+        userIds: [user1, user2, actor],
+        type: "test",
+        title: "Test",
+        message: "Test",
+        actorId: actor,
       });
 
       // Verify actor didn't get notification

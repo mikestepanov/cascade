@@ -71,7 +71,12 @@ export function BillingReport({ projectId }: BillingReportProps) {
         <div className="flex gap-2">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as any)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "week" || value === "month" || value === "all") {
+                setDateRange(value);
+              }
+            }}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="week">Last 7 days</option>

@@ -1,0 +1,73 @@
+import { httpRouter } from "convex/server";
+import { httpAction } from "./_generated/server";
+import { internal } from "./_generated/api";
+
+const http = httpRouter();
+
+// GitHub webhook endpoint
+http.route({
+  path: "/github/webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const signature = request.headers.get("x-hub-signature-256");
+      const event = request.headers.get("x-github-event");
+
+      if (!signature || !event) {
+        return new Response("Missing signature or event header", { status: 400 });
+      }
+
+      const payload = await request.json();
+
+      // Verify signature (in production, you'd verify the HMAC signature here)
+      // For now, we'll process the event
+
+      // Handle different GitHub events
+      switch (event) {
+        case "pull_request":
+          await ctx.runMutation(internal.githubWebhook.handlePullRequest, {
+            action: payload.action,
+            pullRequest: payload.pull_request,
+            repository: payload.repository,
+          });
+          break;
+
+        case "push":
+          await ctx.runMutation(internal.githubWebhook.handlePush, {
+            commits: payload.commits,
+            repository: payload.repository,
+            ref: payload.ref,
+          });
+          break;
+
+        case "pull_request_review":
+          await ctx.runMutation(internal.githubWebhook.handlePRReview, {
+            action: payload.action,
+            review: payload.review,
+            pullRequest: payload.pull_request,
+            repository: payload.repository,
+          });
+          break;
+
+        default:
+          console.log(`Unhandled GitHub event: ${event}`);
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error("GitHub webhook error:", error);
+      return new Response(
+        JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+  }),
+});
+
+export default http;

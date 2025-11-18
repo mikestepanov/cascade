@@ -2,6 +2,8 @@ import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Input } from "./ui/form/Input";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 type SearchResult =
   | {
@@ -71,7 +73,8 @@ export function GlobalSearch() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        aria-label="Open search (⌘K)"
+        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
       >
         <svg
           aria-hidden="true"
@@ -97,19 +100,7 @@ export function GlobalSearch() {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsOpen(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setIsOpen(false);
-              }
-            }}
-            aria-label="Close search"
-          />
+          <ModalBackdrop onClick={() => setIsOpen(false)} animated={false} />
 
           {/* Modal */}
           <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-white rounded-lg shadow-2xl z-50">
@@ -130,12 +121,12 @@ export function GlobalSearch() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                <input
+                <Input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search issues and documents..."
-                  className="w-full pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
+                  className="pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
                 />
               </div>
             </div>

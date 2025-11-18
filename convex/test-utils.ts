@@ -4,8 +4,11 @@
  * This file provides helper functions for creating test data and managing test authentication.
  */
 
-import type { ConvexTestingHelper } from "convex-test";
+import type { TestConvex } from "convex-test";
 import type { DataModel, Id } from "./_generated/dataModel";
+import type schema from "./schema";
+
+type TestCtx = TestConvex<typeof schema>;
 
 /**
  * Create a test user
@@ -15,7 +18,7 @@ import type { DataModel, Id } from "./_generated/dataModel";
  * @returns User ID
  */
 export async function createTestUser(
-  t: ConvexTestingHelper<DataModel>,
+  t: TestCtx,
   userData?: {
     name?: string;
     email?: string;
@@ -28,7 +31,7 @@ export async function createTestUser(
     return await ctx.db.insert("users", {
       name,
       email,
-      emailVerified: Date.now(),
+      emailVerificationTime: Date.now(),
       image: undefined,
     });
   });
@@ -43,7 +46,7 @@ export async function createTestUser(
  * @returns Project ID
  */
 export async function createTestProject(
-  t: ConvexTestingHelper<DataModel>,
+  t: TestCtx,
   creatorId: Id<"users">,
   projectData?: {
     name?: string;
@@ -103,7 +106,7 @@ export async function createTestProject(
  * @returns Project member ID
  */
 export async function addProjectMember(
-  t: ConvexTestingHelper<DataModel>,
+  t: TestCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
   role: "admin" | "editor" | "viewer",
@@ -130,7 +133,7 @@ export async function addProjectMember(
  * @returns Issue ID
  */
 export async function createTestIssue(
-  t: ConvexTestingHelper<DataModel>,
+  t: TestCtx,
   projectId: Id<"projects">,
   reporterId: Id<"users">,
   issueData?: {

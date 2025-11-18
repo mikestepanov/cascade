@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
+import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ModalProps {
   isOpen: boolean;
@@ -32,14 +32,7 @@ export function Modal({
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 animate-in fade-in duration-200"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close modal"
-      />
+      <ModalBackdrop onClick={onClose} />
 
       {/* Modal */}
       <div
@@ -49,22 +42,26 @@ export function Modal({
         aria-labelledby={title ? "modal-title" : undefined}
       >
         <div
-          className={`bg-white ${
+          className={`bg-white dark:bg-gray-900 ${
             fullScreenOnMobile
               ? "rounded-none sm:rounded-lg min-h-screen sm:min-h-0"
               : "rounded-lg m-4 sm:m-0"
           } shadow-xl w-full ${maxWidthClasses[maxWidth]} animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-200`}
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
         >
           {title && (
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex items-center justify-between rounded-t-lg z-10">
-              <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+            <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex items-center justify-between rounded-t-lg z-10">
+              <h2
+                id="modal-title"
+                className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+              >
                 {title}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 aria-label="Close modal"
               >
                 <svg

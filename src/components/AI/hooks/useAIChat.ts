@@ -1,0 +1,147 @@
+/**
+ * useAIChat Hook
+ * Manages AI chat state and business logic
+ */
+
+import { useAction, useMutation, useQuery } from "convex/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
+
+export interface UseAIChatOptions {
+  projectId?: Id<"projects">;
+  initialChatId?: Id<"aiChats">;
+  onChatCreated?: (chatId: Id<"aiChats">) => void;
+}
+
+export interface UseAIChatReturn {
+  // State
+  chatId: Id<"aiChats"> | null;
+  inputMessage: string;
+  isSending: boolean;
+  copiedMessageId: string | null;
+
+  // Refs
+  messagesEndRef: React.RefObject<HTMLDivElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+
+  // Data
+  messages: any[] | undefined;
+
+  // Actions
+  setInputMessage: (message: string) => void;
+  handleSendMessage: () => Promise<void>;
+  handleKeyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  copyToClipboard: (content: string, messageId: string) => Promise<void>;
+}
+
+export function useAIChat({
+  projectId,
+  initialChatId,
+  onChatCreated,
+}: UseAIChatOptions): UseAIChatReturn {
+  const [chatId, setChatId] = useState<Id<"aiChats"> | null>(initialChatId || null);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const createChat = useMutation(api.ai.mutations.createChat);
+  const sendMessage = useAction(api.ai.actions.sendChatMessage);
+  const messages = useQuery(api.ai.queries.getChatMessages, chatId ? { chatId } : "skip");
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages && messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages?.length]); // Only depend on length, not entire array
+
+  // Create chat on mount if no chatId provided
+  useEffect(() => {
+    if (!chatId) {
+      createChat({ projectId, title: "New Chat" })
+        .then((newChatId) => {
+          setChatId(newChatId);
+          onChatCreated?.(newChatId);
+        })
+        .catch((error) => {
+          console.error("Failed to create chat:", error);
+        });
+    }
+  }, []); // Empty deps - only run once on mount
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea && inputMessage !== undefined) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+    }
+  }, [inputMessage?.length]); // Only depend on length
+
+  const copyToClipboard = useCallback(async (content: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch {
+      // Silently fail if clipboard access is denied
+    }
+  }, []);
+
+  const handleSendMessage = useCallback(async () => {
+    if (!inputMessage.trim() || !chatId || isSending) return;
+
+    const message = inputMessage.trim();
+    setInputMessage("");
+    setIsSending(true);
+
+    try {
+      await sendMessage({
+        chatId,
+        message,
+        projectId,
+      });
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // Restore message on error
+      setInputMessage(message);
+    } finally {
+      setIsSending(false);
+    }
+  }, [inputMessage, chatId, isSending, sendMessage, projectId]);
+
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    },
+    [handleSendMessage],
+  );
+
+  return {
+    // State
+    chatId,
+    inputMessage,
+    isSending,
+    copiedMessageId,
+
+    // Refs
+    messagesEndRef,
+    textareaRef,
+
+    // Data
+    messages,
+
+    // Actions
+    setInputMessage,
+    handleSendMessage,
+    handleKeyPress,
+    copyToClipboard,
+  };
+}

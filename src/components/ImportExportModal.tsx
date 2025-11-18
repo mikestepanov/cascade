@@ -11,12 +11,20 @@ interface ImportExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: Id<"projects">;
+  sprintId?: Id<"sprints">;
+  status?: string;
 }
 
 type Mode = "export" | "import";
 type ExportFormat = "csv" | "json";
 
-export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportModalProps) {
+export function ImportExportModal({
+  isOpen,
+  onClose,
+  projectId,
+  sprintId,
+  status,
+}: ImportExportModalProps) {
   const [mode, setMode] = useState<Mode>("export");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [importFormat, setImportFormat] = useState<ExportFormat>("csv");
@@ -27,12 +35,12 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
 
   const csvData = useQuery(
     api.export.exportIssuesCSV,
-    isExporting && exportFormat === "csv" ? { projectId } : "skip",
+    isExporting && exportFormat === "csv" ? { projectId, sprintId, status } : "skip",
   );
 
   const jsonData = useQuery(
     api.export.exportIssuesJSON,
-    isExporting && exportFormat === "json" ? { projectId } : "skip",
+    isExporting && exportFormat === "json" ? { projectId, sprintId, status } : "skip",
   );
 
   const importCSV = useMutation(api.export.importIssuesCSV);
@@ -236,7 +244,11 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
                   <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
                     <li>CSV format is compatible with Excel, Google Sheets</li>
                     <li>JSON format includes full issue data and metadata</li>
-                    <li>All issues in this project will be exported</li>
+                    <li>
+                      {sprintId || status
+                        ? "Filtered issues will be exported"
+                        : "All issues in this project will be exported"}
+                    </li>
                   </ul>
                 </div>
               </div>

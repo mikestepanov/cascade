@@ -97,8 +97,9 @@ describe("AnalyticsDashboard", () => {
 
     render(<AnalyticsDashboard projectId={"test" as Id<"projects">} />);
 
-    const spinner = document.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+    // Check for skeleton loading states (uses animate-pulse class)
+    const skeletons = document.querySelectorAll(".animate-pulse");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("should render dashboard header", () => {

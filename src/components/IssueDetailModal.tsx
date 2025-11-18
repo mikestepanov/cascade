@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -10,7 +9,12 @@ import { FileAttachments } from "./FileAttachments";
 import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
 import { IssueWatchers } from "./IssueWatchers";
+import { IssueMetadataSection } from "./IssueDetail/IssueMetadataSection";
+import { SubtasksList } from "./IssueDetail/SubtasksList";
 import { TimeTracker } from "./TimeTracker";
+import { Input } from "./ui/form/Input";
+import { Textarea } from "./ui/form/Textarea";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Skeleton } from "./ui/Skeleton";
 
 interface IssueDetailModalProps {
@@ -24,41 +28,47 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
   const [description, setDescription] = useState("");
 
   const issue = useQuery(api.issues.get, { id: issueId });
+  const subtasks = useQuery(api.issues.listSubtasks, { parentId: issueId });
   const updateIssue = useMutation(api.issues.update);
 
   if (!issue) {
     return (
       <>
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
+        <ModalBackdrop onClick={onClose} animated={false} />
 
         {/* Modal Skeleton */}
         <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
+          <div
+            role="status"
+            aria-busy="true"
+            className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
+          >
+            <span className="sr-only">Loading...</span>
             {/* Header Skeleton */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6">
               <div className="flex items-center space-x-3">
-                <Skeleton className="h-8 w-8 rounded" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-8 rounded" />
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-16" />
+                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-24" />
+                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-16" />
                 </div>
               </div>
             </div>
 
             {/* Content Skeleton */}
             <div className="p-6 space-y-6">
-              <Skeleton className="h-8 w-3/4" />
+              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-8 w-3/4" />
               <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
               </div>
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
               </div>
             </div>
           </div>
@@ -90,14 +100,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
-        tabIndex={0}
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-        onKeyDown={handleKeyboardClick(onClose)}
-        aria-label="Close modal"
-      />
+      <ModalBackdrop onClick={onClose} animated={false} />
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
@@ -140,11 +143,11 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             {/* Title */}
             <div>
               {isEditing ? (
-                <input
+                <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full text-2xl font-bold border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="text-2xl font-bold"
                   placeholder="Issue title"
                 />
               ) : (
@@ -163,18 +166,21 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Description */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
               {isEditing ? (
-                <textarea
+                <Textarea
+                  label="Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
+                  rows={6}
                   placeholder="Add a description..."
                 />
               ) : (
-                <p className="text-gray-600 whitespace-pre-wrap">
-                  {issue.description || "No description provided"}
-                </p>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                  <p className="text-gray-600 whitespace-pre-wrap">
+                    {issue.description || "No description provided"}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -199,41 +205,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             )}
 
             {/* Metadata */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div>
-                <span className="text-sm text-gray-500">Status:</span>
-                <p className="font-medium">{issue.status}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Type:</span>
-                <p className="font-medium capitalize">{issue.type}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Assignee:</span>
-                <p className="font-medium">{issue.assignee?.name || "Unassigned"}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Reporter:</span>
-                <p className="font-medium">{issue.reporter?.name || "Unknown"}</p>
-              </div>
-            </div>
-
-            {/* Labels */}
-            {issue.labels.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Labels</h3>
-                <div className="flex flex-wrap gap-2">
-                  {issue.labels.map((label) => (
-                    <span
-                      key={label}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
-                    >
-                      {label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+            <IssueMetadataSection
+              status={issue.status}
+              type={issue.type}
+              assignee={issue.assignee}
+              reporter={issue.reporter}
+              storyPoints={issue.storyPoints}
+              labels={issue.labels}
+            />
 
             {/* Time Tracking */}
             <div>
@@ -264,6 +243,15 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               <h3 className="text-sm font-medium text-gray-700 mb-3">Dependencies</h3>
               <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
             </div>
+
+            {/* Sub-tasks (only show for non-subtasks) */}
+            {issue.type !== "subtask" && (
+              <SubtasksList
+                issueId={issue._id}
+                projectId={issue.projectId}
+                subtasks={subtasks}
+              />
+            )}
 
             {/* Custom Fields */}
             <div>

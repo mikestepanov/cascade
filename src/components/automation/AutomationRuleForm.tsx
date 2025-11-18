@@ -3,6 +3,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Input } from "../ui/form/Input";
+import { Select } from "../ui/form/Select";
+import { Textarea } from "../ui/form/Textarea";
 import { FormDialog } from "../ui/FormDialog";
 
 interface AutomationRuleFormProps {
@@ -110,96 +113,67 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
     >
       <div className="space-y-4">
         {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Rule Name *
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            placeholder="e.g., Auto-assign high priority issues"
-          />
-        </div>
+        <Input
+          label="Rule Name *"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Auto-assign high priority issues"
+        />
 
         {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            placeholder="Optional description"
-          />
-        </div>
+        <Textarea
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={2}
+          placeholder="Optional description"
+        />
 
         {/* Trigger */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Trigger Event *
-          </label>
-          <select
-            value={trigger}
-            onChange={(e) => setTrigger(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-          >
-            <option value="status_changed">Status Changed</option>
-            <option value="assignee_changed">Assignee Changed</option>
-            <option value="priority_changed">Priority Changed</option>
-            <option value="issue_created">Issue Created</option>
-            <option value="label_added">Label Added</option>
-          </select>
-        </div>
+        <Select
+          label="Trigger Event *"
+          value={trigger}
+          onChange={(e) => setTrigger(e.target.value)}
+        >
+          <option value="status_changed">Status Changed</option>
+          <option value="assignee_changed">Assignee Changed</option>
+          <option value="priority_changed">Priority Changed</option>
+          <option value="issue_created">Issue Created</option>
+          <option value="label_added">Label Added</option>
+        </Select>
 
         {/* Trigger Value */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Trigger Value
-          </label>
-          <input
-            type="text"
-            value={triggerValue}
-            onChange={(e) => setTriggerValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            placeholder="Optional trigger condition"
-          />
-        </div>
+        <Input
+          label="Trigger Value"
+          type="text"
+          value={triggerValue}
+          onChange={(e) => setTriggerValue(e.target.value)}
+          placeholder="Optional trigger condition"
+        />
 
         {/* Action Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Action *
-          </label>
-          <select
-            value={actionType}
-            onChange={(e) => setActionType(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-          >
-            <option value="set_assignee">Set Assignee</option>
-            <option value="set_priority">Set Priority</option>
-            <option value="add_label">Add Label</option>
-            <option value="add_comment">Add Comment</option>
-            <option value="send_notification">Send Notification</option>
-          </select>
-        </div>
+        <Select
+          label="Action *"
+          value={actionType}
+          onChange={(e) => setActionType(e.target.value)}
+        >
+          <option value="set_assignee">Set Assignee</option>
+          <option value="set_priority">Set Priority</option>
+          <option value="add_label">Add Label</option>
+          <option value="add_comment">Add Comment</option>
+          <option value="send_notification">Send Notification</option>
+        </Select>
 
         {/* Action Value */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Action Value (JSON) *
-          </label>
-          <textarea
-            value={actionValue}
-            onChange={(e) => setActionValue(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 font-mono text-sm"
-            placeholder='{"label": "urgent"}'
-          />
-        </div>
+        <Textarea
+          label="Action Value (JSON) *"
+          value={actionValue}
+          onChange={(e) => setActionValue(e.target.value)}
+          rows={3}
+          className="font-mono text-sm"
+          placeholder='{"label": "urgent"}'
+        />
       </div>
     </FormDialog>
   );

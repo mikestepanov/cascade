@@ -10,27 +10,49 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
     {
       category: "General",
       items: [
-        { keys: ["⌘", "K"], description: "Open command palette" },
-        { keys: ["Ctrl", "K"], description: "Open command palette (Windows/Linux)" },
+        { keys: ["⌘K", "Ctrl+K"], description: "Open command palette" },
         { keys: ["?"], description: "Show keyboard shortcuts" },
-        { keys: ["Esc"], description: "Close dialogs" },
+        { keys: ["/"], description: "Focus search" },
+        { keys: ["Esc"], description: "Close modal or cancel" },
       ],
     },
     {
       category: "Navigation",
       items: [
-        { keys: ["⌘", "D"], description: "Go to Dashboard" },
-        { keys: ["⌘", "1"], description: "Go to Dashboard" },
-        { keys: ["⌘", "2"], description: "Go to Documents" },
-        { keys: ["⌘", "3"], description: "Go to Projects" },
+        { keys: ["G", "H"], description: "Go to home" },
+        { keys: ["G", "B"], description: "Go to board" },
+        { keys: ["G", "R"], description: "Go to roadmap" },
+        { keys: ["G", "A"], description: "Go to analytics" },
+        { keys: ["G", "S"], description: "Go to settings" },
       ],
     },
     {
-      category: "Command Palette",
+      category: "Actions",
       items: [
-        { keys: ["↑", "↓"], description: "Navigate commands" },
-        { keys: ["Enter"], description: "Execute selected command" },
-        { keys: ["Esc"], description: "Close palette" },
+        { keys: ["C"], description: "Create new issue" },
+        { keys: ["D"], description: "Create new document" },
+        { keys: ["P"], description: "Create new project" },
+      ],
+    },
+    {
+      category: "Issue Actions",
+      items: [
+        { keys: ["E"], description: "Edit issue" },
+        { keys: ["A"], description: "Assign to me" },
+        { keys: ["L"], description: "Add label" },
+        { keys: ["Shift", "P"], description: "Set priority" },
+        { keys: ["Shift", "S"], description: "Change status" },
+        { keys: ["T"], description: "Start time tracking" },
+      ],
+    },
+    {
+      category: "Editor",
+      items: [
+        { keys: ["⌘B", "Ctrl+B"], description: "Bold" },
+        { keys: ["⌘I", "Ctrl+I"], description: "Italic" },
+        { keys: ["⌘U", "Ctrl+U"], description: "Underline" },
+        { keys: ["⌘Z", "Ctrl+Z"], description: "Undo" },
+        { keys: ["⌘Shift+Z", "Ctrl+Shift+Z"], description: "Redo" },
       ],
     },
   ];

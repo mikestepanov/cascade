@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Checkbox } from "../ui/form/Checkbox";
+import { Input } from "../ui/form/Input";
+import { Select } from "../ui/form/Select";
+import { Textarea } from "../ui/form/Textarea";
 import { FormDialog } from "../ui/FormDialog";
 
 type FieldType = "text" | "number" | "select" | "multiselect" | "date" | "checkbox" | "url";
@@ -116,110 +120,71 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
     >
       <div className="space-y-4">
         {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Field Name *
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            placeholder="e.g., Sprint Points"
-          />
-        </div>
+        <Input
+          label="Field Name *"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Sprint Points"
+        />
 
         {/* Field Key (only for create) */}
         {!field && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Field Key *
-            </label>
-            <input
-              type="text"
-              value={fieldKey}
-              onChange={(e) => setFieldKey(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 font-mono"
-              placeholder="e.g., sprint_points"
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Unique identifier (lowercase, underscores only)
-            </p>
-          </div>
+          <Input
+            label="Field Key *"
+            type="text"
+            value={fieldKey}
+            onChange={(e) => setFieldKey(e.target.value)}
+            className="font-mono"
+            placeholder="e.g., sprint_points"
+            helperText="Unique identifier (lowercase, underscores only)"
+          />
         )}
 
         {/* Field Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Field Type *
-          </label>
-          <select
-            value={fieldType}
-            onChange={(e) => setFieldType(e.target.value as FieldType)}
-            disabled={!!field}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 disabled:opacity-50"
-          >
-            <option value="text">Text</option>
-            <option value="number">Number</option>
-            <option value="select">Select (Dropdown)</option>
-            <option value="multiselect">Multi-Select</option>
-            <option value="date">Date</option>
-            <option value="checkbox">Checkbox</option>
-            <option value="url">URL</option>
-          </select>
-          {field && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Field type cannot be changed after creation
-            </p>
-          )}
-        </div>
+        <Select
+          label="Field Type *"
+          value={fieldType}
+          onChange={(e) => setFieldType(e.target.value as FieldType)}
+          disabled={!!field}
+          helperText={field ? "Field type cannot be changed after creation" : undefined}
+        >
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="select">Select (Dropdown)</option>
+          <option value="multiselect">Multi-Select</option>
+          <option value="date">Date</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="url">URL</option>
+        </Select>
 
         {/* Options (for select types) */}
         {requiresOptions && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Options *
-            </label>
-            <input
-              type="text"
-              value={options}
-              onChange={(e) => setOptions(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              placeholder="Option 1, Option 2, Option 3"
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Separate options with commas
-            </p>
-          </div>
+          <Input
+            label="Options *"
+            type="text"
+            value={options}
+            onChange={(e) => setOptions(e.target.value)}
+            placeholder="Option 1, Option 2, Option 3"
+            helperText="Separate options with commas"
+          />
         )}
 
         {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            placeholder="Optional description"
-          />
-        </div>
+        <Textarea
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={2}
+          placeholder="Optional description"
+        />
 
         {/* Required Checkbox */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isRequired"
-            checked={isRequired}
-            onChange={(e) => setIsRequired(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          />
-          <label htmlFor="isRequired" className="text-sm text-gray-700 dark:text-gray-300">
-            Required field
-          </label>
-        </div>
+        <Checkbox
+          label="Required field"
+          checked={isRequired}
+          onChange={(e) => setIsRequired(e.target.checked)}
+        />
       </div>
     </FormDialog>
   );

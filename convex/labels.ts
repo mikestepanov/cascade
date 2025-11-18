@@ -80,9 +80,7 @@ export const update = mutation({
       const newName = args.name; // Store in variable for type narrowing
       const existing = await ctx.db
         .query("labels")
-        .withIndex("by_project_name", (q) =>
-          q.eq("projectId", label.projectId).eq("name", newName),
-        )
+        .withIndex("by_project_name", (q) => q.eq("projectId", label.projectId).eq("name", newName))
         .first();
 
       if (existing) {

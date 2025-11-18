@@ -67,7 +67,13 @@ const applicationTables = {
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: v.union(
+      v.literal("task"),
+      v.literal("bug"),
+      v.literal("story"),
+      v.literal("epic"),
+      v.literal("subtask"),
+    ),
     status: v.string(), // References workflow state id
     priority: v.union(
       v.literal("lowest"),
@@ -83,9 +89,11 @@ const applicationTables = {
     dueDate: v.optional(v.number()),
     estimatedHours: v.optional(v.number()),
     loggedHours: v.optional(v.number()),
+    storyPoints: v.optional(v.number()),
     labels: v.array(v.string()),
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
+    parentId: v.optional(v.id("issues")), // For sub-tasks
     linkedDocuments: v.array(v.id("documents")),
     attachments: v.array(v.id("_storage")),
     order: v.number(), // For ordering within status columns
@@ -96,6 +104,7 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_sprint", ["sprintId"])
     .index("by_epic", ["epicId"])
+    .index("by_parent", ["parentId"])
     .index("by_project_status", ["projectId", "status"])
     .searchIndex("search_title", {
       searchField: "title",
@@ -556,7 +565,7 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_host_status", ["hostId", "status"]),
 
-  // External calendar connections (Google, Outlook) - Future feature
+  // External calendar connections (Google, Outlook)
   calendarConnections: defineTable({
     userId: v.id("users"),
     provider: v.union(v.literal("google"), v.literal("outlook")),
@@ -580,6 +589,207 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_provider", ["provider"])
     .index("by_user_provider", ["userId", "provider"]),
+
+  // GitHub Integration
+  githubConnections: defineTable({
+    userId: v.id("users"),
+    githubUserId: v.string(), // GitHub user ID
+    githubUsername: v.string(), // GitHub username
+    // OAuth tokens
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.optional(v.number()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_github_user", ["githubUserId"]),
+
+  githubRepositories: defineTable({
+    projectId: v.id("projects"),
+    repoOwner: v.string(), // Repository owner (org or user)
+    repoName: v.string(), // Repository name
+    repoFullName: v.string(), // "owner/repo"
+    repoId: v.string(), // GitHub repository ID
+    // Settings
+    syncPRs: v.boolean(), // Sync pull requests
+    syncIssues: v.boolean(), // Sync GitHub issues (optional)
+    autoLinkCommits: v.boolean(), // Auto-link commits that mention issue keys
+    // Metadata
+    linkedBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_repo_id", ["repoId"])
+    .index("by_repo_full_name", ["repoFullName"]),
+
+  githubPullRequests: defineTable({
+    issueId: v.optional(v.id("issues")), // Linked Cascade issue
+    projectId: v.id("projects"),
+    repositoryId: v.id("githubRepositories"),
+    // GitHub PR data
+    prNumber: v.number(),
+    prId: v.string(), // GitHub PR ID
+    title: v.string(),
+    body: v.optional(v.string()),
+    state: v.union(v.literal("open"), v.literal("closed"), v.literal("merged")),
+    mergedAt: v.optional(v.number()),
+    closedAt: v.optional(v.number()),
+    // Author
+    authorUsername: v.string(),
+    authorAvatarUrl: v.optional(v.string()),
+    // Links
+    htmlUrl: v.string(), // GitHub PR URL
+    // Status checks
+    checksStatus: v.optional(
+      v.union(v.literal("pending"), v.literal("success"), v.literal("failure")),
+    ),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_project", ["projectId"])
+    .index("by_repository", ["repositoryId"])
+    .index("by_pr_id", ["prId"])
+    .index("by_repository_pr_number", ["repositoryId", "prNumber"]),
+
+  githubCommits: defineTable({
+    issueId: v.optional(v.id("issues")), // Auto-linked via commit message
+    projectId: v.id("projects"),
+    repositoryId: v.id("githubRepositories"),
+    // GitHub commit data
+    sha: v.string(), // Commit SHA
+    message: v.string(),
+    authorUsername: v.string(),
+    authorAvatarUrl: v.optional(v.string()),
+    htmlUrl: v.string(), // GitHub commit URL
+    committedAt: v.number(),
+    // Metadata
+    createdAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_project", ["projectId"])
+    .index("by_repository", ["repositoryId"])
+    .index("by_sha", ["sha"]),
+
+  // Offline sync queue
+  offlineSyncQueue: defineTable({
+    userId: v.id("users"),
+    mutationType: v.string(), // e.g., "issues.update", "issues.create"
+    mutationArgs: v.string(), // JSON string of mutation arguments
+    status: v.union(
+      v.literal("pending"), // Waiting to be synced
+      v.literal("syncing"), // Currently syncing
+      v.literal("completed"), // Successfully synced
+      v.literal("failed"), // Failed to sync (will retry)
+    ),
+    attempts: v.number(), // Number of sync attempts
+    lastAttempt: v.optional(v.number()),
+    error: v.optional(v.string()), // Error message if failed
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_user_status", ["userId", "status"]),
+
+  // AI Integration
+  aiChats: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Link chat to specific project for context
+    title: v.string(), // Auto-generated from first message or user-provided
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_user_created", ["userId", "createdAt"]),
+
+  aiMessages: defineTable({
+    chatId: v.id("aiChats"),
+    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    content: v.string(),
+    // Context provided to AI (for debugging and transparency)
+    contextData: v.optional(
+      v.object({
+        issueIds: v.optional(v.array(v.id("issues"))),
+        documentIds: v.optional(v.array(v.id("documents"))),
+        sprintIds: v.optional(v.array(v.id("sprints"))),
+      }),
+    ),
+    // AI response metadata
+    modelUsed: v.optional(v.string()), // e.g., "claude-3-5-sonnet-20241022"
+    tokensUsed: v.optional(v.number()),
+    responseTime: v.optional(v.number()), // Milliseconds
+    createdAt: v.number(),
+  })
+    .index("by_chat", ["chatId"])
+    .index("by_chat_created", ["chatId", "createdAt"]),
+
+  aiSuggestions: defineTable({
+    userId: v.id("users"),
+    projectId: v.id("projects"),
+    suggestionType: v.union(
+      v.literal("issue_description"), // AI-generated issue description
+      v.literal("issue_priority"), // AI-suggested priority
+      v.literal("issue_labels"), // AI-suggested labels
+      v.literal("issue_assignee"), // AI-suggested assignee
+      v.literal("sprint_planning"), // AI sprint planning suggestions
+      v.literal("risk_detection"), // AI-detected project risks
+      v.literal("insight"), // General AI insights
+    ),
+    targetId: v.optional(v.string()), // ID of issue/sprint being suggested for
+    suggestion: v.string(), // The AI suggestion content
+    reasoning: v.optional(v.string()), // Why AI made this suggestion
+    // User actions
+    accepted: v.optional(v.boolean()), // Did user accept the suggestion?
+    dismissed: v.optional(v.boolean()),
+    // Metadata
+    modelUsed: v.string(),
+    confidence: v.optional(v.number()), // 0-1 confidence score
+    createdAt: v.number(),
+    respondedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_type", ["suggestionType"])
+    .index("by_project_type", ["projectId", "suggestionType"])
+    .index("by_target", ["targetId"]),
+
+  aiUsage: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")),
+    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    model: v.string(),
+    operation: v.union(
+      v.literal("chat"), // AI chat conversation
+      v.literal("suggestion"), // AI suggestion generation
+      v.literal("automation"), // AI automation task
+      v.literal("analysis"), // AI analytics/insights
+    ),
+    // Token usage
+    promptTokens: v.number(),
+    completionTokens: v.number(),
+    totalTokens: v.number(),
+    // Cost estimation (optional, based on provider pricing)
+    estimatedCost: v.optional(v.number()), // In USD cents
+    // Performance
+    responseTime: v.number(), // Milliseconds
+    success: v.boolean(),
+    errorMessage: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_provider", ["provider"])
+    .index("by_operation", ["operation"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_user_created", ["userId", "createdAt"]),
 };
 
 export default defineSchema({

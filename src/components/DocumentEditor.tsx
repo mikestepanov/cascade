@@ -4,9 +4,16 @@ import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  handleMarkdownExport,
+  importFromMarkdown,
+  readMarkdownForPreview,
+} from "@/lib/markdown";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
+import { Input } from "./ui/form/Input";
+import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -23,6 +30,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewMarkdown, setPreviewMarkdown] = useState("");
+  const [previewFilename, setPreviewFilename] = useState("");
 
   const sync = useBlockNoteSync<BlockNoteEditor>(api.prosemirror, documentId);
 
@@ -88,6 +98,50 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     }
   };
 
+  const handleImportMarkdown = async () => {
+    if (!sync.editor) {
+      toast.error("Editor not ready");
+      return;
+    }
+    try {
+      const result = await readMarkdownForPreview();
+      if (result) {
+        setPreviewMarkdown(result.markdown);
+        setPreviewFilename(result.filename);
+        setShowPreview(true);
+      }
+    } catch (error) {
+      console.error("Import failed:", error);
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (!sync.editor || !previewMarkdown) return;
+
+    try {
+      await importFromMarkdown(sync.editor, previewMarkdown);
+      toast.success(`Imported ${previewFilename}`);
+      setShowPreview(false);
+      setPreviewMarkdown("");
+      setPreviewFilename("");
+    } catch (error) {
+      console.error("Import failed:", error);
+      toast.error("Failed to import markdown");
+    }
+  };
+
+  const handleExportMarkdown = async () => {
+    if (!sync.editor) {
+      toast.error("Editor not ready");
+      return;
+    }
+    try {
+      await handleMarkdownExport(sync.editor, document.title);
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Document Header */}
@@ -95,13 +149,13 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
             {isEditingTitle ? (
-              <input
+              <Input
                 type="text"
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
                 onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
-                className="text-2xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
+                className="text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
               />
             ) : (
               <h1
@@ -126,8 +180,64 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
             )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <PresenceIndicator roomId={documentId} userId={userId} />
+
+            {/* Import Markdown */}
+            <button
+              type="button"
+              onClick={() => void handleImportMarkdown()}
+              disabled={!sync.editor}
+              className="px-3 py-1 rounded-md text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Import from Markdown file"
+              aria-label="Import from Markdown"
+            >
+              <span className="inline-flex items-center gap-1">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Import MD</span>
+              </span>
+            </button>
+
+            {/* Export Markdown */}
+            <button
+              type="button"
+              onClick={() => void handleExportMarkdown()}
+              disabled={!sync.editor}
+              className="px-3 py-1 rounded-md text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Export as Markdown file"
+              aria-label="Export as Markdown"
+            >
+              <span className="inline-flex items-center gap-1">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Export MD</span>
+              </span>
+            </button>
 
             {document.isOwner && (
               <button
@@ -172,6 +282,19 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           )}
         </div>
       </div>
+
+      {/* Markdown Preview Modal */}
+      <MarkdownPreviewModal
+        isOpen={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          setPreviewMarkdown("");
+          setPreviewFilename("");
+        }}
+        onConfirm={() => void handleConfirmImport()}
+        markdown={previewMarkdown}
+        filename={previewFilename}
+      />
     </div>
   );
 }

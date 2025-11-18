@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/FormField";
 import { Modal } from "../ui/Modal";
 
@@ -138,15 +139,12 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
           </div>
           <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
             {AVAILABLE_EVENTS.map((event) => (
-              <label key={event.value} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedEvents.includes(event.value)}
-                  onChange={() => toggleEvent(event.value)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">{event.label}</span>
-              </label>
+              <Checkbox
+                key={event.value}
+                label={event.label}
+                checked={selectedEvents.includes(event.value)}
+                onChange={() => toggleEvent(event.value)}
+              />
             ))}
           </div>
           {selectedEvents.length === 0 && (
