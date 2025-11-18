@@ -2,7 +2,7 @@
  * Issue utility functions for consistent handling of issue types, priorities, and statuses
  */
 
-export type IssueType = "task" | "bug" | "story" | "epic";
+export type IssueType = "task" | "bug" | "story" | "epic" | "subtask";
 export type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
 
 /**
@@ -16,6 +16,8 @@ export function getTypeIcon(type: string): string {
       return "📖";
     case "epic":
       return "⚡";
+    case "subtask":
+      return "🔸";
     default:
       return "✓";
   }
@@ -111,6 +113,8 @@ export function getTypeLabel(type: string): string {
       return "📖 Story";
     case "epic":
       return "🎯 Epic";
+    case "subtask":
+      return "🔸 Sub-task";
     default:
       return "📋 Task";
   }

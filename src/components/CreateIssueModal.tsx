@@ -18,7 +18,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState<"task" | "bug" | "story" | "epic">("task");
+  const [type, setType] = useState<"task" | "bug" | "story" | "epic" | "subtask">("task");
   const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">(
     "medium",
   );
@@ -135,12 +135,13 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           <SelectField
             label="Type"
             value={type}
-            onChange={(e) => setType(e.target.value as "task" | "bug" | "story" | "epic")}
+            onChange={(e) => setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")}
           >
             <option value="task">📋 Task</option>
             <option value="bug">🐛 Bug</option>
             <option value="story">📖 Story</option>
             <option value="epic">🎯 Epic</option>
+            <option value="subtask">🔸 Sub-task</option>
           </SelectField>
 
           <SelectField

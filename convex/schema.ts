@@ -67,7 +67,7 @@ const applicationTables = {
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"), v.literal("subtask")),
     status: v.string(), // References workflow state id
     priority: v.union(
       v.literal("lowest"),
@@ -87,6 +87,7 @@ const applicationTables = {
     labels: v.array(v.string()),
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
+    parentId: v.optional(v.id("issues")), // For sub-tasks
     linkedDocuments: v.array(v.id("documents")),
     attachments: v.array(v.id("_storage")),
     order: v.number(), // For ordering within status columns
@@ -97,6 +98,7 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_sprint", ["sprintId"])
     .index("by_epic", ["epicId"])
+    .index("by_parent", ["parentId"])
     .index("by_project_status", ["projectId", "status"])
     .searchIndex("search_title", {
       searchField: "title",

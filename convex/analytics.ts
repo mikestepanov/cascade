@@ -45,6 +45,7 @@ export const getProjectAnalytics = query({
       bug: 0,
       story: 0,
       epic: 0,
+      subtask: 0,
     };
     allIssues.forEach((issue) => {
       issuesByType[issue.type]++;

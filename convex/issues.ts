@@ -8,7 +8,7 @@ export const create = mutation({
     projectId: v.id("projects"),
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"), v.literal("subtask")),
     priority: v.union(
       v.literal("lowest"),
       v.literal("low"),
@@ -19,6 +19,7 @@ export const create = mutation({
     assigneeId: v.optional(v.id("users")),
     sprintId: v.optional(v.id("sprints")),
     epicId: v.optional(v.id("issues")),
+    parentId: v.optional(v.id("issues")),
     labels: v.optional(v.array(v.id("labels"))),
     estimatedHours: v.optional(v.number()),
     dueDate: v.optional(v.number()),
@@ -37,6 +38,40 @@ export const create = mutation({
 
     // Check if user can create issues (requires editor role or higher)
     await assertMinimumRole(ctx, args.projectId, userId, "editor");
+
+    // Validate sub-task constraints
+    let inheritedEpicId = args.epicId;
+    if (args.parentId) {
+      const parentIssue = await ctx.db.get(args.parentId);
+      if (!parentIssue) {
+        throw new Error("Parent issue not found");
+      }
+
+      // Prevent sub-tasks of sub-tasks (only 1 level deep)
+      if (parentIssue.parentId) {
+        throw new Error("Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+      }
+
+      // Prevent epics from being parents (optional - remove if you want epics to have sub-tasks)
+      // if (parentIssue.type === "epic") {
+      //   throw new Error("Epics cannot have sub-tasks. Use stories/tasks under the epic instead.");
+      // }
+
+      // Inherit epicId from parent if not explicitly provided
+      if (!inheritedEpicId && parentIssue.epicId) {
+        inheritedEpicId = parentIssue.epicId;
+      }
+
+      // Sub-tasks must be of type "subtask"
+      if (args.type !== "subtask") {
+        throw new Error("Issues with a parent must be of type 'subtask'");
+      }
+    }
+
+    // Epics cannot be sub-tasks
+    if (args.type === "epic" && args.parentId) {
+      throw new Error("Epics cannot be sub-tasks");
+    }
 
     // Generate issue key
     const existingIssues = await ctx.db
@@ -75,7 +110,8 @@ export const create = mutation({
       updatedAt: now,
       labels: args.labels || [],
       sprintId: args.sprintId,
-      epicId: args.epicId,
+      epicId: inheritedEpicId,
+      parentId: args.parentId,
       linkedDocuments: [],
       attachments: [],
       estimatedHours: args.estimatedHours,
@@ -274,6 +310,60 @@ export const get = query({
       comments: commentsWithAuthors,
       activity,
     };
+  },
+});
+
+export const listSubtasks = query({
+  args: { parentId: v.id("issues") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const parentIssue = await ctx.db.get(args.parentId);
+    if (!parentIssue) {
+      return [];
+    }
+
+    // Check if user has access to the parent issue's project
+    const project = await ctx.db.get(parentIssue.projectId);
+    if (!project) {
+      return [];
+    }
+
+    // Get all sub-tasks
+    const subtasks = await ctx.db
+      .query("issues")
+      .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
+      .collect();
+
+    // Enrich with assignee and reporter info
+    const enrichedSubtasks = await Promise.all(
+      subtasks.map(async (subtask) => {
+        const assignee = subtask.assigneeId ? await ctx.db.get(subtask.assigneeId) : null;
+        const reporter = subtask.reporterId ? await ctx.db.get(subtask.reporterId) : null;
+
+        return {
+          ...subtask,
+          assignee: assignee
+            ? {
+                _id: assignee._id,
+                name: assignee.name || assignee.email || "Unknown",
+                image: assignee.image,
+              }
+            : null,
+          reporter: reporter
+            ? {
+                _id: reporter._id,
+                name: reporter.name || reporter.email || "Unknown",
+              }
+            : null,
+        };
+      }),
+    );
+
+    return enrichedSubtasks;
   },
 });
 
