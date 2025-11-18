@@ -195,7 +195,7 @@ Analytics are privacy-focused and can be disabled by removing PostHog environmen
 
 ## 🙏 Acknowledgments
 
-- Built with [Convex](https://convex.dev) for real-time sync
+- Built with [Chef](https://chef.convex.dev) and [Convex](https://convex.dev) for real-time sync
 - UI components inspired by Notion and Jira
 - BlockNote editor for rich text editing
 - Tailwind CSS for styling

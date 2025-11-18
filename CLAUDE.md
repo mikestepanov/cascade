@@ -651,6 +651,13 @@ PostHog integration provides:
 
 Analytics are opt-in via environment variables and privacy-focused.
 
+## Chef Integration
+
+The project includes Chef (Convex's development platform) integration:
+- Enables screenshots during development
+- Only active in development mode
+- Safe to remove if not using Chef
+
 ## Resources
 
 - [Convex Documentation](https://docs.convex.dev/)
