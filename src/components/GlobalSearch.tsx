@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 type SearchResult =
@@ -119,12 +120,12 @@ export function GlobalSearch() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                <input
+                <Input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search issues and documents..."
-                  className="w-full pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
+                  className="pl-10 pr-4 py-3 text-lg border-none focus:outline-none"
                 />
               </div>
             </div>

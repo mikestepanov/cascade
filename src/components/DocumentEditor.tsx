@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
+import { Input } from "./ui/form/Input";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -95,13 +96,13 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
             {isEditingTitle ? (
-              <input
+              <Input
                 type="text"
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
                 onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
-                className="text-2xl font-bold text-gray-900 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 w-full"
+                className="text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
               />
             ) : (
               <h1
