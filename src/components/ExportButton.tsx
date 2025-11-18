@@ -8,7 +8,7 @@ interface ExportButtonProps {
   status?: string;
 }
 
-export function ExportButton({ projectId }: ExportButtonProps) {
+export function ExportButton({ projectId, sprintId, status }: ExportButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

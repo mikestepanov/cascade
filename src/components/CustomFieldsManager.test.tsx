@@ -45,8 +45,9 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       const { container } = render(<CustomFieldsManager projectId={mockProjectId} />);
 
-      const spinner = container.querySelector(".animate-spin");
-      expect(spinner).toBeInTheDocument();
+      // Check for skeleton loading states (uses animate-pulse class)
+      const skeletons = container.querySelectorAll(".animate-pulse");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it("should show empty state with emoji when no fields exist", () => {
