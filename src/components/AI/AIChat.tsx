@@ -1,10 +1,14 @@
-import { useAction, useMutation, useQuery } from "convex/react";
-import { useEffect, useRef, useState } from "react";
+/**
+ * AIChat - Refactored with useAIChat hook
+ */
+
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
-import { Skeleton } from "./ui/Skeleton";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { Skeleton } from "../ui/Skeleton";
+import { AI_CONFIG } from "./config";
+import { useAIChat } from "./hooks";
 
 interface AIChatProps {
   projectId?: Id<"projects">;
@@ -12,80 +16,24 @@ interface AIChatProps {
   onChatCreated?: (chatId: Id<"aiChats">) => void;
 }
 
-export function AIChat({ projectId, chatId: initialChatId, onChatCreated }: AIChatProps) {
-  const [chatId, setChatId] = useState<Id<"aiChats"> | null>(initialChatId || null);
-  const [inputMessage, setInputMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const createChat = useMutation(api.ai.mutations.createChat);
-  const sendMessage = useAction(api.ai.actions.sendChatMessage);
-  const messages = useQuery(api.ai.queries.getChatMessages, chatId ? { chatId } : "skip");
-
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Create chat on mount if no chatId provided
-  useEffect(() => {
-    if (!chatId) {
-      createChat({ projectId, title: "New Chat" }).then((newChatId) => {
-        setChatId(newChatId);
-        onChatCreated?.(newChatId);
-      });
-    }
-  }, [chatId, projectId, createChat, onChatCreated]);
-
-  // Auto-resize textarea
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
-    }
-  }, [inputMessage]);
-
-  const copyToClipboard = async (content: string, messageId: string) => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopiedMessageId(messageId);
-      setTimeout(() => setCopiedMessageId(null), 2000);
-    } catch {
-      // Silently fail if clipboard access is denied
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || !chatId || isSending) return;
-
-    const message = inputMessage.trim();
-    setInputMessage("");
-    setIsSending(true);
-
-    try {
-      await sendMessage({
-        chatId,
-        message,
-        projectId,
-      });
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      // Restore message on error
-      setInputMessage(message);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
+export const AIChat = React.memo(function AIChat({
+  projectId,
+  chatId: initialChatId,
+  onChatCreated,
+}: AIChatProps) {
+  const {
+    chatId,
+    inputMessage,
+    isSending,
+    copiedMessageId,
+    messagesEndRef,
+    textareaRef,
+    messages,
+    setInputMessage,
+    handleSendMessage,
+    handleKeyPress,
+    copyToClipboard,
+  } = useAIChat({ projectId, initialChatId, onChatCreated });
 
   if (!chatId) {
     return (
@@ -135,11 +83,11 @@ export function AIChat({ projectId, chatId: initialChatId, onChatCreated }: AICh
 
                 return (
                   <div
-                    key={index}
+                    key={`${message.chatId}-${message.createdAt}-${index}`}
                     className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
                   >
                     <div
-                      className={`relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3 ${
+                      className={`relative max-w-[${AI_CONFIG.message.maxWidth.mobile}] md:max-w-[${AI_CONFIG.message.maxWidth.desktop}] rounded-lg px-4 py-3 ${
                         message.role === "user"
                           ? "bg-blue-600 text-white"
                           : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -242,8 +190,8 @@ export function AIChat({ projectId, chatId: initialChatId, onChatCreated }: AICh
             className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}
             style={{
-              minHeight: "44px",
-              maxHeight: "120px",
+              minHeight: `${AI_CONFIG.textarea.minHeight}px`,
+              maxHeight: `${AI_CONFIG.textarea.maxHeight}px`,
             }}
           />
           <button
@@ -274,4 +222,4 @@ export function AIChat({ projectId, chatId: initialChatId, onChatCreated }: AICh
       </div>
     </div>
   );
-}
+});

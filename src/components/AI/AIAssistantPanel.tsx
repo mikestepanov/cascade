@@ -1,9 +1,16 @@
+/**
+ * AIAssistantPanel - Main panel with tabs for chat and suggestions
+ */
+
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { ErrorBoundary } from "../ErrorBoundary";
 import { AIChat } from "./AIChat";
+import { AIErrorFallback } from "./AIErrorFallback";
 import { AISuggestionsPanel } from "./AISuggestionsPanel";
+import { AI_CONFIG } from "./config";
 
 interface AIAssistantPanelProps {
   projectId?: Id<"projects">;
@@ -30,7 +37,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
     setTimeout(() => {
       setActiveTab(tab);
       setIsAnimating(false);
-    }, 150);
+    }, AI_CONFIG.animations.tabTransition);
   };
 
   return (
@@ -47,7 +54,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
 
       {/* Panel */}
       <div
-        className={`fixed right-0 top-0 h-full w-full sm:w-[480px] md:w-[520px] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-all duration-300 ${
+        className={`fixed right-0 top-0 h-full ${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-all duration-${AI_CONFIG.animations.slideInOut} ${
           isOpen ? "translate-x-0 ease-out" : "translate-x-full ease-in"
         }`}
       >
@@ -117,21 +124,31 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Content */}
-        <div className="h-[calc(100vh-140px)] overflow-hidden">
+        <div className={`h-[calc(100vh-${AI_CONFIG.panel.headerHeight}px)] overflow-hidden`}>
           <div
-            className={`transition-opacity duration-150 ${
+            className={`transition-opacity duration-${AI_CONFIG.animations.tabTransition} ${
               isAnimating ? "opacity-0" : "opacity-100"
             }`}
           >
-            {activeTab === "chat" ? (
-              <AIChat
-                projectId={projectId}
-                chatId={currentChatId}
-                onChatCreated={setCurrentChatId}
-              />
-            ) : (
-              <AISuggestionsPanel projectId={projectId} />
-            )}
+            <ErrorBoundary
+              fallback={
+                <AIErrorFallback
+                  title="Chat Error"
+                  message="Failed to load AI chat. Please try refreshing."
+                  onRetry={() => window.location.reload()}
+                />
+              }
+            >
+              {activeTab === "chat" ? (
+                <AIChat
+                  projectId={projectId}
+                  chatId={currentChatId}
+                  onChatCreated={setCurrentChatId}
+                />
+              ) : (
+                <AISuggestionsPanel projectId={projectId} />
+              )}
+            </ErrorBoundary>
           </div>
         </div>
       </div>

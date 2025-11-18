@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
-import { AIAssistantPanel } from "./components/AIAssistantPanel";
+import { AIAssistantButton, AIAssistantPanel } from "./components/AI";
 import { CalendarView } from "./components/Calendar/CalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
@@ -698,20 +698,10 @@ function Content() {
 
         {/* AI Assistant Floating Button */}
         {!showAIAssistant && (
-          <button
-            type="button"
+          <AIAssistantButton
             onClick={() => setShowAIAssistant(true)}
-            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30 group"
-            title={`AI Assistant (Cmd/Ctrl+Shift+A)${unreadAISuggestions > 0 ? ` - ${unreadAISuggestions} new suggestion${unreadAISuggestions > 1 ? "s" : ""}` : ""}`}
-            aria-label={`Open AI Assistant${unreadAISuggestions > 0 ? ` (${unreadAISuggestions} unread)` : ""}`}
-          >
-            <span className="text-2xl sm:text-3xl">🤖</span>
-            {unreadAISuggestions > 0 && (
-              <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md animate-pulse">
-                {unreadAISuggestions > 9 ? "9+" : unreadAISuggestions}
-              </span>
-            )}
-          </button>
+            unreadCount={unreadAISuggestions}
+          />
         )}
       </Authenticated>
 
