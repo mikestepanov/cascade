@@ -1,6 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestProject, createTestUser } from "./test-utils";
@@ -497,13 +497,10 @@ describe("Automation Rules", () => {
       });
 
       // Execute rules
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId,
+        trigger: "issue_created",
       });
 
       // Check if assignee was set
@@ -537,14 +534,11 @@ describe("Automation Rules", () => {
       });
 
       // Execute rules
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId,
-          trigger: "issue_created",
-          triggerValue: "bug",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId,
+        trigger: "issue_created",
+        triggerValue: "bug",
       });
 
       // Check if priority was set
@@ -577,13 +571,10 @@ describe("Automation Rules", () => {
       });
 
       // Execute rules
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId,
+        trigger: "issue_created",
       });
 
       // Check if label was added
@@ -618,17 +609,20 @@ describe("Automation Rules", () => {
       });
 
       // Execute rules
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId,
+        trigger: "issue_created",
       });
 
       // Check if comment was added
-      const comments = await t.query(api.issues.getComments, { issueId });
+      const comments = await t.run(async (ctx: any) => {
+        // eslint-disable-line @typescript-eslint/no-explicit-any
+        return await ctx.db
+          .query("issueComments")
+          .withIndex("by_issue", (q: any) => q.eq("issueId", issueId)) // eslint-disable-line @typescript-eslint/no-explicit-any
+          .collect();
+      });
       expect(comments).toHaveLength(1);
       expect(comments[0]?.content).toBe("This issue was automatically created");
     });
@@ -664,13 +658,10 @@ describe("Automation Rules", () => {
       });
 
       // Execute rules
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId,
+        trigger: "issue_created",
       });
 
       // Priority should NOT be changed
@@ -702,13 +693,10 @@ describe("Automation Rules", () => {
         priority: "medium",
       });
 
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId: issue1Id,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId: issue1Id,
+        trigger: "issue_created",
       });
 
       // Create second issue
@@ -719,13 +707,10 @@ describe("Automation Rules", () => {
         priority: "medium",
       });
 
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId: issue2Id,
-          trigger: "issue_created",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId: issue2Id,
+        trigger: "issue_created",
       });
 
       // Check execution count
@@ -761,14 +746,11 @@ describe("Automation Rules", () => {
         priority: "medium",
       });
 
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId: taskId,
-          trigger: "issue_created",
-          triggerValue: "task",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId: taskId,
+        trigger: "issue_created",
+        triggerValue: "task",
       });
 
       const task = await t.query(api.issues.get, { id: taskId });
@@ -782,14 +764,11 @@ describe("Automation Rules", () => {
         priority: "medium",
       });
 
-      await t.run(async (ctx) => {
-        const { executeRules } = await import("./automationRules");
-        await executeRules(ctx, {
-          projectId,
-          issueId: bugId,
-          trigger: "issue_created",
-          triggerValue: "bug",
-        });
+      await t.mutation(internal.automationRules.executeRules, {
+        projectId,
+        issueId: bugId,
+        trigger: "issue_created",
+        triggerValue: "bug",
       });
 
       const bug = await t.query(api.issues.get, { id: bugId });

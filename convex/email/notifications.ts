@@ -218,7 +218,8 @@ export const sendNotificationEmail = internalAction({
     // Send appropriate email based on type
     switch (type) {
       case "mention":
-        return await ctx.runAction(internal.email.notifications.sendMentionEmail, {
+        return await ctx.runAction((internal as any).email.notifications.sendMentionEmail, {
+          // eslint-disable-line @typescript-eslint/no-explicit-any
           to,
           userId,
           mentionedByName: actorName,
@@ -230,7 +231,8 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "assigned":
-        return await ctx.runAction(internal.email.notifications.sendAssignmentEmail, {
+        return await ctx.runAction((internal as any).email.notifications.sendAssignmentEmail, {
+          // eslint-disable-line @typescript-eslint/no-explicit-any
           to,
           userId,
           assignedByName: actorName,
@@ -244,7 +246,8 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "comment":
-        return await ctx.runAction(internal.email.notifications.sendCommentEmail, {
+        return await ctx.runAction((internal as any).email.notifications.sendCommentEmail, {
+          // eslint-disable-line @typescript-eslint/no-explicit-any
           to,
           userId,
           commenterName: actorName,
@@ -273,7 +276,7 @@ export const sendDigestEmail = internalAction({
     const { userId, frequency } = args;
 
     // Get user details
-    const user = await ctx.runQuery(internal.users.get, { id: userId });
+    const user = await ctx.runQuery((internal as any).users.get, { id: userId }); // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!user?.email) {
       return { success: false, error: "No email found" }; // User has no email address
     }
@@ -311,7 +314,7 @@ export const sendDigestEmail = internalAction({
 
     // Format notifications into digest items
     const items = notifications.map((n) => ({
-      type: n.type,
+      type: n.type as "mention" | "assignment" | "comment",
       issueKey: n.issueKey || "Unknown",
       issueTitle: n.title,
       issueUrl: `${appUrl}/issues/${n.issueId}`,

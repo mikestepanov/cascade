@@ -16,7 +16,7 @@ const crons = cronJobs();
 crons.daily(
   "send daily digests",
   { hourUTC: 9, minuteUTC: 0 },
-  internal.email.digests.sendDailyDigests,
+  (internal as any).email.digests.sendDailyDigests, // eslint-disable-line @typescript-eslint/no-explicit-any
 );
 
 /**
@@ -26,7 +26,7 @@ crons.daily(
 crons.weekly(
   "send weekly digests",
   { dayOfWeek: "monday", hourUTC: 9, minuteUTC: 0 },
-  internal.email.digests.sendWeeklyDigests,
+  (internal as any).email.digests.sendWeeklyDigests, // eslint-disable-line @typescript-eslint/no-explicit-any
 );
 
 export default crons;

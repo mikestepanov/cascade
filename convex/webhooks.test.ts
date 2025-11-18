@@ -1,6 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { createTestProject, createTestUser } from "./test-utils";
@@ -782,7 +782,7 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
 
       t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhooks">;
+      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhookExecutions">;
 
       await expect(async () => {
         await t.mutation(api.webhooks.retryExecution, { id: fakeId });
@@ -813,12 +813,9 @@ describe("Webhooks", () => {
       });
 
       // Get webhooks for issue.created event
-      const webhooks = await t.run(async (ctx) => {
-        const { getActiveWebhooksForEvent } = await import("./webhooks");
-        return await getActiveWebhooksForEvent(ctx, {
-          projectId,
-          event: "issue.created",
-        });
+      const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
+        projectId,
+        event: "issue.created",
       });
 
       expect(webhooks).toHaveLength(1);
@@ -852,12 +849,9 @@ describe("Webhooks", () => {
         isActive: false,
       });
 
-      const webhooks = await t.run(async (ctx) => {
-        const { getActiveWebhooksForEvent } = await import("./webhooks");
-        return await getActiveWebhooksForEvent(ctx, {
-          projectId,
-          event: "issue.created",
-        });
+      const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
+        projectId,
+        event: "issue.created",
       });
 
       expect(webhooks).toHaveLength(1);
