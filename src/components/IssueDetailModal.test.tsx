@@ -85,6 +85,7 @@ describe("IssueDetailModal", () => {
     labels: ["backend", "urgent"],
     estimatedHours: 8,
     loggedHours: 3.5,
+    storyPoints: 5,
   };
 
   beforeEach(() => {
@@ -314,5 +315,34 @@ describe("IssueDetailModal", () => {
     await waitFor(() => {
       expect(showError).toHaveBeenCalledWith(expect.any(Error), "Failed to update issue");
     });
+  });
+
+  it("should display story points in metadata", () => {
+    (useQuery as vi.Mock).mockReturnValue(mockIssue);
+
+    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+
+    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument();
+  });
+
+  it("should show 'Not set' when story points is undefined", () => {
+    const issueWithoutStoryPoints = { ...mockIssue, storyPoints: undefined };
+    (useQuery as vi.Mock).mockReturnValue(issueWithoutStoryPoints);
+
+    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+
+    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("Not set")).toBeInTheDocument();
+  });
+
+  it("should display decimal story points correctly", () => {
+    const issueWithDecimalPoints = { ...mockIssue, storyPoints: 3.5 };
+    (useQuery as vi.Mock).mockReturnValue(issueWithDecimalPoints);
+
+    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+
+    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("3.5")).toBeInTheDocument();
   });
 });
