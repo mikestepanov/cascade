@@ -159,14 +159,25 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
 }
 
 /**
+ * Strip YAML frontmatter from markdown
+ */
+export function stripFrontmatter(markdown: string): string {
+  const frontmatterRegex = /^---\n[\s\S]*?\n---\n\n/;
+  return markdown.replace(frontmatterRegex, "");
+}
+
+/**
  * Convert markdown string to BlockNote blocks
  * Uses BlockNote's built-in markdown parsing when available
  */
 async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Promise<Block[]> {
+  // Strip frontmatter before parsing
+  const content = stripFrontmatter(markdown);
+
   // Try to use BlockNote's tryParseMarkdownToBlocks if available
   if ("tryParseMarkdownToBlocks" in editor && typeof editor.tryParseMarkdownToBlocks === "function") {
     try {
-      const blocks = await (editor as any).tryParseMarkdownToBlocks(markdown);
+      const blocks = await (editor as any).tryParseMarkdownToBlocks(content);
       if (blocks && Array.isArray(blocks)) {
         return blocks;
       }
@@ -176,7 +187,7 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
   }
 
   // Fallback: Simple markdown parser
-  return parseMarkdownSimple(markdown);
+  return parseMarkdownSimple(content);
 }
 
 /**
@@ -337,6 +348,27 @@ export async function handleMarkdownImport(editor: BlockNoteEditor): Promise<voi
       } catch (error) {
         toast.error("Failed to import markdown file");
         reject(error);
+      }
+    });
+  });
+}
+
+/**
+ * Read markdown file for preview (doesn't import yet)
+ * Returns file content and filename for preview modal
+ */
+export async function readMarkdownForPreview(): Promise<{
+  markdown: string;
+  filename: string;
+} | null> {
+  return new Promise((resolve) => {
+    triggerMarkdownImport(async (file) => {
+      try {
+        const markdown = await readMarkdownFile(file);
+        resolve({ markdown, filename: file.name });
+      } catch (error) {
+        toast.error("Failed to read markdown file");
+        resolve(null);
       }
     });
   });

@@ -4,11 +4,16 @@ import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { handleMarkdownExport, handleMarkdownImport } from "@/lib/markdown";
+import {
+  handleMarkdownExport,
+  importFromMarkdown,
+  readMarkdownForPreview,
+} from "@/lib/markdown";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
 import { Input } from "./ui/form/Input";
+import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -25,6 +30,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewMarkdown, setPreviewMarkdown] = useState("");
+  const [previewFilename, setPreviewFilename] = useState("");
 
   const sync = useBlockNoteSync<BlockNoteEditor>(api.prosemirror, documentId);
 
@@ -96,9 +104,29 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
       return;
     }
     try {
-      await handleMarkdownImport(sync.editor);
+      const result = await readMarkdownForPreview();
+      if (result) {
+        setPreviewMarkdown(result.markdown);
+        setPreviewFilename(result.filename);
+        setShowPreview(true);
+      }
     } catch (error) {
       console.error("Import failed:", error);
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (!sync.editor || !previewMarkdown) return;
+
+    try {
+      await importFromMarkdown(sync.editor, previewMarkdown);
+      toast.success(`Imported ${previewFilename}`);
+      setShowPreview(false);
+      setPreviewMarkdown("");
+      setPreviewFilename("");
+    } catch (error) {
+      console.error("Import failed:", error);
+      toast.error("Failed to import markdown");
     }
   };
 
@@ -254,6 +282,19 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           )}
         </div>
       </div>
+
+      {/* Markdown Preview Modal */}
+      <MarkdownPreviewModal
+        isOpen={showPreview}
+        onClose={() => {
+          setShowPreview(false);
+          setPreviewMarkdown("");
+          setPreviewFilename("");
+        }}
+        onConfirm={() => void handleConfirmImport()}
+        markdown={previewMarkdown}
+        filename={previewFilename}
+      />
     </div>
   );
 }
