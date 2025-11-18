@@ -4,11 +4,7 @@ import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  handleMarkdownExport,
-  importFromMarkdown,
-  readMarkdownForPreview,
-} from "@/lib/markdown";
+import { handleMarkdownExport, importFromMarkdown, readMarkdownForPreview } from "@/lib/markdown";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";

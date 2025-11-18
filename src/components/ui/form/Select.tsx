@@ -1,4 +1,4 @@
-import { type SelectHTMLAttributes, forwardRef } from "react";
+import { forwardRef, type SelectHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -45,10 +45,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             "text-gray-900 dark:text-gray-100",
             "focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error
-              ? "border-red-500 dark:border-red-400"
-              : "border-gray-300 dark:border-gray-600",
-            className
+            error ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600",
+            className,
           )}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={
@@ -76,7 +74,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

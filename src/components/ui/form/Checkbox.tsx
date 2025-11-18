@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
@@ -37,7 +37,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "bg-white dark:bg-gray-800",
               error && "border-red-500 dark:border-red-400",
-              className
+              className,
             )}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={
@@ -60,16 +60,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${checkboxId}-helper`}
-            className="mt-1 text-xs text-gray-500 dark:text-gray-400"
-          >
+          <p id={`${checkboxId}-helper`} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {helperText}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
 Checkbox.displayName = "Checkbox";

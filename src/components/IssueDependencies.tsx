@@ -5,8 +5,8 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Input, Select } from "./ui/form";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;

@@ -8,9 +8,9 @@ import { CustomFieldValues } from "./CustomFieldValues";
 import { FileAttachments } from "./FileAttachments";
 import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
-import { IssueWatchers } from "./IssueWatchers";
 import { IssueMetadataSection } from "./IssueDetail/IssueMetadataSection";
 import { SubtasksList } from "./IssueDetail/SubtasksList";
+import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
@@ -120,7 +120,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 </div>
               </div>
             </div>
-            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close issue modal"
+              className="text-gray-400 hover:text-gray-600"
+            >
               <svg
                 aria-hidden="true"
                 className="w-6 h-6"
@@ -246,11 +251,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Sub-tasks (only show for non-subtasks) */}
             {issue.type !== "subtask" && (
-              <SubtasksList
-                issueId={issue._id}
-                projectId={issue.projectId}
-                subtasks={subtasks}
-              />
+              <SubtasksList issueId={issue._id} projectId={issue.projectId} subtasks={subtasks} />
             )}
 
             {/* Custom Fields */}

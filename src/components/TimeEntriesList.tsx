@@ -100,6 +100,7 @@ export function TimeEntriesList({ issueId }: TimeEntriesListProps) {
               <button
                 type="button"
                 onClick={() => handleDelete(entry._id)}
+                aria-label="Delete time entry"
                 className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 title="Delete entry"
               >

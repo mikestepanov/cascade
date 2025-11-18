@@ -1,6 +1,6 @@
+import type { BlockNoteEditor } from "@blocknote/core";
 import JSZip from "jszip";
 import { toast } from "sonner";
-import type { BlockNoteEditor } from "@blocknote/core";
 import { exportToMarkdown } from "./markdown";
 
 /**

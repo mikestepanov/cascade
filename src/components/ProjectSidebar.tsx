@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { Input, Select, Textarea, Checkbox } from "./ui/form";
+import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;

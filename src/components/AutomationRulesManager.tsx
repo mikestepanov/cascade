@@ -6,8 +6,8 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Input, Select, Textarea } from "./ui/form";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;

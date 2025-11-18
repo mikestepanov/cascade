@@ -4,8 +4,8 @@ import { getTodayString } from "@/lib/dates";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Input, Textarea } from "./ui/form";
+import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface TimeLogModalProps {
   issueId: Id<"issues">;

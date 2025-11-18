@@ -81,6 +81,7 @@ export function CreateEventModal({
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Event</h2>
           <button
             onClick={onClose}
+            aria-label="Close create event modal"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <X className="w-5 h-5 text-gray-500" />

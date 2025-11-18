@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { EmptyState } from "./ui/EmptyState";
+import { Checkbox, Input } from "./ui/form";
 import { SkeletonList } from "./ui/Skeleton";
-import { Input, Checkbox } from "./ui/form";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;

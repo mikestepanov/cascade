@@ -106,9 +106,7 @@ export function QuickStats({ stats }: QuickStatsProps) {
               <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">
                 {stats.createdByMe || 0}
               </div>
-              <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">
-                Total issues
-              </div>
+              <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Total issues</div>
             </CardBody>
           </Card>
         </>

@@ -89,11 +89,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
       case "date":
         return (
-          <Input
-            type="date"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-          />
+          <Input type="date" value={editValue} onChange={(e) => setEditValue(e.target.value)} />
         );
 
       case "checkbox":
@@ -107,10 +103,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
       case "select":
         return (
-          <Select
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-          >
+          <Select value={editValue} onChange={(e) => setEditValue(e.target.value)}>
             <option value="">Select an option...</option>
             {field.options?.map((option: string) => (
               <option key={option} value={option}>
@@ -150,11 +143,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
       default:
         return (
-          <Input
-            type="text"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-          />
+          <Input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} />
         );
     }
   };

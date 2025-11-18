@@ -10,7 +10,7 @@
  * - forwardRef for form libraries
  */
 
+export { Checkbox, type CheckboxProps } from "./Checkbox";
 export { Input, type InputProps } from "./Input";
 export { Select, type SelectProps } from "./Select";
 export { Textarea, type TextareaProps } from "./Textarea";
-export { Checkbox, type CheckboxProps } from "./Checkbox";

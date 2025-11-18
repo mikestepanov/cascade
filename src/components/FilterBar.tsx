@@ -3,8 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Checkbox, Input } from "./ui/form";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
-import { Input, Checkbox } from "./ui/form";
 
 type FilterValues = Record<string, unknown>;
 

@@ -3,10 +3,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { FormDialog } from "../ui/FormDialog";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
 import { Textarea } from "../ui/form/Textarea";
-import { FormDialog } from "../ui/FormDialog";
 
 interface AutomationRuleFormProps {
   projectId: Id<"projects">;
@@ -153,11 +153,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
         />
 
         {/* Action Type */}
-        <Select
-          label="Action *"
-          value={actionType}
-          onChange={(e) => setActionType(e.target.value)}
-        >
+        <Select label="Action *" value={actionType} onChange={(e) => setActionType(e.target.value)}>
           <option value="set_assignee">Set Assignee</option>
           <option value="set_priority">Set Priority</option>
           <option value="add_label">Add Label</option>

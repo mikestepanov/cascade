@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Modal } from "./Modal";
 import { Button } from "./Button";
+import { Modal } from "./Modal";
 
 interface MarkdownPreviewModalProps {
   isOpen: boolean;
@@ -35,9 +35,7 @@ export function MarkdownPreviewModal({
         {/* File Info */}
         <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              📄 {filename}
-            </span>
+            <span className="font-medium text-gray-700 dark:text-gray-300">📄 {filename}</span>
             <span className="text-gray-500 dark:text-gray-400">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
@@ -136,7 +134,10 @@ function renderMarkdownPreview(markdown: string): string {
   html = html.replace(/_(.*?)_/g, "<em>$1</em>");
 
   // Code blocks
-  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+  html = html.replace(
+    /```(\w+)?\n([\s\S]*?)```/g,
+    '<pre><code class="language-$1">$2</code></pre>',
+  );
 
   // Inline code
   html = html.replace(/`([^`]+)`/g, "<code>$1</code>");

@@ -110,6 +110,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           </div>
           <button
             onClick={onClose}
+            aria-label="Close event details modal"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <X className="w-5 h-5 text-gray-500" />
