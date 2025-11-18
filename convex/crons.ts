@@ -16,7 +16,8 @@ const crons = cronJobs();
 crons.daily(
   "send daily digests",
   { hourUTC: 9, minuteUTC: 0 },
-  (internal as any).email.digests.sendDailyDigests, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+  internal.email.digests.sendDailyDigests,
 );
 
 /**
@@ -26,7 +27,8 @@ crons.daily(
 crons.weekly(
   "send weekly digests",
   { dayOfWeek: "monday", hourUTC: 9, minuteUTC: 0 },
-  (internal as any).email.digests.sendWeeklyDigests, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+  internal.email.digests.sendWeeklyDigests,
 );
 
 export default crons;

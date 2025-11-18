@@ -6,7 +6,7 @@
 
 import { render } from "@react-email/render";
 import { v } from "convex/values";
-import { internal } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
 import { sendEmail } from "./index";
 
@@ -218,8 +218,8 @@ export const sendNotificationEmail = internalAction({
     // Send appropriate email based on type
     switch (type) {
       case "mention":
-        return await ctx.runAction((internal as any).email.notifications.sendMentionEmail, {
-          // eslint-disable-line @typescript-eslint/no-explicit-any
+        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+        return await ctx.runAction(internal.email.notifications.sendMentionEmail, {
           to,
           userId,
           mentionedByName: actorName,
@@ -231,8 +231,8 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "assigned":
-        return await ctx.runAction((internal as any).email.notifications.sendAssignmentEmail, {
-          // eslint-disable-line @typescript-eslint/no-explicit-any
+        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+        return await ctx.runAction(internal.email.notifications.sendAssignmentEmail, {
           to,
           userId,
           assignedByName: actorName,
@@ -246,8 +246,8 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "comment":
-        return await ctx.runAction((internal as any).email.notifications.sendCommentEmail, {
-          // eslint-disable-line @typescript-eslint/no-explicit-any
+        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+        return await ctx.runAction(internal.email.notifications.sendCommentEmail, {
           to,
           userId,
           commenterName: actorName,
@@ -276,7 +276,7 @@ export const sendDigestEmail = internalAction({
     const { userId, frequency } = args;
 
     // Get user details
-    const user = await ctx.runQuery((internal as any).users.get, { id: userId }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const user = await ctx.runQuery(api.users.get, { id: userId });
     if (!user?.email) {
       return { success: false, error: "No email found" }; // User has no email address
     }

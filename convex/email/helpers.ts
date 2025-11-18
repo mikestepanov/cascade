@@ -64,8 +64,8 @@ export async function sendEmailNotification(
   }
 
   // Schedule email to be sent (using action)
-  await ctx.scheduler.runAfter(0, (internal as any).email.notifications.sendNotificationEmail, {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
+  await ctx.scheduler.runAfter(0, internal.email.notifications.sendNotificationEmail, {
     to: user.email as string,
     type,
     actorName,

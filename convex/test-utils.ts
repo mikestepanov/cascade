@@ -4,7 +4,11 @@
  * This file provides helper functions for creating test data and managing test authentication.
  */
 
-import type { Id } from "./_generated/dataModel";
+import type { TestConvex } from "convex-test";
+import type { DataModel, Id } from "./_generated/dataModel";
+import type schema from "./schema";
+
+type TestCtx = TestConvex<typeof schema>;
 
 /**
  * Create a test user
@@ -14,21 +18,20 @@ import type { Id } from "./_generated/dataModel";
  * @returns User ID
  */
 export async function createTestUser(
-  t: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  t: TestCtx,
   userData?: {
     name?: string;
     email?: string;
   },
 ): Promise<Id<"users">> {
-  return await t.run(async (ctx: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  return await t.run(async (ctx) => {
     const name = userData?.name || `Test User ${Date.now()}`;
     const email = userData?.email || `test${Date.now()}@example.com`;
 
     return await ctx.db.insert("users", {
       name,
       email,
-      emailVerified: Date.now(),
+      emailVerificationTime: Date.now(),
       image: undefined,
     });
   });
@@ -43,7 +46,7 @@ export async function createTestUser(
  * @returns Project ID
  */
 export async function createTestProject(
-  t: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  t: TestCtx,
   creatorId: Id<"users">,
   projectData?: {
     name?: string;
@@ -53,8 +56,7 @@ export async function createTestProject(
     boardType?: "kanban" | "scrum";
   },
 ): Promise<Id<"projects">> {
-  return await t.run(async (ctx: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  return await t.run(async (ctx) => {
     const now = Date.now();
     const name = projectData?.name || `Test Project ${now}`;
     const key = projectData?.key || `TEST${now.toString().slice(-6)}`;
@@ -104,14 +106,13 @@ export async function createTestProject(
  * @returns Project member ID
  */
 export async function addProjectMember(
-  t: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  t: TestCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
   role: "admin" | "editor" | "viewer",
   addedBy: Id<"users">,
 ): Promise<Id<"projectMembers">> {
-  return await t.run(async (ctx: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  return await t.run(async (ctx) => {
     return await ctx.db.insert("projectMembers", {
       projectId,
       userId,
@@ -132,7 +133,7 @@ export async function addProjectMember(
  * @returns Issue ID
  */
 export async function createTestIssue(
-  t: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  t: TestCtx,
   projectId: Id<"projects">,
   reporterId: Id<"users">,
   issueData?: {
@@ -144,8 +145,7 @@ export async function createTestIssue(
     assigneeId?: Id<"users">;
   },
 ): Promise<Id<"issues">> {
-  return await t.run(async (ctx: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  return await t.run(async (ctx) => {
     const now = Date.now();
 
     // Get project to construct issue key
@@ -155,9 +155,9 @@ export async function createTestIssue(
     // Count existing issues to generate key
     const issueCount = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q: any) => q.eq("projectId", projectId)) // eslint-disable-line @typescript-eslint/no-explicit-any
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
       .collect()
-      .then((issues: any) => issues.length); // eslint-disable-line @typescript-eslint/no-explicit-any
+      .then((issues) => issues.length);
 
     const key = `${project.key}-${issueCount + 1}`;
 
