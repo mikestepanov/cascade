@@ -13,6 +13,7 @@ import { IssueMetadataSection } from "./IssueDetail/IssueMetadataSection";
 import { SubtasksList } from "./IssueDetail/SubtasksList";
 import { TimeTracker } from "./TimeTracker";
 import { Input } from "./ui/form/Input";
+import { Textarea } from "./ui/form/Textarea";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 import { Skeleton } from "./ui/Skeleton";
 
@@ -165,18 +166,21 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Description */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
               {isEditing ? (
-                <textarea
+                <Textarea
+                  label="Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
+                  rows={6}
                   placeholder="Add a description..."
                 />
               ) : (
-                <p className="text-gray-600 whitespace-pre-wrap">
-                  {issue.description || "No description provided"}
-                </p>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                  <p className="text-gray-600 whitespace-pre-wrap">
+                    {issue.description || "No description provided"}
+                  </p>
+                </div>
               )}
             </div>
 

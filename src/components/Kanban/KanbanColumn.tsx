@@ -1,3 +1,4 @@
+import { ANIMATION } from "@/lib/constants";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
 
@@ -57,7 +58,7 @@ export function KanbanColumn({
   return (
     <div
       className="flex-shrink-0 w-72 sm:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg animate-slide-up"
-      style={{ animationDelay: `${columnIndex * 100}ms` }}
+      style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, state.id)}
     >
@@ -102,7 +103,9 @@ export function KanbanColumn({
           <div
             key={issue._id}
             className="animate-scale-in"
-            style={{ animationDelay: `${columnIndex * 100 + issueIndex * 50}ms` }}
+            style={{
+              animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2) + issueIndex * ANIMATION.STAGGER_DELAY}ms`,
+            }}
           >
             <IssueCard
               issue={issue}

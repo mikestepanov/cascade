@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { DISPLAY_LIMITS } from "@/lib/constants";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { BulkOperationsBar } from "./BulkOperationsBar";
@@ -23,8 +24,6 @@ interface BoardAction {
   newOrder: number;
   issueTitle: string; // For toast message
 }
-
-const MAX_HISTORY_SIZE = 10;
 
 export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
@@ -63,7 +62,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
       // Update stacks
       setHistoryStack(newHistory);
-      setRedoStack((prev) => [...prev, lastAction].slice(-MAX_HISTORY_SIZE));
+      setRedoStack((prev) => [...prev, lastAction].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
 
       // Show toast
       toast.success(`Undid move of "${lastAction.issueTitle}"`);
@@ -92,7 +91,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
       // Update stacks
       setRedoStack(newRedoStack);
-      setHistoryStack((prev) => [...prev, lastRedo].slice(-MAX_HISTORY_SIZE));
+      setHistoryStack((prev) => [...prev, lastRedo].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
 
       // Show toast
       toast.success(`Redid move of "${lastRedo.issueTitle}"`);
@@ -205,7 +204,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       });
 
       // Add to history and clear redo stack (new action invalidates redo)
-      setHistoryStack((prev) => [...prev, action].slice(-MAX_HISTORY_SIZE));
+      setHistoryStack((prev) => [...prev, action].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
       setRedoStack([]);
     } catch {
       toast.error("Failed to update issue status");

@@ -1,8 +1,10 @@
+import { memo } from "react";
+
 /**
  * Horizontal bar chart visualization
  * Extracted from AnalyticsDashboard for better organization and reusability
  */
-export function BarChart({
+export const BarChart = memo(function BarChart({
   data,
   color,
 }: {
@@ -33,4 +35,4 @@ export function BarChart({
       ))}
     </div>
   );
-}
+});

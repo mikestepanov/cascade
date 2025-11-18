@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -25,7 +26,7 @@ interface IssueCardProps {
   onToggleSelect?: (issueId: Id<"issues">) => void;
 }
 
-export function IssueCard({
+export const IssueCard = memo(function IssueCard({
   issue,
   onDragStart,
   onClick,
@@ -135,4 +136,4 @@ export function IssueCard({
       </div>
     </div>
   );
-}
+});
