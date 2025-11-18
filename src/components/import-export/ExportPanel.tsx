@@ -8,6 +8,8 @@ import { Card } from "../ui/Card";
 
 interface ExportPanelProps {
   projectId: Id<"projects">;
+  sprintId?: Id<"sprints">;
+  status?: string;
 }
 
 type ExportFormat = "csv" | "json";
@@ -16,18 +18,18 @@ type ExportFormat = "csv" | "json";
  * Extracted export panel from ImportExportModal
  * Handles all export logic and UI
  */
-export function ExportPanel({ projectId }: ExportPanelProps) {
+export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [isExporting, setIsExporting] = useState(false);
 
   const csvData = useQuery(
     api.export.exportIssuesCSV,
-    isExporting && exportFormat === "csv" ? { projectId } : "skip",
+    isExporting && exportFormat === "csv" ? { projectId, sprintId, status } : "skip",
   );
 
   const jsonData = useQuery(
     api.export.exportIssuesJSON,
-    isExporting && exportFormat === "json" ? { projectId } : "skip",
+    isExporting && exportFormat === "json" ? { projectId, sprintId, status } : "skip",
   );
 
   const handleExport = () => {
@@ -149,7 +151,11 @@ export function ExportPanel({ projectId }: ExportPanelProps) {
             <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
               <li>CSV format is compatible with Excel, Google Sheets</li>
               <li>JSON format includes full issue data and metadata</li>
-              <li>All issues in this project will be exported</li>
+              <li>
+                {sprintId || status
+                  ? "Filtered issues will be exported"
+                  : "All issues in this project will be exported"}
+              </li>
             </ul>
           </div>
         </div>

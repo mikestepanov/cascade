@@ -306,6 +306,9 @@ export const importIssuesJSON = mutation({
           priority: issueData.priority || "medium",
           reporterId: userId,
           assigneeId: issueData.assigneeId || undefined,
+          epicId: issueData.epicId || undefined,
+          parentId: issueData.parentId || undefined,
+          sprintId: issueData.sprintId || undefined,
           labels: issueData.labels || [],
           estimatedHours: issueData.estimatedHours || undefined,
           loggedHours: 0,
@@ -409,7 +412,8 @@ export const importIssuesCSV = mutation({
             | "task"
             | "bug"
             | "story"
-            | "epic",
+            | "epic"
+            | "subtask",
           status: project.workflowStates[0].id,
           priority: ((priorityIndex !== -1 && values[priorityIndex]) || "medium") as
             | "lowest"

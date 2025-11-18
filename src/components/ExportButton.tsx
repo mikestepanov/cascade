@@ -39,6 +39,8 @@ export function ExportButton({ projectId }: ExportButtonProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         projectId={projectId}
+        sprintId={sprintId}
+        status={status}
       />
     </>
   );

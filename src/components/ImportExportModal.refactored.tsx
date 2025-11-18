@@ -8,6 +8,8 @@ interface ImportExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: Id<"projects">;
+  sprintId?: Id<"sprints">;
+  status?: string;
 }
 
 type Mode = "export" | "import";
@@ -22,7 +24,7 @@ type Mode = "export" | "import";
  * - Each panel testable in isolation
  * - Clearer separation of concerns
  */
-export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportModalProps) {
+export function ImportExportModal({ isOpen, onClose, projectId, sprintId, status }: ImportExportModalProps) {
   const [mode, setMode] = useState<Mode>("export");
 
   const handleImportComplete = () => {
@@ -60,7 +62,7 @@ export function ImportExportModal({ isOpen, onClose, projectId }: ImportExportMo
 
         {/* Panel Content */}
         {mode === "export" ? (
-          <ExportPanel projectId={projectId} />
+          <ExportPanel projectId={projectId} sprintId={sprintId} status={status} />
         ) : (
           <ImportPanel projectId={projectId} onImportComplete={handleImportComplete} />
         )}
