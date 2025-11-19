@@ -865,6 +865,72 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_active", ["isActive"])
     .index("by_user_active", ["userId", "isActive"]),
+
+  // Time Tracking (Native - Kimai-like features)
+  timeEntries: defineTable({
+    userId: v.id("users"), // Who logged the time
+    projectId: v.optional(v.id("projects")), // Project
+    issueId: v.optional(v.id("issues")), // Issue (optional)
+    // Time data
+    startTime: v.number(), // Unix timestamp
+    endTime: v.optional(v.number()), // Unix timestamp (null if timer still running)
+    duration: v.number(), // Duration in seconds
+    date: v.number(), // Date of time entry (for grouping/filtering)
+    // Description & Activity
+    description: v.optional(v.string()),
+    activity: v.optional(v.string()), // e.g., "Development", "Meeting", "Code Review", "Design"
+    tags: v.array(v.string()), // Tags for categorization
+    // Billing
+    hourlyRate: v.optional(v.number()), // Hourly rate at time of entry (snapshot)
+    totalCost: v.optional(v.number()), // Calculated cost (duration * hourlyRate)
+    currency: v.string(), // Currency code: "USD", "EUR", etc.
+    billable: v.boolean(), // Is this time billable to client?
+    billed: v.boolean(), // Has this been billed to client?
+    invoiceId: v.optional(v.string()), // Link to invoice if billed
+    // Status
+    isLocked: v.boolean(), // Locked entries can't be edited (for payroll/billing)
+    isApproved: v.boolean(), // Approved by manager
+    approvedBy: v.optional(v.id("users")),
+    approvedAt: v.optional(v.number()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_issue", ["issueId"])
+    .index("by_date", ["date"])
+    .index("by_user_date", ["userId", "date"])
+    .index("by_project_date", ["projectId", "date"])
+    .index("by_billable", ["billable"])
+    .index("by_billed", ["billed"])
+    .index("by_user_project", ["userId", "projectId"]),
+
+  // User Hourly Rates (for cost calculation)
+  userRates: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Project-specific rate (overrides default)
+    hourlyRate: v.number(), // Rate per hour
+    currency: v.string(), // Currency code: "USD", "EUR", etc.
+    // Effective period
+    effectiveFrom: v.number(), // Start date of this rate
+    effectiveTo: v.optional(v.number()), // End date (null if current rate)
+    // Rate type
+    rateType: v.union(
+      v.literal("internal"), // Internal cost rate
+      v.literal("billable"), // Client billable rate
+    ),
+    // Metadata
+    setBy: v.id("users"), // Who set this rate
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_user_project", ["userId", "projectId"])
+    .index("by_effective_from", ["effectiveFrom"])
+    .index("by_rate_type", ["rateType"]),
 };
 
 export default defineSchema({
