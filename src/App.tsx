@@ -4,7 +4,7 @@ import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
 import { AIAssistantButton, AIAssistantPanel } from "./components/AI";
-import { CalendarView } from "./components/Calendar/CalendarView";
+import { UnifiedCalendarView } from "./components/Calendar/UnifiedCalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
 import { DocumentEditor } from "./components/DocumentEditor";
@@ -669,7 +669,7 @@ function Content() {
                 ) : activeView === "timesheet" ? (
                   <TimeTrackingPage />
                 ) : activeView === "calendar" ? (
-                  <CalendarView />
+                  <UnifiedCalendarView projectId={selectedProjectId || undefined} />
                 ) : activeView === "settings" ? (
                   <Settings />
                 ) : selectedProjectId ? (

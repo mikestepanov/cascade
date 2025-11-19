@@ -60,11 +60,11 @@ export const create = mutation({
       projectId: args.projectId,
       issueId: args.issueId,
       status: args.status || "confirmed",
-      isRecurring: args.isRecurring,
+      isRecurring: args.isRecurring ?? false,
       recurrenceRule: args.recurrenceRule,
       meetingUrl: args.meetingUrl,
       notes: args.notes,
-      isRequired: args.isRequired,
+      isRequired: args.isRequired ?? false,
       createdAt: now,
       updatedAt: now,
     });

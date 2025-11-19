@@ -75,7 +75,7 @@ export const create = mutation({
       locationDetails: args.locationDetails,
       questions: args.questions,
       isActive: true,
-      requiresConfirmation: args.requiresConfirmation,
+      requiresConfirmation: args.requiresConfirmation ?? false,
       color: args.color || "#3B82F6",
       createdAt: now,
       updatedAt: now,
