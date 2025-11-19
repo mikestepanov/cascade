@@ -23,8 +23,8 @@ import { SectionErrorFallback } from "./components/SectionErrorFallback";
 import { Settings } from "./components/Settings";
 import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { TimerWidget } from "./components/TimeTracker/TimerWidget";
-import { Timesheet } from "./components/TimeTracker/Timesheet";
+import { TimerWidget as NavTimerWidget } from "./components/TimeTracking/TimerWidget";
+import { TimeTrackingPage } from "./components/TimeTracking/TimeTrackingPage";
 import { ModalBackdrop } from "./components/ui/ModalBackdrop";
 import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { type KeySequence, useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
@@ -620,6 +620,7 @@ function Content() {
                     />
                   </svg>
                 </button>
+                <NavTimerWidget />
                 <GlobalSearch />
                 <ThemeToggle />
                 <NotificationCenter />
@@ -665,7 +666,7 @@ function Content() {
                     </div>
                   )
                 ) : activeView === "timesheet" ? (
-                  <Timesheet />
+                  <TimeTrackingPage />
                 ) : activeView === "calendar" ? (
                   <CalendarView />
                 ) : activeView === "settings" ? (
