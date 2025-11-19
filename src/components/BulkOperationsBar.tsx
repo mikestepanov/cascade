@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 
 interface BulkOperationsBarProps {
@@ -37,10 +37,10 @@ export function BulkOperationsBar({
   const handleUpdateStatus = async (statusId: string) => {
     try {
       const result = await bulkUpdateStatus({ issueIds, newStatus: statusId });
-      toast.success(`Updated ${result.updated} issue(s)`);
+      showSuccess(`Updated ${result.updated} issue(s)`);
       onClearSelection();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update status");
+      showError(error, "Failed to update status");
     }
   };
 
@@ -50,10 +50,10 @@ export function BulkOperationsBar({
         issueIds,
         priority: priority as "lowest" | "low" | "medium" | "high" | "highest",
       });
-      toast.success(`Updated ${result.updated} issue(s)`);
+      showSuccess(`Updated ${result.updated} issue(s)`);
       onClearSelection();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update priority");
+      showError(error, "Failed to update priority");
     }
   };
 
@@ -63,10 +63,10 @@ export function BulkOperationsBar({
         issueIds,
         assigneeId: assigneeId === "unassigned" ? null : (assigneeId as Id<"users">),
       });
-      toast.success(`Assigned ${result.updated} issue(s)`);
+      showSuccess(`Assigned ${result.updated} issue(s)`);
       onClearSelection();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to assign issues");
+      showError(error, "Failed to assign issues");
     }
   };
 
@@ -76,20 +76,20 @@ export function BulkOperationsBar({
         issueIds,
         sprintId: sprintId === "backlog" ? null : (sprintId as Id<"sprints">),
       });
-      toast.success(`Moved ${result.updated} issue(s)`);
+      showSuccess(`Moved ${result.updated} issue(s)`);
       onClearSelection();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to move to sprint");
+      showError(error, "Failed to move to sprint");
     }
   };
 
   const handleDelete = async () => {
     try {
       const result = await bulkDelete({ issueIds });
-      toast.success(`Deleted ${result.deleted} issue(s)`);
+      showSuccess(`Deleted ${result.deleted} issue(s)`);
       onClearSelection();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete issues");
+      showError(error, "Failed to delete issues");
     } finally {
       setDeleteConfirm(false);
     }

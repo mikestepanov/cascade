@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { formatRelativeTime } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
 import { CommentRenderer } from "./CommentRenderer";
 import { MentionInput } from "./MentionInput";
 import { Button } from "./ui/Button";
@@ -35,28 +36,12 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       setNewComment("");
       setMentions([]);
-      toast.success("Comment added");
+      showSuccess("Comment added");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to add comment");
+      showError(error, "Failed to add comment");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return date.toLocaleDateString();
   };
 
   return (
@@ -111,7 +96,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                     {comment.author.name}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {formatDate(comment.createdAt)}
+                    {formatRelativeTime(comment.createdAt)}
                   </span>
                   {comment.updatedAt > comment.createdAt && (
                     <span className="text-xs text-gray-400 dark:text-gray-500">(edited)</span>

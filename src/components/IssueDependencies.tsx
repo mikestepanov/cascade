@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Input, Select } from "./ui/form";
@@ -30,7 +30,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
   const handleAddLink = async () => {
     if (!selectedIssueKey) {
-      toast.error("Please select an issue");
+      showError("Please select an issue");
       return;
     }
 
@@ -40,12 +40,12 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
         toIssueId: selectedIssueKey as Id<"issues">,
         linkType,
       });
-      toast.success("Dependency added");
+      showSuccess("Dependency added");
       setShowAddDialog(false);
       setSelectedIssueKey("");
       setSearchQuery("");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to add dependency");
+      showError(error, "Failed to add dependency");
     }
   };
 
@@ -54,9 +54,9 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
     try {
       await removeLink({ linkId: deleteConfirm });
-      toast.success("Dependency removed");
+      showSuccess("Dependency removed");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to remove dependency");
+      showError(error, "Failed to remove dependency");
     } finally {
       setDeleteConfirm(null);
     }
