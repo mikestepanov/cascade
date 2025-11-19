@@ -178,7 +178,7 @@ Format your response as JSON with keys: description, priority, priorityReason, l
         response.content,
       ];
       suggestions = JSON.parse(jsonMatch[1] || response.content);
-    } catch (error) {
+    } catch (_error) {
       suggestions = { raw: response.content };
     }
 
@@ -281,7 +281,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
         response.content,
       ];
       insights = JSON.parse(jsonMatch[1] || response.content);
-    } catch (error) {
+    } catch (_error) {
       insights = { raw: response.content };
     }
 

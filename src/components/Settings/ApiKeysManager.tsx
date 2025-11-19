@@ -117,7 +117,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
     try {
       await revokeKey({ keyId: apiKey.id });
       toast.success("API key revoked successfully");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to revoke API key");
     } finally {
       setIsRevoking(false);
@@ -133,7 +133,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
     try {
       await deleteKey({ keyId: apiKey.id });
       toast.success("API key deleted successfully");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete API key");
     } finally {
       setIsDeleting(false);
@@ -297,7 +297,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
       setGeneratedKey(result.apiKey);
       toast.success("API key generated successfully!");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to generate API key");
     } finally {
       setIsGenerating(false);
@@ -372,7 +372,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               <input
                 type="number"
                 value={rateLimit}
-                onChange={(e) => setRateLimit(parseInt(e.target.value) || 100)}
+                onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
                 min="10"
                 max="1000"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"

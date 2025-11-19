@@ -106,9 +106,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         setPreviewFilename(result.filename);
         setShowPreview(true);
       }
-    } catch (error) {
-      console.error("Import failed:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleConfirmImport = async () => {
@@ -120,8 +118,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
       setShowPreview(false);
       setPreviewMarkdown("");
       setPreviewFilename("");
-    } catch (error) {
-      console.error("Import failed:", error);
+    } catch (_error) {
       toast.error("Failed to import markdown");
     }
   };
@@ -133,9 +130,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     }
     try {
       await handleMarkdownExport(sync.editor, document.title);
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
+    } catch (_error) {}
   };
 
   return (

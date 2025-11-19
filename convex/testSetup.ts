@@ -16,6 +16,7 @@
 
 export const modules = {
   analytics: () => import("./analytics"),
+  apiKeys: () => import("./apiKeys"),
   attachments: () => import("./attachments"),
   auth: () => import("./auth"),
   automationRules: () => import("./automationRules"),

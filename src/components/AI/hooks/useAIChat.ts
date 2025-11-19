@@ -57,7 +57,7 @@ export function useAIChat({
     if (messages && messages.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages?.length]); // Only depend on length, not entire array
+  }, [messages?.length, messages]); // Only depend on length, not entire array
 
   // Create chat on mount if no chatId provided
   useEffect(() => {
@@ -67,11 +67,9 @@ export function useAIChat({
           setChatId(newChatId);
           onChatCreated?.(newChatId);
         })
-        .catch((error) => {
-          console.error("Failed to create chat:", error);
-        });
+        .catch((_error) => {});
     }
-  }, []); // Empty deps - only run once on mount
+  }, [chatId, createChat, onChatCreated, projectId]); // Empty deps - only run once on mount
 
   // Auto-resize textarea
   useEffect(() => {
@@ -80,7 +78,7 @@ export function useAIChat({
       textarea.style.height = "auto";
       textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
     }
-  }, [inputMessage?.length]); // Only depend on length
+  }, [inputMessage?.length, inputMessage]); // Only depend on length
 
   const copyToClipboard = useCallback(async (content: string, messageId: string) => {
     try {
@@ -105,8 +103,7 @@ export function useAIChat({
         message,
         projectId,
       });
-    } catch (error) {
-      console.error("Failed to send message:", error);
+    } catch (_error) {
       // Restore message on error
       setInputMessage(message);
     } finally {

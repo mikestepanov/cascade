@@ -13,8 +13,7 @@ export async function exportToMarkdown(editor: BlockNoteEditor): Promise<string>
   try {
     const blocks = editor.document;
     return await blocksToMarkdown(blocks);
-  } catch (error) {
-    console.error("Failed to export to markdown:", error);
+  } catch (_error) {
     throw new Error("Failed to export document to markdown");
   }
 }
@@ -26,8 +25,7 @@ export async function importFromMarkdown(editor: BlockNoteEditor, markdown: stri
   try {
     const blocks = await markdownToBlocks(editor, markdown);
     editor.replaceBlocks(editor.document, blocks);
-  } catch (error) {
-    console.error("Failed to import from markdown:", error);
+  } catch (_error) {
     throw new Error("Failed to import markdown to document");
   }
 }
@@ -185,9 +183,7 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
       if (blocks && Array.isArray(blocks)) {
         return blocks;
       }
-    } catch (error) {
-      console.warn("BlockNote markdown parsing failed, using fallback:", error);
-    }
+    } catch (_error) {}
   }
 
   // Fallback: Simple markdown parser
@@ -370,7 +366,7 @@ export async function readMarkdownForPreview(): Promise<{
       try {
         const markdown = await readMarkdownFile(file);
         resolve({ markdown, filename: file.name });
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to read markdown file");
         resolve(null);
       }

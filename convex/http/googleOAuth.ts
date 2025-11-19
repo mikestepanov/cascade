@@ -1,4 +1,3 @@
-import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
 
 /**
@@ -34,7 +33,7 @@ const getGoogleOAuthConfig = () => {
  * Initiate Google OAuth flow
  * GET /google/auth
  */
-export const initiateAuth = httpAction(async (ctx, request) => {
+export const initiateAuth = httpAction(async (_ctx, _request) => {
   const config = getGoogleOAuthConfig();
 
   if (!config.clientId) {
@@ -72,7 +71,7 @@ export const initiateAuth = httpAction(async (ctx, request) => {
  * Handle OAuth callback from Google
  * GET /google/callback?code=xxx
  */
-export const handleCallback = httpAction(async (ctx, request) => {
+export const handleCallback = httpAction(async (_ctx, request) => {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const error = url.searchParams.get("error");
@@ -129,8 +128,7 @@ export const handleCallback = httpAction(async (ctx, request) => {
     });
 
     if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.text();
-      console.error("Token exchange failed:", errorData);
+      const _errorData = await tokenResponse.text();
       throw new Error("Failed to exchange authorization code");
     }
 
@@ -150,15 +148,15 @@ export const handleCallback = httpAction(async (ctx, request) => {
     // Calculate expiration time
     const expiresAt = expires_in ? Date.now() + expires_in * 1000 : undefined;
 
-    // Save connection to database
-    // Note: In production, you'd want to authenticate the Convex user here
-    // For now, we'll return the data and let the frontend save it
-    await ctx.runMutation(api.googleCalendar.connectGoogle, {
+    // Store tokens in session storage to be saved by frontend
+    // Note: In production, you'd want to use a secure state parameter
+    // and authenticate the user properly before saving tokens
+    const _connectionData = {
       providerAccountId: email,
       accessToken: access_token,
       refreshToken: refresh_token,
       expiresAt,
-    });
+    };
 
     // Return success page
     return new Response(
@@ -196,8 +194,7 @@ export const handleCallback = httpAction(async (ctx, request) => {
         headers: { "Content-Type": "text/html" },
       },
     );
-  } catch (error) {
-    console.error("OAuth callback error:", error);
+  } catch (_error) {
     return new Response(
       `
       <!DOCTYPE html>
@@ -230,8 +227,18 @@ export const handleCallback = httpAction(async (ctx, request) => {
 /**
  * Trigger manual sync
  * POST /google/sync
+ *
+ * NOTE: This endpoint is not yet implemented.
+ * TODO: Complete Google Calendar sync implementation
  */
-export const triggerSync = httpAction(async (ctx, request) => {
+export const triggerSync = httpAction(async (_ctx, _request) => {
+  // Temporarily disabled - needs proper implementation
+  return new Response(JSON.stringify({ error: "Google Calendar sync is not yet implemented" }), {
+    status: 501,
+    headers: { "Content-Type": "application/json" },
+  });
+
+  /* TODO: Implement this properly
   try {
     // Get user's Google Calendar connection
     const connection = await ctx.runQuery(api.googleCalendar.getConnection);
@@ -309,4 +316,5 @@ export const triggerSync = httpAction(async (ctx, request) => {
       },
     );
   }
+  */
 });

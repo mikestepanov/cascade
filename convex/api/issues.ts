@@ -2,12 +2,10 @@ import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { httpAction } from "../_generated/server";
 import {
-  checkRateLimit,
   createErrorResponse,
   createSuccessResponse,
   extractApiKey,
   hasScope,
-  validateApiKey,
   verifyProjectAccess,
 } from "../lib/apiAuth";
 
@@ -25,7 +23,7 @@ import {
 // This file shows the structure - actual routes registered in router.ts
 
 export const handler = httpAction(async (ctx, request) => {
-  const startTime = Date.now();
+  const _startTime = Date.now();
   const url = new URL(request.url);
   const method = request.method;
 
@@ -34,7 +32,7 @@ export const handler = httpAction(async (ctx, request) => {
     const apiKey = extractApiKey(request.headers);
     if (!apiKey) return createErrorResponse(401, "Missing API key");
 
-    const auth = await validateApiKey(ctx, apiKey);
+    const auth = await ctx.runQuery((api as any).apiKeys.validateApiKey, { apiKey });
     if (!auth) return createErrorResponse(401, "Invalid or expired API key");
 
     // Route based on method and path
@@ -43,8 +41,7 @@ export const handler = httpAction(async (ctx, request) => {
     }
 
     return createErrorResponse(404, "Not found");
-  } catch (error) {
-    console.error("API Error:", error);
+  } catch (_error) {
     return createErrorResponse(500, "Internal server error");
   }
 });

@@ -1,5 +1,4 @@
 import { useQuery } from "convex/react";
-import Fuse from "fuse.js";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -69,7 +68,7 @@ export function GlobalSearch() {
   useEffect(() => {
     setIssueOffset(0);
     setDocumentOffset(0);
-  }, [query]);
+  }, []);
 
   const issueResults = issueSearchResult?.results ?? [];
   const documentResults = documentSearchResult?.results ?? [];

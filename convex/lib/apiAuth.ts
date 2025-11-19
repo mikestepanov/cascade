@@ -44,10 +44,11 @@ export function extractApiKey(headers: Headers): string | null {
 }
 
 /**
- * Validate API key and return auth context
+ * Validate API key and return auth context (for use in queries/mutations)
+ * Note: For HTTP actions, use internal.apiKeys.validateApiKeyInternal instead
  */
 export async function validateApiKey(
-  ctx: QueryCtx,
+  ctx: { db: QueryCtx["db"] },
   apiKey: string,
 ): Promise<ApiAuthContext | null> {
   // Hash the provided key
@@ -108,7 +109,7 @@ export function verifyProjectAccess(
  * Returns null if allowed, or { retryAfter: seconds } if rate limited
  */
 export async function checkRateLimit(
-  ctx: QueryCtx,
+  ctx: { db: QueryCtx["db"] },
   keyId: Id<"apiKeys">,
 ): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> {
   const now = Date.now();

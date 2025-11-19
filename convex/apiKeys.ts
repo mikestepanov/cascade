@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import type { ApiAuthContext } from "./lib/apiAuth";
 
 /**
  * API Key Management
@@ -29,6 +29,38 @@ async function hashApiKey(key: string): Promise<string> {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+/**
+ * Query to validate API key (for use in HTTP actions)
+ * This is public but only contains validation logic, not sensitive data
+ */
+export const validateApiKey = query({
+  args: {
+    apiKey: v.string(),
+  },
+  handler: async (ctx, args): Promise<ApiAuthContext | null> => {
+    // Hash the provided key
+    const keyHash = await hashApiKey(args.apiKey);
+
+    // Find key by hash
+    const key = await ctx.db
+      .query("apiKeys")
+      .withIndex("by_key_hash", (q) => q.eq("keyHash", keyHash))
+      .first();
+
+    if (!key) return null;
+    if (!key.isActive) return null;
+    if (key.expiresAt && key.expiresAt < Date.now()) return null;
+
+    return {
+      userId: key.userId,
+      keyId: key._id,
+      scopes: key.scopes,
+      projectId: key.projectId,
+      rateLimit: key.rateLimit,
+    };
+  },
+});
 
 /**
  * Generate a new API key

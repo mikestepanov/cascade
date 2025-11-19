@@ -125,7 +125,6 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       setShowAISuggestions(true);
       showSuccess("AI suggestions applied!");
     } catch (error) {
-      console.error("AI suggestion error:", error);
       showError(error, "Failed to generate AI suggestions. Make sure AI provider is configured.");
     } finally {
       setIsGeneratingAI(false);

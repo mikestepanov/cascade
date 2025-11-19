@@ -1,4 +1,3 @@
-import type { Block, BlockNoteEditor } from "@blocknote/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { downloadMarkdown, readMarkdownFile, stripFrontmatter } from "./markdown";
 

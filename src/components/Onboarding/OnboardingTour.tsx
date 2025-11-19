@@ -99,7 +99,7 @@ export function OnboardingTour() {
         element.classList.remove("onboarding-spotlight");
       }
     };
-  }, [showTour, step, currentTourStep]);
+  }, [showTour, currentTourStep]);
 
   if (!showTour || !currentTourStep) return null;
 

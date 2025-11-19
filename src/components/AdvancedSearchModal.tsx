@@ -24,7 +24,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
   // Reset offset when query or filters change
   useEffect(() => {
     setOffset(0);
-  }, [searchQuery, selectedType, selectedPriority, selectedStatus]);
+  }, []);
 
   // Use server-side filtering
   const searchResult = useQuery(

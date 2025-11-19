@@ -15,7 +15,6 @@ import { TimeTracker } from "./TimeTracker";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
-import { Skeleton } from "./ui/Skeleton";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;

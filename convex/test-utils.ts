@@ -5,7 +5,7 @@
  */
 
 import type { TestConvex } from "convex-test";
-import type { DataModel, Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 import type schema from "./schema";
 
 type TestCtx = TestConvex<typeof schema>;

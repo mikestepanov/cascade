@@ -1,8 +1,61 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
-// Connect Google Calendar (OAuth callback)
+// Internal mutation for connecting Google Calendar (called from HTTP action)
+export const connectGoogleInternal = internalMutation({
+  args: {
+    userId: v.id("users"),
+    providerAccountId: v.string(),
+    accessToken: v.string(),
+    refreshToken: v.optional(v.string()),
+    expiresAt: v.optional(v.number()),
+    syncDirection: v.optional(
+      v.union(v.literal("import"), v.literal("export"), v.literal("bidirectional")),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { userId, ...connectionArgs } = args;
+
+    // Check if connection already exists for this provider
+    const existing = await ctx.db
+      .query("calendarConnections")
+      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .first();
+
+    const now = Date.now();
+
+    if (existing) {
+      // Update existing connection
+      await ctx.db.patch(existing._id, {
+        providerAccountId: connectionArgs.providerAccountId,
+        accessToken: connectionArgs.accessToken,
+        refreshToken: connectionArgs.refreshToken,
+        expiresAt: connectionArgs.expiresAt,
+        syncDirection: connectionArgs.syncDirection || "bidirectional",
+        updatedAt: now,
+      });
+      return existing._id;
+    }
+
+    // Create new connection
+    return await ctx.db.insert("calendarConnections", {
+      userId,
+      provider: "google",
+      providerAccountId: connectionArgs.providerAccountId,
+      accessToken: connectionArgs.accessToken,
+      refreshToken: connectionArgs.refreshToken,
+      expiresAt: connectionArgs.expiresAt,
+      syncDirection: connectionArgs.syncDirection || "bidirectional",
+      syncEnabled: true,
+      lastSyncAt: undefined,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+// Connect Google Calendar (OAuth callback) - for authenticated users
 export const connectGoogle = mutation({
   args: {
     providerAccountId: v.string(), // Google email

@@ -1,6 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
 import { action, mutation, query } from "./_generated/server";
 
 /**
@@ -202,7 +201,7 @@ export const sendMessage = action({
           ...(args.fields && { fields: args.fields }),
         },
       ];
-      payload.text = args.title || args.text.substring(0, 50) + "...";
+      payload.text = args.title || `${args.text.substring(0, 50)}...`;
     }
 
     try {
@@ -356,9 +355,7 @@ export const sendIssueNotification = action({
             },
           ],
         });
-      } catch (error) {
-        console.error(`Failed to send Pumble notification:`, error);
-      }
+      } catch (_error) {}
     }
   },
 });
@@ -381,7 +378,7 @@ function getColorForEvent(event: string): string {
   }
 }
 
-function getTitleForEvent(event: string, issue: any): string {
+function getTitleForEvent(event: string, _issue: any): string {
   switch (event) {
     case "issue.created":
       return `🆕 New Issue Created`;

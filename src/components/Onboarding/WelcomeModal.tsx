@@ -21,8 +21,7 @@ export function WelcomeModal() {
       navigate(`/project/${projectId}`);
       // Start the product tour
       startOnboarding();
-    } catch (error) {
-      console.error("Failed to create sample project:", error);
+    } catch (_error) {
     } finally {
       setIsCreatingSample(false);
     }
