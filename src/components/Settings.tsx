@@ -13,23 +13,23 @@ export function Settings() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
             Manage your account, integrations, and preferences
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-          <nav className="-mb-px flex space-x-8" aria-label="Settings tabs">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6 sm:mb-8 overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+          <nav className="-mb-px flex gap-4 sm:gap-8 min-w-max" aria-label="Settings tabs">
             <button
               type="button"
               onClick={() => setActiveTab("integrations")}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
                 ${
                   activeTab === "integrations"
                     ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -43,7 +43,7 @@ export function Settings() {
               type="button"
               onClick={() => setActiveTab("apikeys")}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
                 ${
                   activeTab === "apikeys"
                     ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -57,7 +57,7 @@ export function Settings() {
               type="button"
               onClick={() => setActiveTab("offline")}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
                 ${
                   activeTab === "offline"
                     ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -71,7 +71,7 @@ export function Settings() {
               type="button"
               onClick={() => setActiveTab("preferences")}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
                 ${
                   activeTab === "preferences"
                     ? "border-blue-500 text-blue-600 dark:text-blue-400"

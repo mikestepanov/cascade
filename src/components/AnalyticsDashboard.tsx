@@ -21,16 +21,16 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
   if (!(analytics && velocity)) {
     return (
-      <div className="p-6 overflow-y-auto h-full bg-gray-50">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="p-3 sm:p-6 overflow-y-auto h-full bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header Skeleton */}
           <div>
-            <Skeleton className="h-8 w-64 mb-2" />
-            <Skeleton className="h-4 w-96" />
+            <Skeleton className="h-6 sm:h-8 w-48 sm:w-64 mb-2" />
+            <Skeleton className="h-3 sm:h-4 w-64 sm:w-96" />
           </div>
 
           {/* Metric Cards Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <SkeletonStatCard />
             <SkeletonStatCard />
             <SkeletonStatCard />
@@ -38,22 +38,22 @@ export function AnalyticsDashboard({ projectId }: Props) {
           </div>
 
           {/* Charts Skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <Skeleton className="h-6 w-48 mb-4" />
-              <Skeleton className="h-64 w-full" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+              <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
+              <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <Skeleton className="h-6 w-48 mb-4" />
-              <Skeleton className="h-64 w-full" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+              <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
+              <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <Skeleton className="h-6 w-48 mb-4" />
-              <Skeleton className="h-64 w-full" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+              <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
+              <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <Skeleton className="h-6 w-48 mb-4" />
-              <Skeleton className="h-64 w-full" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+              <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
+              <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
           </div>
         </div>
@@ -62,18 +62,18 @@ export function AnalyticsDashboard({ projectId }: Props) {
   }
 
   return (
-    <div className="p-6 overflow-y-auto h-full bg-gray-50">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-6 overflow-y-auto h-full bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
             Project insights, team velocity, and progress metrics
           </p>
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <MetricCard title="Total Issues" value={analytics.totalIssues} icon="📊" />
           <MetricCard
             title="Unassigned"
@@ -91,7 +91,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Issues by Status */}
           <ChartCard title="Issues by Status">
             <BarChart
