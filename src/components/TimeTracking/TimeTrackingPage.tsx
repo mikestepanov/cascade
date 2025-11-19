@@ -3,10 +3,11 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { BurnRateDashboard } from "./BurnRateDashboard";
+import { UserRatesManagement } from "./UserRatesManagement";
 import type { Id } from "../../../convex/_generated/dataModel";
 
 export function TimeTrackingPage() {
-  const [activeTab, setActiveTab] = useState<"entries" | "burn-rate">("entries");
+  const [activeTab, setActiveTab] = useState<"entries" | "burn-rate" | "rates">("entries");
   const [selectedProject, setSelectedProject] = useState<Id<"projects"> | "all">("all");
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("week");
 
@@ -65,6 +66,17 @@ export function TimeTrackingPage() {
             }`}
           >
             Burn Rate & Costs
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("rates")}
+            className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === "rates"
+                ? "border-blue-600 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            Hourly Rates
           </button>
         </nav>
       </div>
@@ -148,6 +160,8 @@ export function TimeTrackingPage() {
             </p>
           </div>
         )}
+
+        {activeTab === "rates" && <UserRatesManagement />}
       </div>
     </div>
   );

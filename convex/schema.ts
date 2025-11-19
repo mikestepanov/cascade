@@ -177,29 +177,6 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_project_name", ["projectId", "name"]),
 
-  timeEntries: defineTable({
-    issueId: v.id("issues"),
-    userId: v.id("users"),
-    hours: v.number(),
-    description: v.optional(v.string()),
-    date: v.number(), // Timestamp of when work was done
-    billable: v.boolean(), // For agency billing - is this billable to client?
-    hourlyRate: v.optional(v.number()), // Override project rate if needed
-    createdAt: v.number(),
-  })
-    .index("by_issue", ["issueId"])
-    .index("by_user", ["userId"])
-    .index("by_date", ["date"]),
-
-  activeTimers: defineTable({
-    userId: v.id("users"),
-    issueId: v.id("issues"),
-    startedAt: v.number(),
-    description: v.optional(v.string()),
-  })
-    .index("by_user", ["userId"])
-    .index("by_issue", ["issueId"]),
-
   issueTemplates: defineTable({
     projectId: v.id("projects"),
     name: v.string(),

@@ -335,23 +335,28 @@ export const listTimeEntries = query({
 
     let entries;
 
-    if (args.projectId && args.startDate && args.endDate) {
+    if (args.projectId && args.startDate !== undefined && args.endDate !== undefined) {
+      const startDate = args.startDate;
+      const endDate = args.endDate;
+      const projectId = args.projectId;
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
           q
-            .eq("projectId", args.projectId)
-            .gte("date", args.startDate)
-            .lte("date", args.endDate),
+            .eq("projectId", projectId)
+            .gte("date", startDate)
+            .lte("date", endDate),
         )
         .filter((q) => q.eq(q.field("userId"), userId))
         .order("desc")
         .take(args.limit || 100);
-    } else if (args.startDate && args.endDate) {
+    } else if (args.startDate !== undefined && args.endDate !== undefined) {
+      const startDate = args.startDate;
+      const endDate = args.endDate;
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_user_date", (q) =>
-          q.eq("userId", userId).gte("date", args.startDate).lte("date", args.endDate),
+          q.eq("userId", userId).gte("date", startDate).lte("date", endDate),
         )
         .order("desc")
         .take(args.limit || 100);
@@ -690,8 +695,8 @@ async function getUserCurrentRate(
   if (projectId) {
     const projectRate = await ctx.db
       .query("userRates")
-      .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", projectId))
-      .filter((q) => q.eq(q.field("effectiveTo"), undefined))
+      .withIndex("by_user_project", (q: any) => q.eq("userId", userId).eq("projectId", projectId))
+      .filter((q: any) => q.eq(q.field("effectiveTo"), undefined))
       .first();
 
     if (projectRate && (!rateType || projectRate.rateType === rateType)) {
@@ -702,8 +707,8 @@ async function getUserCurrentRate(
   // Fall back to default user rate
   const defaultRate = await ctx.db
     .query("userRates")
-    .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", undefined))
-    .filter((q) => q.eq(q.field("effectiveTo"), undefined))
+    .withIndex("by_user_project", (q: any) => q.eq("userId", userId).eq("projectId", undefined))
+    .filter((q: any) => q.eq(q.field("effectiveTo"), undefined))
     .first();
 
   if (defaultRate && (!rateType || defaultRate.rateType === rateType)) {
