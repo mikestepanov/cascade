@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query, type QueryCtx } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 /**
@@ -206,7 +207,19 @@ export const updateTimeEntry = mutation({
       throw new Error("Cannot edit locked time entry");
     }
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: Partial<{
+      description: string;
+      activity: string;
+      tags: string[];
+      billable: boolean;
+      startTime: number;
+      endTime: number;
+      duration: number;
+      date: number;
+      hourlyRate: number;
+      totalCost: number;
+      updatedAt: number;
+    }> = { updatedAt: Date.now() };
 
     if (args.description !== undefined) updates.description = args.description;
     if (args.activity !== undefined) updates.activity = args.activity;
@@ -523,7 +536,18 @@ export const getTeamCosts = query({
     // Group by user
     const userCosts: Record<
       string,
-      { hours: number; cost: number; user: any; billableHours: number; billableCost: number }
+      {
+        hours: number;
+        cost: number;
+        user: {
+          _id: Id<"users">;
+          name: string;
+          email: string | undefined;
+          image: string | undefined;
+        } | null;
+        billableHours: number;
+        billableCost: number;
+      }
     > = {};
 
     for (const entry of entries) {
@@ -683,7 +707,7 @@ export const listUserRates = query({
 // ===== Helper Functions =====
 
 async function getUserCurrentRate(
-  ctx: any,
+  ctx: { db: QueryCtx["db"] },
   userId: string,
   projectId?: string,
   rateType?: "internal" | "billable",
