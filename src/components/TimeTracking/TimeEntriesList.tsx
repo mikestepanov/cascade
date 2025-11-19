@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -26,7 +28,8 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
   const [_editingEntry, _setEditingEntry] = useState<string | null>(null);
   const [showManualEntryModal, setShowManualEntryModal] = useState(false);
 
-  const formatDuration = (seconds: number) => {
+  // Format duration for display (hours and minutes)
+  const formatDurationDisplay = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
 
@@ -36,29 +39,6 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
     return `${minutes}m`;
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency || "USD",
-    }).format(amount || 0);
-  };
-
-  const formatDate = (timestamp: number) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(timestamp);
-  };
-
-  const formatTime = (timestamp: number) => {
-    return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(timestamp);
-  };
-
   const handleDelete = async (entryId: Id<"timeEntries">) => {
     if (!confirm("Are you sure you want to delete this time entry?")) {
       return;
@@ -66,16 +46,16 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
     try {
       await deleteEntry({ entryId });
-      toast.success("Time entry deleted");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete time entry");
+      showSuccess("Time entry deleted");
+    } catch (error) {
+      showError(error, "Failed to delete time entry");
     }
   };
 
   if (!entries) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -146,7 +126,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
             <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{date}</h3>
               <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                <span>{formatDuration(totalDuration)}</span>
+                <span>{formatDurationDisplay(totalDuration)}</span>
                 <span>{formatCurrency(totalCost, dateEntries[0]?.currency || "USD")}</span>
               </div>
             </div>
@@ -230,7 +210,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   {/* Duration and cost */}
                   <div className="flex-shrink-0 text-right">
                     <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {formatDuration(entry.duration)}
+                      {formatDurationDisplay(entry.duration)}
                     </div>
                     {entry.totalCost !== undefined && entry.totalCost > 0 && (
                       <div className="text-xs text-gray-600 dark:text-gray-400">

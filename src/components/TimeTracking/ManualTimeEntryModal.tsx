@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { ACTIVITY_TYPES } from "@/lib/constants";
+import { formatDateForInput, formatDuration } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -21,10 +23,7 @@ export function ManualTimeEntryModal({
 
   const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
-  const [date, setDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0]; // YYYY-MM-DD
-  });
+  const [date, setDate] = useState(() => formatDateForInput(Date.now()));
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [description, setDescription] = useState("");
@@ -75,12 +74,12 @@ export function ManualTimeEntryModal({
 
   const handleSubmit = async () => {
     if (!date || !startTime || !endTime) {
-      toast.error("Please fill in date, start time, and end time");
+      showError("Please fill in date, start time, and end time");
       return;
     }
 
     if (duration <= 0) {
-      toast.error("End time must be after start time");
+      showError("End time must be after start time");
       return;
     }
 
@@ -99,14 +98,15 @@ export function ManualTimeEntryModal({
         billable,
       });
 
-      toast.success("Time entry created");
+      showSuccess("Time entry created");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create time entry");
+    } catch (error) {
+      showError(error, "Failed to create time entry");
     }
   };
 
-  const formatDuration = (seconds: number) => {
+  // Format duration for display (hours and minutes)
+  const formatDurationDisplay = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     if (hours > 0) {
@@ -136,7 +136,7 @@ export function ManualTimeEntryModal({
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              max={new Date().toISOString().split("T")[0]}
+              max={formatDateForInput(Date.now())}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
               required
             />
@@ -174,7 +174,7 @@ export function ManualTimeEntryModal({
           {duration > 0 && (
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Duration: {formatDuration(duration)}
+                Duration: {formatDurationDisplay(duration)}
               </span>
             </div>
           )}
@@ -249,14 +249,11 @@ export function ManualTimeEntryModal({
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
             >
               <option value="">Select activity...</option>
-              <option value="Development">Development</option>
-              <option value="Code Review">Code Review</option>
-              <option value="Meeting">Meeting</option>
-              <option value="Design">Design</option>
-              <option value="Testing">Testing</option>
-              <option value="Documentation">Documentation</option>
-              <option value="Planning">Planning</option>
-              <option value="Research">Research</option>
+              {ACTIVITY_TYPES.map((activityType) => (
+                <option key={activityType} value={activityType}>
+                  {activityType}
+                </option>
+              ))}
             </select>
           </div>
 

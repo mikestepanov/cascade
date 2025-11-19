@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import { ACTIVITY_TYPES } from "@/lib/constants";
+import { formatDuration, formatHours } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -31,26 +33,15 @@ export function TimerWidget() {
     return () => clearInterval(interval);
   }, [runningTimer]);
 
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-    return `${minutes}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const handleStop = async () => {
     if (!runningTimer) return;
 
     try {
       const result = await stopTimer({ entryId: runningTimer._id });
-      const hours = (result.duration / 3600).toFixed(2);
-      toast.success(`Timer stopped: ${hours}h logged`);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to stop timer");
+      const hours = formatHours(result.duration);
+      showSuccess(`Timer stopped: ${hours}h logged`);
+    } catch (error) {
+      showError(error, "Failed to stop timer");
     }
   };
 
@@ -124,10 +115,10 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
         description: description || undefined,
         activity: activity || undefined,
       });
-      toast.success("Timer started");
+      showSuccess("Timer started");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start timer");
+    } catch (error) {
+      showError(error, "Failed to start timer");
     }
   };
 
@@ -164,14 +155,11 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
             >
               <option value="">Select activity...</option>
-              <option value="Development">Development</option>
-              <option value="Code Review">Code Review</option>
-              <option value="Meeting">Meeting</option>
-              <option value="Design">Design</option>
-              <option value="Testing">Testing</option>
-              <option value="Documentation">Documentation</option>
-              <option value="Planning">Planning</option>
-              <option value="Research">Research</option>
+              {ACTIVITY_TYPES.map((activityType) => (
+                <option key={activityType} value={activityType}>
+                  {activityType}
+                </option>
+              ))}
             </select>
           </div>
         </div>
