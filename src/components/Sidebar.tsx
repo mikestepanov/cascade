@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { EmptyState } from "./ui/EmptyState";
@@ -38,9 +38,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       setNewDocIsPublic(false);
       setShowCreateForm(false);
       onSelectDocument(docId);
-      toast.success("Document created successfully");
-    } catch {
-      toast.error("Failed to create document");
+      showSuccess("Document created successfully");
+    } catch (error) {
+      showError(error, "Failed to create document");
     }
   };
 
@@ -52,9 +52,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       if (selectedDocumentId === docId) {
         onSelectDocument(null);
       }
-      toast.success("Document deleted successfully");
-    } catch {
-      toast.error("Failed to delete document");
+      showSuccess("Document deleted successfully");
+    } catch (error) {
+      showError(error, "Failed to delete document");
     }
   };
 

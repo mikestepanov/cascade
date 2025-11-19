@@ -3,8 +3,8 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { handleMarkdownExport, importFromMarkdown, readMarkdownForPreview } from "@/lib/markdown";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
@@ -69,9 +69,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     if (titleValue.trim() && titleValue !== document.title) {
       try {
         await updateTitle({ id: documentId, title: titleValue.trim() });
-        toast.success("Title updated");
-      } catch {
-        toast.error("Failed to update title");
+        showSuccess("Title updated");
+      } catch (error) {
+        showError(error, "Failed to update title");
       }
     }
     setIsEditingTitle(false);
@@ -88,15 +88,15 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   const handleTogglePublic = async () => {
     try {
       await togglePublic({ id: documentId });
-      toast.success(document.isPublic ? "Document is now private" : "Document is now public");
-    } catch {
-      toast.error("Failed to update document visibility");
+      showSuccess(document.isPublic ? "Document is now private" : "Document is now public");
+    } catch (error) {
+      showError(error, "Failed to update document visibility");
     }
   };
 
   const handleImportMarkdown = async () => {
     if (!sync.editor) {
-      toast.error("Editor not ready");
+      showError("Editor not ready");
       return;
     }
     try {
@@ -114,18 +114,18 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
     try {
       await importFromMarkdown(sync.editor, previewMarkdown);
-      toast.success(`Imported ${previewFilename}`);
+      showSuccess(`Imported ${previewFilename}`);
       setShowPreview(false);
       setPreviewMarkdown("");
       setPreviewFilename("");
-    } catch (_error) {
-      toast.error("Failed to import markdown");
+    } catch (error) {
+      showError(error, "Failed to import markdown");
     }
   };
 
   const handleExportMarkdown = async () => {
     if (!sync.editor) {
-      toast.error("Editor not ready");
+      showError("Editor not ready");
       return;
     }
     try {

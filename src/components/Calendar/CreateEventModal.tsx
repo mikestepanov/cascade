@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { Calendar, Clock, Link as LinkIcon, MapPin, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 
 interface CreateEventModalProps {
   onClose: () => void;
@@ -64,10 +64,10 @@ export function CreateEventModal({
         attendeeIds: [],
       });
 
-      toast.success("Event created successfully");
+      showSuccess("Event created successfully");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create event");
+    } catch (error) {
+      showError(error, "Failed to create event");
     } finally {
       setIsSubmitting(false);
     }

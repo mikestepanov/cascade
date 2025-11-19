@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Checkbox, Input, Select, Textarea } from "./ui/form";
@@ -42,9 +42,9 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       setNewProjectBoardType("kanban");
       setShowCreateForm(false);
       onSelectProject(projectId);
-      toast.success("Project created successfully");
+      showSuccess("Project created successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create project");
+      showError(error, "Failed to create project");
     }
   };
 

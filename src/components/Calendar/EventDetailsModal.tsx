@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { Calendar, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { formatDate, formatTime } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -19,7 +21,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
-          <div className="text-center text-gray-500">Loading...</div>
+          <LoadingSpinner size="lg" />
         </div>
       </div>
     );
@@ -31,33 +33,13 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
     setIsDeleting(true);
     try {
       await deleteEvent({ id: eventId });
-      toast.success("Event deleted");
+      showSuccess("Event deleted");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete event");
+    } catch (error) {
+      showError(error, "Failed to delete event");
     } finally {
       setIsDeleting(false);
     }
-  };
-
-  const startDate = new Date(event.startTime);
-  const endDate = new Date(event.endTime);
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
   };
 
   const getEventTypeColor = (eventType: string) => {
@@ -124,14 +106,20 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <Calendar className="w-5 h-5 text-gray-500 mt-0.5" />
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
-                {formatDate(startDate)}
+                {formatDate(event.startTime, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {event.allDay ? (
                   "All day"
                 ) : (
                   <>
-                    {formatTime(startDate)} - {formatTime(endDate)}
+                    {formatTime(event.startTime, { hour: "numeric", minute: "2-digit" })} -{" "}
+                    {formatTime(event.endTime, { hour: "numeric", minute: "2-digit" })}
                   </>
                 )}
               </div>
