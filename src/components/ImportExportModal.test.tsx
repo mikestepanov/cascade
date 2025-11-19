@@ -68,7 +68,7 @@ describe("ImportExportModal - Component Behavior", () => {
 
   describe("Mode Switching Logic", () => {
     it("should default to export mode", () => {
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -78,7 +78,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should switch to import mode when Import button clicked", async () => {
       const user = userEvent.setup();
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -91,7 +91,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should switch back to export mode when Export button clicked", async () => {
       const user = userEvent.setup();
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -105,7 +105,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should maintain separate format selections for export and import", async () => {
       const user = userEvent.setup();
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -134,7 +134,7 @@ describe("ImportExportModal - Component Behavior", () => {
         return queryCallCount > 1 ? "" : undefined;
       });
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -154,7 +154,7 @@ describe("ImportExportModal - Component Behavior", () => {
         return queryCallCount > 1 ? "   " : undefined;
       });
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -210,7 +210,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue(undefined); // Keep loading
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -223,7 +223,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue(undefined);
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -236,7 +236,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should show correct format in button text when switching formats", async () => {
       const user = userEvent.setup();
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 
@@ -265,7 +265,7 @@ describe("ImportExportModal - Component Behavior", () => {
     it("should disable import button when no file selected", async () => {
       const user = userEvent.setup();
 
-      const { container } = render(
+      render(
         <ImportExportModal isOpen={true} onClose={mockOnClose} projectId={mockProjectId} />,
       );
 

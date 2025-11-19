@@ -44,7 +44,7 @@ const TOUR_STEPS: TourStep[] = [
 ];
 
 export function OnboardingTour() {
-  const { showTour, completeOnboarding, currentStep, nextStep } = useOnboarding();
+  const { showTour, completeOnboarding, _currentStep, nextStep } = useOnboarding();
   const [step, setStep] = useState(0);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 

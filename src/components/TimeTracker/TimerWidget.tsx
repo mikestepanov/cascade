@@ -12,7 +12,7 @@ interface TimerWidgetProps {
   issueTitle?: string;
 }
 
-export function TimerWidget({ issueId, issueKey, issueTitle }: TimerWidgetProps) {
+export function TimerWidget({ issueId, _issueKey, _issueTitle }: TimerWidgetProps) {
   const activeTimer = useQuery(api.timeEntries.getActiveTimer);
   const startTimer = useMutation(api.timeEntries.startTimer);
   const stopTimer = useMutation(api.timeEntries.stopTimer);

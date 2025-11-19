@@ -15,10 +15,10 @@ interface TimeTrackerProps {
 
 export function TimeTracker({
   issueId,
-  issueKey,
-  issueTitle,
+  _issueKey,
+  _issueTitle,
   estimatedHours = 0,
-  loggedHours = 0,
+  _loggedHours = 0,
 }: TimeTrackerProps) {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
