@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query, type QueryCtx } from "./_generated/server";
+import { mutation, type QueryCtx, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 /**
@@ -708,16 +708,16 @@ export const listUserRates = query({
 
 async function getUserCurrentRate(
   ctx: { db: QueryCtx["db"] },
-  userId: string,
-  projectId?: string,
+  userId: Id<"users">,
+  projectId?: Id<"projects">,
   rateType?: "internal" | "billable",
 ) {
   // Try project-specific rate first
   if (projectId) {
     const projectRate = await ctx.db
       .query("userRates")
-      .withIndex("by_user_project", (q: any) => q.eq("userId", userId).eq("projectId", projectId))
-      .filter((q: any) => q.eq(q.field("effectiveTo"), undefined))
+      .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", projectId))
+      .filter((q) => q.eq(q.field("effectiveTo"), undefined))
       .first();
 
     if (projectRate && (!rateType || projectRate.rateType === rateType)) {
@@ -728,8 +728,8 @@ async function getUserCurrentRate(
   // Fall back to default user rate
   const defaultRate = await ctx.db
     .query("userRates")
-    .withIndex("by_user_project", (q: any) => q.eq("userId", userId).eq("projectId", undefined))
-    .filter((q: any) => q.eq(q.field("effectiveTo"), undefined))
+    .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", undefined))
+    .filter((q) => q.eq(q.field("effectiveTo"), undefined))
     .first();
 
   if (defaultRate && (!rateType || defaultRate.rateType === rateType)) {
