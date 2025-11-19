@@ -33,6 +33,7 @@ export const create = mutation({
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
     notes: v.optional(v.string()),
+    isRequired: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -63,6 +64,7 @@ export const create = mutation({
       recurrenceRule: args.recurrenceRule,
       meetingUrl: args.meetingUrl,
       notes: args.notes,
+      isRequired: args.isRequired,
       createdAt: now,
       updatedAt: now,
     });

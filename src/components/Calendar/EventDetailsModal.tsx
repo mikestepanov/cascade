@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
+import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -14,8 +14,11 @@ interface EventDetailsModalProps {
 
 export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) {
   const event = useQuery(api.calendarEvents.get, { id: eventId });
+  const attendance = useQuery(api.calendarEventsAttendance.getAttendance, { eventId });
   const deleteEvent = useMutation(api.calendarEvents.remove);
+  const markAttendance = useMutation(api.calendarEventsAttendance.markAttendance);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false);
 
   if (!event) {
     return (
@@ -39,6 +42,21 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
       showError(error, "Failed to delete event");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleMarkAttendance = async (
+    userId: Id<"users">,
+    status: "present" | "tardy" | "absent",
+  ) => {
+    setIsSavingAttendance(true);
+    try {
+      await markAttendance({ eventId, userId, status });
+      showSuccess("Attendance marked");
+    } catch (error) {
+      showError(error, "Failed to mark attendance");
+    } finally {
+      setIsSavingAttendance(false);
     }
   };
 
@@ -200,6 +218,67 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 <Clock className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Recurring event</span>
               </div>
+            </div>
+          )}
+
+          {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
+          {event.isRequired && attendance && (
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
+                </h4>
+              </div>
+
+              <div className="space-y-2">
+                {attendance.attendees.map((attendee) => (
+                  <div
+                    key={attendee.userId}
+                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-md"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      {/* Status Icon */}
+                      {attendee.status === "present" && (
+                        <Check className="w-4 h-4 text-green-600" />
+                      )}
+                      {attendee.status === "tardy" && (
+                        <Clock className="w-4 h-4 text-yellow-600" />
+                      )}
+                      {attendee.status === "absent" && <X className="w-4 h-4 text-red-600" />}
+                      {!attendee.status && <div className="w-4 h-4" />}
+
+                      {/* Attendee Name */}
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {attendee.userName}
+                      </span>
+                    </div>
+
+                    {/* Status Dropdown */}
+                    <select
+                      value={attendee.status || ""}
+                      onChange={(e) =>
+                        handleMarkAttendance(
+                          attendee.userId,
+                          e.target.value as "present" | "tardy" | "absent",
+                        )
+                      }
+                      disabled={isSavingAttendance}
+                      className="text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    >
+                      <option value="">Not marked</option>
+                      <option value="present">✓ Present</option>
+                      <option value="tardy">⏰ Tardy</option>
+                      <option value="absent">✗ Absent</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              {attendance.totalAttendees === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                  No attendees added to this meeting
+                </p>
+              )}
             </div>
           )}
         </div>

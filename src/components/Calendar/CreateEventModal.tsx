@@ -33,6 +33,7 @@ export function CreateEventModal({
   const [location, setLocation] = useState("");
   const [meetingUrl, setMeetingUrl] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | undefined>(projectId);
+  const [isRequired, setIsRequired] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,6 +63,7 @@ export function CreateEventModal({
         projectId: selectedProjectId,
         issueId,
         attendeeIds: [],
+        isRequired: eventType === "meeting" ? isRequired : undefined,
       });
 
       showSuccess("Event created successfully");
@@ -182,6 +184,28 @@ export function CreateEventModal({
               <span className="text-sm text-gray-700 dark:text-gray-300">All day event</span>
             </label>
           </div>
+
+          {/* Required Attendance (only for meetings) */}
+          {eventType === "meeting" && (
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isRequired}
+                  onChange={(e) => setIsRequired(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Required attendance (track who attends)
+                </span>
+              </label>
+              {isRequired && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                  Admins can mark who attended, was tardy, or missed this meeting
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Description */}
           <div>

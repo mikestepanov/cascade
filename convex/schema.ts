@@ -423,6 +423,8 @@ const applicationTables = {
     // Meeting details
     meetingUrl: v.optional(v.string()), // Zoom, Meet, etc.
     notes: v.optional(v.string()),
+    // Attendance tracking
+    isRequired: v.optional(v.boolean()), // Required attendance (for tracking who missed)
     // Metadata
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -432,10 +434,28 @@ const applicationTables = {
     .index("by_issue", ["issueId"])
     .index("by_start_time", ["startTime"])
     .index("by_status", ["status"])
+    .index("by_required", ["isRequired"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["organizerId", "projectId", "status"],
     }),
+
+  // Meeting Attendance Tracking (for required meetings)
+  meetingAttendance: defineTable({
+    eventId: v.id("calendarEvents"),
+    userId: v.id("users"),
+    status: v.union(
+      v.literal("present"), // Attended on time
+      v.literal("tardy"), // Attended but late
+      v.literal("absent"), // Did not attend
+    ),
+    markedBy: v.id("users"), // Admin/organizer who marked attendance
+    markedAt: v.number(),
+    notes: v.optional(v.string()), // Optional notes: "Left early", "Technical issues", etc.
+  })
+    .index("by_event", ["eventId"])
+    .index("by_user", ["userId"])
+    .index("by_event_user", ["eventId", "userId"]),
 
   // User availability for booking (Cal.com-style)
   availabilitySlots: defineTable({
