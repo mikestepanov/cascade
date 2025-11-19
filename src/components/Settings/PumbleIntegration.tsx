@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -146,9 +146,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const handleTest = async () => {
     try {
       await testWebhook({ webhookId: webhook._id });
-      toast.success("Test message sent to Pumble!");
+      showSuccess("Test message sent to Pumble!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to send test message");
+      showError(error, "Failed to send test message");
     }
   };
 
@@ -158,9 +158,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         webhookId: webhook._id,
         isActive: !webhook.isActive,
       });
-      toast.success(webhook.isActive ? "Webhook disabled" : "Webhook enabled");
+      showSuccess(webhook.isActive ? "Webhook disabled" : "Webhook enabled");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update webhook");
+      showError(error, "Failed to update webhook");
     }
   };
 
@@ -169,9 +169,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
     try {
       await deleteWebhook({ webhookId: webhook._id });
-      toast.success("Webhook deleted");
+      showSuccess("Webhook deleted");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete webhook");
+      showError(error, "Failed to delete webhook");
     }
   };
 
@@ -347,22 +347,22 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Please enter a webhook name");
+      showError("Please enter a webhook name");
       return;
     }
 
     if (!webhookUrl.trim()) {
-      toast.error("Please enter a webhook URL");
+      showError("Please enter a webhook URL");
       return;
     }
 
     if (!webhookUrl.includes("pumble.com")) {
-      toast.error("Invalid Pumble webhook URL");
+      showError("Invalid Pumble webhook URL");
       return;
     }
 
     if (selectedEvents.length === 0) {
-      toast.error("Please select at least one event");
+      showError("Please select at least one event");
       return;
     }
 
@@ -376,10 +376,10 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
         sendAssignments,
         sendStatusChanges,
       });
-      toast.success("Webhook added successfully!");
+      showSuccess("Webhook added successfully!");
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to add webhook");
+      showError(error, "Failed to add webhook");
     }
   };
 
@@ -582,17 +582,17 @@ function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps)
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Please enter a webhook name");
+      showError("Please enter a webhook name");
       return;
     }
 
     if (!webhookUrl.trim()) {
-      toast.error("Please enter a webhook URL");
+      showError("Please enter a webhook URL");
       return;
     }
 
     if (selectedEvents.length === 0) {
-      toast.error("Please select at least one event");
+      showError("Please select at least one event");
       return;
     }
 
@@ -606,10 +606,10 @@ function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps)
         sendAssignments,
         sendStatusChanges,
       });
-      toast.success("Webhook updated successfully!");
+      showSuccess("Webhook updated successfully!");
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update webhook");
+      showError(error, "Failed to update webhook");
     }
   };
 

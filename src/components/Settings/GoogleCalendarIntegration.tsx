@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -25,9 +26,9 @@ export function GoogleCalendarIntegration() {
     setIsDisconnecting(true);
     try {
       await disconnectGoogle();
-      toast.success("Google Calendar disconnected successfully");
-    } catch (_error) {
-      toast.error("Failed to disconnect Google Calendar");
+      showSuccess("Google Calendar disconnected successfully");
+    } catch (error) {
+      showError(error, "Failed to disconnect Google Calendar");
     } finally {
       setIsDisconnecting(false);
     }
@@ -69,9 +70,9 @@ export function GoogleCalendarIntegration() {
       await updateSyncSettings({
         syncEnabled: !calendarConnection.syncEnabled,
       });
-      toast.success(`Sync ${!calendarConnection.syncEnabled ? "enabled" : "disabled"}`);
-    } catch (_error) {
-      toast.error("Failed to update sync settings");
+      showSuccess(`Sync ${!calendarConnection.syncEnabled ? "enabled" : "disabled"}`);
+    } catch (error) {
+      showError(error, "Failed to update sync settings");
     } finally {
       setIsSaving(false);
     }
@@ -83,9 +84,9 @@ export function GoogleCalendarIntegration() {
       await updateSyncSettings({
         syncDirection: direction,
       });
-      toast.success("Sync direction updated");
-    } catch (_error) {
-      toast.error("Failed to update sync direction");
+      showSuccess("Sync direction updated");
+    } catch (error) {
+      showError(error, "Failed to update sync direction");
     } finally {
       setIsSaving(false);
     }

@@ -2,10 +2,12 @@ import { useMutation, useQuery } from "convex/react";
 import { Copy, Key, Plus, Trash2, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Modal } from "../ui/Modal";
 
 /**
@@ -116,9 +118,9 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
     setIsRevoking(true);
     try {
       await revokeKey({ keyId: apiKey.id });
-      toast.success("API key revoked successfully");
-    } catch (_error) {
-      toast.error("Failed to revoke API key");
+      showSuccess("API key revoked successfully");
+    } catch (error) {
+      showError(error, "Failed to revoke API key");
     } finally {
       setIsRevoking(false);
     }
@@ -132,9 +134,9 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
     setIsDeleting(true);
     try {
       await deleteKey({ keyId: apiKey.id });
-      toast.success("API key deleted successfully");
-    } catch (_error) {
-      toast.error("Failed to delete API key");
+      showSuccess("API key deleted successfully");
+    } catch (error) {
+      showError(error, "Failed to delete API key");
     } finally {
       setIsDeleting(false);
     }
@@ -278,12 +280,12 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
   const handleGenerate = async () => {
     if (!name.trim()) {
-      toast.error("Please enter a name for this API key");
+      showError("Please enter a name for this API key");
       return;
     }
 
     if (selectedScopes.length === 0) {
-      toast.error("Please select at least one scope");
+      showError("Please select at least one scope");
       return;
     }
 
@@ -296,9 +298,9 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
       });
 
       setGeneratedKey(result.apiKey);
-      toast.success("API key generated successfully!");
-    } catch (_error) {
-      toast.error("Failed to generate API key");
+      showSuccess("API key generated successfully!");
+    } catch (error) {
+      showError(error, "Failed to generate API key");
     } finally {
       setIsGenerating(false);
     }
@@ -307,7 +309,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
   const copyAndClose = () => {
     if (generatedKey) {
       navigator.clipboard.writeText(generatedKey);
-      toast.success("API key copied to clipboard!");
+      showSuccess("API key copied to clipboard!");
       onClose();
     }
   };
@@ -455,7 +457,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
       <div className="p-6">
         {!stats ? (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+            <LoadingSpinner size="lg" />
             <p className="mt-2 text-sm text-gray-500">Loading statistics...</p>
           </div>
         ) : (
