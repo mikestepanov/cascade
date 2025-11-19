@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { toast } from "sonner";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -17,7 +17,7 @@ export function ManualTimeEntryModal({
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const projects = useQuery(api.projects.list);
-  const currentUser = useQuery(api.auth.loggedInUser);
+  const _currentUser = useQuery(api.auth.loggedInUser);
 
   const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
@@ -34,10 +34,7 @@ export function ManualTimeEntryModal({
   const [billable, setBillable] = useState(false);
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(
-    api.issues.list,
-    projectId ? { projectId } : "skip",
-  );
+  const projectIssues = useQuery(api.issues.list, projectId ? { projectId } : "skip");
 
   // Calculate duration
   const [duration, setDuration] = useState(0);
@@ -212,7 +209,9 @@ export function ManualTimeEntryModal({
               </label>
               <select
                 value={issueId || ""}
-                onChange={(e) => setIssueId(e.target.value ? (e.target.value as Id<"issues">) : undefined)}
+                onChange={(e) =>
+                  setIssueId(e.target.value ? (e.target.value as Id<"issues">) : undefined)
+                }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="">No issue</option>

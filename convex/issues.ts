@@ -330,15 +330,16 @@ export const getByKey = query({
   handler: async (ctx, args) => {
     // Find issue by key
     const issues = await ctx.db.query("issues").collect();
-    const issue = issues.find(i => i.key === args.key);
+    const issue = issues.find((i) => i.key === args.key);
 
     if (!issue) {
       return null;
     }
 
     // Use the existing get query to return full issue data
-    return ctx.db.query("issues")
-      .filter(q => q.eq(q.field("_id"), issue._id))
+    return ctx.db
+      .query("issues")
+      .filter((q) => q.eq(q.field("_id"), issue._id))
       .first();
   },
 });

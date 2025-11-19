@@ -1,8 +1,8 @@
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { toast } from "sonner";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -23,7 +23,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
   const deleteEntry = useMutation(api.timeTracking.deleteTimeEntry);
 
-  const [editingEntry, setEditingEntry] = useState<string | null>(null);
+  const [_editingEntry, _setEditingEntry] = useState<string | null>(null);
   const [showManualEntryModal, setShowManualEntryModal] = useState(false);
 
   const formatDuration = (seconds: number) => {

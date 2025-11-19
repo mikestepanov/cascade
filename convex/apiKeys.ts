@@ -1,7 +1,7 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 
 /**
  * API Key Management
@@ -15,7 +15,7 @@ function generateApiKey(): string {
   const prefix = "sk_casc";
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const randomPart = Array.from({ length: 32 }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length))
+    chars.charAt(Math.floor(Math.random() * chars.length)),
   ).join("");
   return `${prefix}_${randomPart}`;
 }
@@ -27,7 +27,7 @@ async function hashApiKey(key: string): Promise<string> {
   const data = encoder.encode(key);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
@@ -59,7 +59,7 @@ export const generate = mutation({
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", args.projectId!).eq("userId", userId)
+          q.eq("projectId", args.projectId!).eq("userId", userId),
         )
         .first();
 
@@ -70,10 +70,15 @@ export const generate = mutation({
 
     // Validate scopes
     const validScopes = [
-      "issues:read", "issues:write", "issues:delete",
-      "projects:read", "projects:write",
-      "comments:read", "comments:write",
-      "documents:read", "documents:write",
+      "issues:read",
+      "issues:write",
+      "issues:delete",
+      "projects:read",
+      "projects:write",
+      "comments:read",
+      "comments:write",
+      "documents:read",
+      "documents:write",
       "search:read",
     ];
 
@@ -124,7 +129,7 @@ export const list = query({
       .collect();
 
     // Return keys with sensitive data removed
-    return keys.map(key => ({
+    return keys.map((key) => ({
       id: key._id,
       name: key.name,
       keyPrefix: key.keyPrefix,
@@ -332,14 +337,15 @@ export const getUsageStats = query({
     const oneHourAgo = now - 60 * 60 * 1000;
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
 
-    const recentLogs = logs.filter(log => log.createdAt > oneDayAgo);
-    const lastHourLogs = logs.filter(log => log.createdAt > oneHourAgo);
+    const recentLogs = logs.filter((log) => log.createdAt > oneDayAgo);
+    const lastHourLogs = logs.filter((log) => log.createdAt > oneHourAgo);
 
-    const successCount = recentLogs.filter(log => log.statusCode < 400).length;
-    const errorCount = recentLogs.filter(log => log.statusCode >= 400).length;
-    const avgResponseTime = recentLogs.length > 0
-      ? recentLogs.reduce((sum, log) => sum + log.responseTime, 0) / recentLogs.length
-      : 0;
+    const successCount = recentLogs.filter((log) => log.statusCode < 400).length;
+    const errorCount = recentLogs.filter((log) => log.statusCode >= 400).length;
+    const avgResponseTime =
+      recentLogs.length > 0
+        ? recentLogs.reduce((sum, log) => sum + log.responseTime, 0) / recentLogs.length
+        : 0;
 
     return {
       totalCalls: key.usageCount,
@@ -348,7 +354,7 @@ export const getUsageStats = query({
       successCount,
       errorCount,
       avgResponseTime: Math.round(avgResponseTime),
-      recentLogs: logs.slice(0, 10).map(log => ({
+      recentLogs: logs.slice(0, 10).map((log) => ({
         method: log.method,
         endpoint: log.endpoint,
         statusCode: log.statusCode,

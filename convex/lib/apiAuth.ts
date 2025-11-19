@@ -1,5 +1,5 @@
-import type { QueryCtx } from "../_generated/server";
 import type { Id } from "../_generated/dataModel";
+import type { QueryCtx } from "../_generated/server";
 
 /**
  * API Authentication Utilities
@@ -13,7 +13,7 @@ async function hashApiKey(key: string): Promise<string> {
   const data = encoder.encode(key);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export interface ApiAuthContext {
@@ -48,7 +48,7 @@ export function extractApiKey(headers: Headers): string | null {
  */
 export async function validateApiKey(
   ctx: QueryCtx,
-  apiKey: string
+  apiKey: string,
 ): Promise<ApiAuthContext | null> {
   // Hash the provided key
   const keyHash = await hashApiKey(apiKey);
@@ -94,7 +94,7 @@ export function hasScope(auth: ApiAuthContext, requiredScope: string): boolean {
  */
 export function verifyProjectAccess(
   auth: ApiAuthContext,
-  requestedProjectId?: Id<"projects">
+  requestedProjectId?: Id<"projects">,
 ): boolean {
   // If key is not project-scoped, allow any project
   if (!auth.projectId) return true;
@@ -109,7 +109,7 @@ export function verifyProjectAccess(
  */
 export async function checkRateLimit(
   ctx: QueryCtx,
-  keyId: Id<"apiKeys">
+  keyId: Id<"apiKeys">,
 ): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> {
   const now = Date.now();
   const oneMinuteAgo = now - 60 * 1000;
@@ -121,9 +121,7 @@ export async function checkRateLimit(
   // Count requests in last minute
   const recentRequests = await ctx.db
     .query("apiUsageLogs")
-    .withIndex("by_api_key_created", (q) =>
-      q.eq("apiKeyId", keyId).gt("createdAt", oneMinuteAgo)
-    )
+    .withIndex("by_api_key_created", (q) => q.eq("apiKeyId", keyId).gt("createdAt", oneMinuteAgo))
     .collect();
 
   if (recentRequests.length >= key.rateLimit) {
@@ -142,7 +140,7 @@ export async function checkRateLimit(
 export function createErrorResponse(
   statusCode: number,
   message: string,
-  details?: Record<string, unknown>
+  details?: Record<string, unknown>,
 ): Response {
   return new Response(
     JSON.stringify({
@@ -157,17 +155,14 @@ export function createErrorResponse(
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 }
 
 /**
  * Create a standard API success response
  */
-export function createSuccessResponse(
-  data: unknown,
-  statusCode: number = 200
-): Response {
+export function createSuccessResponse(data: unknown, statusCode: number = 200): Response {
   return new Response(JSON.stringify(data), {
     status: statusCode,
     headers: {

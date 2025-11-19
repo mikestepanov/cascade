@@ -2,14 +2,14 @@ import { useState } from "react";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
-import { PumbleIntegration } from "./Settings/PumbleIntegration";
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
+import { PumbleIntegration } from "./Settings/PumbleIntegration";
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState<"integrations" | "apikeys" | "offline" | "preferences">(
-    "integrations",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "integrations" | "apikeys" | "offline" | "preferences"
+  >("integrations");
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

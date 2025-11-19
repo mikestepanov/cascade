@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { toast } from "sonner";
 import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
 
 interface TimeTrackerProps {
@@ -31,8 +31,7 @@ export function TimeTracker({
 
   // Check if there's a running timer
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
-  const isTimerRunningForThisIssue =
-    runningTimer && runningTimer.issueId === issueId;
+  const isTimerRunningForThisIssue = runningTimer && runningTimer.issueId === issueId;
 
   // Mutations
   const startTimer = useMutation(api.timeTracking.startTimer);
@@ -43,10 +42,8 @@ export function TimeTracker({
     ? timeEntries.reduce((sum, entry) => sum + entry.duration / 3600, 0)
     : 0;
 
-  const remainingHours =
-    estimatedHours > 0 ? estimatedHours - totalLoggedHours : null;
-  const isOverEstimate =
-    remainingHours !== null && remainingHours < 0;
+  const remainingHours = estimatedHours > 0 ? estimatedHours - totalLoggedHours : null;
+  const isOverEstimate = remainingHours !== null && remainingHours < 0;
 
   const handleStartTimer = async () => {
     try {
@@ -82,12 +79,7 @@ export function TimeTracker({
                 onClick={handleStopTimer}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
               >
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
@@ -102,18 +94,9 @@ export function TimeTracker({
                 onClick={handleStartTimer}
                 disabled={!!runningTimer}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={
-                  runningTimer
-                    ? "Stop the current timer first"
-                    : "Start timer for this issue"
-                }
+                title={runningTimer ? "Stop the current timer first" : "Start timer for this issue"}
               >
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -157,16 +140,9 @@ export function TimeTracker({
                 {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
               </span>
               {remainingHours !== null && (
-                <span
-                  className={
-                    isOverEstimate
-                      ? "text-red-600 font-medium"
-                      : "text-gray-600"
-                  }
-                >
+                <span className={isOverEstimate ? "text-red-600 font-medium" : "text-gray-600"}>
                   {isOverEstimate ? "+" : ""}
-                  {Math.abs(remainingHours).toFixed(1)}h{" "}
-                  {isOverEstimate ? "over" : "remaining"}
+                  {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
                 </span>
               )}
             </div>
@@ -185,8 +161,8 @@ export function TimeTracker({
 
         {estimatedHours === 0 && totalLoggedHours > 0 && (
           <div className="text-sm text-gray-600">
-            <span className="font-semibold">{totalLoggedHours.toFixed(1)}h</span>{" "}
-            logged (no estimate set)
+            <span className="font-semibold">{totalLoggedHours.toFixed(1)}h</span> logged (no
+            estimate set)
           </div>
         )}
 
@@ -202,9 +178,7 @@ export function TimeTracker({
           onClick={() => setShowEntries(!showEntries)}
           className="w-full px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-between"
         >
-          <span>
-            View Time Entries ({timeEntries?.length || 0})
-          </span>
+          <span>View Time Entries ({timeEntries?.length || 0})</span>
           <svg
             aria-hidden="true"
             className={`w-4 h-4 transition-transform ${showEntries ? "rotate-180" : ""}`}
@@ -212,12 +186,7 @@ export function TimeTracker({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
       )}
@@ -236,24 +205,15 @@ export function TimeTracker({
             };
 
             return (
-              <div
-                key={entry._id}
-                className="bg-white border border-gray-200 rounded-lg p-3"
-              >
+              <div key={entry._id} className="bg-white border border-gray-200 rounded-lg p-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="font-semibold text-gray-900">
-                      {hours.toFixed(2)}h
-                    </div>
+                    <div className="font-semibold text-gray-900">{hours.toFixed(2)}h</div>
                     {entry.description && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        {entry.description}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-500">
-                        {formatDate(entry.date)}
-                      </span>
+                      <span className="text-xs text-gray-500">{formatDate(entry.date)}</span>
                       {entry.activity && (
                         <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
                           {entry.activity}
@@ -280,10 +240,7 @@ export function TimeTracker({
 
       {/* Log Time Modal */}
       {showLogModal && (
-        <ManualTimeEntryModal
-          onClose={() => setShowLogModal(false)}
-          issueId={issueId}
-        />
+        <ManualTimeEntryModal onClose={() => setShowLogModal(false)} issueId={issueId} />
       )}
     </div>
   );

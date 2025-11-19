@@ -1,6 +1,6 @@
 import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
-import { initiateAuth, handleCallback, triggerSync } from "./http/googleOAuth";
+import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 
 const http = httpRouter();
 

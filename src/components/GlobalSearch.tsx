@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
 import Fuse from "fuse.js";
+import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Input } from "./ui/form/Input";
@@ -91,8 +91,8 @@ export function GlobalSearch() {
     activeTab === "all"
       ? allResults
       : activeTab === "issues"
-        ? fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? []
-        : fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? [];
+        ? (fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? [])
+        : (fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? []);
 
   const totalCount =
     activeTab === "all"
@@ -196,7 +196,10 @@ export function GlobalSearch() {
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
-                All {query.length >= 2 && <span className="text-xs">({issueTotal + documentTotal})</span>}
+                All{" "}
+                {query.length >= 2 && (
+                  <span className="text-xs">({issueTotal + documentTotal})</span>
+                )}
               </button>
               <button
                 type="button"
@@ -283,7 +286,9 @@ export function GlobalSearch() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               {result.type === "issue" && (
-                                <span className="text-xs font-mono text-gray-500">{result.key}</span>
+                                <span className="text-xs font-mono text-gray-500">
+                                  {result.key}
+                                </span>
                               )}
                               <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
                                 {result.type}

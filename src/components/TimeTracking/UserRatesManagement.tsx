@@ -1,8 +1,8 @@
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { toast } from "sonner";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
@@ -25,7 +25,7 @@ export function UserRatesManagement() {
     const userId = editingUserId || currentUser._id;
     const rate = parseFloat(hourlyRate);
 
-    if (isNaN(rate) || rate <= 0) {
+    if (Number.isNaN(rate) || rate <= 0) {
       toast.error("Please enter a valid hourly rate");
       return;
     }
@@ -66,9 +66,7 @@ export function UserRatesManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Hourly Rates
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Hourly Rates</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Manage hourly rates for cost tracking and burn rate calculations
           </p>
@@ -108,17 +106,13 @@ export function UserRatesManagement() {
                   </div>
                   <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                     {rate.projectId ? (
-                      <span>
-                        Project-specific rate
-                      </span>
+                      <span>Project-specific rate</span>
                     ) : (
                       <span>Default rate (applies to all projects)</span>
                     )}
                   </div>
                   {rate.notes && (
-                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                      {rate.notes}
-                    </p>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{rate.notes}</p>
                   )}
                 </div>
                 <div className="text-right">
@@ -231,9 +225,7 @@ export function UserRatesManagement() {
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         Internal Cost
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        What you pay
-                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">What you pay</div>
                     </div>
                   </label>
                   <label
@@ -254,9 +246,7 @@ export function UserRatesManagement() {
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         Billable Rate
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Charge clients
-                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Charge clients</div>
                     </div>
                   </label>
                 </div>
@@ -280,7 +270,6 @@ export function UserRatesManagement() {
                       step="0.01"
                       min="0"
                       className="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-                      autoFocus
                     />
                   </div>
                   <select

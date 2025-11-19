@@ -342,10 +342,7 @@ export const listTimeEntries = query({
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
-          q
-            .eq("projectId", projectId)
-            .gte("date", startDate)
-            .lte("date", endDate),
+          q.eq("projectId", projectId).gte("date", startDate).lte("date", endDate),
         )
         .filter((q) => q.eq(q.field("userId"), userId))
         .order("desc")

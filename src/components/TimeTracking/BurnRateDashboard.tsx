@@ -122,9 +122,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Total Hours
-          </h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Hours</h3>
           <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {formatHours(burnRate.totalHours)}h
           </div>
@@ -154,14 +152,15 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
         {teamCosts.length === 0 ? (
           <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <p className="text-sm text-gray-500 dark:text-gray-400">No time entries for this period</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No time entries for this period
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
             {teamCosts.map((member) => {
-              const percentOfTotal = burnRate.totalCost > 0
-                ? (member.cost / burnRate.totalCost) * 100
-                : 0;
+              const percentOfTotal =
+                burnRate.totalCost > 0 ? (member.cost / burnRate.totalCost) * 100 : 0;
 
               return (
                 <div

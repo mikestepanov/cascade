@@ -43,7 +43,7 @@ export function GoogleCalendarIntegration() {
     const popup = window.open(
       "/google/auth",
       "Google Calendar OAuth",
-      `width=${width},height=${height},left=${left},top=${top},popup=yes`
+      `width=${width},height=${height},left=${left},top=${top},popup=yes`,
     );
 
     if (!popup) {

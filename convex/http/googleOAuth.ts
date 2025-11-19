@@ -1,5 +1,5 @@
-import { httpAction } from "../_generated/server";
 import { api } from "../_generated/api";
+import { httpAction } from "../_generated/server";
 
 /**
  * Google OAuth Integration
@@ -19,7 +19,9 @@ const getGoogleOAuthConfig = () => {
   return {
     clientId: process.env.GOOGLE_CLIENT_ID || "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    redirectUri: process.env.SITE_URL ? `${process.env.SITE_URL}/google/callback` : "http://localhost:5173/google/callback",
+    redirectUri: process.env.SITE_URL
+      ? `${process.env.SITE_URL}/google/callback`
+      : "http://localhost:5173/google/callback",
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",
@@ -38,12 +40,13 @@ export const initiateAuth = httpAction(async (ctx, request) => {
   if (!config.clientId) {
     return new Response(
       JSON.stringify({
-        error: "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
+        error:
+          "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
       }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -99,7 +102,7 @@ export const handleCallback = httpAction(async (ctx, request) => {
       {
         status: 400,
         headers: { "Content-Type": "text/html" },
-      }
+      },
     );
   }
 
@@ -191,7 +194,7 @@ export const handleCallback = httpAction(async (ctx, request) => {
       {
         status: 200,
         headers: { "Content-Type": "text/html" },
-      }
+      },
     );
   } catch (error) {
     console.error("OAuth callback error:", error);
@@ -219,7 +222,7 @@ export const handleCallback = httpAction(async (ctx, request) => {
       {
         status: 500,
         headers: { "Content-Type": "text/html" },
-      }
+      },
     );
   }
 });
@@ -234,23 +237,17 @@ export const triggerSync = httpAction(async (ctx, request) => {
     const connection = await ctx.runQuery(api.googleCalendar.getConnection);
 
     if (!connection) {
-      return new Response(
-        JSON.stringify({ error: "Not connected to Google Calendar" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Not connected to Google Calendar" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     if (!connection.syncEnabled) {
-      return new Response(
-        JSON.stringify({ error: "Sync is disabled" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "Sync is disabled" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Fetch events from Google Calendar API
@@ -260,7 +257,7 @@ export const triggerSync = httpAction(async (ctx, request) => {
         headers: {
           Authorization: `Bearer ${connection.accessToken}`,
         },
-      }
+      },
     );
 
     if (!eventsResponse.ok) {
@@ -297,7 +294,7 @@ export const triggerSync = httpAction(async (ctx, request) => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (error) {
     console.error("Sync error:", error);
@@ -309,7 +306,7 @@ export const triggerSync = httpAction(async (ctx, request) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 });

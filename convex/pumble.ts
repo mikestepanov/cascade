@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query, action } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
+import { action, mutation, query } from "./_generated/server";
 
 /**
  * Pumble Integration
@@ -41,7 +41,7 @@ export const addWebhook = mutation({
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", args.projectId!).eq("userId", userId)
+          q.eq("projectId", args.projectId!).eq("userId", userId),
         )
         .first();
 
@@ -169,16 +169,15 @@ export const sendMessage = action({
           title: v.string(),
           value: v.string(),
           short: v.optional(v.boolean()),
-        })
-      )
+        }),
+      ),
     ),
   },
   handler: async (ctx, args) => {
     // Get webhook
-    const webhook = await ctx.runQuery(
-      ((api: any) => api.pumble.getWebhook)(ctx),
-      { webhookId: args.webhookId }
-    );
+    const webhook = await ctx.runQuery(((api: any) => api.pumble.getWebhook)(ctx), {
+      webhookId: args.webhookId,
+    });
 
     if (!webhook) {
       throw new Error("Webhook not found");
@@ -222,25 +221,19 @@ export const sendMessage = action({
       }
 
       // Update webhook stats
-      await ctx.runMutation(
-        ((api: any) => api.pumble.updateWebhookStats)(ctx),
-        {
-          webhookId: args.webhookId,
-          success: true,
-        }
-      );
+      await ctx.runMutation(((api: any) => api.pumble.updateWebhookStats)(ctx), {
+        webhookId: args.webhookId,
+        success: true,
+      });
 
       return { success: true };
     } catch (error) {
       // Update webhook stats with error
-      await ctx.runMutation(
-        ((api: any) => api.pumble.updateWebhookStats)(ctx),
-        {
-          webhookId: args.webhookId,
-          success: false,
-          error: error instanceof Error ? error.message : "Unknown error",
-        }
-      );
+      await ctx.runMutation(((api: any) => api.pumble.updateWebhookStats)(ctx), {
+        webhookId: args.webhookId,
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
 
       throw error;
     }
@@ -275,27 +268,24 @@ export const updateWebhookStats = mutation({
 export const testWebhook = action({
   args: { webhookId: v.id("pumbleWebhooks") },
   handler: async (ctx, args) => {
-    return await ctx.runAction(
-      ((api: any) => api.pumble.sendMessage)(ctx),
-      {
-        webhookId: args.webhookId,
-        text: "🎉 Cascade integration is working!",
-        title: "Test Message",
-        color: "#3b82f6",
-        fields: [
-          {
-            title: "Status",
-            value: "Connected ✅",
-            short: true,
-          },
-          {
-            title: "Time",
-            value: new Date().toLocaleString(),
-            short: true,
-          },
-        ],
-      }
-    );
+    return await ctx.runAction(((api: any) => api.pumble.sendMessage)(ctx), {
+      webhookId: args.webhookId,
+      text: "🎉 Cascade integration is working!",
+      title: "Test Message",
+      color: "#3b82f6",
+      fields: [
+        {
+          title: "Status",
+          value: "Connected ✅",
+          short: true,
+        },
+        {
+          title: "Time",
+          value: new Date().toLocaleString(),
+          short: true,
+        },
+      ],
+    });
   },
 });
 
@@ -311,24 +301,20 @@ export const sendIssueNotification = action({
   },
   handler: async (ctx, args) => {
     // Get issue details
-    const issue: any = await ctx.runQuery(
-      ((api: any) => api.issues.get)(ctx),
-      { id: args.issueId }
-    );
+    const issue: any = await ctx.runQuery(((api: any) => api.issues.get)(ctx), {
+      id: args.issueId,
+    });
 
     if (!issue) return;
 
     // Find active webhooks for this project
-    const webhooks = await ctx.runQuery(
-      ((api: any) => api.pumble.listWebhooks)(ctx),
-      {}
-    );
+    const webhooks = await ctx.runQuery(((api: any) => api.pumble.listWebhooks)(ctx), {});
 
     const activeWebhooks = webhooks.filter(
       (w: any) =>
         w.isActive &&
         w.events.includes(args.event) &&
-        (!w.projectId || w.projectId === issue.projectId)
+        (!w.projectId || w.projectId === issue.projectId),
     );
 
     // Send notification to each webhook
@@ -337,42 +323,39 @@ export const sendIssueNotification = action({
         const color = getColorForEvent(args.event);
         const title = getTitleForEvent(args.event, issue);
 
-        await ctx.runAction(
-          ((api: any) => api.pumble.sendMessage)(ctx),
-          {
-            webhookId: webhook._id,
-            text: issue.description || "No description",
-            title,
-            color,
-            fields: [
-              {
-                title: "Issue",
-                value: `${issue.key}: ${issue.title}`,
-                short: false,
-              },
-              {
-                title: "Type",
-                value: issue.type,
-                short: true,
-              },
-              {
-                title: "Priority",
-                value: issue.priority,
-                short: true,
-              },
-              {
-                title: "Status",
-                value: issue.status,
-                short: true,
-              },
-              {
-                title: "Assignee",
-                value: issue.assignee?.name || "Unassigned",
-                short: true,
-              },
-            ],
-          }
-        );
+        await ctx.runAction(((api: any) => api.pumble.sendMessage)(ctx), {
+          webhookId: webhook._id,
+          text: issue.description || "No description",
+          title,
+          color,
+          fields: [
+            {
+              title: "Issue",
+              value: `${issue.key}: ${issue.title}`,
+              short: false,
+            },
+            {
+              title: "Type",
+              value: issue.type,
+              short: true,
+            },
+            {
+              title: "Priority",
+              value: issue.priority,
+              short: true,
+            },
+            {
+              title: "Status",
+              value: issue.status,
+              short: true,
+            },
+            {
+              title: "Assignee",
+              value: issue.assignee?.name || "Unassigned",
+              short: true,
+            },
+          ],
+        });
       } catch (error) {
         console.error(`Failed to send Pumble notification:`, error);
       }

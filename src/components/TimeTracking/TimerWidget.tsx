@@ -1,11 +1,11 @@
-import { useQuery, useMutation } from "convex/react";
-import { useState, useEffect } from "react";
-import { api } from "../../../convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
-  const startTimer = useMutation(api.timeTracking.startTimer);
+  const _startTimer = useMutation(api.timeTracking.startTimer);
   const stopTimer = useMutation(api.timeTracking.stopTimer);
 
   const [currentDuration, setCurrentDuration] = useState(0);
@@ -134,17 +134,11 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={onClose}
-        aria-hidden="true"
-      ></div>
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true"></div>
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-          Start Timer
-        </h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Start Timer</h2>
 
         <div className="space-y-4">
           <div>
@@ -157,7 +151,6 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g., Fixing login bug..."
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              autoFocus
             />
           </div>
 

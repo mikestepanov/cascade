@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { toast } from "sonner";
 
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -17,8 +17,18 @@ export function PumbleIntegration() {
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
                 </svg>
               </div>
             </div>
@@ -51,11 +61,7 @@ export function PumbleIntegration() {
         ) : (
           <div className="space-y-4">
             {webhooks.map((webhook) => (
-              <WebhookCard
-                key={webhook._id}
-                webhook={webhook}
-                projects={projects || []}
-              />
+              <WebhookCard key={webhook._id} webhook={webhook} projects={projects || []} />
             ))}
           </div>
         )}
@@ -70,7 +76,12 @@ export function PumbleIntegration() {
           >
             <span>How to create a Pumble incoming webhook</span>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
             </svg>
           </a>
         </div>
@@ -78,10 +89,7 @@ export function PumbleIntegration() {
 
       {/* Add Webhook Modal */}
       {showAddModal && (
-        <AddWebhookModal
-          onClose={() => setShowAddModal(false)}
-          projects={projects || []}
-        />
+        <AddWebhookModal onClose={() => setShowAddModal(false)} projects={projects || []} />
       )}
     </div>
   );
@@ -91,15 +99,26 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
   return (
     <div className="text-center py-12">
       <div className="mx-auto w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-4">
-        <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <svg
+          className="w-8 h-8 text-purple-600 dark:text-purple-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+          />
         </svg>
       </div>
       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
         No Pumble webhooks configured
       </h3>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-        Connect Cascade to Pumble channels to receive notifications when issues are created, updated, or assigned.
+        Connect Cascade to Pumble channels to receive notifications when issues are created,
+        updated, or assigned.
       </p>
       <button
         onClick={onAddWebhook}
@@ -122,9 +141,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const deleteWebhook = useMutation(api.pumble.deleteWebhook);
   const updateWebhook = useMutation(api.pumble.updateWebhook);
 
-  const project = webhook.projectId
-    ? projects.find((p) => p._id === webhook.projectId)
-    : null;
+  const project = webhook.projectId ? projects.find((p) => p._id === webhook.projectId) : null;
 
   const handleTest = async () => {
     try {
@@ -165,9 +182,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
-            <h4 className="font-medium text-gray-900 dark:text-gray-100">
-              {webhook.name}
-            </h4>
+            <h4 className="font-medium text-gray-900 dark:text-gray-100">{webhook.name}</h4>
             {webhook.isActive ? (
               <span className="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded">
                 Active
@@ -178,13 +193,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
-            {maskedUrl}
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">{maskedUrl}</p>
           {project && (
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              Project: {project.name}
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Project: {project.name}</p>
           )}
         </div>
       </div>
@@ -206,7 +217,11 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.sendMentions && (
           <span className="flex items-center space-x-1">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span>Mentions</span>
           </span>
@@ -214,7 +229,11 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.sendAssignments && (
           <span className="flex items-center space-x-1">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span>Assignments</span>
           </span>
@@ -222,7 +241,11 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.sendStatusChanges && (
           <span className="flex items-center space-x-1">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span>Status Changes</span>
           </span>
@@ -362,9 +385,7 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) =>
-      prev.includes(event)
-        ? prev.filter((e) => e !== event)
-        : [...prev, event]
+      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
     );
   };
 
@@ -381,7 +402,12 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -426,7 +452,9 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </label>
             <select
               value={projectId || ""}
-              onChange={(e) => setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)}
+              onChange={(e) =>
+                setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
               <option value="">All Projects</option>
@@ -448,19 +476,14 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </label>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
-                <label
-                  key={event.value}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
+                <label key={event.value} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selectedEvents.includes(event.value)}
                     onChange={() => toggleEvent(event.value)}
                     className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {event.label}
-                  </span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{event.label}</span>
                 </label>
               ))}
             </div>
@@ -592,9 +615,7 @@ function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps)
 
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) =>
-      prev.includes(event)
-        ? prev.filter((e) => e !== event)
-        : [...prev, event]
+      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
     );
   };
 
@@ -603,15 +624,18 @@ function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps)
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Edit Webhook
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Edit Webhook</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -651,19 +675,14 @@ function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps)
             </label>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
-                <label
-                  key={event.value}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
+                <label key={event.value} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selectedEvents.includes(event.value)}
                     onChange={() => toggleEvent(event.value)}
                     className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {event.label}
-                  </span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{event.label}</span>
                 </label>
               ))}
             </div>

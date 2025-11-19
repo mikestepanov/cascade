@@ -66,11 +66,7 @@ export function ApiKeysManager() {
         ) : (
           <div className="space-y-4">
             {apiKeys.map((key) => (
-              <ApiKeyCard
-                key={key.id}
-                apiKey={key}
-                onViewStats={() => setSelectedKeyId(key.id)}
-              />
+              <ApiKeyCard key={key.id} apiKey={key} onViewStats={() => setSelectedKeyId(key.id)} />
             ))}
           </div>
         )}
@@ -93,16 +89,11 @@ export function ApiKeysManager() {
       </div>
 
       {/* Generate Key Modal */}
-      {showGenerateModal && (
-        <GenerateKeyModal onClose={() => setShowGenerateModal(false)} />
-      )}
+      {showGenerateModal && <GenerateKeyModal onClose={() => setShowGenerateModal(false)} />}
 
       {/* Usage Stats Modal */}
       {selectedKeyId && (
-        <UsageStatsModal
-          keyId={selectedKeyId}
-          onClose={() => setSelectedKeyId(null)}
-        />
+        <UsageStatsModal keyId={selectedKeyId} onClose={() => setSelectedKeyId(null)} />
       )}
     </Card>
   );
@@ -111,13 +102,7 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-function ApiKeyCard({
-  apiKey,
-  onViewStats,
-}: {
-  apiKey: any;
-  onViewStats: () => void;
-}) {
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -216,9 +201,7 @@ function ApiKeyCard({
             {apiKey.lastUsedAt && (
               <>
                 <span>•</span>
-                <span>
-                  Last used: {new Date(apiKey.lastUsedAt).toLocaleDateString()}
-                </span>
+                <span>Last used: {new Date(apiKey.lastUsedAt).toLocaleDateString()}</span>
               </>
             )}
             {apiKey.expiresAt && (
@@ -289,7 +272,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
   const toggleScope = (scope: string) => {
     setSelectedScopes((prev) =>
-      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope]
+      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope],
     );
   };
 
@@ -404,11 +387,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               <Button variant="secondary" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                variant="primary"
-                onClick={handleGenerate}
-                disabled={isGenerating}
-              >
+              <Button variant="primary" onClick={handleGenerate} disabled={isGenerating}>
                 {isGenerating ? "Generating..." : "Generate API Key"}
               </Button>
             </div>
@@ -436,11 +415,10 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
               {/* Copy Instructions */}
               <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                  Usage Example:
-                </p>
+                <p className="font-medium text-blue-900 dark:text-blue-100 mb-2">Usage Example:</p>
                 <code className="block bg-white dark:bg-gray-900 p-2 rounded text-xs font-mono">
-                  curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..." https://cascade.app/api/issues
+                  curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
+                  https://cascade.app/api/issues
                 </code>
               </div>
 
@@ -469,13 +447,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 /**
  * Usage Statistics Modal
  */
-function UsageStatsModal({
-  keyId,
-  onClose,
-}: {
-  keyId: Id<"apiKeys">;
-  onClose: () => void;
-}) {
+function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: () => void }) {
   const stats = useQuery(api.apiKeys.getUsageStats, { keyId });
 
   return (
@@ -531,18 +503,13 @@ function UsageStatsModal({
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {stats.recentLogs.map((log: any, i: number) => (
-                    <div
-                      key={i}
-                      className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm"
-                    >
+                    <div key={i} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-medium text-gray-900 dark:text-gray-100">
                             {log.method}
                           </span>
-                          <span className="text-gray-600 dark:text-gray-400">
-                            {log.endpoint}
-                          </span>
+                          <span className="text-gray-600 dark:text-gray-400">{log.endpoint}</span>
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${

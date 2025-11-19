@@ -25,7 +25,8 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: ".kanban-board",
     title: "Kanban Board",
-    content: "Drag and drop issues between columns to update their status. Real-time for the whole team!",
+    content:
+      "Drag and drop issues between columns to update their status. Real-time for the whole team!",
     placement: "top",
   },
   {
@@ -137,9 +138,7 @@ export function OnboardingTour() {
             <div
               key={index}
               className={`h-1.5 flex-1 rounded-full ${
-                index <= step
-                  ? "bg-blue-600"
-                  : "bg-gray-300 dark:bg-gray-600"
+                index <= step ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
               }`}
             />
           ))}

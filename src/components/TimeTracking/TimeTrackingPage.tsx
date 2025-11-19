@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import { TimeEntriesList } from "./TimeEntriesList";
-import { BurnRateDashboard } from "./BurnRateDashboard";
-import { UserRatesManagement } from "./UserRatesManagement";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { BurnRateDashboard } from "./BurnRateDashboard";
+import { TimeEntriesList } from "./TimeEntriesList";
+import { UserRatesManagement } from "./UserRatesManagement";
 
 export function TimeTrackingPage() {
   const [activeTab, setActiveTab] = useState<"entries" | "burn-rate" | "rates">("entries");
@@ -91,7 +91,9 @@ export function TimeTrackingPage() {
           <select
             value={selectedProject}
             onChange={(e) =>
-              setSelectedProject(e.target.value === "all" ? "all" : (e.target.value as Id<"projects">))
+              setSelectedProject(
+                e.target.value === "all" ? "all" : (e.target.value as Id<"projects">),
+              )
             }
             className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
