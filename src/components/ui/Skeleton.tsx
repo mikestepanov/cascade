@@ -67,7 +67,10 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={`skeleton-row-${i}`} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+        <div
+          key={`skeleton-row-${i}`}
+          className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded"
+        >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
           <Skeleton className="h-4 w-24" />
