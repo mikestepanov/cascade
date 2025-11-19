@@ -94,67 +94,70 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={handleToday}
-              className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
             >
               Today
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={handlePrevious}
                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
                 aria-label="Previous"
               >
-                <ChevronLeft className="w-5 h-5 dark:text-gray-300" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
               </button>
               <button
                 onClick={handleNext}
                 className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
                 aria-label="Next"
               >
-                <ChevronRight className="w-5 h-5 dark:text-gray-300" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
               </button>
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
               {getHeaderText()}
             </h2>
           </div>
 
           {/* Time Scale Toggle */}
-          <div className="flex border border-gray-300 dark:border-gray-600 rounded-md">
+          <div className="flex border border-gray-300 dark:border-gray-600 rounded-md flex-shrink-0">
             <button
               onClick={() => setTimeScale("week")}
-              className={`px-3 py-1.5 text-sm ${
+              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "week"
                   ? "bg-blue-600 text-white"
                   : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               } rounded-l-md`}
             >
-              Week
+              <span className="sm:hidden">W</span>
+              <span className="hidden sm:inline">Week</span>
             </button>
             <button
               onClick={() => setTimeScale("month")}
-              className={`px-3 py-1.5 text-sm ${
+              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "month"
                   ? "bg-blue-600 text-white"
                   : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               } border-l border-gray-300 dark:border-gray-600`}
             >
-              Month
+              <span className="sm:hidden">M</span>
+              <span className="hidden sm:inline">Month</span>
             </button>
             <button
               onClick={() => setTimeScale("quarter")}
-              className={`px-3 py-1.5 text-sm ${
+              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "quarter"
                   ? "bg-blue-600 text-white"
                   : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
               } rounded-r-md border-l border-gray-300 dark:border-gray-600`}
             >
-              Quarter
+              <span className="sm:hidden">Q</span>
+              <span className="hidden sm:inline">Quarter</span>
             </button>
           </div>
         </div>
@@ -166,14 +169,14 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           {/* Timeline Header */}
           <div className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="flex">
-              <div className="w-64 flex-shrink-0 p-3 border-r border-gray-200 dark:border-gray-700 font-medium text-sm text-gray-700 dark:text-gray-300">
+              <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700 font-medium text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                 Item
               </div>
               <div className="flex-1 flex">
                 {columns.map((col, idx) => (
                   <div
                     key={idx}
-                    className="flex-1 p-3 border-r border-gray-200 dark:border-gray-700 text-center text-sm font-medium text-gray-700 dark:text-gray-300"
+                    className="flex-1 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700 text-center text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {col.label}
                   </div>
@@ -184,7 +187,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
           {/* Roadmap Items */}
           {sortedItems.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-4 sm:p-8 text-center text-sm sm:text-base text-gray-500 dark:text-gray-400">
               No items with dates found. Add due dates to issues or create sprints to see them here.
             </div>
           ) : (
@@ -192,21 +195,21 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               {sortedItems.map((item) => (
                 <div key={`${item.type}-${item.id}`} className="flex border-b border-gray-200 dark:border-gray-700">
                   {/* Item Info */}
-                  <div className="w-64 flex-shrink-0 p-3 border-r border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2">
+                  <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
-                        <span className="text-purple-600 dark:text-purple-400 text-xs font-medium px-2 py-0.5 bg-purple-100 dark:bg-purple-900 rounded">
+                        <span className="text-purple-600 dark:text-purple-400 text-xs font-medium px-1.5 sm:px-2 py-0.5 bg-purple-100 dark:bg-purple-900 rounded">
                           Sprint
                         </span>
                       ) : (
                         <span
-                          className={`text-xs font-medium px-2 py-0.5 rounded ${getIssueTypeStyle(item.issueType)}`}
+                          className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 rounded ${getIssueTypeStyle(item.issueType)}`}
                         >
                           {item.issueType}
                         </span>
                       )}
                     </div>
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1 truncate">
+                    <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 mt-1 truncate">
                       {item.title}
                     </div>
                   </div>

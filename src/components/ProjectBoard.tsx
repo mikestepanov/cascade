@@ -63,24 +63,24 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const activeSprint = sprints?.find((sprint) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-            <p className="text-gray-600">{project.description}</p>
+      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{project.name}</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">{project.description}</p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <ExportButton
               projectId={projectId}
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
-            <div className="flex items-center space-x-2">
-              <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.key}
               </span>
-              <span className="text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded">
+              <span className="text-xs sm:text-sm bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.boardType}
               </span>
             </div>
@@ -88,16 +88,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         </div>
 
         {/* Tabs - Visually grouped by function */}
-        <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch">
+        <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch scrollbar-hide">
           {/* Primary Workflow Tabs */}
-          <div className="flex space-x-4 sm:space-x-6">
+          <div className="flex gap-3 sm:gap-6">
             <button
               type="button"
               onClick={() => setActiveTab("board")}
-              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base ${
                 activeTab === "board"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               Board
@@ -105,10 +105,10 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <button
               type="button"
               onClick={() => setActiveTab("backlog")}
-              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
+              className={`pb-2 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base ${
                 activeTab === "backlog"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               Backlog

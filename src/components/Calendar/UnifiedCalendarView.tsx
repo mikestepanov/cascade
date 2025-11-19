@@ -15,33 +15,35 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* View Switcher */}
-      <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-3 bg-white dark:bg-gray-900">
-        <div className="flex items-center gap-2">
+      <div className="border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 bg-white dark:bg-gray-900">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
             onClick={() => setViewType("calendar")}
-            className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
+            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
               viewType === "calendar"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
           >
-            📅 Calendar (Events)
+            <span className="sm:hidden">📅 Calendar</span>
+            <span className="hidden sm:inline">📅 Calendar (Events)</span>
           </button>
           <button
             onClick={() => setViewType("roadmap")}
             disabled={!projectId}
-            className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
+            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
               viewType === "roadmap"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             } ${!projectId ? "opacity-50 cursor-not-allowed" : ""}`}
             title={!projectId ? "Select a project to view roadmap" : ""}
           >
-            🗺️ Roadmap (Issues)
+            <span className="sm:hidden">🗺️ Roadmap</span>
+            <span className="hidden sm:inline">🗺️ Roadmap (Issues)</span>
           </button>
         </div>
         {!projectId && viewType === "roadmap" && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
             Select a project from the sidebar to view the roadmap
           </p>
         )}
