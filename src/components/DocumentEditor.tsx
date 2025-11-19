@@ -2,6 +2,7 @@ import type { BlockNoteEditor } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
+import { History } from "lucide-react";
 import { useState } from "react";
 import { handleMarkdownExport, importFromMarkdown, readMarkdownForPreview } from "@/lib/markdown";
 import { showError, showSuccess } from "@/lib/toast";
@@ -11,6 +12,7 @@ import { PresenceIndicator } from "./PresenceIndicator";
 import { Input } from "./ui/form/Input";
 import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
+import { VersionHistory } from "./VersionHistory";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
@@ -29,8 +31,10 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [previewMarkdown, setPreviewMarkdown] = useState("");
   const [previewFilename, setPreviewFilename] = useState("");
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
 
   const sync = useBlockNoteSync<BlockNoteEditor>(api.prosemirror, documentId);
+  const versionCount = useQuery(api.documentVersions.getVersionCount, { documentId });
 
   if (!(document && userId)) {
     return (
@@ -133,6 +137,24 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     } catch (_error) {}
   };
 
+  const handleRestoreVersion = async (snapshot: any, version: number, title: string) => {
+    try {
+      // Submit the restored snapshot to ProseMirror
+      if (sync.editor && snapshot) {
+        // Update document title if it changed
+        if (title !== document.title) {
+          await updateTitle({ id: documentId, title });
+        }
+        // The snapshot will be applied automatically through ProseMirror sync
+        showSuccess("Version restored successfully. Refreshing...");
+        // Reload the page to apply the restored version
+        window.location.reload();
+      }
+    } catch (error) {
+      showError(error, "Failed to restore version");
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Document Header */}
@@ -173,6 +195,25 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
           <div className="flex items-center space-x-2">
             <PresenceIndicator roomId={documentId} userId={userId} />
+
+            {/* Version History */}
+            <button
+              type="button"
+              onClick={() => setShowVersionHistory(true)}
+              className="px-3 py-1 rounded-md text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors relative"
+              title="View version history"
+              aria-label="Version history"
+            >
+              <span className="inline-flex items-center gap-1">
+                <History className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden sm:inline">History</span>
+                {versionCount !== undefined && versionCount > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-200 rounded">
+                    {versionCount}
+                  </span>
+                )}
+              </span>
+            </button>
 
             {/* Import Markdown */}
             <button
@@ -285,6 +326,14 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         onConfirm={() => void handleConfirmImport()}
         markdown={previewMarkdown}
         filename={previewFilename}
+      />
+
+      {/* Version History Modal */}
+      <VersionHistory
+        documentId={documentId}
+        isOpen={showVersionHistory}
+        onClose={() => setShowVersionHistory(false)}
+        onRestoreVersion={handleRestoreVersion}
       />
     </div>
   );

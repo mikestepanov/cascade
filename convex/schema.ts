@@ -20,6 +20,19 @@ const applicationTables = {
       filterFields: ["isPublic", "createdBy", "projectId"],
     }),
 
+  documentVersions: defineTable({
+    documentId: v.id("documents"),
+    version: v.number(), // Version number from ProseMirror
+    snapshot: v.any(), // ProseMirror snapshot data
+    title: v.string(), // Document title at this version
+    createdBy: v.id("users"), // User who created this version
+    createdAt: v.number(), // Timestamp when version was created
+    changeDescription: v.optional(v.string()), // Optional description of changes
+  })
+    .index("by_document", ["documentId"])
+    .index("by_document_version", ["documentId", "version"])
+    .index("by_document_created", ["documentId", "createdAt"]),
+
   projects: defineTable({
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
