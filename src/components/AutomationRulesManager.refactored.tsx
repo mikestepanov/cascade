@@ -1,13 +1,14 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { AutomationRuleCard } from "./automation/AutomationRuleCard";
 import { AutomationRuleForm } from "./automation/AutomationRuleForm";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;
@@ -58,9 +59,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
     try {
       await removeRule({ id: deleteConfirm });
-      toast.success("Rule deleted");
+      showSuccess("Rule deleted");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete rule");
+      showError(error, "Failed to delete rule");
     } finally {
       setDeleteConfirm(null);
     }
@@ -87,7 +88,11 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       </div>
 
       {/* Rules List */}
-      {!rules || rules.length === 0 ? (
+      {rules === undefined ? (
+        <Card className="p-8 text-center">
+          <LoadingSpinner size="lg" />
+        </Card>
+      ) : rules.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-gray-500 dark:text-gray-400">
             <p className="mb-2">No automation rules yet</p>
