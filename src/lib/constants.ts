@@ -212,3 +212,42 @@ export const SHORTCUTS = {
   /** Redo */
   REDO: "cmd+shift+z",
 } as const;
+
+/**
+ * Time tracking activity types
+ */
+export const ACTIVITY_TYPES = [
+  "Development",
+  "Code Review",
+  "Meeting",
+  "Design",
+  "Testing",
+  "Documentation",
+  "Planning",
+  "Research",
+  "Bug Fixing",
+  "Deployment",
+] as const;
+
+export type ActivityType = (typeof ACTIVITY_TYPES)[number];
+
+/**
+ * Supported currencies for time tracking
+ */
+export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "CAD"] as const;
+
+export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
+
+/**
+ * Time entry defaults
+ */
+export const TIME_TRACKING = {
+  /** Default hourly rate (USD) */
+  DEFAULT_HOURLY_RATE: 0,
+  /** Minimum billable increment (minutes) */
+  MIN_BILLABLE_INCREMENT: 15,
+  /** Maximum hours per day */
+  MAX_HOURS_PER_DAY: 24,
+  /** Default timer update interval (ms) */
+  TIMER_UPDATE_INTERVAL: 1000,
+} as const;

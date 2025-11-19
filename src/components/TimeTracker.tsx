@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
 import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
 
 interface TimeTrackerProps {
@@ -48,9 +49,9 @@ export function TimeTracker({
   const handleStartTimer = async () => {
     try {
       await startTimer({ issueId });
-      toast.success("Timer started");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start timer");
+      showSuccess("Timer started");
+    } catch (error) {
+      showError(error, "Failed to start timer");
     }
   };
 
@@ -58,10 +59,10 @@ export function TimeTracker({
     if (!runningTimer) return;
     try {
       const result = await stopTimer({ entryId: runningTimer._id });
-      const hours = (result.duration / 3600).toFixed(2);
-      toast.success(`Timer stopped: ${hours}h logged`);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to stop timer");
+      const hours = formatHours(result.duration);
+      showSuccess(`Timer stopped: ${hours}h logged`);
+    } catch (error) {
+      showError(error, "Failed to stop timer");
     }
   };
 
@@ -195,25 +196,19 @@ export function TimeTracker({
       {showEntries && timeEntries && (
         <div className="p-4 border-t border-gray-200 bg-gray-50 space-y-2">
           {timeEntries.map((entry) => {
-            const hours = entry.duration / 3600;
-            const formatDate = (timestamp: number) => {
-              return new Date(timestamp).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              });
-            };
+            const hours = formatHours(entry.duration);
+            const entryDate = formatDate(entry.date);
 
             return (
               <div key={entry._id} className="bg-white border border-gray-200 rounded-lg p-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="font-semibold text-gray-900">{hours.toFixed(2)}h</div>
+                    <div className="font-semibold text-gray-900">{hours}h</div>
                     {entry.description && (
                       <p className="text-sm text-gray-600 mt-1">{entry.description}</p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-500">{formatDate(entry.date)}</span>
+                      <span className="text-xs text-gray-500">{entryDate}</span>
                       {entry.activity && (
                         <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
                           {entry.activity}
@@ -228,7 +223,7 @@ export function TimeTracker({
                   </div>
                   {entry.totalCost && (
                     <div className="text-sm font-medium text-gray-700">
-                      ${entry.totalCost.toFixed(2)}
+                      {formatCurrency(entry.totalCost)}
                     </div>
                   )}
                 </div>
