@@ -1,10 +1,11 @@
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ExportPanelProps {
   projectId: Id<"projects">;
@@ -40,7 +41,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   useEffect(() => {
     if (csvData !== undefined && isExporting && exportFormat === "csv") {
       if (!csvData || csvData.trim().length === 0) {
-        toast.error("No data to export");
+        showError(new Error("No data to export"), "Export Failed");
         setIsExporting(false);
       } else {
         try {
@@ -57,9 +58,9 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
 
-          toast.success("Issues exported successfully!");
-        } catch (_error) {
-          toast.error("Failed to export issues");
+          showSuccess("Issues exported successfully!");
+        } catch (error) {
+          showError(error, "Failed to export issues");
         } finally {
           setIsExporting(false);
         }
@@ -71,7 +72,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   useEffect(() => {
     if (jsonData !== undefined && isExporting && exportFormat === "json") {
       if (!jsonData || jsonData.trim().length === 0) {
-        toast.error("No data to export");
+        showError(new Error("No data to export"), "Export Failed");
         setIsExporting(false);
       } else {
         try {
@@ -88,9 +89,9 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
 
-          toast.success("Issues exported successfully!");
-        } catch (_error) {
-          toast.error("Failed to export issues");
+          showSuccess("Issues exported successfully!");
+        } catch (error) {
+          showError(error, "Failed to export issues");
         } finally {
           setIsExporting(false);
         }
@@ -163,10 +164,10 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
 
       <Button onClick={handleExport} disabled={isExporting} className="w-full">
         {isExporting ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+          <div className="flex items-center justify-center gap-2">
+            <LoadingSpinner size="sm" color="white" />
             Exporting...
-          </>
+          </div>
         ) : (
           `Export as ${exportFormat.toUpperCase()}`
         )}

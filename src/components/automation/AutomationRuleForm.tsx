@@ -1,8 +1,8 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { FormDialog } from "../ui/FormDialog";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
@@ -60,7 +60,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
 
   const handleSave = async () => {
     if (!name.trim() || !actionValue.trim()) {
-      toast.error("Please fill in all required fields");
+      showError(new Error("Please fill in all required fields"), "Validation Error");
       return;
     }
 
@@ -80,7 +80,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
           actionType,
           actionValue: actionValue.trim(),
         });
-        toast.success("Rule updated");
+        showSuccess("Rule updated");
       } else {
         await createRule({
           projectId,
@@ -91,12 +91,12 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
           actionType,
           actionValue: actionValue.trim(),
         });
-        toast.success("Rule created");
+        showSuccess("Rule created");
       }
 
       onClose();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save rule");
+      showError(error, "Failed to save rule");
     } finally {
       setIsLoading(false);
     }

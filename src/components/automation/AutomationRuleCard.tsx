@@ -1,7 +1,7 @@
 import { useMutation } from "convex/react";
-import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { showError, showSuccess } from "@/lib/toast";
 import { Card } from "../ui/Card";
 
 interface AutomationRuleCardProps {
@@ -55,9 +55,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
         id: rule._id,
         isActive: !rule.isActive,
       });
-      toast.success(rule.isActive ? "Rule disabled" : "Rule enabled");
+      showSuccess(rule.isActive ? "Rule disabled" : "Rule enabled");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to toggle rule");
+      showError(error, "Failed to toggle rule");
     }
   };
 
