@@ -25,7 +25,7 @@ export const createBooking = mutation({
       .withIndex("by_slug", (q) => q.eq("slug", args.bookingPageSlug))
       .first();
 
-    if (!page || !page.isActive) {
+    if (!(page && page.isActive)) {
       throw new Error("Booking page not found or inactive");
     }
 
@@ -125,7 +125,7 @@ export const getAvailableSlots = query({
       .withIndex("by_slug", (q) => q.eq("slug", args.bookingPageSlug))
       .first();
 
-    if (!page || !page.isActive) return [];
+    if (!(page && page.isActive)) return [];
 
     // Get host's availability for this day of week
     const date = new Date(args.date);
@@ -145,7 +145,7 @@ export const getAvailableSlots = query({
       .withIndex("by_user_day", (q) => q.eq("userId", page.userId).eq("dayOfWeek", dayOfWeek))
       .first();
 
-    if (!availability || !availability.isActive) return [];
+    if (!(availability && availability.isActive)) return [];
 
     // Get existing bookings for this day
     const dayStart = args.date;

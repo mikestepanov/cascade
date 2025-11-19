@@ -163,7 +163,7 @@ export function createErrorResponse(
 /**
  * Create a standard API success response
  */
-export function createSuccessResponse(data: unknown, statusCode: number = 200): Response {
+export function createSuccessResponse(data: unknown, statusCode = 200): Response {
   return new Response(JSON.stringify(data), {
     status: statusCode,
     headers: {

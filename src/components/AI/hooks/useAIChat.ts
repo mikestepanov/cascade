@@ -91,7 +91,7 @@ export function useAIChat({
   }, []);
 
   const handleSendMessage = useCallback(async () => {
-    if (!inputMessage.trim() || !chatId || isSending) return;
+    if (!(inputMessage.trim() && chatId) || isSending) return;
 
     const message = inputMessage.trim();
     setInputMessage("");

@@ -213,7 +213,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
               </div>
             </div>
           )}
-          {!suggestion.accepted && !suggestion.dismissed && (
+          {!(suggestion.accepted || suggestion.dismissed) && (
             <div className="flex gap-2 mt-3">
               <button
                 type="button"

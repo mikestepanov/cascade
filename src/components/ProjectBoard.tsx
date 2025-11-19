@@ -129,7 +129,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
 
           {/* Visual Separator */}
-          <div className="hidden lg:block h-6 w-px bg-gray-300 mx-4 sm:mx-6"></div>
+          <div className="hidden lg:block h-6 w-px bg-gray-300 mx-4 sm:mx-6" />
 
           {/* Analysis & Views Tabs */}
           <div className="flex space-x-4 sm:space-x-6 flex-shrink-0">
@@ -191,7 +191,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
 
           {/* Spacer to push Settings to the right */}
-          <div className="flex-1"></div>
+          <div className="flex-1" />
 
           {/* Settings Tab - Separated */}
           <button

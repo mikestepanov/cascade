@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { api } from "../../../convex/_generated/api";
 import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { api } from "../../../convex/_generated/api";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -51,8 +51,8 @@ export function TimerWidget() {
         <div className="flex items-center gap-2">
           {/* Pulsing dot */}
           <div className="relative">
-            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-            <div className="absolute inset-0 w-2 h-2 bg-blue-600 rounded-full animate-ping"></div>
+            <div className="w-2 h-2 bg-blue-600 rounded-full" />
+            <div className="absolute inset-0 w-2 h-2 bg-blue-600 rounded-full animate-ping" />
           </div>
 
           {/* Timer display */}
@@ -125,7 +125,7 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true"></div>
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6">

@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -241,9 +241,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                       {attendee.status === "present" && (
                         <Check className="w-4 h-4 text-green-600" />
                       )}
-                      {attendee.status === "tardy" && (
-                        <Clock className="w-4 h-4 text-yellow-600" />
-                      )}
+                      {attendee.status === "tardy" && <Clock className="w-4 h-4 text-yellow-600" />}
                       {attendee.status === "absent" && <X className="w-4 h-4 text-red-600" />}
                       {!attendee.status && <div className="w-4 h-4" />}
 

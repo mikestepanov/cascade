@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Input, Select } from "./ui/form";
@@ -210,92 +210,93 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
               className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Add Dependency
-            </h3>
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Add Dependency
+              </h3>
 
-            <div className="space-y-4">
-              {/* Link Type */}
-              <Select
-                label="Relationship Type"
-                value={linkType}
-                onChange={(e) =>
-                  setLinkType(e.target.value as "blocks" | "relates" | "duplicates")
-                }
-              >
-                <option value="blocks">Blocks</option>
-                <option value="relates">Relates to</option>
-                <option value="duplicates">Duplicates</option>
-              </Select>
-
-              {/* Search Issues */}
-              <Input
-                label="Search Issue"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type to search..."
-              />
-
-              {/* Search Results */}
-              {searchResults && searchResults.length > 0 && (
-                <div className="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg">
-                  {searchResults
-                    .filter((issue) => issue._id !== issueId)
-                    .map((issue) => (
-                      <button
-                        type="button"
-                        key={issue._id}
-                        onClick={() => {
-                          setSelectedIssueKey(issue._id);
-                          setSearchQuery("");
-                        }}
-                        className={`w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 last:border-0 ${
-                          selectedIssueKey === issue._id ? "bg-blue-50 dark:bg-blue-900/20" : ""
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                          <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
-                            {issue.key}
-                          </span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                            {issue.title}
-                          </span>
-                        </div>
-                      </button>
-                    ))}
-                </div>
-              )}
-
-              {/* Selected Issue */}
-              {selectedIssueKey && (
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Selected: <span className="font-medium">{selectedIssueKey}</span>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddDialog(false);
-                    setSelectedIssueKey("");
-                    setSearchQuery("");
-                  }}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              <div className="space-y-4">
+                {/* Link Type */}
+                <Select
+                  label="Relationship Type"
+                  value={linkType}
+                  onChange={(e) =>
+                    setLinkType(e.target.value as "blocks" | "relates" | "duplicates")
+                  }
                 >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAddLink}
-                  disabled={!selectedIssueKey}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add Dependency
-                </button>
+                  <option value="blocks">Blocks</option>
+                  <option value="relates">Relates to</option>
+                  <option value="duplicates">Duplicates</option>
+                </Select>
+
+                {/* Search Issues */}
+                <Input
+                  label="Search Issue"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Type to search..."
+                />
+
+                {/* Search Results */}
+                {searchResults && searchResults.length > 0 && (
+                  <div className="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg">
+                    {searchResults
+                      .filter((issue) => issue._id !== issueId)
+                      .map((issue) => (
+                        <button
+                          type="button"
+                          key={issue._id}
+                          onClick={() => {
+                            setSelectedIssueKey(issue._id);
+                            setSearchQuery("");
+                          }}
+                          className={`w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 last:border-0 ${
+                            selectedIssueKey === issue._id ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{getTypeIcon(issue.type)}</span>
+                            <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                              {issue.key}
+                            </span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                              {issue.title}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                )}
+
+                {/* Selected Issue */}
+                {selectedIssueKey && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Selected: <span className="font-medium">{selectedIssueKey}</span>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddDialog(false);
+                      setSelectedIssueKey("");
+                      setSearchQuery("");
+                    }}
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddLink}
+                    disabled={!selectedIssueKey}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add Dependency
+                  </button>
+                </div>
               </div>
             </div>
           </div>

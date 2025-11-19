@@ -60,7 +60,7 @@ export const create = mutation({
       projectId: args.projectId,
       issueId: args.issueId,
       status: args.status || "confirmed",
-      isRecurring: args.isRecurring || false,
+      isRecurring: args.isRecurring,
       recurrenceRule: args.recurrenceRule,
       meetingUrl: args.meetingUrl,
       notes: args.notes,
@@ -87,7 +87,7 @@ export const get = query({
     const isOrganizer = event.organizerId === userId;
     const isAttendee = event.attendeeIds.includes(userId);
 
-    if (!isOrganizer && !isAttendee) {
+    if (!(isOrganizer || isAttendee)) {
       return null; // Not authorized to view
     }
 

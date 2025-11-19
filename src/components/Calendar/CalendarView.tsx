@@ -170,7 +170,7 @@ function WeekView({
     <div className="flex flex-col h-full">
       {/* Day Headers */}
       <div className="grid grid-cols-8 border-b border-gray-200 bg-gray-50">
-        <div className="p-2 text-xs font-medium text-gray-500"></div>
+        <div className="p-2 text-xs font-medium text-gray-500" />
         {days.map((day, idx) => {
           const isToday = isSameDay(day, new Date());
           return (

@@ -19,7 +19,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
     limit: 10,
   });
 
-  if (!analytics || !velocity) {
+  if (!(analytics && velocity)) {
     return (
       <div className="p-6 overflow-y-auto h-full bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">

@@ -288,7 +288,7 @@ export const getEventsToSync = query({
       .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
       .first();
 
-    if (!connection || !connection.syncEnabled || connection.syncDirection === "import") {
+    if (!(connection && connection.syncEnabled) || connection.syncDirection === "import") {
       return [];
     }
 

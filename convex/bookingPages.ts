@@ -75,7 +75,7 @@ export const create = mutation({
       locationDetails: args.locationDetails,
       questions: args.questions,
       isActive: true,
-      requiresConfirmation: args.requiresConfirmation || false,
+      requiresConfirmation: args.requiresConfirmation,
       color: args.color || "#3B82F6",
       createdAt: now,
       updatedAt: now,
@@ -92,7 +92,7 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .first();
 
-    if (!page || !page.isActive) return null;
+    if (!(page && page.isActive)) return null;
 
     // Get host info
     const host = await ctx.db.get(page.userId);

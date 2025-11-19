@@ -30,7 +30,7 @@ export function formatDurationMs(ms: number): string {
  * @param decimals - Number of decimal places (default: 2)
  * @returns Formatted hours like "2.50"
  */
-export function formatHours(seconds: number, decimals: number = 2): string {
+export function formatHours(seconds: number, decimals = 2): string {
   return (seconds / 3600).toFixed(decimals);
 }
 
@@ -82,7 +82,7 @@ export function formatDateTime(timestamp: number): string {
  * @param currency - Currency code (default: "USD")
  * @returns Formatted currency like "$1,234.56"
  */
-export function formatCurrency(amount: number, currency: string = "USD"): string {
+export function formatCurrency(amount: number, currency = "USD"): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currency || "USD",

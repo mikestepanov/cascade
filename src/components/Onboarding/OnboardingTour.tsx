@@ -101,7 +101,7 @@ export function OnboardingTour() {
     };
   }, [showTour, currentTourStep]);
 
-  if (!showTour || !currentTourStep) return null;
+  if (!(showTour && currentTourStep)) return null;
 
   const handleNext = () => {
     if (isLastStep) {

@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { formatRelativeTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { CommentRenderer } from "./CommentRenderer";
 import { MentionInput } from "./MentionInput";
 import { Button } from "./ui/Button";

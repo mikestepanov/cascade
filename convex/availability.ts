@@ -30,7 +30,7 @@ export const setDayAvailability = mutation({
 
     // Validate time format (HH:MM)
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(args.startTime) || !timeRegex.test(args.endTime)) {
+    if (!(timeRegex.test(args.startTime) && timeRegex.test(args.endTime))) {
       throw new Error("Invalid time format. Use HH:MM (24-hour)");
     }
 

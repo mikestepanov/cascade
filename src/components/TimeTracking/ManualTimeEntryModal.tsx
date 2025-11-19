@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDateForInput, formatDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -39,7 +39,7 @@ export function ManualTimeEntryModal({
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    if (!date || !startTime || !endTime) {
+    if (!(date && startTime && endTime)) {
       setDuration(0);
       return;
     }
@@ -73,7 +73,7 @@ export function ManualTimeEntryModal({
   };
 
   const handleSubmit = async () => {
-    if (!date || !startTime || !endTime) {
+    if (!(date && startTime && endTime)) {
       showError("Please fill in date, start time, and end time");
       return;
     }
@@ -118,7 +118,7 @@ export function ManualTimeEntryModal({
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose}></div>
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto">

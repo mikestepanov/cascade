@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { Calendar, Clock, Link as LinkIcon, MapPin, X } from "lucide-react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 
 interface CreateEventModalProps {
   onClose: () => void;

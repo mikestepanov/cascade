@@ -123,7 +123,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleRedo, handleUndo]);
 
-  if (!project || !issues) {
+  if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-x-auto">
         {/* Header skeleton */}

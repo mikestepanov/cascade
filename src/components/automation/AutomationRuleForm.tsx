@@ -1,8 +1,8 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 import { FormDialog } from "../ui/FormDialog";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
@@ -59,7 +59,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
   });
 
   const handleSave = async () => {
-    if (!name.trim() || !actionValue.trim()) {
+    if (!(name.trim() && actionValue.trim())) {
       showError(new Error("Please fill in all required fields"), "Validation Error");
       return;
     }

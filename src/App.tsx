@@ -63,7 +63,8 @@ function Content() {
     api.ai.queries.getProjectSuggestions,
     selectedProjectId ? { projectId: selectedProjectId } : "skip",
   );
-  const unreadAISuggestions = aiSuggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
+  const unreadAISuggestions =
+    aiSuggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
 
   // Onboarding state
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
@@ -80,7 +81,7 @@ function Content() {
       if (!onboardingStatus) {
         // Show sample project offer modal
         setShowSampleProjectModal(true);
-      } else if (!onboardingStatus.tourShown && !showSampleProjectModal) {
+      } else if (!(onboardingStatus.tourShown || showSampleProjectModal)) {
         // Show welcome tour if they haven't seen it
         setShowWelcomeTour(true);
       }
@@ -254,7 +255,7 @@ function Content() {
   if (loggedInUser === undefined) {
     return (
       <div className="flex justify-center items-center w-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
       </div>
     );
   }

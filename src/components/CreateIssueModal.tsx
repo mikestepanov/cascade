@@ -37,7 +37,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
 
   // Apply template when selected
   useEffect(() => {
-    if (!selectedTemplate || !templates) return;
+    if (!(selectedTemplate && templates)) return;
 
     const template = templates.find((t) => t._id === selectedTemplate);
     if (!template) return;

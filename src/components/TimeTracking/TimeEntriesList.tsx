@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -220,7 +220,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   </div>
 
                   {/* Actions */}
-                  {!entry.isLocked && !entry.billed && (
+                  {!(entry.isLocked || entry.billed) && (
                     <div className="flex-shrink-0">
                       <button
                         type="button"

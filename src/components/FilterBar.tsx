@@ -141,44 +141,45 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Save Filter
-            </h3>
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Save Filter
+              </h3>
 
-            <div className="space-y-4">
-              <Input
-                label="Filter Name"
-                type="text"
-                value={filterName}
-                onChange={(e) => setFilterName(e.target.value)}
-                placeholder="e.g., High Priority Bugs"
-              />
+              <div className="space-y-4">
+                <Input
+                  label="Filter Name"
+                  type="text"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                  placeholder="e.g., High Priority Bugs"
+                />
 
-              <Checkbox
-                label="Share with team (make public)"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-              />
+                <Checkbox
+                  label="Share with team (make public)"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                />
 
-              <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSaveDialog(false);
-                    setFilterName("");
-                    setIsPublic(false);
-                  }}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveFilter}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover"
-                >
-                  Save
-                </button>
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSaveDialog(false);
+                      setFilterName("");
+                      setIsPublic(false);
+                    }}
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveFilter}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           </div>

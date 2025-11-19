@@ -24,7 +24,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProjectName.trim() || !newProjectKey.trim()) return;
+    if (!(newProjectName.trim() && newProjectKey.trim())) return;
 
     try {
       const projectId = await createProject({

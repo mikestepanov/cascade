@@ -21,7 +21,7 @@ async function checkPermissions(
   }
 
   // Check if user can access this document
-  if (!("isPublic" in document) || !("createdBy" in document)) {
+  if (!("isPublic" in document && "createdBy" in document)) {
     throw new Error("Invalid document");
   }
 
@@ -42,7 +42,7 @@ async function checkWritePermissions(ctx: GenericMutationCtx<DataModel>, documen
   }
 
   // Check if user can write to this document
-  if (!("isPublic" in document) || !("createdBy" in document)) {
+  if (!("isPublic" in document && "createdBy" in document)) {
     throw new Error("Invalid document");
   }
 

@@ -43,7 +43,7 @@ export function useAISuggestions({ projectId }: UseAISuggestionsOptions): UseAIS
   const acceptSuggestion = useMutation(api.ai.mutations.acceptSuggestion);
   const dismissSuggestion = useMutation(api.ai.mutations.dismissSuggestion);
 
-  const unreadCount = suggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
+  const unreadCount = suggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
 
   const handleGenerateInsights = useCallback(async () => {
     if (!projectId || isGenerating) return;

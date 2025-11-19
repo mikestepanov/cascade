@@ -167,7 +167,7 @@ export function UserRatesManagement() {
               setHourlyRate("");
               setNotes("");
             }}
-          ></div>
+          />
 
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6">
             <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">

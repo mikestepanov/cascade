@@ -38,7 +38,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
     return filtered;
   }, [issues, filterEpic]);
 
-  if (!project || !issues) {
+  if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-auto p-6">
         <div className="mb-6">
@@ -81,7 +81,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
   };
 
   const _getDuration = (startDate?: number, endDate?: number) => {
-    if (!startDate || !endDate) return 5; // Default width
+    if (!(startDate && endDate)) return 5; // Default width
     const totalDays = Math.floor(
       (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24),
     );

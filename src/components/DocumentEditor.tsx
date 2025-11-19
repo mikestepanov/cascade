@@ -32,7 +32,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   const sync = useBlockNoteSync<BlockNoteEditor>(api.prosemirror, documentId);
 
-  if (!document || !userId) {
+  if (!(document && userId)) {
     return (
       <div className="flex flex-col h-full bg-white">
         {/* Document Header Skeleton */}
@@ -110,7 +110,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   };
 
   const handleConfirmImport = async () => {
-    if (!sync.editor || !previewMarkdown) return;
+    if (!(sync.editor && previewMarkdown)) return;
 
     try {
       await importFromMarkdown(sync.editor, previewMarkdown);
