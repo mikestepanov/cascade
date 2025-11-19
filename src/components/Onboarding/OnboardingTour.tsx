@@ -134,9 +134,9 @@ export function OnboardingTour() {
       >
         {/* Progress */}
         <div className="flex items-center gap-1 mb-4">
-          {TOUR_STEPS.map((_, index) => (
+          {TOUR_STEPS.map((tourStep, index) => (
             <div
-              key={index}
+              key={tourStep.target}
               className={`h-1.5 flex-1 rounded-full ${
                 index <= step ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
               }`}
