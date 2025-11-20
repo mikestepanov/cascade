@@ -16,6 +16,114 @@ interface AIChatProps {
   onChatCreated?: (chatId: Id<"aiChats">) => void;
 }
 
+// Message Item Component
+function MessageItem({
+  message,
+  index,
+  chatId,
+  copiedMessageId,
+  onCopy,
+}: {
+  message: {
+    role: "user" | "assistant" | "system";
+    content: string;
+    createdAt: number;
+    modelUsed?: string;
+    responseTime?: number;
+  };
+  index: number;
+  chatId: Id<"aiChats">;
+  copiedMessageId: string | null;
+  onCopy: (content: string, messageId: string) => void;
+}) {
+  const messageId = `${chatId}-${index}`;
+  const isCopied = copiedMessageId === messageId;
+
+  return (
+    <div
+      key={`${chatId}-${message.createdAt}-${index}`}
+      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
+    >
+      <div
+        className={`relative max-w-[${AI_CONFIG.message.maxWidth.mobile}] md:max-w-[${AI_CONFIG.message.maxWidth.desktop}] rounded-lg px-4 py-3 ${
+          message.role === "user"
+            ? "bg-blue-600 text-white"
+            : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+        }`}
+      >
+        {/* Copy button for assistant messages */}
+        {message.role === "assistant" && (
+          <button
+            type="button"
+            onClick={() => onCopy(message.content, messageId)}
+            className="absolute -right-2 -top-2 p-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md"
+            title="Copy message"
+          >
+            {isCopied ? (
+              <svg
+                className="w-4 h-4 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <title>Copied</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-4 h-4 text-gray-600 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <title>Copy</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+            )}
+          </button>
+        )}
+
+        {/* Message content with markdown for assistant */}
+        {message.role === "assistant" ? (
+          <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-sm">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+          </div>
+        ) : (
+          <div className="whitespace-pre-wrap break-words">{message.content}</div>
+        )}
+
+        {/* Message metadata */}
+        <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
+          <span>
+            {new Date(message.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+          {message.role === "assistant" && message.modelUsed && (
+            <span className="hidden sm:inline">
+              • {message.modelUsed.split("-").slice(0, 2).join("-")}
+            </span>
+          )}
+          {message.role === "assistant" && message.responseTime && (
+            <span className="hidden md:inline">• {(message.responseTime / 1000).toFixed(1)}s</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const AIChat = React.memo(function AIChat({
   projectId,
   chatId: initialChatId,
@@ -77,98 +185,16 @@ export const AIChat = React.memo(function AIChat({
           <>
             {messages
               .filter((m) => m.role !== "system")
-              .map((message, index) => {
-                const messageId = `${message.chatId}-${index}`;
-                const isCopied = copiedMessageId === messageId;
-
-                return (
-                  <div
-                    key={`${message.chatId}-${message.createdAt}-${index}`}
-                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
-                  >
-                    <div
-                      className={`relative max-w-[${AI_CONFIG.message.maxWidth.mobile}] md:max-w-[${AI_CONFIG.message.maxWidth.desktop}] rounded-lg px-4 py-3 ${
-                        message.role === "user"
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      {/* Copy button for assistant messages */}
-                      {message.role === "assistant" && (
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(message.content, messageId)}
-                          className="absolute -right-2 -top-2 p-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md"
-                          title="Copy message"
-                        >
-                          {isCopied ? (
-                            <svg
-                              className="w-4 h-4 text-green-600"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <title>Copied</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              className="w-4 h-4 text-gray-600 dark:text-gray-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <title>Copy</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
-                          )}
-                        </button>
-                      )}
-
-                      {/* Message content with markdown for assistant */}
-                      {message.role === "assistant" ? (
-                        <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-sm">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {message.content}
-                          </ReactMarkdown>
-                        </div>
-                      ) : (
-                        <div className="whitespace-pre-wrap break-words">{message.content}</div>
-                      )}
-
-                      {/* Message metadata */}
-                      <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
-                        <span>
-                          {new Date(message.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                        {message.role === "assistant" && message.modelUsed && (
-                          <span className="hidden sm:inline">
-                            • {message.modelUsed.split("-").slice(0, 2).join("-")}
-                          </span>
-                        )}
-                        {message.role === "assistant" && message.responseTime && (
-                          <span className="hidden md:inline">
-                            • {(message.responseTime / 1000).toFixed(1)}s
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              .map((message, index) => (
+                <MessageItem
+                  key={`${message.chatId}-${message.createdAt}-${index}`}
+                  message={message}
+                  index={index}
+                  chatId={message.chatId}
+                  copiedMessageId={copiedMessageId}
+                  onCopy={copyToClipboard}
+                />
+              ))}
             {isSending && (
               <div className="flex justify-start">
                 <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-3">
