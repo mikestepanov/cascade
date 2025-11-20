@@ -13,8 +13,10 @@ function ThrowError({ shouldThrow }: { shouldThrow: boolean }) {
 
 describe("ErrorBoundary", () => {
   // Suppress console.error for these tests
+  // biome-ignore lint/suspicious/noConsole: Test needs to mock console.error
   const originalError = console.error;
   beforeAll(() => {
+    // biome-ignore lint/suspicious/noConsole: Test needs to mock console.error
     console.error = vi.fn();
   });
 

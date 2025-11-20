@@ -559,7 +559,7 @@ interface EditWebhookModalProps {
   onClose: () => void;
 }
 
-function EditWebhookModal({ webhook, projects, onClose }: EditWebhookModalProps) {
+function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhookModalProps) {
   const [name, setName] = useState(webhook.name);
   const [webhookUrl, setWebhookUrl] = useState(webhook.webhookUrl);
   const [selectedEvents, setSelectedEvents] = useState<string[]>(webhook.events);
