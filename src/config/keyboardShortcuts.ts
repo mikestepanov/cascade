@@ -1,7 +1,9 @@
 import type { KeySequence } from "../hooks/useKeyboardShortcuts";
 
 export interface ShortcutHandlers {
-  setActiveView: (view: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings") => void;
+  setActiveView: (
+    view: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+  ) => void;
   setShowCommandPalette: (show: boolean) => void;
   setShowShortcutsHelp: (show: boolean) => void;
   setShowAIAssistant: (toggle: boolean) => void;

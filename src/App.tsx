@@ -203,44 +203,44 @@ function Content() {
 
           {/* Sidebar - only show for documents and projects views */}
           {shouldShowSidebar(activeView) && (
-              <ErrorBoundary
-                fallback={
-                  <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-                    <SectionErrorFallback
-                      title="Sidebar Error"
-                      message="Failed to load sidebar. Please refresh the page."
-                    />
-                  </div>
-                }
-              >
-                <div
-                  data-tour={activeView === "documents" ? "sidebar" : ""}
-                  className={`
+            <ErrorBoundary
+              fallback={
+                <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+                  <SectionErrorFallback
+                    title="Sidebar Error"
+                    message="Failed to load sidebar. Please refresh the page."
+                  />
+                </div>
+              }
+            >
+              <div
+                data-tour={activeView === "documents" ? "sidebar" : ""}
+                className={`
                     fixed lg:relative inset-y-0 left-0 z-40 lg:z-auto
                     transform transition-transform duration-200 ease-in-out
                     ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
                   `}
-                >
-                  {activeView === "documents" ? (
-                    <Sidebar
-                      selectedDocumentId={selectedDocumentId}
-                      onSelectDocument={(id) => {
-                        setSelectedDocumentId(id);
-                        setIsMobileSidebarOpen(false);
-                      }}
-                    />
-                  ) : (
-                    <ProjectSidebar
-                      selectedProjectId={selectedProjectId}
-                      onSelectProject={(id) => {
-                        setSelectedProjectId(id);
-                        setIsMobileSidebarOpen(false);
-                      }}
-                    />
-                  )}
-                </div>
-              </ErrorBoundary>
-            )}
+              >
+                {activeView === "documents" ? (
+                  <Sidebar
+                    selectedDocumentId={selectedDocumentId}
+                    onSelectDocument={(id) => {
+                      setSelectedDocumentId(id);
+                      setIsMobileSidebarOpen(false);
+                    }}
+                  />
+                ) : (
+                  <ProjectSidebar
+                    selectedProjectId={selectedProjectId}
+                    onSelectProject={(id) => {
+                      setSelectedProjectId(id);
+                      setIsMobileSidebarOpen(false);
+                    }}
+                  />
+                )}
+              </div>
+            </ErrorBoundary>
+          )}
 
           <div className="flex-1 flex flex-col min-w-0">
             {/* Header */}
@@ -248,28 +248,28 @@ function Content() {
               <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
                 {/* Mobile Hamburger Menu */}
                 {shouldShowSidebar(activeView) && (
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                      className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      aria-label="Toggle sidebar menu"
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    aria-label="Toggle sidebar menu"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 6h16M4 12h16M4 18h16"
-                        />
-                      </svg>
-                    </button>
-                  )}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  </button>
+                )}
                 {/* View Switcher */}
                 <nav
                   className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 overflow-x-auto"

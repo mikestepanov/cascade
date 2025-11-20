@@ -31,8 +31,7 @@ export function SampleProjectModal({
           Welcome to Cascade! 🎉
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Would you like us to create a sample project with demo issues to help you explore
-          Cascade?
+          Would you like us to create a sample project with demo issues to help you explore Cascade?
         </p>
         <div className="flex gap-3">
           <button

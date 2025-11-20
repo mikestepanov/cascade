@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query, type MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
+import { type MutationCtx, mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Helper: Generate next issue key for a project
@@ -175,8 +175,12 @@ function parseCSVRow(
       | "epic"
       | "subtask",
     status: defaultStatus,
-    priority: ((indices.priorityIndex !== -1 && values[indices.priorityIndex]) ||
-      "medium") as "lowest" | "low" | "medium" | "high" | "highest",
+    priority: ((indices.priorityIndex !== -1 && values[indices.priorityIndex]) || "medium") as
+      | "lowest"
+      | "low"
+      | "medium"
+      | "high"
+      | "highest",
     reporterId: userId,
     labels:
       indices.labelsIndex !== -1 && values[indices.labelsIndex]

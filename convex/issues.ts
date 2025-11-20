@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query, type MutationCtx } from "./_generated/server";
+import { type MutationCtx, mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Helper: Validate parent issue and get inherited epic
@@ -38,11 +38,7 @@ async function validateParentIssue(
 }
 
 // Helper: Generate issue key
-async function generateIssueKey(
-  ctx: MutationCtx,
-  projectId: Id<"projects">,
-  projectKey: string,
-) {
+async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, projectKey: string) {
   const existingIssues = await ctx.db
     .query("issues")
     .withIndex("by_project", (q) => q.eq("projectId", projectId))
@@ -53,11 +49,7 @@ async function generateIssueKey(
 }
 
 // Helper: Get max order for status column
-async function getMaxOrderForStatus(
-  ctx: MutationCtx,
-  projectId: Id<"projects">,
-  status: string,
-) {
+async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">, status: string) {
   const issuesInStatus = await ctx.db
     .query("issues")
     .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", status))
@@ -466,13 +458,21 @@ export const updateStatus = mutation({
 
 // Helper: Track field change and add to changes array
 function trackFieldChange<T>(
-  changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }>,
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
   field: string,
   oldValue: T,
   newValue: T | undefined,
 ): boolean {
   if (newValue !== undefined && newValue !== oldValue) {
-    changes.push({ field, oldValue: oldValue as string | number | null | undefined, newValue: newValue as string | number | null | undefined });
+    changes.push({
+      field,
+      oldValue: oldValue as string | number | null | undefined,
+      newValue: newValue as string | number | null | undefined,
+    });
     return true;
   }
   return false;
@@ -500,7 +500,11 @@ function processIssueUpdates(
     estimatedHours?: number | null;
     storyPoints?: number | null;
   },
-  changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }>,
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
 ) {
   const updates: Record<string, unknown> = { updatedAt: Date.now() };
 
@@ -609,7 +613,12 @@ export const update = mutation({
     const updates = processIssueUpdates(issue, args, changes);
 
     // Send assignment email notification if assigned to someone new
-    if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId && args.assigneeId && args.assigneeId !== userId) {
+    if (
+      args.assigneeId !== undefined &&
+      args.assigneeId !== issue.assigneeId &&
+      args.assigneeId &&
+      args.assigneeId !== userId
+    ) {
       const { sendEmailNotification } = await import("./email/helpers");
       await sendEmailNotification(ctx, {
         userId: args.assigneeId,
@@ -839,7 +848,11 @@ function matchesSearchFilters(
   }
 
   // Priority filter
-  if (filters.priority && filters.priority.length > 0 && !filters.priority.includes(issue.priority)) {
+  if (
+    filters.priority &&
+    filters.priority.length > 0 &&
+    !filters.priority.includes(issue.priority)
+  ) {
     return false;
   }
 
