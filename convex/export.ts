@@ -1,7 +1,240 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type MutationCtx } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 import { assertMinimumRole } from "./rbac";
+
+// Helper: Generate next issue key for a project
+async function generateNextIssueKey(
+  ctx: MutationCtx,
+  projectId: Id<"projects">,
+  projectKey: string,
+): Promise<{ key: string; order: number }> {
+  const existingIssues = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+
+  const issueNumbers = existingIssues
+    .map((issue) => Number.parseInt(issue.key.split("-")[1], 10))
+    .filter((n) => !Number.isNaN(n));
+
+  const nextNumber = Math.max(0, ...issueNumbers) + 1;
+  const key = `${projectKey}-${nextNumber}`;
+  const order = existingIssues.length;
+
+  return { key, order };
+}
+
+// Helper: Validate and parse JSON import data
+function validateJSONImportData(jsonData: string): { issues: unknown[] } {
+  let data: unknown;
+  try {
+    data = JSON.parse(jsonData);
+  } catch {
+    throw new Error("Invalid JSON format");
+  }
+
+  // Type guard and validation
+  if (!data || typeof data !== "object" || !("issues" in data) || !Array.isArray(data.issues)) {
+    throw new Error("JSON must contain an 'issues' array");
+  }
+
+  return { issues: data.issues };
+}
+
+// Helper: Process single issue from JSON import
+async function processJSONIssue(
+  ctx: MutationCtx,
+  issue: unknown,
+  projectId: Id<"projects">,
+  projectKey: string,
+  userId: Id<"users">,
+  defaultStatus: string,
+): Promise<string> {
+  // Cast to any for runtime validation
+  const issueData = issue as {
+    title?: string;
+    description?: string;
+    type?: string;
+    status?: string;
+    priority?: string;
+    assigneeId?: Id<"users">;
+    epicId?: Id<"issues">;
+    parentId?: Id<"issues">;
+    sprintId?: Id<"sprints">;
+    labels?: string[];
+    estimatedHours?: number;
+    dueDate?: number;
+  };
+
+  // Validate required fields
+  if (!issueData.title) {
+    throw new Error("Missing required field: title");
+  }
+
+  // Generate next issue key
+  const { key: issueKey, order } = await generateNextIssueKey(ctx, projectId, projectKey);
+
+  // Create the issue
+  await createIssueWithActivity(
+    ctx,
+    {
+      projectId,
+      key: issueKey,
+      title: issueData.title,
+      description: issueData.description || undefined,
+      type: (issueData.type || "task") as "task" | "bug" | "story" | "epic" | "subtask",
+      status: issueData.status || defaultStatus,
+      priority: (issueData.priority || "medium") as
+        | "lowest"
+        | "low"
+        | "medium"
+        | "high"
+        | "highest",
+      reporterId: userId,
+      assigneeId: issueData.assigneeId || undefined,
+      epicId: issueData.epicId || undefined,
+      parentId: issueData.parentId || undefined,
+      sprintId: issueData.sprintId || undefined,
+      labels: issueData.labels || [],
+      estimatedHours: issueData.estimatedHours || undefined,
+      dueDate: issueData.dueDate || undefined,
+      order,
+    },
+    userId,
+  );
+
+  return issueKey;
+}
+
+// Helper: Parse CSV headers to get column indices
+function parseCSVHeaders(headerLine: string): {
+  titleIndex: number;
+  typeIndex: number;
+  priorityIndex: number;
+  descriptionIndex: number;
+  labelsIndex: number;
+  estimatedIndex: number;
+  dueDateIndex: number;
+} {
+  const headers = headerLine.split(",").map((h) => h.trim().toLowerCase());
+  const titleIndex = headers.indexOf("title");
+
+  if (titleIndex === -1) {
+    throw new Error("CSV must contain a 'title' column");
+  }
+
+  return {
+    titleIndex,
+    typeIndex: headers.indexOf("type"),
+    priorityIndex: headers.indexOf("priority"),
+    descriptionIndex: headers.indexOf("description"),
+    labelsIndex: headers.indexOf("labels"),
+    estimatedIndex: headers.indexOf("estimated hours"),
+    dueDateIndex: headers.indexOf("due date"),
+  };
+}
+
+// Helper: Parse CSV row into issue data
+function parseCSVRow(
+  values: string[],
+  indices: ReturnType<typeof parseCSVHeaders>,
+  projectId: Id<"projects">,
+  issueKey: string,
+  userId: Id<"users">,
+  defaultStatus: string,
+  order: number,
+): {
+  projectId: Id<"projects">;
+  key: string;
+  title: string;
+  description?: string;
+  type: "task" | "bug" | "story" | "epic" | "subtask";
+  status: string;
+  priority: "lowest" | "low" | "medium" | "high" | "highest";
+  reporterId: Id<"users">;
+  labels: string[];
+  estimatedHours?: number;
+  dueDate?: number;
+  order: number;
+} {
+  if (!values[indices.titleIndex]) {
+    throw new Error("Title is required");
+  }
+
+  return {
+    projectId,
+    key: issueKey,
+    title: values[indices.titleIndex],
+    description: indices.descriptionIndex !== -1 ? values[indices.descriptionIndex] : undefined,
+    type: ((indices.typeIndex !== -1 && values[indices.typeIndex]) || "task") as
+      | "task"
+      | "bug"
+      | "story"
+      | "epic"
+      | "subtask",
+    status: defaultStatus,
+    priority: ((indices.priorityIndex !== -1 && values[indices.priorityIndex]) ||
+      "medium") as "lowest" | "low" | "medium" | "high" | "highest",
+    reporterId: userId,
+    labels:
+      indices.labelsIndex !== -1 && values[indices.labelsIndex]
+        ? values[indices.labelsIndex].split(";").map((l) => l.trim())
+        : [],
+    estimatedHours:
+      indices.estimatedIndex !== -1 && values[indices.estimatedIndex]
+        ? Number.parseFloat(values[indices.estimatedIndex])
+        : undefined,
+    dueDate:
+      indices.dueDateIndex !== -1 && values[indices.dueDateIndex]
+        ? new Date(values[indices.dueDateIndex]).getTime()
+        : undefined,
+    order,
+  };
+}
+
+// Helper: Create issue and log activity
+async function createIssueWithActivity(
+  ctx: MutationCtx,
+  issueData: {
+    projectId: Id<"projects">;
+    key: string;
+    title: string;
+    description?: string;
+    type: "task" | "bug" | "story" | "epic" | "subtask";
+    status: string;
+    priority: "lowest" | "low" | "medium" | "high" | "highest";
+    reporterId: Id<"users">;
+    assigneeId?: Id<"users">;
+    epicId?: Id<"issues">;
+    parentId?: Id<"issues">;
+    sprintId?: Id<"sprints">;
+    labels: string[];
+    estimatedHours?: number;
+    dueDate?: number;
+    order: number;
+  },
+  userId: Id<"users">,
+): Promise<Id<"issues">> {
+  const issueId = await ctx.db.insert("issues", {
+    ...issueData,
+    loggedHours: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    linkedDocuments: [],
+    attachments: [],
+  });
+
+  await ctx.db.insert("issueActivity", {
+    issueId,
+    userId,
+    action: "created",
+    createdAt: Date.now(),
+  });
+
+  return issueId;
+}
 
 // Export issues as CSV
 export const exportIssuesCSV = query({
@@ -261,77 +494,26 @@ export const importIssuesJSON = mutation({
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
-    let data: unknown;
-    try {
-      data = JSON.parse(args.jsonData);
-    } catch {
-      throw new Error("Invalid JSON format");
-    }
-
-    // Type guard and validation
-    if (!data || typeof data !== "object" || !("issues" in data) || !Array.isArray(data.issues)) {
-      throw new Error("JSON must contain an 'issues' array");
-    }
+    // Validate and parse JSON data
+    const { issues } = validateJSONImportData(args.jsonData);
 
     const imported = [];
     const errors = [];
 
-    for (const issueData of data.issues) {
+    for (const issue of issues) {
       try {
-        // Get the next issue number for this project
-        const existingIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-          .collect();
-
-        const issueNumbers = existingIssues
-          .map((i) => parseInt(i.key.split("-")[1], 10))
-          .filter((n) => !Number.isNaN(n));
-        const nextNumber = Math.max(0, ...issueNumbers) + 1;
-        const issueKey = `${project.key}-${nextNumber}`;
-
-        // Validate required fields
-        if (!issueData.title) {
-          throw new Error("Missing required field: title");
-        }
-
-        // Create the issue
-        const issueId = await ctx.db.insert("issues", {
-          projectId: args.projectId,
-          key: issueKey,
-          title: issueData.title,
-          description: issueData.description || undefined,
-          type: issueData.type || "task",
-          status: issueData.status || project.workflowStates[0].id,
-          priority: issueData.priority || "medium",
-          reporterId: userId,
-          assigneeId: issueData.assigneeId || undefined,
-          epicId: issueData.epicId || undefined,
-          parentId: issueData.parentId || undefined,
-          sprintId: issueData.sprintId || undefined,
-          labels: issueData.labels || [],
-          estimatedHours: issueData.estimatedHours || undefined,
-          loggedHours: 0,
-          dueDate: issueData.dueDate || undefined,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          order: existingIssues.length,
-          linkedDocuments: [],
-          attachments: [],
-        });
-
-        // Log activity
-        await ctx.db.insert("issueActivity", {
-          issueId,
+        const issueKey = await processJSONIssue(
+          ctx,
+          issue,
+          args.projectId,
+          project.key,
           userId,
-          action: "created",
-          createdAt: Date.now(),
-        });
-
+          project.workflowStates[0].id,
+        );
         imported.push(issueKey);
       } catch (error) {
         errors.push({
-          title: issueData.title || "Unknown",
+          title: (issue as { title?: string }).title || "Unknown",
           error: error instanceof Error ? error.message : "Import failed",
         });
       }
@@ -366,19 +548,8 @@ export const importIssuesCSV = mutation({
       throw new Error("CSV must have at least a header row and one data row");
     }
 
-    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
-    const titleIndex = headers.indexOf("title");
-
-    if (titleIndex === -1) {
-      throw new Error("CSV must contain a 'title' column");
-    }
-
-    const typeIndex = headers.indexOf("type");
-    const priorityIndex = headers.indexOf("priority");
-    const descriptionIndex = headers.indexOf("description");
-    const labelsIndex = headers.indexOf("labels");
-    const estimatedIndex = headers.indexOf("estimated hours");
-    const dueDateIndex = headers.indexOf("due date");
+    // Parse headers to get column indices
+    const indices = parseCSVHeaders(lines[0]);
 
     const imported = [];
     const errors = [];
@@ -387,68 +558,25 @@ export const importIssuesCSV = mutation({
       try {
         const values = lines[i].split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
 
-        if (!values[titleIndex]) {
-          throw new Error("Title is required");
-        }
+        // Generate next issue key
+        const { key: issueKey, order } = await generateNextIssueKey(
+          ctx,
+          args.projectId,
+          project.key,
+        );
 
-        // Get the next issue number
-        const existingIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-          .collect();
-
-        const issueNumbers = existingIssues
-          .map((issue) => parseInt(issue.key.split("-")[1], 10))
-          .filter((n) => !Number.isNaN(n));
-        const nextNumber = Math.max(0, ...issueNumbers) + 1;
-        const issueKey = `${project.key}-${nextNumber}`;
-
-        const issueId = await ctx.db.insert("issues", {
-          projectId: args.projectId,
-          key: issueKey,
-          title: values[titleIndex],
-          description: descriptionIndex !== -1 ? values[descriptionIndex] : undefined,
-          type: ((typeIndex !== -1 && values[typeIndex]) || "task") as
-            | "task"
-            | "bug"
-            | "story"
-            | "epic"
-            | "subtask",
-          status: project.workflowStates[0].id,
-          priority: ((priorityIndex !== -1 && values[priorityIndex]) || "medium") as
-            | "lowest"
-            | "low"
-            | "medium"
-            | "high"
-            | "highest",
-          reporterId: userId,
-          labels:
-            labelsIndex !== -1 && values[labelsIndex]
-              ? values[labelsIndex].split(";").map((l) => l.trim())
-              : [],
-          estimatedHours:
-            estimatedIndex !== -1 && values[estimatedIndex]
-              ? parseFloat(values[estimatedIndex])
-              : undefined,
-          loggedHours: 0,
-          dueDate:
-            dueDateIndex !== -1 && values[dueDateIndex]
-              ? new Date(values[dueDateIndex]).getTime()
-              : undefined,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          order: existingIssues.length,
-          linkedDocuments: [],
-          attachments: [],
-        });
-
-        await ctx.db.insert("issueActivity", {
-          issueId,
+        // Parse CSV row into issue data
+        const issueData = parseCSVRow(
+          values,
+          indices,
+          args.projectId,
+          issueKey,
           userId,
-          action: "created",
-          createdAt: Date.now(),
-        });
+          project.workflowStates[0].id,
+          order,
+        );
 
+        await createIssueWithActivity(ctx, issueData, userId);
         imported.push(issueKey);
       } catch (error) {
         errors.push({
