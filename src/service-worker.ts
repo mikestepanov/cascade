@@ -152,7 +152,7 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-async function getAllPendingMutations(db: IDBDatabase): Promise<unknown[]> {
+function getAllPendingMutations(db: IDBDatabase): Promise<unknown[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["mutations"], "readonly");
     const store = transaction.objectStore("mutations");
@@ -164,7 +164,7 @@ async function getAllPendingMutations(db: IDBDatabase): Promise<unknown[]> {
   });
 }
 
-async function markMutationSynced(db: IDBDatabase, id: number): Promise<void> {
+function markMutationSynced(db: IDBDatabase, id: number): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["mutations"], "readwrite");
     const store = transaction.objectStore("mutations");

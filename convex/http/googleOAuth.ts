@@ -33,19 +33,21 @@ const getGoogleOAuthConfig = () => {
  * Initiate Google OAuth flow
  * GET /google/auth
  */
-export const initiateAuth = httpAction(async (_ctx, _request) => {
+export const initiateAuth = httpAction((_ctx, _request) => {
   const config = getGoogleOAuthConfig();
 
   if (!config.clientId) {
-    return new Response(
-      JSON.stringify({
-        error:
-          "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      },
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          error:
+            "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
     );
   }
 
@@ -59,12 +61,14 @@ export const initiateAuth = httpAction(async (_ctx, _request) => {
   authUrl.searchParams.set("prompt", "consent"); // Force consent to get refresh token
 
   // Redirect user to Google OAuth page
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: authUrl.toString(),
-    },
-  });
+  return Promise.resolve(
+    new Response(null, {
+      status: 302,
+      headers: {
+        Location: authUrl.toString(),
+      },
+    }),
+  );
 });
 
 /**
@@ -231,12 +235,14 @@ export const handleCallback = httpAction(async (_ctx, request) => {
  * NOTE: This endpoint is not yet implemented.
  * TODO: Complete Google Calendar sync implementation
  */
-export const triggerSync = httpAction(async (_ctx, _request) => {
+export const triggerSync = httpAction((_ctx, _request) => {
   // Temporarily disabled - needs proper implementation
-  return new Response(JSON.stringify({ error: "Google Calendar sync is not yet implemented" }), {
-    status: 501,
-    headers: { "Content-Type": "application/json" },
-  });
+  return Promise.resolve(
+    new Response(JSON.stringify({ error: "Google Calendar sync is not yet implemented" }), {
+      status: 501,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
 
   /* TODO: Implement this properly
   try {

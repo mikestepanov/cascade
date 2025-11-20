@@ -18,15 +18,15 @@ export class SendPulseProvider implements EmailProvider {
     return false;
   }
 
-  async send(_params: EmailSendParams): Promise<EmailSendResult> {
+  send(_params: EmailSendParams): Promise<EmailSendResult> {
     // TODO: Implement SendPulse API call
     // https://sendpulse.com/integrations/api/smtp
 
-    return {
+    return Promise.resolve({
       id: "",
       success: false,
       error: "SendPulse provider not implemented yet",
-    };
+    });
   }
 }
 
