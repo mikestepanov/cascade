@@ -1,5 +1,6 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -64,41 +65,11 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     return issuesByDate[dateKey] || [];
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "highest":
-        return "bg-red-500";
-      case "high":
-        return "bg-orange-500";
-      case "medium":
-        return "bg-yellow-500";
-      case "low":
-        return "bg-blue-500";
-      case "lowest":
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "bug":
-        return "🐛";
-      case "story":
-        return "📖";
-      case "epic":
-        return "⚡";
-      default:
-        return "✓";
-    }
-  };
-
   // Generate calendar grid
   const calendarDays = [];
   // Add empty cells for days before first day of month
   for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarDays.push(<div key={`empty-${i}`} className="min-h-24 bg-gray-50 dark:bg-gray-900" />);
+    calendarDays.push(<div key={`empty-${i}`} className="min-h-32 md:min-h-24 bg-gray-50 dark:bg-gray-900" />);
   }
   // Add cells for each day of the month
   for (let day = 1; day <= daysInMonth; day++) {
@@ -108,7 +79,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     calendarDays.push(
       <div
         key={day}
-        className={`min-h-24 border border-gray-200 dark:border-gray-700 p-2 ${
+        className={`min-h-32 md:min-h-24 border border-gray-200 dark:border-gray-700 p-2 ${
           isTodayDate ? "bg-blue-50 dark:bg-blue-900/20" : "bg-white dark:bg-gray-800"
         }`}
       >
@@ -157,17 +128,18 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
   }
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar View</h2>
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar View</h2>
 
         {/* Month Navigation */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
           <button
             type="button"
             onClick={previousMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            aria-label="Previous month"
           >
             <svg
               aria-hidden="true"
@@ -185,14 +157,15 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             </svg>
           </button>
 
-          <h3 className="text-xl font-semibold min-w-48 text-center text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg sm:text-xl font-semibold w-full sm:min-w-48 text-center text-gray-900 dark:text-gray-100">
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </h3>
 
           <button
             type="button"
             onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            aria-label="Next month"
           >
             <svg
               aria-hidden="true"
@@ -208,7 +181,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
           <button
             type="button"
             onClick={() => setCurrentDate(new Date())}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
+            className="px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
           >
             Today
           </button>
@@ -216,21 +189,23 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
       </div>
 
       {/* Calendar Grid */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {/* Weekday Headers */}
-        <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div
-              key={day}
-              className="p-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300"
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+      <div className="overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden min-w-[640px]">
+          {/* Weekday Headers */}
+          <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div
+                key={day}
+                className="p-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
 
-        {/* Calendar Days */}
-        <div className="grid grid-cols-7">{calendarDays}</div>
+          {/* Calendar Days */}
+          <div className="grid grid-cols-7">{calendarDays}</div>
+        </div>
       </div>
 
       {/* Legend */}
