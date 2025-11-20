@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { UserTypeManager } from "./Admin/UserTypeManager";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
@@ -8,7 +9,7 @@ import { PumbleIntegration } from "./Settings/PumbleIntegration";
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState<
-    "integrations" | "apikeys" | "offline" | "preferences"
+    "integrations" | "apikeys" | "offline" | "preferences" | "admin"
   >("integrations");
 
   return (
@@ -81,6 +82,20 @@ export function Settings() {
             >
               Preferences
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("admin")}
+              className={`
+                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
+                ${
+                  activeTab === "admin"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                }
+              `}
+            >
+              Admin
+            </button>
           </nav>
         </div>
 
@@ -90,6 +105,7 @@ export function Settings() {
           {activeTab === "apikeys" && <ApiKeysManager />}
           {activeTab === "offline" && <OfflineTab />}
           {activeTab === "preferences" && <PreferencesTab />}
+          {activeTab === "admin" && <UserTypeManager />}
         </div>
       </div>
     </div>

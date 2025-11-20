@@ -964,6 +964,61 @@ const applicationTables = {
     .index("by_user_project", ["userId", "projectId"])
     .index("by_effective_from", ["effectiveFrom"])
     .index("by_rate_type", ["rateType"]),
+
+  // User Employment Types & Work Hour Configuration
+  userProfiles: defineTable({
+    userId: v.id("users"), // One profile per user
+    employmentType: v.union(
+      v.literal("employee"), // Full-time employee
+      v.literal("contractor"), // Independent contractor
+      v.literal("intern"), // Intern/trainee
+    ),
+    // Work hour configuration (can override employment type defaults)
+    maxHoursPerWeek: v.optional(v.number()), // Max billable hours per week (overrides type default)
+    maxHoursPerDay: v.optional(v.number()), // Max hours per day (overrides type default)
+    requiresApproval: v.optional(v.boolean()), // Does time tracking require manager approval?
+    canWorkOvertime: v.optional(v.boolean()), // Can log overtime hours?
+    // Employment details
+    startDate: v.optional(v.number()), // Employment start date
+    endDate: v.optional(v.number()), // Employment end date (for contractors/interns)
+    department: v.optional(v.string()),
+    jobTitle: v.optional(v.string()),
+    managerId: v.optional(v.id("users")), // Direct manager
+    // Status
+    isActive: v.boolean(), // Is user currently active?
+    // Metadata
+    createdBy: v.id("users"), // Admin who created profile
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_employment_type", ["employmentType"])
+    .index("by_manager", ["managerId"])
+    .index("by_active", ["isActive"])
+    .index("by_employment_active", ["employmentType", "isActive"]),
+
+  // Employment Type Default Configurations
+  employmentTypeConfigs: defineTable({
+    type: v.union(
+      v.literal("employee"),
+      v.literal("contractor"),
+      v.literal("intern"),
+    ),
+    name: v.string(), // Display name: "Full-time Employee", "Contractor", "Intern"
+    description: v.optional(v.string()),
+    // Default work hour limits
+    defaultMaxHoursPerWeek: v.number(), // e.g., 40 for employees, 20 for interns
+    defaultMaxHoursPerDay: v.number(), // e.g., 8 for employees, 4 for interns
+    defaultRequiresApproval: v.boolean(), // e.g., true for interns, false for employees
+    defaultCanWorkOvertime: v.boolean(), // e.g., false for interns, true for employees
+    // Permissions & restrictions
+    canAccessBilling: v.boolean(), // Can see billing/rate info
+    canManageProjects: v.boolean(), // Can create/manage projects
+    // Metadata
+    isActive: v.boolean(), // Is this type currently in use?
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_type", ["type"]),
 };
 
 export default defineSchema({
