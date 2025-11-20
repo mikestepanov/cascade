@@ -49,11 +49,11 @@ export function SignInForm() {
         <button className="auth-button" type="submit" disabled={submitting}>
           {flow === "signIn" ? "Sign in" : "Sign up"}
         </button>
-        <div className="text-center text-sm text-secondary">
+        <div className="text-center text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <span>{flow === "signIn" ? "Don't have an account? " : "Already have an account? "}</span>
           <button
             type="button"
-            className="text-primary hover:text-primary-hover hover:underline font-medium cursor-pointer"
+            className="text-brand-600 dark:text-brand-500 hover:text-brand-700 dark:hover:text-brand-600 hover:underline font-medium cursor-pointer"
             onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
           >
             {flow === "signIn" ? "Sign up instead" : "Sign in instead"}
@@ -61,13 +61,13 @@ export function SignInForm() {
         </div>
       </form>
       <div className="flex items-center justify-center my-3">
-        <hr className="my-4 grow border-gray-200 dark:border-gray-700" />
-        <span className="mx-4 text-secondary dark:text-gray-400">or</span>
-        <hr className="my-4 grow border-gray-200 dark:border-gray-700" />
+        <hr className="my-4 grow border-ui-border-primary dark:border-ui-border-primary-dark" />
+        <span className="mx-4 text-ui-text-secondary dark:text-ui-text-secondary-dark">or</span>
+        <hr className="my-4 grow border-ui-border-primary dark:border-ui-border-primary-dark" />
       </div>
       <button
         type="button"
-        className="w-full px-4 py-3 rounded bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+        className="w-full px-4 py-3 rounded bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-2 border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark font-semibold hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
         onClick={() => void signIn("google")}
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
