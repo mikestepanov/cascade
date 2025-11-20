@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
@@ -346,7 +346,7 @@ export const listTimeEntries = query({
 
     const userId = args.userId || currentUserId;
 
-    let entries;
+    let entries: Doc<"timeEntries">[];
 
     if (args.projectId && args.startDate !== undefined && args.endDate !== undefined) {
       const startDate = args.startDate;
@@ -517,7 +517,7 @@ export const getTeamCosts = query({
     }
 
     // Get all time entries in date range
-    let entries;
+    let entries: Doc<"timeEntries">[];
     if (args.projectId) {
       await assertMinimumRole(ctx, args.projectId, userId, "viewer");
       entries = await ctx.db

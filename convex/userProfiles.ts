@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 // Check if user is admin (has admin role in any project they created)
@@ -315,7 +316,7 @@ export const listUserProfiles = query({
       throw new Error("Admin access required");
     }
 
-    let profiles;
+    let profiles: Doc<"userProfiles">[];
     if (args.employmentType && args.isActive !== undefined) {
       const employmentType = args.employmentType;
       const isActive = args.isActive;

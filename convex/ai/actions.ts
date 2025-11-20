@@ -170,14 +170,14 @@ Format your response as JSON with keys: description, priority, priorityReason, l
     const responseTime = Date.now() - startTime;
 
     // Parse AI response
-    let suggestions;
+    let suggestions: Record<string, unknown>;
     try {
       // Extract JSON from response (AI might wrap it in markdown code blocks)
       const jsonMatch = response.content.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || [
         null,
         response.content,
       ];
-      suggestions = JSON.parse(jsonMatch[1] || response.content);
+      suggestions = JSON.parse(jsonMatch[1] || response.content) as Record<string, unknown>;
     } catch (_error) {
       suggestions = { raw: response.content };
     }
@@ -274,13 +274,13 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     const responseTime = Date.now() - startTime;
 
     // Parse AI response
-    let insights;
+    let insights: Record<string, unknown>;
     try {
       const jsonMatch = response.content.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || [
         null,
         response.content,
       ];
-      insights = JSON.parse(jsonMatch[1] || response.content);
+      insights = JSON.parse(jsonMatch[1] || response.content) as Record<string, unknown>;
     } catch (_error) {
       insights = { raw: response.content };
     }
