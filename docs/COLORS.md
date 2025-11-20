@@ -363,6 +363,7 @@ As of 2025-11-20:
 ### Phase 2: Feature Components (Medium Priority)
 - ✅ Project boards (ProjectBoard, KanbanBoard)
 - ✅ Modals and dialogs (Modal, CreateIssueModal, IssueDetailModal)
+- ✅ Navigation components (Sidebar, ProjectSidebar, Dashboard)
 - ⏳ Document editor components
 - ⏳ Additional issue forms and dialogs
 
