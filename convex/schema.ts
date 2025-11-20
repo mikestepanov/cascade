@@ -1031,6 +1031,50 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_type", ["type"]),
+
+  // Hour Compliance Tracking (for monitoring required hours)
+  hourComplianceRecords: defineTable({
+    userId: v.id("users"),
+    periodType: v.union(v.literal("week"), v.literal("month")), // Weekly or monthly tracking
+    periodStart: v.number(), // Start of period (Unix timestamp)
+    periodEnd: v.number(), // End of period (Unix timestamp)
+    // Hours tracked
+    totalHoursWorked: v.number(), // Total hours logged in period
+    totalEquityHours: v.optional(v.number()), // Total equity hours (for employees with equity)
+    // Requirements from user profile at time of record
+    requiredHoursPerWeek: v.optional(v.number()), // Weekly requirement snapshot
+    requiredHoursPerMonth: v.optional(v.number()), // Monthly requirement snapshot
+    requiredEquityHoursPerWeek: v.optional(v.number()), // Equity hours requirement snapshot
+    requiredEquityHoursPerMonth: v.optional(v.number()),
+    maxHoursPerWeek: v.optional(v.number()), // Max hours limit snapshot
+    // Compliance status
+    status: v.union(
+      v.literal("compliant"), // Met requirements
+      v.literal("under_hours"), // Worked less than required
+      v.literal("over_hours"), // Exceeded maximum hours (warning)
+      v.literal("equity_under"), // Didn't meet equity hour requirements
+    ),
+    // Variance
+    hoursDeficit: v.optional(v.number()), // How many hours short (if under_hours)
+    hoursExcess: v.optional(v.number()), // How many hours over (if over_hours)
+    equityHoursDeficit: v.optional(v.number()), // Equity hours short
+    // Notification
+    notificationSent: v.boolean(), // Was admin/manager notified?
+    notificationId: v.optional(v.id("notifications")),
+    // Review
+    reviewedBy: v.optional(v.id("users")), // Admin who reviewed this record
+    reviewedAt: v.optional(v.number()),
+    reviewNotes: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_period", ["periodStart"])
+    .index("by_status", ["status"])
+    .index("by_user_period", ["userId", "periodStart"])
+    .index("by_user_status", ["userId", "status"])
+    .index("by_period_status", ["periodStart", "status"]),
 };
 
 export default defineSchema({

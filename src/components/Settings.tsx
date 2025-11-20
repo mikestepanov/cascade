@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserTypeManager } from "./Admin/UserTypeManager";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
@@ -105,7 +106,7 @@ export function Settings() {
           {activeTab === "apikeys" && <ApiKeysManager />}
           {activeTab === "offline" && <OfflineTab />}
           {activeTab === "preferences" && <PreferencesTab />}
-          {activeTab === "admin" && <UserTypeManager />}
+          {activeTab === "admin" && <AdminTab />}
         </div>
       </div>
     </div>
@@ -118,6 +119,15 @@ function IntegrationsTab() {
       <GitHubIntegration />
       <GoogleCalendarIntegration />
       <PumbleIntegration />
+    </div>
+  );
+}
+
+function AdminTab() {
+  return (
+    <div className="space-y-8">
+      <UserTypeManager />
+      <HourComplianceDashboard />
     </div>
   );
 }
