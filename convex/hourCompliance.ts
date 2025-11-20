@@ -185,7 +185,7 @@ async function checkUserComplianceInternal(
     requiredHours,
     requiredEquityHours,
     maxHours,
-    profile.hasEquity,
+    profile.hasEquity || false,
   );
 
   // Check if record already exists for this period

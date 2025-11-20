@@ -1,7 +1,70 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query, type MutationCtx } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
+
+// Helper: Validate parent issue and get inherited epic
+async function validateParentIssue(
+  ctx: MutationCtx,
+  parentId: Id<"issues"> | undefined,
+  issueType: string,
+  epicId: Id<"issues"> | undefined,
+) {
+  if (!parentId) {
+    if (issueType === "epic" && parentId) {
+      throw new Error("Epics cannot be sub-tasks");
+    }
+    return epicId;
+  }
+
+  const parentIssue = await ctx.db.get(parentId);
+  if (!parentIssue) {
+    throw new Error("Parent issue not found");
+  }
+
+  // Prevent sub-tasks of sub-tasks (only 1 level deep)
+  if (parentIssue.parentId) {
+    throw new Error("Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+  }
+
+  // Sub-tasks must be of type "subtask"
+  if (issueType !== "subtask") {
+    throw new Error("Issues with a parent must be of type 'subtask'");
+  }
+
+  // Inherit epicId from parent if not explicitly provided
+  return epicId || parentIssue.epicId;
+}
+
+// Helper: Generate issue key
+async function generateIssueKey(
+  ctx: MutationCtx,
+  projectId: Id<"projects">,
+  projectKey: string,
+) {
+  const existingIssues = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+
+  const issueNumber = existingIssues.length + 1;
+  return `${projectKey}-${issueNumber}`;
+}
+
+// Helper: Get max order for status column
+async function getMaxOrderForStatus(
+  ctx: MutationCtx,
+  projectId: Id<"projects">,
+  status: string,
+) {
+  const issuesInStatus = await ctx.db
+    .query("issues")
+    .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", status))
+    .collect();
+
+  return Math.max(...issuesInStatus.map((i) => i.order), -1);
+}
 
 export const create = mutation({
   args: {
@@ -45,63 +108,17 @@ export const create = mutation({
     // Check if user can create issues (requires editor role or higher)
     await assertMinimumRole(ctx, args.projectId, userId, "editor");
 
-    // Validate sub-task constraints
-    let inheritedEpicId = args.epicId;
-    if (args.parentId) {
-      const parentIssue = await ctx.db.get(args.parentId);
-      if (!parentIssue) {
-        throw new Error("Parent issue not found");
-      }
-
-      // Prevent sub-tasks of sub-tasks (only 1 level deep)
-      if (parentIssue.parentId) {
-        throw new Error(
-          "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.",
-        );
-      }
-
-      // Prevent epics from being parents (optional - remove if you want epics to have sub-tasks)
-      // if (parentIssue.type === "epic") {
-      //   throw new Error("Epics cannot have sub-tasks. Use stories/tasks under the epic instead.");
-      // }
-
-      // Inherit epicId from parent if not explicitly provided
-      if (!inheritedEpicId && parentIssue.epicId) {
-        inheritedEpicId = parentIssue.epicId;
-      }
-
-      // Sub-tasks must be of type "subtask"
-      if (args.type !== "subtask") {
-        throw new Error("Issues with a parent must be of type 'subtask'");
-      }
-    }
-
-    // Epics cannot be sub-tasks
-    if (args.type === "epic" && args.parentId) {
-      throw new Error("Epics cannot be sub-tasks");
-    }
+    // Validate parent/epic constraints
+    const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
-    const existingIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    const issueNumber = existingIssues.length + 1;
-    const issueKey = `${project.key}-${issueNumber}`;
+    const issueKey = await generateIssueKey(ctx, args.projectId, project.key);
 
     // Get the first workflow state as default status
     const defaultStatus = project.workflowStates[0]?.id || "todo";
 
     // Get max order for the status column
-    const issuesInStatus = await ctx.db
-      .query("issues")
-      .withIndex("by_project_status", (q) =>
-        q.eq("projectId", args.projectId).eq("status", defaultStatus),
-      )
-      .collect();
-
-    const maxOrder = Math.max(...issuesInStatus.map((i) => i.order), -1);
+    const maxOrder = await getMaxOrderForStatus(ctx, args.projectId, defaultStatus);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
