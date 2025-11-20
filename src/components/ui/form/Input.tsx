@@ -39,12 +39,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={cn(
             "w-full px-3 py-2 border rounded-md text-sm",
-            "bg-white dark:bg-gray-800",
-            "text-gray-900 dark:text-gray-100",
-            "placeholder-gray-500 dark:placeholder-gray-400",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent",
+            "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+            "text-ui-text-primary dark:text-ui-text-primary-dark",
+            "placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark",
+            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600",
+            error ? "border-ui-border-error dark:border-ui-border-error-dark" : "border-ui-border-primary dark:border-ui-border-primary-dark",
             className,
           )}
           aria-invalid={error ? "true" : "false"}
@@ -54,12 +54,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className="mt-1 text-sm text-red-600 dark:text-red-400">
+          <p id={`${inputId}-error`} className="mt-1 text-sm text-status-error dark:text-status-error">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p id={`${inputId}-helper`} className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {helperText}
           </p>
         )}

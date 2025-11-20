@@ -22,13 +22,13 @@ export function Button({
 }: ButtonProps) {
   const variantStyles = {
     primary:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-400",
+      "bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500 dark:bg-brand-500 dark:hover:bg-brand-600 dark:focus:ring-brand-400",
     secondary:
-      "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-400",
+      "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus:ring-brand-500 dark:focus:ring-brand-400",
     danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-400",
+      "bg-status-error text-white hover:bg-status-error/90 focus:ring-status-error dark:bg-status-error dark:hover:bg-status-error/90 dark:focus:ring-status-error",
     ghost:
-      "text-gray-600 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:ring-gray-400",
+      "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus:ring-brand-500 dark:focus:ring-brand-400",
   };
 
   const sizeStyles = {
