@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const create = mutation({
@@ -159,6 +160,54 @@ export const deleteDocument = mutation({
   },
 });
 
+// Helper: Check if document matches search filters
+function matchesDocumentFilters(
+  doc: {
+    isPublic: boolean;
+    createdBy: Id<"users">;
+    projectId?: Id<"projects">;
+    createdAt: number;
+  },
+  filters: {
+    projectId?: Id<"projects">;
+    createdBy?: Id<"users"> | "me";
+    isPublic?: boolean;
+    dateFrom?: number;
+    dateTo?: number;
+  },
+  userId: Id<"users">,
+): boolean {
+  // Apply project filter
+  if (filters.projectId && doc.projectId !== filters.projectId) {
+    return false;
+  }
+
+  // Apply creator filter
+  if (filters.createdBy) {
+    if (filters.createdBy === "me" && doc.createdBy !== userId) {
+      return false;
+    }
+    if (filters.createdBy !== "me" && doc.createdBy !== filters.createdBy) {
+      return false;
+    }
+  }
+
+  // Apply public/private filter
+  if (filters.isPublic !== undefined && doc.isPublic !== filters.isPublic) {
+    return false;
+  }
+
+  // Apply date range filter
+  if (filters.dateFrom && doc.createdAt < filters.dateFrom) {
+    return false;
+  }
+  if (filters.dateTo && doc.createdAt > filters.dateTo) {
+    return false;
+  }
+
+  return true;
+}
+
 export const search = query({
   args: {
     query: v.string(),
@@ -193,30 +242,8 @@ export const search = query({
         continue;
       }
 
-      // Apply project filter
-      if (args.projectId && doc.projectId !== args.projectId) {
-        continue;
-      }
-
-      // Apply creator filter
-      if (args.createdBy) {
-        if (args.createdBy === "me" && doc.createdBy !== userId) {
-          continue;
-        } else if (args.createdBy !== "me" && doc.createdBy !== args.createdBy) {
-          continue;
-        }
-      }
-
-      // Apply public/private filter
-      if (args.isPublic !== undefined && doc.isPublic !== args.isPublic) {
-        continue;
-      }
-
-      // Apply date range filter (createdAt)
-      if (args.dateFrom && doc.createdAt < args.dateFrom) {
-        continue;
-      }
-      if (args.dateTo && doc.createdAt > args.dateTo) {
+      // Apply all search filters
+      if (!matchesDocumentFilters(doc, args, userId)) {
         continue;
       }
 
