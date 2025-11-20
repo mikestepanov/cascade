@@ -31,12 +31,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             type="checkbox"
             id={checkboxId}
             className={cn(
-              "rounded border-gray-300 dark:border-gray-600",
-              "text-blue-600 dark:text-blue-500",
-              "focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400",
+              "rounded border-ui-border-primary dark:border-ui-border-primary-dark",
+              "text-brand-600 dark:text-brand-500",
+              "focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "bg-white dark:bg-gray-800",
-              error && "border-red-500 dark:border-red-400",
+              "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+              error && "border-ui-border-error dark:border-ui-border-error-dark",
               className,
             )}
             aria-invalid={error ? "true" : "false"}
@@ -48,19 +48,19 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {label && (
             <label
               htmlFor={checkboxId}
-              className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+              className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark cursor-pointer select-none"
             >
               {label}
             </label>
           )}
         </div>
         {error && (
-          <p id={`${checkboxId}-error`} className="mt-1 text-sm text-red-600 dark:text-red-400">
+          <p id={`${checkboxId}-error`} className="mt-1 text-sm text-status-error dark:text-status-error">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${checkboxId}-helper`} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p id={`${checkboxId}-helper`} className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {helperText}
           </p>
         )}
