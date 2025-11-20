@@ -11,6 +11,59 @@ import { Modal } from "../ui/Modal";
 
 type EmploymentType = "employee" | "contractor" | "intern";
 
+// Helper: Convert string to number or undefined
+function parseOptionalNumber(value: string): number | undefined {
+  return value ? Number(value) : undefined;
+}
+
+// Helper: Convert date string to timestamp or undefined
+function parseOptionalDate(value: string): number | undefined {
+  return value ? new Date(value).getTime() : undefined;
+}
+
+// Helper: Build profile data from form state
+function buildProfileData(formData: {
+  userId: Id<"users">;
+  profileType: EmploymentType;
+  profileMaxWeekly: string;
+  profileMaxDaily: string;
+  profileRequiresApproval: boolean | null;
+  profileCanOvertime: boolean | null;
+  profileDepartment: string;
+  profileJobTitle: string;
+  profileStartDate: string;
+  profileEndDate: string;
+  profileHasEquity: boolean;
+  profileEquityPercentage: string;
+  profileRequiredEquityWeekly: string;
+  profileRequiredEquityMonthly: string;
+  profileMaxEquityWeekly: string;
+  profileEquityHourlyValue: string;
+  profileEquityNotes: string;
+  profileIsActive: boolean;
+}) {
+  return {
+    userId: formData.userId,
+    employmentType: formData.profileType,
+    maxHoursPerWeek: parseOptionalNumber(formData.profileMaxWeekly),
+    maxHoursPerDay: parseOptionalNumber(formData.profileMaxDaily),
+    requiresApproval: formData.profileRequiresApproval ?? undefined,
+    canWorkOvertime: formData.profileCanOvertime ?? undefined,
+    department: formData.profileDepartment || undefined,
+    jobTitle: formData.profileJobTitle || undefined,
+    startDate: parseOptionalDate(formData.profileStartDate),
+    endDate: parseOptionalDate(formData.profileEndDate),
+    hasEquity: formData.profileHasEquity || undefined,
+    equityPercentage: parseOptionalNumber(formData.profileEquityPercentage),
+    requiredEquityHoursPerWeek: parseOptionalNumber(formData.profileRequiredEquityWeekly),
+    requiredEquityHoursPerMonth: parseOptionalNumber(formData.profileRequiredEquityMonthly),
+    maxEquityHoursPerWeek: parseOptionalNumber(formData.profileMaxEquityWeekly),
+    equityHourlyValue: parseOptionalNumber(formData.profileEquityHourlyValue),
+    equityNotes: formData.profileEquityNotes || undefined,
+    isActive: formData.profileIsActive,
+  };
+}
+
 export function UserTypeManager() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -161,30 +214,28 @@ export function UserTypeManager() {
 
     setIsSubmitting(true);
     try {
-      await upsertProfile({
+      const profileData = buildProfileData({
         userId: selectedUserId,
-        employmentType: profileType,
-        maxHoursPerWeek: profileMaxWeekly ? Number(profileMaxWeekly) : undefined,
-        maxHoursPerDay: profileMaxDaily ? Number(profileMaxDaily) : undefined,
-        requiresApproval: profileRequiresApproval ?? undefined,
-        canWorkOvertime: profileCanOvertime ?? undefined,
-        department: profileDepartment || undefined,
-        jobTitle: profileJobTitle || undefined,
-        startDate: profileStartDate ? new Date(profileStartDate).getTime() : undefined,
-        endDate: profileEndDate ? new Date(profileEndDate).getTime() : undefined,
-        hasEquity: profileHasEquity || undefined,
-        equityPercentage: profileEquityPercentage ? Number(profileEquityPercentage) : undefined,
-        requiredEquityHoursPerWeek: profileRequiredEquityWeekly
-          ? Number(profileRequiredEquityWeekly)
-          : undefined,
-        requiredEquityHoursPerMonth: profileRequiredEquityMonthly
-          ? Number(profileRequiredEquityMonthly)
-          : undefined,
-        maxEquityHoursPerWeek: profileMaxEquityWeekly ? Number(profileMaxEquityWeekly) : undefined,
-        equityHourlyValue: profileEquityHourlyValue ? Number(profileEquityHourlyValue) : undefined,
-        equityNotes: profileEquityNotes || undefined,
-        isActive: profileIsActive,
+        profileType,
+        profileMaxWeekly,
+        profileMaxDaily,
+        profileRequiresApproval,
+        profileCanOvertime,
+        profileDepartment,
+        profileJobTitle,
+        profileStartDate,
+        profileEndDate,
+        profileHasEquity,
+        profileEquityPercentage,
+        profileRequiredEquityWeekly,
+        profileRequiredEquityMonthly,
+        profileMaxEquityWeekly,
+        profileEquityHourlyValue,
+        profileEquityNotes,
+        profileIsActive,
       });
+
+      await upsertProfile(profileData);
       showSuccess("User profile saved");
       setShowAssignModal(false);
       setSelectedUserId(null);
