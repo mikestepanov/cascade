@@ -728,7 +728,7 @@ The project includes Chef (Convex's development platform) integration:
 
 ---
 
-**Last Updated:** 2025-11-15
+**Last Updated:** 2025-11-20
 **Convex Deployment:** peaceful-salmon-964
 **Node Version:** 18+
 **Package Manager:** pnpm (preferred)

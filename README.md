@@ -1,5 +1,7 @@
 # Cascade - Collaborative Project Management Platform
 
+> **Last Updated:** 2025-11-20
+
 A modern Jira + Confluence clone built with React, TypeScript, and Convex for real-time collaboration.
 
 ## 🚀 Features
@@ -27,6 +29,14 @@ A modern Jira + Confluence clone built with React, TypeScript, and Convex for re
 - **GitHub** - Link repos, track PRs and commits (OAuth)
 - **Email notifications** - @mentions, assignments, digests
 
+### 🔐 Authentication & User Management
+- **Email & Password** - Standard authentication with secure password hashing
+- **Google OAuth** - Sign in with Google account (UI ready, requires OAuth setup)
+- **Anonymous Authentication** - Quick access for demos and testing
+- **User Invitations** - Admin-controlled invitation system with email-based invites
+- **Role-Based Access** - Platform-wide admin and user roles
+- **Invitation Management** - Send, resend, revoke, and track invitation status
+
 ### 📱 Mobile & Offline
 - **Responsive design** - Works on all devices (mobile, tablet, desktop)
 - **Progressive Web App** - Installable as native app
@@ -36,8 +46,9 @@ A modern Jira + Confluence clone built with React, TypeScript, and Convex for re
 ### 🎨 Design
 - Clean, minimal interface with lots of white space
 - Neutral color palette for reduced eye strain
-- Dark/light theme support
+- **Full dark mode support** - Comprehensive dark theme across all components
 - Fast, real-time updates without page refreshes
+- **Fully responsive** - Optimized for mobile, tablet, and desktop devices
 
 ## 🛠 Tech Stack
 
@@ -45,9 +56,10 @@ A modern Jira + Confluence clone built with React, TypeScript, and Convex for re
 - **Backend**: [Convex](https://convex.dev) (real-time database)
 - **Styling**: Tailwind CSS
 - **Editor**: BlockNote (ProseMirror-based)
-- **Auth**: Convex Auth
+- **Auth**: Convex Auth (Email/Password, Google OAuth, Anonymous)
 - **Real-time**: Convex Presence + ProseMirror Sync
 - **Analytics**: [PostHog](https://posthog.com) (product analytics & session replay)
+- **Testing**: Vitest + React Testing Library
 
 This project is connected to the Convex deployment named [`peaceful-salmon-964`](https://dashboard.convex.dev/d/peaceful-salmon-964).
 
@@ -86,10 +98,10 @@ The app will open automatically at http://localhost:5173
 
 ### First Time Setup
 
-1. Sign up for an account using email/password
+1. Sign up for an account using email/password or Google OAuth
 2. Create your first project with a unique project key (e.g., "PROJ")
 3. Start creating documents and issues
-4. Invite team members to collaborate
+4. **Invite team members** - Use Settings → Admin → User Management to send invitations
 
 ## 📁 Project Structure
 

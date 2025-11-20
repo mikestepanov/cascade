@@ -1,5 +1,7 @@
 # PWA (Progressive Web App) Setup
 
+> **Last Updated:** 2025-11-20
+
 Cascade is now configured as a Progressive Web App! This allows users to install the application on their devices and use it offline.
 
 ## Features Included

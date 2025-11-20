@@ -1,5 +1,8 @@
 # Authentication & User Management
 
+> **Last Updated:** 2025-11-20
+> **Version:** 1.1 - User Invitations & Google OAuth Support Added
+
 This document describes the authentication and user management features in Cascade.
 
 ## Authentication Methods
