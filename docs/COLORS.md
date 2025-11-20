@@ -357,13 +357,14 @@ As of 2025-11-20:
 - ✅ Card component (widely reused)
 - ✅ SignInForm and auth styles
 - ✅ Settings pages (PreferencesTab, OfflineTab)
-- ⏳ Dashboard
+- ✅ Dashboard (main + QuickStats + MyIssuesList + RecentActivity)
+- ✅ IssueCard component
 
 ### Phase 2: Feature Components (Medium Priority)
-- ⏳ Project boards
-- ⏳ Issue cards
-- ⏳ Document editor
-- ⏳ Modals
+- ⏳ Project boards (ProjectBoard, KanbanBoard)
+- ⏳ Document editor components
+- ⏳ Modals and dialogs
+- ⏳ Issue details and forms
 
 ### Phase 3: Remaining Components (Low Priority)
 - ⏳ All other components
