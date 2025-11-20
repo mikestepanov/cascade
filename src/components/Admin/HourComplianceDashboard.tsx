@@ -15,9 +15,7 @@ export function HourComplianceDashboard() {
   const [selectedStatus, setSelectedStatus] = useState<ComplianceStatus | "all">("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [reviewingRecord, setReviewingRecord] = useState<Id<"hourComplianceRecords"> | null>(
-    null,
-  );
+  const [reviewingRecord, setReviewingRecord] = useState<Id<"hourComplianceRecords"> | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -386,10 +384,14 @@ export function HourComplianceDashboard() {
       >
         <form onSubmit={handleReview} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="review-notes"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Review Notes (Optional)
             </label>
             <textarea
+              id="review-notes"
               value={reviewNotes}
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add notes about this compliance record..."

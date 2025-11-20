@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 // Check if user is admin (copied from userProfiles.ts)
@@ -22,7 +22,7 @@ async function isAdmin(ctx: any, userId: string) {
 }
 
 // Helper to calculate start/end of week
-function getWeekBounds(date: Date): { start: number; end: number } {
+function _getWeekBounds(date: Date): { start: number; end: number } {
   const d = new Date(date);
   const day = d.getDay();
   const diff = d.getDate() - day; // Adjust to Sunday
@@ -34,7 +34,7 @@ function getWeekBounds(date: Date): { start: number; end: number } {
 }
 
 // Helper to calculate start/end of month
-function getMonthBounds(date: Date): { start: number; end: number } {
+function _getMonthBounds(date: Date): { start: number; end: number } {
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
   start.setHours(0, 0, 0, 0);
   const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -308,7 +308,7 @@ export const listComplianceRecords = query({
       throw new Error("Admin access required");
     }
 
-    let records;
+    let records: Doc<"hourComplianceRecords">[];
 
     if (args.userId && args.status) {
       const userId = args.userId;
@@ -377,10 +377,7 @@ export const getComplianceSummary = query({
       throw new Error("Admin access required");
     }
 
-    let records = await ctx.db
-      .query("hourComplianceRecords")
-      .order("desc")
-      .take(1000); // Get recent records
+    let records = await ctx.db.query("hourComplianceRecords").order("desc").take(1000); // Get recent records
 
     // Filter by date range
     if (args.startDate || args.endDate) {
