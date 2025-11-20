@@ -45,15 +45,15 @@ export function MyIssuesList({
   return (
     <Card>
       <CardHeader title="My Issues" description="Track your assigned and created issues" />
-      <div className="border-b border-gray-200 dark:border-gray-700 px-4">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4">
         <div className="flex gap-4">
           <button
             type="button"
             onClick={() => onFilterChange("assigned")}
             className={`pb-2 px-2 border-b-2 transition-colors ${
               issueFilter === "assigned"
-                ? "border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
             aria-label="Show assigned issues"
           >
@@ -64,8 +64,8 @@ export function MyIssuesList({
             onClick={() => onFilterChange("created")}
             className={`pb-2 px-2 border-b-2 transition-colors ${
               issueFilter === "created"
-                ? "border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
             aria-label="Show created issues"
           >
@@ -110,13 +110,13 @@ export function MyIssuesList({
                   }
                 }}
                 {...issueNavigation.getItemProps(index)}
-                className={`p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
+                className={`p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                      <span className="text-sm font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {issue.key}
                       </span>
                       <span className="text-lg" aria-hidden="true">
@@ -128,10 +128,10 @@ export function MyIssuesList({
                         {issue.priority}
                       </span>
                     </div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                    <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                       {issue.title}
                     </h4>
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-2 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       <span>{issue.projectName}</span>
                       <span>•</span>
                       <span>{issue.status}</span>
