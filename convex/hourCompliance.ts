@@ -1,21 +1,21 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
 
 // Check if user is admin (copied from userProfiles.ts)
-async function isAdmin(ctx: any, userId: string) {
+async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const createdProjects = await ctx.db
     .query("projects")
-    .withIndex("by_creator", (q: any) => q.eq("createdBy", userId))
+    .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
   if (createdProjects) return true;
 
   const adminMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_user", (q: any) => q.eq("userId", userId))
-    .filter((q: any) => q.eq(q.field("role"), "admin"))
+    .withIndex("by_user", (q) => q.eq("userId", userId))
+    .filter((q) => q.eq(q.field("role"), "admin"))
     .first();
 
   return !!adminMembership;
@@ -44,7 +44,7 @@ function _getMonthBounds(date: Date): { start: number; end: number } {
 
 // Internal helper for compliance checking logic
 async function checkUserComplianceInternal(
-  ctx: any,
+  ctx: MutationCtx,
   args: {
     userId: Id<"users">;
     periodType: "week" | "month";
@@ -55,7 +55,7 @@ async function checkUserComplianceInternal(
   // Get user profile
   const profile = await ctx.db
     .query("userProfiles")
-    .withIndex("by_user", (q: any) => q.eq("userId", args.userId))
+    .withIndex("by_user", (q) => q.eq("userId", args.userId))
     .first();
 
   if (!profile) {
@@ -65,22 +65,19 @@ async function checkUserComplianceInternal(
   // Get all time entries for the period
   const timeEntries = await ctx.db
     .query("timeEntries")
-    .withIndex("by_user_date", (q: any) => q.eq("userId", args.userId))
-    .filter((q: any) =>
+    .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
+    .filter((q) =>
       q.and(q.gte(q.field("date"), args.periodStart), q.lte(q.field("date"), args.periodEnd)),
     )
     .collect();
 
   // Calculate total hours
-  const totalSeconds = timeEntries.reduce((sum: number, entry: any) => sum + entry.duration, 0);
+  const totalSeconds = timeEntries.reduce((sum, entry) => sum + entry.duration, 0);
   const totalHoursWorked = totalSeconds / 3600;
 
   // Calculate equity hours
-  const equityEntries = timeEntries.filter((e: any) => e.isEquityHour);
-  const totalEquitySeconds = equityEntries.reduce(
-    (sum: number, entry: any) => sum + entry.duration,
-    0,
-  );
+  const equityEntries = timeEntries.filter((e) => e.isEquityHour);
+  const totalEquitySeconds = equityEntries.reduce((sum, entry) => sum + entry.duration, 0);
   const totalEquityHours = totalEquitySeconds / 3600;
 
   // Determine requirements based on period type
@@ -126,9 +123,7 @@ async function checkUserComplianceInternal(
   // Check if record already exists for this period
   const existingRecord = await ctx.db
     .query("hourComplianceRecords")
-    .withIndex("by_user_period", (q: any) =>
-      q.eq("userId", args.userId).eq("periodStart", args.periodStart),
-    )
+    .withIndex("by_user_period", (q) => q.eq("userId", args.userId).eq("periodStart", args.periodStart))
     .first();
 
   const now = Date.now();
