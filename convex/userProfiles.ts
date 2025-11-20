@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 
 // Check if user is admin (has admin role in any project they created)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {

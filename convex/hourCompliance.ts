@@ -42,6 +42,104 @@ function _getMonthBounds(date: Date): { start: number; end: number } {
   return { start: start.getTime(), end: end.getTime() };
 }
 
+// Helper: Calculate hours from time entries
+function calculateHours(timeEntries: Array<{ duration: number; isEquityHour?: boolean }>) {
+  const totalSeconds = timeEntries.reduce((sum, entry) => sum + entry.duration, 0);
+  const totalHoursWorked = totalSeconds / 3600;
+
+  const equityEntries = timeEntries.filter((e) => e.isEquityHour);
+  const totalEquitySeconds = equityEntries.reduce((sum, entry) => sum + entry.duration, 0);
+  const totalEquityHours = totalEquitySeconds / 3600;
+
+  return { totalHoursWorked, totalEquityHours };
+}
+
+// Helper: Determine requirements based on period type
+function determineRequirements(
+  profile: {
+    maxHoursPerWeek?: number;
+    requiredEquityHoursPerWeek?: number;
+    requiredEquityHoursPerMonth?: number;
+  },
+  periodType: "week" | "month",
+) {
+  if (periodType === "week") {
+    return {
+      requiredHours: profile.maxHoursPerWeek || 40,
+      requiredEquityHours: profile.requiredEquityHoursPerWeek || 0,
+      maxHours: profile.maxHoursPerWeek || 0,
+    };
+  }
+
+  return {
+    requiredHours: profile.maxHoursPerWeek ? profile.maxHoursPerWeek * 4.33 : 173,
+    requiredEquityHours: profile.requiredEquityHoursPerMonth || 0,
+    maxHours: profile.maxHoursPerWeek ? profile.maxHoursPerWeek * 4.33 : 0,
+  };
+}
+
+// Helper: Determine compliance status
+function determineComplianceStatus(
+  totalHoursWorked: number,
+  totalEquityHours: number,
+  requiredHours: number,
+  requiredEquityHours: number,
+  maxHours: number,
+  hasEquity: boolean,
+) {
+  let status: "compliant" | "under_hours" | "over_hours" | "equity_under";
+  let hoursDeficit = 0;
+  let hoursExcess = 0;
+  let equityHoursDeficit = 0;
+
+  if (hasEquity && requiredEquityHours > 0 && totalEquityHours < requiredEquityHours) {
+    status = "equity_under";
+    equityHoursDeficit = requiredEquityHours - totalEquityHours;
+  } else if (totalHoursWorked < requiredHours) {
+    status = "under_hours";
+    hoursDeficit = requiredHours - totalHoursWorked;
+  } else if (maxHours > 0 && totalHoursWorked > maxHours) {
+    status = "over_hours";
+    hoursExcess = totalHoursWorked - maxHours;
+  } else {
+    status = "compliant";
+  }
+
+  return { status, hoursDeficit, hoursExcess, equityHoursDeficit };
+}
+
+// Helper: Create notification message
+function createNotificationMessage(
+  status: "under_hours" | "over_hours" | "equity_under",
+  userName: string,
+  totalHoursWorked: number,
+  totalEquityHours: number,
+  hoursDeficit: number,
+  hoursExcess: number,
+  equityHoursDeficit: number,
+  requiredHours: number,
+  requiredEquityHours: number,
+  maxHours: number,
+) {
+  switch (status) {
+    case "under_hours":
+      return {
+        title: "Hour Requirement Not Met",
+        message: `${userName} worked ${totalHoursWorked.toFixed(1)} hours (${hoursDeficit.toFixed(1)} hours short of ${requiredHours} required)`,
+      };
+    case "over_hours":
+      return {
+        title: "Maximum Hours Exceeded",
+        message: `${userName} worked ${totalHoursWorked.toFixed(1)} hours (${hoursExcess.toFixed(1)} hours over ${maxHours} maximum)`,
+      };
+    case "equity_under":
+      return {
+        title: "Equity Hour Requirement Not Met",
+        message: `${userName} worked ${totalEquityHours.toFixed(1)} equity hours (${equityHoursDeficit.toFixed(1)} hours short of ${requiredEquityHours} required)`,
+      };
+  }
+}
+
 // Internal helper for compliance checking logic
 async function checkUserComplianceInternal(
   ctx: MutationCtx,
@@ -71,54 +169,24 @@ async function checkUserComplianceInternal(
     )
     .collect();
 
-  // Calculate total hours
-  const totalSeconds = timeEntries.reduce((sum, entry) => sum + entry.duration, 0);
-  const totalHoursWorked = totalSeconds / 3600;
+  // Calculate hours
+  const { totalHoursWorked, totalEquityHours } = calculateHours(timeEntries);
 
-  // Calculate equity hours
-  const equityEntries = timeEntries.filter((e) => e.isEquityHour);
-  const totalEquitySeconds = equityEntries.reduce((sum, entry) => sum + entry.duration, 0);
-  const totalEquityHours = totalEquitySeconds / 3600;
-
-  // Determine requirements based on period type
-  let requiredHours = 0;
-  let requiredEquityHours = 0;
-  let maxHours = 0;
-
-  if (args.periodType === "week") {
-    requiredHours = profile.maxHoursPerWeek || 40; // Default to 40 if not set
-    requiredEquityHours = profile.requiredEquityHoursPerWeek || 0;
-    maxHours = profile.maxHoursPerWeek || 0;
-  } else {
-    // Month - multiply weekly by ~4.33
-    requiredHours = profile.maxHoursPerWeek ? profile.maxHoursPerWeek * 4.33 : 173;
-    requiredEquityHours = profile.requiredEquityHoursPerMonth || 0;
-    maxHours = profile.maxHoursPerWeek ? profile.maxHoursPerWeek * 4.33 : 0;
-  }
+  // Determine requirements
+  const { requiredHours, requiredEquityHours, maxHours } = determineRequirements(
+    profile,
+    args.periodType,
+  );
 
   // Determine compliance status
-  let status: "compliant" | "under_hours" | "over_hours" | "equity_under";
-  let hoursDeficit = 0;
-  let hoursExcess = 0;
-  let equityHoursDeficit = 0;
-
-  // Check equity hours first (if applicable)
-  if (profile.hasEquity && requiredEquityHours > 0 && totalEquityHours < requiredEquityHours) {
-    status = "equity_under";
-    equityHoursDeficit = requiredEquityHours - totalEquityHours;
-  }
-  // Check if under required hours
-  else if (totalHoursWorked < requiredHours) {
-    status = "under_hours";
-    hoursDeficit = requiredHours - totalHoursWorked;
-  }
-  // Check if over max hours (if max is set)
-  else if (maxHours > 0 && totalHoursWorked > maxHours) {
-    status = "over_hours";
-    hoursExcess = totalHoursWorked - maxHours;
-  } else {
-    status = "compliant";
-  }
+  const { status, hoursDeficit, hoursExcess, equityHoursDeficit } = determineComplianceStatus(
+    totalHoursWorked,
+    totalEquityHours,
+    requiredHours,
+    requiredEquityHours,
+    maxHours,
+    profile.hasEquity,
+  );
 
   // Check if record already exists for this period
   const existingRecord = await ctx.db
@@ -162,58 +230,94 @@ async function checkUserComplianceInternal(
     });
   }
 
-  // Create notification if not compliant and notification not already sent
-  if (status !== "compliant" && !existingRecord?.notificationSent) {
-    const user = await ctx.db.get(args.userId);
-    let message = "";
-    let title = "";
+  // Send notifications if needed
+  await sendComplianceNotifications(
+    ctx,
+    args.userId,
+    status,
+    existingRecord,
+    recordId,
+    totalHoursWorked,
+    totalEquityHours,
+    hoursDeficit,
+    hoursExcess,
+    equityHoursDeficit,
+    requiredHours,
+    requiredEquityHours,
+    maxHours,
+    profile.managerId,
+    now,
+  );
 
-    switch (status) {
-      case "under_hours":
-        title = "Hour Requirement Not Met";
-        message = `${user?.name || "User"} worked ${totalHoursWorked.toFixed(1)} hours (${hoursDeficit.toFixed(1)} hours short of ${requiredHours} required)`;
-        break;
-      case "over_hours":
-        title = "Maximum Hours Exceeded";
-        message = `${user?.name || "User"} worked ${totalHoursWorked.toFixed(1)} hours (${hoursExcess.toFixed(1)} hours over ${maxHours} maximum)`;
-        break;
-      case "equity_under":
-        title = "Equity Hour Requirement Not Met";
-        message = `${user?.name || "User"} worked ${totalEquityHours.toFixed(1)} equity hours (${equityHoursDeficit.toFixed(1)} hours short of ${requiredEquityHours} required)`;
-        break;
-    }
+  return recordId;
+}
 
-    // Create notification for admins and manager
-    const adminUsers = await ctx.db.query("users").collect();
-    const notifications = [];
+// Helper: Send compliance notifications
+async function sendComplianceNotifications(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  status: "compliant" | "under_hours" | "over_hours" | "equity_under",
+  existingRecord: { notificationSent: boolean } | null,
+  recordId: Id<"hourComplianceRecords">,
+  totalHoursWorked: number,
+  totalEquityHours: number,
+  hoursDeficit: number,
+  hoursExcess: number,
+  equityHoursDeficit: number,
+  requiredHours: number,
+  requiredEquityHours: number,
+  maxHours: number,
+  managerId: Id<"users"> | undefined,
+  now: number,
+) {
+  if (status === "compliant" || existingRecord?.notificationSent) {
+    return;
+  }
 
-    for (const admin of adminUsers) {
-      const isAdminUser = await isAdmin(ctx, admin._id);
-      const isManager = profile.managerId === admin._id;
+  const user = await ctx.db.get(userId);
+  const userName = user?.name || "User";
 
-      if (isAdminUser || isManager) {
-        const notificationId = await ctx.db.insert("notifications", {
-          userId: admin._id,
-          type: "hour_compliance",
-          title,
-          message,
-          isRead: false,
-          createdAt: now,
-        });
-        notifications.push(notificationId);
-      }
-    }
+  const { title, message } = createNotificationMessage(
+    status,
+    userName,
+    totalHoursWorked,
+    totalEquityHours,
+    hoursDeficit,
+    hoursExcess,
+    equityHoursDeficit,
+    requiredHours,
+    requiredEquityHours,
+    maxHours,
+  );
 
-    // Update record with notification info
-    if (notifications.length > 0) {
-      await ctx.db.patch(recordId, {
-        notificationSent: true,
-        notificationId: notifications[0], // Store first notification ID
+  // Create notifications for admins and manager
+  const adminUsers = await ctx.db.query("users").collect();
+  const notifications: Id<"notifications">[] = [];
+
+  for (const admin of adminUsers) {
+    const isAdminUser = await isAdmin(ctx, admin._id);
+    const isManager = managerId === admin._id;
+
+    if (isAdminUser || isManager) {
+      const notificationId = await ctx.db.insert("notifications", {
+        userId: admin._id,
+        type: "hour_compliance",
+        title,
+        message,
+        isRead: false,
+        createdAt: now,
       });
+      notifications.push(notificationId);
     }
   }
 
-  return recordId;
+  // Update record with notification info
+  if (notifications.length > 0) {
+    await ctx.db.patch(recordId, {
+      notificationSent: true,
+      notificationId: notifications[0],
+    });
+  }
 }
 
 // Check and record compliance for a user for a specific period
