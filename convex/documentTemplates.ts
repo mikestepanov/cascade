@@ -726,7 +726,11 @@ export const initializeBuiltInTemplates = mutation({
 
     // Insert all built-in templates
     for (const template of builtInTemplates) {
-      await ctx.db.insert("documentTemplates", template as any);
+      await ctx.db.insert("documentTemplates", {
+        ...template,
+        createdBy: undefined,
+        projectId: undefined,
+      });
     }
 
     return { message: `Created ${builtInTemplates.length} built-in templates` };

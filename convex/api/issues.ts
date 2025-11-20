@@ -1,7 +1,8 @@
 import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { httpAction } from "../_generated/server";
+import { type ActionCtx, httpAction } from "../_generated/server";
 import {
+  type ApiAuthContext,
   createErrorResponse,
   createSuccessResponse,
   extractApiKey,
@@ -32,7 +33,8 @@ export const handler = httpAction(async (ctx, request) => {
     const apiKey = extractApiKey(request.headers);
     if (!apiKey) return createErrorResponse(401, "Missing API key");
 
-    const auth = await ctx.runQuery((api as any).apiKeys.validateApiKey, { apiKey });
+    // @ts-expect-error - Convex types need regeneration after adding apiKeys module
+    const auth = await ctx.runQuery(api.apiKeys.validateApiKey, { apiKey });
     if (!auth) return createErrorResponse(401, "Invalid or expired API key");
 
     // Route based on method and path
@@ -46,7 +48,7 @@ export const handler = httpAction(async (ctx, request) => {
   }
 });
 
-async function handleList(ctx: any, request: Request, auth: any) {
+async function handleList(ctx: ActionCtx, request: Request, auth: ApiAuthContext) {
   if (!hasScope(auth, "issues:read")) {
     return createErrorResponse(403, "Missing scope: issues:read");
   }
