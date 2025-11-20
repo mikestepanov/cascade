@@ -8,6 +8,20 @@ import type { Id } from "./_generated/dataModel";
  * Supports meetings, deadlines, time blocks, and personal events
  */
 
+// Helper: Add field to updates if defined
+function addFieldIfDefined(
+  updates: Record<string, unknown>,
+  key: string,
+  value: unknown,
+  checkTruthy = false,
+): void {
+  if (checkTruthy) {
+    if (value) updates[key] = value;
+  } else {
+    if (value !== undefined) updates[key] = value;
+  }
+}
+
 // Helper: Build update object from optional fields
 function buildEventUpdateObject(args: {
   title?: string;
@@ -29,22 +43,25 @@ function buildEventUpdateObject(args: {
 }): Record<string, unknown> {
   const updates: Record<string, unknown> = { updatedAt: Date.now() };
 
-  if (args.title) updates.title = args.title;
-  if (args.description !== undefined) updates.description = args.description;
-  if (args.startTime) updates.startTime = args.startTime;
-  if (args.endTime) updates.endTime = args.endTime;
-  if (args.allDay !== undefined) updates.allDay = args.allDay;
-  if (args.location !== undefined) updates.location = args.location;
-  if (args.eventType) updates.eventType = args.eventType;
-  if (args.attendeeIds) updates.attendeeIds = args.attendeeIds;
-  if (args.externalAttendees !== undefined) updates.externalAttendees = args.externalAttendees;
-  if (args.projectId !== undefined) updates.projectId = args.projectId;
-  if (args.issueId !== undefined) updates.issueId = args.issueId;
-  if (args.status) updates.status = args.status;
-  if (args.isRecurring !== undefined) updates.isRecurring = args.isRecurring;
-  if (args.recurrenceRule !== undefined) updates.recurrenceRule = args.recurrenceRule;
-  if (args.meetingUrl !== undefined) updates.meetingUrl = args.meetingUrl;
-  if (args.notes !== undefined) updates.notes = args.notes;
+  // Fields that require truthy check
+  addFieldIfDefined(updates, "title", args.title, true);
+  addFieldIfDefined(updates, "startTime", args.startTime, true);
+  addFieldIfDefined(updates, "endTime", args.endTime, true);
+  addFieldIfDefined(updates, "eventType", args.eventType, true);
+  addFieldIfDefined(updates, "attendeeIds", args.attendeeIds, true);
+  addFieldIfDefined(updates, "status", args.status, true);
+
+  // Fields that allow undefined/null values
+  addFieldIfDefined(updates, "description", args.description);
+  addFieldIfDefined(updates, "allDay", args.allDay);
+  addFieldIfDefined(updates, "location", args.location);
+  addFieldIfDefined(updates, "externalAttendees", args.externalAttendees);
+  addFieldIfDefined(updates, "projectId", args.projectId);
+  addFieldIfDefined(updates, "issueId", args.issueId);
+  addFieldIfDefined(updates, "isRecurring", args.isRecurring);
+  addFieldIfDefined(updates, "recurrenceRule", args.recurrenceRule);
+  addFieldIfDefined(updates, "meetingUrl", args.meetingUrl);
+  addFieldIfDefined(updates, "notes", args.notes);
 
   return updates;
 }
