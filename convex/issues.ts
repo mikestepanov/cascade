@@ -464,6 +464,106 @@ export const updateStatus = mutation({
   },
 });
 
+// Helper: Track field change and add to changes array
+function trackFieldChange<T>(
+  changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }>,
+  field: string,
+  oldValue: T,
+  newValue: T | undefined,
+): boolean {
+  if (newValue !== undefined && newValue !== oldValue) {
+    changes.push({ field, oldValue: oldValue as string | number | null | undefined, newValue: newValue as string | number | null | undefined });
+    return true;
+  }
+  return false;
+}
+
+// Helper: Process issue update fields and track changes
+function processIssueUpdates(
+  issue: {
+    title: string;
+    description?: string;
+    priority: string;
+    assigneeId?: Id<"users">;
+    labels: string[];
+    dueDate?: number;
+    estimatedHours?: number;
+    storyPoints?: number;
+  },
+  args: {
+    title?: string;
+    description?: string;
+    priority?: string;
+    assigneeId?: Id<"users"> | null;
+    labels?: string[];
+    dueDate?: number | null;
+    estimatedHours?: number | null;
+    storyPoints?: number | null;
+  },
+  changes: Array<{ field: string; oldValue: string | number | null | undefined; newValue: string | number | null | undefined }>,
+) {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  if (trackFieldChange(changes, "title", issue.title, args.title)) {
+    updates.title = args.title;
+  }
+
+  if (trackFieldChange(changes, "description", issue.description, args.description)) {
+    updates.description = args.description;
+  }
+
+  if (trackFieldChange(changes, "priority", issue.priority, args.priority)) {
+    updates.priority = args.priority;
+  }
+
+  if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
+    updates.assigneeId = args.assigneeId ?? undefined;
+    changes.push({
+      field: "assignee",
+      oldValue: issue.assigneeId,
+      newValue: args.assigneeId ?? undefined,
+    });
+  }
+
+  if (args.labels !== undefined) {
+    updates.labels = args.labels;
+    changes.push({
+      field: "labels",
+      oldValue: issue.labels.join(", "),
+      newValue: args.labels.join(", "),
+    });
+  }
+
+  if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
+    updates.dueDate = args.dueDate ?? undefined;
+    changes.push({
+      field: "dueDate",
+      oldValue: issue.dueDate,
+      newValue: args.dueDate ?? undefined,
+    });
+  }
+
+  if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
+    updates.estimatedHours = args.estimatedHours ?? undefined;
+    changes.push({
+      field: "estimatedHours",
+      oldValue: issue.estimatedHours,
+      newValue: args.estimatedHours ?? undefined,
+    });
+  }
+
+  if (args.storyPoints !== undefined && args.storyPoints !== issue.storyPoints) {
+    updates.storyPoints = args.storyPoints ?? undefined;
+    changes.push({
+      field: "storyPoints",
+      oldValue: issue.storyPoints,
+      newValue: args.storyPoints ?? undefined,
+    });
+  }
+
+  return updates;
+}
+
 export const update = mutation({
   args: {
     issueId: v.id("issues"),
@@ -495,97 +595,27 @@ export const update = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
     // Check permissions (requires editor role or higher)
     await assertMinimumRole(ctx, issue.projectId, userId, "editor");
 
-    const updates: Partial<typeof issue> = { updatedAt: Date.now() };
     const now = Date.now();
-
-    // Track changes for activity log
     const changes: Array<{
       field: string;
       oldValue: string | number | null | undefined;
       newValue: string | number | null | undefined;
     }> = [];
 
-    if (args.title !== undefined && args.title !== issue.title) {
-      updates.title = args.title;
-      changes.push({ field: "title", oldValue: issue.title, newValue: args.title });
-    }
+    // Process all field updates and track changes
+    const updates = processIssueUpdates(issue, args, changes);
 
-    if (args.description !== undefined && args.description !== issue.description) {
-      updates.description = args.description;
-      changes.push({
-        field: "description",
-        oldValue: issue.description,
-        newValue: args.description,
-      });
-    }
-
-    if (args.priority !== undefined && args.priority !== issue.priority) {
-      updates.priority = args.priority;
-      changes.push({ field: "priority", oldValue: issue.priority, newValue: args.priority });
-    }
-
-    if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
-      updates.assigneeId = args.assigneeId ?? undefined;
-      changes.push({
-        field: "assignee",
-        oldValue: issue.assigneeId,
-        newValue: args.assigneeId ?? undefined,
-      });
-
-      // Send assignment email notification if assigned to someone new
-      if (args.assigneeId && args.assigneeId !== userId) {
-        // Import email helper dynamically to avoid circular deps
-        const { sendEmailNotification } = await import("./email/helpers");
-        await sendEmailNotification(ctx, {
-          userId: args.assigneeId,
-          type: "assigned",
-          issueId: args.issueId,
-          actorId: userId,
-        });
-      }
-    }
-
-    if (args.labels !== undefined) {
-      updates.labels = args.labels;
-      changes.push({
-        field: "labels",
-        oldValue: issue.labels.join(", "),
-        newValue: args.labels.join(", "),
-      });
-    }
-
-    if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
-      updates.dueDate = args.dueDate ?? undefined;
-      changes.push({
-        field: "dueDate",
-        oldValue: issue.dueDate,
-        newValue: args.dueDate ?? undefined,
-      });
-    }
-
-    if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
-      updates.estimatedHours = args.estimatedHours ?? undefined;
-      changes.push({
-        field: "estimatedHours",
-        oldValue: issue.estimatedHours,
-        newValue: args.estimatedHours ?? undefined,
-      });
-    }
-
-    if (args.storyPoints !== undefined && args.storyPoints !== issue.storyPoints) {
-      updates.storyPoints = args.storyPoints ?? undefined;
-      changes.push({
-        field: "storyPoints",
-        oldValue: issue.storyPoints,
-        newValue: args.storyPoints ?? undefined,
+    // Send assignment email notification if assigned to someone new
+    if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId && args.assigneeId && args.assigneeId !== userId) {
+      const { sendEmailNotification } = await import("./email/helpers");
+      await sendEmailNotification(ctx, {
+        userId: args.assigneeId,
+        type: "assigned",
+        issueId: args.issueId,
+        actorId: userId,
       });
     }
 
@@ -711,6 +741,135 @@ export const addComment = mutation({
 });
 
 // Search issues with advanced filters and pagination
+// Helper: Check if issue matches assignee filter
+function matchesAssigneeFilter(
+  issue: { assigneeId?: Id<"users"> },
+  assigneeFilter: Id<"users"> | "unassigned" | "me" | undefined,
+  userId: Id<"users">,
+): boolean {
+  if (!assigneeFilter) return true;
+
+  if (assigneeFilter === "unassigned") {
+    return !issue.assigneeId;
+  }
+  if (assigneeFilter === "me") {
+    return issue.assigneeId === userId;
+  }
+  return issue.assigneeId === assigneeFilter;
+}
+
+// Helper: Check if issue matches sprint filter
+function matchesSprintFilter(
+  issue: { sprintId?: Id<"sprints"> },
+  sprintFilter: Id<"sprints"> | "backlog" | "none" | undefined,
+): boolean {
+  if (!sprintFilter) return true;
+
+  if (sprintFilter === "backlog" || sprintFilter === "none") {
+    return !issue.sprintId;
+  }
+  return issue.sprintId === sprintFilter;
+}
+
+// Helper: Check if issue matches epic filter
+function matchesEpicFilter(
+  issue: { epicId?: Id<"issues"> },
+  epicFilter: Id<"issues"> | "none" | undefined,
+): boolean {
+  if (!epicFilter) return true;
+
+  if (epicFilter === "none") {
+    return !issue.epicId;
+  }
+  return issue.epicId === epicFilter;
+}
+
+// Helper: Check if issue matches all search filters
+function matchesSearchFilters(
+  issue: {
+    projectId: Id<"projects">;
+    assigneeId?: Id<"users">;
+    reporterId: Id<"users">;
+    type: string;
+    status: string;
+    priority: string;
+    labels: string[];
+    sprintId?: Id<"sprints">;
+    epicId?: Id<"issues">;
+    createdAt: number;
+  },
+  filters: {
+    projectId?: Id<"projects">;
+    assigneeId?: Id<"users"> | "unassigned" | "me";
+    reporterId?: Id<"users">;
+    type?: string[];
+    status?: string[];
+    priority?: string[];
+    labels?: string[];
+    sprintId?: Id<"sprints"> | "backlog" | "none";
+    epicId?: Id<"issues"> | "none";
+    dateFrom?: number;
+    dateTo?: number;
+  },
+  userId: Id<"users">,
+): boolean {
+  // Project filter
+  if (filters.projectId && issue.projectId !== filters.projectId) {
+    return false;
+  }
+
+  // Assignee filter
+  if (!matchesAssigneeFilter(issue, filters.assigneeId, userId)) {
+    return false;
+  }
+
+  // Reporter filter
+  if (filters.reporterId && issue.reporterId !== filters.reporterId) {
+    return false;
+  }
+
+  // Type filter
+  if (filters.type && filters.type.length > 0 && !filters.type.includes(issue.type)) {
+    return false;
+  }
+
+  // Status filter
+  if (filters.status && filters.status.length > 0 && !filters.status.includes(issue.status)) {
+    return false;
+  }
+
+  // Priority filter
+  if (filters.priority && filters.priority.length > 0 && !filters.priority.includes(issue.priority)) {
+    return false;
+  }
+
+  // Labels filter (issue must have ALL specified labels)
+  if (filters.labels && filters.labels.length > 0) {
+    const hasAllLabels = filters.labels.every((label) => issue.labels.includes(label));
+    if (!hasAllLabels) return false;
+  }
+
+  // Sprint filter
+  if (!matchesSprintFilter(issue, filters.sprintId)) {
+    return false;
+  }
+
+  // Epic filter
+  if (!matchesEpicFilter(issue, filters.epicId)) {
+    return false;
+  }
+
+  // Date range filter
+  if (filters.dateFrom && issue.createdAt < filters.dateFrom) {
+    return false;
+  }
+  if (filters.dateTo && issue.createdAt > filters.dateTo) {
+    return false;
+  }
+
+  return true;
+}
+
 export const search = query({
   args: {
     query: v.string(),
@@ -748,83 +907,8 @@ export const search = query({
         continue; // User doesn't have access, skip this issue
       }
 
-      // Apply project filter
-      if (args.projectId && issue.projectId !== args.projectId) {
-        continue;
-      }
-
-      // Apply assignee filter
-      if (args.assigneeId) {
-        if (args.assigneeId === "unassigned" && issue.assigneeId) {
-          continue;
-        } else if (args.assigneeId === "me" && issue.assigneeId !== userId) {
-          continue;
-        } else if (
-          args.assigneeId !== "unassigned" &&
-          args.assigneeId !== "me" &&
-          issue.assigneeId !== args.assigneeId
-        ) {
-          continue;
-        }
-      }
-
-      // Apply reporter filter
-      if (args.reporterId && issue.reporterId !== args.reporterId) {
-        continue;
-      }
-
-      // Apply type filter
-      if (args.type && args.type.length > 0 && !args.type.includes(issue.type)) {
-        continue;
-      }
-
-      // Apply status filter
-      if (args.status && args.status.length > 0 && !args.status.includes(issue.status)) {
-        continue;
-      }
-
-      // Apply priority filter
-      if (args.priority && args.priority.length > 0 && !args.priority.includes(issue.priority)) {
-        continue;
-      }
-
-      // Apply labels filter (issue must have ALL specified labels)
-      if (args.labels && args.labels.length > 0) {
-        const hasAllLabels = args.labels.every((label) => issue.labels.includes(label));
-        if (!hasAllLabels) {
-          continue;
-        }
-      }
-
-      // Apply sprint filter
-      if (args.sprintId) {
-        if (args.sprintId === "backlog" && issue.sprintId) {
-          continue;
-        } else if (args.sprintId === "none" && issue.sprintId) {
-          continue;
-        } else if (
-          args.sprintId !== "backlog" &&
-          args.sprintId !== "none" &&
-          issue.sprintId !== args.sprintId
-        ) {
-          continue;
-        }
-      }
-
-      // Apply epic filter
-      if (args.epicId) {
-        if (args.epicId === "none" && issue.epicId) {
-          continue;
-        } else if (args.epicId !== "none" && issue.epicId !== args.epicId) {
-          continue;
-        }
-      }
-
-      // Apply date range filter (createdAt)
-      if (args.dateFrom && issue.createdAt < args.dateFrom) {
-        continue;
-      }
-      if (args.dateTo && issue.createdAt > args.dateTo) {
+      // Apply all search filters
+      if (!matchesSearchFilters(issue, args, userId)) {
         continue;
       }
 
