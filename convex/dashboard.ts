@@ -131,7 +131,7 @@ export const getMyRecentActivity = query({
     const accessibleActivity = await Promise.all(
       allActivity.map(async (activity) => {
         const issue = await ctx.db.get(activity.issueId);
-        if (!issue || !projectIds.includes(issue.projectId)) return null;
+        if (!(issue && projectIds.includes(issue.projectId))) return null;
 
         const project = await ctx.db.get(issue.projectId);
         const user = await ctx.db.get(activity.userId);

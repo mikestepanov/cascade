@@ -201,7 +201,7 @@ export const getProjectSuggestions = query({
 
     // Filter out responded suggestions unless requested
     if (!args.includeResponded) {
-      filtered = filtered.filter((s) => !s.accepted && !s.dismissed);
+      filtered = filtered.filter((s) => !(s.accepted || s.dismissed));
     }
 
     // Sort by most recent

@@ -39,7 +39,7 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
     <div className={cn("space-y-2", className)}>
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
-          key={i}
+          key={`skeleton-text-${i}`}
           className={cn("h-4", i === lines - 1 ? "w-4/5" : i % 2 === 0 ? "w-full" : "w-11/12")}
         />
       ))}
@@ -67,7 +67,10 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+        <div
+          key={`skeleton-row-${i}`}
+          className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded"
+        >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
           <Skeleton className="h-4 w-24" />
@@ -85,7 +88,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: items }).map((_, i) => (
-        <div key={i} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div key={`skeleton-item-${i}`} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <div className="flex items-start gap-3">
             <SkeletonAvatar size="sm" />
             <div className="flex-1 space-y-2">

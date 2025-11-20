@@ -31,7 +31,7 @@ describe("CreateIssueModal", () => {
   const mockCreateIssue = vi.fn();
   const mockOnClose = vi.fn();
   const mockProjectId = "project-123" as Id<"projects">;
-  const mockSprintId = "sprint-456" as Id<"sprints">;
+  const _mockSprintId = "sprint-456" as Id<"sprints">;
 
   const mockProject = {
     _id: mockProjectId,

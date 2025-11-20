@@ -115,7 +115,7 @@ export const get = query({
     if (
       !project.isPublic &&
       project.createdBy !== userId &&
-      (!userId || !project.members.includes(userId))
+      !(userId && project.members.includes(userId))
     ) {
       throw new Error("Not authorized to access this project");
     }

@@ -1,8 +1,8 @@
 # Cascade - Product Roadmap & TODO
 
-> **Last Updated:** 2025-11-17
-> **Version:** 2.1 - Code Quality Improvements Complete
-> **Status:** Active Development - Pre-Launch Phase
+> **Last Updated:** 2025-11-19
+> **Version:** 2.3 - Phase 1 Complete, Integrations Live, Code Quality Enhanced
+> **Status:** Active Development - Ready for Public Launch
 
 This document serves as the comprehensive roadmap for Cascade development, reorganized after competitive analysis against Canvas LMS, Cal.com, AppFlowy, and Kimai.
 
@@ -37,7 +37,7 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 
 ## 📊 Current State
 
-### ✅ What Works (73% Feature Complete)
+### ✅ What Works (85% Feature Complete)
 - ✅ Real-time collaborative document editing (BlockNote)
 - ✅ Kanban/Scrum boards with drag-and-drop + undo/redo
 - ✅ Full issue lifecycle (task/bug/story/epic)
@@ -56,20 +56,27 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 - ✅ Keyboard navigation
 - ✅ Frontend testing (Vitest + React Testing Library)
 - ✅ Backend testing (221 tests across 9 modules, 32% coverage)
+- ✅ **REST API for CLI/AI integration** - API keys, scopes, rate limiting
+- ✅ **Google Calendar OAuth integration** - bi-directional sync
+- ✅ **Pumble webhook integration** - team chat notifications
+- ✅ **API Keys management UI** - generate, view stats, revoke
+- ✅ **Onboarding flow** - welcome modal, onboarding tour
+- ✅ **Mobile-responsive PWA** - installable, offline-ready
+- ✅ **Calendar events with attendance tracking** - required meetings, admin-only marking
+- ✅ **Enhanced biome configuration** - comprehensive linting rules (a11y, security, performance)
+- ✅ **Phase 5 refactoring** - automation & import/export components modularized
 
 ### 🔴 What's Missing (Critical for Launch)
-- ❌ **Onboarding flow** - Users are dropped into empty dashboard
-- ❌ **Mobile-responsive design** - Desktop-only UI
 - ❌ **Public launch** - No users, no community, 0 GitHub stars
 - ❌ **Landing page** - No marketing site
+- ❌ **Production deployment** - Still in development
 
 ### 🟡 What's Missing (Important but not blocking)
 - 🟡 Document version history
-- 🟡 Calendar integration
-- 🟡 Slack/GitHub integrations
+- 🟡 Slack integration
+- 🟡 GitHub integration (Pumble alternative for developers)
 - 🟡 SSO/SAML
 - 🟡 Native mobile apps
-- 🟡 Offline mode
 - 🟡 AI assistant
 
 ---
@@ -85,9 +92,12 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 |--------|----------|------|--------|--------|-----|
 | ✅ | P0 | Loading Skeletons | High | 1 week | DONE |
 | ✅ | P0 | Email Notifications | Critical | 3 weeks | DONE |
-| 🔥 | P0 | **Onboarding Flow** | Critical | 2 weeks | Week 1-2 |
-| 🔥 | P0 | **Mobile-Responsive PWA** | Critical | 4 weeks | Week 3-6 |
-| 🔥 | P0 | **Public Launch** | Critical | 1 week | Week 7 |
+| ✅ | P0 | **Onboarding Flow** | Critical | 2 weeks | DONE |
+| ✅ | P0 | **Mobile-Responsive PWA** | Critical | 4 weeks | DONE |
+| ✅ | P0 | **REST API Integration** | Critical | 2 weeks | DONE |
+| ✅ | P0 | **Google Calendar Integration** | Critical | 2 weeks | DONE |
+| ✅ | P0 | **Pumble Integration** | High | 1 week | DONE |
+| 🔥 | P0 | **Public Launch** | Critical | 1 week | NEXT |
 | ✅ | P1 | Backend Testing | High | 4 weeks | DONE |
 | ✅ | P1 | Quick Wins (6 items) | High | 1 week | DONE |
 
@@ -119,180 +129,14 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 
 ---
 
-## 🔥 Phase 1: Launch & Validate (ACTIVE)
+## 🔥 Phase 1: Launch & Validate (95% COMPLETE)
 
-### 1. Onboarding Flow (P0) - 🚧 NEXT UP
-
-**Impact:** ⭐⭐⭐⭐⭐ Increases activation 3x
-**Effort:** 🟢 Medium (2 weeks)
-**Status:** ❌ Not Started
-**ETA:** Week 1-2
-
-#### Why This Matters
-- Users are dropped into empty dashboard with no guidance
-- Competitors (Linear, Notion) have excellent onboarding
-- Users who complete onboarding are 3x more likely to stick around
-- First 60 seconds determine if users bounce
-
-#### Implementation Plan
-
-**Week 1: Welcome Tour + Sample Project**
-- [ ] **Install Driver.js** (`pnpm add driver.js`)
-- [ ] **Create welcome tour** (`src/components/Onboarding/WelcomeTour.tsx`)
-  - [ ] Step 1: Welcome message
-  - [ ] Step 2: Command palette (⌘K)
-  - [ ] Step 3: "Create Project" button
-  - [ ] Step 4: Dashboard layout
-  - [ ] Step 5: Sidebar navigation
-  - [ ] Step 6: "Create your first project" CTA
-
-- [ ] **Track onboarding progress** (update `convex/schema.ts`)
-  ```typescript
-  users: defineTable({
-    // ...existing
-    onboardingCompleted: v.boolean(),
-    onboardingStep: v.optional(v.number()),
-  })
-  ```
-
-- [ ] **Create sample project generator** (`convex/onboarding.ts`)
-  - [ ] `createSampleProject(userId)` mutation
-  - [ ] Generate "Sample Project" with 10 issues
-  - [ ] 3 bugs, 4 tasks, 2 stories, 1 epic
-  - [ ] 2 labels, 1 active sprint
-  - [ ] 5 sample comments
-
-- [ ] **Show tour on first login**
-  - [ ] Check `onboardingCompleted` flag
-  - [ ] Auto-start for new users
-  - [ ] "Skip tour" option
-  - [ ] "Restart tour" in help menu
-
-**Week 2: Interactive Wizard + Progress Checklist**
-- [ ] **Project creation wizard** (`src/components/Onboarding/ProjectWizard.tsx`)
-  - [ ] Step 1: Project name & key
-  - [ ] Step 2: Board type (Kanban/Scrum)
-  - [ ] Step 3: Workflow states
-  - [ ] Step 4: Create first issue
-  - [ ] Confetti on completion 🎉
-
-- [ ] **Onboarding checklist** (`src/components/Onboarding/Checklist.tsx`)
-  - [ ] Sticky widget (bottom-right)
-  - [ ] Progress bar (e.g., "3/6 complete")
-  - [ ] Tasks: Create project, add member, create issue, complete issue, create document
-  - [ ] Dismiss when all complete
-
-- [ ] **Achievement system** (optional gamification)
-  - [ ] Track in user schema
-  - [ ] Toast notifications for achievements
-
-#### Success Metrics
-- Onboarding completion rate > 60%
-- Time to first project < 2 minutes
-- Activation rate > 40%
-- Day 7 retention increases by 50%
-
-#### Files to Create
-- `src/components/Onboarding/WelcomeTour.tsx`
-- `src/components/Onboarding/ProjectWizard.tsx`
-- `src/components/Onboarding/Checklist.tsx`
-- `convex/onboarding.ts`
-
-#### Files to Modify
-- `convex/schema.ts` - Add onboarding fields
-- `src/App.tsx` - Trigger onboarding
-- `src/components/Dashboard.tsx` - Empty state improvements
-
----
-
-### 2. Mobile-Responsive PWA (P0)
-
-**Impact:** ⭐⭐⭐⭐⭐ Expands addressable market (60% of traffic is mobile)
-**Effort:** 🔴 High (4 weeks)
-**Status:** ❌ Not Started
-**ETA:** Week 3-6
-
-#### Why This Matters
-- Current design is desktop-only
-- 60% of web traffic is mobile
-- Competitors have mobile apps (Canvas, AppFlowy)
-- PWA = offline + push notifications without app store
-
-#### Implementation Plan
-
-**Week 3: Mobile UI Audit + Responsive Redesign**
-- [ ] **Audit mobile experience**
-  - [ ] Test on iPhone (375px)
-  - [ ] Test on Android (360px)
-  - [ ] Test on tablet (768px)
-  - [ ] Document all UX issues
-
-- [ ] **Redesign for mobile:**
-  - [ ] Dashboard (stack cards)
-  - [ ] Kanban (swipe columns, compact cards)
-  - [ ] Issue detail (full screen)
-  - [ ] Navigation (hamburger menu)
-  - [ ] Search (full screen modal)
-  - [ ] Document editor (mobile toolbar)
-
-**Week 4: Touch Optimization**
-- [ ] **Touch interactions:**
-  - [ ] Larger tap targets (44x44px min)
-  - [ ] Swipe to complete issues
-  - [ ] Pull to refresh
-  - [ ] Long press context menus
-  - [ ] Bottom sheet modals
-
-- [ ] **Responsive components:**
-  - [ ] Tab bar → Bottom nav on mobile
-  - [ ] Sidebar → Drawer
-  - [ ] Dropdowns → Full-screen pickers
-  - [ ] Tables → Card layout
-
-**Week 5-6: PWA Setup**
-- [ ] **Install PWA plugin** (`vite-plugin-pwa`)
-- [ ] **Create manifest** (`public/manifest.json`)
-  - [ ] App name, description
-  - [ ] Theme color
-  - [ ] Icons (192x192, 512x512)
-  - [ ] Display: standalone
-
-- [ ] **Service worker:**
-  - [ ] Cache static assets
-  - [ ] Cache API responses (stale-while-revalidate)
-  - [ ] Offline fallback page
-  - [ ] Background sync
-
-- [ ] **Install prompt:**
-  - [ ] Detect if installable
-  - [ ] "Add to Home Screen" banner
-  - [ ] Track install events
-
-- [ ] **Push notifications setup:**
-  - [ ] Request permission
-  - [ ] Subscribe to push service
-  - [ ] Store subscription in Convex
-  - [ ] Send @mentions, assignments via push
-
-#### Success Metrics
-- Mobile load time < 3s on 3G
-- Lighthouse mobile score > 90
-- PWA installable on all devices
-- 30% of users on mobile after launch
-
-#### Dependencies
-- `vite-plugin-pwa`
-- `workbox`
-- `idb` (for offline storage)
-
----
-
-### 3. Public Launch (P0)
+### Public Launch (P0) - 🔥 NEXT UP
 
 **Impact:** ⭐⭐⭐⭐⭐ Everything depends on this
 **Effort:** 🟢 Low (1 week)
 **Status:** ❌ Not Started
-**ETA:** Week 7
+**ETA:** Next Week
 
 #### Why This Matters
 - Currently: 0 users, 0 stars, 0 community
@@ -378,75 +222,28 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 
 ---
 
-### 4. Backend Testing - ✅ COMPLETE
-
-**Status:** ✅ **COMPLETE**
-**Completed:** 2025-01-17
-
-- ✅ 9 out of 28 modules tested (32% coverage)
-- ✅ 221 test cases across rbac, projects, issues, documents, sprints, analytics, notifications, automationRules, webhooks
-- ✅ Test infrastructure with `convex-test` v0.0.38
-- ✅ Separate Vitest config for backend
-- ✅ Test utilities for common operations
-
-**How to run:**
-```bash
-# Terminal 1: Start Convex
-npx convex dev
-
-# Terminal 2: Run tests
-pnpm run test:convex
-```
-
----
-
-### 5. Quick Wins - ✅ COMPLETE
-
-**Status:** ✅ **100% COMPLETE** (6/6 items done)
-**Completed:** 2025-11-17
-
-1. ✅ Empty State CTAs
-2. ✅ Webhook Logs/History UI
-3. ✅ Export to CSV
-4. ✅ Keyboard Navigation
-5. ✅ Undo/Redo for Boards
-6. ✅ Attachment Upload UI
-
----
-
-### 6. Email Notifications - ✅ COMPLETE
-
-**Status:** ✅ **100% COMPLETE**
-**Completed:** 2025-01-17
-
-- ✅ Provider-agnostic architecture (Resend default, SendPulse stub)
-- ✅ @mention, assignment, comment notifications
-- ✅ Daily/weekly digest emails with cron jobs
-- ✅ One-click unsubscribe with tokens
-- ✅ Beautiful React Email templates
-- ✅ User preferences UI
-- ✅ Non-blocking email sending
-- ✅ Unsubscribe links in all templates
-
----
-
 ## 🚀 Phase 2: Grow & Differentiate (Months 4-6)
 
 **Goal:** 1,000 GitHub stars, 100 active users, 10 contributors
 
-### 1. Calendar Integration (P0)
+### 1. Calendar Integration (P0) - 🟡 PARTIALLY COMPLETE
 
 **Impact:** ⭐⭐⭐⭐⭐ Cal.com proves demand
-**Effort:** 🟢 Medium (2 weeks)
-**Status:** Not Started
+**Effort:** 🟢 Medium (2 weeks total, 1 week remaining)
+**Status:** 50% Complete (Google done, Outlook pending)
 
-- [ ] Google Calendar API integration
+**Completed:**
+- ✅ Google Calendar API integration (OAuth + bi-directional sync)
+- ✅ Two-way sync (calendar → Cascade, Cascade → calendar)
+- ✅ Auto-refresh expired tokens
+
+**Remaining:**
 - [ ] Outlook Calendar API integration
 - [ ] Sync issue due dates to calendar
 - [ ] Sync sprint dates to calendar
-- [ ] Two-way sync (calendar → issue updates)
 - [ ] Create calendar events from issues
 - [ ] Calendar view in Cascade UI
+- [ ] Recurring event support
 
 **Why:** Cal.com's success (36k stars) shows calendar integration is critical
 

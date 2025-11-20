@@ -21,7 +21,7 @@ async function checkPermissions(
   }
 
   // Check if user can access this document
-  if (!("isPublic" in document) || !("createdBy" in document)) {
+  if (!("isPublic" in document && "createdBy" in document)) {
     throw new Error("Invalid document");
   }
 
@@ -42,7 +42,7 @@ async function checkWritePermissions(ctx: GenericMutationCtx<DataModel>, documen
   }
 
   // Check if user can write to this document
-  if (!("isPublic" in document) || !("createdBy" in document)) {
+  if (!("isPublic" in document && "createdBy" in document)) {
     throw new Error("Invalid document");
   }
 
@@ -56,13 +56,55 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
   prosemirrorSync.syncApi<DataModel>({
     checkRead: checkPermissions,
     checkWrite: checkWritePermissions,
-    onSnapshot: async (ctx, id, _snapshot, _version) => {
+    onSnapshot: async (ctx, id, snapshot, version) => {
       // Update the document's updatedAt timestamp when content changes
       const document = await ctx.db.get(id as Id<"documents">);
-      if (document) {
+      const userId = await getAuthUserId(ctx);
+
+      if (document && userId) {
+        const now = Date.now();
+
         await ctx.db.patch(id as Id<"documents">, {
-          updatedAt: Date.now(),
+          updatedAt: now,
         });
+
+        // Save version history (throttle: only save if >1 minute since last version)
+        const lastVersion = await ctx.db
+          .query("documentVersions")
+          .withIndex("by_document_created", (q) => q.eq("documentId", id as Id<"documents">))
+          .order("desc")
+          .first();
+
+        // Save version if:
+        // 1. No previous version exists, OR
+        // 2. More than 1 minute has passed since last version
+        const shouldSaveVersion = !lastVersion || now - lastVersion.createdAt > 60 * 1000; // 1 minute
+
+        if (shouldSaveVersion) {
+          await ctx.db.insert("documentVersions", {
+            documentId: id as Id<"documents">,
+            version,
+            snapshot,
+            title: document.title,
+            createdBy: userId,
+            createdAt: now,
+          });
+
+          // Keep only last 50 versions per document (optional cleanup)
+          const versions = await ctx.db
+            .query("documentVersions")
+            .withIndex("by_document_created", (q) => q.eq("documentId", id as Id<"documents">))
+            .order("desc")
+            .collect();
+
+          if (versions.length > 50) {
+            // Delete oldest versions beyond 50
+            const toDelete = versions.slice(50);
+            for (const v of toDelete) {
+              await ctx.db.delete(v._id);
+            }
+          }
+        }
       }
     },
   });

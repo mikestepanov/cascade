@@ -1,8 +1,10 @@
 import { useQuery } from "convex/react";
-import { useState } from "react";
-import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { useEffect, useState } from "react";
+import { getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { FilterCheckboxGroup } from "./AdvancedSearchModal/FilterCheckboxGroup";
+import { SearchResultsList } from "./AdvancedSearchModal/SearchResultsList";
 import { Button } from "./ui/Button";
 import { InputField } from "./ui/InputField";
 import { Modal } from "./ui/Modal";
@@ -18,18 +20,32 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
   const [selectedType, setSelectedType] = useState<string[]>([]);
   const [selectedPriority, setSelectedPriority] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [offset, setOffset] = useState(0);
+  const LIMIT = 50;
 
-  const searchResults = useQuery(
+  // Reset offset when query or filters change
+  useEffect(() => {
+    setOffset(0);
+  }, []);
+
+  // Use server-side filtering
+  const searchResult = useQuery(
     api.issues.search,
-    searchQuery.length >= 2 ? { query: searchQuery, limit: 50 } : "skip",
+    searchQuery.length >= 2
+      ? {
+          query: searchQuery,
+          limit: LIMIT,
+          offset,
+          type: selectedType.length > 0 ? selectedType : undefined,
+          priority: selectedPriority.length > 0 ? selectedPriority : undefined,
+          status: selectedStatus.length > 0 ? selectedStatus : undefined,
+        }
+      : "skip",
   );
 
-  const filteredResults = searchResults?.filter((issue) => {
-    if (selectedType.length > 0 && !selectedType.includes(issue.type)) return false;
-    if (selectedPriority.length > 0 && !selectedPriority.includes(issue.priority)) return false;
-    if (selectedStatus.length > 0 && !selectedStatus.includes(issue.status)) return false;
-    return true;
-  });
+  const results = searchResult?.results ?? [];
+  const total = searchResult?.total ?? 0;
+  const hasMore = searchResult?.hasMore ?? false;
 
   const handleSelectIssue = (issueId: Id<"issues">) => {
     onSelectIssue(issueId);
@@ -38,6 +54,11 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
     setSelectedType([]);
     setSelectedPriority([]);
     setSelectedStatus([]);
+    setOffset(0);
+  };
+
+  const handleLoadMore = () => {
+    setOffset(offset + LIMIT);
   };
 
   const toggleFilter = (value: string, array: string[], setter: (arr: string[]) => void) => {
@@ -67,74 +88,39 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Type Filter */}
-          <div>
-            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Type
-            </div>
-            <div className="space-y-2">
-              {["task", "bug", "story", "epic"].map((type) => (
-                <label key={type} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedType.includes(type)}
-                    onChange={() => toggleFilter(type, selectedType, setSelectedType)}
-                    className="rounded"
-                  />
-                  <span className="text-sm capitalize">
-                    {getTypeIcon(type)} {type}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <FilterCheckboxGroup
+            label="Type"
+            options={["task", "bug", "story", "epic"]}
+            selectedValues={selectedType}
+            onToggle={(type) => toggleFilter(type, selectedType, setSelectedType)}
+            renderLabel={(type) => (
+              <>
+                {getTypeIcon(type)} {type}
+              </>
+            )}
+          />
 
-          {/* Priority Filter */}
-          <div>
-            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Priority
-            </div>
-            <div className="space-y-2">
-              {["highest", "high", "medium", "low", "lowest"].map((priority) => (
-                <label key={priority} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedPriority.includes(priority)}
-                    onChange={() => toggleFilter(priority, selectedPriority, setSelectedPriority)}
-                    className="rounded"
-                  />
-                  <span className="text-sm capitalize">{priority}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <FilterCheckboxGroup
+            label="Priority"
+            options={["highest", "high", "medium", "low", "lowest"]}
+            selectedValues={selectedPriority}
+            onToggle={(priority) => toggleFilter(priority, selectedPriority, setSelectedPriority)}
+          />
 
-          {/* Status Filter */}
-          <div>
-            <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Status
-            </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
-              {["todo", "in progress", "done", "blocked"].map((status) => (
-                <label key={status} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedStatus.includes(status)}
-                    onChange={() => toggleFilter(status, selectedStatus, setSelectedStatus)}
-                    className="rounded"
-                  />
-                  <span className="text-sm capitalize">{status}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          <FilterCheckboxGroup
+            label="Status"
+            options={["todo", "in progress", "done", "blocked"]}
+            selectedValues={selectedStatus}
+            onToggle={(status) => toggleFilter(status, selectedStatus, setSelectedStatus)}
+            maxHeight="max-h-40 overflow-y-auto"
+          />
         </div>
 
         {/* Results */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Results {filteredResults && `(${filteredResults.length})`}
+              Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
             </h3>
             {(selectedType.length > 0 ||
               selectedPriority.length > 0 ||
@@ -153,60 +139,15 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
             )}
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg max-h-96 overflow-y-auto">
-            {searchQuery.length < 2 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <svg
-                  aria-hidden="true"
-                  className="w-16 h-16 mx-auto mb-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <p>Start typing to search issues</p>
-              </div>
-            ) : !filteredResults || filteredResults.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p>No issues found matching your criteria</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredResults.map((issue) => (
-                  <button
-                    type="button"
-                    key={issue._id}
-                    onClick={() => handleSelectIssue(issue._id)}
-                    className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl flex-shrink-0">{getTypeIcon(issue.type)}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
-                            {issue.key}
-                          </span>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority, "bg")}`}
-                          >
-                            {issue.priority}
-                          </span>
-                        </div>
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {issue.title}
-                        </h4>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <SearchResultsList
+              searchQuery={searchQuery}
+              results={results}
+              total={total}
+              hasMore={hasMore}
+              onSelectIssue={handleSelectIssue}
+              onLoadMore={handleLoadMore}
+            />
           </div>
         </div>
 

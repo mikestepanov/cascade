@@ -59,8 +59,8 @@ function AttachmentItem({
   if (!url) {
     return (
       <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
-        <div className="animate-pulse h-8 w-8 bg-gray-200 rounded"></div>
-        <div className="flex-1 animate-pulse h-4 bg-gray-200 rounded"></div>
+        <div className="animate-pulse h-8 w-8 bg-gray-200 rounded" />
+        <div className="flex-1 animate-pulse h-4 bg-gray-200 rounded" />
       </div>
     );
   }

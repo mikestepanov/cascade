@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { InputField } from "./ui/InputField";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Modal } from "./ui/Modal";
 
 interface UserProfileProps {
@@ -46,10 +47,10 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
         name: name || undefined,
         email: email || undefined,
       });
-      toast.success("Profile updated");
+      showSuccess("Profile updated");
       setIsEditing(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update profile");
+      showError(error, "Failed to update profile");
     }
   };
 
@@ -57,7 +58,7 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="User Profile">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <LoadingSpinner size="lg" />
         </div>
       </Modal>
     );

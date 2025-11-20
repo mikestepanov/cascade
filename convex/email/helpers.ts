@@ -38,7 +38,7 @@ export async function sendEmailNotification(
 
   // Get user email
   const user = await ctx.db.get(userId);
-  if (!user || !("email" in user) || !user.email) {
+  if (!(user && "email" in user && user.email)) {
     return; // User has no email address
   }
 

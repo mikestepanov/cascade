@@ -1,6 +1,6 @@
+import type { BlockNoteEditor } from "@blocknote/core";
 import JSZip from "jszip";
 import { toast } from "sonner";
-import type { BlockNoteEditor } from "@blocknote/core";
 import { exportToMarkdown } from "./markdown";
 
 /**
@@ -74,7 +74,6 @@ export async function exportDocumentsAsZip(
       } else if (doc.editor) {
         markdown = await exportToMarkdown(doc.editor);
       } else {
-        console.warn(`Skipping document ${doc.title} - no content available`);
         continue;
       }
 
@@ -89,7 +88,7 @@ export async function exportDocumentsAsZip(
       });
 
       // Clean filename
-      const filename = doc.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".md";
+      const filename = `${doc.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md`;
       folder.file(filename, withMetadata);
     }
 
@@ -106,7 +105,6 @@ export async function exportDocumentsAsZip(
 
     toast.success(`Exported ${documents.length} documents as ${projectName}-docs.zip`);
   } catch (error) {
-    console.error("Failed to export documents:", error);
     toast.error("Failed to create export archive");
     throw error;
   }

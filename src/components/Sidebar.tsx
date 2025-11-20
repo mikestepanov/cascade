@@ -1,11 +1,13 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { DocumentTemplatesManager } from "./DocumentTemplatesManager";
 import { EmptyState } from "./ui/EmptyState";
+import { Checkbox, Input } from "./ui/form";
+import { Modal } from "./ui/Modal";
 import { SkeletonList } from "./ui/Skeleton";
-import { Input, Checkbox } from "./ui/form";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
@@ -15,12 +17,17 @@ interface SidebarProps {
 export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState("");
   const [newDocIsPublic, setNewDocIsPublic] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"documentTemplates"> | null>(
+    null,
+  );
 
   const documents = useQuery(api.documents.list);
   const searchResults = useQuery(api.documents.search, { query: searchQuery });
   const createDocument = useMutation(api.documents.create);
+  const createFromTemplate = useMutation(api.documentTemplates.createDocumentFromTemplate);
   const deleteDocument = useMutation(api.documents.deleteDocument);
 
   const displayedDocuments = searchQuery.trim() ? searchResults : documents;
@@ -38,9 +45,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       setNewDocIsPublic(false);
       setShowCreateForm(false);
       onSelectDocument(docId);
-      toast.success("Document created successfully");
-    } catch {
-      toast.error("Failed to create document");
+      showSuccess("Document created successfully");
+    } catch (error) {
+      showError(error, "Failed to create document");
     }
   };
 
@@ -52,14 +59,41 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       if (selectedDocumentId === docId) {
         onSelectDocument(null);
       }
-      toast.success("Document deleted successfully");
-    } catch {
-      toast.error("Failed to delete document");
+      showSuccess("Document deleted successfully");
+    } catch (error) {
+      showError(error, "Failed to delete document");
+    }
+  };
+
+  const handleSelectTemplate = (templateId: Id<"documentTemplates">) => {
+    setSelectedTemplateId(templateId);
+    setShowTemplateModal(false);
+    setShowCreateForm(true);
+  };
+
+  const handleCreateFromTemplate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!(newDocTitle.trim() && selectedTemplateId)) return;
+
+    try {
+      const result = await createFromTemplate({
+        templateId: selectedTemplateId,
+        title: newDocTitle.trim(),
+        isPublic: newDocIsPublic,
+      });
+      setNewDocTitle("");
+      setNewDocIsPublic(false);
+      setShowCreateForm(false);
+      setSelectedTemplateId(null);
+      onSelectDocument(result.documentId);
+      showSuccess("Document created from template");
+    } catch (error) {
+      showError(error, "Failed to create document from template");
     }
   };
 
   return (
-    <div className="w-full sm:w-96 lg:w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-full sm:w-72 lg:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h2>
@@ -75,27 +109,52 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
           />
         </div>
 
-        {/* Create Document Button */}
-        <button
-          type="button"
-          onClick={() => setShowCreateForm(true)}
-          className="w-full px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-          aria-label="Create new document"
-        >
-          + New Document
-        </button>
+        {/* Create Document Buttons */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedTemplateId(null);
+              setShowCreateForm(true);
+            }}
+            className="flex-1 px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+            aria-label="Create new document"
+          >
+            + New
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowTemplateModal(true)}
+            className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Create from template"
+            title="Create from template"
+          >
+            📄
+          </button>
+        </div>
       </div>
 
       {/* Create Document Form */}
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-          <form onSubmit={(e) => void handleCreateDocument(e)} className="space-y-3">
+          <form
+            onSubmit={(e) =>
+              void (selectedTemplateId ? handleCreateFromTemplate(e) : handleCreateDocument(e))
+            }
+            className="space-y-3"
+          >
+            {selectedTemplateId && (
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded text-xs text-blue-700 dark:text-blue-300">
+                Creating from template
+              </div>
+            )}
             <Input
               type="text"
               placeholder="Document title..."
               value={newDocTitle}
               onChange={(e) => setNewDocTitle(e.target.value)}
               aria-label="Document title"
+              autoFocus
             />
             <Checkbox
               label="Make public"
@@ -115,6 +174,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                   setShowCreateForm(false);
                   setNewDocTitle("");
                   setNewDocIsPublic(false);
+                  setSelectedTemplateId(null);
                 }}
                 className="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm hover:bg-gray-400 dark:hover:bg-gray-600"
               >
@@ -124,6 +184,19 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
           </form>
         </div>
       )}
+
+      {/* Template Selection Modal */}
+      <Modal
+        isOpen={showTemplateModal}
+        onClose={() => setShowTemplateModal(false)}
+        title="Choose a Template"
+        maxWidth="4xl"
+        fullScreenOnMobile={true}
+      >
+        <div className="p-4">
+          <DocumentTemplatesManager onSelectTemplate={handleSelectTemplate} />
+        </div>
+      </Modal>
 
       {/* Documents List */}
       <div className="flex-1 overflow-y-auto">
@@ -200,7 +273,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
+                      className="sm:opacity-0 sm:group-hover:opacity-100 p-2.5 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
                       aria-label="Delete document"
                     >
                       <svg

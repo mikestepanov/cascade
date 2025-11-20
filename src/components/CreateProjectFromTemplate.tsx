@@ -42,7 +42,7 @@ export function CreateProjectFromTemplate({
   };
 
   const handleCreate = async () => {
-    if (!selectedTemplateId || !projectName.trim() || !projectKey.trim()) {
+    if (!(selectedTemplateId && projectName.trim() && projectKey.trim())) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -106,7 +106,7 @@ export function CreateProjectFromTemplate({
 
           {!templates ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100" />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -268,7 +268,7 @@ export function CreateProjectFromTemplate({
               <Button onClick={handleClose} variant="secondary">
                 Cancel
               </Button>
-              <Button onClick={handleCreate} disabled={!projectName.trim() || !projectKey.trim()}>
+              <Button onClick={handleCreate} disabled={!(projectName.trim() && projectKey.trim())}>
                 Create Project
               </Button>
             </div>

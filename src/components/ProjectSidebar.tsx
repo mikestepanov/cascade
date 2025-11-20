@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { Input, Select, Textarea, Checkbox } from "./ui/form";
+import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
@@ -24,7 +24,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProjectName.trim() || !newProjectKey.trim()) return;
+    if (!(newProjectName.trim() && newProjectKey.trim())) return;
 
     try {
       const projectId = await createProject({
@@ -42,14 +42,14 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       setNewProjectBoardType("kanban");
       setShowCreateForm(false);
       onSelectProject(projectId);
-      toast.success("Project created successfully");
+      showSuccess("Project created successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create project");
+      showError(error, "Failed to create project");
     }
   };
 
   return (
-    <div className="w-full sm:w-96 lg:w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-full sm:w-72 lg:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Projects</h2>

@@ -63,8 +63,8 @@ export const IssueCard = memo(function IssueCard({
           handleClick(e);
         }
       }}
-      className={`bg-white p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
-        isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20" : "border-gray-200"
+      className={`bg-white dark:bg-gray-800 p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
+        isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20 dark:border-blue-600" : "border-gray-200 dark:border-gray-700"
       }`}
     >
       {/* Header */}
@@ -81,7 +81,7 @@ export const IssueCard = memo(function IssueCard({
             />
           )}
           <span className="text-sm">{getTypeIcon(issue.type)}</span>
-          <span className="text-xs text-gray-500 font-mono">{issue.key}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">{issue.key}</span>
         </div>
         <div className={`text-xs ${getPriorityColor(issue.priority)}`}>
           {getPriorityIcon(issue.priority)}
@@ -89,7 +89,7 @@ export const IssueCard = memo(function IssueCard({
       </div>
 
       {/* Title */}
-      <h4 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2">{issue.title}</h4>
+      <h4 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">{issue.title}</h4>
 
       {/* Labels */}
       {issue.labels.length > 0 && (
@@ -97,19 +97,19 @@ export const IssueCard = memo(function IssueCard({
           {issue.labels.slice(0, 3).map((label) => (
             <span
               key={label}
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
+              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             >
               {label}
             </span>
           ))}
           {issue.labels.length > 3 && (
-            <span className="text-xs text-gray-500">+{issue.labels.length - 3}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">+{issue.labels.length - 3}</span>
           )}
         </div>
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
           {issue.assignee && (
             <div className="flex items-center space-x-1">
@@ -120,7 +120,7 @@ export const IssueCard = memo(function IssueCard({
                   className="w-5 h-5 rounded-full"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600">
+                <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">
                   {issue.assignee.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -128,7 +128,7 @@ export const IssueCard = memo(function IssueCard({
           )}
         </div>
         {issue.storyPoints !== undefined && (
-          <div className="flex items-center space-x-1 text-xs text-gray-600">
+          <div className="flex items-center space-x-1 text-xs text-gray-600 dark:text-gray-400">
             <span className="font-medium">{issue.storyPoints}</span>
             <span>pts</span>
           </div>

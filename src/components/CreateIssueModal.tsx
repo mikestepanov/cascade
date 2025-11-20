@@ -37,7 +37,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
 
   // Apply template when selected
   useEffect(() => {
-    if (!selectedTemplate || !templates) return;
+    if (!(selectedTemplate && templates)) return;
 
     const template = templates.find((t) => t._id === selectedTemplate);
     if (!template) return;
@@ -125,7 +125,6 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       setShowAISuggestions(true);
       showSuccess("AI suggestions applied!");
     } catch (error) {
-      console.error("AI suggestion error:", error);
       showError(error, "Failed to generate AI suggestions. Make sure AI provider is configured.");
     } finally {
       setIsGeneratingAI(false);
@@ -142,7 +141,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       maxWidth="2xl"
       fullScreenOnMobile={true}
     >
-      <form onSubmit={handleSubmit} className="space-y-4 p-6">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
         {/* Template Selector */}
         {templates && templates.length > 0 && (
           <SelectField

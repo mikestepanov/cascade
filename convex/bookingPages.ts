@@ -7,6 +7,47 @@ import { mutation, query } from "./_generated/server";
  * Create shareable booking links for meetings
  */
 
+// Helper: Build booking page update object from optional fields
+function buildBookingPageUpdates(args: {
+  title?: string;
+  description?: string;
+  duration?: number;
+  bufferTimeBefore?: number;
+  bufferTimeAfter?: number;
+  minimumNotice?: number;
+  maxBookingsPerDay?: number;
+  location?: string;
+  locationDetails?: string;
+  questions?: Array<{
+    label: string;
+    type: "text" | "email" | "phone";
+    required: boolean;
+  }>;
+  isActive?: boolean;
+  requiresConfirmation?: boolean;
+  color?: string;
+}): Record<string, unknown> {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  if (args.title) updates.title = args.title;
+  if (args.description !== undefined) updates.description = args.description;
+  if (args.duration) updates.duration = args.duration;
+  if (args.bufferTimeBefore !== undefined) updates.bufferTimeBefore = args.bufferTimeBefore;
+  if (args.bufferTimeAfter !== undefined) updates.bufferTimeAfter = args.bufferTimeAfter;
+  if (args.minimumNotice !== undefined) updates.minimumNotice = args.minimumNotice;
+  if (args.maxBookingsPerDay !== undefined) updates.maxBookingsPerDay = args.maxBookingsPerDay;
+  if (args.location) updates.location = args.location;
+  if (args.locationDetails !== undefined) updates.locationDetails = args.locationDetails;
+  if (args.questions !== undefined) updates.questions = args.questions;
+  if (args.isActive !== undefined) updates.isActive = args.isActive;
+  if (args.requiresConfirmation !== undefined) {
+    updates.requiresConfirmation = args.requiresConfirmation;
+  }
+  if (args.color) updates.color = args.color;
+
+  return updates;
+}
+
 // Create a booking page
 export const create = mutation({
   args: {
@@ -75,7 +116,7 @@ export const create = mutation({
       locationDetails: args.locationDetails,
       questions: args.questions,
       isActive: true,
-      requiresConfirmation: args.requiresConfirmation || false,
+      requiresConfirmation: args.requiresConfirmation ?? false,
       color: args.color || "#3B82F6",
       createdAt: now,
       updatedAt: now,
@@ -92,7 +133,7 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .first();
 
-    if (!page || !page.isActive) return null;
+    if (!page?.isActive) return null;
 
     // Get host info
     const host = await ctx.db.get(page.userId);
@@ -163,28 +204,9 @@ export const update = mutation({
     if (!page) throw new Error("Booking page not found");
     if (page.userId !== userId) throw new Error("Not authorized");
 
-    await ctx.db.patch(args.id, {
-      ...(args.title && { title: args.title }),
-      ...(args.description !== undefined && { description: args.description }),
-      ...(args.duration && { duration: args.duration }),
-      ...(args.bufferTimeBefore !== undefined && {
-        bufferTimeBefore: args.bufferTimeBefore,
-      }),
-      ...(args.bufferTimeAfter !== undefined && { bufferTimeAfter: args.bufferTimeAfter }),
-      ...(args.minimumNotice !== undefined && { minimumNotice: args.minimumNotice }),
-      ...(args.maxBookingsPerDay !== undefined && {
-        maxBookingsPerDay: args.maxBookingsPerDay,
-      }),
-      ...(args.location && { location: args.location }),
-      ...(args.locationDetails !== undefined && { locationDetails: args.locationDetails }),
-      ...(args.questions !== undefined && { questions: args.questions }),
-      ...(args.isActive !== undefined && { isActive: args.isActive }),
-      ...(args.requiresConfirmation !== undefined && {
-        requiresConfirmation: args.requiresConfirmation,
-      }),
-      ...(args.color && { color: args.color }),
-      updatedAt: Date.now(),
-    });
+    // Build update object using helper
+    const updates = buildBookingPageUpdates(args);
+    await ctx.db.patch(args.id, updates);
   },
 });
 

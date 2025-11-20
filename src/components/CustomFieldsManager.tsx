@@ -5,10 +5,11 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
+import { InputField } from "./ui/FormField";
 import { Checkbox } from "./ui/form/Checkbox";
 import { Input } from "./ui/form/Input";
+import { Select } from "./ui/form/Select";
 import { Textarea } from "./ui/form/Textarea";
-import { InputField } from "./ui/FormField";
 import { SkeletonList } from "./ui/Skeleton";
 
 interface CustomFieldsManagerProps {
@@ -65,7 +66,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
   };
 
   const handleSave = async () => {
-    if (!name.trim() || (!editingId && !fieldKey.trim())) {
+    if (!(name.trim() && (editingId || fieldKey.trim()))) {
       showError("Please fill in all required fields");
       return;
     }
@@ -179,25 +180,20 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
               />
             )}
 
-            <div>
-              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Field Type {!editingId && <span className="text-red-500">*</span>}
-              </div>
-              <select
-                value={fieldType}
-                onChange={(e) => setFieldType(e.target.value as FieldType)}
-                disabled={!!editingId}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100 disabled:opacity-50"
-              >
-                <option value="text">Text</option>
-                <option value="number">Number</option>
-                <option value="select">Select (single)</option>
-                <option value="multiselect">Multi-Select</option>
-                <option value="date">Date</option>
-                <option value="checkbox">Checkbox</option>
-                <option value="url">URL</option>
-              </select>
-            </div>
+            <Select
+              label={<>Field Type {!editingId && <span className="text-red-500">*</span>}</>}
+              value={fieldType}
+              onChange={(e) => setFieldType(e.target.value as FieldType)}
+              disabled={!!editingId}
+            >
+              <option value="text">Text</option>
+              <option value="number">Number</option>
+              <option value="select">Select (single)</option>
+              <option value="multiselect">Multi-Select</option>
+              <option value="date">Date</option>
+              <option value="checkbox">Checkbox</option>
+              <option value="url">URL</option>
+            </Select>
 
             {(fieldType === "select" || fieldType === "multiselect") && (
               <Input

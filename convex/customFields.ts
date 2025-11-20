@@ -1,7 +1,49 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
+
+// Helper: Validate number field value
+function validateNumberField(value: string): void {
+  if (Number.isNaN(Number(value))) {
+    throw new Error("Value must be a valid number");
+  }
+}
+
+// Helper: Validate URL field value
+function validateUrlField(value: string): void {
+  try {
+    new URL(value);
+  } catch {
+    throw new Error("Value must be a valid URL");
+  }
+}
+
+// Helper: Validate select/multiselect field value
+function validateSelectField(
+  value: string,
+  fieldType: "select" | "multiselect",
+  options: string[],
+): void {
+  const values = fieldType === "multiselect" ? value.split(",") : [value];
+  for (const val of values) {
+    if (!options.includes(val.trim())) {
+      throw new Error(`Invalid option: ${val}`);
+    }
+  }
+}
+
+// Helper: Validate custom field value based on type
+function validateCustomFieldValue(field: Doc<"customFields">, value: string): void {
+  if (field.fieldType === "number") {
+    validateNumberField(value);
+  } else if (field.fieldType === "url") {
+    validateUrlField(value);
+  } else if ((field.fieldType === "select" || field.fieldType === "multiselect") && field.options) {
+    validateSelectField(value, field.fieldType, field.options);
+  }
+}
 
 // Get all custom fields for a project
 export const list = query({
@@ -206,26 +248,7 @@ export const setValue = mutation({
     }
 
     // Validate value based on field type
-    if (field.fieldType === "number" && Number.isNaN(Number(args.value))) {
-      throw new Error("Value must be a valid number");
-    }
-
-    if (field.fieldType === "url") {
-      try {
-        new URL(args.value);
-      } catch {
-        throw new Error("Value must be a valid URL");
-      }
-    }
-
-    if ((field.fieldType === "select" || field.fieldType === "multiselect") && field.options) {
-      const values = field.fieldType === "multiselect" ? args.value.split(",") : [args.value];
-      for (const val of values) {
-        if (!field.options.includes(val.trim())) {
-          throw new Error(`Invalid option: ${val}`);
-        }
-      }
-    }
+    validateCustomFieldValue(field, args.value);
 
     // Check if value already exists
     const existing = await ctx.db

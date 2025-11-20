@@ -18,6 +18,10 @@ This document provides comprehensive guidance for AI assistants working on the C
 - Analytics dashboard with charts and metrics
 - Role-based access control (RBAC)
 - Team velocity tracking and burndown charts
+- Calendar events with attendance tracking (required meetings)
+- REST API with API key management
+- Google Calendar integration (OAuth, bi-directional sync)
+- Pumble webhook integration (team chat notifications)
 
 ## Tech Stack
 
@@ -40,9 +44,12 @@ This document provides comprehensive guidance for AI assistants working on the C
 
 ### Development Tools
 - **Package Manager:** pnpm (preferred) or npm
-- **Linting:** ESLint 9 with TypeScript support
+- **Linting & Formatting:** Biome 2.3.5 (replaces ESLint + Prettier)
+  - Comprehensive linting rules (a11y, security, performance, complexity)
+  - Fast formatting with built-in rules
+  - Import organization
+  - Test file overrides (relaxed rules for tests)
 - **Type Checking:** TypeScript 5.7
-- **Formatting:** Prettier 3.5
 - **Version Control:** Git
 
 ## Codebase Structure
@@ -136,6 +143,18 @@ cascade/
 - Relationships between issues
 - Types: blocks, relates, duplicates
 - Indexes: by_from_issue, by_to_issue
+
+**calendarEvents**
+- Calendar events and meetings
+- Fields: title, description, startTime, endTime, eventType (meeting/deadline/other), organizerId, attendeeIds[], isRequired
+- Indexes: by_organizer, by_start_time, by_required
+- Feature: Attendance tracking for required meetings
+
+**meetingAttendance**
+- Attendance records for required meetings
+- Fields: eventId, userId, status (present/tardy/absent), markedBy, markedAt, notes
+- Indexes: by_event, by_user, by_event_user
+- Admin-only: Only event organizers can mark attendance
 
 ## Key Conventions
 
@@ -302,9 +321,12 @@ pnpm run dev:frontend # Start only Vite dev server
 pnpm run dev:backend  # Start only Convex dev server
 pnpm run build        # Build for production
 pnpm run preview      # Preview production build
-pnpm run lint         # Run ESLint
+pnpm run lint         # Run Biome linting (with auto-fix)
+pnpm run lint:check   # Run Biome linting (check only)
+pnpm run format       # Run Biome formatting (with auto-fix)
+pnpm run format:check # Run Biome formatting (check only)
 pnpm run typecheck    # Run TypeScript type checking
-pnpm run check        # Run both typecheck and lint
+pnpm run check        # Run typecheck, lint check, and all tests
 ```
 
 ### Making Changes
@@ -332,21 +354,35 @@ pnpm run check        # Run both typecheck and lint
 1. **Before Committing:**
 ```bash
 pnpm run typecheck  # Ensure no TypeScript errors
-pnpm run lint       # Check for linting issues
+pnpm run lint       # Run Biome linting and auto-fix issues
 # OR use combined check
-pnpm run check      # Run both
+pnpm run check      # Run typecheck, lint check, and all tests
 ```
 
-2. **ESLint Configuration:**
-   - Uses TypeScript ESLint with recommended rules
-   - React hooks rules enabled
-   - Relaxed `any` rules for easier development
-   - Unused variables warning (ignore with `_` prefix)
+2. **Biome Configuration (`biome.json`):**
+   - Comprehensive linting rules across multiple categories:
+     - **Accessibility (a11y)**: ARIA attributes, keyboard navigation, semantic HTML
+     - **Security**: Dangerous patterns, innerHTML usage, eval prevention
+     - **Performance**: Accumulating spreads, delete operator warnings
+     - **Complexity**: Cognitive complexity, useless code detection
+     - **Correctness**: React hooks, unused variables, type safety
+     - **Style**: Consistent code style, modern JS patterns
+   - **Import Organization**: Automatic import sorting and cleanup
+   - **Formatter**: Consistent code formatting (replaces Prettier)
+   - **Test Overrides**: Relaxed rules for test files (*.test.ts, *.spec.tsx)
+   - **Generated Files**: Disabled linting for `convex/_generated/**`
 
 3. **TypeScript Configuration:**
    - Strict mode enabled
    - Path alias `@/*` → `./src/*`
    - Separate configs for app, node, and convex code
+
+4. **Code Patterns to Follow:**
+   - Use centralized error handling: `showError(error, "Context")` and `showSuccess("Message")`
+   - Use `LoadingSpinner` component instead of custom spinners
+   - Extract complex components into smaller, focused modules
+   - Keep components under 200 lines when possible
+   - Use accessibility attributes (aria-label, role, etc.)
 
 ## Deployment
 

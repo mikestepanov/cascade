@@ -16,6 +16,7 @@
 
 export const modules = {
   analytics: () => import("./analytics"),
+  apiKeys: () => import("./apiKeys"),
   attachments: () => import("./attachments"),
   auth: () => import("./auth"),
   automationRules: () => import("./automationRules"),
@@ -34,7 +35,7 @@ export const modules = {
   savedFilters: () => import("./savedFilters"),
   sprints: () => import("./sprints"),
   templates: () => import("./templates"),
-  timeEntries: () => import("./timeEntries"),
+  timeTracking: () => import("./timeTracking"),
   users: () => import("./users"),
   watchers: () => import("./watchers"),
   webhooks: () => import("./webhooks"),

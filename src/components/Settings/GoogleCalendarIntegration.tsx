@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -25,18 +26,40 @@ export function GoogleCalendarIntegration() {
     setIsDisconnecting(true);
     try {
       await disconnectGoogle();
-      toast.success("Google Calendar disconnected successfully");
-    } catch (_error) {
-      toast.error("Failed to disconnect Google Calendar");
+      showSuccess("Google Calendar disconnected successfully");
+    } catch (error) {
+      showError(error, "Failed to disconnect Google Calendar");
     } finally {
       setIsDisconnecting(false);
     }
   };
 
   const handleConnect = () => {
-    toast.info("Google OAuth not yet implemented. Please set up OAuth in convex/auth.config.ts");
-    // TODO: Implement Google OAuth flow
-    // window.location.href = "/auth/google";
+    // Open OAuth flow in popup window
+    const width = 600;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    const popup = window.open(
+      "/google/auth",
+      "Google Calendar OAuth",
+      `width=${width},height=${height},left=${left},top=${top},popup=yes`,
+    );
+
+    if (!popup) {
+      toast.error("Please allow popups to connect to Google Calendar");
+      return;
+    }
+
+    // Listen for popup close (successful auth will reload the page)
+    const checkPopup = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(checkPopup);
+        // Popup closed, connection may have been established
+        // The popup auto-reloads the opener on success
+      }
+    }, 500);
   };
 
   const handleToggleSync = async () => {
@@ -47,9 +70,9 @@ export function GoogleCalendarIntegration() {
       await updateSyncSettings({
         syncEnabled: !calendarConnection.syncEnabled,
       });
-      toast.success(`Sync ${!calendarConnection.syncEnabled ? "enabled" : "disabled"}`);
-    } catch (_error) {
-      toast.error("Failed to update sync settings");
+      showSuccess(`Sync ${!calendarConnection.syncEnabled ? "enabled" : "disabled"}`);
+    } catch (error) {
+      showError(error, "Failed to update sync settings");
     } finally {
       setIsSaving(false);
     }
@@ -61,9 +84,9 @@ export function GoogleCalendarIntegration() {
       await updateSyncSettings({
         syncDirection: direction,
       });
-      toast.success("Sync direction updated");
-    } catch (_error) {
-      toast.error("Failed to update sync direction");
+      showSuccess("Sync direction updated");
+    } catch (error) {
+      showError(error, "Failed to update sync direction");
     } finally {
       setIsSaving(false);
     }

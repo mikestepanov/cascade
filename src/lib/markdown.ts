@@ -13,8 +13,7 @@ export async function exportToMarkdown(editor: BlockNoteEditor): Promise<string>
   try {
     const blocks = editor.document;
     return await blocksToMarkdown(blocks);
-  } catch (error) {
-    console.error("Failed to export to markdown:", error);
+  } catch (_error) {
     throw new Error("Failed to export document to markdown");
   }
 }
@@ -22,15 +21,11 @@ export async function exportToMarkdown(editor: BlockNoteEditor): Promise<string>
 /**
  * Convert Markdown string to BlockNote blocks
  */
-export async function importFromMarkdown(
-  editor: BlockNoteEditor,
-  markdown: string,
-): Promise<void> {
+export async function importFromMarkdown(editor: BlockNoteEditor, markdown: string): Promise<void> {
   try {
     const blocks = await markdownToBlocks(editor, markdown);
     editor.replaceBlocks(editor.document, blocks);
-  } catch (error) {
-    console.error("Failed to import from markdown:", error);
+  } catch (_error) {
     throw new Error("Failed to import markdown to document");
   }
 }
@@ -102,10 +97,11 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
 
   // Convert based on block type
   switch (block.type) {
-    case "heading":
+    case "heading": {
       const headingLevel = (block.props as any)?.level || 1;
       result = `${"#".repeat(headingLevel)} ${textContent}`;
       break;
+    }
 
     case "paragraph":
       result = textContent;
@@ -119,25 +115,28 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
       result = `${indent}1. ${textContent}`;
       break;
 
-    case "checkListItem":
+    case "checkListItem": {
       const checked = (block.props as any)?.checked ? "x" : " ";
       result = `${indent}- [${checked}] ${textContent}`;
       break;
+    }
 
-    case "codeBlock":
+    case "codeBlock": {
       const language = (block.props as any)?.language || "";
       result = `\`\`\`${language}\n${textContent}\n\`\`\``;
       break;
+    }
 
     case "table":
       result = "| Table | Content |\n|-------|---------|";
       break;
 
-    case "image":
+    case "image": {
       const imageUrl = (block.props as any)?.url || "";
       const imageCaption = (block.props as any)?.caption || "";
       result = `![${imageCaption}](${imageUrl})`;
       break;
+    }
 
     default:
       result = textContent;
@@ -175,14 +174,17 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
   const content = stripFrontmatter(markdown);
 
   // Try to use BlockNote's tryParseMarkdownToBlocks if available
-  if ("tryParseMarkdownToBlocks" in editor && typeof editor.tryParseMarkdownToBlocks === "function") {
+  if (
+    "tryParseMarkdownToBlocks" in editor &&
+    typeof editor.tryParseMarkdownToBlocks === "function"
+  ) {
     try {
       const blocks = await (editor as any).tryParseMarkdownToBlocks(content);
       if (blocks && Array.isArray(blocks)) {
         return blocks;
       }
-    } catch (error) {
-      console.warn("BlockNote markdown parsing failed, using fallback:", error);
+    } catch (_error) {
+      // Fall through to simple markdown parser
     }
   }
 
@@ -366,7 +368,7 @@ export async function readMarkdownForPreview(): Promise<{
       try {
         const markdown = await readMarkdownFile(file);
         resolve({ markdown, filename: file.name });
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to read markdown file");
         resolve(null);
       }

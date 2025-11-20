@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -48,10 +48,10 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
           size: file.size,
         });
 
-        toast.success(`Uploaded ${file.name}`);
+        showSuccess(`Uploaded ${file.name}`);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to upload file");
+      showError(error, "Failed to upload file");
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -80,9 +80,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
 
     try {
       await removeAttachment({ issueId, storageId: deleteConfirm });
-      toast.success("Attachment removed");
+      showSuccess("Attachment removed");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to remove attachment");
+      showError(error, "Failed to remove attachment");
     } finally {
       setDeleteConfirm(null);
     }

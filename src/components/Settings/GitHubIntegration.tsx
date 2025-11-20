@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Github } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -28,9 +29,9 @@ export function GitHubIntegration() {
     setIsDisconnecting(true);
     try {
       await disconnectGitHub();
-      toast.success("GitHub disconnected successfully");
-    } catch (_error) {
-      toast.error("Failed to disconnect GitHub");
+      showSuccess("GitHub disconnected successfully");
+    } catch (error) {
+      showError(error, "Failed to disconnect GitHub");
     } finally {
       setIsDisconnecting(false);
     }

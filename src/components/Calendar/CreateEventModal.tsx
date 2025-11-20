@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { Calendar, Clock, Link as LinkIcon, MapPin, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -33,6 +33,7 @@ export function CreateEventModal({
   const [location, setLocation] = useState("");
   const [meetingUrl, setMeetingUrl] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | undefined>(projectId);
+  const [isRequired, setIsRequired] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,12 +63,13 @@ export function CreateEventModal({
         projectId: selectedProjectId,
         issueId,
         attendeeIds: [],
+        isRequired: eventType === "meeting" ? isRequired : undefined,
       });
 
-      toast.success("Event created successfully");
+      showSuccess("Event created successfully");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create event");
+    } catch (error) {
+      showError(error, "Failed to create event");
     } finally {
       setIsSubmitting(false);
     }
@@ -81,6 +83,7 @@ export function CreateEventModal({
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Event</h2>
           <button
             onClick={onClose}
+            aria-label="Close create event modal"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <X className="w-5 h-5 text-gray-500" />
@@ -181,6 +184,28 @@ export function CreateEventModal({
               <span className="text-sm text-gray-700 dark:text-gray-300">All day event</span>
             </label>
           </div>
+
+          {/* Required Attendance (only for meetings) */}
+          {eventType === "meeting" && (
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isRequired}
+                  onChange={(e) => setIsRequired(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Required attendance (track who attends)
+                </span>
+              </label>
+              {isRequired && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+                  Admins can mark who attended, was tardy, or missed this meeting
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Description */}
           <div>

@@ -1,4 +1,4 @@
-import { type TextareaHTMLAttributes, forwardRef } from "react";
+import { forwardRef, type TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -44,10 +44,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             "placeholder-gray-500 dark:placeholder-gray-400",
             "focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error
-              ? "border-red-500 dark:border-red-400"
-              : "border-gray-300 dark:border-gray-600",
-            className
+            error ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600",
+            className,
           )}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={
@@ -61,16 +59,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${textareaId}-helper`}
-            className="mt-1 text-xs text-gray-500 dark:text-gray-400"
-          >
+          <p id={`${textareaId}-helper`} className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {helperText}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
 Textarea.displayName = "Textarea";

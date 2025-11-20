@@ -1,10 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { BlockNoteEditor, Block } from "@blocknote/core";
-import {
-  stripFrontmatter,
-  readMarkdownFile,
-  downloadMarkdown,
-} from "./markdown";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { downloadMarkdown, readMarkdownFile, stripFrontmatter } from "./markdown";
 
 describe("markdown utilities", () => {
   describe("stripFrontmatter", () => {

@@ -1,7 +1,62 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { type MutationCtx, mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
+
+// Helper: Validate parent issue and get inherited epic
+async function validateParentIssue(
+  ctx: MutationCtx,
+  parentId: Id<"issues"> | undefined,
+  issueType: string,
+  epicId: Id<"issues"> | undefined,
+) {
+  if (!parentId) {
+    if (issueType === "epic" && parentId) {
+      throw new Error("Epics cannot be sub-tasks");
+    }
+    return epicId;
+  }
+
+  const parentIssue = await ctx.db.get(parentId);
+  if (!parentIssue) {
+    throw new Error("Parent issue not found");
+  }
+
+  // Prevent sub-tasks of sub-tasks (only 1 level deep)
+  if (parentIssue.parentId) {
+    throw new Error("Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+  }
+
+  // Sub-tasks must be of type "subtask"
+  if (issueType !== "subtask") {
+    throw new Error("Issues with a parent must be of type 'subtask'");
+  }
+
+  // Inherit epicId from parent if not explicitly provided
+  return epicId || parentIssue.epicId;
+}
+
+// Helper: Generate issue key
+async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, projectKey: string) {
+  const existingIssues = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+
+  const issueNumber = existingIssues.length + 1;
+  return `${projectKey}-${issueNumber}`;
+}
+
+// Helper: Get max order for status column
+async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">, status: string) {
+  const issuesInStatus = await ctx.db
+    .query("issues")
+    .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", status))
+    .collect();
+
+  return Math.max(...issuesInStatus.map((i) => i.order), -1);
+}
 
 export const create = mutation({
   args: {
@@ -45,63 +100,17 @@ export const create = mutation({
     // Check if user can create issues (requires editor role or higher)
     await assertMinimumRole(ctx, args.projectId, userId, "editor");
 
-    // Validate sub-task constraints
-    let inheritedEpicId = args.epicId;
-    if (args.parentId) {
-      const parentIssue = await ctx.db.get(args.parentId);
-      if (!parentIssue) {
-        throw new Error("Parent issue not found");
-      }
-
-      // Prevent sub-tasks of sub-tasks (only 1 level deep)
-      if (parentIssue.parentId) {
-        throw new Error(
-          "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.",
-        );
-      }
-
-      // Prevent epics from being parents (optional - remove if you want epics to have sub-tasks)
-      // if (parentIssue.type === "epic") {
-      //   throw new Error("Epics cannot have sub-tasks. Use stories/tasks under the epic instead.");
-      // }
-
-      // Inherit epicId from parent if not explicitly provided
-      if (!inheritedEpicId && parentIssue.epicId) {
-        inheritedEpicId = parentIssue.epicId;
-      }
-
-      // Sub-tasks must be of type "subtask"
-      if (args.type !== "subtask") {
-        throw new Error("Issues with a parent must be of type 'subtask'");
-      }
-    }
-
-    // Epics cannot be sub-tasks
-    if (args.type === "epic" && args.parentId) {
-      throw new Error("Epics cannot be sub-tasks");
-    }
+    // Validate parent/epic constraints
+    const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
-    const existingIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    const issueNumber = existingIssues.length + 1;
-    const issueKey = `${project.key}-${issueNumber}`;
+    const issueKey = await generateIssueKey(ctx, args.projectId, project.key);
 
     // Get the first workflow state as default status
     const defaultStatus = project.workflowStates[0]?.id || "todo";
 
     // Get max order for the status column
-    const issuesInStatus = await ctx.db
-      .query("issues")
-      .withIndex("by_project_status", (q) =>
-        q.eq("projectId", args.projectId).eq("status", defaultStatus),
-      )
-      .collect();
-
-    const maxOrder = Math.max(...issuesInStatus.map((i) => i.order), -1);
+    const maxOrder = await getMaxOrderForStatus(ctx, args.projectId, defaultStatus);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
@@ -160,7 +169,7 @@ export const listByProject = query({
     if (
       !project.isPublic &&
       project.createdBy !== userId &&
-      (!userId || !project.members.includes(userId))
+      !(userId && project.members.includes(userId))
     ) {
       return [];
     }
@@ -232,7 +241,7 @@ export const get = query({
     if (
       !project.isPublic &&
       project.createdBy !== userId &&
-      (!userId || !project.members.includes(userId))
+      !(userId && project.members.includes(userId))
     ) {
       throw new Error("Not authorized to access this issue");
     }
@@ -318,6 +327,29 @@ export const get = query({
       comments: commentsWithAuthors,
       activity,
     };
+  },
+});
+
+/**
+ * Get issue by key (e.g., "PROJ-123")
+ * Used by REST API for looking up issues by their human-readable key
+ */
+export const getByKey = query({
+  args: { key: v.string() },
+  handler: async (ctx, args) => {
+    // Find issue by key
+    const issues = await ctx.db.query("issues").collect();
+    const issue = issues.find((i) => i.key === args.key);
+
+    if (!issue) {
+      return null;
+    }
+
+    // Use the existing get query to return full issue data
+    return ctx.db
+      .query("issues")
+      .filter((q) => q.eq(q.field("_id"), issue._id))
+      .first();
   },
 });
 
@@ -424,6 +456,121 @@ export const updateStatus = mutation({
   },
 });
 
+// Helper: Track field change and add to changes array
+function trackFieldChange<T>(
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
+  field: string,
+  oldValue: T,
+  newValue: T | undefined,
+): boolean {
+  if (newValue !== undefined && newValue !== oldValue) {
+    changes.push({
+      field,
+      oldValue: oldValue as string | number | null | undefined,
+      newValue: newValue as string | number | null | undefined,
+    });
+    return true;
+  }
+  return false;
+}
+
+// Helper: Track and update a nullable field
+function trackNullableFieldUpdate<T>(
+  updates: Record<string, unknown>,
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
+  fieldName: string,
+  oldValue: T | undefined,
+  newValue: T | null | undefined,
+  valueTransform?: (val: T | null | undefined) => string | number | null | undefined,
+): void {
+  if (newValue !== undefined && newValue !== oldValue) {
+    updates[fieldName] = newValue ?? undefined;
+    changes.push({
+      field: fieldName,
+      oldValue: valueTransform
+        ? valueTransform(oldValue)
+        : (oldValue as string | number | undefined),
+      newValue: valueTransform
+        ? valueTransform(newValue)
+        : (newValue as string | number | null | undefined),
+    });
+  }
+}
+
+// Helper: Process issue update fields and track changes
+function processIssueUpdates(
+  issue: {
+    title: string;
+    description?: string;
+    priority: string;
+    assigneeId?: Id<"users">;
+    labels: string[];
+    dueDate?: number;
+    estimatedHours?: number;
+    storyPoints?: number;
+  },
+  args: {
+    title?: string;
+    description?: string;
+    priority?: string;
+    assigneeId?: Id<"users"> | null;
+    labels?: string[];
+    dueDate?: number | null;
+    estimatedHours?: number | null;
+    storyPoints?: number | null;
+  },
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
+) {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  // Track simple field changes
+  if (trackFieldChange(changes, "title", issue.title, args.title)) {
+    updates.title = args.title;
+  }
+  if (trackFieldChange(changes, "description", issue.description, args.description)) {
+    updates.description = args.description;
+  }
+  if (trackFieldChange(changes, "priority", issue.priority, args.priority)) {
+    updates.priority = args.priority;
+  }
+
+  // Track nullable field changes
+  trackNullableFieldUpdate(updates, changes, "assigneeId", issue.assigneeId, args.assigneeId);
+  trackNullableFieldUpdate(updates, changes, "dueDate", issue.dueDate, args.dueDate);
+  trackNullableFieldUpdate(
+    updates,
+    changes,
+    "estimatedHours",
+    issue.estimatedHours,
+    args.estimatedHours,
+  );
+  trackNullableFieldUpdate(updates, changes, "storyPoints", issue.storyPoints, args.storyPoints);
+
+  // Handle labels specially (array to string transform)
+  if (args.labels !== undefined) {
+    updates.labels = args.labels;
+    changes.push({
+      field: "labels",
+      oldValue: issue.labels.join(", "),
+      newValue: args.labels.join(", "),
+    });
+  }
+
+  return updates;
+}
+
 export const update = mutation({
   args: {
     issueId: v.id("issues"),
@@ -455,97 +602,32 @@ export const update = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
     // Check permissions (requires editor role or higher)
     await assertMinimumRole(ctx, issue.projectId, userId, "editor");
 
-    const updates: Partial<typeof issue> = { updatedAt: Date.now() };
     const now = Date.now();
-
-    // Track changes for activity log
     const changes: Array<{
       field: string;
       oldValue: string | number | null | undefined;
       newValue: string | number | null | undefined;
     }> = [];
 
-    if (args.title !== undefined && args.title !== issue.title) {
-      updates.title = args.title;
-      changes.push({ field: "title", oldValue: issue.title, newValue: args.title });
-    }
+    // Process all field updates and track changes
+    const updates = processIssueUpdates(issue, args, changes);
 
-    if (args.description !== undefined && args.description !== issue.description) {
-      updates.description = args.description;
-      changes.push({
-        field: "description",
-        oldValue: issue.description,
-        newValue: args.description,
-      });
-    }
-
-    if (args.priority !== undefined && args.priority !== issue.priority) {
-      updates.priority = args.priority;
-      changes.push({ field: "priority", oldValue: issue.priority, newValue: args.priority });
-    }
-
-    if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
-      updates.assigneeId = args.assigneeId ?? undefined;
-      changes.push({
-        field: "assignee",
-        oldValue: issue.assigneeId,
-        newValue: args.assigneeId ?? undefined,
-      });
-
-      // Send assignment email notification if assigned to someone new
-      if (args.assigneeId && args.assigneeId !== userId) {
-        // Import email helper dynamically to avoid circular deps
-        const { sendEmailNotification } = await import("./email/helpers");
-        await sendEmailNotification(ctx, {
-          userId: args.assigneeId,
-          type: "assigned",
-          issueId: args.issueId,
-          actorId: userId,
-        });
-      }
-    }
-
-    if (args.labels !== undefined) {
-      updates.labels = args.labels;
-      changes.push({
-        field: "labels",
-        oldValue: issue.labels.join(", "),
-        newValue: args.labels.join(", "),
-      });
-    }
-
-    if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
-      updates.dueDate = args.dueDate ?? undefined;
-      changes.push({
-        field: "dueDate",
-        oldValue: issue.dueDate,
-        newValue: args.dueDate ?? undefined,
-      });
-    }
-
-    if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
-      updates.estimatedHours = args.estimatedHours ?? undefined;
-      changes.push({
-        field: "estimatedHours",
-        oldValue: issue.estimatedHours,
-        newValue: args.estimatedHours ?? undefined,
-      });
-    }
-
-    if (args.storyPoints !== undefined && args.storyPoints !== issue.storyPoints) {
-      updates.storyPoints = args.storyPoints ?? undefined;
-      changes.push({
-        field: "storyPoints",
-        oldValue: issue.storyPoints,
-        newValue: args.storyPoints ?? undefined,
+    // Send assignment email notification if assigned to someone new
+    if (
+      args.assigneeId !== undefined &&
+      args.assigneeId !== issue.assigneeId &&
+      args.assigneeId &&
+      args.assigneeId !== userId
+    ) {
+      const { sendEmailNotification } = await import("./email/helpers");
+      await sendEmailNotification(ctx, {
+        userId: args.assigneeId,
+        type: "assigned",
+        issueId: args.issueId,
+        actorId: userId,
       });
     }
 
@@ -670,33 +752,219 @@ export const addComment = mutation({
   },
 });
 
-// Search issues
+// Search issues with advanced filters and pagination
+// Helper: Check if issue matches assignee filter
+function matchesAssigneeFilter(
+  issue: { assigneeId?: Id<"users"> },
+  assigneeFilter: Id<"users"> | "unassigned" | "me" | undefined,
+  userId: Id<"users">,
+): boolean {
+  if (!assigneeFilter) return true;
+
+  if (assigneeFilter === "unassigned") {
+    return !issue.assigneeId;
+  }
+  if (assigneeFilter === "me") {
+    return issue.assigneeId === userId;
+  }
+  return issue.assigneeId === assigneeFilter;
+}
+
+// Helper: Check if issue matches sprint filter
+function matchesSprintFilter(
+  issue: { sprintId?: Id<"sprints"> },
+  sprintFilter: Id<"sprints"> | "backlog" | "none" | undefined,
+): boolean {
+  if (!sprintFilter) return true;
+
+  if (sprintFilter === "backlog" || sprintFilter === "none") {
+    return !issue.sprintId;
+  }
+  return issue.sprintId === sprintFilter;
+}
+
+// Helper: Check if issue matches epic filter
+function matchesEpicFilter(
+  issue: { epicId?: Id<"issues"> },
+  epicFilter: Id<"issues"> | "none" | undefined,
+): boolean {
+  if (!epicFilter) return true;
+
+  if (epicFilter === "none") {
+    return !issue.epicId;
+  }
+  return issue.epicId === epicFilter;
+}
+
+// Helper: Check if value matches array filter
+function matchesArrayFilter<T>(value: T, filterArray: T[] | undefined): boolean {
+  if (!filterArray || filterArray.length === 0) return true;
+  return filterArray.includes(value);
+}
+
+// Helper: Check if issue matches date range
+function matchesDateRange(createdAt: number, dateFrom?: number, dateTo?: number): boolean {
+  if (dateFrom && createdAt < dateFrom) return false;
+  if (dateTo && createdAt > dateTo) return false;
+  return true;
+}
+
+// Helper: Check if issue matches labels filter (all labels must be present)
+function matchesLabelsFilter(issueLabels: string[], filterLabels?: string[]): boolean {
+  if (!filterLabels || filterLabels.length === 0) return true;
+  return filterLabels.every((label) => issueLabels.includes(label));
+}
+
+// Helper: Check if issue matches all search filters
+function matchesSearchFilters(
+  issue: {
+    projectId: Id<"projects">;
+    assigneeId?: Id<"users">;
+    reporterId: Id<"users">;
+    type: string;
+    status: string;
+    priority: string;
+    labels: string[];
+    sprintId?: Id<"sprints">;
+    epicId?: Id<"issues">;
+    createdAt: number;
+  },
+  filters: {
+    projectId?: Id<"projects">;
+    assigneeId?: Id<"users"> | "unassigned" | "me";
+    reporterId?: Id<"users">;
+    type?: string[];
+    status?: string[];
+    priority?: string[];
+    labels?: string[];
+    sprintId?: Id<"sprints"> | "backlog" | "none";
+    epicId?: Id<"issues"> | "none";
+    dateFrom?: number;
+    dateTo?: number;
+  },
+  userId: Id<"users">,
+): boolean {
+  // Simple ID filters
+  if (filters.projectId && issue.projectId !== filters.projectId) return false;
+  if (filters.reporterId && issue.reporterId !== filters.reporterId) return false;
+
+  // Complex filters using helpers
+  if (!matchesAssigneeFilter(issue, filters.assigneeId, userId)) return false;
+  if (!matchesArrayFilter(issue.type, filters.type)) return false;
+  if (!matchesArrayFilter(issue.status, filters.status)) return false;
+  if (!matchesArrayFilter(issue.priority, filters.priority)) return false;
+  if (!matchesLabelsFilter(issue.labels, filters.labels)) return false;
+  if (!matchesSprintFilter(issue, filters.sprintId)) return false;
+  if (!matchesEpicFilter(issue, filters.epicId)) return false;
+  if (!matchesDateRange(issue.createdAt, filters.dateFrom, filters.dateTo)) return false;
+
+  return true;
+}
+
 export const search = query({
   args: {
     query: v.string(),
     limit: v.optional(v.number()),
+    offset: v.optional(v.number()),
+    projectId: v.optional(v.id("projects")),
+    assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
+    reporterId: v.optional(v.id("users")),
+    type: v.optional(v.array(v.string())),
+    status: v.optional(v.array(v.string())),
+    priority: v.optional(v.array(v.string())),
+    labels: v.optional(v.array(v.string())),
+    sprintId: v.optional(v.union(v.id("sprints"), v.literal("backlog"), v.literal("none"))),
+    epicId: v.optional(v.union(v.id("issues"), v.literal("none"))),
+    dateFrom: v.optional(v.number()),
+    dateTo: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
+    if (!userId) return { results: [], total: 0, hasMore: false };
 
-    const results = await ctx.db
+    // Get search results
+    const searchResults = await ctx.db
       .query("issues")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .take(args.limit ?? 20);
+      .collect();
 
-    // Filter to only issues user has access to
+    // Filter to only issues user has access to and apply advanced filters
     const filtered = [];
-    for (const issue of results) {
+    for (const issue of searchResults) {
+      // Check access permissions
       try {
         await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
-        filtered.push(issue);
       } catch {
-        // User doesn't have access, skip this issue
+        continue; // User doesn't have access, skip this issue
       }
+
+      // Apply all search filters
+      if (!matchesSearchFilters(issue, args, userId)) {
+        continue;
+      }
+
+      filtered.push(issue);
     }
 
-    return filtered;
+    const total = filtered.length;
+    const offset = args.offset ?? 0;
+    const limit = args.limit ?? 20;
+
+    // Apply pagination
+    const paginatedResults = filtered.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    // Enrich with user and project data
+    const enrichedResults = await Promise.all(
+      paginatedResults.map(async (issue) => {
+        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+        const reporter = await ctx.db.get(issue.reporterId);
+        const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
+        const project = await ctx.db.get(issue.projectId);
+
+        return {
+          ...issue,
+          assignee: assignee
+            ? {
+                _id: assignee._id,
+                name: assignee.name || assignee.email || "Unknown",
+                email: assignee.email,
+                image: assignee.image,
+              }
+            : null,
+          reporter: reporter
+            ? {
+                _id: reporter._id,
+                name: reporter.name || reporter.email || "Unknown",
+                email: reporter.email,
+                image: reporter.image,
+              }
+            : null,
+          epic: epic
+            ? {
+                _id: epic._id,
+                key: epic.key,
+                title: epic.title,
+              }
+            : null,
+          project: project
+            ? {
+                _id: project._id,
+                name: project.name,
+                key: project.key,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return {
+      results: enrichedResults,
+      total,
+      hasMore,
+      offset,
+      limit,
+    };
   },
 });
 
@@ -953,6 +1221,63 @@ export const bulkMoveToSprint = mutation({
   },
 });
 
+// Helper: Delete all related records for an issue
+async function deleteIssueRelatedRecords(ctx: MutationCtx, issueId: Id<"issues">): Promise<void> {
+  // Delete comments
+  const comments = await ctx.db
+    .query("issueComments")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const comment of comments) {
+    await ctx.db.delete(comment._id);
+  }
+
+  // Delete activities
+  const activities = await ctx.db
+    .query("issueActivity")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const activity of activities) {
+    await ctx.db.delete(activity._id);
+  }
+
+  // Delete outgoing links
+  const links = await ctx.db
+    .query("issueLinks")
+    .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
+    .collect();
+  for (const link of links) {
+    await ctx.db.delete(link._id);
+  }
+
+  // Delete incoming links
+  const backlinks = await ctx.db
+    .query("issueLinks")
+    .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
+    .collect();
+  for (const link of backlinks) {
+    await ctx.db.delete(link._id);
+  }
+
+  // Delete watchers
+  const watchers = await ctx.db
+    .query("issueWatchers")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const watcher of watchers) {
+    await ctx.db.delete(watcher._id);
+  }
+
+  // Delete time entries
+  const timeEntries = await ctx.db
+    .query("timeEntries")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const entry of timeEntries) {
+    await ctx.db.delete(entry._id);
+  }
+}
+
 export const bulkDelete = mutation({
   args: {
     issueIds: v.array(v.id("issues")),
@@ -975,60 +1300,8 @@ export const bulkDelete = mutation({
         continue; // Only admins can delete
       }
 
-      // Delete related data
-      const comments = await ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const comment of comments) {
-        await ctx.db.delete(comment._id);
-      }
-
-      const activities = await ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const activity of activities) {
-        await ctx.db.delete(activity._id);
-      }
-
-      const links = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-        .collect();
-
-      for (const link of links) {
-        await ctx.db.delete(link._id);
-      }
-
-      const backlinks = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-        .collect();
-
-      for (const link of backlinks) {
-        await ctx.db.delete(link._id);
-      }
-
-      const watchers = await ctx.db
-        .query("issueWatchers")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const watcher of watchers) {
-        await ctx.db.delete(watcher._id);
-      }
-
-      const timeEntries = await ctx.db
-        .query("timeEntries")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const entry of timeEntries) {
-        await ctx.db.delete(entry._id);
-      }
+      // Delete all related records
+      await deleteIssueRelatedRecords(ctx, issueId);
 
       // Finally delete the issue
       await ctx.db.delete(issueId);

@@ -20,6 +20,42 @@ const applicationTables = {
       filterFields: ["isPublic", "createdBy", "projectId"],
     }),
 
+  documentVersions: defineTable({
+    documentId: v.id("documents"),
+    version: v.number(), // Version number from ProseMirror
+    snapshot: v.any(), // ProseMirror snapshot data
+    title: v.string(), // Document title at this version
+    createdBy: v.id("users"), // User who created this version
+    createdAt: v.number(), // Timestamp when version was created
+    changeDescription: v.optional(v.string()), // Optional description of changes
+  })
+    .index("by_document", ["documentId"])
+    .index("by_document_version", ["documentId", "version"])
+    .index("by_document_created", ["documentId", "createdAt"]),
+
+  documentTemplates: defineTable({
+    name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
+    description: v.optional(v.string()),
+    category: v.string(), // "meeting", "planning", "design", "engineering", etc.
+    icon: v.string(), // Emoji or icon identifier
+    content: v.any(), // BlockNote/ProseMirror content structure
+    isBuiltIn: v.boolean(), // Built-in templates vs user-created
+    isPublic: v.boolean(), // Public templates visible to all users
+    createdBy: v.optional(v.id("users")), // Creator (null for built-in)
+    projectId: v.optional(v.id("projects")), // Project-specific template (optional)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_built_in", ["isBuiltIn"])
+    .index("by_public", ["isPublic"])
+    .index("by_creator", ["createdBy"])
+    .index("by_project", ["projectId"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["category", "isPublic", "isBuiltIn"],
+    }),
+
   projects: defineTable({
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
@@ -176,29 +212,6 @@ const applicationTables = {
   })
     .index("by_project", ["projectId"])
     .index("by_project_name", ["projectId", "name"]),
-
-  timeEntries: defineTable({
-    issueId: v.id("issues"),
-    userId: v.id("users"),
-    hours: v.number(),
-    description: v.optional(v.string()),
-    date: v.number(), // Timestamp of when work was done
-    billable: v.boolean(), // For agency billing - is this billable to client?
-    hourlyRate: v.optional(v.number()), // Override project rate if needed
-    createdAt: v.number(),
-  })
-    .index("by_issue", ["issueId"])
-    .index("by_user", ["userId"])
-    .index("by_date", ["date"]),
-
-  activeTimers: defineTable({
-    userId: v.id("users"),
-    issueId: v.id("issues"),
-    startedAt: v.number(),
-    description: v.optional(v.string()),
-  })
-    .index("by_user", ["userId"])
-    .index("by_issue", ["issueId"]),
 
   issueTemplates: defineTable({
     projectId: v.id("projects"),
@@ -446,6 +459,8 @@ const applicationTables = {
     // Meeting details
     meetingUrl: v.optional(v.string()), // Zoom, Meet, etc.
     notes: v.optional(v.string()),
+    // Attendance tracking
+    isRequired: v.optional(v.boolean()), // Required attendance (for tracking who missed)
     // Metadata
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -455,10 +470,28 @@ const applicationTables = {
     .index("by_issue", ["issueId"])
     .index("by_start_time", ["startTime"])
     .index("by_status", ["status"])
+    .index("by_required", ["isRequired"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["organizerId", "projectId", "status"],
     }),
+
+  // Meeting Attendance Tracking (for required meetings)
+  meetingAttendance: defineTable({
+    eventId: v.id("calendarEvents"),
+    userId: v.id("users"),
+    status: v.union(
+      v.literal("present"), // Attended on time
+      v.literal("tardy"), // Attended but late
+      v.literal("absent"), // Did not attend
+    ),
+    markedBy: v.id("users"), // Admin/organizer who marked attendance
+    markedAt: v.number(),
+    notes: v.optional(v.string()), // Optional notes: "Left early", "Technical issues", etc.
+  })
+    .index("by_event", ["eventId"])
+    .index("by_user", ["userId"])
+    .index("by_event_user", ["eventId", "userId"]),
 
   // User availability for booking (Cal.com-style)
   availabilitySlots: defineTable({
@@ -790,6 +823,254 @@ const applicationTables = {
     .index("by_operation", ["operation"])
     .index("by_created_at", ["createdAt"])
     .index("by_user_created", ["userId", "createdAt"]),
+
+  // REST API Keys (for CLI and external integrations)
+  apiKeys: defineTable({
+    userId: v.id("users"),
+    name: v.string(), // User-friendly name: "My CLI Tool", "GitHub Actions", etc.
+    keyHash: v.string(), // SHA-256 hash of the API key
+    keyPrefix: v.string(), // First 8 chars for display: "sk_casc_AbCdEfGh..."
+    // Permissions & Scopes
+    scopes: v.array(v.string()), // e.g., ["issues:read", "issues:write", "projects:read"]
+    // Optional project restriction
+    projectId: v.optional(v.id("projects")), // If set, key only works for this project
+    // Rate limiting
+    rateLimit: v.number(), // Requests per minute (default: 100)
+    // Status
+    isActive: v.boolean(),
+    lastUsedAt: v.optional(v.number()),
+    usageCount: v.number(), // Total API calls made with this key
+    // Expiration
+    expiresAt: v.optional(v.number()), // Optional expiration timestamp
+    // Metadata
+    createdAt: v.number(),
+    revokedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_key_hash", ["keyHash"])
+    .index("by_active", ["isActive"])
+    .index("by_user_active", ["userId", "isActive"]),
+
+  // API usage logs (for monitoring and rate limiting)
+  apiUsageLogs: defineTable({
+    apiKeyId: v.id("apiKeys"),
+    userId: v.id("users"),
+    // Request details
+    method: v.string(), // GET, POST, PATCH, DELETE
+    endpoint: v.string(), // e.g., "/api/issues"
+    statusCode: v.number(), // HTTP status code
+    responseTime: v.number(), // Milliseconds
+    // Request metadata
+    userAgent: v.optional(v.string()),
+    ipAddress: v.optional(v.string()),
+    // Errors
+    error: v.optional(v.string()),
+    // Timestamp
+    createdAt: v.number(),
+  })
+    .index("by_api_key", ["apiKeyId"])
+    .index("by_user", ["userId"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_api_key_created", ["apiKeyId", "createdAt"]),
+
+  // Pumble Integration (Team Chat)
+  pumbleWebhooks: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Optional: link to specific project
+    name: v.string(), // User-friendly name: "Team Notifications", "Bug Reports Channel"
+    webhookUrl: v.string(), // Pumble incoming webhook URL
+    // Event subscriptions
+    events: v.array(v.string()), // e.g., ["issue.created", "issue.updated", "issue.assigned"]
+    // Settings
+    isActive: v.boolean(),
+    sendMentions: v.boolean(), // Send when user is @mentioned
+    sendAssignments: v.boolean(), // Send when assigned to issue
+    sendStatusChanges: v.boolean(), // Send when issue status changes
+    // Stats
+    messagesSent: v.number(),
+    lastMessageAt: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_active", ["isActive"])
+    .index("by_user_active", ["userId", "isActive"]),
+
+  // Time Tracking (Native - Kimai-like features)
+  timeEntries: defineTable({
+    userId: v.id("users"), // Who logged the time
+    projectId: v.optional(v.id("projects")), // Project
+    issueId: v.optional(v.id("issues")), // Issue (optional)
+    // Time data
+    startTime: v.number(), // Unix timestamp
+    endTime: v.optional(v.number()), // Unix timestamp (null if timer still running)
+    duration: v.number(), // Duration in seconds
+    date: v.number(), // Date of time entry (for grouping/filtering)
+    // Description & Activity
+    description: v.optional(v.string()),
+    activity: v.optional(v.string()), // e.g., "Development", "Meeting", "Code Review", "Design"
+    tags: v.array(v.string()), // Tags for categorization
+    // Billing
+    hourlyRate: v.optional(v.number()), // Hourly rate at time of entry (snapshot)
+    totalCost: v.optional(v.number()), // Calculated cost (duration * hourlyRate)
+    currency: v.string(), // Currency code: "USD", "EUR", etc.
+    billable: v.boolean(), // Is this time billable to client?
+    billed: v.boolean(), // Has this been billed to client?
+    invoiceId: v.optional(v.string()), // Link to invoice if billed
+    // Equity compensation
+    isEquityHour: v.optional(v.boolean()), // Is this compensated with equity (non-paid)?
+    equityValue: v.optional(v.number()), // Calculated equity value for this entry
+    // Status
+    isLocked: v.boolean(), // Locked entries can't be edited (for payroll/billing)
+    isApproved: v.boolean(), // Approved by manager
+    approvedBy: v.optional(v.id("users")),
+    approvedAt: v.optional(v.number()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_issue", ["issueId"])
+    .index("by_date", ["date"])
+    .index("by_user_date", ["userId", "date"])
+    .index("by_project_date", ["projectId", "date"])
+    .index("by_billable", ["billable"])
+    .index("by_billed", ["billed"])
+    .index("by_user_project", ["userId", "projectId"])
+    .index("by_equity", ["isEquityHour"]),
+
+  // User Hourly Rates (for cost calculation)
+  userRates: defineTable({
+    userId: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Project-specific rate (overrides default)
+    hourlyRate: v.number(), // Rate per hour
+    currency: v.string(), // Currency code: "USD", "EUR", etc.
+    // Effective period
+    effectiveFrom: v.number(), // Start date of this rate
+    effectiveTo: v.optional(v.number()), // End date (null if current rate)
+    // Rate type
+    rateType: v.union(
+      v.literal("internal"), // Internal cost rate
+      v.literal("billable"), // Client billable rate
+    ),
+    // Metadata
+    setBy: v.id("users"), // Who set this rate
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_project", ["projectId"])
+    .index("by_user_project", ["userId", "projectId"])
+    .index("by_effective_from", ["effectiveFrom"])
+    .index("by_rate_type", ["rateType"]),
+
+  // User Employment Types & Work Hour Configuration
+  userProfiles: defineTable({
+    userId: v.id("users"), // One profile per user
+    employmentType: v.union(
+      v.literal("employee"), // Full-time employee
+      v.literal("contractor"), // Independent contractor
+      v.literal("intern"), // Intern/trainee
+    ),
+    // Work hour configuration (can override employment type defaults)
+    maxHoursPerWeek: v.optional(v.number()), // Max billable hours per week (overrides type default)
+    maxHoursPerDay: v.optional(v.number()), // Max hours per day (overrides type default)
+    requiresApproval: v.optional(v.boolean()), // Does time tracking require manager approval?
+    canWorkOvertime: v.optional(v.boolean()), // Can log overtime hours?
+    // Employment details
+    startDate: v.optional(v.number()), // Employment start date
+    endDate: v.optional(v.number()), // Employment end date (for contractors/interns)
+    department: v.optional(v.string()),
+    jobTitle: v.optional(v.string()),
+    managerId: v.optional(v.id("users")), // Direct manager
+    // Equity compensation (employees only)
+    hasEquity: v.optional(v.boolean()), // Does employee have equity compensation?
+    equityPercentage: v.optional(v.number()), // Equity stake percentage (e.g., 0.5 for 0.5%)
+    requiredEquityHoursPerWeek: v.optional(v.number()), // Required non-paid equity hours per week
+    requiredEquityHoursPerMonth: v.optional(v.number()), // Alternative: monthly equity hours requirement
+    maxEquityHoursPerWeek: v.optional(v.number()), // Maximum equity hours allowed per week
+    equityHourlyValue: v.optional(v.number()), // Estimated value per equity hour (for tracking)
+    equityNotes: v.optional(v.string()), // Notes about equity arrangement
+    // Status
+    isActive: v.boolean(), // Is user currently active?
+    // Metadata
+    createdBy: v.id("users"), // Admin who created profile
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_employment_type", ["employmentType"])
+    .index("by_manager", ["managerId"])
+    .index("by_active", ["isActive"])
+    .index("by_employment_active", ["employmentType", "isActive"]),
+
+  // Employment Type Default Configurations
+  employmentTypeConfigs: defineTable({
+    type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
+    name: v.string(), // Display name: "Full-time Employee", "Contractor", "Intern"
+    description: v.optional(v.string()),
+    // Default work hour limits
+    defaultMaxHoursPerWeek: v.number(), // e.g., 40 for employees, 20 for interns
+    defaultMaxHoursPerDay: v.number(), // e.g., 8 for employees, 4 for interns
+    defaultRequiresApproval: v.boolean(), // e.g., true for interns, false for employees
+    defaultCanWorkOvertime: v.boolean(), // e.g., false for interns, true for employees
+    // Permissions & restrictions
+    canAccessBilling: v.boolean(), // Can see billing/rate info
+    canManageProjects: v.boolean(), // Can create/manage projects
+    // Metadata
+    isActive: v.boolean(), // Is this type currently in use?
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_type", ["type"]),
+
+  // Hour Compliance Tracking (for monitoring required hours)
+  hourComplianceRecords: defineTable({
+    userId: v.id("users"),
+    periodType: v.union(v.literal("week"), v.literal("month")), // Weekly or monthly tracking
+    periodStart: v.number(), // Start of period (Unix timestamp)
+    periodEnd: v.number(), // End of period (Unix timestamp)
+    // Hours tracked
+    totalHoursWorked: v.number(), // Total hours logged in period
+    totalEquityHours: v.optional(v.number()), // Total equity hours (for employees with equity)
+    // Requirements from user profile at time of record
+    requiredHoursPerWeek: v.optional(v.number()), // Weekly requirement snapshot
+    requiredHoursPerMonth: v.optional(v.number()), // Monthly requirement snapshot
+    requiredEquityHoursPerWeek: v.optional(v.number()), // Equity hours requirement snapshot
+    requiredEquityHoursPerMonth: v.optional(v.number()),
+    maxHoursPerWeek: v.optional(v.number()), // Max hours limit snapshot
+    // Compliance status
+    status: v.union(
+      v.literal("compliant"), // Met requirements
+      v.literal("under_hours"), // Worked less than required
+      v.literal("over_hours"), // Exceeded maximum hours (warning)
+      v.literal("equity_under"), // Didn't meet equity hour requirements
+    ),
+    // Variance
+    hoursDeficit: v.optional(v.number()), // How many hours short (if under_hours)
+    hoursExcess: v.optional(v.number()), // How many hours over (if over_hours)
+    equityHoursDeficit: v.optional(v.number()), // Equity hours short
+    // Notification
+    notificationSent: v.boolean(), // Was admin/manager notified?
+    notificationId: v.optional(v.id("notifications")),
+    // Review
+    reviewedBy: v.optional(v.id("users")), // Admin who reviewed this record
+    reviewedAt: v.optional(v.number()),
+    reviewNotes: v.optional(v.string()),
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_period", ["periodStart"])
+    .index("by_status", ["status"])
+    .index("by_user_period", ["userId", "periodStart"])
+    .index("by_user_status", ["userId", "status"])
+    .index("by_period_status", ["periodStart", "status"]),
 };
 
 export default defineSchema({

@@ -79,6 +79,7 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle notifications"
         className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
       >
         <svg
@@ -127,7 +128,7 @@ export function NotificationBell() {
           <div className="overflow-y-auto flex-1">
             {!notifications ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
@@ -186,6 +187,7 @@ export function NotificationBell() {
                           e.stopPropagation();
                           removeNotification({ id: notification._id });
                         }}
+                        aria-label="Remove notification"
                         className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                       >
                         <svg

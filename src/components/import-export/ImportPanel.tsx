@@ -1,10 +1,11 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ImportPanelProps {
   projectId: Id<"projects">;
@@ -40,7 +41,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
 
   const handleImport = async () => {
     if (!importData) {
-      toast.error("Please select a file to import");
+      showError(new Error("Please select a file to import"), "Validation Error");
       return;
     }
 
@@ -56,7 +57,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       }
 
       if (result.imported > 0) {
-        toast.success(
+        showSuccess(
           `Successfully imported ${result.imported} issue${result.imported > 1 ? "s" : ""}${
             result.failed > 0 ? ` (${result.failed} failed)` : ""
           }`,
@@ -66,10 +67,10 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
         setImportData("");
         onImportComplete?.();
       } else {
-        toast.error("No issues were imported");
+        showError(new Error("No issues were imported"), "Import Failed");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to import issues");
+      showError(error, "Failed to import issues");
     } finally {
       setIsImporting(false);
     }
@@ -157,10 +158,10 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
 
       <Button onClick={handleImport} disabled={!importData || isImporting} className="w-full">
         {isImporting ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+          <div className="flex items-center justify-center gap-2">
+            <LoadingSpinner size="sm" color="white" />
             Importing...
-          </>
+          </div>
         ) : (
           `Import from ${importFormat.toUpperCase()}`
         )}

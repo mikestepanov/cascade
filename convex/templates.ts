@@ -79,6 +79,9 @@ export const listByProject = query({
   },
 });
 
+// Alias for backwards compatibility
+export const list = listByProject;
+
 // Get a single template
 export const get = query({
   args: { id: v.id("issueTemplates") },

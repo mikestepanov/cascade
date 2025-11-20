@@ -59,7 +59,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
               >
                 {/* Timeline connector */}
                 {activityIndex < activities.length - 1 && (
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="absolute left-4 top-8 bottom-0 w-px bg-gray-200 dark:bg-gray-700" />
                 )}
 
                 <div className="flex items-start gap-3">

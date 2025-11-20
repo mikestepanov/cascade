@@ -579,13 +579,13 @@ describe("Issues", () => {
         priority: "low",
       });
 
-      const results = await t.query(api.issues.search, {
+      const searchResult = await t.query(api.issues.search, {
         query: "login",
       });
 
-      expect(results).toHaveLength(2);
-      expect(results.map((i) => i.title)).toContain("Fix login bug");
-      expect(results.map((i) => i.title)).toContain("Add login feature");
+      expect(searchResult.results).toHaveLength(2);
+      expect(searchResult.results.map((i) => i.title)).toContain("Fix login bug");
+      expect(searchResult.results.map((i) => i.title)).toContain("Add login feature");
     });
   });
 });

@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
+import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { formatDate, formatTime } from "@/lib/formatting";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -12,14 +14,17 @@ interface EventDetailsModalProps {
 
 export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) {
   const event = useQuery(api.calendarEvents.get, { id: eventId });
+  const attendance = useQuery(api.calendarEventsAttendance.getAttendance, { eventId });
   const deleteEvent = useMutation(api.calendarEvents.remove);
+  const markAttendance = useMutation(api.calendarEventsAttendance.markAttendance);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false);
 
   if (!event) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
-          <div className="text-center text-gray-500">Loading...</div>
+          <LoadingSpinner size="lg" />
         </div>
       </div>
     );
@@ -31,33 +36,28 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
     setIsDeleting(true);
     try {
       await deleteEvent({ id: eventId });
-      toast.success("Event deleted");
+      showSuccess("Event deleted");
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete event");
+    } catch (error) {
+      showError(error, "Failed to delete event");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const startDate = new Date(event.startTime);
-  const endDate = new Date(event.endTime);
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+  const handleMarkAttendance = async (
+    userId: Id<"users">,
+    status: "present" | "tardy" | "absent",
+  ) => {
+    setIsSavingAttendance(true);
+    try {
+      await markAttendance({ eventId, userId, status });
+      showSuccess("Attendance marked");
+    } catch (error) {
+      showError(error, "Failed to mark attendance");
+    } finally {
+      setIsSavingAttendance(false);
+    }
   };
 
   const getEventTypeColor = (eventType: string) => {
@@ -110,6 +110,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           </div>
           <button
             onClick={onClose}
+            aria-label="Close event details modal"
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
             <X className="w-5 h-5 text-gray-500" />
@@ -123,14 +124,20 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <Calendar className="w-5 h-5 text-gray-500 mt-0.5" />
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
-                {formatDate(startDate)}
+                {formatDate(event.startTime, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {event.allDay ? (
                   "All day"
                 ) : (
                   <>
-                    {formatTime(startDate)} - {formatTime(endDate)}
+                    {formatTime(event.startTime, { hour: "numeric", minute: "2-digit" })} -{" "}
+                    {formatTime(event.endTime, { hour: "numeric", minute: "2-digit" })}
                   </>
                 )}
               </div>
@@ -211,6 +218,65 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 <Clock className="w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Recurring event</span>
               </div>
+            </div>
+          )}
+
+          {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
+          {event.isRequired && attendance && (
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
+                </h4>
+              </div>
+
+              <div className="space-y-2">
+                {attendance.attendees.map((attendee) => (
+                  <div
+                    key={attendee.userId}
+                    className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-md"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      {/* Status Icon */}
+                      {attendee.status === "present" && (
+                        <Check className="w-4 h-4 text-green-600" />
+                      )}
+                      {attendee.status === "tardy" && <Clock className="w-4 h-4 text-yellow-600" />}
+                      {attendee.status === "absent" && <X className="w-4 h-4 text-red-600" />}
+                      {!attendee.status && <div className="w-4 h-4" />}
+
+                      {/* Attendee Name */}
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {attendee.userName}
+                      </span>
+                    </div>
+
+                    {/* Status Dropdown */}
+                    <select
+                      value={attendee.status || ""}
+                      onChange={(e) =>
+                        handleMarkAttendance(
+                          attendee.userId,
+                          e.target.value as "present" | "tardy" | "absent",
+                        )
+                      }
+                      disabled={isSavingAttendance}
+                      className="text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    >
+                      <option value="">Not marked</option>
+                      <option value="present">✓ Present</option>
+                      <option value="tardy">⏰ Tardy</option>
+                      <option value="absent">✗ Absent</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              {attendance.totalAttendees === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                  No attendees added to this meeting
+                </p>
+              )}
             </div>
           )}
         </div>

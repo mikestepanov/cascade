@@ -38,7 +38,9 @@ export function register() {
             }
           });
         })
-        .catch((_error) => {});
+        .catch((_error) => {
+          // Service worker registration errors are non-critical
+        });
 
       // Handle controller change (new SW activated)
       navigator.serviceWorker.addEventListener("controllerchange", () => {
@@ -54,7 +56,9 @@ export function unregister() {
       .then((registration) => {
         registration.unregister();
       })
-      .catch((_error) => {});
+      .catch((_error) => {
+        // Unregister errors are non-critical
+      });
   }
 }
 
@@ -147,7 +151,9 @@ export function promptInstall() {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult: { outcome: "accepted" | "dismissed" }) => {
           if (choiceResult.outcome === "accepted") {
+            // User accepted the install prompt
           } else {
+            // User dismissed the install prompt
           }
           deferredPrompt = null;
         });

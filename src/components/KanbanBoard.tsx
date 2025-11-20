@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { DISPLAY_LIMITS } from "@/lib/constants";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { BulkOperationsBar } from "./BulkOperationsBar";
@@ -65,9 +65,9 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       setRedoStack((prev) => [...prev, lastAction].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
 
       // Show toast
-      toast.success(`Undid move of "${lastAction.issueTitle}"`);
-    } catch {
-      toast.error("Failed to undo");
+      showSuccess(`Undid move of "${lastAction.issueTitle}"`);
+    } catch (error) {
+      showError(error, "Failed to undo");
     }
   }, [historyStack, updateIssueStatus]);
 
@@ -94,9 +94,9 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       setHistoryStack((prev) => [...prev, lastRedo].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
 
       // Show toast
-      toast.success(`Redid move of "${lastRedo.issueTitle}"`);
-    } catch {
-      toast.error("Failed to redo");
+      showSuccess(`Redid move of "${lastRedo.issueTitle}"`);
+    } catch (error) {
+      showError(error, "Failed to redo");
     }
   }, [redoStack, updateIssueStatus]);
 
@@ -123,7 +123,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleRedo, handleUndo]);
 
-  if (!project || !issues) {
+  if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-x-auto">
         {/* Header skeleton */}
@@ -133,7 +133,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         </div>
 
         {/* Kanban columns skeleton */}
-        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
+        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -206,8 +206,8 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       // Add to history and clear redo stack (new action invalidates redo)
       setHistoryStack((prev) => [...prev, action].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
       setRedoStack([]);
-    } catch {
-      toast.error("Failed to update issue status");
+    } catch (error) {
+      showError(error, "Failed to update issue status");
     }
 
     setDraggedIssue(null);
@@ -255,7 +255,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         onToggleSelectionMode={handleToggleSelectionMode}
       />
 
-      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 min-w-max">
+      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
         {workflowStates.map((state, columnIndex) => (
           <KanbanColumn
             key={state.id}

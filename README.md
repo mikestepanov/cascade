@@ -18,11 +18,25 @@ A modern Jira + Confluence clone built with React, TypeScript, and Convex for re
 - **Custom workflows** - Define your own workflow states
 - **Activity tracking** - Complete history of all changes
 - **Comments** - Collaborate on issues with threaded discussions
+- **Analytics dashboard** - Sprint burndown, velocity tracking, team metrics
+
+### 🔗 Integrations & API
+- **REST API** - API keys with scope-based permissions for CLI/AI integration
+- **Google Calendar** - Bi-directional calendar sync (OAuth)
+- **Pumble** - Team chat notifications via webhooks
+- **GitHub** - Link repos, track PRs and commits (OAuth)
+- **Email notifications** - @mentions, assignments, digests
+
+### 📱 Mobile & Offline
+- **Responsive design** - Works on all devices (mobile, tablet, desktop)
+- **Progressive Web App** - Installable as native app
+- **Offline mode** - Full functionality offline with auto-sync
+- **Onboarding flow** - Interactive tour for new users
 
 ### 🎨 Design
 - Clean, minimal interface with lots of white space
 - Neutral color palette for reduced eye strain
-- Responsive design that works on all devices
+- Dark/light theme support
 - Fast, real-time updates without page refreshes
 
 ## 🛠 Tech Stack

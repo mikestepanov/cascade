@@ -30,7 +30,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
     projectId ? { projectId } : "skip",
   );
 
-  const unreadSuggestions = suggestions?.filter((s) => !s.accepted && !s.dismissed).length || 0;
+  const unreadSuggestions = suggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
 
   const handleTabChange = (tab: "chat" | "suggestions") => {
     if (tab === activeTab) return;

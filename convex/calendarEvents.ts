@@ -1,11 +1,70 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
  * Supports meetings, deadlines, time blocks, and personal events
  */
+
+// Helper: Add field to updates if defined
+function addFieldIfDefined(
+  updates: Record<string, unknown>,
+  key: string,
+  value: unknown,
+  checkTruthy = false,
+): void {
+  if (checkTruthy) {
+    if (value) updates[key] = value;
+  } else {
+    if (value !== undefined) updates[key] = value;
+  }
+}
+
+// Helper: Build update object from optional fields
+function buildEventUpdateObject(args: {
+  title?: string;
+  description?: string;
+  startTime?: number;
+  endTime?: number;
+  allDay?: boolean;
+  location?: string;
+  eventType?: "meeting" | "deadline" | "timeblock" | "personal";
+  attendeeIds?: Id<"users">[];
+  externalAttendees?: string[];
+  projectId?: Id<"projects">;
+  issueId?: Id<"issues">;
+  status?: "confirmed" | "tentative" | "cancelled";
+  isRecurring?: boolean;
+  recurrenceRule?: string;
+  meetingUrl?: string;
+  notes?: string;
+}): Record<string, unknown> {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  // Fields that require truthy check
+  addFieldIfDefined(updates, "title", args.title, true);
+  addFieldIfDefined(updates, "startTime", args.startTime, true);
+  addFieldIfDefined(updates, "endTime", args.endTime, true);
+  addFieldIfDefined(updates, "eventType", args.eventType, true);
+  addFieldIfDefined(updates, "attendeeIds", args.attendeeIds, true);
+  addFieldIfDefined(updates, "status", args.status, true);
+
+  // Fields that allow undefined/null values
+  addFieldIfDefined(updates, "description", args.description);
+  addFieldIfDefined(updates, "allDay", args.allDay);
+  addFieldIfDefined(updates, "location", args.location);
+  addFieldIfDefined(updates, "externalAttendees", args.externalAttendees);
+  addFieldIfDefined(updates, "projectId", args.projectId);
+  addFieldIfDefined(updates, "issueId", args.issueId);
+  addFieldIfDefined(updates, "isRecurring", args.isRecurring);
+  addFieldIfDefined(updates, "recurrenceRule", args.recurrenceRule);
+  addFieldIfDefined(updates, "meetingUrl", args.meetingUrl);
+  addFieldIfDefined(updates, "notes", args.notes);
+
+  return updates;
+}
 
 // Create a new calendar event
 export const create = mutation({
@@ -33,6 +92,7 @@ export const create = mutation({
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
     notes: v.optional(v.string()),
+    isRequired: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -59,10 +119,11 @@ export const create = mutation({
       projectId: args.projectId,
       issueId: args.issueId,
       status: args.status || "confirmed",
-      isRecurring: args.isRecurring || false,
+      isRecurring: args.isRecurring ?? false,
       recurrenceRule: args.recurrenceRule,
       meetingUrl: args.meetingUrl,
       notes: args.notes,
+      isRequired: args.isRequired ?? false,
       createdAt: now,
       updatedAt: now,
     });
@@ -85,7 +146,7 @@ export const get = query({
     const isOrganizer = event.organizerId === userId;
     const isAttendee = event.attendeeIds.includes(userId);
 
-    if (!isOrganizer && !isAttendee) {
+    if (!(isOrganizer || isAttendee)) {
       return null; // Not authorized to view
     }
 
@@ -246,27 +307,9 @@ export const update = mutation({
       throw new Error("End time must be after start time");
     }
 
-    await ctx.db.patch(args.id, {
-      ...(args.title && { title: args.title }),
-      ...(args.description !== undefined && { description: args.description }),
-      ...(args.startTime && { startTime: args.startTime }),
-      ...(args.endTime && { endTime: args.endTime }),
-      ...(args.allDay !== undefined && { allDay: args.allDay }),
-      ...(args.location !== undefined && { location: args.location }),
-      ...(args.eventType && { eventType: args.eventType }),
-      ...(args.attendeeIds && { attendeeIds: args.attendeeIds }),
-      ...(args.externalAttendees !== undefined && {
-        externalAttendees: args.externalAttendees,
-      }),
-      ...(args.projectId !== undefined && { projectId: args.projectId }),
-      ...(args.issueId !== undefined && { issueId: args.issueId }),
-      ...(args.status && { status: args.status }),
-      ...(args.isRecurring !== undefined && { isRecurring: args.isRecurring }),
-      ...(args.recurrenceRule !== undefined && { recurrenceRule: args.recurrenceRule }),
-      ...(args.meetingUrl !== undefined && { meetingUrl: args.meetingUrl }),
-      ...(args.notes !== undefined && { notes: args.notes }),
-      updatedAt: Date.now(),
-    });
+    // Build update object using helper
+    const updates = buildEventUpdateObject(args);
+    await ctx.db.patch(args.id, updates);
 
     return args.id;
   },

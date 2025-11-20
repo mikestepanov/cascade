@@ -69,7 +69,7 @@ vi.mock("./IssueWatchers", () => ({
 
 describe("IssueDetailModal", () => {
   const mockUpdateIssue = vi.fn();
-  const mockCreateIssue = vi.fn();
+  const _mockCreateIssue = vi.fn();
   const mockOnClose = vi.fn();
   const mockIssueId = "issue-123" as Id<"issues">;
 

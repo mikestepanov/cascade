@@ -1,5 +1,8 @@
 # Human TODO - Manual Setup & Configuration
 
+> **Last Updated:** 2025-11-18
+> **Version:** 2.2 - Updated for Pumble & API Keys
+
 This document contains tasks that require **manual human intervention** - things that can't be automated through code. These are configuration, setup, and deployment tasks.
 
 ---
@@ -11,7 +14,8 @@ This document contains tasks that require **manual human intervention** - things
 2. [ ] Start Convex dev: `pnpm run dev:backend`
 3. [ ] Start frontend: `pnpm run dev:frontend`
 4. [ ] (Optional) Configure email provider for notifications
-5. [ ] (Optional) Install testing dependencies for backend tests
+5. [ ] (Optional) Configure integrations (Google Calendar, Pumble)
+6. [ ] (Optional) Install testing dependencies for backend tests
 
 **To Enable Email Notifications:**
 1. [ ] Sign up for email provider (Resend or SendPulse)
@@ -291,6 +295,129 @@ Before launching email notifications to users:
 5. [ ] Add OAuth credentials to environment variables
 
 **Reference:** See `convex/auth.config.ts` for current configuration
+
+---
+
+## 🔑 REST API & CLI Integration (Optional)
+
+### 13. API Keys for REST API Access
+
+**Status:** Code implemented ✅ | No OAuth required ✅ |Works out of the box ✅
+
+The REST API allows programmatic access to Cascade from CLI tools, AI assistants, and external scripts.
+
+**Features:**
+- Generate API keys with custom scopes
+- Rate limiting per key
+- Usage statistics tracking
+- Secure key storage (SHA-256 hashing)
+
+**How to Use:**
+
+1. **Generate an API Key:**
+   - Go to Settings → API Keys
+   - Click "Generate Key"
+   - Enter a name (e.g., "Claude Code Integration")
+   - Select scopes (e.g., `issues:read`, `issues:write`)
+   - Set rate limit (default: 100 req/min)
+   - Click "Generate"
+   - **Important:** Copy the key immediately (shown only once!)
+
+2. **Use the API Key:**
+   ```bash
+   # Example: List issues for a project
+   curl -H "Authorization: Bearer sk_casc_your_key_here" \
+     "https://yourdomain.com/api/issues?projectId=PROJECT_ID"
+   ```
+
+3. **Monitor Usage:**
+   - Go to Settings → API Keys
+   - Click "View Stats" on any key
+   - See total calls, last 24h usage, success rate, response times
+
+4. **Revoke/Delete Keys:**
+   - Go to Settings → API Keys
+   - Click "Revoke" to disable temporarily
+   - Click "Delete" to remove permanently
+
+**Available Scopes:**
+- `issues:read` - View issues
+- `issues:write` - Create/update issues
+- `issues:delete` - Delete issues
+- `projects:read` - View projects
+- `documents:read` - View documents
+- `*` - Full access (use with caution)
+
+**Documentation:**
+- See `docs/API.md` for complete API reference
+- Includes examples for bash, Python, Node.js, and Claude Code
+
+**No OAuth Setup Required** - API keys work immediately!
+
+---
+
+## 📢 Pumble Integration (Optional - Webhook Setup)
+
+### 14. Pumble Team Chat Integration
+
+**Status:** Code implemented ✅ | Webhook setup required 🔴
+
+The Pumble integration sends notifications to Pumble channels when issues are created, updated, or assigned.
+
+**Features:**
+- Webhook-based (no OAuth needed)
+- Event subscriptions (issue.created, issue.updated, etc.)
+- Rich message formatting with colors
+- Per-project or global webhooks
+- Test message functionality
+
+**Setup Steps:**
+
+1. **Get Pumble Webhook URL:**
+   - [ ] Open Pumble and go to the channel where you want notifications
+   - [ ] Click channel name → "Integrations"
+   - [ ] Click "Incoming Webhooks"
+   - [ ] Click "Add Incoming Webhook"
+   - [ ] Copy the Webhook URL (e.g., `https://api.pumble.com/workspaces/xxx/...`)
+
+2. **Add Webhook in Cascade:**
+   - [ ] Go to Settings → Integrations → Pumble
+   - [ ] Click "Add Webhook"
+   - [ ] Enter webhook name (e.g., "Team Notifications")
+   - [ ] Paste the Pumble webhook URL
+   - [ ] (Optional) Select a specific project
+   - [ ] Choose events to subscribe to:
+     - ✅ Issue Created
+     - ✅ Issue Updated
+     - ✅ Issue Assigned
+     - ✅ Issue Completed
+     - ☐ Issue Deleted
+     - ☐ Comment Added
+   - [ ] Configure notification settings:
+     - ✅ Send notifications for @mentions
+     - ✅ Send notifications for assignments
+     - ✅ Send notifications for status changes
+   - [ ] Click "Add Webhook"
+
+3. **Test the Integration:**
+   - [ ] Click "Test Webhook" button
+   - [ ] Check your Pumble channel for test message
+   - [ ] If successful, you'll see: "🎉 Cascade integration is working!"
+
+4. **Monitor Usage:**
+   - Webhook cards show:
+     - Total messages sent
+     - Last message time
+     - Last error (if any)
+   - Click "View Stats" for detailed usage
+
+**Troubleshooting:**
+- If test fails, verify webhook URL is correct
+- Ensure webhook URL contains "pumble.com"
+- Check webhook is active (toggle in settings)
+- Check browser console for errors
+
+**No OAuth Required** - Just add webhook URL and start receiving notifications!
 
 ---
 
@@ -624,20 +751,24 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 | Feature | Code Status | OAuth/Setup Required | Manual Steps |
 |---------|-------------|----------------------|--------------|
 | Email Notifications | ✅ Complete | 🔴 Yes | Email provider account + API keys |
-| GitHub Integration | ✅ Complete | 🔴 Yes | GitHub OAuth app + credentials |
+| REST API / API Keys | ✅ Complete | ✅ No | None - generate keys in Settings |
+| Pumble Integration | ✅ Complete | 🟡 Webhook URL | Get webhook URL from Pumble |
 | Google Calendar | ✅ Complete | 🔴 Yes | Google Cloud project + OAuth |
+| GitHub Integration | ✅ Complete | 🔴 Yes | GitHub OAuth app + credentials |
 | Offline Mode / PWA | ✅ Complete | ✅ No | None - works out of the box! |
 | Responsive Design | ✅ Complete | ✅ No | None - already applied |
 | Dark Mode | ✅ Complete | ✅ No | None - already implemented |
-| Settings Page | ✅ Complete | ✅ No | None - UI ready for OAuth |
+| Onboarding Flow | ✅ Complete | ✅ No | None - auto-triggers for new users |
 
 **Priority Order for Production:**
 1. **Email Notifications** - Users expect this
-2. **Offline Mode** - Already works, just deploy
-3. **GitHub Integration** - If targeting developers
-4. **Google Calendar** - If calendar sync is important
+2. **REST API** - Already works, just generate keys
+3. **Pumble Integration** - Simple webhook setup
+4. **Offline Mode** - Already works, just deploy
+5. **Google Calendar** - If calendar sync is important
+6. **GitHub Integration** - If targeting developers
 
 ---
 
-**Last Updated:** 2025-11-17
-**Status:** All Features Implemented - OAuth Setup Required for GitHub/Google
+**Last Updated:** 2025-11-18
+**Status:** Phase 1 Complete - OAuth Setup Optional for Integrations

@@ -5,8 +5,8 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { Checkbox } from "../ui/form/Checkbox";
 import { InputField } from "../ui/FormField";
+import { Checkbox } from "../ui/form/Checkbox";
 import { Modal } from "../ui/Modal";
 
 interface WebhookFormProps {

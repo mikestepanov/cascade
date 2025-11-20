@@ -16,6 +16,7 @@ export function ThemeToggle() {
           type="button"
           key={t.value}
           onClick={() => setTheme(t.value)}
+          aria-label={`Switch to ${t.label.toLowerCase()} theme`}
           className={`px-2 py-1 rounded-md text-sm transition-colors ${
             theme === t.value
               ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"

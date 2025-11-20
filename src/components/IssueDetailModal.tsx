@@ -8,14 +8,13 @@ import { CustomFieldValues } from "./CustomFieldValues";
 import { FileAttachments } from "./FileAttachments";
 import { IssueComments } from "./IssueComments";
 import { IssueDependencies } from "./IssueDependencies";
-import { IssueWatchers } from "./IssueWatchers";
 import { IssueMetadataSection } from "./IssueDetail/IssueMetadataSection";
 import { SubtasksList } from "./IssueDetail/SubtasksList";
+import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
-import { Skeleton } from "./ui/Skeleton";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -46,7 +45,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
           >
             <span className="sr-only">Loading...</span>
             {/* Header Skeleton */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
               <div className="flex items-center space-x-3">
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-8 rounded" />
                 <div className="space-y-2">
@@ -57,7 +56,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             </div>
 
             {/* Content Skeleton */}
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-8 w-3/4" />
               <div className="space-y-2">
                 <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
@@ -106,7 +105,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
         <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <span className="text-2xl">{getTypeIcon(issue.type)}</span>
               <div>
@@ -120,7 +119,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 </div>
               </div>
             </div>
-            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close issue modal"
+              className="text-gray-400 hover:text-gray-600"
+            >
               <svg
                 aria-hidden="true"
                 className="w-6 h-6"
@@ -139,7 +143,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-6">
             {/* Title */}
             <div>
               {isEditing ? (
@@ -246,11 +250,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Sub-tasks (only show for non-subtasks) */}
             {issue.type !== "subtask" && (
-              <SubtasksList
-                issueId={issue._id}
-                projectId={issue.projectId}
-                subtasks={subtasks}
-              />
+              <SubtasksList issueId={issue._id} projectId={issue.projectId} subtasks={subtasks} />
             )}
 
             {/* Custom Fields */}

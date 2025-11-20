@@ -63,24 +63,28 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const activeSprint = sprints?.find((sprint) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-            <p className="text-gray-600">{project.description}</p>
+      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {project.name}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">
+              {project.description}
+            </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <ExportButton
               projectId={projectId}
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
-            <div className="flex items-center space-x-2">
-              <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.key}
               </span>
-              <span className="text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded">
+              <span className="text-xs sm:text-sm bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.boardType}
               </span>
             </div>
@@ -88,122 +92,140 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         </div>
 
         {/* Tabs - Visually grouped by function */}
-        <div className="flex items-center">
+        <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch scrollbar-hide">
           {/* Primary Workflow Tabs */}
-          <div className="flex space-x-6">
+          <div className="flex gap-2 sm:gap-3 md:gap-6">
             <button
               type="button"
               onClick={() => setActiveTab("board")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "board"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Board view"
             >
-              Board
+              <span>📋</span>
+              <span className="hidden sm:inline">Board</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("backlog")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "backlog"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Backlog view"
             >
-              Backlog
+              <span>📝</span>
+              <span className="hidden sm:inline">Backlog</span>
             </button>
             {project.boardType === "scrum" && (
               <button
                 type="button"
                 onClick={() => setActiveTab("sprints")}
-                className={`pb-2 border-b-2 transition-colors ${
+                className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                   activeTab === "sprints"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
+                aria-label="Sprints view"
               >
-                Sprints
+                <span>🏃</span>
+                <span className="hidden sm:inline">Sprints</span>
               </button>
             )}
           </div>
 
           {/* Visual Separator */}
-          <div className="h-6 w-px bg-gray-300 mx-6"></div>
+          <div className="hidden lg:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
-          <div className="flex space-x-6">
+          <div className="flex gap-2 sm:gap-3 md:gap-6 flex-shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("roadmap")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "roadmap"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Roadmap view"
             >
-              Roadmap
+              <span>🗺️</span>
+              <span className="hidden sm:inline">Roadmap</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("calendar")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "calendar"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Calendar view"
             >
-              Calendar
+              <span>📅</span>
+              <span className="hidden sm:inline">Calendar</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("activity")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "activity"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Activity view"
             >
-              Activity
+              <span>📊</span>
+              <span className="hidden sm:inline">Activity</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("analytics")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "analytics"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Analytics view"
             >
-              Analytics
+              <span>📈</span>
+              <span className="hidden sm:inline">Analytics</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("billing")}
-              className={`pb-2 border-b-2 transition-colors ${
+              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "billing"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
+              aria-label="Billing view"
             >
-              💰 Billing
+              <span>💰</span>
+              <span className="hidden sm:inline">Billing</span>
             </button>
           </div>
 
           {/* Spacer to push Settings to the right */}
-          <div className="flex-1"></div>
+          <div className="flex-1" />
 
           {/* Settings Tab - Separated */}
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`pb-2 border-b-2 transition-colors ${
+            className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
               activeTab === "settings"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
+            aria-label="Settings"
           >
-            ⚙️ Settings
+            <span>⚙️</span>
+            <span className="hidden sm:inline">Settings</span>
           </button>
         </div>
 
@@ -254,25 +276,29 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
         {activeTab === "billing" && <BillingReport projectId={projectId} />}
         {activeTab === "settings" && (
-          <div className="p-6 overflow-y-auto bg-gray-50">
+          <div className="p-3 sm:p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
             <div className="max-w-5xl mx-auto space-y-8">
               {/* Project Basics Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Project Basics</h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Project Basics</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Configure fundamental project settings and templates
                 </p>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Labels Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <LabelsManager projectId={projectId} />
                   </ErrorBoundary>
 
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Templates Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <TemplatesManager projectId={projectId} />
                   </ErrorBoundary>
@@ -281,23 +307,27 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
               {/* Integrations & Automation Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
                   Integrations & Automation
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Connect external services and automate workflows
                 </p>
                 <div className="space-y-6">
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Webhooks Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <WebhooksManager projectId={projectId} />
                   </ErrorBoundary>
 
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Automation Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <AutomationRulesManager projectId={projectId} />
                   </ErrorBoundary>
@@ -306,13 +336,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
               {/* Advanced Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Advanced</h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Advanced</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Customize your project with additional metadata fields
                 </p>
                 <ErrorBoundary
                   fallback={<SectionErrorFallback title="Custom Fields Error" />}
-                  onError={(_error) => {}}
+                  onError={(_error) => {
+                    // Error is shown in fallback UI
+                  }}
                 >
                   <CustomFieldsManager projectId={projectId} />
                 </ErrorBoundary>

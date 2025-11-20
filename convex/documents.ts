@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 export const create = mutation({
@@ -159,16 +160,73 @@ export const deleteDocument = mutation({
   },
 });
 
+// Helper: Check if document matches search filters
+function matchesDocumentFilters(
+  doc: {
+    isPublic: boolean;
+    createdBy: Id<"users">;
+    projectId?: Id<"projects">;
+    createdAt: number;
+  },
+  filters: {
+    projectId?: Id<"projects">;
+    createdBy?: Id<"users"> | "me";
+    isPublic?: boolean;
+    dateFrom?: number;
+    dateTo?: number;
+  },
+  userId: Id<"users">,
+): boolean {
+  // Apply project filter
+  if (filters.projectId && doc.projectId !== filters.projectId) {
+    return false;
+  }
+
+  // Apply creator filter
+  if (filters.createdBy) {
+    if (filters.createdBy === "me" && doc.createdBy !== userId) {
+      return false;
+    }
+    if (filters.createdBy !== "me" && doc.createdBy !== filters.createdBy) {
+      return false;
+    }
+  }
+
+  // Apply public/private filter
+  if (filters.isPublic !== undefined && doc.isPublic !== filters.isPublic) {
+    return false;
+  }
+
+  // Apply date range filter
+  if (filters.dateFrom && doc.createdAt < filters.dateFrom) {
+    return false;
+  }
+  if (filters.dateTo && doc.createdAt > filters.dateTo) {
+    return false;
+  }
+
+  return true;
+}
+
 export const search = query({
-  args: { query: v.string() },
+  args: {
+    query: v.string(),
+    limit: v.optional(v.number()),
+    offset: v.optional(v.number()),
+    projectId: v.optional(v.id("projects")),
+    createdBy: v.optional(v.union(v.id("users"), v.literal("me"))),
+    isPublic: v.optional(v.boolean()),
+    dateFrom: v.optional(v.number()),
+    dateTo: v.optional(v.number()),
+  },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return { results: [], total: 0, hasMore: false };
     }
 
     if (!args.query.trim()) {
-      return [];
+      return { results: [], total: 0, hasMore: false };
     }
 
     const results = await ctx.db
@@ -176,18 +234,57 @@ export const search = query({
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
       .collect();
 
-    // Filter results based on access permissions
-    const accessibleResults = results.filter((doc) => doc.isPublic || doc.createdBy === userId);
+    // Filter results based on access permissions and advanced filters
+    const filtered = [];
+    for (const doc of results) {
+      // Check access permissions
+      if (!doc.isPublic && doc.createdBy !== userId) {
+        continue;
+      }
 
-    return await Promise.all(
-      accessibleResults.map(async (doc) => {
+      // Apply all search filters
+      if (!matchesDocumentFilters(doc, args, userId)) {
+        continue;
+      }
+
+      filtered.push(doc);
+    }
+
+    const total = filtered.length;
+    const offset = args.offset ?? 0;
+    const limit = args.limit ?? 20;
+
+    // Apply pagination
+    const paginatedResults = filtered.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    // Enrich with creator and project data
+    const enrichedResults = await Promise.all(
+      paginatedResults.map(async (doc) => {
         const creator = await ctx.db.get(doc.createdBy);
+        const project = doc.projectId ? await ctx.db.get(doc.projectId) : null;
+
         return {
           ...doc,
           creatorName: creator?.name || creator?.email || "Unknown",
           isOwner: doc.createdBy === userId,
+          project: project
+            ? {
+                _id: project._id,
+                name: project.name,
+                key: project.key,
+              }
+            : null,
         };
       }),
     );
+
+    return {
+      results: enrichedResults,
+      total,
+      hasMore,
+      offset,
+      limit,
+    };
   },
 });
