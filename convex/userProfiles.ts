@@ -1,14 +1,14 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
+import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
 
 // Check if user is admin (has admin role in any project they created)
-async function isAdmin(ctx: any, userId: string) {
+async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   // Check if user has created any projects (project creators are admins)
   const createdProjects = await ctx.db
     .query("projects")
-    .withIndex("by_creator", (q: any) => q.eq("createdBy", userId))
+    .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
   if (createdProjects) return true;
@@ -16,8 +16,8 @@ async function isAdmin(ctx: any, userId: string) {
   // Check if user has admin role in any project
   const adminMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_user", (q: any) => q.eq("userId", userId))
-    .filter((q: any) => q.eq(q.field("role"), "admin"))
+    .withIndex("by_user", (q) => q.eq("userId", userId))
+    .filter((q) => q.eq(q.field("role"), "admin"))
     .first();
 
   return !!adminMembership;
@@ -153,7 +153,17 @@ export const updateEmploymentTypeConfig = mutation({
       throw new Error("Employment type configuration not found");
     }
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: {
+      updatedAt: number;
+      name?: string;
+      description?: string;
+      defaultMaxHoursPerWeek?: number;
+      defaultMaxHoursPerDay?: number;
+      defaultRequiresApproval?: boolean;
+      defaultCanWorkOvertime?: boolean;
+      canAccessBilling?: boolean;
+      canManageProjects?: boolean;
+    } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.description !== undefined) updates.description = args.description;
     if (args.defaultMaxHoursPerWeek !== undefined)
