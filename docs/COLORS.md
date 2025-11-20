@@ -354,8 +354,9 @@ As of 2025-11-20:
 ### Phase 1: Core Components (High Priority)
 - ✅ Button component
 - ✅ Form components (Input, Select, Textarea, Checkbox)
-- ⏳ SignInForm
-- ⏳ Settings pages
+- ✅ Card component (widely reused)
+- ✅ SignInForm and auth styles
+- ✅ Settings pages (PreferencesTab, OfflineTab)
 - ⏳ Dashboard
 
 ### Phase 2: Feature Components (Medium Priority)
