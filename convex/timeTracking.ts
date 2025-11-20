@@ -249,11 +249,7 @@ export const updateTimeEntry = mutation({
     const endTime = args.endTime ?? entry.endTime;
 
     if (endTime && startTime) {
-      const { duration, totalCost } = calculateTimeEntryCost(
-        startTime,
-        endTime,
-        entry.hourlyRate,
-      );
+      const { duration, totalCost } = calculateTimeEntryCost(startTime, endTime, entry.hourlyRate);
       updates.duration = duration;
       updates.totalCost = totalCost;
     }

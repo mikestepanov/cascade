@@ -495,8 +495,12 @@ function trackNullableFieldUpdate<T>(
     updates[fieldName] = newValue ?? undefined;
     changes.push({
       field: fieldName,
-      oldValue: valueTransform ? valueTransform(oldValue) : (oldValue as string | number | undefined),
-      newValue: valueTransform ? valueTransform(newValue) : (newValue as string | number | null | undefined),
+      oldValue: valueTransform
+        ? valueTransform(oldValue)
+        : (oldValue as string | number | undefined),
+      newValue: valueTransform
+        ? valueTransform(newValue)
+        : (newValue as string | number | null | undefined),
     });
   }
 }
@@ -545,7 +549,13 @@ function processIssueUpdates(
   // Track nullable field changes
   trackNullableFieldUpdate(updates, changes, "assigneeId", issue.assigneeId, args.assigneeId);
   trackNullableFieldUpdate(updates, changes, "dueDate", issue.dueDate, args.dueDate);
-  trackNullableFieldUpdate(updates, changes, "estimatedHours", issue.estimatedHours, args.estimatedHours);
+  trackNullableFieldUpdate(
+    updates,
+    changes,
+    "estimatedHours",
+    issue.estimatedHours,
+    args.estimatedHours,
+  );
   trackNullableFieldUpdate(updates, changes, "storyPoints", issue.storyPoints, args.storyPoints);
 
   // Handle labels specially (array to string transform)
@@ -1212,10 +1222,7 @@ export const bulkMoveToSprint = mutation({
 });
 
 // Helper: Delete all related records for an issue
-async function deleteIssueRelatedRecords(
-  ctx: MutationCtx,
-  issueId: Id<"issues">,
-): Promise<void> {
+async function deleteIssueRelatedRecords(ctx: MutationCtx, issueId: Id<"issues">): Promise<void> {
   // Delete comments
   const comments = await ctx.db
     .query("issueComments")

@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 import { assertMinimumRole } from "./rbac";
 
 // Helper: Validate number field value
