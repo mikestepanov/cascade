@@ -54,6 +54,29 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     }
   };
 
+  const formatUpdateMessage = (
+    field: string,
+    oldValue: string | undefined,
+    newValue: string | undefined,
+  ): string => {
+    if (field === "status") {
+      return `changed status from ${oldValue} to ${newValue}`;
+    }
+    if (field === "priority") {
+      return `changed priority from ${oldValue} to ${newValue}`;
+    }
+    if (field === "assignee") {
+      if (oldValue && newValue) {
+        return `reassigned from ${oldValue} to ${newValue}`;
+      }
+      if (newValue) {
+        return `assigned to ${newValue}`;
+      }
+      return "unassigned";
+    }
+    return `updated ${field}`;
+  };
+
   const formatActivityMessage = (activity: {
     action: string;
     field?: string;
@@ -61,37 +84,35 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     newValue?: string;
     issueKey?: string;
   }) => {
-    const { action, field, oldValue, newValue, issueKey: _issueKey } = activity;
+    const { action, field, oldValue, newValue } = activity;
 
-    if (action === "created") {
-      return "created";
-    } else if (action === "commented") {
-      return "commented on";
-    } else if (action === "started_watching") {
-      return "started watching";
-    } else if (action === "stopped_watching") {
-      return "stopped watching";
-    } else if (action === "linked") {
-      return `linked ${field}`;
-    } else if (action === "unlinked") {
-      return `unlinked ${field}`;
-    } else if (action === "updated" && field) {
-      if (field === "status") {
-        return `changed status from ${oldValue} to ${newValue}`;
-      } else if (field === "priority") {
-        return `changed priority from ${oldValue} to ${newValue}`;
-      } else if (field === "assignee") {
-        return oldValue && newValue
-          ? `reassigned from ${oldValue} to ${newValue}`
-          : newValue
-            ? `assigned to ${newValue}`
-            : "unassigned";
-      } else {
-        return `updated ${field}`;
-      }
-    } else {
-      return action;
+    // Handle simple action messages
+    const simpleActions: Record<string, string> = {
+      created: "created",
+      commented: "commented on",
+      started_watching: "started watching",
+      stopped_watching: "stopped watching",
+    };
+
+    if (simpleActions[action]) {
+      return simpleActions[action];
     }
+
+    // Handle linked/unlinked actions
+    if (action === "linked") {
+      return `linked ${field}`;
+    }
+    if (action === "unlinked") {
+      return `unlinked ${field}`;
+    }
+
+    // Handle updated actions with field-specific formatting
+    if (action === "updated" && field) {
+      return formatUpdateMessage(field, oldValue, newValue);
+    }
+
+    // Default fallback
+    return action;
   };
 
   if (!activities) {
