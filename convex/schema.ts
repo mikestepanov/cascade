@@ -33,6 +33,29 @@ const applicationTables = {
     .index("by_document_version", ["documentId", "version"])
     .index("by_document_created", ["documentId", "createdAt"]),
 
+  documentTemplates: defineTable({
+    name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
+    description: v.optional(v.string()),
+    category: v.string(), // "meeting", "planning", "design", "engineering", etc.
+    icon: v.string(), // Emoji or icon identifier
+    content: v.any(), // BlockNote/ProseMirror content structure
+    isBuiltIn: v.boolean(), // Built-in templates vs user-created
+    isPublic: v.boolean(), // Public templates visible to all users
+    createdBy: v.optional(v.id("users")), // Creator (null for built-in)
+    projectId: v.optional(v.id("projects")), // Project-specific template (optional)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_built_in", ["isBuiltIn"])
+    .index("by_public", ["isPublic"])
+    .index("by_creator", ["createdBy"])
+    .index("by_project", ["projectId"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["category", "isPublic", "isBuiltIn"],
+    }),
+
   projects: defineTable({
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
