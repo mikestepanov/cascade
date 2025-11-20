@@ -49,16 +49,16 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
   };
 
   return (
-    <div className="w-full sm:w-72 lg:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Projects</h2>
+      <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">Projects</h2>
 
         {/* Create Project Button */}
         <button
           type="button"
           onClick={() => setShowCreateForm(true)}
-          className="w-full px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+          className="w-full px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm font-medium hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors"
         >
           + New Project
         </button>
@@ -66,7 +66,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
 
       {/* Create Project Form */}
       {showCreateForm && (
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
           <form onSubmit={(e) => void handleCreateProject(e)} className="space-y-3">
             <Input
               type="text"
@@ -102,7 +102,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
             <div className="flex space-x-2">
               <button
                 type="submit"
-                className="flex-1 px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm hover:bg-blue-700 dark:hover:bg-blue-600"
+                className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm hover:bg-brand-700 dark:hover:bg-brand-600"
               >
                 Create
               </button>
@@ -116,7 +116,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                   setNewProjectIsPublic(false);
                   setNewProjectBoardType("kanban");
                 }}
-                className="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm hover:bg-gray-400 dark:hover:bg-gray-600"
+                className="flex-1 px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               >
                 Cancel
               </button>
@@ -128,9 +128,9 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {/* Projects List */}
       <div className="flex-1 overflow-y-auto">
         {projects === undefined ? (
-          <div className="p-4 text-center text-gray-500 dark:text-gray-400">Loading...</div>
+          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">Loading...</div>
         ) : projects.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 dark:text-gray-400">No projects yet</div>
+          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">No projects yet</div>
         ) : (
           <div className="p-2">
             {projects.map((project) => (
@@ -140,8 +140,8 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                 tabIndex={0}
                 className={`group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedProjectId === project._id
-                    ? "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700"
-                    : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
+                    : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
                 onClick={() => onSelectProject(project._id)}
                 onKeyDown={handleKeyboardClick(() => onSelectProject(project._id))}
@@ -150,32 +150,32 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                         {project.name}
                       </h3>
-                      <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 py-0.5 rounded">
                         {project.key}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {project.issueCount} issues
                       </span>
-                      <span className="text-xs bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-400 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-400 px-2 py-0.5 rounded">
                         {project.boardType}
                       </span>
                       {project.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark">
                           Public
                         </span>
                       )}
                       {project.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-400">
                           Owner
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       by {project.creatorName}
                     </p>
                   </div>
