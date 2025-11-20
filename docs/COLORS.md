@@ -364,8 +364,8 @@ As of 2025-11-20:
 - ✅ Project boards (ProjectBoard, KanbanBoard)
 - ✅ Modals and dialogs (Modal, CreateIssueModal, IssueDetailModal)
 - ✅ Navigation components (Sidebar, ProjectSidebar, Dashboard)
-- ⏳ Document editor components
-- ⏳ Additional issue forms and dialogs
+- ✅ Document editor components (DocumentEditor, DocumentTemplatesManager)
+- ⏳ Additional feature components (Sprint, Calendar, Analytics)
 
 ### Phase 3: Remaining Components (Low Priority)
 - ⏳ All other components
