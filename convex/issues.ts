@@ -478,6 +478,29 @@ function trackFieldChange<T>(
   return false;
 }
 
+// Helper: Track and update a nullable field
+function trackNullableFieldUpdate<T>(
+  updates: Record<string, unknown>,
+  changes: Array<{
+    field: string;
+    oldValue: string | number | null | undefined;
+    newValue: string | number | null | undefined;
+  }>,
+  fieldName: string,
+  oldValue: T | undefined,
+  newValue: T | null | undefined,
+  valueTransform?: (val: T | null | undefined) => string | number | null | undefined,
+): void {
+  if (newValue !== undefined && newValue !== oldValue) {
+    updates[fieldName] = newValue ?? undefined;
+    changes.push({
+      field: fieldName,
+      oldValue: valueTransform ? valueTransform(oldValue) : (oldValue as string | number | undefined),
+      newValue: valueTransform ? valueTransform(newValue) : (newValue as string | number | null | undefined),
+    });
+  }
+}
+
 // Helper: Process issue update fields and track changes
 function processIssueUpdates(
   issue: {
@@ -508,60 +531,30 @@ function processIssueUpdates(
 ) {
   const updates: Record<string, unknown> = { updatedAt: Date.now() };
 
+  // Track simple field changes
   if (trackFieldChange(changes, "title", issue.title, args.title)) {
     updates.title = args.title;
   }
-
   if (trackFieldChange(changes, "description", issue.description, args.description)) {
     updates.description = args.description;
   }
-
   if (trackFieldChange(changes, "priority", issue.priority, args.priority)) {
     updates.priority = args.priority;
   }
 
-  if (args.assigneeId !== undefined && args.assigneeId !== issue.assigneeId) {
-    updates.assigneeId = args.assigneeId ?? undefined;
-    changes.push({
-      field: "assignee",
-      oldValue: issue.assigneeId,
-      newValue: args.assigneeId ?? undefined,
-    });
-  }
+  // Track nullable field changes
+  trackNullableFieldUpdate(updates, changes, "assigneeId", issue.assigneeId, args.assigneeId);
+  trackNullableFieldUpdate(updates, changes, "dueDate", issue.dueDate, args.dueDate);
+  trackNullableFieldUpdate(updates, changes, "estimatedHours", issue.estimatedHours, args.estimatedHours);
+  trackNullableFieldUpdate(updates, changes, "storyPoints", issue.storyPoints, args.storyPoints);
 
+  // Handle labels specially (array to string transform)
   if (args.labels !== undefined) {
     updates.labels = args.labels;
     changes.push({
       field: "labels",
       oldValue: issue.labels.join(", "),
       newValue: args.labels.join(", "),
-    });
-  }
-
-  if (args.dueDate !== undefined && args.dueDate !== issue.dueDate) {
-    updates.dueDate = args.dueDate ?? undefined;
-    changes.push({
-      field: "dueDate",
-      oldValue: issue.dueDate,
-      newValue: args.dueDate ?? undefined,
-    });
-  }
-
-  if (args.estimatedHours !== undefined && args.estimatedHours !== issue.estimatedHours) {
-    updates.estimatedHours = args.estimatedHours ?? undefined;
-    changes.push({
-      field: "estimatedHours",
-      oldValue: issue.estimatedHours,
-      newValue: args.estimatedHours ?? undefined,
-    });
-  }
-
-  if (args.storyPoints !== undefined && args.storyPoints !== issue.storyPoints) {
-    updates.storyPoints = args.storyPoints ?? undefined;
-    changes.push({
-      field: "storyPoints",
-      oldValue: issue.storyPoints,
-      newValue: args.storyPoints ?? undefined,
     });
   }
 
@@ -793,6 +786,25 @@ function matchesEpicFilter(
   return issue.epicId === epicFilter;
 }
 
+// Helper: Check if value matches array filter
+function matchesArrayFilter<T>(value: T, filterArray: T[] | undefined): boolean {
+  if (!filterArray || filterArray.length === 0) return true;
+  return filterArray.includes(value);
+}
+
+// Helper: Check if issue matches date range
+function matchesDateRange(createdAt: number, dateFrom?: number, dateTo?: number): boolean {
+  if (dateFrom && createdAt < dateFrom) return false;
+  if (dateTo && createdAt > dateTo) return false;
+  return true;
+}
+
+// Helper: Check if issue matches labels filter (all labels must be present)
+function matchesLabelsFilter(issueLabels: string[], filterLabels?: string[]): boolean {
+  if (!filterLabels || filterLabels.length === 0) return true;
+  return filterLabels.every((label) => issueLabels.includes(label));
+}
+
 // Helper: Check if issue matches all search filters
 function matchesSearchFilters(
   issue: {
@@ -822,63 +834,19 @@ function matchesSearchFilters(
   },
   userId: Id<"users">,
 ): boolean {
-  // Project filter
-  if (filters.projectId && issue.projectId !== filters.projectId) {
-    return false;
-  }
+  // Simple ID filters
+  if (filters.projectId && issue.projectId !== filters.projectId) return false;
+  if (filters.reporterId && issue.reporterId !== filters.reporterId) return false;
 
-  // Assignee filter
-  if (!matchesAssigneeFilter(issue, filters.assigneeId, userId)) {
-    return false;
-  }
-
-  // Reporter filter
-  if (filters.reporterId && issue.reporterId !== filters.reporterId) {
-    return false;
-  }
-
-  // Type filter
-  if (filters.type && filters.type.length > 0 && !filters.type.includes(issue.type)) {
-    return false;
-  }
-
-  // Status filter
-  if (filters.status && filters.status.length > 0 && !filters.status.includes(issue.status)) {
-    return false;
-  }
-
-  // Priority filter
-  if (
-    filters.priority &&
-    filters.priority.length > 0 &&
-    !filters.priority.includes(issue.priority)
-  ) {
-    return false;
-  }
-
-  // Labels filter (issue must have ALL specified labels)
-  if (filters.labels && filters.labels.length > 0) {
-    const hasAllLabels = filters.labels.every((label) => issue.labels.includes(label));
-    if (!hasAllLabels) return false;
-  }
-
-  // Sprint filter
-  if (!matchesSprintFilter(issue, filters.sprintId)) {
-    return false;
-  }
-
-  // Epic filter
-  if (!matchesEpicFilter(issue, filters.epicId)) {
-    return false;
-  }
-
-  // Date range filter
-  if (filters.dateFrom && issue.createdAt < filters.dateFrom) {
-    return false;
-  }
-  if (filters.dateTo && issue.createdAt > filters.dateTo) {
-    return false;
-  }
+  // Complex filters using helpers
+  if (!matchesAssigneeFilter(issue, filters.assigneeId, userId)) return false;
+  if (!matchesArrayFilter(issue.type, filters.type)) return false;
+  if (!matchesArrayFilter(issue.status, filters.status)) return false;
+  if (!matchesArrayFilter(issue.priority, filters.priority)) return false;
+  if (!matchesLabelsFilter(issue.labels, filters.labels)) return false;
+  if (!matchesSprintFilter(issue, filters.sprintId)) return false;
+  if (!matchesEpicFilter(issue, filters.epicId)) return false;
+  if (!matchesDateRange(issue.createdAt, filters.dateFrom, filters.dateTo)) return false;
 
   return true;
 }
@@ -1243,6 +1211,66 @@ export const bulkMoveToSprint = mutation({
   },
 });
 
+// Helper: Delete all related records for an issue
+async function deleteIssueRelatedRecords(
+  ctx: MutationCtx,
+  issueId: Id<"issues">,
+): Promise<void> {
+  // Delete comments
+  const comments = await ctx.db
+    .query("issueComments")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const comment of comments) {
+    await ctx.db.delete(comment._id);
+  }
+
+  // Delete activities
+  const activities = await ctx.db
+    .query("issueActivity")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const activity of activities) {
+    await ctx.db.delete(activity._id);
+  }
+
+  // Delete outgoing links
+  const links = await ctx.db
+    .query("issueLinks")
+    .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
+    .collect();
+  for (const link of links) {
+    await ctx.db.delete(link._id);
+  }
+
+  // Delete incoming links
+  const backlinks = await ctx.db
+    .query("issueLinks")
+    .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
+    .collect();
+  for (const link of backlinks) {
+    await ctx.db.delete(link._id);
+  }
+
+  // Delete watchers
+  const watchers = await ctx.db
+    .query("issueWatchers")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const watcher of watchers) {
+    await ctx.db.delete(watcher._id);
+  }
+
+  // Delete time entries
+  const timeEntries = await ctx.db
+    .query("timeEntries")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  for (const entry of timeEntries) {
+    await ctx.db.delete(entry._id);
+  }
+}
+
 export const bulkDelete = mutation({
   args: {
     issueIds: v.array(v.id("issues")),
@@ -1265,60 +1293,8 @@ export const bulkDelete = mutation({
         continue; // Only admins can delete
       }
 
-      // Delete related data
-      const comments = await ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const comment of comments) {
-        await ctx.db.delete(comment._id);
-      }
-
-      const activities = await ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const activity of activities) {
-        await ctx.db.delete(activity._id);
-      }
-
-      const links = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-        .collect();
-
-      for (const link of links) {
-        await ctx.db.delete(link._id);
-      }
-
-      const backlinks = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-        .collect();
-
-      for (const link of backlinks) {
-        await ctx.db.delete(link._id);
-      }
-
-      const watchers = await ctx.db
-        .query("issueWatchers")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const watcher of watchers) {
-        await ctx.db.delete(watcher._id);
-      }
-
-      const timeEntries = await ctx.db
-        .query("timeEntries")
-        .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-        .collect();
-
-      for (const entry of timeEntries) {
-        await ctx.db.delete(entry._id);
-      }
+      // Delete all related records
+      await deleteIssueRelatedRecords(ctx, issueId);
 
       // Finally delete the issue
       await ctx.db.delete(issueId);
