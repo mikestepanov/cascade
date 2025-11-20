@@ -1,4 +1,4 @@
-import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
@@ -15,6 +15,7 @@ import { NotificationCenter } from "./components/NotificationCenter";
 import { OnboardingChecklist } from "./components/Onboarding/Checklist";
 import { OnboardingTour } from "./components/Onboarding/OnboardingTour";
 import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
+import { SampleProjectModal } from "./components/Onboarding/SampleProjectModal";
 import { WelcomeModal } from "./components/Onboarding/WelcomeModal";
 import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
@@ -26,10 +27,12 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./components/TimeTracking/TimerWidget";
 import { TimeTrackingPage } from "./components/TimeTracking/TimeTrackingPage";
 import { ModalBackdrop } from "./components/ui/ModalBackdrop";
+import { createKeyboardShortcuts, createKeySequences } from "./config/keyboardShortcuts";
 import { OnboardingProvider } from "./contexts/OnboardingContext";
-import { type KeySequence, useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
+import { useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
+import { type AppView, shouldShowSidebar } from "./utils/viewHelpers";
 
 export default function App() {
   return (
@@ -50,9 +53,7 @@ function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | null>(null);
-  const [activeView, setActiveView] = useState<
-    "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings"
-  >("dashboard");
+  const [activeView, setActiveView] = useState<AppView>("dashboard");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -71,8 +72,6 @@ function Content() {
   const [showSampleProjectModal, setShowSampleProjectModal] = useState(false);
   const [showWelcomeTour, setShowWelcomeTour] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
-  const createSampleProject = useMutation(api.onboarding.createSampleProject);
-  const _projects = useQuery(api.projects.list, {});
 
   // Check if user is new and should see onboarding
   useEffect(() => {
@@ -102,152 +101,28 @@ function Content() {
     onCreateProject: undefined, // Will be set contextually
   });
 
-  // Global keyboard shortcuts (regular shortcuts)
-  const shortcuts = [
-    // Command palette (Cmd/Ctrl+K)
-    {
-      key: "k",
-      meta: true,
-      handler: () => setShowCommandPalette(true),
-      description: "Open command palette",
-      global: true,
+  // Create keyboard shortcuts with handlers
+  const shortcuts = createKeyboardShortcuts({
+    setActiveView,
+    setShowCommandPalette,
+    setShowShortcutsHelp,
+    setShowAIAssistant: (toggle) => setShowAIAssistant(toggle),
+    clearSelections: () => {
+      setSelectedDocumentId(null);
+      setSelectedProjectId(null);
     },
-    {
-      key: "k",
-      ctrl: true,
-      handler: () => setShowCommandPalette(true),
-      description: "Open command palette",
-      global: true,
-    },
-    // Help (?)
-    {
-      key: "?",
-      shift: true,
-      handler: () => setShowShortcutsHelp(true),
-      description: "Show keyboard shortcuts",
-      global: true,
-    },
-    // AI Assistant (Cmd/Ctrl+Shift+A)
-    {
-      key: "a",
-      meta: true,
-      shift: true,
-      handler: () => setShowAIAssistant(!showAIAssistant),
-      description: "Toggle AI assistant",
-      global: true,
-    },
-    {
-      key: "a",
-      ctrl: true,
-      shift: true,
-      handler: () => setShowAIAssistant(!showAIAssistant),
-      description: "Toggle AI assistant",
-      global: true,
-    },
-    // Quick navigation (Cmd/Ctrl+number)
-    {
-      key: "1",
-      meta: true,
-      handler: () => setActiveView("dashboard"),
-      description: "Go to dashboard",
-    },
-    {
-      key: "2",
-      meta: true,
-      handler: () => setActiveView("documents"),
-      description: "Go to documents",
-    },
-    {
-      key: "3",
-      meta: true,
-      handler: () => setActiveView("projects"),
-      description: "Go to projects",
-    },
-    {
-      key: "4",
-      meta: true,
-      handler: () => setActiveView("timesheet"),
-      description: "Go to timesheet",
-    },
-    {
-      key: "5",
-      meta: true,
-      handler: () => setActiveView("calendar"),
-      description: "Go to calendar",
-    },
-    // Single-key actions (only when not typing)
-    {
-      key: "c",
-      handler: () => {
-        // Trigger create issue event
-        const event = new CustomEvent("cascade:create-issue");
-        window.dispatchEvent(event);
-      },
-      description: "Create new issue",
-    },
-    {
-      key: "d",
-      handler: () => {
-        // Trigger create document event
-        const event = new CustomEvent("cascade:create-document");
-        window.dispatchEvent(event);
-      },
-      description: "Create new document",
-    },
-    {
-      key: "p",
-      handler: () => {
-        // Trigger create project event
-        const event = new CustomEvent("cascade:create-project");
-        window.dispatchEvent(event);
-      },
-      description: "Create new project",
-    },
-  ];
+  });
 
-  // Key sequences (G+key for navigation, Linear-style)
-  const sequences: KeySequence[] = [
-    {
-      keys: ["g", "h"],
-      handler: () => {
-        setActiveView("dashboard");
-        setSelectedDocumentId(null);
-        setSelectedProjectId(null);
-      },
-      description: "Go to home",
+  const sequences = createKeySequences({
+    setActiveView,
+    setShowCommandPalette,
+    setShowShortcutsHelp,
+    setShowAIAssistant: (toggle) => setShowAIAssistant(toggle),
+    clearSelections: () => {
+      setSelectedDocumentId(null);
+      setSelectedProjectId(null);
     },
-    {
-      keys: ["g", "b"],
-      handler: () => {
-        setActiveView("projects");
-        setSelectedDocumentId(null);
-      },
-      description: "Go to board",
-    },
-    {
-      keys: ["g", "d"],
-      handler: () => {
-        setActiveView("documents");
-        setSelectedProjectId(null);
-      },
-      description: "Go to documents",
-    },
-    {
-      keys: ["g", "t"],
-      handler: () => setActiveView("timesheet"),
-      description: "Go to timesheet",
-    },
-    {
-      keys: ["g", "c"],
-      handler: () => setActiveView("calendar"),
-      description: "Go to calendar",
-    },
-    {
-      keys: ["g", "s"],
-      handler: () => setActiveView("settings"),
-      description: "Go to settings",
-    },
-  ];
+  });
 
   // Register shortcuts with sequence support
   useKeyboardShortcutsWithSequences(shortcuts, sequences);
@@ -298,47 +173,18 @@ function Content() {
 
         {/* Sample Project Offer Modal */}
         {showSampleProjectModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Welcome to Cascade! 🎉
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Would you like us to create a sample project with demo issues to help you explore
-                Cascade?
-              </p>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const projectId = await createSampleProject();
-                      setShowSampleProjectModal(false);
-                      setShowWelcomeTour(true); // Start tour after creating sample project
-                      toast.success("Sample project created! Let's take a quick tour.");
-                      setActiveView("projects");
-                      setSelectedProjectId(projectId as Id<"projects">);
-                    } catch (_error) {
-                      toast.error("Failed to create sample project");
-                    }
-                  }}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-                >
-                  Yes, show me around!
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSampleProjectModal(false);
-                    setShowProjectWizard(true); // Show project wizard instead
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  I'll start from scratch
-                </button>
-              </div>
-            </div>
-          </div>
+          <SampleProjectModal
+            onCreateSampleProject={(projectId) => {
+              setShowSampleProjectModal(false);
+              setShowWelcomeTour(true);
+              setActiveView("projects");
+              setSelectedProjectId(projectId);
+            }}
+            onStartFromScratch={() => {
+              setShowSampleProjectModal(false);
+              setShowProjectWizard(true);
+            }}
+          />
         )}
 
         {/* Onboarding Checklist (sticky widget) */}
@@ -356,10 +202,7 @@ function Content() {
           )}
 
           {/* Sidebar - only show for documents and projects views */}
-          {activeView !== "dashboard" &&
-            activeView !== "timesheet" &&
-            activeView !== "calendar" &&
-            activeView !== "settings" && (
+          {shouldShowSidebar(activeView) && (
               <ErrorBoundary
                 fallback={
                   <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
@@ -404,10 +247,7 @@ function Content() {
             <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
               <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
                 {/* Mobile Hamburger Menu */}
-                {activeView !== "dashboard" &&
-                  activeView !== "timesheet" &&
-                  activeView !== "calendar" &&
-                  activeView !== "settings" && (
+                {shouldShowSidebar(activeView) && (
                     <button
                       type="button"
                       onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
