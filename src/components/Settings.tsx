@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
+import { UserManagement } from "./Admin/UserManagement";
 import { UserTypeManager } from "./Admin/UserTypeManager";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
@@ -128,6 +129,7 @@ function IntegrationsTab() {
 function AdminTab() {
   return (
     <div className="space-y-8">
+      <UserManagement />
       <UserTypeManager />
       <HourComplianceDashboard />
     </div>

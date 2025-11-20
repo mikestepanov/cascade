@@ -22,6 +22,9 @@ This document provides comprehensive guidance for AI assistants working on the C
 - REST API with API key management
 - Google Calendar integration (OAuth, bi-directional sync)
 - Pumble webhook integration (team chat notifications)
+- **Multi-provider authentication** (Email/Password, Google OAuth, Anonymous)
+- **User invitation system** (Admin-controlled, email-based invites with expiration)
+- **User management dashboard** (Admin view of all users and invitations)
 
 ## Tech Stack
 
@@ -36,11 +39,12 @@ This document provides comprehensive guidance for AI assistants working on the C
 
 ### Backend
 - **Platform:** Convex (serverless backend with real-time database)
-- **Authentication:** @convex-dev/auth (Password + Anonymous providers)
+- **Authentication:** @convex-dev/auth (Password, Google OAuth, Anonymous providers)
 - **Real-time Features:**
   - @convex-dev/presence (user presence tracking)
   - @convex-dev/prosemirror-sync (collaborative editing)
 - **HTTP API:** Convex HTTP router
+- **User Management:** Invitation system with admin controls
 
 ### Development Tools
 - **Package Manager:** pnpm (preferred) or npm

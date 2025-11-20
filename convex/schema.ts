@@ -1071,6 +1071,32 @@ const applicationTables = {
     .index("by_user_period", ["userId", "periodStart"])
     .index("by_user_status", ["userId", "status"])
     .index("by_period_status", ["periodStart", "status"]),
+
+  // User Invitations
+  invites: defineTable({
+    email: v.string(), // Email address to invite
+    role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
+    invitedBy: v.id("users"), // Admin who sent the invite
+    token: v.string(), // Unique invitation token
+    expiresAt: v.number(), // Expiration timestamp
+    status: v.union(
+      v.literal("pending"), // Not yet accepted
+      v.literal("accepted"), // User accepted and created account
+      v.literal("revoked"), // Admin revoked the invite
+      v.literal("expired"), // Invite expired
+    ),
+    acceptedBy: v.optional(v.id("users")), // User who accepted (if accepted)
+    acceptedAt: v.optional(v.number()), // When accepted
+    revokedBy: v.optional(v.id("users")), // Admin who revoked (if revoked)
+    revokedAt: v.optional(v.number()), // When revoked
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_token", ["token"])
+    .index("by_status", ["status"])
+    .index("by_invited_by", ["invitedBy"])
+    .index("by_email_status", ["email", "status"]),
 };
 
 export default defineSchema({
