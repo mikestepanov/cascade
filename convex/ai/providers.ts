@@ -140,11 +140,11 @@ async function callCustomProvider(config: AIConfig, messages: AIMessage[]): Prom
 export async function callAI(config: AIConfig, messages: AIMessage[]): Promise<AIResponse> {
   switch (config.provider) {
     case "anthropic":
-      return callAnthropic(config, messages);
+      return await callAnthropic(config, messages);
     case "openai":
-      return callOpenAI(config, messages);
+      return await callOpenAI(config, messages);
     case "custom":
-      return callCustomProvider(config, messages);
+      return await callCustomProvider(config, messages);
     default:
       throw new Error(`Unsupported AI provider: ${config.provider}`);
   }
