@@ -361,7 +361,7 @@ As of 2025-11-20:
 - ✅ IssueCard component
 
 ### Phase 2: Feature Components (Medium Priority)
-- ⏳ Project boards (ProjectBoard, KanbanBoard)
+- ✅ Project boards (ProjectBoard, KanbanBoard)
 - ⏳ Document editor components
 - ⏳ Modals and dialogs
 - ⏳ Issue details and forms
