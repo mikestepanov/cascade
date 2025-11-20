@@ -920,6 +920,9 @@ const applicationTables = {
     billable: v.boolean(), // Is this time billable to client?
     billed: v.boolean(), // Has this been billed to client?
     invoiceId: v.optional(v.string()), // Link to invoice if billed
+    // Equity compensation
+    isEquityHour: v.optional(v.boolean()), // Is this compensated with equity (non-paid)?
+    equityValue: v.optional(v.number()), // Calculated equity value for this entry
     // Status
     isLocked: v.boolean(), // Locked entries can't be edited (for payroll/billing)
     isApproved: v.boolean(), // Approved by manager
@@ -937,7 +940,8 @@ const applicationTables = {
     .index("by_project_date", ["projectId", "date"])
     .index("by_billable", ["billable"])
     .index("by_billed", ["billed"])
-    .index("by_user_project", ["userId", "projectId"]),
+    .index("by_user_project", ["userId", "projectId"])
+    .index("by_equity", ["isEquityHour"]),
 
   // User Hourly Rates (for cost calculation)
   userRates: defineTable({
@@ -984,6 +988,14 @@ const applicationTables = {
     department: v.optional(v.string()),
     jobTitle: v.optional(v.string()),
     managerId: v.optional(v.id("users")), // Direct manager
+    // Equity compensation (employees only)
+    hasEquity: v.optional(v.boolean()), // Does employee have equity compensation?
+    equityPercentage: v.optional(v.number()), // Equity stake percentage (e.g., 0.5 for 0.5%)
+    requiredEquityHoursPerWeek: v.optional(v.number()), // Required non-paid equity hours per week
+    requiredEquityHoursPerMonth: v.optional(v.number()), // Alternative: monthly equity hours requirement
+    maxEquityHoursPerWeek: v.optional(v.number()), // Maximum equity hours allowed per week
+    equityHourlyValue: v.optional(v.number()), // Estimated value per equity hour (for tracking)
+    equityNotes: v.optional(v.string()), // Notes about equity arrangement
     // Status
     isActive: v.boolean(), // Is user currently active?
     // Metadata

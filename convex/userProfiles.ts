@@ -187,6 +187,14 @@ export const upsertUserProfile = mutation({
     department: v.optional(v.string()),
     jobTitle: v.optional(v.string()),
     managerId: v.optional(v.id("users")),
+    // Equity compensation
+    hasEquity: v.optional(v.boolean()),
+    equityPercentage: v.optional(v.number()),
+    requiredEquityHoursPerWeek: v.optional(v.number()),
+    requiredEquityHoursPerMonth: v.optional(v.number()),
+    maxEquityHoursPerWeek: v.optional(v.number()),
+    equityHourlyValue: v.optional(v.number()),
+    equityNotes: v.optional(v.string()),
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -217,6 +225,13 @@ export const upsertUserProfile = mutation({
       department: args.department,
       jobTitle: args.jobTitle,
       managerId: args.managerId,
+      hasEquity: args.hasEquity,
+      equityPercentage: args.equityPercentage,
+      requiredEquityHoursPerWeek: args.requiredEquityHoursPerWeek,
+      requiredEquityHoursPerMonth: args.requiredEquityHoursPerMonth,
+      maxEquityHoursPerWeek: args.maxEquityHoursPerWeek,
+      equityHourlyValue: args.equityHourlyValue,
+      equityNotes: args.equityNotes,
       isActive: args.isActive,
       updatedAt: now,
     };
@@ -393,5 +408,82 @@ export const deleteUserProfile = mutation({
     }
 
     await ctx.db.delete(profile._id);
+  },
+});
+
+// Get equity hours statistics for a user (for a specific time period)
+export const getEquityHoursStats = query({
+  args: {
+    userId: v.id("users"),
+    startDate: v.number(), // Unix timestamp
+    endDate: v.number(), // Unix timestamp
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Users can view their own stats, admins can view anyone's
+    const isAdminUser = await isAdmin(ctx, userId);
+    if (userId !== args.userId && !isAdminUser) {
+      throw new Error("Not authorized to view equity hours for this user");
+    }
+
+    // Get user profile with equity configuration
+    const profile = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .first();
+
+    if (!profile || !profile.hasEquity) {
+      return {
+        hasEquity: false,
+        totalEquityHours: 0,
+        requiredEquityHoursPerWeek: 0,
+        requiredEquityHoursPerMonth: 0,
+        maxEquityHoursPerWeek: 0,
+      };
+    }
+
+    // Get all equity time entries for the period
+    const allEntries = await ctx.db
+      .query("timeEntries")
+      .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
+      .filter((q) =>
+        q.and(
+          q.gte(q.field("date"), args.startDate),
+          q.lte(q.field("date"), args.endDate),
+          q.eq(q.field("isEquityHour"), true),
+        ),
+      )
+      .collect();
+
+    const totalEquitySeconds = allEntries.reduce((sum, entry) => sum + entry.duration, 0);
+    const totalEquityHours = totalEquitySeconds / 3600;
+
+    const totalEquityValue = allEntries.reduce((sum, entry) => sum + (entry.equityValue || 0), 0);
+
+    // Calculate weeks in period
+    const periodDays = (args.endDate - args.startDate) / (1000 * 60 * 60 * 24);
+    const weeksInPeriod = Math.ceil(periodDays / 7);
+
+    return {
+      hasEquity: true,
+      totalEquityHours,
+      totalEquityValue,
+      entriesCount: allEntries.length,
+      requiredEquityHoursPerWeek: profile.requiredEquityHoursPerWeek,
+      requiredEquityHoursPerMonth: profile.requiredEquityHoursPerMonth,
+      maxEquityHoursPerWeek: profile.maxEquityHoursPerWeek,
+      equityHourlyValue: profile.equityHourlyValue,
+      equityPercentage: profile.equityPercentage,
+      weeksInPeriod,
+      // Compliance metrics
+      requiredTotalHours: profile.requiredEquityHoursPerWeek
+        ? profile.requiredEquityHoursPerWeek * weeksInPeriod
+        : 0,
+      isCompliant:
+        !profile.requiredEquityHoursPerWeek ||
+        totalEquityHours >= profile.requiredEquityHoursPerWeek * weeksInPeriod,
+    };
   },
 });

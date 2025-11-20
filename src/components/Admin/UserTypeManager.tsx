@@ -50,6 +50,14 @@ export function UserTypeManager() {
   const [profileStartDate, setProfileStartDate] = useState("");
   const [profileEndDate, setProfileEndDate] = useState("");
   const [profileIsActive, setProfileIsActive] = useState(true);
+  // Equity state
+  const [profileHasEquity, setProfileHasEquity] = useState(false);
+  const [profileEquityPercentage, setProfileEquityPercentage] = useState<string>("");
+  const [profileRequiredEquityWeekly, setProfileRequiredEquityWeekly] = useState<string>("");
+  const [profileRequiredEquityMonthly, setProfileRequiredEquityMonthly] = useState<string>("");
+  const [profileMaxEquityWeekly, setProfileMaxEquityWeekly] = useState<string>("");
+  const [profileEquityHourlyValue, setProfileEquityHourlyValue] = useState<string>("");
+  const [profileEquityNotes, setProfileEquityNotes] = useState("");
 
   const handleInitializeConfigs = async () => {
     try {
@@ -113,6 +121,13 @@ export function UserTypeManager() {
     setProfileStartDate("");
     setProfileEndDate("");
     setProfileIsActive(true);
+    setProfileHasEquity(false);
+    setProfileEquityPercentage("");
+    setProfileRequiredEquityWeekly("");
+    setProfileRequiredEquityMonthly("");
+    setProfileMaxEquityWeekly("");
+    setProfileEquityHourlyValue("");
+    setProfileEquityNotes("");
     setShowAssignModal(true);
   };
 
@@ -132,6 +147,13 @@ export function UserTypeManager() {
       profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "",
     );
     setProfileIsActive(profile.isActive);
+    setProfileHasEquity(profile.hasEquity || false);
+    setProfileEquityPercentage(profile.equityPercentage?.toString() || "");
+    setProfileRequiredEquityWeekly(profile.requiredEquityHoursPerWeek?.toString() || "");
+    setProfileRequiredEquityMonthly(profile.requiredEquityHoursPerMonth?.toString() || "");
+    setProfileMaxEquityWeekly(profile.maxEquityHoursPerWeek?.toString() || "");
+    setProfileEquityHourlyValue(profile.equityHourlyValue?.toString() || "");
+    setProfileEquityNotes(profile.equityNotes || "");
     setShowAssignModal(true);
   };
 
@@ -152,6 +174,21 @@ export function UserTypeManager() {
         jobTitle: profileJobTitle || undefined,
         startDate: profileStartDate ? new Date(profileStartDate).getTime() : undefined,
         endDate: profileEndDate ? new Date(profileEndDate).getTime() : undefined,
+        hasEquity: profileHasEquity || undefined,
+        equityPercentage: profileEquityPercentage ? Number(profileEquityPercentage) : undefined,
+        requiredEquityHoursPerWeek: profileRequiredEquityWeekly
+          ? Number(profileRequiredEquityWeekly)
+          : undefined,
+        requiredEquityHoursPerMonth: profileRequiredEquityMonthly
+          ? Number(profileRequiredEquityMonthly)
+          : undefined,
+        maxEquityHoursPerWeek: profileMaxEquityWeekly
+          ? Number(profileMaxEquityWeekly)
+          : undefined,
+        equityHourlyValue: profileEquityHourlyValue
+          ? Number(profileEquityHourlyValue)
+          : undefined,
+        equityNotes: profileEquityNotes || undefined,
         isActive: profileIsActive,
       });
       showSuccess("User profile saved");
@@ -610,6 +647,103 @@ export function UserTypeManager() {
               onChange={(e) => setProfileEndDate(e.target.value)}
             />
           </div>
+
+          {/* Equity Compensation Section (Employees Only) */}
+          {profileType === "employee" && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-sm text-blue-900 dark:text-blue-100">
+                  💎 Equity Compensation
+                </h4>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={profileHasEquity}
+                    onChange={(e) => setProfileHasEquity(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-xs font-medium text-blue-900 dark:text-blue-100">
+                    Has Equity
+                  </span>
+                </label>
+              </div>
+
+              {profileHasEquity && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField
+                      label="Equity Percentage (%)"
+                      type="number"
+                      value={profileEquityPercentage}
+                      onChange={(e) => setProfileEquityPercentage(e.target.value)}
+                      placeholder="e.g., 0.5 for 0.5%"
+                      step="0.001"
+                      min={0}
+                    />
+
+                    <InputField
+                      label="Equity Hour Value ($)"
+                      type="number"
+                      value={profileEquityHourlyValue}
+                      onChange={(e) => setProfileEquityHourlyValue(e.target.value)}
+                      placeholder="Est. value per hour"
+                      step="0.01"
+                      min={0}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <InputField
+                      label="Required Hours/Week"
+                      type="number"
+                      value={profileRequiredEquityWeekly}
+                      onChange={(e) => setProfileRequiredEquityWeekly(e.target.value)}
+                      placeholder="e.g., 10"
+                      min={0}
+                      max={168}
+                    />
+
+                    <InputField
+                      label="Required Hours/Month"
+                      type="number"
+                      value={profileRequiredEquityMonthly}
+                      onChange={(e) => setProfileRequiredEquityMonthly(e.target.value)}
+                      placeholder="e.g., 40"
+                      min={0}
+                    />
+
+                    <InputField
+                      label="Max Equity Hours/Week"
+                      type="number"
+                      value={profileMaxEquityWeekly}
+                      onChange={(e) => setProfileMaxEquityWeekly(e.target.value)}
+                      placeholder="e.g., 20"
+                      min={0}
+                      max={168}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Equity Notes
+                    </label>
+                    <textarea
+                      value={profileEquityNotes}
+                      onChange={(e) => setProfileEquityNotes(e.target.value)}
+                      placeholder="Additional notes about equity arrangement..."
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
+                    />
+                  </div>
+
+                  <div className="text-xs text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 p-2 rounded">
+                    💡 Tip: Equity hours are non-paid hours compensated with equity. Set required
+                    hours/week OR hours/month (not both). Max hours/week prevents overwork.
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="space-y-3">
             <label className="flex items-center gap-2">
