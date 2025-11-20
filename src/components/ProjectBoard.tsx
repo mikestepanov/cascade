@@ -42,8 +42,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
   if (!project) {
     return (
-      <div className="flex flex-col h-full bg-white">
-        <div className="border-b border-gray-200 p-6">
+      <div className="flex flex-col h-full bg-ui-bg-primary">
+        <div className="border-b border-ui-border-primary p-6">
           <div className="space-y-4">
             <SkeletonText lines={2} />
             <div className="flex space-x-6">
@@ -63,15 +63,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const activeSprint = sprints?.find((sprint) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               {project.name}
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">
+            <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
               {project.description}
             </p>
           </div>
@@ -81,10 +81,10 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              <span className="text-xs sm:text-sm bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.key}
               </span>
-              <span className="text-xs sm:text-sm bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              <span className="text-xs sm:text-sm bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.boardType}
               </span>
             </div>
@@ -100,8 +100,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("board")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "board"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Board view"
             >
@@ -113,8 +113,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("backlog")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "backlog"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Backlog view"
             >
@@ -127,8 +127,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 onClick={() => setActiveTab("sprints")}
                 className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                   activeTab === "sprints"
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
                 }`}
                 aria-label="Sprints view"
               >
@@ -139,7 +139,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
 
           {/* Visual Separator */}
-          <div className="hidden lg:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2 sm:mx-4 md:mx-6" />
+          <div className="hidden lg:block h-6 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
           <div className="flex gap-2 sm:gap-3 md:gap-6 flex-shrink-0">
@@ -148,8 +148,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("roadmap")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "roadmap"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Roadmap view"
             >
@@ -161,8 +161,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("calendar")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "calendar"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Calendar view"
             >
@@ -174,8 +174,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("activity")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "activity"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Activity view"
             >
@@ -187,8 +187,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("analytics")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "analytics"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Analytics view"
             >
@@ -200,8 +200,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("billing")}
               className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
                 activeTab === "billing"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                  : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
               }`}
               aria-label="Billing view"
             >
@@ -219,8 +219,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             onClick={() => setActiveTab("settings")}
             className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
               activeTab === "settings"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-brand-600 text-brand-600 dark:text-brand-500"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
             aria-label="Settings"
           >
@@ -237,7 +237,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onChange={(e) =>
                 setSelectedSprintId(e.target.value ? (e.target.value as Id<"sprints">) : undefined)
               }
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ui-border-focus"
             >
               <option value="">Active Sprint</option>
               {sprints?.map((sprint) => (
@@ -266,7 +266,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {activeTab === "activity" && (
           <div className="p-6 overflow-y-auto">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+              <h2 className="text-2xl font-bold mb-6 text-ui-text-primary dark:text-ui-text-primary-dark">
                 Project Activity
               </h2>
               <ActivityFeed projectId={projectId} />
@@ -276,12 +276,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
         {activeTab === "billing" && <BillingReport projectId={projectId} />}
         {activeTab === "settings" && (
-          <div className="p-3 sm:p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+          <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
             <div className="max-w-5xl mx-auto space-y-8">
               {/* Project Basics Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Project Basics</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">Project Basics</h3>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Configure fundamental project settings and templates
                 </p>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -307,10 +307,10 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
               {/* Integrations & Automation Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                   Integrations & Automation
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Connect external services and automate workflows
                 </p>
                 <div className="space-y-6">
@@ -336,8 +336,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
               {/* Advanced Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Advanced</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">Advanced</h3>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Customize your project with additional metadata fields
                 </p>
                 <ErrorBoundary
