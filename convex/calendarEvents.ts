@@ -1,11 +1,53 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
  * Supports meetings, deadlines, time blocks, and personal events
  */
+
+// Helper: Build update object from optional fields
+function buildEventUpdateObject(args: {
+  title?: string;
+  description?: string;
+  startTime?: number;
+  endTime?: number;
+  allDay?: boolean;
+  location?: string;
+  eventType?: "meeting" | "deadline" | "timeblock" | "personal";
+  attendeeIds?: Id<"users">[];
+  externalAttendees?: string[];
+  projectId?: Id<"projects">;
+  issueId?: Id<"issues">;
+  status?: "confirmed" | "tentative" | "cancelled";
+  isRecurring?: boolean;
+  recurrenceRule?: string;
+  meetingUrl?: string;
+  notes?: string;
+}): Record<string, unknown> {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  if (args.title) updates.title = args.title;
+  if (args.description !== undefined) updates.description = args.description;
+  if (args.startTime) updates.startTime = args.startTime;
+  if (args.endTime) updates.endTime = args.endTime;
+  if (args.allDay !== undefined) updates.allDay = args.allDay;
+  if (args.location !== undefined) updates.location = args.location;
+  if (args.eventType) updates.eventType = args.eventType;
+  if (args.attendeeIds) updates.attendeeIds = args.attendeeIds;
+  if (args.externalAttendees !== undefined) updates.externalAttendees = args.externalAttendees;
+  if (args.projectId !== undefined) updates.projectId = args.projectId;
+  if (args.issueId !== undefined) updates.issueId = args.issueId;
+  if (args.status) updates.status = args.status;
+  if (args.isRecurring !== undefined) updates.isRecurring = args.isRecurring;
+  if (args.recurrenceRule !== undefined) updates.recurrenceRule = args.recurrenceRule;
+  if (args.meetingUrl !== undefined) updates.meetingUrl = args.meetingUrl;
+  if (args.notes !== undefined) updates.notes = args.notes;
+
+  return updates;
+}
 
 // Create a new calendar event
 export const create = mutation({
@@ -248,27 +290,9 @@ export const update = mutation({
       throw new Error("End time must be after start time");
     }
 
-    await ctx.db.patch(args.id, {
-      ...(args.title && { title: args.title }),
-      ...(args.description !== undefined && { description: args.description }),
-      ...(args.startTime && { startTime: args.startTime }),
-      ...(args.endTime && { endTime: args.endTime }),
-      ...(args.allDay !== undefined && { allDay: args.allDay }),
-      ...(args.location !== undefined && { location: args.location }),
-      ...(args.eventType && { eventType: args.eventType }),
-      ...(args.attendeeIds && { attendeeIds: args.attendeeIds }),
-      ...(args.externalAttendees !== undefined && {
-        externalAttendees: args.externalAttendees,
-      }),
-      ...(args.projectId !== undefined && { projectId: args.projectId }),
-      ...(args.issueId !== undefined && { issueId: args.issueId }),
-      ...(args.status && { status: args.status }),
-      ...(args.isRecurring !== undefined && { isRecurring: args.isRecurring }),
-      ...(args.recurrenceRule !== undefined && { recurrenceRule: args.recurrenceRule }),
-      ...(args.meetingUrl !== undefined && { meetingUrl: args.meetingUrl }),
-      ...(args.notes !== undefined && { notes: args.notes }),
-      updatedAt: Date.now(),
-    });
+    // Build update object using helper
+    const updates = buildEventUpdateObject(args);
+    await ctx.db.patch(args.id, updates);
 
     return args.id;
   },
