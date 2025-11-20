@@ -1,11 +1,90 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type QueryCtx } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
 
 /**
  * Meeting Attendance Tracking
  * For required meetings - admins/organizers mark who attended, was tardy, or missed
  */
+
+// Helper: Filter required meetings by date range
+function filterRequiredMeetings(
+  events: Doc<"calendarEvents">[],
+  startDate?: number,
+  endDate?: number,
+): Doc<"calendarEvents">[] {
+  return events.filter((event) => {
+    if (!event.isRequired) return false;
+    if (startDate && event.startTime < startDate) return false;
+    if (endDate && event.startTime > endDate) return false;
+    return true;
+  });
+}
+
+// Helper: Get or create user summary
+async function getOrCreateUserSummary(
+  ctx: QueryCtx,
+  userSummaries: Map<
+    string,
+    {
+      userId: string;
+      userName: string;
+      totalMeetings: number;
+      present: number;
+      tardy: number;
+      absent: number;
+      notMarked: number;
+    }
+  >,
+  attendeeId: Id<"users">,
+): Promise<{
+  userId: string;
+  userName: string;
+  totalMeetings: number;
+  present: number;
+  tardy: number;
+  absent: number;
+  notMarked: number;
+}> {
+  let summary = userSummaries.get(attendeeId);
+  if (!summary) {
+    const user = await ctx.db.get(attendeeId);
+    summary = {
+      userId: attendeeId,
+      userName: user?.name || "Unknown",
+      totalMeetings: 0,
+      present: 0,
+      tardy: 0,
+      absent: 0,
+      notMarked: 0,
+    };
+    userSummaries.set(attendeeId, summary);
+  }
+  return summary;
+}
+
+// Helper: Update summary with attendance status
+function updateAttendanceSummary(
+  summary: {
+    totalMeetings: number;
+    present: number;
+    tardy: number;
+    absent: number;
+    notMarked: number;
+  },
+  attendance: Doc<"meetingAttendance"> | undefined,
+): void {
+  summary.totalMeetings++;
+
+  if (attendance) {
+    if (attendance.status === "present") summary.present++;
+    else if (attendance.status === "tardy") summary.tardy++;
+    else if (attendance.status === "absent") summary.absent++;
+  } else {
+    summary.notMarked++;
+  }
+}
 
 // Mark attendance for an attendee
 export const markAttendance = mutation({
@@ -165,13 +244,7 @@ export const getAttendanceReport = query({
 
     // Get all required meetings in date range
     const allEvents = await ctx.db.query("calendarEvents").collect();
-
-    const requiredMeetings = allEvents.filter((event) => {
-      if (!event.isRequired) return false;
-      if (args.startDate && event.startTime < args.startDate) return false;
-      if (args.endDate && event.startTime > args.endDate) return false;
-      return true;
-    });
+    const requiredMeetings = filterRequiredMeetings(allEvents, args.startDate, args.endDate);
 
     // Get all attendance records for these meetings
     const allAttendance = await ctx.db.query("meetingAttendance").collect();
@@ -192,34 +265,11 @@ export const getAttendanceReport = query({
 
     for (const meeting of requiredMeetings) {
       for (const attendeeId of meeting.attendeeIds) {
-        let summary = userSummaries.get(attendeeId);
-        if (!summary) {
-          const user = await ctx.db.get(attendeeId);
-          summary = {
-            userId: attendeeId,
-            userName: user?.name || "Unknown",
-            totalMeetings: 0,
-            present: 0,
-            tardy: 0,
-            absent: 0,
-            notMarked: 0,
-          };
-          userSummaries.set(attendeeId, summary);
-        }
-
-        summary.totalMeetings++;
-
+        const summary = await getOrCreateUserSummary(ctx, userSummaries, attendeeId);
         const attendance = allAttendance.find(
           (a) => a.eventId === meeting._id && a.userId === attendeeId,
         );
-
-        if (attendance) {
-          if (attendance.status === "present") summary.present++;
-          else if (attendance.status === "tardy") summary.tardy++;
-          else if (attendance.status === "absent") summary.absent++;
-        } else {
-          summary.notMarked++;
-        }
+        updateAttendanceSummary(summary, attendance);
       }
     }
 
