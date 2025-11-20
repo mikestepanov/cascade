@@ -172,7 +172,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             type="button"
             onClick={handleGenerateAISuggestions}
             disabled={!title.trim() || isGeneratingAI}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isGeneratingAI ? (
               <>
@@ -187,7 +187,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             )}
           </button>
           {showAISuggestions && (
-            <span className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+            <span className="text-sm text-status-success dark:text-status-success flex items-center gap-1">
               <span>✓</span>
               <span>AI suggestions applied</span>
             </span>
@@ -258,7 +258,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         {/* Labels */}
         {labels && labels.length > 0 && (
           <div>
-            <div className="block text-sm font-medium text-gray-700 mb-2">Labels</div>
+            <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
             <div className="flex flex-wrap gap-2">
               {labels.map((label) => (
                 <button
@@ -267,7 +267,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
                   onClick={() => toggleLabel(label._id)}
                   className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
                     selectedLabels.includes(label._id)
-                      ? "opacity-100 ring-2 ring-offset-2 ring-gray-900"
+                      ? "opacity-100 ring-2 ring-offset-2 ring-brand-600 dark:ring-brand-500"
                       : "opacity-60 hover:opacity-80"
                   }`}
                   style={{ backgroundColor: label.color }}
