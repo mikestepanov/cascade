@@ -77,10 +77,16 @@ export function CalendarView() {
               Today
             </button>
             <div className="flex items-center gap-1 sm:gap-2">
-              <button onClick={handlePrevious} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+              <button
+                onClick={handlePrevious}
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+              >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
               </button>
-              <button onClick={handleNext} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+              <button
+                onClick={handleNext}
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+              >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
               </button>
             </div>
@@ -177,10 +183,19 @@ function WeekView({
         {days.map((day, idx) => {
           const isToday = isSameDay(day, new Date());
           return (
-            <div key={idx} className="p-1 sm:p-2 text-center border-l border-gray-200 dark:border-gray-700">
-              <div className={`text-xs font-medium ${isToday ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}>
-                <span className="hidden sm:inline">{day.toLocaleDateString("en-US", { weekday: "short" })}</span>
-                <span className="sm:hidden">{day.toLocaleDateString("en-US", { weekday: "short" })[0]}</span>
+            <div
+              key={idx}
+              className="p-1 sm:p-2 text-center border-l border-gray-200 dark:border-gray-700"
+            >
+              <div
+                className={`text-xs font-medium ${isToday ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
+              >
+                <span className="hidden sm:inline">
+                  {day.toLocaleDateString("en-US", { weekday: "short" })}
+                </span>
+                <span className="sm:hidden">
+                  {day.toLocaleDateString("en-US", { weekday: "short" })[0]}
+                </span>
               </div>
               <div
                 className={`text-base sm:text-xl font-semibold ${
@@ -232,7 +247,10 @@ function WeekView({
           {days.map((day, dayIdx) => (
             <div key={dayIdx} className="border-r border-gray-200 dark:border-gray-700 relative">
               {hours.map((hour) => (
-                <div key={hour} className="h-12 sm:h-16 border-b border-gray-200 dark:border-gray-700" />
+                <div
+                  key={hour}
+                  className="h-12 sm:h-16 border-b border-gray-200 dark:border-gray-700"
+                />
               ))}
 
               {/* Events for this day */}
@@ -303,7 +321,7 @@ function MonthView({
     <div className="flex flex-col h-full">
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, idx) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, _idx) => (
           <div
             key={day}
             className="p-1 sm:p-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 first:border-l-0"
@@ -357,7 +375,9 @@ function MonthView({
                   </button>
                 ))}
                 {dayEvents.length > 2 && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 px-0.5 sm:px-1">+{dayEvents.length - 2}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 px-0.5 sm:px-1">
+                    +{dayEvents.length - 2}
+                  </div>
                 )}
               </div>
             </div>

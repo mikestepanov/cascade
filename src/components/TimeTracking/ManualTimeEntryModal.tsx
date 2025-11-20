@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { formatDateForInput, formatDuration } from "@/lib/formatting";
+import { formatDateForInput } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";

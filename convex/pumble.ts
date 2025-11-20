@@ -355,7 +355,9 @@ export const sendIssueNotification = action({
             },
           ],
         });
-      } catch (_error) {}
+      } catch (_error) {
+        // Intentionally ignore Pumble notification failures - non-critical
+      }
     }
   },
 });

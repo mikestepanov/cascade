@@ -68,8 +68,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
       <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{project.name}</h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">{project.description}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {project.name}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">
+              {project.description}
+            </p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <ExportButton
@@ -265,14 +269,18 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Labels Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <LabelsManager projectId={projectId} />
                   </ErrorBoundary>
 
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Templates Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <TemplatesManager projectId={projectId} />
                   </ErrorBoundary>
@@ -290,14 +298,18 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 <div className="space-y-6">
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Webhooks Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <WebhooksManager projectId={projectId} />
                   </ErrorBoundary>
 
                   <ErrorBoundary
                     fallback={<SectionErrorFallback title="Automation Error" />}
-                    onError={(_error) => {}}
+                    onError={(_error) => {
+                      // Error is shown in fallback UI
+                    }}
                   >
                     <AutomationRulesManager projectId={projectId} />
                   </ErrorBoundary>
@@ -312,7 +324,9 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 </p>
                 <ErrorBoundary
                   fallback={<SectionErrorFallback title="Custom Fields Error" />}
-                  onError={(_error) => {}}
+                  onError={(_error) => {
+                    // Error is shown in fallback UI
+                  }}
                 >
                   <CustomFieldsManager projectId={projectId} />
                 </ErrorBoundary>

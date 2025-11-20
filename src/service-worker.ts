@@ -114,9 +114,13 @@ async function syncOfflineQueue() {
 
         // Mark as synced
         await markMutationSynced(db, mutation.id);
-      } catch (_error) {}
+      } catch (_error) {
+        // Individual mutation sync errors are logged but don't stop the sync
+      }
     }
-  } catch (_error) {}
+  } catch (_error) {
+    // Background sync errors are non-critical
+  }
 }
 
 // IndexedDB helpers

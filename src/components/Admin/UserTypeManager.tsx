@@ -143,11 +143,9 @@ export function UserTypeManager() {
     setProfileStartDate(
       profile.startDate ? new Date(profile.startDate).toISOString().split("T")[0] : "",
     );
-    setProfileEndDate(
-      profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "",
-    );
+    setProfileEndDate(profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "");
     setProfileIsActive(profile.isActive);
-    setProfileHasEquity(profile.hasEquity || false);
+    setProfileHasEquity(profile.hasEquity);
     setProfileEquityPercentage(profile.equityPercentage?.toString() || "");
     setProfileRequiredEquityWeekly(profile.requiredEquityHoursPerWeek?.toString() || "");
     setProfileRequiredEquityMonthly(profile.requiredEquityHoursPerMonth?.toString() || "");
@@ -182,12 +180,8 @@ export function UserTypeManager() {
         requiredEquityHoursPerMonth: profileRequiredEquityMonthly
           ? Number(profileRequiredEquityMonthly)
           : undefined,
-        maxEquityHoursPerWeek: profileMaxEquityWeekly
-          ? Number(profileMaxEquityWeekly)
-          : undefined,
-        equityHourlyValue: profileEquityHourlyValue
-          ? Number(profileEquityHourlyValue)
-          : undefined,
+        maxEquityHoursPerWeek: profileMaxEquityWeekly ? Number(profileMaxEquityWeekly) : undefined,
+        equityHourlyValue: profileEquityHourlyValue ? Number(profileEquityHourlyValue) : undefined,
         equityNotes: profileEquityNotes || undefined,
         isActive: profileIsActive,
       });

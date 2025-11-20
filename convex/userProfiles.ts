@@ -164,8 +164,7 @@ export const updateEmploymentTypeConfig = mutation({
     if (args.defaultCanWorkOvertime !== undefined)
       updates.defaultCanWorkOvertime = args.defaultCanWorkOvertime;
     if (args.canAccessBilling !== undefined) updates.canAccessBilling = args.canAccessBilling;
-    if (args.canManageProjects !== undefined)
-      updates.canManageProjects = args.canManageProjects;
+    if (args.canManageProjects !== undefined) updates.canManageProjects = args.canManageProjects;
 
     await ctx.db.patch(config._id, updates);
   },
@@ -292,8 +291,7 @@ export const getUserProfileWithDefaults = query({
       ...profile,
       effectiveMaxHoursPerWeek: profile.maxHoursPerWeek ?? typeConfig.defaultMaxHoursPerWeek,
       effectiveMaxHoursPerDay: profile.maxHoursPerDay ?? typeConfig.defaultMaxHoursPerDay,
-      effectiveRequiresApproval:
-        profile.requiresApproval ?? typeConfig.defaultRequiresApproval,
+      effectiveRequiresApproval: profile.requiresApproval ?? typeConfig.defaultRequiresApproval,
       effectiveCanWorkOvertime: profile.canWorkOvertime ?? typeConfig.defaultCanWorkOvertime,
       typeConfig,
     };
@@ -434,7 +432,7 @@ export const getEquityHoursStats = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .first();
 
-    if (!profile || !profile.hasEquity) {
+    if (!profile?.hasEquity) {
       return {
         hasEquity: false,
         totalEquityHours: 0,

@@ -78,8 +78,7 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
         // Save version if:
         // 1. No previous version exists, OR
         // 2. More than 1 minute has passed since last version
-        const shouldSaveVersion =
-          !lastVersion || now - lastVersion.createdAt > 60 * 1000; // 1 minute
+        const shouldSaveVersion = !lastVersion || now - lastVersion.createdAt > 60 * 1000; // 1 minute
 
         if (shouldSaveVersion) {
           await ctx.db.insert("documentVersions", {

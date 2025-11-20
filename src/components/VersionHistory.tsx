@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
-import { Clock, RotateCcw, History, X } from "lucide-react";
+import { Clock, History, RotateCcw, X } from "lucide-react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
@@ -20,12 +20,10 @@ export function VersionHistory({
   onClose,
   onRestoreVersion,
 }: VersionHistoryProps) {
-  const [selectedVersionId, setSelectedVersionId] = useState<Id<"documentVersions"> | null>(
-    null,
-  );
+  const [selectedVersionId, _setSelectedVersionId] = useState<Id<"documentVersions"> | null>(null);
 
   const versions = useQuery(api.documentVersions.listVersions, { documentId });
-  const selectedVersion = useQuery(
+  const _selectedVersion = useQuery(
     api.documentVersions.getVersion,
     selectedVersionId ? { documentId, versionId: selectedVersionId } : "skip",
   );

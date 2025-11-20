@@ -87,8 +87,7 @@ export const get = query({
 
     // Check if user has access to this template
     if (
-      !template.isBuiltIn &&
-      !template.isPublic &&
+      !(template.isBuiltIn || template.isPublic) &&
       template.createdBy !== userId &&
       !template.projectId
     ) {
@@ -178,8 +177,7 @@ export const createDocumentFromTemplate = mutation({
 
     // Check if user has access to this template
     if (
-      !template.isBuiltIn &&
-      !template.isPublic &&
+      !(template.isBuiltIn || template.isPublic) &&
       template.createdBy !== userId &&
       !template.projectId
     ) {
@@ -258,15 +256,11 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Topic 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Topic 1" }] }],
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Topic 2" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Topic 2" }] }],
             },
             {
               type: "heading",
@@ -282,16 +276,12 @@ export const initializeBuiltInTemplates = mutation({
             {
               type: "checkListItem",
               attrs: { checked: false },
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Action item 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 1" }] }],
             },
             {
               type: "checkListItem",
               attrs: { checked: false },
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Action item 2" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 2" }] }],
             },
             {
               type: "heading",
@@ -356,7 +346,9 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Why are we doing this? What problem does it solve?" }],
+              content: [
+                { type: "text", text: "Why are we doing this? What problem does it solve?" },
+              ],
             },
             {
               type: "heading",
@@ -374,7 +366,12 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "paragraph",
-              content: [{ type: "text", text: "Other approaches we considered and why we didn't choose them..." }],
+              content: [
+                {
+                  type: "text",
+                  text: "Other approaches we considered and why we didn't choose them...",
+                },
+              ],
             },
             {
               type: "heading",
@@ -383,15 +380,11 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "numberedListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Phase 1: ..." }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Phase 1: ..." }] }],
             },
             {
               type: "numberedListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Phase 2: ..." }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Phase 2: ..." }] }],
             },
             {
               type: "heading",
@@ -400,9 +393,7 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Question 1?" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Question 1?" }] }],
             },
           ],
         },
@@ -440,15 +431,11 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Objective 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Objective 1" }] }],
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Objective 2" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Objective 2" }] }],
             },
             {
               type: "heading",
@@ -466,27 +453,19 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "In Scope:" },
-              ],
+              content: [{ type: "text", marks: [{ type: "bold" }], text: "In Scope:" }],
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Item 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Item 1" }] }],
             },
             {
               type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Out of Scope:" },
-              ],
+              content: [{ type: "text", marks: [{ type: "bold" }], text: "Out of Scope:" }],
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Item 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Item 1" }] }],
             },
             {
               type: "heading",
@@ -588,9 +567,7 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Duration: " }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Duration: " }] }],
             },
             {
               type: "bulletListItem",
@@ -654,15 +631,11 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "What went well:" },
-              ],
+              content: [{ type: "text", marks: [{ type: "bold" }], text: "What went well:" }],
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "..." }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "..." }] }],
             },
             {
               type: "paragraph",
@@ -672,9 +645,7 @@ export const initializeBuiltInTemplates = mutation({
             },
             {
               type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "..." }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "..." }] }],
             },
           ],
         },
@@ -742,9 +713,7 @@ export const initializeBuiltInTemplates = mutation({
             {
               type: "checkListItem",
               attrs: { checked: false },
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Action item 1" }] },
-              ],
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 1" }] }],
             },
           ],
         },

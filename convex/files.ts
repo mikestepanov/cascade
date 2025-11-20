@@ -114,7 +114,7 @@ export const getIssueAttachments = query({
     }
 
     const issue = await ctx.db.get(args.issueId);
-    if (!(issue && issue.attachments)) {
+    if (!issue?.attachments) {
       return [];
     }
 

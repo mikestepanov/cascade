@@ -193,7 +193,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           ) : (
             <div>
               {sortedItems.map((item) => (
-                <div key={`${item.type}-${item.id}`} className="flex border-b border-gray-200 dark:border-gray-700">
+                <div
+                  key={`${item.type}-${item.id}`}
+                  className="flex border-b border-gray-200 dark:border-gray-700"
+                >
                   {/* Item Info */}
                   <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-1 sm:gap-2">
@@ -217,7 +220,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   {/* Timeline Bar */}
                   <div className="flex-1 relative">
                     <div className="absolute inset-0 flex">
-                      {columns.map((col, idx) => (
+                      {columns.map((_col, idx) => (
                         <div
                           key={idx}
                           className="flex-1 border-r border-gray-200 dark:border-gray-700"
@@ -241,12 +244,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 }
 
 // Render a date bar for an item
-function renderDateBar(
-  item: any,
-  rangeStart: Date,
-  rangeEnd: Date,
-  columnCount: number,
-) {
+function renderDateBar(item: any, rangeStart: Date, rangeEnd: Date, _columnCount: number) {
   const itemStart = new Date(item.startDate);
   const itemEnd = new Date(item.endDate);
 
@@ -345,10 +343,9 @@ function getDateRange(currentDate: Date, timeScale: TimeScale) {
 
     const columns = [
       {
-        label: new Date(currentDate.getFullYear(), quarterStart, 1).toLocaleDateString(
-          "en-US",
-          { month: "short" },
-        ),
+        label: new Date(currentDate.getFullYear(), quarterStart, 1).toLocaleDateString("en-US", {
+          month: "short",
+        }),
         date: new Date(currentDate.getFullYear(), quarterStart, 1),
       },
       {

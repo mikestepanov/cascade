@@ -1011,11 +1011,7 @@ const applicationTables = {
 
   // Employment Type Default Configurations
   employmentTypeConfigs: defineTable({
-    type: v.union(
-      v.literal("employee"),
-      v.literal("contractor"),
-      v.literal("intern"),
-    ),
+    type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
     name: v.string(), // Display name: "Full-time Employee", "Contractor", "Intern"
     description: v.optional(v.string()),
     // Default work hour limits

@@ -66,7 +66,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
   };
 
   const handleSave = async () => {
-    if (!name.trim() || !(editingId || fieldKey.trim())) {
+    if (!(name.trim() && (editingId || fieldKey.trim()))) {
       showError("Please fill in all required fields");
       return;
     }

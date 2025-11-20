@@ -110,7 +110,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         setPreviewFilename(result.filename);
         setShowPreview(true);
       }
-    } catch (_error) {}
+    } catch (_error) {
+      // Ignore file parsing errors - invalid files are silently rejected
+    }
   };
 
   const handleConfirmImport = async () => {
@@ -134,10 +136,12 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     }
     try {
       await handleMarkdownExport(sync.editor, document.title);
-    } catch (_error) {}
+    } catch (_error) {
+      // Export errors are shown to user by handleMarkdownExport
+    }
   };
 
-  const handleRestoreVersion = async (snapshot: any, version: number, title: string) => {
+  const handleRestoreVersion = async (snapshot: any, _version: number, title: string) => {
     try {
       // Submit the restored snapshot to ProseMirror
       if (sync.editor && snapshot) {

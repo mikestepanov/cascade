@@ -62,7 +62,7 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
   }, [field]);
 
   const handleSave = async () => {
-    if (!name.trim() || !(field || fieldKey.trim())) {
+    if (!(name.trim() && (field || fieldKey.trim()))) {
       showError("Please fill in all required fields");
       return;
     }

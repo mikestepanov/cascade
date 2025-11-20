@@ -183,7 +183,9 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
       if (blocks && Array.isArray(blocks)) {
         return blocks;
       }
-    } catch (_error) {}
+    } catch (_error) {
+      // Fall through to simple markdown parser
+    }
   }
 
   // Fallback: Simple markdown parser

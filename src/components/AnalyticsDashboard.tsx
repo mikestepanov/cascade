@@ -66,7 +66,9 @@ export function AnalyticsDashboard({ projectId }: Props) {
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Analytics Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Analytics Dashboard
+          </h1>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
             Project insights, team velocity, and progress metrics
           </p>

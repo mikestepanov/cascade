@@ -67,7 +67,9 @@ export function useAIChat({
           setChatId(newChatId);
           onChatCreated?.(newChatId);
         })
-        .catch((_error) => {});
+        .catch((_error) => {
+          // Chat creation errors are handled by the mutation
+        });
     }
   }, [chatId, createChat, onChatCreated, projectId]); // Empty deps - only run once on mount
 

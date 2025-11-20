@@ -22,6 +22,7 @@ export function WelcomeModal() {
       // Start the product tour
       startOnboarding();
     } catch (_error) {
+      // Sample project creation errors are non-critical
     } finally {
       setIsCreatingSample(false);
     }

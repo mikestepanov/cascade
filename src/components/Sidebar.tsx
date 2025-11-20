@@ -20,7 +20,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState("");
   const [newDocIsPublic, setNewDocIsPublic] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"documentTemplates"> | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"documentTemplates"> | null>(
+    null,
+  );
 
   const documents = useQuery(api.documents.list);
   const searchResults = useQuery(api.documents.search, { query: searchQuery });
@@ -71,7 +73,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
   const handleCreateFromTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newDocTitle.trim() || !selectedTemplateId) return;
+    if (!(newDocTitle.trim() && selectedTemplateId)) return;
 
     try {
       const result = await createFromTemplate({
@@ -136,7 +138,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       {showCreateForm && (
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <form
-            onSubmit={(e) => void (selectedTemplateId ? handleCreateFromTemplate(e) : handleCreateDocument(e))}
+            onSubmit={(e) =>
+              void (selectedTemplateId ? handleCreateFromTemplate(e) : handleCreateDocument(e))
+            }
             className="space-y-3"
           >
             {selectedTemplateId && (

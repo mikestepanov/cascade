@@ -59,9 +59,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
           <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
             <div className="text-center">
               <p className="text-lg font-medium mb-2">No Project Selected</p>
-              <p className="text-sm">
-                Select a project from the sidebar to view the roadmap
-              </p>
+              <p className="text-sm">Select a project from the sidebar to view the roadmap</p>
             </div>
           </div>
         )}
