@@ -33,28 +33,28 @@ export function QuickStats({ stats }: QuickStatsProps) {
       ) : (
         <>
           {/* Assigned to Me */}
-          <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 dark:to-gray-800 border-l-4 border-blue-500 dark:border-blue-400 animate-fade-in">
+          <Card className="bg-gradient-to-br from-brand-50 to-ui-bg-primary dark:from-brand-900/20 dark:to-ui-bg-primary-dark border-l-4 border-brand-600 dark:border-brand-500 animate-fade-in">
             <CardBody className="text-center">
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-2">
+              <div className="text-sm font-medium text-brand-700 dark:text-brand-400 mb-2">
                 ASSIGNED TO ME
               </div>
-              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-4xl font-bold text-brand-600 dark:text-brand-400">
                 {stats.assignedToMe || 0}
               </div>
-              <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">Active tasks</div>
+              <div className="text-xs text-brand-600 dark:text-brand-400 mt-2">Active tasks</div>
             </CardBody>
           </Card>
 
           {/* Completed This Week */}
-          <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900/20 dark:to-gray-800 border-l-4 border-green-500 dark:border-green-400 animate-fade-in">
+          <Card className="bg-gradient-to-br from-status-success-bg to-ui-bg-primary dark:from-status-success-bg-dark dark:to-ui-bg-primary-dark border-l-4 border-status-success dark:border-status-success animate-fade-in">
             <CardBody className="text-center">
-              <div className="text-sm font-medium text-green-700 dark:text-green-400 mb-2">
+              <div className="text-sm font-medium text-status-success-text dark:text-status-success-text-dark mb-2">
                 COMPLETED
               </div>
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-4xl font-bold text-status-success dark:text-status-success">
                 {stats.completedThisWeek || 0}
               </div>
-              <div className="text-xs text-green-600 dark:text-green-400 mt-2">This week</div>
+              <div className="text-xs text-status-success dark:text-status-success mt-2">This week</div>
             </CardBody>
           </Card>
 
@@ -62,16 +62,16 @@ export function QuickStats({ stats }: QuickStatsProps) {
           <Card
             className={`border-l-4 animate-fade-in ${
               (stats.highPriority || 0) > 0
-                ? "bg-gradient-to-br from-orange-50 to-white dark:from-orange-900/20 dark:to-gray-800 border-orange-500 dark:border-orange-400"
-                : "bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 border-gray-300 dark:border-gray-600"
+                ? "bg-gradient-to-br from-status-warning-bg to-ui-bg-primary dark:from-status-warning-bg-dark dark:to-ui-bg-primary-dark border-status-warning dark:border-status-warning"
+                : "bg-gradient-to-br from-ui-bg-secondary to-ui-bg-primary dark:from-ui-bg-secondary-dark dark:to-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark"
             }`}
           >
             <CardBody className="text-center">
               <div
                 className={`text-sm font-medium mb-2 ${
                   (stats.highPriority || 0) > 0
-                    ? "text-orange-700 dark:text-orange-400"
-                    : "text-gray-600 dark:text-gray-400"
+                    ? "text-status-warning-text dark:text-status-warning-text-dark"
+                    : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
                 }`}
               >
                 HIGH PRIORITY
@@ -79,8 +79,8 @@ export function QuickStats({ stats }: QuickStatsProps) {
               <div
                 className={`text-4xl font-bold ${
                   (stats.highPriority || 0) > 0
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-gray-400 dark:text-gray-500"
+                    ? "text-status-warning dark:text-status-warning"
+                    : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
                 }`}
               >
                 {stats.highPriority || 0}
@@ -88,8 +88,8 @@ export function QuickStats({ stats }: QuickStatsProps) {
               <div
                 className={`text-xs mt-2 ${
                   (stats.highPriority || 0) > 0
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "text-status-warning dark:text-status-warning"
+                    : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
                 }`}
               >
                 {(stats.highPriority || 0) > 0 ? "Needs attention" : "All clear"}
@@ -98,15 +98,15 @@ export function QuickStats({ stats }: QuickStatsProps) {
           </Card>
 
           {/* Created by Me */}
-          <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/20 dark:to-gray-800 border-l-4 border-purple-500 dark:border-purple-400 animate-fade-in">
+          <Card className="bg-gradient-to-br from-accent-50 to-ui-bg-primary dark:from-accent-900/20 dark:to-ui-bg-primary-dark border-l-4 border-accent-600 dark:border-accent-500 animate-fade-in">
             <CardBody className="text-center">
-              <div className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-2">
+              <div className="text-sm font-medium text-accent-700 dark:text-accent-400 mb-2">
                 CREATED
               </div>
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="text-4xl font-bold text-accent-600 dark:text-accent-400">
                 {stats.createdByMe || 0}
               </div>
-              <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Total issues</div>
+              <div className="text-xs text-accent-600 dark:text-accent-400 mt-2">Total issues</div>
             </CardBody>
           </Card>
         </>
