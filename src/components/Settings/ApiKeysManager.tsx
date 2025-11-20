@@ -7,6 +7,8 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Checkbox } from "../ui/form/Checkbox";
+import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Modal } from "../ui/Modal";
 
@@ -320,21 +322,18 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
         {!generatedKey ? (
           <>
             {/* Key Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Key Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                A descriptive name to help you identify this key
-              </p>
-            </div>
+            <Input
+              label={
+                <>
+                  Key Name <span className="text-red-500">*</span>
+                </>
+              }
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
+              helperText="A descriptive name to help you identify this key"
+            />
 
             {/* Scopes */}
             <div>
@@ -343,15 +342,15 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </label>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableScopes.map((scope) => (
-                  <label
+                  <div
                     key={scope.value}
                     className="flex items-start p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => toggleScope(scope.value)}
                   >
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedScopes.includes(scope.value)}
                       onChange={() => toggleScope(scope.value)}
-                      className="mt-0.5 h-4 w-4 text-blue-600 rounded"
+                      className="mt-0.5"
                     />
                     <div className="ml-3">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -361,28 +360,21 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
                         {scope.description}
                       </p>
                     </div>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Rate Limit */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Rate Limit (requests per minute)
-              </label>
-              <input
-                type="number"
-                value={rateLimit}
-                onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
-                min="10"
-                max="1000"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Maximum number of API requests allowed per minute (default: 100)
-              </p>
-            </div>
+            <Input
+              label="Rate Limit (requests per minute)"
+              type="number"
+              value={rateLimit.toString()}
+              onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
+              min="10"
+              max="1000"
+              helperText="Maximum number of API requests allowed per minute (default: 100)"
+            />
 
             {/* Actions */}
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

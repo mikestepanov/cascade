@@ -3,6 +3,9 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Checkbox } from "../ui/form/Checkbox";
+import { Input } from "../ui/form/Input";
+import { Select } from "../ui/form/Select";
 
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -415,59 +418,41 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Webhook Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Team Notifications"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
+          <Input
+            label="Webhook Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g., Team Notifications"
+          />
 
           {/* Webhook URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Webhook URL
-            </label>
-            <input
-              type="url"
-              value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
-              placeholder="https://api.pumble.com/workspaces/.../..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
-            />
-            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-              Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks
-            </p>
-          </div>
+          <Input
+            label="Webhook URL"
+            type="url"
+            value={webhookUrl}
+            onChange={(e) => setWebhookUrl(e.target.value)}
+            placeholder="https://api.pumble.com/workspaces/.../..."
+            className="font-mono text-sm"
+            helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
+          />
 
           {/* Project */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Project (Optional)
-            </label>
-            <select
-              value={projectId || ""}
-              onChange={(e) =>
-                setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="">All Projects</option>
-              {projects.map((project) => (
-                <option key={project._id} value={project._id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-              Leave empty to receive notifications from all projects
-            </p>
-          </div>
+          <Select
+            label="Project (Optional)"
+            value={projectId || ""}
+            onChange={(e) =>
+              setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
+            }
+            helperText="Leave empty to receive notifications from all projects"
+          >
+            <option value="">All Projects</option>
+            {projects.map((project) => (
+              <option key={project._id} value={project._id}>
+                {project.name}
+              </option>
+            ))}
+          </Select>
 
           {/* Events */}
           <div>
@@ -476,15 +461,12 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </label>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
-                <label key={event.value} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedEvents.includes(event.value)}
-                    onChange={() => toggleEvent(event.value)}
-                    className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{event.label}</span>
-                </label>
+                <Checkbox
+                  key={event.value}
+                  label={event.label}
+                  checked={selectedEvents.includes(event.value)}
+                  onChange={() => toggleEvent(event.value)}
+                />
               ))}
             </div>
           </div>
@@ -495,39 +477,21 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
               Additional Settings
             </label>
             <div className="space-y-2">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendMentions}
-                  onChange={(e) => setSendMentions(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for @mentions
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendAssignments}
-                  onChange={(e) => setSendAssignments(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for assignments
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendStatusChanges}
-                  onChange={(e) => setSendStatusChanges(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for status changes
-                </span>
-              </label>
+              <Checkbox
+                label="Send notifications for @mentions"
+                checked={sendMentions}
+                onChange={(e) => setSendMentions(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for assignments"
+                checked={sendAssignments}
+                onChange={(e) => setSendAssignments(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for status changes"
+                checked={sendStatusChanges}
+                onChange={(e) => setSendStatusChanges(e.target.checked)}
+              />
             </div>
           </div>
 
@@ -656,17 +620,13 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
           </div>
 
           {/* Webhook URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Webhook URL
-            </label>
-            <input
-              type="url"
-              value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
+          <Input
+            label="Webhook URL"
+            type="url"
+            value={webhookUrl}
+            onChange={(e) => setWebhookUrl(e.target.value)}
+            className="font-mono text-sm"
+          />
 
           {/* Events */}
           <div>
@@ -675,15 +635,12 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
             </label>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
-                <label key={event.value} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedEvents.includes(event.value)}
-                    onChange={() => toggleEvent(event.value)}
-                    className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{event.label}</span>
-                </label>
+                <Checkbox
+                  key={event.value}
+                  label={event.label}
+                  checked={selectedEvents.includes(event.value)}
+                  onChange={() => toggleEvent(event.value)}
+                />
               ))}
             </div>
           </div>
@@ -694,39 +651,21 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
               Additional Settings
             </label>
             <div className="space-y-2">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendMentions}
-                  onChange={(e) => setSendMentions(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for @mentions
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendAssignments}
-                  onChange={(e) => setSendAssignments(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for assignments
-                </span>
-              </label>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={sendStatusChanges}
-                  onChange={(e) => setSendStatusChanges(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  Send notifications for status changes
-                </span>
-              </label>
+              <Checkbox
+                label="Send notifications for @mentions"
+                checked={sendMentions}
+                onChange={(e) => setSendMentions(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for assignments"
+                checked={sendAssignments}
+                onChange={(e) => setSendAssignments(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for status changes"
+                checked={sendStatusChanges}
+                onChange={(e) => setSendStatusChanges(e.target.checked)}
+              />
             </div>
           </div>
 
