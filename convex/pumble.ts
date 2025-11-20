@@ -35,14 +35,15 @@ export const addWebhook = mutation({
 
     // If project is specified, verify access
     if (args.projectId) {
-      const project = await ctx.db.get(args.projectId);
+      const projectId = args.projectId;
+      const project = await ctx.db.get(projectId);
       if (!project) throw new Error("Project not found");
 
       // Check if user has access to project
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", args.projectId!).eq("userId", userId),
+          q.eq("projectId", projectId).eq("userId", userId),
         )
         .first();
 

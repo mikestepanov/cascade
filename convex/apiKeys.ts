@@ -84,14 +84,15 @@ export const generate = mutation({
 
     // If projectId is specified, verify user has access
     if (args.projectId) {
-      const project = await ctx.db.get(args.projectId);
+      const projectId = args.projectId;
+      const project = await ctx.db.get(projectId);
       if (!project) throw new Error("Project not found");
 
       // Check if user is a member
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", args.projectId!).eq("userId", userId),
+          q.eq("projectId", projectId).eq("userId", userId),
         )
         .first();
 

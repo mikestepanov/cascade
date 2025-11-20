@@ -192,9 +192,10 @@ export const getAttendanceReport = query({
 
     for (const meeting of requiredMeetings) {
       for (const attendeeId of meeting.attendeeIds) {
-        if (!userSummaries.has(attendeeId)) {
+        let summary = userSummaries.get(attendeeId);
+        if (!summary) {
           const user = await ctx.db.get(attendeeId);
-          userSummaries.set(attendeeId, {
+          summary = {
             userId: attendeeId,
             userName: user?.name || "Unknown",
             totalMeetings: 0,
@@ -202,10 +203,10 @@ export const getAttendanceReport = query({
             tardy: 0,
             absent: 0,
             notMarked: 0,
-          });
+          };
+          userSummaries.set(attendeeId, summary);
         }
 
-        const summary = userSummaries.get(attendeeId)!;
         summary.totalMeetings++;
 
         const attendance = allAttendance.find(
