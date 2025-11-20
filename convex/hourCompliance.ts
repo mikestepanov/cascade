@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -123,7 +123,9 @@ async function checkUserComplianceInternal(
   // Check if record already exists for this period
   const existingRecord = await ctx.db
     .query("hourComplianceRecords")
-    .withIndex("by_user_period", (q) => q.eq("userId", args.userId).eq("periodStart", args.periodStart))
+    .withIndex("by_user_period", (q) =>
+      q.eq("userId", args.userId).eq("periodStart", args.periodStart),
+    )
     .first();
 
   const now = Date.now();

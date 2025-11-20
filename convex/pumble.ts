@@ -1,5 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { api } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 import { action, mutation, query } from "./_generated/server";
 
 /**
@@ -123,7 +125,16 @@ export const updateWebhook = mutation({
     if (!webhook) throw new Error("Webhook not found");
     if (webhook.userId !== userId) throw new Error("Not authorized");
 
-    const updates: any = { updatedAt: Date.now() };
+    const updates: {
+      updatedAt: number;
+      name?: string;
+      webhookUrl?: string;
+      events?: string[];
+      isActive?: boolean;
+      sendMentions?: boolean;
+      sendAssignments?: boolean;
+      sendStatusChanges?: boolean;
+    } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
     if (args.webhookUrl !== undefined) updates.webhookUrl = args.webhookUrl;
     if (args.events !== undefined) updates.events = args.events;
@@ -174,7 +185,8 @@ export const sendMessage = action({
   },
   handler: async (ctx, args) => {
     // Get webhook
-    const webhook = await ctx.runQuery(((api: any) => api.pumble.getWebhook)(ctx), {
+    // @ts-expect-error - Convex types need regeneration after adding pumble module
+    const webhook = await ctx.runQuery(api.pumble.getWebhook, {
       webhookId: args.webhookId,
     });
 
@@ -187,7 +199,15 @@ export const sendMessage = action({
     }
 
     // Build Pumble message payload
-    const payload: any = {
+    const payload: {
+      text: string;
+      attachments?: Array<{
+        title?: string;
+        text: string;
+        color?: string;
+        fields?: Array<{ title: string; value: string; short?: boolean }>;
+      }>;
+    } = {
       text: args.text,
     };
 
@@ -220,7 +240,8 @@ export const sendMessage = action({
       }
 
       // Update webhook stats
-      await ctx.runMutation(((api: any) => api.pumble.updateWebhookStats)(ctx), {
+      // @ts-expect-error - Convex types need regeneration after adding pumble module
+      await ctx.runMutation(api.pumble.updateWebhookStats, {
         webhookId: args.webhookId,
         success: true,
       });
@@ -228,7 +249,8 @@ export const sendMessage = action({
       return { success: true };
     } catch (error) {
       // Update webhook stats with error
-      await ctx.runMutation(((api: any) => api.pumble.updateWebhookStats)(ctx), {
+      // @ts-expect-error - Convex types need regeneration after adding pumble module
+      await ctx.runMutation(api.pumble.updateWebhookStats, {
         webhookId: args.webhookId,
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -267,7 +289,8 @@ export const updateWebhookStats = mutation({
 export const testWebhook = action({
   args: { webhookId: v.id("pumbleWebhooks") },
   handler: async (ctx, args) => {
-    return await ctx.runAction(((api: any) => api.pumble.sendMessage)(ctx), {
+    // @ts-expect-error - Convex types need regeneration after adding pumble module
+    return await ctx.runAction(api.pumble.sendMessage, {
       webhookId: args.webhookId,
       text: "🎉 Cascade integration is working!",
       title: "Test Message",
@@ -300,17 +323,18 @@ export const sendIssueNotification = action({
   },
   handler: async (ctx, args) => {
     // Get issue details
-    const issue: any = await ctx.runQuery(((api: any) => api.issues.get)(ctx), {
+    const issue = await ctx.runQuery(api.issues.get, {
       id: args.issueId,
     });
 
     if (!issue) return;
 
     // Find active webhooks for this project
-    const webhooks = await ctx.runQuery(((api: any) => api.pumble.listWebhooks)(ctx), {});
+    // @ts-expect-error - Convex types need regeneration after adding pumble module
+    const webhooks = (await ctx.runQuery(api.pumble.listWebhooks, {})) as Doc<"pumbleWebhooks">[];
 
     const activeWebhooks = webhooks.filter(
-      (w: any) =>
+      (w: Doc<"pumbleWebhooks">) =>
         w.isActive &&
         w.events.includes(args.event) &&
         (!w.projectId || w.projectId === issue.projectId),
@@ -322,7 +346,8 @@ export const sendIssueNotification = action({
         const color = getColorForEvent(args.event);
         const title = getTitleForEvent(args.event, issue);
 
-        await ctx.runAction(((api: any) => api.pumble.sendMessage)(ctx), {
+        // @ts-expect-error - Convex types need regeneration after adding pumble module
+        await ctx.runAction(api.pumble.sendMessage, {
           webhookId: webhook._id,
           text: issue.description || "No description",
           title,
@@ -380,7 +405,7 @@ function getColorForEvent(event: string): string {
   }
 }
 
-function getTitleForEvent(event: string, _issue: any): string {
+function getTitleForEvent(event: string, _issue: unknown): string {
   switch (event) {
     case "issue.created":
       return `🆕 New Issue Created`;
