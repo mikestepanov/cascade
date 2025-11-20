@@ -24,10 +24,11 @@ async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">)
   return !!adminMembership;
 }
 
-// Generate a unique invite token
+// Generate a cryptographically secure invite token
 function generateInviteToken(): string {
   const timestamp = Date.now().toString(36);
-  const randomPart = Math.random().toString(36).substring(2, 15);
+  // Use crypto.randomUUID() for secure random generation
+  const randomPart = crypto.randomUUID().replace(/-/g, "");
   return `invite_${timestamp}_${randomPart}`;
 }
 
@@ -281,12 +282,16 @@ export const listInvites = query({
     }
 
     // Filter by status if provided
-    const invites = args.status
-      ? await ctx.db
-          .query("invites")
-          .withIndex("by_status", (q) => q.eq("status", args.status!))
-          .collect()
-      : await ctx.db.query("invites").collect();
+    let invites;
+    if (args.status !== undefined) {
+      const status = args.status; // Extract to const for type narrowing
+      invites = await ctx.db
+        .query("invites")
+        .withIndex("by_status", (q) => q.eq("status", status))
+        .collect();
+    } else {
+      invites = await ctx.db.query("invites").collect();
+    }
 
     // Get inviter names
     const invitesWithNames = await Promise.all(
