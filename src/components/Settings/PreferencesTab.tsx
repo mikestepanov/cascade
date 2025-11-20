@@ -8,10 +8,10 @@ export function PreferencesTab() {
   return (
     <Card>
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
           User Preferences
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           Additional preference settings coming soon...
         </p>
       </div>
