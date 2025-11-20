@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CreateIssueModal } from "./CreateIssueModal";
@@ -9,6 +9,7 @@ import { CreateIssueModal } from "./CreateIssueModal";
 vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
   useMutation: vi.fn(),
+  useAction: vi.fn(),
 }));
 
 // Mock toast utilities
@@ -63,6 +64,7 @@ describe("CreateIssueModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useMutation as vi.Mock).mockReturnValue(mockCreateIssue);
+    (useAction as vi.Mock).mockReturnValue(vi.fn());
     // Mock useQuery to return values in order:
     // 1st call: api.projects.get -> mockProject
     // 2nd call: api.templates.list -> mockTemplates
