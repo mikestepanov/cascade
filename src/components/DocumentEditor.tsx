@@ -38,9 +38,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   if (!(document && userId)) {
     return (
-      <div className="flex flex-col h-full bg-white">
+      <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
         {/* Document Header Skeleton */}
-        <div className="border-b border-gray-200 p-6">
+        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-6">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-8 w-1/2" />
             <div className="flex items-center space-x-4">
@@ -160,9 +160,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Document Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex-1 w-full sm:w-auto">
             {isEditingTitle ? (
@@ -172,13 +172,13 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 onChange={(e) => setTitleValue(e.target.value)}
                 onBlur={() => void handleTitleSave()}
                 onKeyDown={handleTitleKeyDown}
-                className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 dark:text-white"
+                className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 dark:text-white"
               />
             ) : (
               <h1
                 role={document.isOwner ? "button" : undefined}
                 tabIndex={document.isOwner ? 0 : undefined}
-                className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 transition-colors"
+                className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded px-2 py-1 transition-colors"
                 onClick={document.isOwner ? handleTitleEdit : undefined}
                 onKeyDown={
                   document.isOwner
@@ -204,7 +204,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
             <button
               type="button"
               onClick={() => setShowVersionHistory(true)}
-              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors relative"
+              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors relative"
               title="View version history"
               aria-label="Version history"
             >
@@ -212,7 +212,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 <History className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                 <span className="hidden sm:inline">History</span>
                 {versionCount !== undefined && versionCount > 0 && (
-                  <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded">
+                  <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
                     {versionCount}
                   </span>
                 )}
@@ -224,7 +224,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               type="button"
               onClick={() => void handleImportMarkdown()}
               disabled={!sync.editor}
-              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Import from Markdown file"
               aria-label="Import from Markdown"
             >
@@ -252,7 +252,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               type="button"
               onClick={() => void handleExportMarkdown()}
               disabled={!sync.editor}
-              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Export as Markdown file"
               aria-label="Export as Markdown"
             >
@@ -281,8 +281,8 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
                 onClick={() => void handleTogglePublic()}
                 className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                   document.isPublic
-                    ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/40"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    ? "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark hover:bg-status-success-bg dark:hover:bg-status-success-bg-dark hover:opacity-80"
+                    : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
               >
                 {document.isPublic ? "Public" : "Private"}
@@ -291,7 +291,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <span>Created by {document.creatorName}</span>
           <span className="hidden sm:inline">•</span>
           <span>Last updated {new Date(document.updatedAt).toLocaleDateString()}</span>
@@ -310,7 +310,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               <button
                 type="button"
                 onClick={() => void sync.create({ type: "doc", content: [] })}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors"
               >
                 Initialize Document
               </button>

@@ -181,8 +181,8 @@ export function DocumentTemplatesManager({
                   onClick={() => setSelectedCategory(cat.value)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                     selectedCategory === cat.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? "bg-brand-600 text-white"
+                      : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                   }`}
                 >
                   {cat.label}
@@ -206,7 +206,7 @@ export function DocumentTemplatesManager({
               {/* Built-in Templates */}
               {builtInTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                     Built-in Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -215,20 +215,20 @@ export function DocumentTemplatesManager({
                         key={template._id}
                         type="button"
                         onClick={() => onSelectTemplate?.(template._id)}
-                        className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-700"
+                        className="p-4 bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{template.icon}</span>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                            <h4 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                               {template.name}
                             </h4>
                             {template.description && (
-                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark line-clamp-2">
                                 {template.description}
                               </p>
                             )}
-                            <span className="inline-block mt-2 text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded capitalize">
+                            <span className="inline-block mt-2 text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded capitalize">
                               {template.category}
                             </span>
                           </div>
@@ -242,14 +242,14 @@ export function DocumentTemplatesManager({
               {/* Custom Templates */}
               {customTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                     Custom Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {customTemplates.map((template) => (
                       <div
                         key={template._id}
-                        className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
+                        className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors border border-ui-border-primary dark:border-ui-border-primary-dark"
                       >
                         <div className="flex items-start gap-3">
                           <button
@@ -259,20 +259,20 @@ export function DocumentTemplatesManager({
                           >
                             <span className="text-2xl">{template.icon}</span>
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                                 {template.name}
                               </h4>
                               {template.description && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+                                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark line-clamp-2 mb-2">
                                   {template.description}
                                 </p>
                               )}
                               <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded capitalize">
+                                <span className="text-xs px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
                                   {template.category}
                                 </span>
                                 {template.isPublic && (
-                                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded">
+                                  <span className="text-xs px-2 py-1 bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
                                     Public
                                   </span>
                                 )}
@@ -392,11 +392,11 @@ export function DocumentTemplatesManager({
                 id="isPublic"
                 checked={isPublic}
                 onChange={(e) => setIsPublic(e.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
               />
               <label
                 htmlFor="isPublic"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
               >
                 Make public (visible to all users)
               </label>
