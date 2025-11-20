@@ -11,6 +11,40 @@ import { assertMinimumRole } from "./rbac";
  * manage costs and hourly rates.
  */
 
+// Helper: Build time entry field updates
+function buildTimeEntryUpdates(args: {
+  description?: string;
+  activity?: string;
+  tags?: string[];
+  billable?: boolean;
+  startTime?: number;
+  endTime?: number;
+}): Record<string, unknown> {
+  const updates: Record<string, unknown> = { updatedAt: Date.now() };
+
+  if (args.description !== undefined) updates.description = args.description;
+  if (args.activity !== undefined) updates.activity = args.activity;
+  if (args.tags !== undefined) updates.tags = args.tags;
+  if (args.billable !== undefined) updates.billable = args.billable;
+  if (args.startTime !== undefined) updates.startTime = args.startTime;
+  if (args.endTime !== undefined) updates.endTime = args.endTime;
+
+  return updates;
+}
+
+// Helper: Calculate duration and cost for time entry
+function calculateTimeEntryCost(
+  startTime: number,
+  endTime: number,
+  hourlyRate?: number,
+): { duration: number; totalCost: number } {
+  const duration = Math.floor((endTime - startTime) / 1000);
+  const hours = duration / 3600;
+  const totalCost = hourlyRate ? hours * hourlyRate : 0;
+
+  return { duration, totalCost };
+}
+
 // ===== Time Entry Management =====
 
 export const startTimer = mutation({
@@ -207,37 +241,19 @@ export const updateTimeEntry = mutation({
       throw new Error("Cannot edit locked time entry");
     }
 
-    const updates: Partial<{
-      description: string;
-      activity: string;
-      tags: string[];
-      billable: boolean;
-      startTime: number;
-      endTime: number;
-      duration: number;
-      date: number;
-      hourlyRate: number;
-      totalCost: number;
-      updatedAt: number;
-    }> = { updatedAt: Date.now() };
+    // Build basic field updates
+    const updates = buildTimeEntryUpdates(args);
 
-    if (args.description !== undefined) updates.description = args.description;
-    if (args.activity !== undefined) updates.activity = args.activity;
-    if (args.tags !== undefined) updates.tags = args.tags;
-    if (args.billable !== undefined) updates.billable = args.billable;
-
-    // Recalculate duration if times changed
+    // Recalculate duration and cost if times changed
     const startTime = args.startTime ?? entry.startTime;
     const endTime = args.endTime ?? entry.endTime;
 
-    if (args.startTime !== undefined) updates.startTime = args.startTime;
-    if (args.endTime !== undefined) updates.endTime = args.endTime;
-
     if (endTime && startTime) {
-      const duration = Math.floor((endTime - startTime) / 1000);
-      const hours = duration / 3600;
-      const totalCost = entry.hourlyRate ? hours * entry.hourlyRate : 0;
-
+      const { duration, totalCost } = calculateTimeEntryCost(
+        startTime,
+        endTime,
+        entry.hourlyRate,
+      );
       updates.duration = duration;
       updates.totalCost = totalCost;
     }
