@@ -80,13 +80,13 @@ export function CreateProjectFromTemplate({
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "software":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+        return "bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200";
       case "marketing":
-        return "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200";
+        return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
       case "design":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+        return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-ui-bg-tertiary text-ui-text-secondary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-secondary-dark";
     }
   };
 
@@ -100,13 +100,13 @@ export function CreateProjectFromTemplate({
       {step === "select" ? (
         // Template Selection
         <div className="space-y-6">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Start with a pre-configured template to save time and follow best practices
           </p>
 
           {!templates ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 dark:border-brand-400" />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,15 +115,15 @@ export function CreateProjectFromTemplate({
                   type="button"
                   key={template._id}
                   onClick={() => handleSelectTemplate(template._id)}
-                  className="text-left p-6 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="text-left p-6 border-2 border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 >
                   <div className="flex items-start gap-4">
                     <div className="text-4xl flex-shrink-0">{template.icon}</div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                         {template.name}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
                         {template.description}
                       </p>
                       <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ export function CreateProjectFromTemplate({
                         >
                           {template.category}
                         </span>
-                        <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 capitalize">
+                        <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark capitalize">
                           {template.boardType}
                         </span>
                       </div>
@@ -148,14 +148,14 @@ export function CreateProjectFromTemplate({
         <div className="space-y-6">
           {/* Template Info */}
           {selectedTemplate && (
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{selectedTemplate.icon}</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                     {selectedTemplate.name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     {selectedTemplate.workflowStates.length} workflow states,{" "}
                     {selectedTemplate.defaultLabels.length} default labels
                   </p>
@@ -184,14 +184,14 @@ export function CreateProjectFromTemplate({
             />
 
             <div>
-              <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 Description (Optional)
               </div>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
                 placeholder="Project description..."
               />
             </div>
@@ -200,14 +200,14 @@ export function CreateProjectFromTemplate({
           {/* Preview */}
           {selectedTemplate && (
             <div>
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                 What's Included:
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <svg
                     aria-hidden="true"
-                    className="w-5 h-5 text-green-600"
+                    className="w-5 h-5 text-status-success"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -217,14 +217,14 @@ export function CreateProjectFromTemplate({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
                     {selectedTemplate.workflowStates.length} workflow states
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg
                     aria-hidden="true"
-                    className="w-5 h-5 text-green-600"
+                    className="w-5 h-5 text-status-success"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -234,14 +234,14 @@ export function CreateProjectFromTemplate({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
                     {selectedTemplate.defaultLabels.length} pre-configured labels
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg
                     aria-hidden="true"
-                    className="w-5 h-5 text-green-600"
+                    className="w-5 h-5 text-status-success"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -251,7 +251,7 @@ export function CreateProjectFromTemplate({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-gray-700 dark:text-gray-300 capitalize">
+                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
                     {selectedTemplate.boardType} board type
                   </span>
                 </div>
