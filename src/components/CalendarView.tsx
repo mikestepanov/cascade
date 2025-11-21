@@ -211,23 +211,23 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
       {/* Legend */}
       <div className="mt-4 flex items-center gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-status-error" />
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Highest</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500" />
+          <div className="w-3 h-3 rounded-full bg-status-warning" />
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">High</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-accent-500" />
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Medium</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-brand-500" />
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Low</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-gray-500" />
+          <div className="w-3 h-3 rounded-full bg-ui-text-secondary dark:bg-ui-text-secondary-dark" />
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Lowest</span>
         </div>
       </div>
