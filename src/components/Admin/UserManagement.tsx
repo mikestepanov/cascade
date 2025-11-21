@@ -75,10 +75,10 @@ export function UserManagement() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      pending: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400",
-      accepted: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400",
-      revoked: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-400",
-      expired: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400",
+      pending: "bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark",
+      accepted: "bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark",
+      revoked: "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
+      expired: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
     };
     return badges[status as keyof typeof badges] || badges.pending;
   };
@@ -88,8 +88,8 @@ export function UserManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">User Management</h2>
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Manage user invitations and platform access
           </p>
         </div>
@@ -99,15 +99,15 @@ export function UserManagement() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <nav className="-mb-px flex space-x-8" aria-label="User management tabs">
           <button
             type="button"
             onClick={() => setActiveTab("invites")}
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "invites"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
             }`}
           >
             Invitations
@@ -117,8 +117,8 @@ export function UserManagement() {
             onClick={() => setActiveTab("users")}
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "users"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
             }`}
           >
             Users
@@ -138,7 +138,7 @@ export function UserManagement() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
                 >
                   Email Address
                 </label>
@@ -156,7 +156,7 @@ export function UserManagement() {
               <div>
                 <label
                   htmlFor="role"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
                 >
                   Role
                 </label>
@@ -164,12 +164,12 @@ export function UserManagement() {
                   id="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Admins can manage users and send invitations
                 </p>
               </div>
@@ -216,40 +216,40 @@ export function UserManagement() {
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="User invitations">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
+                <table className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark" aria-label="User invitations">
+                  <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Role
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Status
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Invited By
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Sent
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Expires
                       </th>
-                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {invites.map((invite) => (
                       <tr key={invite._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                           {invite.email}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-400 capitalize">
+                          <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 capitalize">
                             {invite.role}
                           </span>
                         </td>
@@ -260,13 +260,13 @@ export function UserManagement() {
                             {invite.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {invite.inviterName}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {formatDate(invite.createdAt)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {invite.status === "pending"
                             ? formatDate(invite.expiresAt)
                             : "-"}
@@ -278,7 +278,7 @@ export function UserManagement() {
                                 <button
                                   type="button"
                                   onClick={() => handleResendInvite(invite._id)}
-                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                                  className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
                                   title="Resend invitation"
                                 >
                                   Resend
@@ -286,7 +286,7 @@ export function UserManagement() {
                                 <button
                                   type="button"
                                   onClick={() => handleRevokeInvite(invite._id)}
-                                  className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                                  className="text-status-error hover:text-status-error-hover dark:hover:text-status-error"
                                   title="Revoke invitation"
                                 >
                                   Revoke
@@ -294,7 +294,7 @@ export function UserManagement() {
                               </>
                             )}
                             {invite.status === "accepted" && invite.acceptedByName && (
-                              <span className="text-gray-500 dark:text-gray-400 text-xs">
+                              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-xs">
                                 Accepted by {invite.acceptedByName}
                               </span>
                             )}
@@ -321,27 +321,27 @@ export function UserManagement() {
               <EmptyState icon="👥" title="No users" description="No users have joined yet" />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="Platform users">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
+                <table className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark" aria-label="Platform users">
+                  <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         User
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Type
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Projects Created
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
                         Project Memberships
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {users.map((user) => (
                       <tr key={user._id}>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -353,37 +353,37 @@ export function UserManagement() {
                                 className="h-8 w-8 rounded-full mr-3"
                               />
                             ) : (
-                              <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold mr-3">
+                              <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-semibold mr-3">
                                 {(user.name || user.email || "?")[0].toUpperCase()}
                               </div>
                             )}
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                               {user.name || "Anonymous"}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {user.email || "No email"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {user.isAnonymous ? (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark">
                               Anonymous
                             </span>
                           ) : user.emailVerificationTime ? (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark">
                               Verified
                             </span>
                           ) : (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark">
                               Unverified
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {user.projectsCreated}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {user.projectMemberships}
                         </td>
                       </tr>
