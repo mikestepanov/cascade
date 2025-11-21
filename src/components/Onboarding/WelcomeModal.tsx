@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
+import type { Id } from "../../../convex/_generated/dataModel";
 
-export function WelcomeModal() {
+interface WelcomeModalProps {
+  onNavigateToProject?: (projectId: Id<"projects">) => void;
+}
+
+export function WelcomeModal({ onNavigateToProject }: WelcomeModalProps = {}) {
   const { showWelcome, setShowWelcome, startOnboarding, skipOnboarding, createSampleProject } =
     useOnboarding();
   const [isCreatingSample, setIsCreatingSample] = useState(false);
-  const navigate = useNavigate();
 
   if (!showWelcome) return null;
 
@@ -17,8 +20,10 @@ export function WelcomeModal() {
     try {
       const projectId = await createSampleProject();
       setShowWelcome(false);
-      // Navigate to the sample project
-      navigate(`/project/${projectId}`);
+      // Navigate to the sample project via callback
+      if (onNavigateToProject) {
+        onNavigateToProject(projectId);
+      }
       // Start the product tour
       startOnboarding();
     } catch (_error) {
