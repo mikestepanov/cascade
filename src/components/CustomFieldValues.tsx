@@ -150,15 +150,15 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
   const renderFieldValue = (field: CustomField, value?: string) => {
     if (!value) {
-      return <span className="text-gray-400 dark:text-gray-500 italic text-sm">Not set</span>;
+      return <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic text-sm">Not set</span>;
     }
 
     switch (field.fieldType) {
       case "checkbox":
         return value === "true" ? (
-          <span className="text-green-600 dark:text-green-400">✓ Yes</span>
+          <span className="text-status-success dark:text-status-success-dark">✓ Yes</span>
         ) : (
-          <span className="text-gray-500">✗ No</span>
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">✗ No</span>
         );
 
       case "url":
@@ -167,7 +167,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="text-brand-600 dark:text-brand-400 hover:underline"
           >
             {value}
           </a>
@@ -182,7 +182,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             {value.split(",").map((option) => (
               <span
                 key={option.trim()}
-                className="text-xs px-2 py-1 bg-primary/10 text-primary rounded"
+                className="text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 rounded"
               >
                 {option.trim()}
               </span>
@@ -191,13 +191,13 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         );
 
       default:
-        return <span className="text-gray-900 dark:text-gray-100">{value}</span>;
+        return <span className="text-ui-text-primary dark:text-ui-text-primary-dark">{value}</span>;
     }
   };
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+      <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark uppercase tracking-wide">
         Custom Fields
       </h3>
 
@@ -206,17 +206,17 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         const isEditing = editingFieldId === field._id;
 
         return (
-          <div key={field._id} className="border-b border-gray-200 dark:border-gray-700 pb-3">
+          <div key={field._id} className="border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3">
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {field.name}
                   </div>
-                  {field.isRequired && <span className="text-red-500 text-xs">*</span>}
+                  {field.isRequired && <span className="text-status-error dark:text-status-error-dark text-xs">*</span>}
                 </div>
                 {field.description && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5">
                     {field.description}
                   </p>
                 )}
