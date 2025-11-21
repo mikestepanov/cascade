@@ -245,7 +245,10 @@ function WeekView({
 
           {/* Day Columns */}
           {days.map((day, dayIdx) => (
-            <div key={dayIdx} className="border-r border-ui-border-primary dark:border-ui-border-primary-dark relative">
+            <div
+              key={dayIdx}
+              className="border-r border-ui-border-primary dark:border-ui-border-primary-dark relative"
+            >
               {hours.map((hour) => (
                 <div
                   key={hour}
@@ -343,7 +346,9 @@ function MonthView({
             <div
               key={idx}
               className={`border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] ${
-                !isCurrentMonth ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark" : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+                !isCurrentMonth
+                  ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
               }`}
             >
               <div

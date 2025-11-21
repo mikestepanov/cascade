@@ -42,7 +42,9 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{template.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              {template.name}
+            </h4>
             <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
               {template.type}
             </span>
@@ -54,7 +56,9 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
             <span className="font-medium">Title:</span> {template.titleTemplate}
           </p>
           {template.descriptionTemplate && (
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">{template.descriptionTemplate}</p>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">
+              {template.descriptionTemplate}
+            </p>
           )}
           {template.defaultLabels && template.defaultLabels.length > 0 && (
             <div className="flex gap-1 mt-2">

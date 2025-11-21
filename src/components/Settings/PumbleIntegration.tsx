@@ -57,7 +57,9 @@ export function PumbleIntegration() {
       <div className="p-6">
         {webhooks === undefined ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading webhooks...</div>
+            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading webhooks...
+            </div>
           </div>
         ) : webhooks.length === 0 ? (
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
@@ -185,7 +187,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{webhook.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              {webhook.name}
+            </h4>
             {webhook.isActive ? (
               <span className="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded">
                 Active
@@ -196,9 +200,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               </span>
             )}
           </div>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">{maskedUrl}</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
+            {maskedUrl}
+          </p>
           {project && (
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">Project: {project.name}</p>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+              Project: {project.name}
+            </p>
           )}
         </div>
       </div>
@@ -588,7 +596,9 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Edit Webhook</h2>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              Edit Webhook
+            </h2>
             <button
               onClick={onClose}
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"

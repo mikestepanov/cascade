@@ -280,7 +280,9 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
             <div className="max-w-5xl mx-auto space-y-8">
               {/* Project Basics Section */}
               <div>
-                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">Project Basics</h3>
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                  Project Basics
+                </h3>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Configure fundamental project settings and templates
                 </p>
@@ -336,7 +338,9 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
               {/* Advanced Section */}
               <div>
-                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">Advanced</h3>
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                  Advanced
+                </h3>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Customize your project with additional metadata fields
                 </p>

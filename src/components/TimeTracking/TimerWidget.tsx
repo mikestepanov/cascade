@@ -129,7 +129,9 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">Start Timer</h2>
+        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
+          Start Timer
+        </h2>
 
         <div className="space-y-4">
           <div>

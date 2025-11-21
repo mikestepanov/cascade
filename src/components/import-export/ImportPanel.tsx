@@ -94,8 +94,12 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             <div className="flex items-center gap-3">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">CSV</div>
-                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">Spreadsheet format</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  CSV
+                </div>
+                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Spreadsheet format
+                </div>
               </div>
             </div>
           </Card>
@@ -111,7 +115,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             <div className="flex items-center gap-3">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">JSON</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  JSON
+                </div>
                 <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Data interchange format
                 </div>
@@ -147,7 +153,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
               <li>CSV must have a header row with column names</li>
               <li>
                 Required column:{" "}
-                <code className="bg-status-warning/20 dark:bg-status-warning/30 px-1 rounded">title</code>
+                <code className="bg-status-warning/20 dark:bg-status-warning/30 px-1 rounded">
+                  title
+                </code>
               </li>
               <li>Optional: type, priority, description, labels, estimated hours, due date</li>
               <li>All imported issues will be created in the first workflow state</li>

@@ -269,7 +269,14 @@ export const acceptInvite = mutation({
  */
 export const listInvites = query({
   args: {
-    status: v.optional(v.union(v.literal("pending"), v.literal("accepted"), v.literal("revoked"), v.literal("expired"))),
+    status: v.optional(
+      v.union(
+        v.literal("pending"),
+        v.literal("accepted"),
+        v.literal("revoked"),
+        v.literal("expired"),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

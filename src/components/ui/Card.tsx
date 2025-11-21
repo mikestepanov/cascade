@@ -40,9 +40,13 @@ export function CardHeader({ title, description, action }: CardHeaderProps) {
   return (
     <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between">
       <div>
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">{title}</h3>
+        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+          {title}
+        </h3>
         {description && (
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">{description}</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            {description}
+          </p>
         )}
       </div>
       {action && <div>{action}</div>}

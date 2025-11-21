@@ -149,7 +149,9 @@ export function OnboardingTour() {
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             {currentTourStep.title}
           </h3>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{currentTourStep.content}</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            {currentTourStep.content}
+          </p>
         </div>
 
         {/* Actions */}

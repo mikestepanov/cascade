@@ -325,14 +325,23 @@ export function GlobalSearch() {
             <div className="p-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <div className="flex items-center gap-4">
                 <span>
-                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">↑↓</kbd> Navigate
+                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
+                    ↑↓
+                  </kbd>{" "}
+                  Navigate
                 </span>
                 <span>
-                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">Enter</kbd> Open
+                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
+                    Enter
+                  </kbd>{" "}
+                  Open
                 </span>
               </div>
               <span>
-                <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">Esc</kbd> Close
+                <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
+                  Esc
+                </kbd>{" "}
+                Close
               </span>
             </div>
           </div>

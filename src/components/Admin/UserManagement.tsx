@@ -75,10 +75,14 @@ export function UserManagement() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      pending: "bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark",
-      accepted: "bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark",
-      revoked: "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
-      expired: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+      pending:
+        "bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark",
+      accepted:
+        "bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark",
+      revoked:
+        "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
+      expired:
+        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
     };
     return badges[status as keyof typeof badges] || badges.pending;
   };
@@ -88,7 +92,9 @@ export function UserManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">User Management</h2>
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            User Management
+          </h2>
           <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Manage user invitations and platform access
           </p>
@@ -216,28 +222,52 @@ export function UserManagement() {
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark" aria-label="User invitations">
+                <table
+                  className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
+                  aria-label="User invitations"
+                >
                   <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Role
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Status
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Invited By
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Sent
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Expires
                       </th>
-                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-right text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Actions
                       </th>
                     </tr>
@@ -267,9 +297,7 @@ export function UserManagement() {
                           {formatDate(invite.createdAt)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {invite.status === "pending"
-                            ? formatDate(invite.expiresAt)
-                            : "-"}
+                          {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end gap-2">
@@ -321,22 +349,40 @@ export function UserManagement() {
               <EmptyState icon="👥" title="No users" description="No users have joined yet" />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark" aria-label="Platform users">
+                <table
+                  className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
+                  aria-label="Platform users"
+                >
                   <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         User
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Type
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Projects Created
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                      >
                         Project Memberships
                       </th>
                     </tr>

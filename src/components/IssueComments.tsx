@@ -99,7 +99,9 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                     {formatRelativeTime(comment.createdAt)}
                   </span>
                   {comment.updatedAt > comment.createdAt && (
-                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">(edited)</span>
+                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      (edited)
+                    </span>
                   )}
                 </div>
 
@@ -113,7 +115,9 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Add Comment</h4>
+        <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          Add Comment
+        </h4>
         <MentionInput
           projectId={projectId}
           value={newComment}

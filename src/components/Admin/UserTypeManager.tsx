@@ -294,7 +294,9 @@ export function UserTypeManager() {
         />
         <CardBody>
           {!configs ? (
-            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading...
+            </div>
           ) : configs.length === 0 ? (
             <EmptyState
               icon="⚙️"
@@ -336,25 +338,33 @@ export function UserTypeManager() {
 
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Max hours/week:</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Max hours/week:
+                      </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerWeek}h
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Max hours/day:</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Max hours/day:
+                      </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerDay}h
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Requires approval:</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Requires approval:
+                      </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Can work overtime:</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Can work overtime:
+                      </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
                       </span>
@@ -414,7 +424,9 @@ export function UserTypeManager() {
 
           {/* Assigned users */}
           {!profiles ? (
-            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading...
+            </div>
           ) : profiles.length === 0 ? (
             <EmptyState
               icon="👥"

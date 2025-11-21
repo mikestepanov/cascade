@@ -55,12 +55,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           )}
         </div>
         {error && (
-          <p id={`${checkboxId}-error`} className="mt-1 text-sm text-status-error dark:text-status-error">
+          <p
+            id={`${checkboxId}-error`}
+            className="mt-1 text-sm text-status-error dark:text-status-error"
+          >
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${checkboxId}-helper`} className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <p
+            id={`${checkboxId}-helper`}
+            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+          >
             {helperText}
           </p>
         )}

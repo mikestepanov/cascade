@@ -102,7 +102,9 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">@</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Mentions</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  Mentions
+                </h4>
               </div>
               <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When someone @mentions you in a comment or description
@@ -125,7 +127,9 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">👤</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Assignments</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  Assignments
+                </h4>
               </div>
               <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When you are assigned to an issue
@@ -148,7 +152,9 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">💬</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Comments</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  Comments
+                </h4>
               </div>
               <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When someone comments on your issues
@@ -171,7 +177,9 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🔄</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Status Changes</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  Status Changes
+                </h4>
               </div>
               <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When issue status changes on issues you're watching
@@ -193,7 +201,9 @@ export function NotificationPreferences() {
 
       {/* Digest Emails */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
-        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Email Digests</h3>
+        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+          Email Digests
+        </h3>
         <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
           Receive a summary of activity instead of individual emails
         </p>
@@ -210,7 +220,9 @@ export function NotificationPreferences() {
               className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">No digest</div>
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                No digest
+              </div>
               <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Receive emails as events happen
               </div>
@@ -228,7 +240,9 @@ export function NotificationPreferences() {
               className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Daily digest</div>
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                Daily digest
+              </div>
               <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 One email per day with all activity (coming soon)
               </div>
@@ -246,7 +260,9 @@ export function NotificationPreferences() {
               className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Weekly digest</div>
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                Weekly digest
+              </div>
               <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 One email per week with all activity (coming soon)
               </div>

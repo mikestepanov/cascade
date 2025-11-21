@@ -75,7 +75,9 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {activity.userName}
                       </span>{" "}
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{activity.action}</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        {activity.action}
+                      </span>
                     </div>
                     <div className="mt-1">
                       <span className="inline-block font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark px-2 py-0.5 rounded">

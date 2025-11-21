@@ -155,7 +155,9 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
         <div className="flex-1">
           {/* Name & Status */}
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{apiKey.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              {apiKey.name}
+            </h4>
             {apiKey.isActive ? (
               <span className="px-2 py-0.5 text-xs font-medium bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success rounded">
                 Active
@@ -409,7 +411,9 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
               {/* Copy Instructions */}
               <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">Usage Example:</p>
+                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">
+                  Usage Example:
+                </p>
                 <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
                   curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                   https://cascade.app/api/issues
@@ -450,26 +454,34 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
-            <p className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading statistics...</p>
+            <p className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading statistics...
+            </p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Overview Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Total Calls</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Total Calls
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.totalCalls.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Last 24 Hours</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Last 24 Hours
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.last24Hours.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Success Rate</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Success Rate
+                </p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
@@ -478,7 +490,9 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Avg Response</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Avg Response
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.avgResponseTime}ms
                 </p>
@@ -497,13 +511,18 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {stats.recentLogs.map((log: any, i: number) => (
-                    <div key={i} className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm">
+                    <div
+                      key={i}
+                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"
+                    >
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {log.method}
                           </span>
-                          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{log.endpoint}</span>
+                          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {log.endpoint}
+                          </span>
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
@@ -522,7 +541,9 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                         {log.error && (
                           <>
                             <span>•</span>
-                            <span className="text-status-error dark:text-status-error">{log.error}</span>
+                            <span className="text-status-error dark:text-status-error">
+                              {log.error}
+                            </span>
                           </>
                         )}
                       </div>

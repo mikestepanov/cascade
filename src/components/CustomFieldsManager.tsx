@@ -146,7 +146,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Custom Fields</h2>
+          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Custom Fields
+          </h2>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Add custom metadata fields to your issues
           </p>

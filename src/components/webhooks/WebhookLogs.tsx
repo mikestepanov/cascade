@@ -69,7 +69,9 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
-            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">No delivery logs yet</h3>
+            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              No delivery logs yet
+            </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Webhook deliveries will appear here once triggered
             </p>
@@ -90,7 +92,9 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       {getStatusBadge(execution.status)}
-                      <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{execution.event}</span>
+                      <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        {execution.event}
+                      </span>
                       {execution.responseStatus && (
                         <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           HTTP {execution.responseStatus}
@@ -141,8 +145,12 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                   {/* Error message */}
                   {execution.error && (
                     <div className="bg-status-error/10 dark:bg-status-error/20 border border-status-error/30 dark:border-status-error/50 rounded p-3 mt-3">
-                      <div className="text-xs font-medium text-status-error dark:text-status-error mb-1">Error:</div>
-                      <div className="text-xs text-status-error/90 dark:text-status-error/80 font-mono">{execution.error}</div>
+                      <div className="text-xs font-medium text-status-error dark:text-status-error mb-1">
+                        Error:
+                      </div>
+                      <div className="text-xs text-status-error/90 dark:text-status-error/80 font-mono">
+                        {execution.error}
+                      </div>
                     </div>
                   )}
 

@@ -23,9 +23,17 @@ export const MetricCard = memo(function MetricCard({
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">{title}</p>
-          <p className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-2">{value}</p>
-          {subtitle && <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">{subtitle}</p>}
+          <p className="text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            {title}
+          </p>
+          <p className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-2">
+            {value}
+          </p>
+          {subtitle && (
+            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              {subtitle}
+            </p>
+          )}
         </div>
         <div className="text-4xl">{icon}</div>
       </div>

@@ -69,7 +69,12 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
   const calendarDays = [];
   // Add empty cells for days before first day of month
   for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarDays.push(<div key={`empty-${i}`} className="min-h-32 md:min-h-24 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark" />);
+    calendarDays.push(
+      <div
+        key={`empty-${i}`}
+        className="min-h-32 md:min-h-24 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
+      />,
+    );
   }
   // Add cells for each day of the month
   for (let day = 1; day <= daysInMonth; day++) {
@@ -80,7 +85,9 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
       <div
         key={day}
         className={`min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2 ${
-          isTodayDate ? "bg-brand-50 dark:bg-brand-900/20" : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+          isTodayDate
+            ? "bg-brand-50 dark:bg-brand-900/20"
+            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
         }`}
       >
         <div className="flex items-center justify-between mb-1">
@@ -131,7 +138,9 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Calendar View</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          Calendar View
+        </h2>
 
         {/* Month Navigation */}
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">

@@ -66,7 +66,9 @@ export function KanbanColumn({
       <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 min-w-0">
-            <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">{state.name}</h3>
+            <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+              {state.name}
+            </h3>
             <span className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-xs px-2 py-1 rounded-full flex-shrink-0">
               {stateIssues.length}
             </span>

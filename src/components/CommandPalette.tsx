@@ -135,7 +135,9 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
             ) : (
               Object.entries(groupedCommands).map(([group, cmds], groupIndex) => (
                 <div key={group}>
-                  {groupIndex > 0 && <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark" />}
+                  {groupIndex > 0 && (
+                    <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark" />
+                  )}
                   <div className="px-4 py-2 text-xs font-semibold text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     {group}
                   </div>
@@ -153,14 +155,20 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         }}
                         onMouseEnter={() => setSelectedIndex(globalIndex)}
                         className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors ${
-                          isSelected ? "bg-brand-50 dark:bg-brand-900/30" : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
+                          isSelected
+                            ? "bg-brand-50 dark:bg-brand-900/30"
+                            : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                         }`}
                       >
                         {cmd.icon && <span className="text-xl">{cmd.icon}</span>}
                         <div className="flex-1">
-                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{cmd.label}</div>
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {cmd.label}
+                          </div>
                           {cmd.description && (
-                            <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">{cmd.description}</div>
+                            <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                              {cmd.description}
+                            </div>
                           )}
                         </div>
                       </button>
@@ -174,13 +182,22 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           {/* Footer */}
           <div className="px-4 py-2 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark flex flex-wrap gap-3 sm:gap-4">
             <span>
-              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">↑↓</kbd> Navigate
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                ↑↓
+              </kbd>{" "}
+              Navigate
             </span>
             <span>
-              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">Enter</kbd> Select
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                Enter
+              </kbd>{" "}
+              Select
             </span>
             <span>
-              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">Esc</kbd> Close
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                Esc
+              </kbd>{" "}
+              Close
             </span>
           </div>
         </div>

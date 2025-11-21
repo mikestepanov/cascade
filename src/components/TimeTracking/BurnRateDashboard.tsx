@@ -122,7 +122,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Total Hours</h3>
+          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            Total Hours
+          </h3>
           <div className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             {formatHours(burnRate.totalHours)}h
           </div>
@@ -228,18 +230,24 @@ interface MetricCardProps {
 function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
     blue: "bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800",
-    green: "bg-status-success/10 dark:bg-status-success/20 border-status-success/30 dark:border-status-success/40",
+    green:
+      "bg-status-success/10 dark:bg-status-success/20 border-status-success/30 dark:border-status-success/40",
     purple: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
-    orange: "bg-status-warning/10 dark:bg-status-warning/20 border-status-warning/30 dark:border-status-warning/40",
+    orange:
+      "bg-status-warning/10 dark:bg-status-warning/20 border-status-warning/30 dark:border-status-warning/40",
   };
 
   return (
     <div className={`p-4 border rounded-lg ${colorClasses[color]}`}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl">{icon}</span>
-        <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">{label}</span>
+        <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          {label}
+        </span>
       </div>
-      <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">{value}</div>
+      <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        {value}
+      </div>
     </div>
   );
 }

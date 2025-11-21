@@ -177,7 +177,9 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-lg">{getTypeIcon(template.type)}</span>
-                        <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{template.name}</h4>
+                        <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {template.name}
+                        </h4>
                         <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark rounded capitalize">
                           {template.type}
                         </span>

@@ -184,7 +184,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                     : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400"
                 }`}
               >
-                <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">📊 Kanban</h3>
+                <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
+                  📊 Kanban
+                </h3>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Continuous flow of work through columns. Great for ongoing projects and support
                   teams.
@@ -204,7 +206,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                     : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400"
                 }`}
               >
-                <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">🏃 Scrum</h3>
+                <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
+                  🏃 Scrum
+                </h3>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Work in sprints with defined goals. Great for product development and fixed
                   deadlines.
@@ -297,19 +301,33 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
 
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 space-y-3">
               <div>
-                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Project Name:</span>
-                <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{projectName}</p>
+                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Project Name:
+                </span>
+                <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  {projectName}
+                </p>
               </div>
               <div>
-                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Project Key:</span>
-                <p className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{projectKey}</p>
+                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Project Key:
+                </span>
+                <p className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  {projectKey}
+                </p>
               </div>
               <div>
-                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Board Type:</span>
-                <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark capitalize">{boardType}</p>
+                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Board Type:
+                </span>
+                <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
+                  {boardType}
+                </p>
               </div>
               <div>
-                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Workflow States:</span>
+                <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Workflow States:
+                </span>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {workflowStates.map((state) => (
                     <span

@@ -150,7 +150,11 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
   const renderFieldValue = (field: CustomField, value?: string) => {
     if (!value) {
-      return <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic text-sm">Not set</span>;
+      return (
+        <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic text-sm">
+          Not set
+        </span>
+      );
     }
 
     switch (field.fieldType) {
@@ -206,14 +210,19 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         const isEditing = editingFieldId === field._id;
 
         return (
-          <div key={field._id} className="border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3">
+          <div
+            key={field._id}
+            className="border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3"
+          >
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {field.name}
                   </div>
-                  {field.isRequired && <span className="text-status-error dark:text-status-error-dark text-xs">*</span>}
+                  {field.isRequired && (
+                    <span className="text-status-error dark:text-status-error-dark text-xs">*</span>
+                  )}
                 </div>
                 {field.description && (
                   <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5">

@@ -15,8 +15,14 @@ export function EmptyState({ icon, title, description, action, children }: Empty
   return (
     <div className="text-center py-12 px-4">
       <div className="text-6xl mb-3 animate-in fade-in duration-500">{icon}</div>
-      <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">{title}</h3>
-      {description && <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4 max-w-sm mx-auto">{description}</p>}
+      <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+        {title}
+      </h3>
+      {description && (
+        <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4 max-w-sm mx-auto">
+          {description}
+        </p>
+      )}
       {action && (
         <button
           type="button"

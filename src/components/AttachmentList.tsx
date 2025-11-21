@@ -30,7 +30,9 @@ export function AttachmentList({ attachmentIds, issueId, canEdit = false }: Atta
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Attachments ({attachmentIds.length})</h4>
+      <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+        Attachments ({attachmentIds.length})
+      </h4>
       <div className="grid grid-cols-1 gap-2">
         {attachmentIds.map((storageId) => (
           <AttachmentItem
@@ -82,7 +84,11 @@ function AttachmentItem({
         </a>
       </div>
       <div className="flex gap-1">
-        <a href={url} download className="text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark">
+        <a
+          href={url}
+          download
+          className="text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+        >
           <svg
             aria-hidden="true"
             className="w-5 h-5"

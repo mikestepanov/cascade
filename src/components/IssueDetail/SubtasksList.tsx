@@ -144,18 +144,28 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{subtask.key}</span>
-                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">{subtask.title}</span>
+                  <span className="text-xs font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    {subtask.key}
+                  </span>
+                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                    {subtask.title}
+                  </span>
                 </div>
                 {subtask.assignee && (
-                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Assigned to {subtask.assignee.name}</span>
+                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    Assigned to {subtask.assignee.name}
+                  </span>
                 )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        !isCreatingSubtask && <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic">No sub-tasks yet</p>
+        !isCreatingSubtask && (
+          <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic">
+            No sub-tasks yet
+          </p>
+        )
       )}
     </div>
   );

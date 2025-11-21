@@ -80,7 +80,9 @@ export function CreateEventModal({
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Create Event</h2>
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Create Event
+          </h2>
           <button
             onClick={onClose}
             aria-label="Close create event modal"
@@ -181,7 +183,9 @@ export function CreateEventModal({
                 onChange={(e) => setAllDay(e.target.checked)}
                 className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
               />
-              <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">All day event</span>
+              <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                All day event
+              </span>
             </label>
           </div>
 

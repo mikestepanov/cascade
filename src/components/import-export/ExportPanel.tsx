@@ -117,8 +117,12 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             <div className="flex items-center gap-3">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">CSV</div>
-                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Spreadsheet format</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  CSV
+                </div>
+                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Spreadsheet format
+                </div>
               </div>
             </div>
           </Card>
@@ -134,7 +138,9 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             <div className="flex items-center gap-3">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">JSON</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  JSON
+                </div>
                 <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                   Data interchange format
                 </div>

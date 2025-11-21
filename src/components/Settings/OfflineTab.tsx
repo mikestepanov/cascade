@@ -40,19 +40,25 @@ export function OfflineTab() {
           <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Pending Changes</p>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Pending Changes
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   {isLoading ? "..." : count}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Sync Status</p>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Sync Status
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   {isOnline ? "Ready" : "Paused"}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Storage</p>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Storage
+                </p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   IndexedDB
                 </p>

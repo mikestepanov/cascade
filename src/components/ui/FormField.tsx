@@ -46,7 +46,9 @@ export function InputField({
       />
       {error && <p className="mt-1 text-sm text-status-error dark:text-status-error">{error}</p>}
       {helpText && !error && (
-        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{helpText}</p>
+        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          {helpText}
+        </p>
       )}
     </div>
   );
@@ -85,7 +87,9 @@ export function TextareaField({
       />
       {error && <p className="mt-1 text-sm text-status-error dark:text-status-error">{error}</p>}
       {helpText && !error && (
-        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{helpText}</p>
+        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          {helpText}
+        </p>
       )}
     </div>
   );
@@ -129,7 +133,9 @@ export function SelectField({
       </select>
       {error && <p className="mt-1 text-sm text-status-error dark:text-status-error">{error}</p>}
       {helpText && !error && (
-        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{helpText}</p>
+        <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          {helpText}
+        </p>
       )}
     </div>
   );

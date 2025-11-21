@@ -78,7 +78,9 @@ export function OnboardingChecklist() {
         <div className="flex items-center gap-2">
           <span className="text-lg">🚀</span>
           <div>
-            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Getting Started</h3>
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              Getting Started
+            </h3>
             <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {completedCount} of {totalCount} complete
             </p>
@@ -138,7 +140,9 @@ export function OnboardingChecklist() {
                 >
                   {item.title}
                 </p>
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{item.description}</p>
+                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  {item.description}
+                </p>
               </div>
             </div>
           ))}

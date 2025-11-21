@@ -50,7 +50,9 @@ export function WelcomeModal() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="text-center p-4">
             <div className="text-4xl mb-3">📋</div>
-            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Kanban Boards</h3>
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Kanban Boards
+            </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Visualize workflow with drag-and-drop boards
             </p>
@@ -58,7 +60,9 @@ export function WelcomeModal() {
 
           <div className="text-center p-4">
             <div className="text-4xl mb-3">📄</div>
-            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Rich Documents</h3>
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Rich Documents
+            </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Collaborate in real-time like Confluence
             </p>
@@ -66,7 +70,9 @@ export function WelcomeModal() {
 
           <div className="text-center p-4">
             <div className="text-4xl mb-3">🚀</div>
-            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Sprint Planning</h3>
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Sprint Planning
+            </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Plan and track sprints with team velocity
             </p>

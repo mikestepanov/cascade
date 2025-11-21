@@ -140,7 +140,9 @@ export function HourComplianceDashboard() {
                 <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {summary.complianceRate.toFixed(1)}%
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Compliance Rate</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Compliance Rate
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -151,7 +153,9 @@ export function HourComplianceDashboard() {
                 <div className="text-2xl font-bold text-status-success dark:text-status-success">
                   {summary.compliant}
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">✅ Compliant</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  ✅ Compliant
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -162,7 +166,9 @@ export function HourComplianceDashboard() {
                 <div className="text-2xl font-bold text-status-warning dark:text-status-warning">
                   {summary.underHours}
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">⚠️ Under Hours</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  ⚠️ Under Hours
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -173,7 +179,9 @@ export function HourComplianceDashboard() {
                 <div className="text-2xl font-bold text-status-error dark:text-status-error">
                   {summary.overHours}
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">🔴 Over Hours</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  🔴 Over Hours
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -184,7 +192,9 @@ export function HourComplianceDashboard() {
                 <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
                   {summary.equityUnder}
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">💎 Equity Short</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  💎 Equity Short
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -235,7 +245,9 @@ export function HourComplianceDashboard() {
 
           {/* Records List */}
           {!records ? (
-            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading...
+            </div>
           ) : records.length === 0 ? (
             <EmptyState
               icon="📊"
@@ -281,7 +293,9 @@ export function HourComplianceDashboard() {
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         <div>
-                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">Period:</span>
+                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
+                            Period:
+                          </span>
                           <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {formatDate(record.periodStart)} - {formatDate(record.periodEnd)}
                           </div>

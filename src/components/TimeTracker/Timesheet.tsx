@@ -67,27 +67,35 @@ export function Timesheet() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">My Timesheet</h2>
+            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+              My Timesheet
+            </h2>
             <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Week of {formatDate(timesheet.startDate)}
             </p>
           </div>
           <div className="flex gap-4">
             <div className="text-right">
-              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Total Hours</div>
+              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                Total Hours
+              </div>
               <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                 {formatHours(timesheet.totalHours)}
               </div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Billable</div>
+              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                Billable
+              </div>
               <div className="text-2xl font-bold text-status-success">
                 {formatHours(timesheet.billableHours)}
               </div>
             </div>
             {billableRevenue > 0 && (
               <div className="text-right">
-                <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Revenue</div>
+                <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Revenue
+                </div>
                 <div className="text-2xl font-bold text-brand-600">
                   ${billableRevenue.toFixed(2)}
                 </div>
@@ -128,7 +136,9 @@ export function Timesheet() {
                 <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {day.date.toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
-                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{day.date.getDate()}</div>
+                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  {day.date.getDate()}
+                </div>
                 {dayHours > 0 && (
                   <div className="text-xs font-medium text-brand-600 mt-1">
                     {formatHours(dayHours)}h

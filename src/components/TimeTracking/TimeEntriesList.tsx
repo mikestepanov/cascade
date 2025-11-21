@@ -124,7 +124,9 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
           <div key={date} className="space-y-2">
             {/* Date header */}
             <div className="flex items-center justify-between py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-              <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">{date}</h3>
+              <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                {date}
+              </h3>
               <div className="flex items-center gap-4 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 <span>{formatDurationDisplay(totalDuration)}</span>
                 <span>{formatCurrency(totalCost, dateEntries[0]?.currency || "USD")}</span>

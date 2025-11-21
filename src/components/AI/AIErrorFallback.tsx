@@ -19,7 +19,9 @@ export function AIErrorFallback({
     <div className="flex items-center justify-center h-full p-6 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-4">⚠️</div>
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">{title}</h3>
+        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+          {title}
+        </h3>
         <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">{message}</p>
 
         {error && process.env.NODE_ENV === "development" && (

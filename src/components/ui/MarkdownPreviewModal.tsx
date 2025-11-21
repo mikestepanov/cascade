@@ -35,7 +35,9 @@ export function MarkdownPreviewModal({
         {/* File Info */}
         <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">📄 {filename}</span>
+            <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              📄 {filename}
+            </span>
             <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>

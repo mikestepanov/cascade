@@ -36,7 +36,9 @@ export function TimeTrackingPage() {
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Time Tracking</h1>
+        <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          Time Tracking
+        </h1>
         <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
           Track time, analyze costs, and monitor burn rate
         </p>

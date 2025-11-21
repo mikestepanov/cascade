@@ -52,7 +52,9 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
     <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">Projects</h2>
+        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          Projects
+        </h2>
 
         {/* Create Project Button */}
         <button
@@ -128,9 +130,13 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       {/* Projects List */}
       <div className="flex-1 overflow-y-auto">
         {projects === undefined ? (
-          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">Loading...</div>
+          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            Loading...
+          </div>
         ) : projects.length === 0 ? (
-          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">No projects yet</div>
+          <div className="p-4 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            No projects yet
+          </div>
         ) : (
           <div className="p-2">
             {projects.map((project) => (

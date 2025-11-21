@@ -45,7 +45,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             "text-ui-text-primary dark:text-ui-text-primary-dark",
             "focus:outline-none focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error ? "border-ui-border-error dark:border-ui-border-error-dark" : "border-ui-border-primary dark:border-ui-border-primary-dark",
+            error
+              ? "border-ui-border-error dark:border-ui-border-error-dark"
+              : "border-ui-border-primary dark:border-ui-border-primary-dark",
             className,
           )}
           aria-invalid={error ? "true" : "false"}
@@ -63,12 +65,18 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             : children}
         </select>
         {error && (
-          <p id={`${selectId}-error`} className="mt-1 text-sm text-status-error dark:text-status-error">
+          <p
+            id={`${selectId}-error`}
+            className="mt-1 text-sm text-status-error dark:text-status-error"
+          >
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${selectId}-helper`} className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <p
+            id={`${selectId}-helper`}
+            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+          >
             {helperText}
           </p>
         )}

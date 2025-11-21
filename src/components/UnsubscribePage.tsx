@@ -52,8 +52,12 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
         {status === "loading" && (
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Processing...</h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Unsubscribing you from email notifications</p>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Processing...
+            </h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              Unsubscribing you from email notifications
+            </p>
           </div>
         )}
 
@@ -74,7 +78,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Successfully Unsubscribed</h2>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Successfully Unsubscribed
+            </h2>
             <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
               You have been unsubscribed from all email notifications.
             </p>
@@ -101,7 +107,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Invalid or Expired Link</h2>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Invalid or Expired Link
+            </h2>
             <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
               This unsubscribe link is invalid or has expired. Links expire after 30 days.
             </p>
@@ -125,10 +133,16 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Something Went Wrong</h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">We couldn't process your unsubscribe request.</p>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Something Went Wrong
+            </h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+              We couldn't process your unsubscribe request.
+            </p>
             {errorMessage && (
-              <p className="text-sm text-status-error dark:text-status-error-dark bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md">{errorMessage}</p>
+              <p className="text-sm text-status-error dark:text-status-error-dark bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md">
+                {errorMessage}
+              </p>
             )}
           </div>
         )}

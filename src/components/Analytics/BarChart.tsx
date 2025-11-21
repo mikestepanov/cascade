@@ -17,7 +17,10 @@ export const BarChart = memo(function BarChart({
     <div className="h-full flex flex-col justify-end space-y-2">
       {data.map((item) => (
         <div key={item.label} className="flex items-center gap-2">
-          <div className="w-24 text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate" title={item.label}>
+          <div
+            className="w-24 text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate"
+            title={item.label}
+          >
             {item.label}
           </div>
           <div className="flex-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-6 relative">

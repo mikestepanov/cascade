@@ -66,7 +66,9 @@ export function UserRatesManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Hourly Rates</h2>
+          <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Hourly Rates
+          </h2>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Manage hourly rates for cost tracking and burn rate calculations
           </p>
@@ -112,14 +114,18 @@ export function UserRatesManagement() {
                     )}
                   </div>
                   {rate.notes && (
-                    <p className="mt-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{rate.notes}</p>
+                    <p className="mt-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      {rate.notes}
+                    </p>
                   )}
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                     {formatCurrency(rate.hourlyRate, rate.currency)}
                   </div>
-                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">per hour</div>
+                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    per hour
+                  </div>
                 </div>
               </div>
             </div>
@@ -225,7 +231,9 @@ export function UserRatesManagement() {
                       <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         Internal Cost
                       </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">What you pay</div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        What you pay
+                      </div>
                     </div>
                   </label>
                   <label
@@ -246,7 +254,9 @@ export function UserRatesManagement() {
                       <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         Billable Rate
                       </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Charge clients</div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        Charge clients
+                      </div>
                     </div>
                   </label>
                 </div>

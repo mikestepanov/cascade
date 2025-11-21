@@ -71,7 +71,9 @@ export function TimeTracker({
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Time Tracking</h3>
+          <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Time Tracking
+          </h3>
           <div className="flex items-center gap-2">
             {/* Timer Button */}
             {isTimerRunningForThisIssue ? (
@@ -141,7 +143,13 @@ export function TimeTracker({
                 {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
               </span>
               {remainingHours !== null && (
-                <span className={isOverEstimate ? "text-status-error dark:text-status-error-dark font-medium" : "text-ui-text-secondary dark:text-ui-text-secondary-dark"}>
+                <span
+                  className={
+                    isOverEstimate
+                      ? "text-status-error dark:text-status-error-dark font-medium"
+                      : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                  }
+                >
                   {isOverEstimate ? "+" : ""}
                   {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
                 </span>
@@ -168,7 +176,9 @@ export function TimeTracker({
         )}
 
         {estimatedHours === 0 && totalLoggedHours === 0 && (
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">No time logged yet</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            No time logged yet
+          </p>
         )}
       </div>
 
@@ -200,15 +210,24 @@ export function TimeTracker({
             const entryDate = formatDate(entry.date);
 
             return (
-              <div key={entry._id} className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3">
+              <div
+                key={entry._id}
+                className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+              >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">{hours}h</div>
+                    <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {hours}h
+                    </div>
                     {entry.description && (
-                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">{entry.description}</p>
+                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                        {entry.description}
+                      </p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{entryDate}</span>
+                      <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        {entryDate}
+                      </span>
                       {entry.activity && (
                         <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
                           {entry.activity}

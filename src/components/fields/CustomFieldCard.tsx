@@ -51,7 +51,9 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
           <div className="text-2xl">{getFieldTypeIcon(field.fieldType)}</div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">{field.name}</h3>
+              <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                {field.name}
+              </h3>
               {field.isRequired && (
                 <span className="text-xs px-2 py-0.5 bg-status-error/10 dark:bg-status-error/20 text-status-error dark:text-status-error rounded">
                   Required
@@ -66,7 +68,9 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
               <span className="capitalize">{field.fieldType}</span>
             </div>
             {field.description && (
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">{field.description}</p>
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+                {field.description}
+              </p>
             )}
             {field.options && field.options.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">

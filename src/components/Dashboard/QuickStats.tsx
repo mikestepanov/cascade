@@ -54,7 +54,9 @@ export function QuickStats({ stats }: QuickStatsProps) {
               <div className="text-4xl font-bold text-status-success dark:text-status-success">
                 {stats.completedThisWeek || 0}
               </div>
-              <div className="text-xs text-status-success dark:text-status-success mt-2">This week</div>
+              <div className="text-xs text-status-success dark:text-status-success mt-2">
+                This week
+              </div>
             </CardBody>
           </Card>
 

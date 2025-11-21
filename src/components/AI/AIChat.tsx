@@ -148,7 +148,9 @@ export const AIChat = React.memo(function AIChat({
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Starting new chat...</p>
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            Starting new chat...
+          </p>
         </div>
       </div>
     );

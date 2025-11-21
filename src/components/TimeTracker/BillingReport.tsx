@@ -63,7 +63,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Billing Report</h2>
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Billing Report
+          </h2>
           <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {project.name} {project.clientName && `• ${project.clientName}`}
           </p>
@@ -137,8 +139,12 @@ export function BillingReport({ projectId }: BillingReportProps) {
             <DollarSign className="w-4 h-4" />
             Avg Hourly Rate
           </div>
-          <div className="text-3xl font-bold text-status-warning">{formatCurrency(averageRate)}</div>
-          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">per billable hour</div>
+          <div className="text-3xl font-bold text-status-warning">
+            {formatCurrency(averageRate)}
+          </div>
+          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            per billable hour
+          </div>
         </div>
       </div>
 
@@ -146,7 +152,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-6">
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Team Breakdown</h3>
+          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Team Breakdown
+          </h3>
         </div>
 
         {sortedUsers.length === 0 ? (
@@ -160,10 +168,15 @@ export function BillingReport({ projectId }: BillingReportProps) {
                 stats.hours > 0 ? (stats.billableHours / stats.hours) * 100 : 0;
 
               return (
-                <div key={userName} className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <div
+                  key={userName}
+                  className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{userName}</div>
+                      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        {userName}
+                      </div>
                       <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {formatHours(stats.billableHours)} / {formatHours(stats.hours)} hours (
                         {userUtilization.toFixed(0)}% billable)
@@ -173,7 +186,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
                       <div className="text-lg font-bold text-status-success">
                         {formatCurrency(stats.revenue)}
                       </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">revenue</div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        revenue
+                      </div>
                     </div>
                   </div>
 
@@ -194,20 +209,28 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Quick Stats */}
       <div className="mt-6 grid grid-cols-3 gap-4 text-center">
         <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">{billing.entries}</div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Time Entries</div>
+          <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            {billing.entries}
+          </div>
+          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            Time Entries
+          </div>
         </div>
         <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             {Object.keys(billing.byUser).length}
           </div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Team Members</div>
+          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            Team Members
+          </div>
         </div>
         <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             {averageRate > 0 ? formatCurrency(averageRate) : "N/A"}
           </div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Blended Rate</div>
+          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            Blended Rate
+          </div>
         </div>
       </div>
     </div>

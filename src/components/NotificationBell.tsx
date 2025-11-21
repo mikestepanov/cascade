@@ -133,7 +133,9 @@ export function NotificationBell() {
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
-                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-center">No notifications yet</p>
+                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-center">
+                  No notifications yet
+                </p>
                 <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center mt-1">
                   We'll notify you when something happens
                 </p>

@@ -66,7 +66,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{rule.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              {rule.name}
+            </h4>
             <span
               className={`text-xs px-2 py-1 rounded ${
                 rule.isActive
@@ -79,7 +81,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           </div>
 
           {rule.description && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">{rule.description}</p>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+              {rule.description}
+            </p>
           )}
 
           <div className="flex items-center gap-4 text-sm">

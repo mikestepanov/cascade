@@ -96,7 +96,9 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
     <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">Documents</h2>
+        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          Documents
+        </h2>
 
         {/* Search */}
         <div className="mb-4">

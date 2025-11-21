@@ -20,7 +20,9 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
       >
         <span className="sr-only">Loading...</span>
       </div>
-      {message && <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>}
+      {message && (
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
+      )}
     </div>
   );
 }

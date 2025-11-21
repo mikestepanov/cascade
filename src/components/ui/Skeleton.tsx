@@ -8,7 +8,14 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn("animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded", className)} />;
+  return (
+    <div
+      className={cn(
+        "animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded",
+        className,
+      )}
+    />
+  );
 }
 
 /**
@@ -88,7 +95,10 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: items }).map((_, i) => (
-        <div key={`skeleton-item-${i}`} className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+        <div
+          key={`skeleton-item-${i}`}
+          className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+        >
           <div className="flex items-start gap-3">
             <SkeletonAvatar size="sm" />
             <div className="flex-1 space-y-2">

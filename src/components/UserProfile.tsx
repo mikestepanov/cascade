@@ -107,7 +107,9 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
                 <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {viewUser.name || "Anonymous User"}
                 </h2>
-                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{viewUser.email}</p>
+                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  {viewUser.email}
+                </p>
                 {isOwnProfile && (
                   <Button onClick={handleEdit} variant="secondary" size="sm" className="mt-3">
                     Edit Profile
@@ -122,24 +124,44 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
         {userStats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.projects}</div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Projects</div>
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                {userStats.projects}
+              </div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Projects
+              </div>
             </div>
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesCreated}</div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Created</div>
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                {userStats.issuesCreated}
+              </div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Created
+              </div>
             </div>
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesAssigned}</div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Assigned</div>
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                {userStats.issuesAssigned}
+              </div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Assigned
+              </div>
             </div>
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesCompleted}</div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Completed</div>
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                {userStats.issuesCompleted}
+              </div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Completed
+              </div>
             </div>
             <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.comments}</div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Comments</div>
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                {userStats.comments}
+              </div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Comments
+              </div>
             </div>
           </div>
         )}
@@ -151,11 +173,17 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
           </h3>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">User ID:</span>
-              <span className="font-mono text-ui-text-primary dark:text-ui-text-primary-dark">{viewUser._id}</span>
+              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                User ID:
+              </span>
+              <span className="font-mono text-ui-text-primary dark:text-ui-text-primary-dark">
+                {viewUser._id}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Email Verified:</span>
+              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Email Verified:
+              </span>
               <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
                 {viewUser.emailVerificationTime ? "Yes" : "No"}
               </span>

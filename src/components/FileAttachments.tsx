@@ -128,7 +128,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          dragOver ? "border-brand-500 bg-brand-50 dark:bg-brand-950" : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
+          dragOver
+            ? "border-brand-500 bg-brand-50 dark:bg-brand-950"
+            : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
         }`}
       >
         <input
@@ -141,7 +143,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         />
         <label htmlFor="file-upload" className="cursor-pointer">
           <div className="text-4xl mb-2">📎</div>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">Drag and drop files here, or click to browse</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+            Drag and drop files here, or click to browse
+          </p>
           <Button
             type="button"
             variant="secondary"
@@ -157,7 +161,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Attachments ({attachments.length})</h4>
+          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            Attachments ({attachments.length})
+          </h4>
           {attachments.map((attachment) => (
             <div
               key={attachment.storageId}

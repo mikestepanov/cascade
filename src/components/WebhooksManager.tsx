@@ -177,7 +177,9 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{webhook.name}</h4>
+                        <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {webhook.name}
+                        </h4>
                         <span
                           className={`text-xs px-2 py-0.5 rounded ${
                             webhook.isActive
@@ -312,7 +314,8 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
 
           <div>
             <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-              Events to Subscribe <span className="text-status-error dark:text-status-error-dark">*</span>
+              Events to Subscribe{" "}
+              <span className="text-status-error dark:text-status-error-dark">*</span>
             </div>
             <div className="space-y-2 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
               {AVAILABLE_EVENTS.map((event) => (
@@ -323,12 +326,16 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                     onChange={() => toggleEvent(event.value)}
                     className="w-4 h-4 text-brand-600 border-ui-border-primary dark:border-ui-border-primary-dark rounded focus:ring-brand-500"
                   />
-                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">{event.label}</span>
+                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                    {event.label}
+                  </span>
                 </label>
               ))}
             </div>
             {selectedEvents.length === 0 && (
-              <p className="mt-1 text-sm text-status-error dark:text-status-error-dark">Select at least one event</p>
+              <p className="mt-1 text-sm text-status-error dark:text-status-error-dark">
+                Select at least one event
+              </p>
             )}
           </div>
 

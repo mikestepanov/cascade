@@ -120,7 +120,9 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Roadmap</h2>
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Roadmap
+          </h2>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Visualize issue timeline and dependencies
           </p>
@@ -217,7 +219,9 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                       {issue.key}
                     </button>
                   </div>
-                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">{issue.title}</p>
+                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+                    {issue.title}
+                  </p>
                 </div>
 
                 {/* Timeline Bar */}

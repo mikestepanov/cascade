@@ -64,7 +64,9 @@ export const IssueCard = memo(function IssueCard({
         }
       }}
       className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
-        isSelected ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20" : "border-ui-border-primary dark:border-ui-border-primary-dark"
+        isSelected
+          ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
+          : "border-ui-border-primary dark:border-ui-border-primary-dark"
       }`}
     >
       {/* Header */}
@@ -81,7 +83,9 @@ export const IssueCard = memo(function IssueCard({
             />
           )}
           <span className="text-sm">{getTypeIcon(issue.type)}</span>
-          <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">{issue.key}</span>
+          <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
+            {issue.key}
+          </span>
         </div>
         <div className={`text-xs ${getPriorityColor(issue.priority)}`}>
           {getPriorityIcon(issue.priority)}
@@ -89,7 +93,9 @@ export const IssueCard = memo(function IssueCard({
       </div>
 
       {/* Title */}
-      <h4 className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2 line-clamp-2">{issue.title}</h4>
+      <h4 className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2 line-clamp-2">
+        {issue.title}
+      </h4>
 
       {/* Labels */}
       {issue.labels.length > 0 && (
@@ -103,7 +109,9 @@ export const IssueCard = memo(function IssueCard({
             </span>
           ))}
           {issue.labels.length > 3 && (
-            <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">+{issue.labels.length - 3}</span>
+            <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              +{issue.labels.length - 3}
+            </span>
           )}
         </div>
       )}

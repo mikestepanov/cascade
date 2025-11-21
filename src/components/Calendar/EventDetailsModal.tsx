@@ -106,7 +106,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 {event.status}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">{event.title}</h2>
+            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+              {event.title}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -150,8 +152,12 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
               {event.organizerName?.[0]?.toUpperCase()}
             </div>
             <div>
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Organizer</div>
-              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{event.organizerName}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Organizer
+              </div>
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                {event.organizerName}
+              </div>
               {event.organizerEmail && (
                 <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   {event.organizerEmail}
@@ -177,8 +183,12 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <div className="flex items-start gap-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
               <MapPin className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
               <div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Location</div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{event.location}</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Location
+                </div>
+                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  {event.location}
+                </div>
               </div>
             </div>
           )}
@@ -188,7 +198,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <div className="flex items-start gap-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
               <LinkIcon className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
               <div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Meeting Link</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Meeting Link
+                </div>
                 <a
                   href={event.meetingUrl}
                   target="_blank"
@@ -204,7 +216,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           {/* Notes */}
           {event.notes && (
             <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
-              <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Notes</div>
+              <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                Notes
+              </div>
               <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark whitespace-pre-wrap">
                 {event.notes}
               </div>
@@ -216,7 +230,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-                <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Recurring event</span>
+                <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  Recurring event
+                </span>
               </div>
             </div>
           )}
@@ -241,7 +257,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                       {attendee.status === "present" && (
                         <Check className="w-4 h-4 text-status-success" />
                       )}
-                      {attendee.status === "tardy" && <Clock className="w-4 h-4 text-status-warning" />}
+                      {attendee.status === "tardy" && (
+                        <Clock className="w-4 h-4 text-status-warning" />
+                      )}
                       {attendee.status === "absent" && <X className="w-4 h-4 text-status-error" />}
                       {!attendee.status && <div className="w-4 h-4" />}
 

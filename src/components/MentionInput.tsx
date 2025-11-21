@@ -196,7 +196,9 @@ export function MentionInput({
                 <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                   {member.userName}
                 </p>
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark capitalize">{member.role}</p>
+                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark capitalize">
+                  {member.role}
+                </p>
               </div>
             </button>
           ))}

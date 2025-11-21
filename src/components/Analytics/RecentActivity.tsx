@@ -18,7 +18,9 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
 
   return (
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">Recent Activity</h3>
+      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        Recent Activity
+      </h3>
       <div className="space-y-3">
         {activities.map((activity) => (
           <div
