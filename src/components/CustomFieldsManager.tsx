@@ -146,8 +146,8 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Custom Fields</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Custom Fields</h2>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Add custom metadata fields to your issues
           </p>
         </div>
@@ -157,7 +157,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Create/Edit Form */}
       {isCreating && (
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
             {editingId ? "Edit Field" : "New Field"}
           </h3>
           <div className="space-y-4">
@@ -181,7 +181,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             )}
 
             <Select
-              label={<>Field Type {!editingId && <span className="text-red-500">*</span>}</>}
+              label={<>Field Type {!editingId && <span className="text-status-error">*</span>}</>}
               value={fieldType}
               onChange={(e) => setFieldType(e.target.value as FieldType)}
               disabled={!!editingId}
@@ -235,7 +235,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-4xl mb-3">📋</div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             No custom fields yet. Add your first field to get started.
           </p>
         </Card>
@@ -248,24 +248,24 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
                   <div className="text-2xl">{getFieldTypeIcon(field.fieldType)}</div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                      <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                         {field.name}
                       </h3>
                       {field.isRequired && (
-                        <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
+                        <span className="text-xs px-2 py-0.5 bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark rounded">
                           Required
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      <code className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">
+                    <div className="flex items-center gap-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                      <code className="px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded font-mono text-xs">
                         {field.fieldKey}
                       </code>
                       <span>•</span>
                       <span className="capitalize">{field.fieldType}</span>
                     </div>
                     {field.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
                         {field.description}
                       </p>
                     )}
@@ -274,7 +274,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
                         {field.options.map((option) => (
                           <span
                             key={option}
-                            className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                            className="text-xs px-2 py-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded"
                           >
                             {option}
                           </span>
@@ -291,7 +291,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
                     onClick={() => handleDelete(field._id)}
                     variant="secondary"
                     size="sm"
-                    className="text-red-600 dark:text-red-400"
+                    className="text-status-error"
                   >
                     Delete
                   </Button>
