@@ -128,7 +128,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+          dragOver ? "border-brand-500 bg-brand-50 dark:bg-brand-950" : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
         }`}
       >
         <input
@@ -141,7 +141,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         />
         <label htmlFor="file-upload" className="cursor-pointer">
           <div className="text-4xl mb-2">📎</div>
-          <p className="text-sm text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">Drag and drop files here, or click to browse</p>
           <Button
             type="button"
             variant="secondary"
@@ -157,11 +157,11 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">Attachments ({attachments.length})</h4>
+          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Attachments ({attachments.length})</h4>
           {attachments.map((attachment) => (
             <div
               key={attachment.storageId}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <span className="text-2xl flex-shrink-0">{getFileIcon(attachment.filename)}</span>
@@ -169,11 +169,11 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-800 truncate block"
+                    className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-500 truncate block"
                   >
                     {attachment.filename}
                   </a>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     {new Date(attachment.uploadedAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -182,7 +182,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                 <a
                   href={attachment.url || "#"}
                   download={attachment.filename}
-                  className="p-1 text-gray-600 hover:text-blue-600 rounded"
+                  className="p-1 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-brand-600 dark:hover:text-brand-400 rounded"
                   title="Download"
                 >
                   <svg
@@ -203,7 +203,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(attachment.storageId)}
-                  className="p-1 text-gray-600 hover:text-red-600 rounded"
+                  className="p-1 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-status-error dark:hover:text-status-error-dark rounded"
                   title="Delete"
                 >
                   <svg
