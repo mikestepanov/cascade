@@ -77,10 +77,10 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Automation Rules
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Automate workflows with trigger-based actions
           </p>
         </div>
@@ -94,7 +94,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
         </Card>
       ) : rules.length === 0 ? (
         <Card className="p-8 text-center">
-          <div className="text-gray-500 dark:text-gray-400">
+          <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <p className="mb-2">No automation rules yet</p>
             <p className="text-sm">Create your first rule to automate repetitive tasks</p>
           </div>
