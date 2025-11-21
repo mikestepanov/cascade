@@ -92,13 +92,13 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
   const getRoadmapPriorityColor = (priority: string) => {
     // Map priority to full background colors for roadmap bars
     const colorMap: Record<string, string> = {
-      highest: "bg-red-500",
-      high: "bg-orange-500",
-      medium: "bg-yellow-500",
-      low: "bg-blue-500",
-      lowest: "bg-gray-500",
+      highest: "bg-status-error",
+      high: "bg-status-warning",
+      medium: "bg-accent-500",
+      low: "bg-brand-500",
+      lowest: "bg-ui-text-secondary dark:bg-ui-text-secondary-dark",
     };
-    return colorMap[priority] || "bg-gray-500";
+    return colorMap[priority] || "bg-ui-text-secondary dark:bg-ui-text-secondary-dark";
   };
 
   const _getTypeIcon = (type: string) => {
