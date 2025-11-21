@@ -32,7 +32,7 @@ export function ApiKeysManager() {
               <Key className="h-5 w-5" />
               API Keys
             </h3>
-            <p className="text-sm text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
             </p>
           </div>
@@ -54,7 +54,7 @@ export function ApiKeysManager() {
             <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               No API keys yet
             </h4>
-            <p className="text-sm text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Generate your first API key to access Cascade programmatically
             </p>
             <Button
@@ -76,14 +76,14 @@ export function ApiKeysManager() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-200 dark:border-brand-800">
+          <p className="text-sm text-brand-900 dark:text-brand-100">
             📚 <strong>Need help?</strong> Check out the{" "}
             <a
               href="/docs/API.md"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-blue-700"
+              className="underline hover:text-brand-700"
             >
               API Documentation
             </a>{" "}
@@ -157,11 +157,11 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
           <div className="flex items-center gap-2 mb-2">
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{apiKey.name}</h4>
             {apiKey.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success rounded">
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error rounded">
                 Revoked
               </span>
             )}
@@ -169,12 +169,12 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
 
           {/* Key Prefix */}
           <div className="flex items-center gap-2 mb-3">
-            <code className="text-sm font-mono bg-white dark:bg-gray-900 px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
+            <code className="text-sm font-mono bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
               {apiKey.keyPrefix}...
             </code>
             <button
               onClick={copyKeyPrefix}
-              className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark transition-colors"
               title="Copy key prefix"
             >
               <Copy className="h-4 w-4" />
@@ -186,7 +186,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             {apiKey.scopes.map((scope: string) => (
               <span
                 key={scope}
-                className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded"
+                className="px-2 py-0.5 text-xs bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-400 rounded"
               >
                 {scope}
               </span>
@@ -194,7 +194,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <div className="flex items-center gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <span>
               <strong>{apiKey.usageCount}</strong> API calls
             </span>
@@ -211,7 +211,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             {apiKey.expiresAt && (
               <>
                 <span>•</span>
-                <span className={apiKey.expiresAt < Date.now() ? "text-red-600" : ""}>
+                <span className={apiKey.expiresAt < Date.now() ? "text-status-error" : ""}>
                   Expires: {new Date(apiKey.expiresAt).toLocaleDateString()}
                 </span>
               </>
@@ -223,7 +223,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
         <div className="flex items-center gap-2 ml-4">
           <button
             onClick={onViewStats}
-            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             title="View usage statistics"
           >
             <TrendingUp className="h-4 w-4" />
@@ -241,7 +241,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-red-400 transition-colors"
             title="Delete key"
           >
             <Trash2 className="h-4 w-4" />
@@ -325,7 +325,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
             <Input
               label={
                 <>
-                  Key Name <span className="text-red-500">*</span>
+                  Key Name <span className="text-status-error">*</span>
                 </>
               }
               type="text"
@@ -338,7 +338,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
             {/* Scopes */}
             <div>
               <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                Permissions (Scopes) <span className="text-red-500">*</span>
+                Permissions (Scopes) <span className="text-status-error">*</span>
               </label>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableScopes.map((scope) => (
@@ -396,7 +396,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 API Key Generated!
               </h3>
-              <p className="text-sm text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-6">
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
                 ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
               </p>
 
@@ -409,8 +409,8 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
               {/* Copy Instructions */}
               <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-blue-900 dark:text-blue-100 mb-2">Usage Example:</p>
-                <code className="block bg-white dark:bg-gray-900 p-2 rounded text-xs font-mono">
+                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">Usage Example:</p>
+                <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
                   curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                   https://cascade.app/api/issues
                 </code>
@@ -457,19 +457,19 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
             {/* Overview Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-1">Total Calls</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Total Calls</p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.totalCalls.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-1">Last 24 Hours</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Last 24 Hours</p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.last24Hours.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-1">Success Rate</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Success Rate</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
@@ -478,7 +478,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 </p>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-1">Avg Response</p>
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">Avg Response</p>
                 <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.avgResponseTime}ms
                 </p>
@@ -503,13 +503,13 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                           <span className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {log.method}
                           </span>
-                          <span className="text-gray-600 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{log.endpoint}</span>
+                          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{log.endpoint}</span>
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
                             log.statusCode < 400
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                              ? "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success"
+                              : "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error"
                           }`}
                         >
                           {log.statusCode}
