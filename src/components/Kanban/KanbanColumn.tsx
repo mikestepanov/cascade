@@ -56,6 +56,7 @@ export function KanbanColumn({
     .sort((a, b) => a.order - b.order);
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
     <div
       className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}

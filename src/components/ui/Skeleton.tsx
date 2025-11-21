@@ -42,12 +42,20 @@ export function SkeletonCard({ className }: SkeletonProps) {
  * Skeleton for text lines with varying widths
  */
 export function SkeletonText({ lines = 3, className }: { lines?: number; className?: string }) {
+  const lineItems = Array.from({ length: lines }, (_, i) => ({
+    id: `skeleton-text-${i}`,
+    index: i,
+  }));
+
   return (
     <div className={cn("space-y-2", className)}>
-      {Array.from({ length: lines }).map((_, i) => (
+      {lineItems.map((item) => (
         <Skeleton
-          key={`skeleton-text-${i}`}
-          className={cn("h-4", i === lines - 1 ? "w-4/5" : i % 2 === 0 ? "w-full" : "w-11/12")}
+          key={item.id}
+          className={cn(
+            "h-4",
+            item.index === lines - 1 ? "w-4/5" : item.index % 2 === 0 ? "w-full" : "w-11/12",
+          )}
         />
       ))}
     </div>
@@ -71,11 +79,13 @@ export function SkeletonAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
  * Skeleton for table rows
  */
 export function SkeletonTable({ rows = 5 }: { rows?: number }) {
+  const rowItems = Array.from({ length: rows }, (_, i) => `skeleton-row-${i}`);
+
   return (
     <div className="space-y-2">
-      {Array.from({ length: rows }).map((_, i) => (
+      {rowItems.map((rowId) => (
         <div
-          key={`skeleton-row-${i}`}
+          key={rowId}
           className="flex items-center gap-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
         >
           <Skeleton className="h-4 w-20" />
@@ -92,11 +102,13 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
  * Skeleton for list items (issues, documents, etc.)
  */
 export function SkeletonList({ items = 5 }: { items?: number }) {
+  const listItems = Array.from({ length: items }, (_, i) => `skeleton-item-${i}`);
+
   return (
     <div className="space-y-2">
-      {Array.from({ length: items }).map((_, i) => (
+      {listItems.map((itemId) => (
         <div
-          key={`skeleton-item-${i}`}
+          key={itemId}
           className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
         >
           <div className="flex items-start gap-3">

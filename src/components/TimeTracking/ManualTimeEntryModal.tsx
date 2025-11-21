@@ -118,7 +118,12 @@ export function ManualTimeEntryModal({
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+      <button
+        type="button"
+        className="fixed inset-0 bg-black/50 z-40 cursor-default"
+        onClick={onClose}
+        aria-label="Close modal"
+      />
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto">

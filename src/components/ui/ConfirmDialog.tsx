@@ -54,9 +54,11 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
       >
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: Modal content needs stopPropagation to prevent backdrop clicks */}
         <div
           className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-md w-full animate-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
         >
           <div className="p-6">
             <div className="flex items-start gap-4">

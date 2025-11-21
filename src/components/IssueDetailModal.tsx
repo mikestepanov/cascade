@@ -38,6 +38,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
         {/* Modal Skeleton */}
         <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+          {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading state */}
           <div
             role="status"
             aria-busy="true"

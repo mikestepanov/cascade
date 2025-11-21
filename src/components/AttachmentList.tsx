@@ -89,6 +89,7 @@ function AttachmentItem({
           download
           className="text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
         >
+          <span className="sr-only">Download attachment</span>
           <svg
             aria-hidden="true"
             className="w-5 h-5"

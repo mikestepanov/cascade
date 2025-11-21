@@ -137,9 +137,11 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
         <>
           <ModalBackdrop onClick={() => setShowSaveDialog(false)} zIndex="z-50" animated={false} />
           <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: Modal content needs stopPropagation to prevent backdrop clicks */}
             <div
               className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg p-6 max-w-md w-full mx-4 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
                 Save Filter

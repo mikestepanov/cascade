@@ -91,12 +91,10 @@ export function NotificationCenter() {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="fixed inset-0 z-10"
+          <button
+            type="button"
+            className="fixed inset-0 z-10 cursor-default"
             onClick={() => setIsOpen(false)}
-            onKeyDown={handleKeyboardClick(() => setIsOpen(false))}
             aria-label="Close notifications"
           />
 

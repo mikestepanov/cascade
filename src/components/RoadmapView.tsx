@@ -227,23 +227,21 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                 {/* Timeline Bar */}
                 <div className="flex-1 relative h-8">
                   {issue.dueDate && (
-                    <div
-                      role="button"
-                      tabIndex={0}
+                    <button
+                      type="button"
                       className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
                       style={{
                         left: `${getPositionOnTimeline(issue.dueDate)}%`,
                         width: "5%", // Default width for single date
                       }}
                       onClick={() => setSelectedIssue(issue._id)}
-                      onKeyDown={handleKeyboardClick(() => setSelectedIssue(issue._id))}
                       title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
                       aria-label={`View issue ${issue.key}`}
                     >
                       <span className="text-xs text-white font-medium truncate">
                         {issue.assignee?.name.split(" ")[0]}
                       </span>
-                    </div>
+                    </button>
                   )}
 
                   {/* Today Indicator */}

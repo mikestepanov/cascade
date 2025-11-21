@@ -227,22 +227,15 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
         ) : (
           <div className="p-2">
             {displayedDocuments.map((doc) => (
-              <div
+              <button
                 key={doc._id}
-                role="button"
-                tabIndex={0}
-                className={`group p-3 rounded-md cursor-pointer transition-colors ${
+                type="button"
+                className={`w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedDocumentId === doc._id
                     ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
                     : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
                 onClick={() => onSelectDocument(doc._id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelectDocument(doc._id);
-                  }
-                }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -293,7 +286,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                     </button>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}

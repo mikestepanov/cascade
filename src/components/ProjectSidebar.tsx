@@ -140,17 +140,15 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         ) : (
           <div className="p-2">
             {projects.map((project) => (
-              <div
+              <button
                 key={project._id}
-                role="button"
-                tabIndex={0}
-                className={`group p-3 rounded-md cursor-pointer transition-colors ${
+                type="button"
+                className={`w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedProjectId === project._id
                     ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
                     : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
                 onClick={() => onSelectProject(project._id)}
-                onKeyDown={handleKeyboardClick(() => onSelectProject(project._id))}
                 aria-label={`Select project ${project.name}`}
               >
                 <div className="flex items-start justify-between">
@@ -186,7 +184,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                     </p>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}

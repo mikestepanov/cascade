@@ -348,10 +348,19 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableScopes.map((scope) => (
+                  // biome-ignore lint/a11y/useSemanticElements: Can't use button here as it contains a checkbox (nested interactive elements)
                   <div
                     key={scope.value}
+                    role="button"
+                    tabIndex={0}
                     className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
                     onClick={() => toggleScope(scope.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleScope(scope.value);
+                      }
+                    }}
                   >
                     <Checkbox
                       checked={selectedScopes.includes(scope.value)}
@@ -514,9 +523,9 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 </p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {stats.recentLogs.map((log: Doc<"apiUsageLogs">, i: number) => (
+                  {stats.recentLogs.map((log: Doc<"apiUsageLogs">) => (
                     <div
-                      key={i}
+                      key={log._id}
                       className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"
                     >
                       <div className="flex items-center justify-between mb-1">

@@ -179,9 +179,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                 Item
               </div>
               <div className="flex-1 flex">
-                {columns.map((col, idx) => (
+                {columns.map((col) => (
                   <div
-                    key={idx}
+                    key={col.date.getTime()}
                     className="flex-1 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark text-center text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
                   >
                     {col.label}
@@ -226,9 +226,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   {/* Timeline Bar */}
                   <div className="flex-1 relative">
                     <div className="absolute inset-0 flex">
-                      {columns.map((_col, idx) => (
+                      {columns.map((col) => (
                         <div
-                          key={idx}
+                          key={col.date.getTime()}
                           className="flex-1 border-r border-ui-border-primary dark:border-ui-border-primary-dark"
                         />
                       ))}

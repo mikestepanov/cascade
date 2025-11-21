@@ -121,8 +121,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
   return (
     <div className="space-y-4">
       {/* Upload Area */}
-      <div
-        role="region"
+      <section
         aria-label="File upload area"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -156,7 +155,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
             {uploading ? "Uploading..." : "Choose Files"}
           </Button>
         </label>
-      </div>
+      </section>
 
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
@@ -191,6 +190,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   className="p-1 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-brand-600 dark:hover:text-brand-400 rounded"
                   title="Download"
                 >
+                  <span className="sr-only">Download {attachment.filename}</span>
                   <svg
                     aria-hidden="true"
                     className="w-4 h-4"

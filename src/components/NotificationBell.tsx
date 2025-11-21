@@ -143,20 +143,13 @@ export function NotificationBell() {
             ) : (
               <div>
                 {notifications.map((notification) => (
-                  <div
+                  <button
                     key={notification._id}
-                    role="button"
-                    tabIndex={0}
-                    className={`px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors ${
+                    type="button"
+                    className={`w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors ${
                       !notification.isRead ? "bg-brand-50 dark:bg-brand-900/20" : ""
                     }`}
                     onClick={() => handleNotificationClick(notification._id, notification.issueId)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        void handleNotificationClick(notification._id, notification.issueId);
-                      }
-                    }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="text-2xl flex-shrink-0">
@@ -208,7 +201,7 @@ export function NotificationBell() {
                         </svg>
                       </button>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

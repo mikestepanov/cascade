@@ -13,6 +13,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
+      {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading spinner */}
       <div
         className={`animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent ${sizeClasses[size]} ${className}`}
         role="status"

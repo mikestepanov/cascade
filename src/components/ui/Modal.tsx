@@ -41,6 +41,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}
       >
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: Modal content needs stopPropagation to prevent backdrop clicks */}
         <div
           className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark ${
             fullScreenOnMobile

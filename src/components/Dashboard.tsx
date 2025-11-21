@@ -108,19 +108,12 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                 ) : (
                   <div ref={projectNavigation.listRef} className="space-y-2">
                     {myProjects.map((project, index) => (
-                      <div
+                      <button
                         key={project._id}
-                        role="button"
-                        tabIndex={0}
+                        type="button"
                         onClick={() => onNavigateToProject?.(project._id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            onNavigateToProject?.(project._id);
-                          }
-                        }}
                         {...projectNavigation.getItemProps(index)}
-                        className={`p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${projectNavigation.getItemProps(index).className}`}
+                        className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${projectNavigation.getItemProps(index).className}`}
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-center justify-between mb-1 gap-2">
@@ -134,7 +127,7 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
                         <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {project.myIssues} my issues • {project.totalIssues} total
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}

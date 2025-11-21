@@ -98,19 +98,12 @@ export function MyIssuesList({
         ) : (
           <div ref={issueNavigation.listRef} className="space-y-2 max-h-[600px] overflow-y-auto">
             {displayIssues.map((issue, index) => (
-              <div
+              <button
                 key={issue._id}
-                role="button"
-                tabIndex={0}
+                type="button"
                 onClick={() => onNavigateToProject?.(issue.projectId)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onNavigateToProject?.(issue.projectId);
-                  }
-                }}
                 {...issueNavigation.getItemProps(index)}
-                className={`p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
+                className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="flex items-start justify-between">
@@ -138,7 +131,7 @@ export function MyIssuesList({
                     </div>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}

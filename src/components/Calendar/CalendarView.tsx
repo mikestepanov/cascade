@@ -186,11 +186,11 @@ function WeekView({
       {/* Day Headers */}
       <div className="grid grid-cols-8 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         <div className="p-1 sm:p-2 text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-        {days.map((day, idx) => {
+        {days.map((day) => {
           const isToday = isSameDay(day, new Date());
           return (
             <div
-              key={idx}
+              key={day.getTime()}
               className="p-1 sm:p-2 text-center border-l border-ui-border-primary dark:border-ui-border-primary-dark"
             >
               <div
@@ -250,9 +250,9 @@ function WeekView({
           </div>
 
           {/* Day Columns */}
-          {days.map((day, dayIdx) => (
+          {days.map((day) => (
             <div
-              key={dayIdx}
+              key={day.getTime()}
               className="border-r border-ui-border-primary dark:border-ui-border-primary-dark relative"
             >
               {hours.map((hour) => (
@@ -344,14 +344,14 @@ function MonthView({
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 flex-1">
-        {days.map((day, idx) => {
+        {days.map((day) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
           const dayEvents = events.filter((event) => isSameDay(new Date(event.startTime), day));
 
           return (
             <div
-              key={idx}
+              key={day.getTime()}
               className={`border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] ${
                 !isCurrentMonth
                   ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"

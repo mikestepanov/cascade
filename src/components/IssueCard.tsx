@@ -51,19 +51,12 @@ export const IssueCard = memo(function IssueCard({
   };
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       draggable={!selectionMode}
       onDragStart={selectionMode ? undefined : onDragStart}
       onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleClick(e);
-        }
-      }}
-      className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
+      className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
         isSelected
           ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
           : "border-ui-border-primary dark:border-ui-border-primary-dark"
@@ -142,6 +135,6 @@ export const IssueCard = memo(function IssueCard({
           </div>
         )}
       </div>
-    </div>
+    </button>
   );
 });

@@ -168,14 +168,16 @@ export function UserRatesManagement() {
       {/* Add/Edit Rate Modal */}
       {showAddRate && (
         <>
-          <div
-            className="fixed inset-0 bg-black/50 z-40"
+          <button
+            type="button"
+            className="fixed inset-0 bg-black/50 z-40 cursor-default"
             onClick={() => {
               setShowAddRate(false);
               setEditingUserId(null);
               setHourlyRate("");
               setNotes("");
             }}
+            aria-label="Close modal"
           />
 
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
