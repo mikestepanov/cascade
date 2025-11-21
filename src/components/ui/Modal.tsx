@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "./Button";
 import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ModalProps {
@@ -59,11 +60,12 @@ export function Modal({
               >
                 {title}
               </h2>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onClose}
-                className="text-ui-text-tertiary hover:text-ui-text-secondary dark:text-ui-text-tertiary-dark dark:hover:text-ui-text-secondary-dark p-1 rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 aria-label="Close modal"
+                className="p-1 min-h-0"
               >
                 <svg
                   aria-hidden="true"
@@ -79,7 +81,7 @@ export function Modal({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
           )}
           <div className={title ? "" : "p-4 sm:p-6"}>{children}</div>

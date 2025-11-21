@@ -1,4 +1,5 @@
 import { useTheme } from "../contexts/ThemeContext";
+import { Button } from "./ui/Button";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -12,20 +13,17 @@ export function ThemeToggle() {
   return (
     <div className="flex items-center gap-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1">
       {themes.map((t) => (
-        <button
-          type="button"
+        <Button
           key={t.value}
+          variant={theme === t.value ? "primary" : "ghost"}
+          size="sm"
           onClick={() => setTheme(t.value)}
           aria-label={`Switch to ${t.label.toLowerCase()} theme`}
-          className={`px-2 py-1 rounded-md text-sm transition-colors ${
-            theme === t.value
-              ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-              : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-          }`}
           title={t.label}
+          className={theme === t.value ? "shadow-sm" : ""}
         >
           <span className="text-base">{t.icon}</span>
-        </button>
+        </Button>
       ))}
     </div>
   );

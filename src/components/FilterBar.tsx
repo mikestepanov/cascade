@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Button } from "./ui/Button";
 import { Checkbox, Input } from "./ui/form";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
@@ -104,24 +105,16 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
         {/* Save Current Filter */}
         {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={() => setShowSaveDialog(true)}
-            className="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700"
-          >
+          <Button size="sm" onClick={() => setShowSaveDialog(true)}>
             💾 Save Filter
-          </button>
+          </Button>
         )}
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            className="px-3 py-1.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-lg text-sm hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-          >
+          <Button variant="secondary" size="sm" onClick={handleClearFilters}>
             ✕ Clear
-          </button>
+          </Button>
         )}
 
         {/* Active Filters Indicator */}
@@ -163,24 +156,17 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                 />
 
                 <div className="flex gap-3 justify-end">
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
                     onClick={() => {
                       setShowSaveDialog(false);
                       setFilterName("");
                       setIsPublic(false);
                     }}
-                    className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
                   >
                     Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveFilter}
-                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
-                  >
-                    Save
-                  </button>
+                  </Button>
+                  <Button onClick={handleSaveFilter}>Save</Button>
                 </div>
               </div>
             </div>
@@ -196,22 +182,25 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               key={filter._id}
               className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-full text-sm"
             >
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => handleLoadFilter(filter.filters)}
-                className="hover:text-brand-600"
+                className="p-0 min-h-0 hover:text-brand-600"
               >
                 {filter.name}
-              </button>
+              </Button>
               {filter.isOwner && (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => handleDeleteFilter(filter._id)}
-                  className="text-ui-text-tertiary hover:text-status-error"
+                  className="p-0 min-h-0 text-ui-text-tertiary hover:text-status-error"
                   title="Delete"
+                  aria-label="Delete filter"
                 >
                   ✕
-                </button>
+                </Button>
               )}
             </div>
           ))}
