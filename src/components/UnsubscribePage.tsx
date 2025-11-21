@@ -47,21 +47,21 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
   }, [getUserFromToken, token, unsubscribe]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+      <div className="max-w-md w-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Processing...</h2>
-            <p className="text-gray-600">Unsubscribing you from email notifications</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Processing...</h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Unsubscribing you from email notifications</p>
           </div>
         )}
 
         {status === "success" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-success-bg dark:bg-status-success-dark flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-green-600"
+                className="w-6 h-6 text-status-success dark:text-status-success-dark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -74,11 +74,11 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Successfully Unsubscribed</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Successfully Unsubscribed</h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
               You have been unsubscribed from all email notifications.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               You can update your notification preferences anytime by logging into your account.
             </p>
           </div>
@@ -86,9 +86,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "invalid" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-warning-bg dark:bg-status-warning-dark flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-yellow-600"
+                className="w-6 h-6 text-status-warning dark:text-status-warning-dark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -101,8 +101,8 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Invalid or Expired Link</h2>
-            <p className="text-gray-600">
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Invalid or Expired Link</h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
               This unsubscribe link is invalid or has expired. Links expire after 30 days.
             </p>
           </div>
@@ -110,9 +110,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "error" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-error-bg dark:bg-status-error-dark flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-red-600"
+                className="w-6 h-6 text-status-error dark:text-status-error-dark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -125,10 +125,10 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Something Went Wrong</h2>
-            <p className="text-gray-600 mb-2">We couldn't process your unsubscribe request.</p>
+            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Something Went Wrong</h2>
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">We couldn't process your unsubscribe request.</p>
             {errorMessage && (
-              <p className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{errorMessage}</p>
+              <p className="text-sm text-status-error dark:text-status-error-dark bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md">{errorMessage}</p>
             )}
           </div>
         )}
