@@ -97,7 +97,10 @@ export function CreateEventModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Title */}
           <div>
-            <label htmlFor="event-title" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="event-title"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Event Title *
             </label>
             <input
@@ -137,7 +140,10 @@ export function CreateEventModal({
           {/* Date and Time */}
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-3 sm:col-span-1">
-              <label htmlFor="event-date" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="event-date"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 <Calendar className="w-4 h-4 inline mr-1" />
                 Date *
               </label>
@@ -151,7 +157,10 @@ export function CreateEventModal({
               />
             </div>
             <div>
-              <label htmlFor="event-start-time" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="event-start-time"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 <Clock className="w-4 h-4 inline mr-1" />
                 Start Time
               </label>
@@ -165,7 +174,10 @@ export function CreateEventModal({
               />
             </div>
             <div>
-              <label htmlFor="event-end-time" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="event-end-time"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 End Time
               </label>
               <input
@@ -218,7 +230,10 @@ export function CreateEventModal({
 
           {/* Description */}
           <div>
-            <label htmlFor="event-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="event-description"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Description
             </label>
             <textarea
@@ -233,7 +248,10 @@ export function CreateEventModal({
 
           {/* Location */}
           <div>
-            <label htmlFor="event-location" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="event-location"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               <MapPin className="w-4 h-4 inline mr-1" />
               Location
             </label>
@@ -250,7 +268,10 @@ export function CreateEventModal({
           {/* Meeting URL */}
           {eventType === "meeting" && (
             <div>
-              <label htmlFor="event-meeting-url" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="event-meeting-url"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 Meeting Link
               </label>
@@ -267,7 +288,10 @@ export function CreateEventModal({
 
           {/* Link to Project */}
           <div>
-            <label htmlFor="event-project" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="event-project"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Link to Project (optional)
             </label>
             <select

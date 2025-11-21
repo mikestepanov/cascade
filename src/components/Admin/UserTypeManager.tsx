@@ -787,7 +787,10 @@ export function UserTypeManager() {
                   </div>
 
                   <div>
-                    <label htmlFor="equity-notes" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                    <label
+                      htmlFor="equity-notes"
+                      className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                    >
                       Equity Notes
                     </label>
                     <textarea

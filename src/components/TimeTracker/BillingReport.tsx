@@ -85,7 +85,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
             <option value="month">Last 30 days</option>
             <option value="all">All time</option>
           </select>
-          <button type="button" className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
+          >
             <Download className="w-4 h-4" />
             Export
           </button>

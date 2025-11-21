@@ -40,7 +40,10 @@ export function LinkedRepositories() {
 
       {/* Project selector */}
       <div className="mb-4">
-        <label htmlFor="project-selector" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <label
+          htmlFor="project-selector"
+          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+        >
           Select Project
         </label>
         <select

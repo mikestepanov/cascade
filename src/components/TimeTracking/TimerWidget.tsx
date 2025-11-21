@@ -135,7 +135,10 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="timer-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="timer-description"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               What are you working on? (optional)
             </label>
             <input
@@ -149,7 +152,10 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label htmlFor="timer-activity" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="timer-activity"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Activity (optional)
             </label>
             <select

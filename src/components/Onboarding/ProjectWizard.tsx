@@ -115,7 +115,10 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </p>
 
             <div>
-              <label htmlFor="project-name" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="project-name"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 Project Name <span className="text-status-error">*</span>
               </label>
               <input
@@ -134,7 +137,10 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <div>
-              <label htmlFor="project-key" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="project-key"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 Project Key <span className="text-status-error">*</span>
               </label>
               <input
@@ -153,7 +159,10 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <div>
-              <label htmlFor="project-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="project-description"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 Description (optional)
               </label>
               <textarea

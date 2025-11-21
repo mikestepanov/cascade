@@ -188,7 +188,10 @@ export function UserRatesManagement() {
             <div className="space-y-4">
               {/* Project Selection */}
               <div>
-                <label htmlFor="rate-apply-to" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label
+                  htmlFor="rate-apply-to"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
                   Apply To
                 </label>
                 <select
@@ -270,7 +273,10 @@ export function UserRatesManagement() {
 
               {/* Hourly Rate */}
               <div>
-                <label htmlFor="rate-hourly-rate" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label
+                  htmlFor="rate-hourly-rate"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
                   Hourly Rate
                 </label>
                 <div className="flex gap-2">
@@ -304,7 +310,10 @@ export function UserRatesManagement() {
 
               {/* Notes */}
               <div>
-                <label htmlFor="rate-notes" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label
+                  htmlFor="rate-notes"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
                   Notes (optional)
                 </label>
                 <textarea

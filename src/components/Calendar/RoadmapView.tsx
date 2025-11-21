@@ -24,8 +24,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   // Filter to items with dates
   const roadmapItems = [
     ...(sprints
-      ?.filter((sprint): sprint is typeof sprint & { startDate: number; endDate: number } =>
-        sprint.startDate !== undefined && sprint.endDate !== undefined
+      ?.filter(
+        (sprint): sprint is typeof sprint & { startDate: number; endDate: number } =>
+          sprint.startDate !== undefined && sprint.endDate !== undefined,
       )
       .map((sprint) => ({
         type: "sprint" as const,
@@ -36,9 +37,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
         status: sprint.status,
       })) || []),
     ...(issues
-      ?.filter((issue): issue is typeof issue & { dueDate: number } =>
-        issue.dueDate !== undefined
-      )
+      ?.filter((issue): issue is typeof issue & { dueDate: number } => issue.dueDate !== undefined)
       .map((issue) => ({
         type: "issue" as const,
         id: issue._id,

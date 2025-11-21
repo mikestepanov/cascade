@@ -134,7 +134,10 @@ export function ManualTimeEntryModal({
         <div className="space-y-4">
           {/* Date */}
           <div>
-            <label htmlFor="time-entry-date" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="time-entry-date"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Date *
             </label>
             <input
@@ -151,7 +154,10 @@ export function ManualTimeEntryModal({
           {/* Time Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="time-entry-start" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="time-entry-start"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 Start Time *
               </label>
               <input
@@ -164,7 +170,10 @@ export function ManualTimeEntryModal({
               />
             </div>
             <div>
-              <label htmlFor="time-entry-end" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="time-entry-end"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 End Time *
               </label>
               <input
@@ -189,7 +198,10 @@ export function ManualTimeEntryModal({
 
           {/* Project Selection */}
           <div>
-            <label htmlFor="time-entry-project" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="time-entry-project"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Project
             </label>
             <select
@@ -213,7 +225,10 @@ export function ManualTimeEntryModal({
           {/* Issue Selection */}
           {projectId && projectIssues && projectIssues.length > 0 && (
             <div>
-              <label htmlFor="time-entry-issue" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label
+                htmlFor="time-entry-issue"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
                 Issue (optional)
               </label>
               <select
@@ -236,7 +251,10 @@ export function ManualTimeEntryModal({
 
           {/* Description */}
           <div>
-            <label htmlFor="time-entry-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="time-entry-description"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Description
             </label>
             <textarea
@@ -251,7 +269,10 @@ export function ManualTimeEntryModal({
 
           {/* Activity */}
           <div>
-            <label htmlFor="time-entry-activity" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="time-entry-activity"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Activity
             </label>
             <select
@@ -271,7 +292,10 @@ export function ManualTimeEntryModal({
 
           {/* Tags */}
           <div>
-            <label htmlFor="time-entry-tags" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="time-entry-tags"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Tags
             </label>
             <div className="flex gap-2">

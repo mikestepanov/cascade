@@ -87,7 +87,10 @@ export function TimeTrackingPage() {
       <div className="flex flex-wrap items-center gap-4">
         {/* Project filter */}
         <div>
-          <label htmlFor="tracking-project-filter" className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+          <label
+            htmlFor="tracking-project-filter"
+            className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
             Project
           </label>
           <select
@@ -112,7 +115,10 @@ export function TimeTrackingPage() {
         {/* Date range filter */}
         {activeTab === "entries" && (
           <div>
-            <label htmlFor="tracking-date-range" className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label
+              htmlFor="tracking-date-range"
+              className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Date Range
             </label>
             <select

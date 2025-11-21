@@ -10,7 +10,9 @@ vi.mock("./ImportExportModal", () => ({
     if (!isOpen) return null;
     return (
       <div data-testid="import-export-modal">
-        <button type="button" onClick={onClose}>Close Modal</button>
+        <button type="button" onClick={onClose}>
+          Close Modal
+        </button>
         <div data-testid="modal-project-id">{projectId}</div>
       </div>
     );

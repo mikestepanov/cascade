@@ -82,7 +82,13 @@ export function PumbleIntegration() {
             className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 flex items-center space-x-1"
           >
             <span>How to create a Pumble incoming webhook</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -423,7 +429,13 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
               aria-label="Close modal"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -616,7 +628,13 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
               aria-label="Close modal"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -631,7 +649,10 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Name */}
           <div>
-            <label htmlFor="webhook-name" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <label
+              htmlFor="webhook-name"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+            >
               Webhook Name
             </label>
             <input
