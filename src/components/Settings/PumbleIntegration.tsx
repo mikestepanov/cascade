@@ -19,7 +19,7 @@ export function PumbleIntegration() {
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -75,7 +75,7 @@ export function PumbleIntegration() {
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-accent-600 dark:text-accent-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center space-x-1"
+            className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 flex items-center space-x-1"
           >
             <span>How to create a Pumble incoming webhook</span>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -181,7 +181,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const maskedUrl = webhook.webhookUrl.replace(/([^/]{8})[^/]+/, "$1***");
 
   return (
-    <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-purple-300 dark:hover:border-purple-700 transition-colors">
+    <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
@@ -191,7 +191,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-gray-800 dark:text-gray-300 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded">
                 Inactive
               </span>
             )}
@@ -208,7 +208,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.events.map((event: string) => (
           <span
             key={event}
-            className="px-2 py-0.5 text-xs font-medium bg-accent-100 dark:bg-accent-900/30 text-purple-800 dark:text-purple-300 rounded"
+            className="px-2 py-0.5 text-xs font-medium bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300 rounded"
           >
             {event.replace("issue.", "")}
           </span>
@@ -272,7 +272,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Error */}
       {webhook.lastError && (
-        <div className="mb-3 p-2 bg-status-error/10 dark:bg-status-error/20 border border-red-200 dark:border-red-800 rounded text-xs text-red-700 dark:text-red-400">
+        <div className="mb-3 p-2 bg-status-error/10 dark:bg-status-error/20 border border-status-error/30 dark:border-status-error/40 rounded text-xs text-status-error dark:text-status-error">
           Last error: {webhook.lastError}
         </div>
       )}
