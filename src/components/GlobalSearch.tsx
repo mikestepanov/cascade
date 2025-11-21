@@ -127,7 +127,7 @@ export function GlobalSearch() {
         type="button"
         onClick={() => setIsOpen(true)}
         aria-label="Open search (⌘K)"
-        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
       >
         <svg
           aria-hidden="true"
@@ -144,7 +144,7 @@ export function GlobalSearch() {
           />
         </svg>
         <span>Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded">
+        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded">
           ⌘K
         </kbd>
       </button>
@@ -156,13 +156,13 @@ export function GlobalSearch() {
           <ModalBackdrop onClick={() => setIsOpen(false)} animated={false} />
 
           {/* Modal */}
-          <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl z-50">
+          <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-2xl z-50">
             {/* Search Input */}
-            <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
               <div className="relative">
                 <svg
                   aria-hidden="true"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -179,20 +179,20 @@ export function GlobalSearch() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search issues and documents..."
-                  className="pl-10 pr-4 py-2 sm:py-3 text-base sm:text-lg border-none focus:outline-none bg-transparent text-gray-900 dark:text-gray-100"
+                  className="pl-10 pr-4 py-2 sm:py-3 text-base sm:text-lg border-none focus:outline-none bg-transparent text-ui-text-primary dark:text-ui-text-primary-dark"
                 />
               </div>
             </div>
 
             {/* Tabs with counts */}
-            <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+            <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab("all")}
                 className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === "all"
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
                 }`}
               >
                 All{" "}
@@ -205,8 +205,8 @@ export function GlobalSearch() {
                 onClick={() => setActiveTab("issues")}
                 className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === "issues"
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
                 }`}
               >
                 Issues {query.length >= 2 && <span className="text-xs">({issueTotal})</span>}
@@ -216,8 +216,8 @@ export function GlobalSearch() {
                 onClick={() => setActiveTab("documents")}
                 className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === "documents"
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
                 }`}
               >
                 Documents {query.length >= 2 && <span className="text-xs">({documentTotal})</span>}
@@ -227,17 +227,17 @@ export function GlobalSearch() {
             {/* Results */}
             <div className="max-h-80 sm:max-h-96 overflow-y-auto">
               {query.length < 2 ? (
-                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   <p className="text-sm">Type at least 2 characters to search</p>
                 </div>
               ) : filteredResults.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   <div className="text-4xl mb-2">🔍</div>
                   <p>No results found</p>
                 </div>
               ) : (
                 <>
-                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {filteredResults.map((result) => (
                       <a
                         key={result._id}
@@ -247,15 +247,15 @@ export function GlobalSearch() {
                             : `/document/${result._id}`
                         }
                         onClick={() => setIsOpen(false)}
-                        className="block p-3 sm:p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        className="block p-3 sm:p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                       >
                         <div className="flex items-start gap-3">
                           {/* Icon */}
-                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-gray-100 dark:bg-gray-700">
+                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
                             {result.type === "issue" ? (
                               <svg
                                 aria-hidden="true"
-                                className="w-5 h-5 text-blue-600"
+                                className="w-5 h-5 text-brand-600"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
@@ -268,7 +268,7 @@ export function GlobalSearch() {
                             ) : (
                               <svg
                                 aria-hidden="true"
-                                className="w-5 h-5 text-green-600"
+                                className="w-5 h-5 text-accent-600"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
@@ -285,18 +285,18 @@ export function GlobalSearch() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               {result.type === "issue" && (
-                                <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+                                <span className="text-xs font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
                                   {result.key}
                                 </span>
                               )}
-                              <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
+                              <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark rounded-full">
                                 {result.type}
                               </span>
                             </div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1 truncate">
+                            <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
                               {result.title}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 line-clamp-2">
                               {result.description || "No description"}
                             </p>
                           </div>
@@ -307,11 +307,11 @@ export function GlobalSearch() {
 
                   {/* Load More Button */}
                   {hasMore && (
-                    <div className="p-4 border-t border-gray-100 dark:border-gray-800">
+                    <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
                       <button
                         type="button"
                         onClick={handleLoadMore}
-                        className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors"
+                        className="w-full px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 rounded-lg transition-colors"
                       >
                         Load More ({totalCount - filteredResults.length} remaining)
                       </button>
@@ -322,17 +322,17 @@ export function GlobalSearch() {
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500">
+            <div className="p-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <div className="flex items-center gap-4">
                 <span>
-                  <kbd className="px-2 py-1 bg-gray-100 rounded">↑↓</kbd> Navigate
+                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">↑↓</kbd> Navigate
                 </span>
                 <span>
-                  <kbd className="px-2 py-1 bg-gray-100 rounded">Enter</kbd> Open
+                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">Enter</kbd> Open
                 </span>
               </div>
               <span>
-                <kbd className="px-2 py-1 bg-gray-100 rounded">Esc</kbd> Close
+                <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">Esc</kbd> Close
               </span>
             </div>
           </div>
