@@ -24,16 +24,16 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</div>
+      <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">{label}</div>
       <div className="flex gap-2 flex-wrap items-center">
         {presetColors.map((presetColor) => (
           <button
             key={presetColor}
             type="button"
             onClick={() => onChange(presetColor)}
-            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 dark:focus:ring-gray-100 ${
+            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark ${
               value === presetColor
-                ? "ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110"
+                ? "ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110"
                 : ""
             }`}
             style={{ backgroundColor: presetColor }}
@@ -46,11 +46,11 @@ export function ColorPicker({
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-8 h-8 rounded cursor-pointer border border-gray-300 dark:border-gray-600"
+            className="w-8 h-8 rounded cursor-pointer border border-ui-border-primary dark:border-ui-border-primary-dark"
             title="Custom color"
             aria-label="Custom color picker"
           />
-          <span className="absolute -bottom-5 left-0 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+          <span className="absolute -bottom-5 left-0 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark whitespace-nowrap">
             Custom
           </span>
         </div>
