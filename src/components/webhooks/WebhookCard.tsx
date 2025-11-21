@@ -20,29 +20,29 @@ interface WebhookCardProps {
  */
 export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
   return (
-    <div className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-medium text-gray-900">{webhook.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{webhook.name}</h4>
             <span
               className={`text-xs px-2 py-0.5 rounded ${
-                webhook.isActive ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700"
+                webhook.isActive ? "bg-status-success/10 text-status-success" : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
               }`}
             >
               {webhook.isActive ? "Active" : "Inactive"}
             </span>
           </div>
-          <p className="text-sm text-gray-600 mb-2 font-mono break-all">{webhook.url}</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 font-mono break-all">{webhook.url}</p>
           <div className="flex flex-wrap gap-1">
             {webhook.events.map((event) => (
-              <span key={event} className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
+              <span key={event} className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded">
                 {event}
               </span>
             ))}
           </div>
           {webhook.lastTriggered && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2">
               Last triggered: {new Date(webhook.lastTriggered).toLocaleString()}
             </p>
           )}
