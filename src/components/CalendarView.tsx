@@ -69,7 +69,12 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
   const calendarDays = [];
   // Add empty cells for days before first day of month
   for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarDays.push(<div key={`empty-${i}`} className="min-h-32 md:min-h-24 bg-gray-50 dark:bg-gray-900" />);
+    calendarDays.push(
+      <div
+        key={`empty-${i}`}
+        className="min-h-32 md:min-h-24 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
+      />,
+    );
   }
   // Add cells for each day of the month
   for (let day = 1; day <= daysInMonth; day++) {
@@ -79,22 +84,24 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     calendarDays.push(
       <div
         key={day}
-        className={`min-h-32 md:min-h-24 border border-gray-200 dark:border-gray-700 p-2 ${
-          isTodayDate ? "bg-blue-50 dark:bg-blue-900/20" : "bg-white dark:bg-gray-800"
+        className={`min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2 ${
+          isTodayDate
+            ? "bg-brand-50 dark:bg-brand-900/20"
+            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
         }`}
       >
         <div className="flex items-center justify-between mb-1">
           <span
             className={`text-sm font-medium ${
               isTodayDate
-                ? "bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center"
-                : "text-gray-700 dark:text-gray-300"
+                ? "bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center"
+                : "text-ui-text-primary dark:text-ui-text-primary-dark"
             }`}
           >
             {day}
           </span>
           {dayIssues.length > 0 && (
-            <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded">
+            <span className="text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark px-1.5 py-0.5 rounded">
               {dayIssues.length}
             </span>
           )}
@@ -106,7 +113,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
               type="button"
               key={issue._id}
               onClick={() => setSelectedIssue(issue._id)}
-              className="w-full text-left p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
               title={issue.title}
             >
               <div className="flex items-center gap-1">
@@ -118,7 +125,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             </button>
           ))}
           {dayIssues.length > 3 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 pl-1.5">
+            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark pl-1.5">
               +{dayIssues.length - 3} more
             </p>
           )}
@@ -131,14 +138,16 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Calendar View</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          Calendar View
+        </h2>
 
         {/* Month Navigation */}
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
           <button
             type="button"
             onClick={previousMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Previous month"
           >
             <svg
@@ -157,14 +166,14 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             </svg>
           </button>
 
-          <h3 className="text-lg sm:text-xl font-semibold w-full sm:min-w-48 text-center text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg sm:text-xl font-semibold w-full sm:min-w-48 text-center text-ui-text-primary dark:text-ui-text-primary-dark">
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </h3>
 
           <button
             type="button"
             onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Next month"
           >
             <svg
@@ -181,7 +190,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
           <button
             type="button"
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
+            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
           >
             Today
           </button>
@@ -190,13 +199,13 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
 
       {/* Calendar Grid */}
       <div className="overflow-x-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden min-w-[640px]">
+        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden min-w-[640px]">
           {/* Weekday Headers */}
-          <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+          <div className="grid grid-cols-7 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                className="p-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300"
+                className="p-2 text-center text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark"
               >
                 {day}
               </div>
@@ -211,24 +220,24 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
       {/* Legend */}
       <div className="mt-4 flex items-center gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span className="text-gray-600 dark:text-gray-400">Highest</span>
+          <div className="w-3 h-3 rounded-full bg-status-error" />
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Highest</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-orange-500" />
-          <span className="text-gray-600 dark:text-gray-400">High</span>
+          <div className="w-3 h-3 rounded-full bg-status-warning" />
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">High</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <span className="text-gray-600 dark:text-gray-400">Medium</span>
+          <div className="w-3 h-3 rounded-full bg-accent-500" />
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Medium</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="text-gray-600 dark:text-gray-400">Low</span>
+          <div className="w-3 h-3 rounded-full bg-brand-500" />
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Low</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-gray-500" />
-          <span className="text-gray-600 dark:text-gray-400">Lowest</span>
+          <div className="w-3 h-3 rounded-full bg-ui-text-secondary dark:bg-ui-text-secondary-dark" />
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Lowest</span>
         </div>
       </div>
 

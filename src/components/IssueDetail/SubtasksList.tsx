@@ -58,10 +58,10 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-gray-700">
+        <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
           Sub-tasks
           {totalSubtasks > 0 && (
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               ({completedSubtasks}/{totalSubtasks} completed)
             </span>
           )}
@@ -69,7 +69,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
         <button
           type="button"
           onClick={() => setIsCreatingSubtask(true)}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-500 font-medium"
         >
           + Add Sub-task
         </button>
@@ -77,9 +77,9 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
       {/* Progress bar */}
       {totalSubtasks > 0 && (
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2 mb-3">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all"
+            className="bg-brand-600 h-2 rounded-full transition-all"
             style={{ width: `${(completedSubtasks / totalSubtasks) * 100}%` }}
           />
         </div>
@@ -87,7 +87,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
       {/* Create sub-task form */}
       {isCreatingSubtask && (
-        <div className="mb-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+        <div className="mb-3 p-3 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
           <Input
             type="text"
             value={subtaskTitle}
@@ -108,7 +108,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
             <button
               type="button"
               onClick={handleCreateSubtask}
-              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              className="px-3 py-1 bg-brand-600 text-white rounded hover:bg-brand-700 text-sm"
             >
               Add
             </button>
@@ -118,7 +118,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 setIsCreatingSubtask(false);
                 setSubtaskTitle("");
               }}
-              className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
+              className="px-3 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark text-sm"
             >
               Cancel
             </button>
@@ -132,7 +132,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
           {subtasks.map((subtask) => (
             <div
               key={subtask._id}
-              className="flex items-start gap-2 p-2 rounded hover:bg-gray-50 group"
+              className="flex items-start gap-2 p-2 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark group"
             >
               <Checkbox
                 checked={subtask.status === "done" || subtask.status === "completed"}
@@ -144,18 +144,28 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-gray-500">{subtask.key}</span>
-                  <span className="text-sm text-gray-900">{subtask.title}</span>
+                  <span className="text-xs font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    {subtask.key}
+                  </span>
+                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                    {subtask.title}
+                  </span>
                 </div>
                 {subtask.assignee && (
-                  <span className="text-xs text-gray-500">Assigned to {subtask.assignee.name}</span>
+                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    Assigned to {subtask.assignee.name}
+                  </span>
                 )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        !isCreatingSubtask && <p className="text-sm text-gray-500 italic">No sub-tasks yet</p>
+        !isCreatingSubtask && (
+          <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic">
+            No sub-tasks yet
+          </p>
+        )
       )}
     </div>
   );

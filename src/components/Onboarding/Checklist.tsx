@@ -72,43 +72,47 @@ export function OnboardingChecklist() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-40">
+    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-40">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <div className="flex items-center gap-2">
           <span className="text-lg">🚀</span>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">Getting Started</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              Getting Started
+            </h3>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {completedCount} of {totalCount} complete
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
           >
             {isExpanded ? (
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              <ChevronDown className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
             ) : (
-              <ChevronUp className="w-4 h-4 text-gray-500" />
+              <ChevronUp className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
             )}
           </button>
           <button
+            type="button"
             onClick={handleDismiss}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
           >
-            <X className="w-4 h-4 text-gray-500" />
+            <X className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
           </button>
         </div>
       </div>
 
       {/* Progress Bar */}
       <div className="px-4 pt-3">
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
           <div
-            className="bg-green-600 h-2 rounded-full transition-all duration-500"
+            className="bg-status-success h-2 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -122,8 +126,8 @@ export function OnboardingChecklist() {
               <div
                 className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all ${
                   item.completed
-                    ? "bg-green-600 border-green-600"
-                    : "border-gray-300 dark:border-gray-600"
+                    ? "bg-status-success border-status-success"
+                    : "border-ui-border-secondary dark:border-ui-border-secondary-dark"
                 }`}
               >
                 {item.completed && <Check className="w-3 h-3 text-white" />}
@@ -132,24 +136,26 @@ export function OnboardingChecklist() {
                 <p
                   className={`font-medium text-sm ${
                     item.completed
-                      ? "text-gray-500 dark:text-gray-400 line-through"
-                      : "text-gray-900 dark:text-white"
+                      ? "text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-through"
+                      : "text-ui-text-primary dark:text-ui-text-primary-dark"
                   }`}
                 >
                   {item.title}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{item.description}</p>
+                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  {item.description}
+                </p>
               </div>
             </div>
           ))}
 
           {/* Completion Message */}
           {allComplete && (
-            <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <p className="text-sm font-medium text-green-800 dark:text-green-300">
+            <div className="mt-4 p-3 bg-status-success/10 dark:bg-status-success/20 rounded-lg border border-status-success/30 dark:border-status-success/50">
+              <p className="text-sm font-medium text-status-success dark:text-status-success">
                 🎉 Congratulations! You've completed the basics.
               </p>
-              <p className="text-xs text-green-700 dark:text-green-400 mt-1">
+              <p className="text-xs text-status-success/90 dark:text-status-success/80 mt-1">
                 You're ready to use Cascade! Feel free to dismiss this checklist.
               </p>
             </div>

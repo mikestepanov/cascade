@@ -6,7 +6,7 @@
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
-import type { Id } from "../../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 export interface UseAIChatOptions {
   projectId?: Id<"projects">;
@@ -26,7 +26,7 @@ export interface UseAIChatReturn {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
 
   // Data
-  messages: any[] | undefined;
+  messages: Doc<"aiMessages">[] | undefined;
 
   // Actions
   setInputMessage: (message: string) => void;

@@ -24,46 +24,111 @@ let lastKeyPressed: string | null = null;
 let lastKeyTime = 0;
 const SEQUENCE_TIMEOUT = 1000; // 1 second to complete a sequence
 
+// Helper function to check if user is typing
+function isUserTyping(target: HTMLElement): boolean {
+  return target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+}
+
+// Helper function to check if modifiers match
+function modifiersMatch(e: KeyboardEvent, shortcut: KeyboardShortcut): boolean {
+  const ctrlMatch = shortcut.ctrl ? e.ctrlKey : !e.ctrlKey;
+  const shiftMatch = shortcut.shift ? e.shiftKey : !e.shiftKey;
+  const altMatch = shortcut.alt ? e.altKey : !e.altKey;
+  const metaMatch = shortcut.meta ? e.metaKey : !e.metaKey;
+  return ctrlMatch && shiftMatch && altMatch && metaMatch;
+}
+
+// Helper function to check if shortcut matches
+function shortcutMatches(e: KeyboardEvent, shortcut: KeyboardShortcut): boolean {
+  return e.key.toLowerCase() === shortcut.key.toLowerCase() && modifiersMatch(e, shortcut);
+}
+
+// Helper function to process shortcuts list
+function processShortcuts(
+  e: KeyboardEvent,
+  shortcuts: KeyboardShortcut[],
+  isTyping: boolean,
+): boolean {
+  for (const shortcut of shortcuts) {
+    // Skip non-global shortcuts when typing
+    if (isTyping && !shortcut.global) {
+      continue;
+    }
+
+    if (shortcutMatches(e, shortcut)) {
+      if (shortcut.preventDefault !== false) {
+        e.preventDefault();
+      }
+      shortcut.handler(e);
+      return true;
+    }
+  }
+  return false;
+}
+
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[], enabled = true) {
   useEffect(() => {
     if (!enabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Skip if typing in input/textarea/contenteditable (unless shortcut is global)
       const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
-
-      for (const shortcut of shortcuts) {
-        // Skip non-global shortcuts when typing
-        if (isTyping && !shortcut.global) {
-          continue;
-        }
-
-        const ctrlMatch = shortcut.ctrl ? e.ctrlKey : !e.ctrlKey;
-        const shiftMatch = shortcut.shift ? e.shiftKey : !e.shiftKey;
-        const altMatch = shortcut.alt ? e.altKey : !e.altKey;
-        const metaMatch = shortcut.meta ? e.metaKey : !e.metaKey;
-
-        if (
-          e.key.toLowerCase() === shortcut.key.toLowerCase() &&
-          ctrlMatch &&
-          shiftMatch &&
-          altMatch &&
-          metaMatch
-        ) {
-          if (shortcut.preventDefault !== false) {
-            e.preventDefault();
-          }
-          shortcut.handler(e);
-          break;
-        }
-      }
+      const isTyping = isUserTyping(target);
+      processShortcuts(e, shortcuts, isTyping);
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [shortcuts, enabled]);
+}
+
+// Helper function to find matching sequence
+function findMatchingSequence(
+  sequences: KeySequence[],
+  lastKey: string,
+  currentKey: string,
+): KeySequence | undefined {
+  const sequenceKey = `${lastKey}+${currentKey}`;
+  return sequences.find((s) => s.keys.join("+") === sequenceKey);
+}
+
+// Helper function to handle sequence match
+function handleSequenceMatch(e: KeyboardEvent, sequence: KeySequence): void {
+  if (sequence.preventDefault !== false) {
+    e.preventDefault();
+  }
+  sequence.handler();
+  lastKeyPressed = null;
+}
+
+// Helper function to handle shortcut match
+function _handleShortcutMatch(e: KeyboardEvent, shortcut: KeyboardShortcut): void {
+  if (shortcut.preventDefault !== false) {
+    e.preventDefault();
+  }
+  shortcut.handler(e);
+  lastKeyPressed = null;
+}
+
+// Helper function to update sequence state
+function updateSequenceState(key: string, isTyping: boolean): boolean {
+  if (key === "g" && !isTyping) {
+    lastKeyPressed = "g";
+    lastKeyTime = Date.now();
+    return true;
+  }
+  return false;
+}
+
+// Helper function to check for sequence timeout
+function isSequenceActive(now: number): boolean {
+  return Boolean(lastKeyPressed && now - lastKeyTime < SEQUENCE_TIMEOUT);
+}
+
+// Helper function to reset expired sequences
+function resetExpiredSequence(now: number): void {
+  if (lastKeyPressed && now - lastKeyTime > SEQUENCE_TIMEOUT) {
+    lastKeyPressed = null;
+  }
 }
 
 /**
@@ -76,68 +141,34 @@ export function useKeyboardShortcutsWithSequences(
 ) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // Skip if typing in input/textarea/contenteditable
       const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
-
+      const isTyping = isUserTyping(target);
       const key = e.key.toLowerCase();
       const now = Date.now();
 
       // Check for sequences (like g+h)
-      if (lastKeyPressed && now - lastKeyTime < SEQUENCE_TIMEOUT) {
-        const sequenceKey = `${lastKeyPressed}+${key}`;
-        const sequence = sequences.find((s) => s.keys.join("+") === sequenceKey);
-
+      if (isSequenceActive(now)) {
+        const sequence = findMatchingSequence(sequences, lastKeyPressed as string, key);
         if (sequence) {
-          if (sequence.preventDefault !== false) {
-            e.preventDefault();
-          }
-          sequence.handler();
-          lastKeyPressed = null;
+          handleSequenceMatch(e, sequence);
           return;
         }
       }
 
       // Update last key for sequences
-      if (key === "g" && !isTyping) {
-        lastKeyPressed = "g";
-        lastKeyTime = now;
+      if (updateSequenceState(key, isTyping)) {
         return;
       }
 
       // Check for single key shortcuts
-      for (const shortcut of shortcuts) {
-        // Skip non-global shortcuts when typing
-        if (isTyping && !shortcut.global) {
-          continue;
-        }
-
-        const ctrlMatch = shortcut.ctrl ? e.ctrlKey : !e.ctrlKey;
-        const shiftMatch = shortcut.shift ? e.shiftKey : !e.shiftKey;
-        const altMatch = shortcut.alt ? e.altKey : !e.altKey;
-        const metaMatch = shortcut.meta ? e.metaKey : !e.metaKey;
-
-        if (
-          e.key.toLowerCase() === shortcut.key.toLowerCase() &&
-          ctrlMatch &&
-          shiftMatch &&
-          altMatch &&
-          metaMatch
-        ) {
-          if (shortcut.preventDefault !== false) {
-            e.preventDefault();
-          }
-          shortcut.handler(e);
-          lastKeyPressed = null;
-          return;
-        }
+      const matched = processShortcuts(e, shortcuts, isTyping);
+      if (matched) {
+        lastKeyPressed = null;
+        return;
       }
 
       // Reset sequence if no match
-      if (lastKeyPressed && now - lastKeyTime > SEQUENCE_TIMEOUT) {
-        lastKeyPressed = null;
-      }
+      resetExpiredSequence(now);
     },
     [shortcuts, sequences],
   );

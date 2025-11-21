@@ -8,7 +8,14 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn("animate-pulse bg-gray-200 dark:bg-gray-700 rounded", className)} />;
+  return (
+    <div
+      className={cn(
+        "animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded",
+        className,
+      )}
+    />
+  );
 }
 
 /**
@@ -18,7 +25,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4",
+        "animate-pulse bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4",
         className,
       )}
     >
@@ -35,12 +42,20 @@ export function SkeletonCard({ className }: SkeletonProps) {
  * Skeleton for text lines with varying widths
  */
 export function SkeletonText({ lines = 3, className }: { lines?: number; className?: string }) {
+  const lineItems = Array.from({ length: lines }, (_, i) => ({
+    id: `skeleton-text-${i}`,
+    index: i,
+  }));
+
   return (
     <div className={cn("space-y-2", className)}>
-      {Array.from({ length: lines }).map((_, i) => (
+      {lineItems.map((item) => (
         <Skeleton
-          key={`skeleton-text-${i}`}
-          className={cn("h-4", i === lines - 1 ? "w-4/5" : i % 2 === 0 ? "w-full" : "w-11/12")}
+          key={item.id}
+          className={cn(
+            "h-4",
+            item.index === lines - 1 ? "w-4/5" : item.index % 2 === 0 ? "w-full" : "w-11/12",
+          )}
         />
       ))}
     </div>
@@ -64,12 +79,14 @@ export function SkeletonAvatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
  * Skeleton for table rows
  */
 export function SkeletonTable({ rows = 5 }: { rows?: number }) {
+  const rowItems = Array.from({ length: rows }, (_, i) => `skeleton-row-${i}`);
+
   return (
     <div className="space-y-2">
-      {Array.from({ length: rows }).map((_, i) => (
+      {rowItems.map((rowId) => (
         <div
-          key={`skeleton-row-${i}`}
-          className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded"
+          key={rowId}
+          className="flex items-center gap-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
         >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
@@ -85,10 +102,15 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
  * Skeleton for list items (issues, documents, etc.)
  */
 export function SkeletonList({ items = 5 }: { items?: number }) {
+  const listItems = Array.from({ length: items }, (_, i) => `skeleton-item-${i}`);
+
   return (
     <div className="space-y-2">
-      {Array.from({ length: items }).map((_, i) => (
-        <div key={`skeleton-item-${i}`} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      {listItems.map((itemId) => (
+        <div
+          key={itemId}
+          className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+        >
           <div className="flex items-start gap-3">
             <SkeletonAvatar size="sm" />
             <div className="flex-1 space-y-2">
@@ -107,7 +129,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
  */
 export function SkeletonStatCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
       <div className="text-center space-y-3">
         <Skeleton className="h-3 w-24 mx-auto" />
         <Skeleton className="h-10 w-16 mx-auto" />
@@ -122,7 +144,7 @@ export function SkeletonStatCard() {
  */
 export function SkeletonKanbanCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-2">
+    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3 space-y-2">
       <div className="flex items-center gap-2">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-3 w-12" />
@@ -142,7 +164,7 @@ export function SkeletonKanbanCard() {
  */
 export function SkeletonProjectCard() {
   return (
-    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2">
+    <div className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg space-y-2">
       <div className="flex items-center justify-between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-5 w-16" />

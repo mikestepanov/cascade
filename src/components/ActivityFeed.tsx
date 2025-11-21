@@ -39,18 +39,18 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   const getActionColor = (action: string) => {
     switch (action) {
       case "created":
-        return "text-green-600 dark:text-green-400";
+        return "text-status-success";
       case "updated":
-        return "text-blue-600 dark:text-blue-400";
+        return "text-brand-600 dark:text-brand-400";
       case "commented":
-        return "text-purple-600 dark:text-purple-400";
+        return "text-accent-600 dark:text-accent-400";
       case "assigned":
-        return "text-orange-600 dark:text-orange-400";
+        return "text-status-warning";
       case "linked":
       case "unlinked":
-        return "text-indigo-600 dark:text-indigo-400";
+        return "text-brand-500 dark:text-brand-300";
       default:
-        return "text-gray-600 dark:text-gray-400";
+        return "text-ui-text-secondary dark:text-ui-text-secondary-dark";
     }
   };
 
@@ -121,10 +121,10 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-12 text-ui-text-secondary dark:text-ui-text-secondary-dark">
         <svg
           aria-hidden="true"
-          className="w-16 h-16 mx-auto mb-4 text-gray-400"
+          className="w-16 h-16 mx-auto mb-4 text-ui-text-tertiary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -150,7 +150,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
           className={`flex gap-4 ${
             compact
               ? "py-2"
-              : "p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              : "p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark"
           }`}
         >
           {/* Timeline dot */}
@@ -159,7 +159,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               {getActionIcon(activity.action)}
             </div>
             {!compact && index < activities.length - 1 && (
-              <div className="w-0.5 flex-1 bg-gray-200 dark:bg-gray-700 mt-2" />
+              <div className="w-0.5 flex-1 bg-ui-border-primary dark:bg-ui-border-primary-dark mt-2" />
             )}
           </div>
 
@@ -168,7 +168,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p
-                  className={`${compact ? "text-sm" : "text-base"} text-gray-900 dark:text-gray-100`}
+                  className={`${compact ? "text-sm" : "text-base"} text-ui-text-primary dark:text-ui-text-primary-dark`}
                 >
                   <span className="font-medium">{activity.userName}</span>{" "}
                   <span className={getActionColor(activity.action)}>
@@ -176,20 +176,20 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   </span>
                   {activity.issueKey && (
                     <span className="ml-1">
-                      <span className="font-mono text-sm text-gray-600 dark:text-gray-400">
+                      <span className="font-mono text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {activity.issueKey}
                       </span>
                     </span>
                   )}
                 </p>
                 {!compact && activity.field && activity.newValue && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 truncate">
                     {activity.field}: {activity.newValue}
                   </p>
                 )}
               </div>
               <span
-                className={`${compact ? "text-xs" : "text-sm"} text-gray-500 dark:text-gray-400 flex-shrink-0`}
+                className={`${compact ? "text-xs" : "text-sm"} text-ui-text-tertiary dark:text-ui-text-tertiary-dark flex-shrink-0`}
               >
                 {formatRelativeTime(activity.createdAt)}
               </span>

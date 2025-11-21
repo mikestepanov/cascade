@@ -21,6 +21,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/*.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
     }
   ],
   "formatter": {
@@ -124,7 +134,8 @@
   "css": {
     "parser": {
       "cssModules": false,
-      "allowWrongLineComments": true
+      "allowWrongLineComments": true,
+      "tailwindDirectives": true
     },
     "formatter": {
       "enabled": false

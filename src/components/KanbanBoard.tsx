@@ -137,10 +137,10 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-72 sm:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              className="flex-shrink-0 w-72 sm:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
             >
               {/* Column header skeleton */}
-              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-t-lg">
+              <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
                 <SkeletonText lines={1} className="w-24" />
               </div>
               {/* Column cards skeleton */}

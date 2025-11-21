@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -10,6 +10,12 @@ import { InputField, SelectField } from "../ui/FormField";
 import { Modal } from "../ui/Modal";
 
 type EmploymentType = "employee" | "contractor" | "intern";
+
+// Type for profile with user and manager data (returned from listUserProfiles query)
+type UserProfileWithUser = Doc<"userProfiles"> & {
+  user: Doc<"users"> | null;
+  manager: Doc<"users"> | null;
+};
 
 // Helper: Convert string to number or undefined
 function parseOptionalNumber(value: string): number | undefined {
@@ -61,6 +67,31 @@ function buildProfileData(formData: {
     equityHourlyValue: parseOptionalNumber(formData.profileEquityHourlyValue),
     equityNotes: formData.profileEquityNotes || undefined,
     isActive: formData.profileIsActive,
+  };
+}
+
+// Helper: Extract form state from profile for editing
+function extractFormStateFromProfile(profile: UserProfileWithUser) {
+  return {
+    profileType: profile.employmentType,
+    profileMaxWeekly: profile.maxHoursPerWeek?.toString() || "",
+    profileMaxDaily: profile.maxHoursPerDay?.toString() || "",
+    profileRequiresApproval: profile.requiresApproval ?? null,
+    profileCanOvertime: profile.canWorkOvertime ?? null,
+    profileDepartment: profile.department || "",
+    profileJobTitle: profile.jobTitle || "",
+    profileStartDate: profile.startDate
+      ? new Date(profile.startDate).toISOString().split("T")[0]
+      : "",
+    profileEndDate: profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "",
+    profileIsActive: profile.isActive,
+    profileHasEquity: profile.hasEquity ?? false,
+    profileEquityPercentage: profile.equityPercentage?.toString() || "",
+    profileRequiredEquityWeekly: profile.requiredEquityHoursPerWeek?.toString() || "",
+    profileRequiredEquityMonthly: profile.requiredEquityHoursPerMonth?.toString() || "",
+    profileMaxEquityWeekly: profile.maxEquityHoursPerWeek?.toString() || "",
+    profileEquityHourlyValue: profile.equityHourlyValue?.toString() || "",
+    profileEquityNotes: profile.equityNotes || "",
   };
 }
 
@@ -184,27 +215,26 @@ export function UserTypeManager() {
     setShowAssignModal(true);
   };
 
-  const handleEditProfile = (profile: any) => {
+  const handleEditProfile = (profile: UserProfileWithUser) => {
     setSelectedUserId(profile.userId);
-    setProfileType(profile.employmentType);
-    setProfileMaxWeekly(profile.maxHoursPerWeek?.toString() || "");
-    setProfileMaxDaily(profile.maxHoursPerDay?.toString() || "");
-    setProfileRequiresApproval(profile.requiresApproval);
-    setProfileCanOvertime(profile.canWorkOvertime);
-    setProfileDepartment(profile.department || "");
-    setProfileJobTitle(profile.jobTitle || "");
-    setProfileStartDate(
-      profile.startDate ? new Date(profile.startDate).toISOString().split("T")[0] : "",
-    );
-    setProfileEndDate(profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "");
-    setProfileIsActive(profile.isActive);
-    setProfileHasEquity(profile.hasEquity);
-    setProfileEquityPercentage(profile.equityPercentage?.toString() || "");
-    setProfileRequiredEquityWeekly(profile.requiredEquityHoursPerWeek?.toString() || "");
-    setProfileRequiredEquityMonthly(profile.requiredEquityHoursPerMonth?.toString() || "");
-    setProfileMaxEquityWeekly(profile.maxEquityHoursPerWeek?.toString() || "");
-    setProfileEquityHourlyValue(profile.equityHourlyValue?.toString() || "");
-    setProfileEquityNotes(profile.equityNotes || "");
+    const formState = extractFormStateFromProfile(profile);
+    setProfileType(formState.profileType);
+    setProfileMaxWeekly(formState.profileMaxWeekly);
+    setProfileMaxDaily(formState.profileMaxDaily);
+    setProfileRequiresApproval(formState.profileRequiresApproval);
+    setProfileCanOvertime(formState.profileCanOvertime);
+    setProfileDepartment(formState.profileDepartment);
+    setProfileJobTitle(formState.profileJobTitle);
+    setProfileStartDate(formState.profileStartDate);
+    setProfileEndDate(formState.profileEndDate);
+    setProfileIsActive(formState.profileIsActive);
+    setProfileHasEquity(formState.profileHasEquity);
+    setProfileEquityPercentage(formState.profileEquityPercentage);
+    setProfileRequiredEquityWeekly(formState.profileRequiredEquityWeekly);
+    setProfileRequiredEquityMonthly(formState.profileRequiredEquityMonthly);
+    setProfileMaxEquityWeekly(formState.profileMaxEquityWeekly);
+    setProfileEquityHourlyValue(formState.profileEquityHourlyValue);
+    setProfileEquityNotes(formState.profileEquityNotes);
     setShowAssignModal(true);
   };
 
@@ -294,7 +324,9 @@ export function UserTypeManager() {
         />
         <CardBody>
           {!configs ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading...
+            </div>
           ) : configs.length === 0 ? (
             <EmptyState
               icon="⚙️"
@@ -310,13 +342,13 @@ export function UserTypeManager() {
               {configs.map((config) => (
                 <div
                   key={config.type}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow"
+                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{getTypeIcon(config.type)}</span>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                        <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                           {config.name}
                         </h3>
                         <span
@@ -329,33 +361,41 @@ export function UserTypeManager() {
                   </div>
 
                   {config.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
                       {config.description}
                     </p>
                   )}
 
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Max hours/week:</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Max hours/week:
+                      </span>
+                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerWeek}h
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Max hours/day:</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Max hours/day:
+                      </span>
+                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerDay}h
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Requires approval:</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Requires approval:
+                      </span>
+                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Can work overtime:</span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        Can work overtime:
+                      </span>
+                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
                       </span>
                     </div>
@@ -393,9 +433,9 @@ export function UserTypeManager() {
                 {usersWithoutProfiles.slice(0, 5).map((user) => (
                   <div
                     key={user._id}
-                    className="flex items-center justify-between bg-white dark:bg-gray-800 p-2 rounded"
+                    className="flex items-center justify-between bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded"
                   >
-                    <span className="text-sm text-gray-900 dark:text-gray-100">
+                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                       {user.name || user.email || "Unknown User"}
                     </span>
                     <Button size="sm" onClick={() => handleAssignUser(user._id)}>
@@ -404,7 +444,7 @@ export function UserTypeManager() {
                   </div>
                 ))}
                 {usersWithoutProfiles.length > 5 && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     +{usersWithoutProfiles.length - 5} more...
                   </p>
                 )}
@@ -414,7 +454,9 @@ export function UserTypeManager() {
 
           {/* Assigned users */}
           {!profiles ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading...
+            </div>
           ) : profiles.length === 0 ? (
             <EmptyState
               icon="👥"
@@ -426,14 +468,14 @@ export function UserTypeManager() {
               {profiles.map((profile) => (
                 <div
                   key={profile._id}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-xl">{getTypeIcon(profile.employmentType)}</span>
                         <div>
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                          <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {profile.user?.name || profile.user?.email || "Unknown User"}
                           </h4>
                           <div className="flex gap-2 mt-1">
@@ -454,37 +496,37 @@ export function UserTypeManager() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         {profile.jobTitle && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Job Title:
                             </span>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
+                            <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                               {profile.jobTitle}
                             </div>
                           </div>
                         )}
                         {profile.department && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Department:
                             </span>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
+                            <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                               {profile.department}
                             </div>
                           </div>
                         )}
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400 text-xs">
+                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                             Max hours/week:
                           </span>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {profile.maxHoursPerWeek || "Default"}
                           </div>
                         </div>
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400 text-xs">
+                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                             Max hours/day:
                           </span>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {profile.maxHoursPerDay || "Default"}
                           </div>
                         </div>
@@ -650,8 +692,8 @@ export function UserTypeManager() {
             />
           </div>
 
-          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h4 className="font-medium text-sm mb-3 text-gray-900 dark:text-gray-100">
+          <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+            <h4 className="font-medium text-sm mb-3 text-ui-text-primary dark:text-ui-text-primary-dark">
               Hour Overrides (leave empty to use type defaults)
             </h4>
             <div className="grid grid-cols-2 gap-4">
@@ -769,15 +811,19 @@ export function UserTypeManager() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label
+                      htmlFor="equity-notes"
+                      className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                    >
                       Equity Notes
                     </label>
                     <textarea
+                      id="equity-notes"
                       value={profileEquityNotes}
                       onChange={(e) => setProfileEquityNotes(e.target.value)}
                       placeholder="Additional notes about equity arrangement..."
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
+                      className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
                     />
                   </div>
 

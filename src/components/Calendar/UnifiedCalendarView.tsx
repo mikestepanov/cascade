@@ -15,26 +15,28 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* View Switcher */}
-      <div className="border-b border-gray-200 dark:border-gray-700 px-3 sm:px-6 py-3 bg-white dark:bg-gray-900">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-3 sm:px-6 py-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
+            type="button"
             onClick={() => setViewType("calendar")}
             className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
               viewType === "calendar"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                ? "bg-brand-600 text-white"
+                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
             }`}
           >
             <span className="sm:hidden">📅 Calendar</span>
             <span className="hidden sm:inline">📅 Calendar (Events)</span>
           </button>
           <button
+            type="button"
             onClick={() => setViewType("roadmap")}
             disabled={!projectId}
             className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
               viewType === "roadmap"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                ? "bg-brand-600 text-white"
+                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
             } ${!projectId ? "opacity-50 cursor-not-allowed" : ""}`}
             title={!projectId ? "Select a project to view roadmap" : ""}
           >
@@ -43,7 +45,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
           </button>
         </div>
         {!projectId && viewType === "roadmap" && (
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
             Select a project from the sidebar to view the roadmap
           </p>
         )}
@@ -56,7 +58,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
         ) : projectId ? (
           <RoadmapView projectId={projectId} />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-center h-full text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <div className="text-center">
               <p className="text-lg font-medium mb-2">No Project Selected</p>
               <p className="text-sm">Select a project from the sidebar to view the roadmap</p>

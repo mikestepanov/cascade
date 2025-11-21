@@ -1,5 +1,7 @@
 # Cascade REST API Documentation
 
+> **Last Updated:** 2025-11-20
+
 Complete API reference for accessing Cascade programmatically from CLI tools, AI agents, and external integrations.
 
 ## Base URL

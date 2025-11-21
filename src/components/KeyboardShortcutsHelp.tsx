@@ -62,16 +62,20 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
       <div className="p-6 space-y-6">
         {shortcuts.map((section) => (
           <div key={section.category}>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">{section.category}</h3>
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              {section.category}
+            </h3>
             <div className="space-y-2">
               {section.items.map((shortcut) => (
                 <div key={shortcut.description} className="flex items-center justify-between py-2">
-                  <span className="text-sm text-gray-700">{shortcut.description}</span>
+                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                    {shortcut.description}
+                  </span>
                   <div className="flex gap-1">
                     {shortcut.keys.map((key) => (
                       <kbd
                         key={key}
-                        className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded"
+                        className="px-2 py-1 text-xs font-semibold text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded"
                       >
                         {key}
                       </kbd>
@@ -83,10 +87,12 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
           </div>
         ))}
 
-        <div className="pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
+        <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <strong>Tip:</strong> Press{" "}
-            <kbd className="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">⌘ K</kbd>{" "}
+            <kbd className="px-2 py-1 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded">
+              ⌘ K
+            </kbd>{" "}
             to quickly access all commands and features.
           </p>
         </div>

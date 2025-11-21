@@ -56,25 +56,28 @@ export function KanbanColumn({
     .sort((a, b) => a.order - b.order);
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
     <div
-      className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-gray-50 dark:bg-gray-800 rounded-lg animate-slide-up"
+      className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, state.id)}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-t-lg">
+      <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 min-w-0">
-            <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{state.name}</h3>
-            <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full flex-shrink-0">
+            <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+              {state.name}
+            </h3>
+            <span className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-xs px-2 py-1 rounded-full flex-shrink-0">
               {stateIssues.length}
             </span>
           </div>
           <button
             type="button"
             onClick={() => onCreateIssue(state.id)}
-            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2.5 sm:p-3 flex-shrink-0"
+            className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
             aria-label={`Add issue to ${state.name}`}
           >
             <svg

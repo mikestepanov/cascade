@@ -60,7 +60,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
   if (!(burnRate && teamCosts)) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600" />
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
     <div className="space-y-6">
       {/* Header with date range selector */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
           Burn Rate & Team Costs
         </h2>
 
@@ -81,8 +81,8 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               onClick={() => setDateRange(range)}
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 dateRange === range
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-brand-600 text-white"
+                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
               }`}
             >
               {ranges[range].label}
@@ -121,24 +121,26 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Hours</h3>
-          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            Total Hours
+          </h3>
+          <div className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             {formatHours(burnRate.totalHours)}h
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
             {burnRate.entriesCount} time entries
           </p>
         </div>
 
-        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Billable Hours
           </h3>
-          <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+          <div className="text-3xl font-bold text-status-success dark:text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
             {formatCurrency(burnRate.billableCost)} billable
           </p>
         </div>
@@ -146,13 +148,13 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Team Costs Breakdown */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
           Team Costs Breakdown
         </h3>
 
         {teamCosts.length === 0 ? (
-          <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-center p-8 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+            <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               No time entries for this period
             </p>
           </div>
@@ -165,7 +167,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               return (
                 <div
                   key={member.user?._id || "unknown"}
-                  className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
+                  className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
@@ -176,15 +178,15 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                           className="w-8 h-8 rounded-full"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-300">
+                        <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           {member.user?.name?.[0] || "?"}
                         </div>
                       )}
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           {member.user?.name || "Unknown"}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                           {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
                           billable)
                         </div>
@@ -192,19 +194,19 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                     </div>
 
                     <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                         {formatCurrency(member.cost)}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {percentOfTotal.toFixed(0)}% of total
                       </div>
                     </div>
                   </div>
 
                   {/* Progress bar */}
-                  <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all"
+                      className="h-full bg-brand-600 dark:bg-brand-500 rounded-full transition-all"
                       style={{ width: `${percentOfTotal}%` }}
                     />
                   </div>
@@ -227,19 +229,25 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
-    blue: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
-    green: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
-    purple: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800",
-    orange: "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800",
+    blue: "bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800",
+    green:
+      "bg-status-success/10 dark:bg-status-success/20 border-status-success/30 dark:border-status-success/40",
+    purple: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
+    orange:
+      "bg-status-warning/10 dark:bg-status-warning/20 border-status-warning/30 dark:border-status-warning/40",
   };
 
   return (
     <div className={`p-4 border rounded-lg ${colorClasses[color]}`}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl">{icon}</span>
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</span>
+        <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          {label}
+        </span>
       </div>
-      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</div>
+      <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        {value}
+      </div>
     </div>
   );
 }

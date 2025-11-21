@@ -73,8 +73,10 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Custom Fields</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            Custom Fields
+          </h2>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Add custom metadata fields to your issues
           </p>
         </div>
@@ -89,7 +91,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-4xl mb-3">📋</div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             No custom fields yet. Add your first field to get started.
           </p>
         </Card>

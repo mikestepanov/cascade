@@ -4,9 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Checkbox } from "../ui/form/Checkbox";
+import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Modal } from "../ui/Modal";
 
@@ -26,11 +28,11 @@ export function ApiKeysManager() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark flex items-center gap-2">
               <Key className="h-5 w-5" />
               API Keys
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
             </p>
           </div>
@@ -47,12 +49,12 @@ export function ApiKeysManager() {
 
         {/* API Keys List */}
         {!apiKeys || apiKeys.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-            <Key className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+          <div className="text-center py-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border-2 border-dashed border-ui-border-primary dark:border-ui-border-primary-dark">
+            <Key className="h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-3" />
+            <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               No API keys yet
             </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Generate your first API key to access Cascade programmatically
             </p>
             <Button
@@ -74,14 +76,14 @@ export function ApiKeysManager() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-200 dark:border-brand-800">
+          <p className="text-sm text-brand-900 dark:text-brand-100">
             📚 <strong>Need help?</strong> Check out the{" "}
             <a
               href="/docs/API.md"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-blue-700"
+              className="underline hover:text-brand-700"
             >
               API Documentation
             </a>{" "}
@@ -104,7 +106,7 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => void }) {
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -148,18 +150,20 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
   };
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {/* Name & Status */}
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-medium text-gray-900 dark:text-gray-100">{apiKey.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              {apiKey.name}
+            </h4>
             {apiKey.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success rounded">
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error rounded">
                 Revoked
               </span>
             )}
@@ -167,12 +171,13 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
 
           {/* Key Prefix */}
           <div className="flex items-center gap-2 mb-3">
-            <code className="text-sm font-mono bg-white dark:bg-gray-900 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+            <code className="text-sm font-mono bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
               {apiKey.keyPrefix}...
             </code>
             <button
+              type="button"
               onClick={copyKeyPrefix}
-              className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark transition-colors"
               title="Copy key prefix"
             >
               <Copy className="h-4 w-4" />
@@ -184,7 +189,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             {apiKey.scopes.map((scope: string) => (
               <span
                 key={scope}
-                className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded"
+                className="px-2 py-0.5 text-xs bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-400 rounded"
               >
                 {scope}
               </span>
@@ -192,7 +197,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <span>
               <strong>{apiKey.usageCount}</strong> API calls
             </span>
@@ -209,7 +214,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             {apiKey.expiresAt && (
               <>
                 <span>•</span>
-                <span className={apiKey.expiresAt < Date.now() ? "text-red-600" : ""}>
+                <span className={apiKey.expiresAt < Date.now() ? "text-status-error" : ""}>
                   Expires: {new Date(apiKey.expiresAt).toLocaleDateString()}
                 </span>
               </>
@@ -220,14 +225,16 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
         {/* Actions */}
         <div className="flex items-center gap-2 ml-4">
           <button
+            type="button"
             onClick={onViewStats}
-            className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             title="View usage statistics"
           >
             <TrendingUp className="h-4 w-4" />
           </button>
           {apiKey.isActive && (
             <button
+              type="button"
               onClick={handleRevoke}
               disabled={isRevoking}
               className="px-3 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
@@ -237,9 +244,10 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             </button>
           )}
           <button
+            type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-red-400 transition-colors"
             title="Delete key"
           >
             <Trash2 className="h-4 w-4" />
@@ -320,72 +328,71 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
         {!generatedKey ? (
           <>
             {/* Key Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Key Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                A descriptive name to help you identify this key
-              </p>
-            </div>
+            <Input
+              label={
+                <>
+                  Key Name <span className="text-status-error">*</span>
+                </>
+              }
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
+              helperText="A descriptive name to help you identify this key"
+            />
 
             {/* Scopes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Permissions (Scopes) <span className="text-red-500">*</span>
-              </label>
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                Permissions (Scopes) <span className="text-status-error">*</span>
+              </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableScopes.map((scope) => (
-                  <label
+                  // biome-ignore lint/a11y/useSemanticElements: Can't use button here as it contains a checkbox (nested interactive elements)
+                  <div
                     key={scope.value}
-                    className="flex items-start p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    role="button"
+                    tabIndex={0}
+                    className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                    onClick={() => toggleScope(scope.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleScope(scope.value);
+                      }
+                    }}
                   >
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedScopes.includes(scope.value)}
                       onChange={() => toggleScope(scope.value)}
-                      className="mt-0.5 h-4 w-4 text-blue-600 rounded"
+                      className="mt-0.5"
                     />
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {scope.label}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {scope.description}
                       </p>
                     </div>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Rate Limit */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Rate Limit (requests per minute)
-              </label>
-              <input
-                type="number"
-                value={rateLimit}
-                onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
-                min="10"
-                max="1000"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Maximum number of API requests allowed per minute (default: 100)
-              </p>
-            </div>
+            <Input
+              label="Rate Limit (requests per minute)"
+              type="number"
+              value={rateLimit.toString()}
+              onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
+              min="10"
+              max="1000"
+              helperText="Maximum number of API requests allowed per minute (default: 100)"
+            />
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end gap-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
               <Button variant="secondary" onClick={onClose}>
                 Cancel
               </Button>
@@ -401,15 +408,15 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
                 <Key className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 API Key Generated!
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
                 ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
               </p>
 
               {/* Generated Key Display */}
-              <div className="mb-6 p-4 bg-gray-900 dark:bg-gray-950 rounded-lg">
+              <div className="mb-6 p-4 bg-slate-900 dark:bg-slate-950 rounded-lg">
                 <code className="text-sm font-mono text-green-400 break-all select-all">
                   {generatedKey}
                 </code>
@@ -417,8 +424,10 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
               {/* Copy Instructions */}
               <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-blue-900 dark:text-blue-100 mb-2">Usage Example:</p>
-                <code className="block bg-white dark:bg-gray-900 p-2 rounded text-xs font-mono">
+                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">
+                  Usage Example:
+                </p>
+                <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
                   curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                   https://cascade.app/api/issues
                 </code>
@@ -458,26 +467,34 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
-            <p className="mt-2 text-sm text-gray-500">Loading statistics...</p>
+            <p className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              Loading statistics...
+            </p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Overview Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Total Calls</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Total Calls
+                </p>
+                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.totalCalls.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Last 24 Hours</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Last 24 Hours
+                </p>
+                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.last24Hours.toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Success Rate</p>
+              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Success Rate
+                </p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
@@ -485,9 +502,11 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                   %
                 </p>
               </div>
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Avg Response</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                  Avg Response
+                </p>
+                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.avgResponseTime}ms
                 </p>
               </div>
@@ -495,42 +514,49 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
 
             {/* Recent Requests */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                 Recent Requests
               </h4>
               {stats.recentLogs.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
+                <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark py-4 text-center">
                   No recent requests
                 </p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {stats.recentLogs.map((log: any, i: number) => (
-                    <div key={i} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
+                  {stats.recentLogs.map((log: Doc<"apiUsageLogs">) => (
+                    <div
+                      key={log._id}
+                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"
+                    >
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-medium text-gray-900 dark:text-gray-100">
+                          <span className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {log.method}
                           </span>
-                          <span className="text-gray-600 dark:text-gray-400">{log.endpoint}</span>
+                          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {log.endpoint}
+                          </span>
                         </div>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
                             log.statusCode < 400
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                              ? "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success"
+                              : "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error"
                           }`}
                         >
                           {log.statusCode}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-4 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>
                         {log.error && (
                           <>
                             <span>•</span>
-                            <span className="text-red-600 dark:text-red-400">{log.error}</span>
+                            <span className="text-status-error dark:text-status-error">
+                              {log.error}
+                            </span>
                           </>
                         )}
                       </div>
@@ -541,7 +567,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
             </div>
 
             {/* Close Button */}
-            <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
               <Button variant="secondary" onClick={onClose}>
                 Close
               </Button>

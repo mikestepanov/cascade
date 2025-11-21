@@ -17,30 +17,32 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6">
+      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        Recent Activity
+      </h3>
       <div className="space-y-3">
         {activities.map((activity) => (
           <div
             key={activity._id}
-            className="flex items-start gap-3 text-sm border-b border-gray-100 pb-3 last:border-0"
+            className="flex items-start gap-3 text-sm border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3 last:border-0"
           >
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs font-medium">
               {activity.userName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-gray-900">
+              <p className="text-ui-text-primary dark:text-ui-text-primary-dark">
                 <span className="font-medium">{activity.userName}</span> {activity.action}{" "}
                 {activity.field && (
                   <>
                     <span className="font-medium">{activity.field}</span> on
                   </>
                 )}{" "}
-                <span className="font-mono text-xs bg-gray-100 px-1 rounded">
+                <span className="font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-1 rounded">
                   {activity.issueKey}
                 </span>
               </p>
-              <p className="text-gray-500 text-xs mt-1">
+              <p className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs mt-1">
                 {new Date(activity.createdAt).toLocaleString()}
               </p>
             </div>

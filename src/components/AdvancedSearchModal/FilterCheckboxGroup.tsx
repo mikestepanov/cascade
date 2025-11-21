@@ -17,7 +17,9 @@ export function FilterCheckboxGroup({
 }: FilterCheckboxGroupProps) {
   return (
     <div>
-      <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</div>
+      <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        {label}
+      </div>
       <div className={`space-y-2 ${maxHeight || ""}`}>
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2 cursor-pointer">

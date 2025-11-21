@@ -38,36 +38,37 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
         {/* Modal Skeleton */}
         <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+          {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading state */}
           <div
             role="status"
             aria-busy="true"
-            className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
+            className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
           >
             <span className="sr-only">Loading...</span>
             {/* Header Skeleton */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
+            <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6">
               <div className="flex items-center space-x-3">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-8 rounded" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark h-8 w-8 rounded" />
                 <div className="space-y-2">
-                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-24" />
-                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-16" />
+                  <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-24" />
+                  <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-16" />
                 </div>
               </div>
             </div>
 
             {/* Content Skeleton */}
             <div className="p-4 sm:p-6 space-y-6">
-              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-8 w-3/4" />
+              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
               <div className="space-y-2">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-2/3" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
               </div>
             </div>
           </div>
@@ -103,14 +104,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-        <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
+        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex items-center justify-between">
+          <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <span className="text-2xl">{getTypeIcon(issue.type)}</span>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500 font-mono">{issue.key}</span>
+                  <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
                   <span
                     className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}
                   >
@@ -123,7 +124,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               type="button"
               onClick={onClose}
               aria-label="Close issue modal"
-              className="text-gray-400 hover:text-gray-600"
+              className="text-ui-text-tertiary hover:text-ui-text-secondary"
             >
               <svg
                 aria-hidden="true"
@@ -156,11 +157,11 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 />
               ) : (
                 <div className="flex items-start justify-between">
-                  <h2 className="text-2xl font-bold text-gray-900">{issue.title}</h2>
+                  <h2 className="text-2xl font-bold text-ui-text-primary">{issue.title}</h2>
                   <button
                     type="button"
                     onClick={handleEdit}
-                    className="text-sm text-blue-600 hover:text-blue-700"
+                    className="text-sm text-brand-600 hover:text-brand-700"
                   >
                     Edit
                   </button>
@@ -180,8 +181,8 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 />
               ) : (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                  <p className="text-gray-600 whitespace-pre-wrap">
+                  <h3 className="text-sm font-medium text-ui-text-primary mb-2">Description</h3>
+                  <p className="text-ui-text-secondary whitespace-pre-wrap">
                     {issue.description || "No description provided"}
                   </p>
                 </div>
@@ -194,14 +195,14 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 <button
                   type="button"
                   onClick={handleSave}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-brand-600 text-white rounded hover:bg-brand-700"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                  className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
                 >
                   Cancel
                 </button>
@@ -220,7 +221,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Time Tracking */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Time Tracking</h3>
+              <h3 className="text-sm font-medium text-ui-text-primary mb-3">Time Tracking</h3>
               <TimeTracker
                 issueId={issue._id}
                 issueKey={issue.key}
@@ -232,19 +233,19 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* File Attachments */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Attachments</h3>
+              <h3 className="text-sm font-medium text-ui-text-primary mb-3">Attachments</h3>
               <FileAttachments issueId={issue._id} />
             </div>
 
             {/* Issue Watchers */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Watchers</h3>
+              <h3 className="text-sm font-medium text-ui-text-primary mb-3">Watchers</h3>
               <IssueWatchers issueId={issue._id} />
             </div>
 
             {/* Issue Dependencies */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Dependencies</h3>
+              <h3 className="text-sm font-medium text-ui-text-primary mb-3">Dependencies</h3>
               <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
             </div>
 
@@ -260,7 +261,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
             {/* Comments */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Comments</h3>
+              <h3 className="text-sm font-medium text-ui-text-primary mb-3">Comments</h3>
               <IssueComments issueId={issue._id} projectId={issue.projectId} />
             </div>
           </div>

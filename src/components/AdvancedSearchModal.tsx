@@ -81,7 +81,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
             placeholder="Search by title, key, or description..."
             autoFocus
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Type at least 2 characters to search
           </p>
         </div>
@@ -119,7 +119,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
         {/* Results */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
             </h3>
             {(selectedType.length > 0 ||
@@ -132,14 +132,14 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
                   setSelectedPriority([]);
                   setSelectedStatus([]);
                 }}
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-brand-600 dark:text-brand-400 hover:underline"
               >
                 Clear Filters
               </button>
             )}
           </div>
 
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg overflow-hidden">
             <SearchResultsList
               searchQuery={searchQuery}
               results={results}

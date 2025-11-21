@@ -51,29 +51,33 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
           <div className="text-2xl">{getFieldTypeIcon(field.fieldType)}</div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{field.name}</h3>
+              <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                {field.name}
+              </h3>
               {field.isRequired && (
-                <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
+                <span className="text-xs px-2 py-0.5 bg-status-error/10 dark:bg-status-error/20 text-status-error dark:text-status-error rounded">
                   Required
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-1">
-              <code className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-xs">
+            <div className="flex items-center gap-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <code className="px-2 py-0.5 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded font-mono text-xs">
                 {field.fieldKey}
               </code>
               <span>•</span>
               <span className="capitalize">{field.fieldType}</span>
             </div>
             {field.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{field.description}</p>
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+                {field.description}
+              </p>
             )}
             {field.options && field.options.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {field.options.map((option) => (
                   <span
                     key={option}
-                    className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    className="text-xs px-2 py-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded"
                   >
                     {option}
                   </span>
@@ -90,7 +94,7 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
             onClick={onDelete}
             variant="secondary"
             size="sm"
-            className="text-red-600 dark:text-red-400"
+            className="text-status-error dark:text-status-error"
           >
             Delete
           </Button>

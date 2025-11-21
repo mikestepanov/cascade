@@ -1,7 +1,7 @@
 # Cascade - Product Roadmap & TODO
 
-> **Last Updated:** 2025-11-19
-> **Version:** 2.3 - Phase 1 Complete, Integrations Live, Code Quality Enhanced
+> **Last Updated:** 2025-11-20
+> **Version:** 2.4 - Auth & Invitations Complete, UI Polished
 > **Status:** Active Development - Ready for Public Launch
 
 This document serves as the comprehensive roadmap for Cascade development, reorganized after competitive analysis against Canvas LMS, Cal.com, AppFlowy, and Kimai.
@@ -37,7 +37,7 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 
 ## 📊 Current State
 
-### ✅ What Works (85% Feature Complete)
+### ✅ What Works (88% Feature Complete)
 - ✅ Real-time collaborative document editing (BlockNote)
 - ✅ Kanban/Scrum boards with drag-and-drop + undo/redo
 - ✅ Full issue lifecycle (task/bug/story/epic)
@@ -50,21 +50,24 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 - ✅ **Email notifications (100% complete)** - digests, unsubscribe, provider-agnostic
 - ✅ Search, filters, command palette
 - ✅ Import/Export (JSON + CSV)
-- ✅ Dark/light theme
+- ✅ **Dark/light theme with full dark mode support** - all components, editor, drag-and-drop
 - ✅ Loading skeletons & optimistic UI
 - ✅ File attachments with drag-and-drop
 - ✅ Keyboard navigation
-- ✅ Frontend testing (Vitest + React Testing Library)
+- ✅ Frontend testing (Vitest + React Testing Library, 644 passing tests)
 - ✅ Backend testing (221 tests across 9 modules, 32% coverage)
 - ✅ **REST API for CLI/AI integration** - API keys, scopes, rate limiting
 - ✅ **Google Calendar OAuth integration** - bi-directional sync
 - ✅ **Pumble webhook integration** - team chat notifications
 - ✅ **API Keys management UI** - generate, view stats, revoke
 - ✅ **Onboarding flow** - welcome modal, onboarding tour
-- ✅ **Mobile-responsive PWA** - installable, offline-ready
+- ✅ **Mobile-responsive PWA** - fully responsive mobile/tablet/desktop, installable, offline-ready
 - ✅ **Calendar events with attendance tracking** - required meetings, admin-only marking
 - ✅ **Enhanced biome configuration** - comprehensive linting rules (a11y, security, performance)
 - ✅ **Phase 5 refactoring** - automation & import/export components modularized
+- ✅ **User invitation system** - admin-controlled invites with email, role assignment, expiration
+- ✅ **User management dashboard** - view all users, invitations, revoke access
+- ✅ **Google OAuth authentication UI** - sign-in button ready (requires env config)
 
 ### 🔴 What's Missing (Critical for Launch)
 - ❌ **Public launch** - No users, no community, 0 GitHub stars

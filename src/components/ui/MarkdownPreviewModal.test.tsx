@@ -17,7 +17,7 @@ vi.mock("./Modal", () => ({
 // Mock the Button component
 vi.mock("./Button", () => ({
   Button: ({ children, onClick, variant }: any) => (
-    <button onClick={onClick} data-variant={variant}>
+    <button type="button" onClick={onClick} data-variant={variant}>
       {children}
     </button>
   ),

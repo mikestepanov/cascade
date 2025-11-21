@@ -59,12 +59,12 @@ export function RecentActivity({ activities }: RecentActivityProps) {
               >
                 {/* Timeline connector */}
                 {activityIndex < activities.length - 1 && (
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-gray-200 dark:bg-gray-700" />
+                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark" />
                 )}
 
                 <div className="flex items-start gap-3">
                   {/* Icon circle with background */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center relative z-10">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center relative z-10">
                     <span className="text-sm" aria-hidden="true">
                       {getActionIcon(activity.action)}
                     </span>
@@ -72,17 +72,19 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="text-sm">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {activity.userName}
                       </span>{" "}
-                      <span className="text-gray-600 dark:text-gray-400">{activity.action}</span>
+                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        {activity.action}
+                      </span>
                     </div>
                     <div className="mt-1">
-                      <span className="inline-block font-mono text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded">
+                      <span className="inline-block font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark px-2 py-0.5 rounded">
                         {activity.issueKey}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-2 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       <span>{activity.projectName}</span>
                       <span>•</span>
                       <span>{new Date(activity.createdAt).toLocaleDateString()}</span>

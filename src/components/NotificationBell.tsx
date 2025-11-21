@@ -80,7 +80,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle notifications"
-        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        className="relative p-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
       >
         <svg
           aria-hidden="true"
@@ -99,7 +99,7 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount !== undefined && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-status-error rounded-full">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -107,17 +107,17 @@ export function NotificationBell() {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-[32rem] overflow-hidden flex flex-col">
+        <div className="absolute right-0 mt-2 w-96 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-50 max-h-[32rem] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="px-4 py-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
               Notifications
             </h3>
             {notifications && notifications.length > 0 && (
               <button
                 type="button"
                 onClick={() => markAllAsRead()}
-                className="text-sm text-primary hover:text-primary-dark font-medium"
+                className="text-sm text-brand-600 hover:text-brand-700 font-medium"
               >
                 Mark all read
               </button>
@@ -128,53 +128,48 @@ export function NotificationBell() {
           <div className="overflow-y-auto flex-1">
             {!notifications ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
-                <p className="text-gray-600 dark:text-gray-400 text-center">No notifications yet</p>
-                <p className="text-sm text-gray-500 dark:text-gray-500 text-center mt-1">
+                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-center">
+                  No notifications yet
+                </p>
+                <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center mt-1">
                   We'll notify you when something happens
                 </p>
               </div>
             ) : (
               <div>
                 {notifications.map((notification) => (
-                  <div
+                  <button
                     key={notification._id}
-                    role="button"
-                    tabIndex={0}
-                    className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 transition-colors ${
-                      !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                    type="button"
+                    className={`w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors ${
+                      !notification.isRead ? "bg-brand-50 dark:bg-brand-900/20" : ""
                     }`}
                     onClick={() => handleNotificationClick(notification._id, notification.issueId)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        void handleNotificationClick(notification._id, notification.issueId);
-                      }
-                    }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="text-2xl flex-shrink-0">
                         {getNotificationIcon(notification.type)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           {notification.title}
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                           {notification.message}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-gray-500 dark:text-gray-500">
+                          <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                             {formatTime(notification.createdAt)}
                           </span>
                           {notification.actorName && (
                             <>
-                              <span className="text-xs text-gray-400">•</span>
-                              <span className="text-xs text-gray-500 dark:text-gray-500">
+                              <span className="text-xs text-ui-text-tertiary">•</span>
+                              <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                 by {notification.actorName}
                               </span>
                             </>
@@ -188,7 +183,7 @@ export function NotificationBell() {
                           removeNotification({ id: notification._id });
                         }}
                         aria-label="Remove notification"
-                        className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="flex-shrink-0 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
                       >
                         <svg
                           aria-hidden="true"
@@ -206,7 +201,7 @@ export function NotificationBell() {
                         </svg>
                       </button>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

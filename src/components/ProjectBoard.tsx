@@ -23,18 +23,184 @@ interface ProjectBoardProps {
   projectId: Id<"projects">;
 }
 
+type TabType =
+  | "board"
+  | "backlog"
+  | "sprints"
+  | "roadmap"
+  | "calendar"
+  | "activity"
+  | "analytics"
+  | "billing"
+  | "settings";
+
+// Tab button component to reduce repetition
+function TabButton({
+  activeTab,
+  tab,
+  icon,
+  label,
+  onClick,
+}: {
+  activeTab: TabType;
+  tab: TabType;
+  icon: string;
+  label: string;
+  onClick: () => void;
+}) {
+  const isActive = activeTab === tab;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
+        isActive
+          ? "border-brand-600 text-brand-600 dark:text-brand-500"
+          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+      }`}
+      aria-label={`${label} view`}
+    >
+      <span>{icon}</span>
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
+// Component to render active tab content
+function TabContent({
+  activeTab,
+  projectId,
+  selectedSprintId,
+  activeSprint,
+}: {
+  activeTab: TabType;
+  projectId: Id<"projects">;
+  selectedSprintId?: Id<"sprints">;
+  activeSprint?: Id<"sprints">;
+}) {
+  const sprintId = selectedSprintId || activeSprint;
+
+  if (activeTab === "board") {
+    return <KanbanBoard projectId={projectId} sprintId={sprintId} />;
+  }
+  if (activeTab === "backlog") {
+    return <KanbanBoard projectId={projectId} />;
+  }
+  if (activeTab === "sprints") {
+    return <SprintManager projectId={projectId} />;
+  }
+  if (activeTab === "roadmap") {
+    return <RoadmapView projectId={projectId} sprintId={sprintId} />;
+  }
+  if (activeTab === "calendar") {
+    return <CalendarView projectId={projectId} sprintId={sprintId} />;
+  }
+  if (activeTab === "activity") {
+    return (
+      <div className="p-6 overflow-y-auto">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold mb-6 text-ui-text-primary dark:text-ui-text-primary-dark">
+            Project Activity
+          </h2>
+          <ActivityFeed projectId={projectId} />
+        </div>
+      </div>
+    );
+  }
+  if (activeTab === "analytics") {
+    return <AnalyticsDashboard projectId={projectId} />;
+  }
+  if (activeTab === "billing") {
+    return <BillingReport projectId={projectId} />;
+  }
+  if (activeTab === "settings") {
+    return (
+      <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Project Basics Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              Project Basics
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+              Configure fundamental project settings and templates
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Labels Error" />}
+                onError={(_error) => {
+                  // Error is shown in fallback UI
+                }}
+              >
+                <LabelsManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Templates Error" />}
+                onError={(_error) => {
+                  // Error is shown in fallback UI
+                }}
+              >
+                <TemplatesManager projectId={projectId} />
+              </ErrorBoundary>
+            </div>
+          </div>
+
+          {/* Integrations & Automation Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              Integrations & Automation
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+              Connect external services and automate workflows
+            </p>
+            <div className="space-y-6">
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Webhooks Error" />}
+                onError={(_error) => {
+                  // Error is shown in fallback UI
+                }}
+              >
+                <WebhooksManager projectId={projectId} />
+              </ErrorBoundary>
+
+              <ErrorBoundary
+                fallback={<SectionErrorFallback title="Automation Error" />}
+                onError={(_error) => {
+                  // Error is shown in fallback UI
+                }}
+              >
+                <AutomationRulesManager projectId={projectId} />
+              </ErrorBoundary>
+            </div>
+          </div>
+
+          {/* Advanced Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              Advanced
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+              Customize your project with additional metadata fields
+            </p>
+            <ErrorBoundary
+              fallback={<SectionErrorFallback title="Custom Fields Error" />}
+              onError={(_error) => {
+                // Error is shown in fallback UI
+              }}
+            >
+              <CustomFieldsManager projectId={projectId} />
+            </ErrorBoundary>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 export function ProjectBoard({ projectId }: ProjectBoardProps) {
-  const [activeTab, setActiveTab] = useState<
-    | "board"
-    | "backlog"
-    | "sprints"
-    | "roadmap"
-    | "calendar"
-    | "activity"
-    | "analytics"
-    | "billing"
-    | "settings"
-  >("board");
+  const [activeTab, setActiveTab] = useState<TabType>("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
   const project = useQuery(api.projects.get, { id: projectId });
@@ -42,8 +208,8 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
   if (!project) {
     return (
-      <div className="flex flex-col h-full bg-white">
-        <div className="border-b border-gray-200 p-6">
+      <div className="flex flex-col h-full bg-ui-bg-primary">
+        <div className="border-b border-ui-border-primary p-6">
           <div className="space-y-4">
             <SkeletonText lines={2} />
             <div className="flex space-x-6">
@@ -63,15 +229,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const activeSprint = sprints?.find((sprint) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               {project.name}
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 truncate">
+            <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
               {project.description}
             </p>
           </div>
@@ -81,10 +247,10 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              <span className="text-xs sm:text-sm bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.key}
               </span>
-              <span className="text-xs sm:text-sm bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              <span className="text-xs sm:text-sm bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
                 {project.boardType}
               </span>
             </div>
@@ -95,138 +261,84 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch scrollbar-hide">
           {/* Primary Workflow Tabs */}
           <div className="flex gap-2 sm:gap-3 md:gap-6">
-            <button
-              type="button"
+            <TabButton
+              activeTab={activeTab}
+              tab="board"
+              icon="📋"
+              label="Board"
               onClick={() => setActiveTab("board")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "board"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Board view"
-            >
-              <span>📋</span>
-              <span className="hidden sm:inline">Board</span>
-            </button>
-            <button
-              type="button"
+            />
+            <TabButton
+              activeTab={activeTab}
+              tab="backlog"
+              icon="📝"
+              label="Backlog"
               onClick={() => setActiveTab("backlog")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "backlog"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Backlog view"
-            >
-              <span>📝</span>
-              <span className="hidden sm:inline">Backlog</span>
-            </button>
+            />
             {project.boardType === "scrum" && (
-              <button
-                type="button"
+              <TabButton
+                activeTab={activeTab}
+                tab="sprints"
+                icon="🏃"
+                label="Sprints"
                 onClick={() => setActiveTab("sprints")}
-                className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                  activeTab === "sprints"
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-                aria-label="Sprints view"
-              >
-                <span>🏃</span>
-                <span className="hidden sm:inline">Sprints</span>
-              </button>
+              />
             )}
           </div>
 
           {/* Visual Separator */}
-          <div className="hidden lg:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2 sm:mx-4 md:mx-6" />
+          <div className="hidden lg:block h-6 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
           <div className="flex gap-2 sm:gap-3 md:gap-6 flex-shrink-0">
-            <button
-              type="button"
+            <TabButton
+              activeTab={activeTab}
+              tab="roadmap"
+              icon="🗺️"
+              label="Roadmap"
               onClick={() => setActiveTab("roadmap")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "roadmap"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Roadmap view"
-            >
-              <span>🗺️</span>
-              <span className="hidden sm:inline">Roadmap</span>
-            </button>
-            <button
-              type="button"
+            />
+            <TabButton
+              activeTab={activeTab}
+              tab="calendar"
+              icon="📅"
+              label="Calendar"
               onClick={() => setActiveTab("calendar")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "calendar"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Calendar view"
-            >
-              <span>📅</span>
-              <span className="hidden sm:inline">Calendar</span>
-            </button>
-            <button
-              type="button"
+            />
+            <TabButton
+              activeTab={activeTab}
+              tab="activity"
+              icon="📊"
+              label="Activity"
               onClick={() => setActiveTab("activity")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "activity"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Activity view"
-            >
-              <span>📊</span>
-              <span className="hidden sm:inline">Activity</span>
-            </button>
-            <button
-              type="button"
+            />
+            <TabButton
+              activeTab={activeTab}
+              tab="analytics"
+              icon="📈"
+              label="Analytics"
               onClick={() => setActiveTab("analytics")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "analytics"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Analytics view"
-            >
-              <span>📈</span>
-              <span className="hidden sm:inline">Analytics</span>
-            </button>
-            <button
-              type="button"
+            />
+            <TabButton
+              activeTab={activeTab}
+              tab="billing"
+              icon="💰"
+              label="Billing"
               onClick={() => setActiveTab("billing")}
-              className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-                activeTab === "billing"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              aria-label="Billing view"
-            >
-              <span>💰</span>
-              <span className="hidden sm:inline">Billing</span>
-            </button>
+            />
           </div>
 
           {/* Spacer to push Settings to the right */}
           <div className="flex-1" />
 
           {/* Settings Tab - Separated */}
-          <button
-            type="button"
+          <TabButton
+            activeTab={activeTab}
+            tab="settings"
+            icon="⚙️"
+            label="Settings"
             onClick={() => setActiveTab("settings")}
-            className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
-              activeTab === "settings"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-            aria-label="Settings"
-          >
-            <span>⚙️</span>
-            <span className="hidden sm:inline">Settings</span>
-          </button>
+          />
         </div>
 
         {/* Sprint Selector for Board */}
@@ -237,7 +349,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onChange={(e) =>
                 setSelectedSprintId(e.target.value ? (e.target.value as Id<"sprints">) : undefined)
               }
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ui-border-focus"
             >
               <option value="">Active Sprint</option>
               {sprints?.map((sprint) => (
@@ -252,106 +364,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === "board" && (
-          <KanbanBoard projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
-        )}
-        {activeTab === "backlog" && <KanbanBoard projectId={projectId} />}
-        {activeTab === "sprints" && <SprintManager projectId={projectId} />}
-        {activeTab === "roadmap" && (
-          <RoadmapView projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
-        )}
-        {activeTab === "calendar" && (
-          <CalendarView projectId={projectId} sprintId={selectedSprintId || activeSprint?._id} />
-        )}
-        {activeTab === "activity" && (
-          <div className="p-6 overflow-y-auto">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-                Project Activity
-              </h2>
-              <ActivityFeed projectId={projectId} />
-            </div>
-          </div>
-        )}
-        {activeTab === "analytics" && <AnalyticsDashboard projectId={projectId} />}
-        {activeTab === "billing" && <BillingReport projectId={projectId} />}
-        {activeTab === "settings" && (
-          <div className="p-3 sm:p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-5xl mx-auto space-y-8">
-              {/* Project Basics Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Project Basics</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Configure fundamental project settings and templates
-                </p>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <ErrorBoundary
-                    fallback={<SectionErrorFallback title="Labels Error" />}
-                    onError={(_error) => {
-                      // Error is shown in fallback UI
-                    }}
-                  >
-                    <LabelsManager projectId={projectId} />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary
-                    fallback={<SectionErrorFallback title="Templates Error" />}
-                    onError={(_error) => {
-                      // Error is shown in fallback UI
-                    }}
-                  >
-                    <TemplatesManager projectId={projectId} />
-                  </ErrorBoundary>
-                </div>
-              </div>
-
-              {/* Integrations & Automation Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                  Integrations & Automation
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Connect external services and automate workflows
-                </p>
-                <div className="space-y-6">
-                  <ErrorBoundary
-                    fallback={<SectionErrorFallback title="Webhooks Error" />}
-                    onError={(_error) => {
-                      // Error is shown in fallback UI
-                    }}
-                  >
-                    <WebhooksManager projectId={projectId} />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary
-                    fallback={<SectionErrorFallback title="Automation Error" />}
-                    onError={(_error) => {
-                      // Error is shown in fallback UI
-                    }}
-                  >
-                    <AutomationRulesManager projectId={projectId} />
-                  </ErrorBoundary>
-                </div>
-              </div>
-
-              {/* Advanced Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Advanced</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Customize your project with additional metadata fields
-                </p>
-                <ErrorBoundary
-                  fallback={<SectionErrorFallback title="Custom Fields Error" />}
-                  onError={(_error) => {
-                    // Error is shown in fallback UI
-                  }}
-                >
-                  <CustomFieldsManager projectId={projectId} />
-                </ErrorBoundary>
-              </div>
-            </div>
-          </div>
-        )}
+        <TabContent
+          activeTab={activeTab}
+          projectId={projectId}
+          selectedSprintId={selectedSprintId}
+          activeSprint={activeSprint?._id}
+        />
       </div>
     </div>
   );

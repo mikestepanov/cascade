@@ -102,7 +102,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
           Select Export Format
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -111,14 +111,18 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             className={`p-4 cursor-pointer transition-all ${
               exportFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
             <div className="flex items-center gap-3">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">CSV</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Spreadsheet format</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  CSV
+                </div>
+                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  Spreadsheet format
+                </div>
               </div>
             </div>
           </Card>
@@ -128,14 +132,16 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             className={`p-4 cursor-pointer transition-all ${
               exportFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
             <div className="flex items-center gap-3">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">JSON</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  JSON
+                </div>
+                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                   Data interchange format
                 </div>
               </div>
@@ -144,12 +150,12 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
         </div>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <div className="text-blue-600 dark:text-blue-400 text-xl">ℹ️</div>
-          <div className="text-sm text-blue-800 dark:text-blue-200">
+          <div className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</div>
+          <div className="text-sm text-brand-800 dark:text-brand-200">
             <p className="font-semibold mb-1">Export Information</p>
-            <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
+            <ul className="list-disc list-inside space-y-1 text-brand-700 dark:text-brand-300">
               <li>CSV format is compatible with Excel, Google Sheets</li>
               <li>JSON format includes full issue data and metadata</li>
               <li>

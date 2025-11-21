@@ -75,27 +75,27 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
       {/* Watchers List */}
       {watchers && watchers.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Watchers ({watchers.length})
           </h4>
           <div className="space-y-2">
             {watchers.map((watcher) => (
               <div
                 key={watcher._id}
-                className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                className="flex items-center gap-3 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
                   {watcher.userName.charAt(0).toUpperCase()}
                 </div>
 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                     {watcher.userName}
                   </p>
                   {watcher.userEmail && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
                       {watcher.userEmail}
                     </p>
                   )}
@@ -108,7 +108,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
 
       {/* Empty State */}
       {watchers && watchers.length === 0 && (
-        <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-center py-4 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           No watchers yet. Be the first to watch this issue!
         </div>
       )}

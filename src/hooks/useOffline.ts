@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type OfflineMutation, offlineDB, offlineStatus } from "../lib/offline";
 
 /**
@@ -65,16 +65,17 @@ export function useOfflineQueue() {
   const [queue, setQueue] = useState<OfflineMutation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setIsLoading(true);
     try {
       const mutations = await offlineDB.getPendingMutations();
       setQueue(mutations);
     } catch (_error) {
+      // Silently ignore errors when refreshing queue - queue will remain in current state
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const retryMutation = async (id: number) => {
     await offlineDB.updateMutationStatus(id, "pending");

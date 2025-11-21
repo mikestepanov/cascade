@@ -1,7 +1,7 @@
 # Human TODO - Manual Setup & Configuration
 
-> **Last Updated:** 2025-11-18
-> **Version:** 2.2 - Updated for Pumble & API Keys
+> **Last Updated:** 2025-11-20
+> **Version:** 2.3 - Updated for User Invitations & Google OAuth
 
 This document contains tasks that require **manual human intervention** - things that can't be automated through code. These are configuration, setup, and deployment tasks.
 
@@ -281,20 +281,47 @@ Before launching email notifications to users:
 
 ## 🔑 Authentication Setup (Required)
 
-### 11. Convex Authentication
+### 11. User Authentication & Invitations
 
-**Already Configured:** Password and Anonymous auth providers are set up.
+**What's Already Configured:**
+- ✅ Email/Password authentication (works out of the box)
+- ✅ Anonymous authentication (works out of the box)
+- ✅ **User invitation system** (works out of the box!)
+- ✅ **User management dashboard** (Settings → Admin → User Management)
+- 🔧 Google OAuth UI ready (requires environment variable setup below)
 
-**No Manual Setup Required** unless you want to add OAuth providers (Google, GitHub, etc.)
+**User Invitations - No Setup Required!**
+Admins can invite users directly from the UI:
+1. Go to Settings → Admin → User Management
+2. Click "Invite User"
+3. Enter email and select role (User/Admin)
+4. User receives invitation (requires email provider setup above)
+5. Invitation valid for 7 days
+6. Admins can revoke/resend invitations
 
-**Optional OAuth Setup:**
-1. [ ] Choose OAuth provider (Google, GitHub, etc.)
-2. [ ] Register OAuth application
-3. [ ] Get client ID and client secret
-4. [ ] Update `convex/auth.config.ts`
-5. [ ] Add OAuth credentials to environment variables
+**Google OAuth Setup (Optional):**
+1. [ ] Create Google Cloud Project
+2. [ ] Enable Google+ API
+3. [ ] Create OAuth 2.0 credentials (Web application)
+4. [ ] Add authorized redirect URIs:
+   - `http://localhost:5173/auth/callback` (development)
+   - `https://yourdomain.com/auth/callback` (production)
+5. [ ] Get Client ID and Client Secret
+6. [ ] Add to environment variables:
+   ```bash
+   AUTH_GOOGLE_CLIENT_ID=your_google_client_id
+   AUTH_GOOGLE_CLIENT_SECRET=your_google_client_secret
+   ```
+7. [ ] Update `convex/auth.ts` (uncomment Google provider)
+8. [ ] Redeploy Convex backend
 
-**Reference:** See `convex/auth.config.ts` for current configuration
+**Testing:**
+- [ ] Visit sign-in page
+- [ ] Click "Sign in with Google" button
+- [ ] Complete OAuth flow
+- [ ] Verify successful login
+
+**Reference:** See `docs/AUTHENTICATION.md` for complete setup guide
 
 ---
 

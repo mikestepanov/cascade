@@ -13,21 +13,24 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
+      {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading spinner */}
       <div
-        className={`animate-spin rounded-full border-gray-900 border-t-transparent ${sizeClasses[size]} ${className}`}
+        className={`animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent ${sizeClasses[size]} ${className}`}
         role="status"
         aria-label="Loading"
       >
         <span className="sr-only">Loading...</span>
       </div>
-      {message && <p className="text-sm text-gray-600">{message}</p>}
+      {message && (
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
+      )}
     </div>
   );
 }
 
 export function LoadingOverlay({ message }: { message?: string }) {
   return (
-    <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
+    <div className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
       <LoadingSpinner size="lg" message={message} />
     </div>
   );

@@ -38,10 +38,10 @@ export function WelcomeModal() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">👋</div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
             Welcome to Cascade!
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-lg text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Your all-in-one workspace for projects, tasks, and collaboration
           </p>
         </div>
@@ -50,24 +50,30 @@ export function WelcomeModal() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="text-center p-4">
             <div className="text-4xl mb-3">📋</div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Kanban Boards</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Kanban Boards
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Visualize workflow with drag-and-drop boards
             </p>
           </div>
 
           <div className="text-center p-4">
             <div className="text-4xl mb-3">📄</div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Rich Documents</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Rich Documents
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Collaborate in real-time like Confluence
             </p>
           </div>
 
           <div className="text-center p-4">
             <div className="text-4xl mb-3">🚀</div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Sprint Planning</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Sprint Planning
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Plan and track sprints with team velocity
             </p>
           </div>
@@ -89,7 +95,7 @@ export function WelcomeModal() {
         </div>
 
         {/* Footer Note */}
-        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-6">
+        <p className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-6">
           We'll create a sample project to help you explore Cascade's features.
           <br />
           You can delete it anytime.

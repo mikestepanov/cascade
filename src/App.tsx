@@ -49,6 +49,125 @@ export default function App() {
   );
 }
 
+// Helper component for navigation buttons
+function ViewSwitcherButton({
+  view,
+  activeView,
+  onClick,
+  icon,
+  label,
+}: {
+  view: AppView;
+  activeView: AppView;
+  onClick: () => void;
+  icon: string;
+  label: string;
+}) {
+  const isActive = activeView === view;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+        isActive
+          ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+      }`}
+      aria-label={label}
+      aria-current={isActive ? "page" : undefined}
+    >
+      <span className="sm:hidden" aria-hidden="true">
+        {icon}
+      </span>
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
+// Helper function to get header title
+function getHeaderTitle(
+  activeView: AppView,
+  selectedDocumentId: Id<"documents"> | null,
+  selectedProjectId: Id<"projects"> | null,
+): string {
+  if (activeView === "dashboard") return "My Work";
+  if (activeView === "timesheet") return "Weekly Timesheet";
+  if (activeView === "calendar") return "Calendar";
+  if (activeView === "settings") return "Settings";
+  if (activeView === "documents") {
+    return selectedDocumentId ? "Document Editor" : "Select a document";
+  }
+  return selectedProjectId ? "Project Board" : "Select a project";
+}
+
+// Helper component for main content area
+function MainContentView({
+  activeView,
+  selectedDocumentId,
+  selectedProjectId,
+  onNavigateToProject,
+  onNavigateToProjects,
+}: {
+  activeView: AppView;
+  selectedDocumentId: Id<"documents"> | null;
+  selectedProjectId: Id<"projects"> | null;
+  onNavigateToProject: (projectId: Id<"projects">) => void;
+  onNavigateToProjects: () => void;
+}) {
+  if (activeView === "dashboard") {
+    return (
+      <Dashboard
+        onNavigateToProject={onNavigateToProject}
+        onNavigateToProjects={onNavigateToProjects}
+      />
+    );
+  }
+
+  if (activeView === "documents") {
+    if (selectedDocumentId) {
+      return <DocumentEditor documentId={selectedDocumentId} />;
+    }
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+        <div className="text-center">
+          <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+            Welcome to your workspace
+          </h2>
+          <p>Select a document from the sidebar or create a new one to get started.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (activeView === "timesheet") {
+    return <TimeTrackingPage />;
+  }
+
+  if (activeView === "calendar") {
+    return <UnifiedCalendarView projectId={selectedProjectId || undefined} />;
+  }
+
+  if (activeView === "settings") {
+    return <Settings />;
+  }
+
+  // Projects view
+  if (selectedProjectId) {
+    return <ProjectBoard projectId={selectedProjectId} />;
+  }
+
+  return (
+    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+      <div className="text-center">
+        <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+          Welcome to project management
+        </h2>
+        <p>Select a project from the sidebar or create a new one to get started.</p>
+      </div>
+    </div>
+  );
+}
+
 function Content() {
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const [selectedDocumentId, setSelectedDocumentId] = useState<Id<"documents"> | null>(null);
@@ -75,30 +194,38 @@ function Content() {
 
   // Check if user is new and should see onboarding
   useEffect(() => {
-    if (loggedInUser && onboardingStatus !== undefined) {
-      // If no onboarding record exists, this is a brand new user
-      if (!onboardingStatus) {
-        // Show sample project offer modal
-        setShowSampleProjectModal(true);
-      } else if (!(onboardingStatus.tourShown || showSampleProjectModal)) {
-        // Show welcome tour if they haven't seen it
-        setShowWelcomeTour(true);
-      }
+    if (!loggedInUser || onboardingStatus === undefined) return;
+
+    // If no onboarding record exists, this is a brand new user
+    if (!onboardingStatus) {
+      setShowSampleProjectModal(true);
+      return;
+    }
+
+    // Show welcome tour if they haven't seen it
+    if (!(onboardingStatus.tourShown || showSampleProjectModal)) {
+      setShowWelcomeTour(true);
     }
   }, [loggedInUser, onboardingStatus, showSampleProjectModal]);
 
+  const clearSelections = () => {
+    setSelectedDocumentId(null);
+    setSelectedProjectId(null);
+  };
+
+  const handleNavigate = (view: AppView) => {
+    setActiveView(view);
+    if (view === "dashboard") {
+      clearSelections();
+    }
+  };
+
   // Build commands for command palette
   const commands = useCommands({
-    onNavigate: (view) => {
-      setActiveView(view);
-      if (view === "dashboard") {
-        setSelectedDocumentId(null);
-        setSelectedProjectId(null);
-      }
-    },
-    onCreateIssue: undefined, // Will be set contextually
-    onCreateDocument: undefined, // Will be set contextually
-    onCreateProject: undefined, // Will be set contextually
+    onNavigate: handleNavigate,
+    onCreateIssue: undefined,
+    onCreateDocument: undefined,
+    onCreateProject: undefined,
   });
 
   // Create keyboard shortcuts with handlers
@@ -107,10 +234,7 @@ function Content() {
     setShowCommandPalette,
     setShowShortcutsHelp,
     setShowAIAssistant: (toggle) => setShowAIAssistant(toggle),
-    clearSelections: () => {
-      setSelectedDocumentId(null);
-      setSelectedProjectId(null);
-    },
+    clearSelections,
   });
 
   const sequences = createKeySequences({
@@ -118,10 +242,7 @@ function Content() {
     setShowCommandPalette,
     setShowShortcutsHelp,
     setShowAIAssistant: (toggle) => setShowAIAssistant(toggle),
-    clearSelections: () => {
-      setSelectedDocumentId(null);
-      setSelectedProjectId(null);
-    },
+    clearSelections,
   });
 
   // Register shortcuts with sequence support
@@ -275,142 +396,70 @@ function Content() {
                   className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 overflow-x-auto"
                   aria-label="Main navigation"
                 >
-                  <button
-                    type="button"
+                  <ViewSwitcherButton
+                    view="dashboard"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("dashboard");
-                      setSelectedDocumentId(null);
-                      setSelectedProjectId(null);
+                      clearSelections();
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "dashboard"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Dashboard"
-                    aria-current={activeView === "dashboard" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      🏠
-                    </span>
-                    <span className="hidden sm:inline">Dashboard</span>
-                  </button>
-                  <button
-                    type="button"
+                    icon="🏠"
+                    label="Dashboard"
+                  />
+                  <ViewSwitcherButton
+                    view="documents"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("documents");
                       setSelectedProjectId(null);
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "documents"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Documents"
-                    aria-current={activeView === "documents" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      📄
-                    </span>
-                    <span className="hidden sm:inline">Documents</span>
-                  </button>
-                  <button
-                    type="button"
+                    icon="📄"
+                    label="Documents"
+                  />
+                  <ViewSwitcherButton
+                    view="projects"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("projects");
                       setSelectedDocumentId(null);
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "projects"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Projects"
-                    aria-current={activeView === "projects" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      📋
-                    </span>
-                    <span className="hidden sm:inline">Projects</span>
-                  </button>
-                  <button
-                    type="button"
+                    icon="📋"
+                    label="Projects"
+                  />
+                  <ViewSwitcherButton
+                    view="timesheet"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("timesheet");
-                      setSelectedDocumentId(null);
-                      setSelectedProjectId(null);
+                      clearSelections();
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "timesheet"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Timesheet"
-                    aria-current={activeView === "timesheet" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      ⏱️
-                    </span>
-                    <span className="hidden sm:inline">Timesheet</span>
-                  </button>
-                  <button
-                    type="button"
+                    icon="⏱️"
+                    label="Timesheet"
+                  />
+                  <ViewSwitcherButton
+                    view="calendar"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("calendar");
-                      setSelectedDocumentId(null);
-                      setSelectedProjectId(null);
+                      clearSelections();
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "calendar"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Calendar"
-                    aria-current={activeView === "calendar" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      📅
-                    </span>
-                    <span className="hidden sm:inline">Calendar</span>
-                  </button>
-                  <button
-                    type="button"
+                    icon="📅"
+                    label="Calendar"
+                  />
+                  <ViewSwitcherButton
+                    view="settings"
+                    activeView={activeView}
                     onClick={() => {
                       setActiveView("settings");
-                      setSelectedDocumentId(null);
-                      setSelectedProjectId(null);
+                      clearSelections();
                     }}
-                    className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeView === "settings"
-                        ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                    }`}
-                    aria-label="Settings"
-                    aria-current={activeView === "settings" ? "page" : undefined}
-                  >
-                    <span className="sm:hidden" aria-hidden="true">
-                      ⚙️
-                    </span>
-                    <span className="hidden sm:inline">Settings</span>
-                  </button>
+                    icon="⚙️"
+                    label="Settings"
+                  />
                 </nav>
 
                 <h1 className="hidden md:block text-base lg:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {activeView === "dashboard"
-                    ? "My Work"
-                    : activeView === "documents"
-                      ? selectedDocumentId
-                        ? "Document Editor"
-                        : "Select a document"
-                      : activeView === "timesheet"
-                        ? "Weekly Timesheet"
-                        : activeView === "calendar"
-                          ? "Calendar"
-                          : activeView === "settings"
-                            ? "Settings"
-                            : selectedProjectId
-                              ? "Project Board"
-                              : "Select a project"}
+                  {getHeaderTitle(activeView, selectedDocumentId, selectedProjectId)}
                 </h1>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -483,54 +532,23 @@ function Content() {
                   />
                 }
               >
-                {activeView === "dashboard" ? (
-                  <Dashboard
-                    onNavigateToProject={(projectId) => {
-                      setActiveView("projects");
-                      setSelectedProjectId(projectId);
-                    }}
-                    onNavigateToProjects={() => setActiveView("projects")}
-                  />
-                ) : activeView === "documents" ? (
-                  selectedDocumentId ? (
-                    <DocumentEditor documentId={selectedDocumentId} />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
-                      <div className="text-center">
-                        <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-                          Welcome to your workspace
-                        </h2>
-                        <p>
-                          Select a document from the sidebar or create a new one to get started.
-                        </p>
-                      </div>
-                    </div>
-                  )
-                ) : activeView === "timesheet" ? (
-                  <TimeTrackingPage />
-                ) : activeView === "calendar" ? (
-                  <UnifiedCalendarView projectId={selectedProjectId || undefined} />
-                ) : activeView === "settings" ? (
-                  <Settings />
-                ) : selectedProjectId ? (
-                  <ProjectBoard projectId={selectedProjectId} />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
-                    <div className="text-center">
-                      <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
-                        Welcome to project management
-                      </h2>
-                      <p>Select a project from the sidebar or create a new one to get started.</p>
-                    </div>
-                  </div>
-                )}
+                <MainContentView
+                  activeView={activeView}
+                  selectedDocumentId={selectedDocumentId}
+                  selectedProjectId={selectedProjectId}
+                  onNavigateToProject={(projectId) => {
+                    setActiveView("projects");
+                    setSelectedProjectId(projectId);
+                  }}
+                  onNavigateToProjects={() => setActiveView("projects")}
+                />
               </ErrorBoundary>
             </main>
           </div>
         </div>
 
         {/* Global Timer Widget - always visible for authenticated users */}
-        <TimerWidget />
+        <NavTimerWidget />
 
         {/* AI Assistant Panel */}
         <AIAssistantPanel

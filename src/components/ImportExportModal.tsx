@@ -41,14 +41,14 @@ export function ImportExportModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Import / Export Issues" size="large">
       <div className="space-y-6">
         {/* Mode Selection */}
-        <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <div className="flex gap-2 p-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
           <button
             type="button"
             onClick={() => setMode("export")}
             className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
               mode === "export"
-                ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
+                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             📤 Export
@@ -58,8 +58,8 @@ export function ImportExportModal({
             onClick={() => setMode("import")}
             className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
               mode === "import"
-                ? "bg-white dark:bg-gray-700 text-primary shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
+                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             📥 Import

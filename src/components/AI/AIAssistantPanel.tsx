@@ -48,12 +48,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
 
       {/* Panel */}
       <div
-        className={`fixed right-0 top-0 h-full ${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-all duration-${AI_CONFIG.animations.slideInOut} ${
+        className={`fixed right-0 top-0 h-full ${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-2xl z-50 transform transition-all duration-${AI_CONFIG.animations.slideInOut} ${
           isOpen ? "translate-x-0 ease-out" : "translate-x-full ease-in"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="flex items-center justify-between p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600">
           <div className="flex items-center gap-3">
             <div className="text-2xl">🤖</div>
             <div>
@@ -82,19 +82,19 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+        <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
           <button
             type="button"
             onClick={() => handleTabChange("chat")}
             className={`flex-1 px-4 py-3 font-medium text-sm transition-colors ${
               activeTab === "chat"
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-gray-900"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             💬 Chat
             {chats && chats.length > 0 && (
-              <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-0.5 rounded-full">
                 {chats.length}
               </span>
             )}
@@ -104,13 +104,13 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             onClick={() => handleTabChange("suggestions")}
             className={`flex-1 px-4 py-3 font-medium text-sm transition-colors relative ${
               activeTab === "suggestions"
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-white dark:bg-gray-900"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             💡 Suggestions
             {unreadSuggestions > 0 && (
-              <span className="ml-2 text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-status-error text-white px-2 py-0.5 rounded-full">
                 {unreadSuggestions}
               </span>
             )}

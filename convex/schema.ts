@@ -921,7 +921,7 @@ const applicationTables = {
     billed: v.boolean(), // Has this been billed to client?
     invoiceId: v.optional(v.string()), // Link to invoice if billed
     // Equity compensation
-    isEquityHour: v.optional(v.boolean()), // Is this compensated with equity (non-paid)?
+    isEquityHour: v.boolean(), // Is this compensated with equity (non-paid)? Default: false
     equityValue: v.optional(v.number()), // Calculated equity value for this entry
     // Status
     isLocked: v.boolean(), // Locked entries can't be edited (for payroll/billing)
@@ -989,7 +989,7 @@ const applicationTables = {
     jobTitle: v.optional(v.string()),
     managerId: v.optional(v.id("users")), // Direct manager
     // Equity compensation (employees only)
-    hasEquity: v.optional(v.boolean()), // Does employee have equity compensation?
+    hasEquity: v.boolean(), // Does employee have equity compensation? Default: false
     equityPercentage: v.optional(v.number()), // Equity stake percentage (e.g., 0.5 for 0.5%)
     requiredEquityHoursPerWeek: v.optional(v.number()), // Required non-paid equity hours per week
     requiredEquityHoursPerMonth: v.optional(v.number()), // Alternative: monthly equity hours requirement
@@ -1071,6 +1071,32 @@ const applicationTables = {
     .index("by_user_period", ["userId", "periodStart"])
     .index("by_user_status", ["userId", "status"])
     .index("by_period_status", ["periodStart", "status"]),
+
+  // User Invitations
+  invites: defineTable({
+    email: v.string(), // Email address to invite
+    role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
+    invitedBy: v.id("users"), // Admin who sent the invite
+    token: v.string(), // Unique invitation token
+    expiresAt: v.number(), // Expiration timestamp
+    status: v.union(
+      v.literal("pending"), // Not yet accepted
+      v.literal("accepted"), // User accepted and created account
+      v.literal("revoked"), // Admin revoked the invite
+      v.literal("expired"), // Invite expired
+    ),
+    acceptedBy: v.optional(v.id("users")), // User who accepted (if accepted)
+    acceptedAt: v.optional(v.number()), // When accepted
+    revokedBy: v.optional(v.id("users")), // Admin who revoked (if revoked)
+    revokedAt: v.optional(v.number()), // When revoked
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_token", ["token"])
+    .index("by_status", ["status"])
+    .index("by_invited_by", ["invitedBy"])
+    .index("by_email_status", ["email", "status"]),
 };
 
 export default defineSchema({

@@ -91,14 +91,14 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         <div
           role="dialog"
           aria-label="Command palette"
-          className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden"
+          className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
           {/* Search Input */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                 <svg
                   aria-hidden="true"
                   className="w-5 h-5"
@@ -121,7 +121,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a command or search..."
-                className="pl-10 pr-4 py-2 sm:py-3 text-base sm:text-lg border-none focus:outline-none bg-transparent text-gray-900 dark:text-gray-100"
+                className="pl-10 pr-4 py-2 sm:py-3 text-base sm:text-lg border-none focus:outline-none bg-transparent text-ui-text-primary dark:text-ui-text-primary-dark"
               />
             </div>
           </div>
@@ -129,14 +129,16 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           {/* Commands List */}
           <div className="max-h-[50vh] sm:max-h-[60vh] overflow-y-auto">
             {allFilteredCommands.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+              <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 <p>No commands found</p>
               </div>
             ) : (
               Object.entries(groupedCommands).map(([group, cmds], groupIndex) => (
                 <div key={group}>
-                  {groupIndex > 0 && <div className="border-t border-gray-200 dark:border-gray-700" />}
-                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800">
+                  {groupIndex > 0 && (
+                    <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark" />
+                  )}
+                  <div className="px-4 py-2 text-xs font-semibold text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
                     {group}
                   </div>
                   {cmds.map((cmd, _cmdIndex) => {
@@ -153,14 +155,20 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         }}
                         onMouseEnter={() => setSelectedIndex(globalIndex)}
                         className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors ${
-                          isSelected ? "bg-blue-50 dark:bg-blue-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                          isSelected
+                            ? "bg-brand-50 dark:bg-brand-900/30"
+                            : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                         }`}
                       >
                         {cmd.icon && <span className="text-xl">{cmd.icon}</span>}
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{cmd.label}</div>
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {cmd.label}
+                          </div>
                           {cmd.description && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{cmd.description}</div>
+                            <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                              {cmd.description}
+                            </div>
                           )}
                         </div>
                       </button>
@@ -172,15 +180,24 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-3 sm:gap-4">
+          <div className="px-4 py-2 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark flex flex-wrap gap-3 sm:gap-4">
             <span>
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300">↑↓</kbd> Navigate
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                ↑↓
+              </kbd>{" "}
+              Navigate
             </span>
             <span>
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300">Enter</kbd> Select
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                Enter
+              </kbd>{" "}
+              Select
             </span>
             <span>
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300">Esc</kbd> Close
+              <kbd className="px-2 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded text-ui-text-primary dark:text-ui-text-primary-dark">
+                Esc
+              </kbd>{" "}
+              Close
             </span>
           </div>
         </div>

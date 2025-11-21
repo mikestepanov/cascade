@@ -41,8 +41,9 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}
       >
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: Modal content needs stopPropagation to prevent backdrop clicks */}
         <div
-          className={`bg-white dark:bg-gray-900 ${
+          className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark ${
             fullScreenOnMobile
               ? "rounded-none sm:rounded-lg min-h-screen sm:min-h-0"
               : "rounded-lg m-4 sm:m-0"
@@ -51,17 +52,17 @@ export function Modal({
           onKeyDown={(e) => e.stopPropagation()}
         >
           {title && (
-            <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6 flex items-center justify-between rounded-t-lg z-10">
+            <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 flex items-center justify-between rounded-t-lg z-10">
               <h2
                 id="modal-title"
-                className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+                className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark"
               >
                 {title}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="text-ui-text-tertiary hover:text-ui-text-secondary dark:text-ui-text-tertiary-dark dark:hover:text-ui-text-secondary-dark p-1 rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 aria-label="Close modal"
               >
                 <svg

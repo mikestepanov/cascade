@@ -2,11 +2,29 @@ import { useQuery } from "convex/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
 type ViewMode = "week" | "month";
+
+/**
+ * Format hour for display (e.g., "12 AM", "1 PM")
+ */
+function formatHour(hour: number, isMobile: boolean): string {
+  if (isMobile) {
+    // Mobile: Compact format
+    if (hour === 0) return "12a";
+    if (hour < 12) return `${hour}a`;
+    if (hour === 12) return "12p";
+    return `${hour - 12}p`;
+  }
+  // Desktop: Full format
+  if (hour === 0) return "12 AM";
+  if (hour < 12) return `${hour} AM`;
+  if (hour === 12) return "12 PM";
+  return `${hour - 12} PM`;
+}
 
 export function CalendarView() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
@@ -65,64 +83,70 @@ export function CalendarView() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
+              type="button"
               onClick={handleToday}
-              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
             >
               Today
             </button>
             <div className="flex items-center gap-1 sm:gap-2">
               <button
+                type="button"
                 onClick={handlePrevious}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
               <button
+                type="button"
                 onClick={handleNext}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
             </div>
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
               {getHeaderText()}
             </h2>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             {/* View Mode Toggle */}
-            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md flex-1 sm:flex-initial">
+            <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-1 sm:flex-initial">
               <button
+                type="button"
                 onClick={() => setViewMode("week")}
                 className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                   viewMode === "week"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    ? "bg-brand-600 text-white"
+                    : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
                 } rounded-l-md`}
               >
                 Week
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("month")}
                 className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                   viewMode === "month"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                } rounded-r-md border-l border-gray-300 dark:border-gray-600`}
+                    ? "bg-brand-600 text-white"
+                    : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                } rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
               >
                 Month
               </button>
             </div>
 
             <button
+              type="button"
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs sm:text-sm flex-shrink-0"
+              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-xs sm:text-sm flex-shrink-0"
             >
               <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">New Event</span>
@@ -164,7 +188,7 @@ function WeekView({
   onEventClick,
 }: {
   startDate: Date;
-  events: any[];
+  events: Doc<"calendarEvents">[];
   onEventClick: (id: Id<"calendarEvents">) => void;
 }) {
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -178,17 +202,17 @@ function WeekView({
   return (
     <div className="flex flex-col h-full">
       {/* Day Headers */}
-      <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-        <div className="p-1 sm:p-2 text-xs font-medium text-gray-500 dark:text-gray-400" />
-        {days.map((day, idx) => {
+      <div className="grid grid-cols-8 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <div className="p-1 sm:p-2 text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+        {days.map((day) => {
           const isToday = isSameDay(day, new Date());
           return (
             <div
-              key={idx}
-              className="p-1 sm:p-2 text-center border-l border-gray-200 dark:border-gray-700"
+              key={day.getTime()}
+              className="p-1 sm:p-2 text-center border-l border-ui-border-primary dark:border-ui-border-primary-dark"
             >
               <div
-                className={`text-xs font-medium ${isToday ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}
+                className={`text-xs font-medium ${isToday ? "text-brand-600 dark:text-brand-400" : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"}`}
               >
                 <span className="hidden sm:inline">
                   {day.toLocaleDateString("en-US", { weekday: "short" })}
@@ -200,8 +224,8 @@ function WeekView({
               <div
                 className={`text-base sm:text-xl font-semibold ${
                   isToday
-                    ? "bg-blue-600 text-white w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mx-auto text-sm sm:text-xl"
-                    : "text-gray-900 dark:text-gray-100"
+                    ? "bg-brand-600 text-white w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mx-auto text-sm sm:text-xl"
+                    : "text-ui-text-primary dark:text-ui-text-primary-dark"
                 }`}
               >
                 {day.getDate()}
@@ -215,41 +239,28 @@ function WeekView({
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-8">
           {/* Time Column */}
-          <div className="border-r border-gray-200 dark:border-gray-700">
+          <div className="border-r border-ui-border-primary dark:border-ui-border-primary-dark">
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="h-12 sm:h-16 border-b border-gray-200 dark:border-gray-700 px-1 sm:px-2 py-1 text-xs text-gray-500 dark:text-gray-400"
+                className="h-12 sm:h-16 border-b border-ui-border-primary dark:border-ui-border-primary-dark px-1 sm:px-2 py-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               >
-                <span className="hidden sm:inline">
-                  {hour === 0
-                    ? "12 AM"
-                    : hour < 12
-                      ? `${hour} AM`
-                      : hour === 12
-                        ? "12 PM"
-                        : `${hour - 12} PM`}
-                </span>
-                <span className="sm:hidden">
-                  {hour === 0
-                    ? "12a"
-                    : hour < 12
-                      ? `${hour}a`
-                      : hour === 12
-                        ? "12p"
-                        : `${hour - 12}p`}
-                </span>
+                <span className="hidden sm:inline">{formatHour(hour, false)}</span>
+                <span className="sm:hidden">{formatHour(hour, true)}</span>
               </div>
             ))}
           </div>
 
           {/* Day Columns */}
-          {days.map((day, dayIdx) => (
-            <div key={dayIdx} className="border-r border-gray-200 dark:border-gray-700 relative">
+          {days.map((day) => (
+            <div
+              key={day.getTime()}
+              className="border-r border-ui-border-primary dark:border-ui-border-primary-dark relative"
+            >
               {hours.map((hour) => (
                 <div
                   key={hour}
-                  className="h-12 sm:h-16 border-b border-gray-200 dark:border-gray-700"
+                  className="h-12 sm:h-16 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
                 />
               ))}
 
@@ -266,6 +277,7 @@ function WeekView({
 
                   return (
                     <button
+                      type="button"
                       key={event._id}
                       onClick={() => onEventClick(event._id)}
                       className="absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity"
@@ -299,7 +311,7 @@ function MonthView({
   onEventClick,
 }: {
   currentDate: Date;
-  events: any[];
+  events: Doc<"calendarEvents">[];
   onEventClick: (id: Id<"calendarEvents">) => void;
 }) {
   // Get first day of month
@@ -320,11 +332,11 @@ function MonthView({
   return (
     <div className="flex flex-col h-full">
       {/* Day Headers */}
-      <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+      <div className="grid grid-cols-7 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, _idx) => (
           <div
             key={day}
-            className="p-1 sm:p-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 first:border-l-0"
+            className="p-1 sm:p-2 text-center text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark border-l border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0"
           >
             <span className="hidden sm:inline">{day}</span>
             <span className="sm:hidden">{day[0]}</span>
@@ -334,25 +346,27 @@ function MonthView({
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 flex-1">
-        {days.map((day, idx) => {
+        {days.map((day) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
           const dayEvents = events.filter((event) => isSameDay(new Date(event.startTime), day));
 
           return (
             <div
-              key={idx}
-              className={`border-l border-b border-gray-200 dark:border-gray-700 first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] ${
-                !isCurrentMonth ? "bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"
+              key={day.getTime()}
+              className={`border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] ${
+                !isCurrentMonth
+                  ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
               }`}
             >
               <div
                 className={`text-xs sm:text-sm font-medium mb-1 ${
                   isToday
-                    ? "bg-blue-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs"
+                    ? "bg-brand-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs"
                     : isCurrentMonth
-                      ? "text-gray-900 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
+                      ? "text-ui-text-primary dark:text-ui-text-primary-dark"
+                      : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
                 }`}
               >
                 {day.getDate()}
@@ -361,6 +375,7 @@ function MonthView({
               <div className="space-y-0.5 sm:space-y-1">
                 {dayEvents.slice(0, 2).map((event) => (
                   <button
+                    type="button"
                     key={event._id}
                     onClick={() => onEventClick(event._id)}
                     className="block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80"
@@ -375,7 +390,7 @@ function MonthView({
                   </button>
                 ))}
                 {dayEvents.length > 2 && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 px-0.5 sm:px-1">
+                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark px-0.5 sm:px-1">
                     +{dayEvents.length - 2}
                   </div>
                 )}

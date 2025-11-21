@@ -93,10 +93,12 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
   };
 
   return (
-    <div className="w-full sm:w-72 lg:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h2>
+      <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          Documents
+        </h2>
 
         {/* Search */}
         <div className="mb-4">
@@ -117,7 +119,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
               setSelectedTemplateId(null);
               setShowCreateForm(true);
             }}
-            className="flex-1 px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+            className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm font-medium hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors"
             aria-label="Create new document"
           >
             + New
@@ -125,7 +127,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
           <button
             type="button"
             onClick={() => setShowTemplateModal(true)}
-            className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            className="px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm font-medium hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
             aria-label="Create from template"
             title="Create from template"
           >
@@ -136,7 +138,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
       {/* Create Document Form */}
       {showCreateForm && (
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
           <form
             onSubmit={(e) =>
               void (selectedTemplateId ? handleCreateFromTemplate(e) : handleCreateDocument(e))
@@ -144,7 +146,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
             className="space-y-3"
           >
             {selectedTemplateId && (
-              <div className="p-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded text-xs text-blue-700 dark:text-blue-300">
+              <div className="p-2 bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700 rounded text-xs text-brand-700 dark:text-brand-300">
                 Creating from template
               </div>
             )}
@@ -164,7 +166,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
             <div className="flex space-x-2">
               <button
                 type="submit"
-                className="flex-1 px-3 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md text-sm hover:bg-blue-700 dark:hover:bg-blue-600"
+                className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm hover:bg-brand-700 dark:hover:bg-brand-600"
               >
                 Create
               </button>
@@ -176,7 +178,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                   setNewDocIsPublic(false);
                   setSelectedTemplateId(null);
                 }}
-                className="flex-1 px-3 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm hover:bg-gray-400 dark:hover:bg-gray-600"
+                className="flex-1 px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               >
                 Cancel
               </button>
@@ -225,44 +227,37 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
         ) : (
           <div className="p-2">
             {displayedDocuments.map((doc) => (
-              <div
+              <button
                 key={doc._id}
-                role="button"
-                tabIndex={0}
-                className={`group p-3 rounded-md cursor-pointer transition-colors ${
+                type="button"
+                className={`w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedDocumentId === doc._id
-                    ? "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700"
-                    : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
+                    : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
                 onClick={() => onSelectDocument(doc._id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelectDocument(doc._id);
-                  }
-                }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                    <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                       {doc.title}
                     </h3>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         by {doc.creatorName}
                       </span>
                       {doc.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark">
                           Public
                         </span>
                       )}
                       {doc.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-400">
                           Owner
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
                       {new Date(doc.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -273,7 +268,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
                       }}
-                      className="sm:opacity-0 sm:group-hover:opacity-100 p-2.5 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-all"
+                      className="sm:opacity-0 sm:group-hover:opacity-100 p-2.5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error transition-all"
                       aria-label="Delete document"
                     >
                       <svg
@@ -291,7 +286,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                     </button>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}

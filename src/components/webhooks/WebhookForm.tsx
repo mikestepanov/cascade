@@ -134,10 +134,10 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
         />
 
         <div>
-          <div className="block text-sm font-medium text-gray-700 mb-2">
-            Events to Subscribe <span className="text-red-500">*</span>
+          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            Events to Subscribe <span className="text-status-error">*</span>
           </div>
-          <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
+          <div className="space-y-2 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
             {AVAILABLE_EVENTS.map((event) => (
               <Checkbox
                 key={event.value}
@@ -148,7 +148,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
             ))}
           </div>
           {selectedEvents.length === 0 && (
-            <p className="mt-1 text-sm text-red-600">Select at least one event</p>
+            <p className="mt-1 text-sm text-status-error">Select at least one event</p>
           )}
         </div>
 

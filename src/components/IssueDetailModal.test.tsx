@@ -165,7 +165,7 @@ describe("IssueDetailModal", () => {
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByRole("button", { name: "" });
+    const closeButton = screen.getByRole("button", { name: /Close issue modal/i });
     await user.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();

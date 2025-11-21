@@ -51,20 +51,15 @@ export const IssueCard = memo(function IssueCard({
   };
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       draggable={!selectionMode}
       onDragStart={selectionMode ? undefined : onDragStart}
       onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleClick(e);
-        }
-      }}
-      className={`bg-white dark:bg-gray-800 p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
-        isSelected ? "border-primary bg-blue-50 dark:bg-blue-900/20 dark:border-blue-600" : "border-gray-200 dark:border-gray-700"
+      className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
+        isSelected
+          ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
+          : "border-ui-border-primary dark:border-ui-border-primary-dark"
       }`}
     >
       {/* Header */}
@@ -77,11 +72,13 @@ export const IssueCard = memo(function IssueCard({
               checked={isSelected}
               onChange={handleCheckboxClick}
               onClick={handleCheckboxClick}
-              className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+              className="w-4 h-4 text-brand-600 border-ui-border-primary rounded focus:ring-brand-500 cursor-pointer"
             />
           )}
           <span className="text-sm">{getTypeIcon(issue.type)}</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">{issue.key}</span>
+          <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
+            {issue.key}
+          </span>
         </div>
         <div className={`text-xs ${getPriorityColor(issue.priority)}`}>
           {getPriorityIcon(issue.priority)}
@@ -89,7 +86,9 @@ export const IssueCard = memo(function IssueCard({
       </div>
 
       {/* Title */}
-      <h4 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">{issue.title}</h4>
+      <h4 className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2 line-clamp-2">
+        {issue.title}
+      </h4>
 
       {/* Labels */}
       {issue.labels.length > 0 && (
@@ -97,13 +96,15 @@ export const IssueCard = memo(function IssueCard({
           {issue.labels.slice(0, 3).map((label) => (
             <span
               key={label}
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
               {label}
             </span>
           ))}
           {issue.labels.length > 3 && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">+{issue.labels.length - 3}</span>
+            <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              +{issue.labels.length - 3}
+            </span>
           )}
         </div>
       )}
@@ -120,7 +121,7 @@ export const IssueCard = memo(function IssueCard({
                   className="w-5 h-5 rounded-full"
                 />
               ) : (
-                <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">
+                <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   {issue.assignee.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -128,12 +129,12 @@ export const IssueCard = memo(function IssueCard({
           )}
         </div>
         {issue.storyPoints !== undefined && (
-          <div className="flex items-center space-x-1 text-xs text-gray-600 dark:text-gray-400">
+          <div className="flex items-center space-x-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <span className="font-medium">{issue.storyPoints}</span>
             <span>pts</span>
           </div>
         )}
       </div>
-    </div>
+    </button>
   );
 });

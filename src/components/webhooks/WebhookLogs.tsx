@@ -31,19 +31,19 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 dark:bg-status-success/20 text-status-success">
             ✓ Success
           </span>
         );
       case "failed":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 dark:bg-status-error/20 text-status-error">
             ✗ Failed
           </span>
         );
       case "retrying":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 dark:bg-status-warning/20 text-status-warning">
             ⟳ Retrying
           </span>
         );
@@ -69,14 +69,16 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No delivery logs yet</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              No delivery logs yet
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Webhook deliveries will appear here once triggered
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="text-sm text-gray-500 mb-4">
+            <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Showing {executions.length} most recent deliveries
             </div>
 
@@ -84,21 +86,23 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
               {executions.map((execution) => (
                 <div
                   key={execution._id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+                  className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark transition-colors"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       {getStatusBadge(execution.status)}
-                      <span className="text-sm font-medium text-gray-900">{execution.event}</span>
+                      <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        {execution.event}
+                      </span>
                       {execution.responseStatus && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                           HTTP {execution.responseStatus}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {formatDate(execution.createdAt)}
                       </span>
                       {execution.status === "failed" && (
@@ -125,7 +129,7 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                   </div>
 
                   {/* Metadata */}
-                  <div className="grid grid-cols-3 gap-4 text-xs text-gray-600 mb-2">
+                  <div className="grid grid-cols-3 gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
                     <div>
                       <span className="font-medium">Attempts:</span> {execution.attempts}
                     </div>
@@ -140,21 +144,25 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
 
                   {/* Error message */}
                   {execution.error && (
-                    <div className="bg-red-50 border border-red-200 rounded p-3 mt-3">
-                      <div className="text-xs font-medium text-red-800 mb-1">Error:</div>
-                      <div className="text-xs text-red-700 font-mono">{execution.error}</div>
+                    <div className="bg-status-error/10 dark:bg-status-error/20 border border-status-error/30 dark:border-status-error/50 rounded p-3 mt-3">
+                      <div className="text-xs font-medium text-status-error dark:text-status-error mb-1">
+                        Error:
+                      </div>
+                      <div className="text-xs text-status-error/90 dark:text-status-error/80 font-mono">
+                        {execution.error}
+                      </div>
                     </div>
                   )}
 
                   {/* Expandable Details */}
                   {selectedExecution === execution._id && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 space-y-3">
+                    <div className="mt-3 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark space-y-3">
                       {/* Request Payload */}
                       <div>
-                        <div className="text-xs font-medium text-gray-700 mb-1">
+                        <div className="text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                           Request Payload:
                         </div>
-                        <pre className="bg-gray-50 border border-gray-200 rounded p-3 text-xs overflow-x-auto">
+                        <pre className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded p-3 text-xs overflow-x-auto">
                           {JSON.stringify(JSON.parse(execution.requestPayload), null, 2)}
                         </pre>
                       </div>
@@ -162,10 +170,10 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                       {/* Response Body */}
                       {execution.responseBody && (
                         <div>
-                          <div className="text-xs font-medium text-gray-700 mb-1">
+                          <div className="text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                             Response Body:
                           </div>
-                          <pre className="bg-gray-50 border border-gray-200 rounded p-3 text-xs overflow-x-auto max-h-48">
+                          <pre className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded p-3 text-xs overflow-x-auto max-h-48">
                             {execution.responseBody}
                           </pre>
                         </div>

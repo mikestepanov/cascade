@@ -10,7 +10,7 @@ export function ThemeToggle() {
   ];
 
   return (
-    <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1">
       {themes.map((t) => (
         <button
           type="button"
@@ -19,8 +19,8 @@ export function ThemeToggle() {
           aria-label={`Switch to ${t.label.toLowerCase()} theme`}
           className={`px-2 py-1 rounded-md text-sm transition-colors ${
             theme === t.value
-              ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-              : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+              : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
           }`}
           title={t.label}
         >

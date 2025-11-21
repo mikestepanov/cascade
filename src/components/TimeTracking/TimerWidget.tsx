@@ -47,22 +47,22 @@ export function TimerWidget() {
 
   if (runningTimer) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+      <div className="flex items-center gap-2 px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
         <div className="flex items-center gap-2">
           {/* Pulsing dot */}
           <div className="relative">
-            <div className="w-2 h-2 bg-blue-600 rounded-full" />
-            <div className="absolute inset-0 w-2 h-2 bg-blue-600 rounded-full animate-ping" />
+            <div className="w-2 h-2 bg-brand-600 rounded-full" />
+            <div className="absolute inset-0 w-2 h-2 bg-brand-600 rounded-full animate-ping" />
           </div>
 
           {/* Timer display */}
-          <span className="text-sm font-mono font-semibold text-blue-900 dark:text-blue-100">
+          <span className="text-sm font-mono font-semibold text-brand-900 dark:text-brand-100">
             {formatDuration(currentDuration)}
           </span>
 
           {/* Description */}
           {runningTimer.description && (
-            <span className="text-xs text-blue-700 dark:text-blue-300 max-w-[150px] truncate">
+            <span className="text-xs text-brand-700 dark:text-brand-300 max-w-[150px] truncate">
               {runningTimer.description}
             </span>
           )}
@@ -72,7 +72,7 @@ export function TimerWidget() {
         <button
           type="button"
           onClick={handleStop}
-          className="px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 rounded transition-colors"
+          className="px-2 py-1 text-xs font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800 rounded transition-colors"
           title="Stop timer"
         >
           Stop
@@ -86,10 +86,10 @@ export function TimerWidget() {
       <button
         type="button"
         onClick={() => setShowStartModal(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
         title="Start timer"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path
             fillRule="evenodd"
             d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -128,31 +128,41 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Start Timer</h2>
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
+        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
+          Start Timer
+        </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="timer-description"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               What are you working on? (optional)
             </label>
             <input
+              id="timer-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g., Fixing login bug..."
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="timer-activity"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Activity (optional)
             </label>
             <select
+              id="timer-activity"
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
             >
               <option value="">Select activity...</option>
               {ACTIVITY_TYPES.map((activityType) => (
@@ -168,14 +178,14 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleStart}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
           >
             Start Timer
           </button>

@@ -32,20 +32,22 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8">
+        <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+          <div className="max-w-md w-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-lg rounded-lg p-8">
             <div className="text-center">
-              <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-              <p className="text-gray-600 mb-6">
+              <div className="text-status-error dark:text-status-error-dark text-6xl mb-4">⚠️</div>
+              <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                Something went wrong
+              </h1>
+              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
               </p>
               {this.state.error && (
                 <details className="text-left mb-6">
-                  <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+                  <summary className="cursor-pointer text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark">
                     Error details
                   </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 p-3 rounded overflow-auto max-h-40">
+                  <pre className="mt-2 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark p-3 rounded overflow-auto max-h-40">
                     {this.state.error.message}
                   </pre>
                 </details>
@@ -53,7 +55,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium"
+                className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-medium"
               >
                 Reload Page
               </button>

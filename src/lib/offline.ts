@@ -23,8 +23,8 @@ export interface CachedData {
 class OfflineDB {
   private db: IDBDatabase | null = null;
 
-  async open(): Promise<IDBDatabase> {
-    if (this.db) return this.db;
+  open(): Promise<IDBDatabase> {
+    if (this.db) return Promise.resolve(this.db);
 
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -269,7 +269,9 @@ export class OfflineStatusManager {
   };
 
   private notifyListeners() {
-    this.listeners.forEach((listener) => listener(this._isOnline));
+    this.listeners.forEach((listener) => {
+      listener(this._isOnline);
+    });
   }
 
   get isOnline() {

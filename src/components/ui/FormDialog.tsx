@@ -36,7 +36,7 @@ export function FormDialog({
       <div className="space-y-4">
         {children}
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-2 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

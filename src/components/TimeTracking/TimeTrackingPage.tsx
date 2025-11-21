@@ -36,22 +36,24 @@ export function TimeTrackingPage() {
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Time Tracking</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          Time Tracking
+        </h1>
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
           Track time, analyze costs, and monitor burn rate
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <nav className="-mb-px flex gap-6">
           <button
             type="button"
             onClick={() => setActiveTab("entries")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "entries"
-                ? "border-blue-600 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             Time Entries
@@ -61,8 +63,8 @@ export function TimeTrackingPage() {
             onClick={() => setActiveTab("burn-rate")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "burn-rate"
-                ? "border-blue-600 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             Burn Rate & Costs
@@ -72,8 +74,8 @@ export function TimeTrackingPage() {
             onClick={() => setActiveTab("rates")}
             className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "rates"
-                ? "border-blue-600 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
             Hourly Rates
@@ -85,17 +87,21 @@ export function TimeTrackingPage() {
       <div className="flex flex-wrap items-center gap-4">
         {/* Project filter */}
         <div>
-          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="tracking-project-filter"
+            className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
             Project
           </label>
           <select
+            id="tracking-project-filter"
             value={selectedProject}
             onChange={(e) =>
               setSelectedProject(
                 e.target.value === "all" ? "all" : (e.target.value as Id<"projects">),
               )
             }
-            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="px-3 py-2 text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
             <option value="all">All Projects</option>
             {projects?.map((project) => (
@@ -109,13 +115,17 @@ export function TimeTrackingPage() {
         {/* Date range filter */}
         {activeTab === "entries" && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="tracking-date-range"
+              className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Date Range
             </label>
             <select
+              id="tracking-date-range"
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value as "week" | "month" | "all")}
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="px-3 py-2 text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
               <option value="week">Last 7 Days</option>
               <option value="month">Last 30 Days</option>
@@ -140,12 +150,14 @@ export function TimeTrackingPage() {
         )}
 
         {activeTab === "burn-rate" && selectedProject === "all" && (
-          <div className="text-center p-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="text-center p-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              role="img"
+              aria-label="Chart icon"
             >
               <path
                 strokeLinecap="round"
@@ -154,10 +166,10 @@ export function TimeTrackingPage() {
                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
               />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Select a project
             </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Choose a project to view burn rate and cost analysis
             </p>
           </div>
