@@ -16,7 +16,7 @@ export function PresenceIndicator({ roomId, userId }: PresenceIndicatorProps) {
 
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-sm text-gray-500">
+      <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
         {presenceState.length} {presenceState.length === 1 ? "person" : "people"} editing
       </span>
       <FacePile presenceState={presenceState} />
