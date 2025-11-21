@@ -99,7 +99,7 @@ export function BulkOperationsBar({
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-primary text-white shadow-lg z-30 transition-transform">
+      <div className="fixed bottom-0 left-0 right-0 bg-brand-600 text-white shadow-lg z-30 transition-transform">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Selection Info */}
@@ -121,7 +121,7 @@ export function BulkOperationsBar({
               <button
                 type="button"
                 onClick={() => setShowActions(!showActions)}
-                className="px-4 py-2 bg-white text-primary rounded hover:bg-gray-100 transition-colors font-medium"
+                className="px-4 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors font-medium"
               >
                 {showActions ? "Hide Actions" : "Show Actions"}
               </button>
@@ -129,7 +129,7 @@ export function BulkOperationsBar({
               <button
                 type="button"
                 onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-status-error text-white rounded hover:bg-status-error-hover transition-colors"
               >
                 Delete
               </button>
@@ -145,7 +145,7 @@ export function BulkOperationsBar({
                   <div className="block text-sm font-medium mb-2">Change Status</div>
                   <select
                     onChange={(e) => e.target.value && handleUpdateStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
+                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
                     defaultValue=""
                   >
                     <option value="" disabled>
@@ -164,7 +164,7 @@ export function BulkOperationsBar({
                   <div className="block text-sm font-medium mb-2">Change Priority</div>
                   <select
                     onChange={(e) => e.target.value && handleUpdatePriority(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
+                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
                     defaultValue=""
                   >
                     <option value="" disabled>
@@ -183,7 +183,7 @@ export function BulkOperationsBar({
                   <div className="block text-sm font-medium mb-2">Assign To</div>
                   <select
                     onChange={(e) => e.target.value && handleAssign(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
+                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
                     defaultValue=""
                   >
                     <option value="" disabled>
@@ -203,7 +203,7 @@ export function BulkOperationsBar({
                   <div className="block text-sm font-medium mb-2">Move to Sprint</div>
                   <select
                     onChange={(e) => e.target.value && handleMoveToSprint(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-gray-900 rounded border-0 focus:ring-2 focus:ring-white"
+                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
                     defaultValue=""
                   >
                     <option value="" disabled>
