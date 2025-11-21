@@ -77,7 +77,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                 setDateRange(value);
               }
             }}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-ui-text-primary dark:text-ui-text-primary-dark"
+            className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
             <option value="week">Last 7 days</option>
             <option value="month">Last 30 days</option>
