@@ -98,6 +98,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
+              type="button"
               onClick={handleToday}
               className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
             >
@@ -105,6 +106,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             </button>
             <div className="flex items-center gap-1 sm:gap-2">
               <button
+                type="button"
                 onClick={handlePrevious}
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
                 aria-label="Previous"
@@ -112,6 +114,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
                 aria-label="Next"
@@ -127,6 +130,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           {/* Time Scale Toggle */}
           <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-shrink-0">
             <button
+              type="button"
               onClick={() => setTimeScale("week")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "week"
@@ -138,6 +142,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <span className="hidden sm:inline">Week</span>
             </button>
             <button
+              type="button"
               onClick={() => setTimeScale("month")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "month"
@@ -149,6 +154,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <span className="hidden sm:inline">Month</span>
             </button>
             <button
+              type="button"
               onClick={() => setTimeScale("quarter")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "quarter"
@@ -244,7 +250,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 }
 
 // Render a date bar for an item
-function renderDateBar(item: any, rangeStart: Date, rangeEnd: Date, _columnCount: number) {
+function renderDateBar(
+  item: { startDate: number; endDate: number },
+  rangeStart: Date,
+  rangeEnd: Date,
+  _columnCount: number,
+) {
   const itemStart = new Date(item.startDate);
   const itemEnd = new Date(item.endDate);
 

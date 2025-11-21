@@ -7,7 +7,7 @@ import { useAction, useMutation, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
-import type { Id } from "../../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 import type { SuggestionType } from "../config";
 
 export interface UseAISuggestionsOptions {
@@ -20,7 +20,7 @@ export interface UseAISuggestionsReturn {
   selectedType: SuggestionType | undefined;
 
   // Data
-  suggestions: any[] | undefined;
+  suggestions: Doc<"aiSuggestions">[] | undefined;
   unreadCount: number;
 
   // Actions

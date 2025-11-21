@@ -87,10 +87,11 @@ export function TimeTrackingPage() {
       <div className="flex flex-wrap items-center gap-4">
         {/* Project filter */}
         <div>
-          <label className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+          <label htmlFor="tracking-project-filter" className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
             Project
           </label>
           <select
+            id="tracking-project-filter"
             value={selectedProject}
             onChange={(e) =>
               setSelectedProject(
@@ -111,10 +112,11 @@ export function TimeTrackingPage() {
         {/* Date range filter */}
         {activeTab === "entries" && (
           <div>
-            <label className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="tracking-date-range" className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Date Range
             </label>
             <select
+              id="tracking-date-range"
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value as "week" | "month" | "all")}
               className="px-3 py-2 text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -148,6 +150,8 @@ export function TimeTrackingPage() {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              role="img"
+              aria-label="Chart icon"
             >
               <path
                 strokeLinecap="round"

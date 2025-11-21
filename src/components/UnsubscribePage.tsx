@@ -69,6 +69,8 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                role="img"
+                aria-label="Success checkmark"
               >
                 <path
                   strokeLinecap="round"
@@ -98,6 +100,8 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                role="img"
+                aria-label="Warning icon"
               >
                 <path
                   strokeLinecap="round"
@@ -124,6 +128,8 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                role="img"
+                aria-label="Error icon"
               >
                 <path
                   strokeLinecap="round"

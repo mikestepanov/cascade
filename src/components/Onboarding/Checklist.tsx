@@ -88,6 +88,7 @@ export function OnboardingChecklist() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
           >
@@ -98,6 +99,7 @@ export function OnboardingChecklist() {
             )}
           </button>
           <button
+            type="button"
             onClick={handleDismiss}
             className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
           >

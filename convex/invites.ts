@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 
 // Helper: Check if user is a platform admin
@@ -289,7 +289,7 @@ export const listInvites = query({
     }
 
     // Filter by status if provided
-    let invites;
+    let invites: Doc<"invites">[];
     if (args.status !== undefined) {
       const status = args.status; // Extract to const for type narrowing
       invites = await ctx.db
@@ -303,10 +303,10 @@ export const listInvites = query({
     // Get inviter names
     const invitesWithNames = await Promise.all(
       invites.map(async (invite) => {
-        const inviter = await ctx.db.get(invite.invitedBy);
+        const inviter = (await ctx.db.get(invite.invitedBy)) as Doc<"users"> | null;
         let acceptedByName: string | undefined;
         if (invite.acceptedBy) {
-          const acceptedUser = await ctx.db.get(invite.acceptedBy);
+          const acceptedUser = (await ctx.db.get(invite.acceptedBy)) as Doc<"users"> | null;
           acceptedByName = acceptedUser?.name || acceptedUser?.email || "Unknown";
         }
         return {

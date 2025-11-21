@@ -3,7 +3,12 @@ import { Calendar, DollarSign, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+
+// Type for time entry with computed hours field
+type TimeEntryWithHours = Doc<"timeEntries"> & {
+  hours: number;
+};
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeEntries.getCurrentWeekTimesheet);
@@ -58,8 +63,8 @@ export function Timesheet() {
 
   const weekDays = getDaysOfWeek();
   const billableRevenue = timesheet.entries
-    .filter((e: any) => e.billable && e.hourlyRate)
-    .reduce((sum: number, e: any) => sum + e.hours * e.hourlyRate, 0);
+    .filter((e: TimeEntryWithHours) => e.billable && e.hourlyRate)
+    .reduce((sum: number, e: TimeEntryWithHours) => sum + e.hours * (e.hourlyRate ?? 0), 0);
 
   return (
     <div className="p-6">
@@ -120,7 +125,10 @@ export function Timesheet() {
       <div className="grid grid-cols-7 gap-4">
         {weekDays.map((day) => {
           const isToday = day.date.toDateString() === new Date().toDateString();
-          const dayHours = day.entries.reduce((sum: number, e: any) => sum + e.hours, 0);
+          const dayHours = day.entries.reduce(
+            (sum: number, e: TimeEntryWithHours) => sum + e.hours,
+            0,
+          );
 
           return (
             <div
@@ -148,7 +156,7 @@ export function Timesheet() {
 
               {/* Time entries */}
               <div className="space-y-2">
-                {day.entries.map((entry: any) => (
+                {day.entries.map((entry: TimeEntryWithHours) => (
                   <div
                     key={entry._id}
                     className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark"
@@ -171,6 +179,7 @@ export function Timesheet() {
                         {formatHours(entry.hours)}h
                       </span>
                       <button
+                        type="button"
                         onClick={() => handleDelete(entry._id)}
                         className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error rounded"
                         title="Delete"

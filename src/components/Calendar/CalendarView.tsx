@@ -2,7 +2,7 @@ import { useQuery } from "convex/react";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
@@ -71,6 +71,7 @@ export function CalendarView() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
+              type="button"
               onClick={handleToday}
               className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
             >
@@ -78,12 +79,14 @@ export function CalendarView() {
             </button>
             <div className="flex items-center gap-1 sm:gap-2">
               <button
+                type="button"
                 onClick={handlePrevious}
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
@@ -99,6 +102,7 @@ export function CalendarView() {
             {/* View Mode Toggle */}
             <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-1 sm:flex-initial">
               <button
+                type="button"
                 onClick={() => setViewMode("week")}
                 className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                   viewMode === "week"
@@ -109,6 +113,7 @@ export function CalendarView() {
                 Week
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("month")}
                 className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                   viewMode === "month"
@@ -121,6 +126,7 @@ export function CalendarView() {
             </div>
 
             <button
+              type="button"
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-xs sm:text-sm flex-shrink-0"
             >
@@ -164,7 +170,7 @@ function WeekView({
   onEventClick,
 }: {
   startDate: Date;
-  events: any[];
+  events: Doc<"calendarEvents">[];
   onEventClick: (id: Id<"calendarEvents">) => void;
 }) {
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -269,6 +275,7 @@ function WeekView({
 
                   return (
                     <button
+                      type="button"
                       key={event._id}
                       onClick={() => onEventClick(event._id)}
                       className="absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity"
@@ -302,7 +309,7 @@ function MonthView({
   onEventClick,
 }: {
   currentDate: Date;
-  events: any[];
+  events: Doc<"calendarEvents">[];
   onEventClick: (id: Id<"calendarEvents">) => void;
 }) {
   // Get first day of month
@@ -366,6 +373,7 @@ function MonthView({
               <div className="space-y-0.5 sm:space-y-1">
                 {dayEvents.slice(0, 2).map((event) => (
                   <button
+                    type="button"
                     key={event._id}
                     onClick={() => onEventClick(event._id)}
                     className="block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80"

@@ -99,6 +99,8 @@ export const startTimer = mutation({
       billable: true,
       billed: false,
       invoiceId: undefined,
+      isEquityHour: false,
+      equityValue: undefined,
       isLocked: false,
       isApproved: false,
       approvedBy: undefined,
@@ -158,6 +160,7 @@ export const createTimeEntry = mutation({
     activity: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     billable: v.optional(v.boolean()),
+    isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -202,6 +205,8 @@ export const createTimeEntry = mutation({
       billable: args.billable ?? true,
       billed: false,
       invoiceId: undefined,
+      isEquityHour: args.isEquityHour ?? false,
+      equityValue: undefined,
       isLocked: false,
       isApproved: false,
       approvedBy: undefined,
@@ -221,6 +226,7 @@ export const updateTimeEntry = mutation({
     activity: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     billable: v.optional(v.boolean()),
+    isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

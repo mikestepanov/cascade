@@ -187,7 +187,7 @@ To import edited documents back to Cascade:
  * Parse frontmatter from markdown
  */
 export function parseFrontmatter(markdown: string): {
-  metadata: Record<string, any> | null;
+  metadata: Record<string, unknown> | null;
   content: string;
 } {
   const frontmatterRegex = /^---\n([\s\S]*?)\n---\n\n([\s\S]*)$/;
@@ -198,7 +198,7 @@ export function parseFrontmatter(markdown: string): {
   }
 
   const [, frontmatterText, content] = match;
-  const metadata: Record<string, any> = {};
+  const metadata: Record<string, unknown> = {};
 
   // Parse YAML-like frontmatter
   const lines = frontmatterText.split("\n");
@@ -207,7 +207,7 @@ export function parseFrontmatter(markdown: string): {
     if (colonIndex === -1) continue;
 
     const key = line.slice(0, colonIndex).trim();
-    let value: any = line.slice(colonIndex + 1).trim();
+    let value: unknown = line.slice(colonIndex + 1).trim();
 
     // Remove quotes
     if (value.startsWith('"') && value.endsWith('"')) {

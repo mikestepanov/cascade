@@ -6,6 +6,12 @@ import { toast } from "sonner";
  * Enables CLI AI tools to patch documents via markdown files
  */
 
+// Helper type for BlockNote content items
+type ContentItem = { text?: string };
+
+// Helper type for block props (BlockNote uses flexible props)
+type BlockProps = Record<string, unknown>;
+
 /**
  * Convert BlockNote blocks to Markdown string
  */
@@ -92,13 +98,14 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
   const content = block.content as unknown;
   const textContent =
     Array.isArray(content) && content.length > 0
-      ? content.map((item: any) => item.text || "").join("")
+      ? content.map((item: ContentItem) => item.text || "").join("")
       : "";
 
   // Convert based on block type
   switch (block.type) {
     case "heading": {
-      const headingLevel = (block.props as any)?.level || 1;
+      const props = block.props as BlockProps;
+      const headingLevel = (props?.level as number) || 1;
       result = `${"#".repeat(headingLevel)} ${textContent}`;
       break;
     }
@@ -116,13 +123,15 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
       break;
 
     case "checkListItem": {
-      const checked = (block.props as any)?.checked ? "x" : " ";
+      const props = block.props as BlockProps;
+      const checked = props?.checked ? "x" : " ";
       result = `${indent}- [${checked}] ${textContent}`;
       break;
     }
 
     case "codeBlock": {
-      const language = (block.props as any)?.language || "";
+      const props = block.props as BlockProps;
+      const language = (props?.language as string) || "";
       result = `\`\`\`${language}\n${textContent}\n\`\`\``;
       break;
     }
@@ -132,8 +141,9 @@ async function blockToMarkdown(block: Block, level: number): Promise<string> {
       break;
 
     case "image": {
-      const imageUrl = (block.props as any)?.url || "";
-      const imageCaption = (block.props as any)?.caption || "";
+      const props = block.props as BlockProps;
+      const imageUrl = (props?.url as string) || "";
+      const imageCaption = (props?.caption as string) || "";
       result = `![${imageCaption}](${imageUrl})`;
       break;
     }
@@ -179,7 +189,10 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
     typeof editor.tryParseMarkdownToBlocks === "function"
   ) {
     try {
-      const blocks = await (editor as any).tryParseMarkdownToBlocks(content);
+      const editorWithMarkdown = editor as BlockNoteEditor & {
+        tryParseMarkdownToBlocks: (content: string) => Promise<Block[]>;
+      };
+      const blocks = await editorWithMarkdown.tryParseMarkdownToBlocks(content);
       if (blocks && Array.isArray(blocks)) {
         return blocks;
       }
@@ -216,7 +229,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
           props: { language: codeLanguage },
           content: [{ type: "text", text: currentBlock.join("\n"), styles: {} }],
           children: [],
-        } as any);
+        } as Block);
         currentBlock = [];
         inCodeBlock = false;
         codeLanguage = "";
@@ -241,7 +254,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
         props: { level: headingMatch[1].length },
         content: [{ type: "text", text: headingMatch[2], styles: {} }],
         children: [],
-      } as any);
+      } as Block);
       continue;
     }
 
@@ -254,7 +267,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
         props: { checked },
         content: [{ type: "text", text, styles: {} }],
         children: [],
-      } as any);
+      } as Block);
       continue;
     }
 
@@ -265,7 +278,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
         props: {},
         content: [{ type: "text", text, styles: {} }],
         children: [],
-      } as any);
+      } as Block);
       continue;
     }
 
@@ -277,7 +290,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
         props: {},
         content: [{ type: "text", text, styles: {} }],
         children: [],
-      } as any);
+      } as Block);
       continue;
     }
 
@@ -289,7 +302,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
         props: { url: imageMatch[2], caption: imageMatch[1] },
         content: [],
         children: [],
-      } as any);
+      } as Block);
       continue;
     }
 
@@ -304,7 +317,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
       props: {},
       content: [{ type: "text", text: line, styles: {} }],
       children: [],
-    } as any);
+    } as Block);
   }
 
   // Handle any remaining code block
@@ -314,7 +327,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
       props: { language: codeLanguage },
       content: [{ type: "text", text: currentBlock.join("\n"), styles: {} }],
       children: [],
-    } as any);
+    } as Block);
   }
 
   return blocks;

@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
@@ -82,16 +82,17 @@ export function GlobalSearch() {
   const fuzzyDocuments = query.length >= 2 ? documentResults : [];
 
   const allResults: SearchResult[] = [
-    ...(fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? []),
-    ...(fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? []),
+    ...(fuzzyIssues?.map((r: Doc<"issues">) => ({ ...r, type: "issue" as const })) ?? []),
+    ...(fuzzyDocuments?.map((r: Doc<"documents">) => ({ ...r, type: "document" as const })) ?? []),
   ];
 
   const filteredResults =
     activeTab === "all"
       ? allResults
       : activeTab === "issues"
-        ? (fuzzyIssues?.map((r: any) => ({ ...r, type: "issue" as const })) ?? [])
-        : (fuzzyDocuments?.map((r: any) => ({ ...r, type: "document" as const })) ?? []);
+        ? (fuzzyIssues?.map((r: Doc<"issues">) => ({ ...r, type: "issue" as const })) ?? [])
+        : (fuzzyDocuments?.map((r: Doc<"documents">) => ({ ...r, type: "document" as const })) ??
+          []);
 
   const totalCount =
     activeTab === "all"

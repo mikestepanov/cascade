@@ -45,8 +45,9 @@ export function UserRatesManagement() {
       setEditingUserId(null);
       setHourlyRate("");
       setNotes("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save rate");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to save rate";
+      toast.error(errorMessage);
     }
   };
 
@@ -138,6 +139,8 @@ export function UserRatesManagement() {
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            role="img"
+            aria-label="Dollar sign icon"
           >
             <path
               strokeLinecap="round"
@@ -183,10 +186,11 @@ export function UserRatesManagement() {
             <div className="space-y-4">
               {/* Project Selection */}
               <div>
-                <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label htmlFor="rate-apply-to" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                   Apply To
                 </label>
                 <select
+                  id="rate-apply-to"
                   value={selectedProject}
                   onChange={(e) =>
                     setSelectedProject(
@@ -209,9 +213,9 @@ export function UserRatesManagement() {
 
               {/* Rate Type */}
               <div>
-                <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                   Rate Type
-                </label>
+                </div>
                 <div className="flex gap-3">
                   <label
                     className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
@@ -264,7 +268,7 @@ export function UserRatesManagement() {
 
               {/* Hourly Rate */}
               <div>
-                <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label htmlFor="rate-hourly-rate" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                   Hourly Rate
                 </label>
                 <div className="flex gap-2">
@@ -273,6 +277,7 @@ export function UserRatesManagement() {
                       $
                     </span>
                     <input
+                      id="rate-hourly-rate"
                       type="number"
                       value={hourlyRate}
                       onChange={(e) => setHourlyRate(e.target.value)}
@@ -297,10 +302,11 @@ export function UserRatesManagement() {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <label htmlFor="rate-notes" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                   Notes (optional)
                 </label>
                 <textarea
+                  id="rate-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g., Senior developer rate, Contract rate for Q1 2024..."

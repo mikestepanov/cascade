@@ -11,7 +11,7 @@ interface VersionHistoryProps {
   documentId: Id<"documents">;
   isOpen: boolean;
   onClose: () => void;
-  onRestoreVersion?: (snapshot: any, version: number, title: string) => void;
+  onRestoreVersion?: (snapshot: unknown, version: number, title: string) => void;
 }
 
 export function VersionHistory({
@@ -89,6 +89,7 @@ export function VersionHistory({
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
             aria-label="Close"

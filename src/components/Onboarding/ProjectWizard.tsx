@@ -115,10 +115,11 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </p>
 
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="project-name" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Project Name <span className="text-status-error">*</span>
               </label>
               <input
+                id="project-name"
                 type="text"
                 value={projectName}
                 onChange={(e) => {
@@ -133,10 +134,11 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="project-key" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Project Key <span className="text-status-error">*</span>
               </label>
               <input
+                id="project-key"
                 type="text"
                 value={projectKey}
                 onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
@@ -151,10 +153,11 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="project-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Description (optional)
               </label>
               <textarea
+                id="project-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What is this project about?"
@@ -177,6 +180,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <button
+                type="button"
                 onClick={() => setBoardType("kanban")}
                 className={`p-6 border-2 rounded-lg text-left transition-all ${
                   boardType === "kanban"
@@ -199,6 +203,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               </button>
 
               <button
+                type="button"
                 onClick={() => setBoardType("scrum")}
                 className={`p-6 border-2 rounded-lg text-left transition-all ${
                   boardType === "scrum"
@@ -270,6 +275,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </div>
 
             <button
+              type="button"
               onClick={() => {
                 const newId = `custom-${workflowStates.length}`;
                 setWorkflowStates([
@@ -353,6 +359,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
           <div>
             {step > 1 && (
               <button
+                type="button"
                 onClick={handlePrevious}
                 className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-md"
               >
@@ -362,6 +369,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
           </div>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={onCancel}
               className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-md"
             >
@@ -369,6 +377,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
             </button>
             {step < 4 ? (
               <button
+                type="button"
                 onClick={handleNext}
                 className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
               >
@@ -376,6 +385,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               </button>
             ) : (
               <button
+                type="button"
                 onClick={handleFinish}
                 className="px-6 py-2 bg-status-success text-white rounded-md hover:bg-status-success/90 font-medium"
               >

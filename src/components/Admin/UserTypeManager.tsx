@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -10,6 +10,12 @@ import { InputField, SelectField } from "../ui/FormField";
 import { Modal } from "../ui/Modal";
 
 type EmploymentType = "employee" | "contractor" | "intern";
+
+// Type for profile with user and manager data (returned from listUserProfiles query)
+type UserProfileWithUser = Doc<"userProfiles"> & {
+  user: Doc<"users"> | null;
+  manager: Doc<"users"> | null;
+};
 
 // Helper: Convert string to number or undefined
 function parseOptionalNumber(value: string): number | undefined {
@@ -184,13 +190,13 @@ export function UserTypeManager() {
     setShowAssignModal(true);
   };
 
-  const handleEditProfile = (profile: any) => {
+  const handleEditProfile = (profile: UserProfileWithUser) => {
     setSelectedUserId(profile.userId);
     setProfileType(profile.employmentType);
     setProfileMaxWeekly(profile.maxHoursPerWeek?.toString() || "");
     setProfileMaxDaily(profile.maxHoursPerDay?.toString() || "");
-    setProfileRequiresApproval(profile.requiresApproval);
-    setProfileCanOvertime(profile.canWorkOvertime);
+    setProfileRequiresApproval(profile.requiresApproval ?? null);
+    setProfileCanOvertime(profile.canWorkOvertime ?? null);
     setProfileDepartment(profile.department || "");
     setProfileJobTitle(profile.jobTitle || "");
     setProfileStartDate(
@@ -198,7 +204,7 @@ export function UserTypeManager() {
     );
     setProfileEndDate(profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "");
     setProfileIsActive(profile.isActive);
-    setProfileHasEquity(profile.hasEquity);
+    setProfileHasEquity(profile.hasEquity ?? false);
     setProfileEquityPercentage(profile.equityPercentage?.toString() || "");
     setProfileRequiredEquityWeekly(profile.requiredEquityHoursPerWeek?.toString() || "");
     setProfileRequiredEquityMonthly(profile.requiredEquityHoursPerMonth?.toString() || "");
@@ -781,10 +787,11 @@ export function UserTypeManager() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                    <label htmlFor="equity-notes" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                       Equity Notes
                     </label>
                     <textarea
+                      id="equity-notes"
                       value={profileEquityNotes}
                       onChange={(e) => setProfileEquityNotes(e.target.value)}
                       placeholder="Additional notes about equity arrangement..."

@@ -198,7 +198,7 @@ export const upsertUserProfile = mutation({
     jobTitle: v.optional(v.string()),
     managerId: v.optional(v.id("users")),
     // Equity compensation
-    hasEquity: v.optional(v.boolean()),
+    hasEquity: v.boolean(),
     equityPercentage: v.optional(v.number()),
     requiredEquityHoursPerWeek: v.optional(v.number()),
     requiredEquityHoursPerMonth: v.optional(v.number()),
@@ -235,7 +235,7 @@ export const upsertUserProfile = mutation({
       department: args.department,
       jobTitle: args.jobTitle,
       managerId: args.managerId,
-      hasEquity: args.hasEquity,
+      hasEquity: args.hasEquity ?? false,
       equityPercentage: args.equityPercentage,
       requiredEquityHoursPerWeek: args.requiredEquityHoursPerWeek,
       requiredEquityHoursPerMonth: args.requiredEquityHoursPerMonth,

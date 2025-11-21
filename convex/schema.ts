@@ -921,7 +921,7 @@ const applicationTables = {
     billed: v.boolean(), // Has this been billed to client?
     invoiceId: v.optional(v.string()), // Link to invoice if billed
     // Equity compensation
-    isEquityHour: v.optional(v.boolean()), // Is this compensated with equity (non-paid)?
+    isEquityHour: v.boolean(), // Is this compensated with equity (non-paid)? Default: false
     equityValue: v.optional(v.number()), // Calculated equity value for this entry
     // Status
     isLocked: v.boolean(), // Locked entries can't be edited (for payroll/billing)
@@ -989,7 +989,7 @@ const applicationTables = {
     jobTitle: v.optional(v.string()),
     managerId: v.optional(v.id("users")), // Direct manager
     // Equity compensation (employees only)
-    hasEquity: v.optional(v.boolean()), // Does employee have equity compensation?
+    hasEquity: v.boolean(), // Does employee have equity compensation? Default: false
     equityPercentage: v.optional(v.number()), // Equity stake percentage (e.g., 0.5 for 0.5%)
     requiredEquityHoursPerWeek: v.optional(v.number()), // Required non-paid equity hours per week
     requiredEquityHoursPerMonth: v.optional(v.number()), // Alternative: monthly equity hours requirement

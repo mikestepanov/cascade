@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
@@ -25,6 +25,7 @@ export function PumbleIntegration() {
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -45,6 +46,7 @@ export function PumbleIntegration() {
             </div>
           </div>
           <button
+            type="button"
             onClick={() => setShowAddModal(true)}
             className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
           >
@@ -80,7 +82,7 @@ export function PumbleIntegration() {
             className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 flex items-center space-x-1"
           >
             <span>How to create a Pumble incoming webhook</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -109,6 +111,8 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          role="img"
+          aria-label="Chat message icon"
         >
           <path
             strokeLinecap="round"
@@ -126,6 +130,7 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
         updated, or assigned.
       </p>
       <button
+        type="button"
         onClick={onAddWebhook}
         className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
       >
@@ -136,8 +141,8 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
 }
 
 interface WebhookCardProps {
-  webhook: any;
-  projects: any[];
+  webhook: Doc<"pumbleWebhooks">;
+  projects: Doc<"projects">[];
 }
 
 function WebhookCard({ webhook, projects }: WebhookCardProps) {
@@ -227,7 +232,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       <div className="flex flex-wrap gap-3 mb-3 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
         {webhook.sendMentions && (
           <span className="flex items-center space-x-1">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -239,7 +244,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         )}
         {webhook.sendAssignments && (
           <span className="flex items-center space-x-1">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -251,7 +256,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         )}
         {webhook.sendStatusChanges && (
           <span className="flex items-center space-x-1">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -288,24 +293,28 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       {/* Actions */}
       <div className="flex items-center space-x-2 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
         <button
+          type="button"
           onClick={handleTest}
           className="px-3 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
         >
           Test Webhook
         </button>
         <button
+          type="button"
           onClick={handleToggleActive}
           className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
         >
           {webhook.isActive ? "Disable" : "Enable"}
         </button>
         <button
+          type="button"
           onClick={() => setShowEditModal(true)}
           className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
         >
           Edit
         </button>
         <button
+          type="button"
           onClick={handleDelete}
           className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors ml-auto"
         >
@@ -327,7 +336,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
 interface AddWebhookModalProps {
   onClose: () => void;
-  projects: any[];
+  projects: Doc<"projects">[];
 }
 
 function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
@@ -409,10 +418,12 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
               Add Pumble Webhook
             </h2>
             <button
+              type="button"
               onClick={onClose}
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
+              aria-label="Close modal"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -464,9 +475,9 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
           {/* Events */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
               Events to Send
-            </label>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
                 <Checkbox
@@ -481,9 +492,9 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
           {/* Additional Settings */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
               Additional Settings
-            </label>
+            </div>
             <div className="space-y-2">
               <Checkbox
                 label="Send notifications for @mentions"
@@ -526,8 +537,8 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 }
 
 interface EditWebhookModalProps {
-  webhook: any;
-  projects: any[];
+  webhook: Doc<"pumbleWebhooks">;
+  projects: Doc<"projects">[];
   onClose: () => void;
 }
 
@@ -600,10 +611,12 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
               Edit Webhook
             </h2>
             <button
+              type="button"
               onClick={onClose}
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
+              aria-label="Close modal"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -618,10 +631,11 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <label htmlFor="webhook-name" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
               Webhook Name
             </label>
             <input
+              id="webhook-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -640,9 +654,9 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
 
           {/* Events */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
               Events to Send
-            </label>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {availableEvents.map((event) => (
                 <Checkbox
@@ -657,9 +671,9 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
 
           {/* Additional Settings */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
               Additional Settings
-            </label>
+            </div>
             <div className="space-y-2">
               <Checkbox
                 label="Send notifications for @mentions"

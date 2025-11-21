@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Checkbox } from "../ui/form/Checkbox";
@@ -106,7 +106,7 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => void }) {
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -175,6 +175,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
               {apiKey.keyPrefix}...
             </code>
             <button
+              type="button"
               onClick={copyKeyPrefix}
               className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark transition-colors"
               title="Copy key prefix"
@@ -224,6 +225,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
         {/* Actions */}
         <div className="flex items-center gap-2 ml-4">
           <button
+            type="button"
             onClick={onViewStats}
             className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
             title="View usage statistics"
@@ -232,6 +234,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
           </button>
           {apiKey.isActive && (
             <button
+              type="button"
               onClick={handleRevoke}
               disabled={isRevoking}
               className="px-3 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
@@ -241,6 +244,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => v
             </button>
           )}
           <button
+            type="button"
             onClick={handleDelete}
             disabled={isDeleting}
             className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-red-400 transition-colors"
@@ -339,9 +343,9 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
             {/* Scopes */}
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 Permissions (Scopes) <span className="text-status-error">*</span>
-              </label>
+              </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {availableScopes.map((scope) => (
                   <div
@@ -510,7 +514,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 </p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {stats.recentLogs.map((log: any, i: number) => (
+                  {stats.recentLogs.map((log: Doc<"apiUsageLogs">, i: number) => (
                     <div
                       key={i}
                       className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"

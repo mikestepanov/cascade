@@ -18,6 +18,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-3 sm:px-6 py-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <button
+            type="button"
             onClick={() => setViewType("calendar")}
             className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
               viewType === "calendar"
@@ -29,6 +30,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
             <span className="hidden sm:inline">📅 Calendar (Events)</span>
           </button>
           <button
+            type="button"
             onClick={() => setViewType("roadmap")}
             disabled={!projectId}
             className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${

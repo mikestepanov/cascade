@@ -84,6 +84,7 @@ export function CreateEventModal({
             Create Event
           </h2>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close create event modal"
             className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
@@ -96,10 +97,11 @@ export function CreateEventModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="event-title" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Event Title *
             </label>
             <input
+              id="event-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -111,9 +113,9 @@ export function CreateEventModal({
 
           {/* Event Type */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Event Type
-            </label>
+            </div>
             <div className="grid grid-cols-4 gap-2">
               {(["meeting", "deadline", "timeblock", "personal"] as const).map((type) => (
                 <button
@@ -135,11 +137,12 @@ export function CreateEventModal({
           {/* Date and Time */}
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-3 sm:col-span-1">
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="event-date" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 Date *
               </label>
               <input
+                id="event-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
@@ -148,11 +151,12 @@ export function CreateEventModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="event-start-time" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 <Clock className="w-4 h-4 inline mr-1" />
                 Start Time
               </label>
               <input
+                id="event-start-time"
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
@@ -161,10 +165,11 @@ export function CreateEventModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="event-end-time" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 End Time
               </label>
               <input
+                id="event-end-time"
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
@@ -213,10 +218,11 @@ export function CreateEventModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="event-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Description
             </label>
             <textarea
+              id="event-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -227,11 +233,12 @@ export function CreateEventModal({
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="event-location" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               <MapPin className="w-4 h-4 inline mr-1" />
               Location
             </label>
             <input
+              id="event-location"
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
@@ -243,11 +250,12 @@ export function CreateEventModal({
           {/* Meeting URL */}
           {eventType === "meeting" && (
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="event-meeting-url" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 Meeting Link
               </label>
               <input
+                id="event-meeting-url"
                 type="url"
                 value={meetingUrl}
                 onChange={(e) => setMeetingUrl(e.target.value)}
@@ -259,10 +267,11 @@ export function CreateEventModal({
 
           {/* Link to Project */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="event-project" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Link to Project (optional)
             </label>
             <select
+              id="event-project"
               value={selectedProjectId || ""}
               onChange={(e) =>
                 setSelectedProjectId(

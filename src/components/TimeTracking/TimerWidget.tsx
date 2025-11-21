@@ -89,7 +89,7 @@ export function TimerWidget() {
         className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
         title="Start timer"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path
             fillRule="evenodd"
             d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -135,10 +135,11 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="timer-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               What are you working on? (optional)
             </label>
             <input
+              id="timer-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -148,10 +149,11 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="timer-activity" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Activity (optional)
             </label>
             <select
+              id="timer-activity"
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
               className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"

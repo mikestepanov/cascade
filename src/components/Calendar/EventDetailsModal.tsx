@@ -111,6 +111,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close event details modal"
             className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
@@ -302,6 +303,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
         {/* Actions */}
         <div className="flex justify-between gap-3 p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <button
+            type="button"
             onClick={handleDelete}
             disabled={isDeleting}
             className="flex items-center gap-2 px-4 py-2 text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-dark rounded-md disabled:opacity-50"
@@ -310,6 +312,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
             {isDeleting ? "Deleting..." : "Delete Event"}
           </button>
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
           >

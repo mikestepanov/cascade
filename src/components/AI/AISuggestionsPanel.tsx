@@ -3,7 +3,7 @@
  */
 
 import React from "react";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Skeleton } from "../ui/Skeleton";
 import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
@@ -166,7 +166,7 @@ const FilterButton = React.memo(function FilterButton({
 });
 
 interface SuggestionCardProps {
-  suggestion: any;
+  suggestion: Doc<"aiSuggestions">;
   onAccept: (id: Id<"aiSuggestions">) => void;
   onDismiss: (id: Id<"aiSuggestions">) => void;
 }

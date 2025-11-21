@@ -40,10 +40,11 @@ export function LinkedRepositories() {
 
       {/* Project selector */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <label htmlFor="project-selector" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
           Select Project
         </label>
         <select
+          id="project-selector"
           value={selectedProject || ""}
           onChange={(e) => setSelectedProject(e.target.value as Id<"projects">)}
           className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"

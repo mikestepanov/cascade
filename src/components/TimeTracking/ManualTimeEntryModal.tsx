@@ -129,10 +129,11 @@ export function ManualTimeEntryModal({
         <div className="space-y-4">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="time-entry-date" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Date *
             </label>
             <input
+              id="time-entry-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
@@ -145,10 +146,11 @@ export function ManualTimeEntryModal({
           {/* Time Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="time-entry-start" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Start Time *
               </label>
               <input
+                id="time-entry-start"
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
@@ -157,10 +159,11 @@ export function ManualTimeEntryModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="time-entry-end" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 End Time *
               </label>
               <input
+                id="time-entry-end"
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
@@ -181,10 +184,11 @@ export function ManualTimeEntryModal({
 
           {/* Project Selection */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="time-entry-project" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Project
             </label>
             <select
+              id="time-entry-project"
               value={projectId || ""}
               onChange={(e) => {
                 setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined);
@@ -204,10 +208,11 @@ export function ManualTimeEntryModal({
           {/* Issue Selection */}
           {projectId && projectIssues && projectIssues.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+              <label htmlFor="time-entry-issue" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Issue (optional)
               </label>
               <select
+                id="time-entry-issue"
                 value={issueId || ""}
                 onChange={(e) =>
                   setIssueId(e.target.value ? (e.target.value as Id<"issues">) : undefined)
@@ -226,10 +231,11 @@ export function ManualTimeEntryModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="time-entry-description" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Description
             </label>
             <textarea
+              id="time-entry-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What did you work on?"
@@ -240,10 +246,11 @@ export function ManualTimeEntryModal({
 
           {/* Activity */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="time-entry-activity" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Activity
             </label>
             <select
+              id="time-entry-activity"
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
               className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
@@ -259,11 +266,12 @@ export function ManualTimeEntryModal({
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <label htmlFor="time-entry-tags" className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Tags
             </label>
             <div className="flex gap-2">
               <input
+                id="time-entry-tags"
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}

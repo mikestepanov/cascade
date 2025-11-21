@@ -141,7 +141,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
     }
   };
 
-  const handleRestoreVersion = async (snapshot: any, _version: number, title: string) => {
+  const handleRestoreVersion = async (snapshot: unknown, _version: number, title: string) => {
     try {
       // Submit the restored snapshot to ProseMirror
       if (sync.editor && snapshot) {
