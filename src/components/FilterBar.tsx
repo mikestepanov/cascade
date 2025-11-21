@@ -69,13 +69,13 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   const hasActiveFilters = Object.keys(activeFilters).length > 0;
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4">
+    <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4">
       <div className="flex items-center gap-3 flex-wrap">
         {/* Saved Filters Dropdown */}
         <div className="flex items-center gap-2">
           <label
             htmlFor="savedFilters"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
           >
             Saved Filters:
           </label>
@@ -89,7 +89,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                 }
               }
             }}
-            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm"
+            className="px-3 py-1.5 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-sm"
             value=""
           >
             <option value="">Select a filter...</option>
@@ -107,7 +107,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           <button
             type="button"
             onClick={() => setShowSaveDialog(true)}
-            className="px-3 py-1.5 bg-primary text-white rounded-lg text-sm hover:bg-primary-hover"
+            className="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700"
           >
             💾 Save Filter
           </button>
@@ -118,7 +118,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           <button
             type="button"
             onClick={handleClearFilters}
-            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="px-3 py-1.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-lg text-sm hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
           >
             ✕ Clear
           </button>
@@ -126,7 +126,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
         {/* Active Filters Indicator */}
         {hasActiveFilters && (
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             {Object.keys(activeFilters).length} filter(s) active
           </div>
         )}
@@ -138,10 +138,10 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           <ModalBackdrop onClick={() => setShowSaveDialog(false)} zIndex="z-50" animated={false} />
           <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
             <div
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 pointer-events-auto"
+              className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg p-6 max-w-md w-full mx-4 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
                 Save Filter
               </h3>
 
@@ -168,14 +168,14 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                       setFilterName("");
                       setIsPublic(false);
                     }}
-                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveFilter}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover"
+                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
                   >
                     Save
                   </button>
@@ -192,12 +192,12 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           {savedFilters.slice(0, 5).map((filter) => (
             <div
               key={filter._id}
-              className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full text-sm"
+              className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-full text-sm"
             >
               <button
                 type="button"
                 onClick={() => handleLoadFilter(filter.filters)}
-                className="hover:text-primary"
+                className="hover:text-brand-600"
               >
                 {filter.name}
               </button>
@@ -205,7 +205,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                 <button
                   type="button"
                   onClick={() => handleDeleteFilter(filter._id)}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-ui-text-tertiary hover:text-status-error"
                   title="Delete"
                 >
                   ✕
