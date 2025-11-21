@@ -5,11 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
-import { InputField } from "./ui/FormField";
-import { Checkbox } from "./ui/form/Checkbox";
-import { Input } from "./ui/form/Input";
-import { Select } from "./ui/form/Select";
-import { Textarea } from "./ui/form/Textarea";
+import { Checkbox, Input, Select, Textarea } from "./ui/form";
 import { SkeletonList } from "./ui/Skeleton";
 
 interface CustomFieldsManagerProps {
@@ -163,7 +159,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             {editingId ? "Edit Field" : "New Field"}
           </h3>
           <div className="space-y-4">
-            <InputField
+            <Input
               label="Field Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -172,7 +168,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
             />
 
             {!editingId && (
-              <InputField
+              <Input
                 label="Field Key"
                 value={fieldKey}
                 onChange={(e) => setFieldKey(e.target.value)}

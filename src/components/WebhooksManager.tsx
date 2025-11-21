@@ -8,7 +8,7 @@ import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { InputField } from "./ui/FormField";
+import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
 import { WebhookLogs } from "./webhooks/WebhookLogs";
 
@@ -285,7 +285,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
         fullScreenOnMobile={true}
       >
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          <InputField
+          <Input
             label="Webhook Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -294,7 +294,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
             autoFocus
           />
 
-          <InputField
+          <Input
             label="Webhook URL"
             type="url"
             value={url}
@@ -303,7 +303,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
             required
           />
 
-          <InputField
+          <Input
             label="Secret (Optional)"
             type="password"
             value={secret}

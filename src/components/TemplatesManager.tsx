@@ -7,7 +7,7 @@ import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Input, Select, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface TemplatesManagerProps {
@@ -275,7 +275,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
       >
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Template Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -284,7 +284,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
               autoFocus
             />
 
-            <SelectField
+            <Select
               label="Issue Type"
               value={type}
               onChange={(e) => setType(e.target.value as IssueType)}
@@ -294,10 +294,10 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
               <option value="bug">Bug</option>
               <option value="story">Story</option>
               <option value="epic">Epic</option>
-            </SelectField>
+            </Select>
           </div>
 
-          <InputField
+          <Input
             label="Title Template"
             value={titleTemplate}
             onChange={(e) => setTitleTemplate(e.target.value)}
@@ -306,7 +306,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
             required
           />
 
-          <TextareaField
+          <Textarea
             label="Description Template"
             value={descriptionTemplate}
             onChange={(e) => setDescriptionTemplate(e.target.value)}
@@ -316,7 +316,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SelectField
+            <Select
               label="Default Priority"
               value={defaultPriority}
               onChange={(e) => setDefaultPriority(e.target.value as IssuePriority)}
@@ -326,9 +326,9 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
               <option value="medium">Medium</option>
               <option value="high">High</option>
               <option value="highest">Highest</option>
-            </SelectField>
+            </Select>
 
-            <InputField
+            <Input
               label="Default Labels (comma separated)"
               value={defaultLabels}
               onChange={(e) => setDefaultLabels(e.target.value)}

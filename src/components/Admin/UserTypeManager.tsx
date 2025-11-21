@@ -6,7 +6,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
-import { InputField, SelectField } from "../ui/FormField";
+import { Input, Select } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
 type EmploymentType = "employee" | "contractor" | "intern";
@@ -561,21 +561,21 @@ export function UserTypeManager() {
         maxWidth="2xl"
       >
         <form onSubmit={handleSaveConfig} className="p-6 space-y-4">
-          <InputField
+          <Input
             label="Display Name"
             value={configName}
             onChange={(e) => setConfigName(e.target.value)}
             required
           />
 
-          <InputField
+          <Input
             label="Description"
             value={configDescription}
             onChange={(e) => setConfigDescription(e.target.value)}
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Max Hours per Week"
               type="number"
               value={configMaxWeekly}
@@ -585,7 +585,7 @@ export function UserTypeManager() {
               required
             />
 
-            <InputField
+            <Input
               label="Max Hours per Day"
               type="number"
               value={configMaxDaily}
@@ -665,7 +665,7 @@ export function UserTypeManager() {
         maxWidth="2xl"
       >
         <form onSubmit={handleSaveProfile} className="p-6 space-y-4">
-          <SelectField
+          <Select
             label="Employment Type"
             value={profileType}
             onChange={(e) => setProfileType(e.target.value as EmploymentType)}
@@ -674,17 +674,17 @@ export function UserTypeManager() {
             <option value="employee">Employee</option>
             <option value="contractor">Contractor</option>
             <option value="intern">Intern</option>
-          </SelectField>
+          </Select>
 
           <div className="grid grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Job Title"
               value={profileJobTitle}
               onChange={(e) => setProfileJobTitle(e.target.value)}
               placeholder="e.g., Senior Developer"
             />
 
-            <InputField
+            <Input
               label="Department"
               value={profileDepartment}
               onChange={(e) => setProfileDepartment(e.target.value)}
@@ -697,7 +697,7 @@ export function UserTypeManager() {
               Hour Overrides (leave empty to use type defaults)
             </h4>
             <div className="grid grid-cols-2 gap-4">
-              <InputField
+              <Input
                 label="Max Hours per Week"
                 type="number"
                 value={profileMaxWeekly}
@@ -707,7 +707,7 @@ export function UserTypeManager() {
                 max={168}
               />
 
-              <InputField
+              <Input
                 label="Max Hours per Day"
                 type="number"
                 value={profileMaxDaily}
@@ -720,14 +720,14 @@ export function UserTypeManager() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Start Date"
               type="date"
               value={profileStartDate}
               onChange={(e) => setProfileStartDate(e.target.value)}
             />
 
-            <InputField
+            <Input
               label="End Date (Optional)"
               type="date"
               value={profileEndDate}
@@ -758,7 +758,7 @@ export function UserTypeManager() {
               {profileHasEquity && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <InputField
+                    <Input
                       label="Equity Percentage (%)"
                       type="number"
                       value={profileEquityPercentage}
@@ -768,7 +768,7 @@ export function UserTypeManager() {
                       min={0}
                     />
 
-                    <InputField
+                    <Input
                       label="Equity Hour Value ($)"
                       type="number"
                       value={profileEquityHourlyValue}
@@ -780,7 +780,7 @@ export function UserTypeManager() {
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
-                    <InputField
+                    <Input
                       label="Required Hours/Week"
                       type="number"
                       value={profileRequiredEquityWeekly}
@@ -790,7 +790,7 @@ export function UserTypeManager() {
                       max={168}
                     />
 
-                    <InputField
+                    <Input
                       label="Required Hours/Month"
                       type="number"
                       value={profileRequiredEquityMonthly}
@@ -799,7 +799,7 @@ export function UserTypeManager() {
                       min={0}
                     />
 
-                    <InputField
+                    <Input
                       label="Max Equity Hours/Week"
                       type="number"
                       value={profileMaxEquityWeekly}

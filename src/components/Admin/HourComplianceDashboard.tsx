@@ -6,7 +6,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
-import { InputField, SelectField } from "../ui/FormField";
+import { Input, Select } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
 type ComplianceStatus = "compliant" | "under_hours" | "over_hours" | "equity_under";
@@ -216,7 +216,7 @@ export function HourComplianceDashboard() {
         <CardBody>
           {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <SelectField
+            <Select
               label="Status"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as ComplianceStatus | "all")}
@@ -226,16 +226,16 @@ export function HourComplianceDashboard() {
               <option value="under_hours">Under Hours</option>
               <option value="over_hours">Over Hours</option>
               <option value="equity_under">Equity Short</option>
-            </SelectField>
+            </Select>
 
-            <InputField
+            <Input
               label="Start Date"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
 
-            <InputField
+            <Input
               label="End Date"
               type="date"
               value={endDate}

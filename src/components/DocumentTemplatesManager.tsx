@@ -7,7 +7,7 @@ import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Input, Select, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface DocumentTemplatesManagerProps {
@@ -345,7 +345,7 @@ export function DocumentTemplatesManager({
       >
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Template Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -354,7 +354,7 @@ export function DocumentTemplatesManager({
               autoFocus
             />
 
-            <InputField
+            <Input
               label="Icon (Emoji)"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
@@ -364,7 +364,7 @@ export function DocumentTemplatesManager({
             />
           </div>
 
-          <TextareaField
+          <Textarea
             label="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -373,7 +373,7 @@ export function DocumentTemplatesManager({
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SelectField
+            <Select
               label="Category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -384,7 +384,7 @@ export function DocumentTemplatesManager({
               <option value="engineering">Engineering</option>
               <option value="design">Design</option>
               <option value="other">Other</option>
-            </SelectField>
+            </Select>
 
             <div className="flex items-center gap-2 pt-7">
               <input

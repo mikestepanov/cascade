@@ -5,7 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { InputField } from "../ui/FormField";
+import { Input } from "../ui/form";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Modal } from "../ui/Modal";
 
@@ -106,7 +106,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
       fullScreenOnMobile={true}
     >
       <form onSubmit={handleSubmit} className="space-y-4 p-6">
-        <InputField
+        <Input
           label="Webhook Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -115,7 +115,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
           autoFocus
         />
 
-        <InputField
+        <Input
           label="Webhook URL"
           type="url"
           value={url}
@@ -124,7 +124,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
           required
         />
 
-        <InputField
+        <Input
           label="Secret (Optional)"
           type="password"
           value={secret}
