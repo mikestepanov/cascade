@@ -54,7 +54,7 @@ export function downloadMarkdown(markdown: string, filename: string): void {
 /**
  * Read markdown file from upload
  */
-export async function readMarkdownFile(file: File): Promise<string> {
+export function readMarkdownFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -217,9 +217,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
   let inCodeBlock = false;
   let codeLanguage = "";
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
+  for (const line of lines) {
     // Code blocks
     if (line.startsWith("```")) {
       if (inCodeBlock) {
@@ -352,7 +350,7 @@ export function triggerMarkdownImport(onSelect: (file: File) => void): void {
 /**
  * Handle complete import flow with error handling
  */
-export async function handleMarkdownImport(editor: BlockNoteEditor): Promise<void> {
+export function handleMarkdownImport(editor: BlockNoteEditor): Promise<void> {
   return new Promise((resolve, reject) => {
     triggerMarkdownImport(async (file) => {
       try {
@@ -372,7 +370,7 @@ export async function handleMarkdownImport(editor: BlockNoteEditor): Promise<voi
  * Read markdown file for preview (doesn't import yet)
  * Returns file content and filename for preview modal
  */
-export async function readMarkdownForPreview(): Promise<{
+export function readMarkdownForPreview(): Promise<{
   markdown: string;
   filename: string;
 } | null> {

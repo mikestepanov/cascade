@@ -89,6 +89,7 @@ export function MarkdownPreviewModal({
         <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose dark:prose-invert max-w-none">
+              {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Safe in this context - user is previewing their own uploaded markdown file before importing. Content is not persisted until explicitly imported. */}
               <div
                 className="markdown-preview"
                 dangerouslySetInnerHTML={{ __html: renderMarkdownPreview(markdown) }}

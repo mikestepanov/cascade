@@ -1,5 +1,3 @@
-import { handleKeyboardClick } from "@/lib/accessibility";
-
 interface ModalBackdropProps {
   onClick: () => void;
   zIndex?: "z-30" | "z-40" | "z-50";

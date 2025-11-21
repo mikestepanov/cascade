@@ -1,6 +1,5 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
