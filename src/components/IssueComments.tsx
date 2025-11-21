@@ -49,10 +49,10 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
       {/* Comments List */}
       <div className="space-y-4">
         {comments.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <svg
               aria-hidden="true"
-              className="w-12 h-12 mx-auto mb-3 text-gray-400"
+              className="w-12 h-12 mx-auto mb-3 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -71,7 +71,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
           comments.map((comment) => (
             <div
               key={comment._id}
-              className="flex gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              className="flex gap-3 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
             >
               {/* Avatar */}
               <div className="flex-shrink-0">
@@ -82,7 +82,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                     className="w-10 h-10 rounded-full"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-medium">
+                  <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-medium">
                     {comment.author.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -92,14 +92,14 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
               <div className="flex-1 min-w-0">
                 {/* Author and Date */}
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {comment.author.name}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     {formatRelativeTime(comment.createdAt)}
                   </span>
                   {comment.updatedAt > comment.createdAt && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">(edited)</span>
+                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">(edited)</span>
                   )}
                 </div>
 
@@ -113,7 +113,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Comment</h4>
+        <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Add Comment</h4>
         <MentionInput
           projectId={projectId}
           value={newComment}
