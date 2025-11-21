@@ -34,19 +34,19 @@ export function LinkedRepositories() {
 
   return (
     <div>
-      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
         Linked Repositories
       </h4>
 
       {/* Project selector */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
           Select Project
         </label>
         <select
           value={selectedProject || ""}
           onChange={(e) => setSelectedProject(e.target.value as Id<"projects">)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
         >
           <option value="">-- Select a project --</option>
           {projects?.map((project) => (
@@ -61,22 +61,22 @@ export function LinkedRepositories() {
       {selectedProject && (
         <div className="space-y-2">
           {repositories && repositories.length === 0 && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
               No repositories linked to this project yet.
             </p>
           )}
           {repositories?.map((repo) => (
             <div
               key={repo._id}
-              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
             >
               <div className="flex items-center space-x-3">
-                <Github className="h-5 w-5 text-gray-400" />
+                <Github className="h-5 w-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {repo.repoFullName}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     {repo.syncPRs && "PRs"} {repo.syncPRs && repo.autoLinkCommits && "• "}
                     {repo.autoLinkCommits && "Auto-link commits"}
                   </p>
