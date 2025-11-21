@@ -26,9 +26,9 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   const variantStyles = {
-    danger: "bg-red-600 hover:bg-red-700 focus:ring-red-500",
-    warning: "bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500",
-    info: "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500",
+    danger: "bg-status-error hover:bg-status-error/90 focus:ring-status-error",
+    warning: "bg-status-warning hover:bg-status-warning/90 focus:ring-status-warning",
+    info: "bg-brand-600 hover:bg-brand-700 focus:ring-brand-500",
   };
 
   const variantIcons = {
@@ -55,7 +55,7 @@ export function ConfirmDialog({
         aria-labelledby="confirm-dialog-title"
       >
         <div
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full animate-in zoom-in-95 duration-200"
+          className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-md w-full animate-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6">
@@ -64,21 +64,21 @@ export function ConfirmDialog({
               <div className="flex-1">
                 <h3
                   id="confirm-dialog-title"
-                  className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2"
+                  className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
                 >
                   {title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex gap-3 justify-end rounded-b-lg">
+          <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 flex gap-3 justify-end rounded-b-lg">
             <button
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 transition-colors"
             >
               {cancelLabel}
             </button>
