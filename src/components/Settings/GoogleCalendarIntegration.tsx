@@ -97,23 +97,23 @@ export function GoogleCalendarIntegration() {
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-blue-500 rounded-lg">
+            <div className="p-3 bg-brand-500 rounded-lg">
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Google Calendar
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Sync calendar events between Cascade and Google Calendar
               </p>
               {calendarConnection && (
                 <div className="mt-2 space-y-1">
-                  <p className="text-sm text-green-600 dark:text-green-400">
+                  <p className="text-sm text-status-success dark:text-status-success">
                     ✓ Connected to {calendarConnection.providerAccountId}
                   </p>
                   {calendarConnection.lastSyncAt && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       Last synced: {new Date(calendarConnection.lastSyncAt).toLocaleString()}
                     </p>
                   )}
@@ -140,14 +140,14 @@ export function GoogleCalendarIntegration() {
         </div>
 
         {calendarConnection && (
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-6">
+          <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark space-y-6">
             {/* Sync Toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                   Enable Sync
                 </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                   Automatically sync events between Cascade and Google Calendar
                 </p>
               </div>
@@ -156,8 +156,8 @@ export function GoogleCalendarIntegration() {
                 onClick={handleToggleSync}
                 disabled={isSaving}
                 className={`
-                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                  ${calendarConnection.syncEnabled ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"}
+                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+                  ${calendarConnection.syncEnabled ? "bg-brand-600" : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark"}
                 `}
               >
                 <span
@@ -172,62 +172,62 @@ export function GoogleCalendarIntegration() {
             {/* Sync Direction */}
             {calendarConnection.syncEnabled && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                   Sync Direction
                 </h4>
                 <div className="space-y-2">
-                  <label className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
                     <input
                       type="radio"
                       name="syncDirection"
                       checked={calendarConnection.syncDirection === "bidirectional"}
                       onChange={() => handleChangeSyncDirection("bidirectional")}
                       disabled={isSaving}
-                      className="h-4 w-4 text-blue-600"
+                      className="h-4 w-4 text-brand-600"
                     />
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         Bidirectional
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         Sync both ways (recommended)
                       </p>
                     </div>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
                     <input
                       type="radio"
                       name="syncDirection"
                       checked={calendarConnection.syncDirection === "import"}
                       onChange={() => handleChangeSyncDirection("import")}
                       disabled={isSaving}
-                      className="h-4 w-4 text-blue-600"
+                      className="h-4 w-4 text-brand-600"
                     />
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         Import Only
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         Only import from Google → Cascade
                       </p>
                     </div>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
                     <input
                       type="radio"
                       name="syncDirection"
                       checked={calendarConnection.syncDirection === "export"}
                       onChange={() => handleChangeSyncDirection("export")}
                       disabled={isSaving}
-                      className="h-4 w-4 text-blue-600"
+                      className="h-4 w-4 text-brand-600"
                     />
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         Export Only
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         Only export from Cascade → Google
                       </p>
                     </div>
