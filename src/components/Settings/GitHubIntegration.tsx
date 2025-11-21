@@ -48,16 +48,16 @@ export function GitHubIntegration() {
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gray-900 dark:bg-gray-800 rounded-lg">
-              <Github className="h-6 w-6 text-white" />
+            <div className="p-3 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
+              <Github className="h-6 w-6 text-ui-text-primary dark:text-ui-text-primary-dark" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">GitHub</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">GitHub</h3>
+              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Link repositories and track PRs and commits
               </p>
               {githubConnection && (
-                <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                <p className="text-sm text-status-success dark:text-status-success mt-2">
                   ✓ Connected as @{githubConnection.githubUsername}
                 </p>
               )}
@@ -82,7 +82,7 @@ export function GitHubIntegration() {
         </div>
 
         {githubConnection && (
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <LinkedRepositories />
           </div>
         )}
