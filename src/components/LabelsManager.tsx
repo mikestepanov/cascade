@@ -124,7 +124,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               {labels.map((label) => (
                 <div
                   key={label._id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -133,7 +133,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                     >
                       {label.name}
                     </span>
-                    <span className="text-xs text-gray-500">{label.color}</span>
+                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{label.color}</span>
                   </div>
 
                   <div className="flex gap-2">
@@ -212,7 +212,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
 
           {/* Preview */}
           <div>
-            <div className="block text-sm font-medium text-gray-700 mb-2">Preview</div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Preview</div>
             <span
               className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
               style={{ backgroundColor: color }}
