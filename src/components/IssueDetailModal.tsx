@@ -41,33 +41,33 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
           <div
             role="status"
             aria-busy="true"
-            className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
+            className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto"
           >
             <span className="sr-only">Loading...</span>
             {/* Header Skeleton */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
+            <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6">
               <div className="flex items-center space-x-3">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-8 rounded" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark h-8 w-8 rounded" />
                 <div className="space-y-2">
-                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-24" />
-                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-16" />
+                  <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-24" />
+                  <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-16" />
                 </div>
               </div>
             </div>
 
             {/* Content Skeleton */}
             <div className="p-4 sm:p-6 space-y-6">
-              <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-8 w-3/4" />
+              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
               <div className="space-y-2">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-2/3" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded h-12 w-full" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
               </div>
             </div>
           </div>
@@ -103,9 +103,9 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-start sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-        <div className="bg-white rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
+        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-none sm:rounded-lg shadow-xl w-full sm:max-w-4xl min-h-screen sm:min-h-0 sm:max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 bg-ui-bg-primary border-b border-ui-border-primary p-4 sm:p-6 flex items-center justify-between">
+          <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <span className="text-2xl">{getTypeIcon(issue.type)}</span>
               <div>
@@ -201,7 +201,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-ui-bg-secondary text-ui-text-primary rounded hover:bg-ui-bg-tertiary"
+                  className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
                 >
                   Cancel
                 </button>
