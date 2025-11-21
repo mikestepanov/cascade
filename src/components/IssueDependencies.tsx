@@ -113,26 +113,26 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Dependencies
           </h4>
           <div className="space-y-2">
             {links.outgoing.map((link) => (
               <div
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded font-medium">
+                  <span className="text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 rounded font-medium">
                     {getLinkTypeLabel(link.linkType, "outgoing")}
                   </span>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-sm">{getTypeIcon(link.issue.type)}</span>
-                      <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                      <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {link.issue.key}
                       </span>
-                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                         {link.issue.title}
                       </span>
                     </div>
@@ -141,7 +141,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
-                  className="text-gray-400 hover:text-red-600 p-1"
+                  className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error-dark p-1"
                   title="Remove dependency"
                 >
                   ✕
@@ -155,26 +155,26 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Referenced By
           </h4>
           <div className="space-y-2">
             {links.incoming.map((link) => (
               <div
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded font-medium">
+                  <span className="text-xs px-2 py-1 bg-accent-100 dark:bg-accent-900 text-accent-800 dark:text-accent-200 rounded font-medium">
                     {getLinkTypeLabel(link.linkType, "incoming")}
                   </span>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-sm">{getTypeIcon(link.issue.type)}</span>
-                      <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                      <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {link.issue.key}
                       </span>
-                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                         {link.issue.title}
                       </span>
                     </div>
@@ -183,7 +183,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
-                  className="text-gray-400 hover:text-red-600 p-1"
+                  className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error-dark p-1"
                   title="Remove dependency"
                 >
                   ✕
@@ -196,7 +196,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
       {/* Empty State */}
       {links && links.outgoing.length === 0 && links.incoming.length === 0 && (
-        <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
+        <div className="text-center py-6 text-ui-text-secondary dark:text-ui-text-secondary-dark text-sm">
           No dependencies yet
         </div>
       )}
@@ -207,10 +207,10 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
           <ModalBackdrop onClick={() => setShowAddDialog(false)} zIndex="z-50" animated={false} />
           <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
             <div
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 pointer-events-auto"
+              className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg p-6 max-w-lg w-full mx-4 pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
                 Add Dependency
               </h3>
 
@@ -239,7 +239,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
                 {/* Search Results */}
                 {searchResults && searchResults.length > 0 && (
-                  <div className="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg">
+                  <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
                     {searchResults
                       .filter((issue) => issue._id !== issueId)
                       .map((issue) => (
@@ -250,16 +250,16 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                             setSelectedIssueKey(issue._id);
                             setSearchQuery("");
                           }}
-                          className={`w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 last:border-0 ${
-                            selectedIssueKey === issue._id ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                          className={`w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0 ${
+                            selectedIssueKey === issue._id ? "bg-brand-50 dark:bg-brand-950" : ""
                           }`}
                         >
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                            <span className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                            <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                               {issue.key}
                             </span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                            <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                               {issue.title}
                             </span>
                           </div>
@@ -270,7 +270,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
 
                 {/* Selected Issue */}
                 {selectedIssueKey && (
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     Selected: <span className="font-medium">{selectedIssueKey}</span>
                   </div>
                 )}
@@ -284,7 +284,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                       setSelectedIssueKey("");
                       setSearchQuery("");
                     }}
-                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
                   >
                     Cancel
                   </button>
@@ -292,7 +292,7 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                     type="button"
                     onClick={handleAddLink}
                     disabled={!selectedIssueKey}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add Dependency
                   </button>
