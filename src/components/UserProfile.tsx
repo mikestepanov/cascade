@@ -78,7 +78,7 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
                 className="w-24 h-24 rounded-full"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center text-3xl font-bold">
+              <div className="w-24 h-24 rounded-full bg-brand-600 text-white flex items-center justify-center text-3xl font-bold">
                 {(viewUser.name || viewUser.email || "?").charAt(0).toUpperCase()}
               </div>
             )}
@@ -104,10 +104,10 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
               </div>
             ) : (
               <>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {viewUser.name || "Anonymous User"}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">{viewUser.email}</p>
+                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{viewUser.email}</p>
                 {isOwnProfile && (
                   <Button onClick={handleEdit} variant="secondary" size="sm" className="mt-3">
                     Edit Profile
@@ -121,42 +121,42 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
         {/* Stats Cards */}
         {userStats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{userStats.projects}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Projects</div>
+            <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.projects}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Projects</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{userStats.issuesCreated}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Created</div>
+            <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesCreated}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Created</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{userStats.issuesAssigned}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Assigned</div>
+            <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesAssigned}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Assigned</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{userStats.issuesCompleted}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Completed</div>
+            <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.issuesCompleted}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Completed</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-primary">{userStats.comments}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Comments</div>
+            <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">{userStats.comments}</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Comments</div>
             </div>
           </div>
         )}
 
         {/* Account Info */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-6">
+          <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
             Account Information
           </h3>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">User ID:</span>
-              <span className="font-mono text-gray-900 dark:text-gray-100">{viewUser._id}</span>
+              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">User ID:</span>
+              <span className="font-mono text-ui-text-primary dark:text-ui-text-primary-dark">{viewUser._id}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Email Verified:</span>
-              <span className="text-gray-900 dark:text-gray-100">
+              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Email Verified:</span>
+              <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
                 {viewUser.emailVerificationTime ? "Yes" : "No"}
               </span>
             </div>
