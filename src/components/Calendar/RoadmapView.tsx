@@ -92,46 +92,46 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={handleToday}
-              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
             >
               Today
             </button>
             <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={handlePrevious}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
                 aria-label="Previous"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
               <button
                 onClick={handleNext}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
                 aria-label="Next"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-gray-300" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
             </div>
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
               {getHeaderText()}
             </h2>
           </div>
 
           {/* Time Scale Toggle */}
-          <div className="flex border border-gray-300 dark:border-gray-600 rounded-md flex-shrink-0">
+          <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-shrink-0">
             <button
               onClick={() => setTimeScale("week")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "week"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  ? "bg-brand-600 text-white"
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               } rounded-l-md`}
             >
               <span className="sm:hidden">W</span>
@@ -141,9 +141,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               onClick={() => setTimeScale("month")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "month"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-              } border-l border-gray-300 dark:border-gray-600`}
+                  ? "bg-brand-600 text-white"
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+              } border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
             >
               <span className="sm:hidden">M</span>
               <span className="hidden sm:inline">Month</span>
@@ -152,9 +152,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               onClick={() => setTimeScale("quarter")}
               className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
                 timeScale === "quarter"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-              } rounded-r-md border-l border-gray-300 dark:border-gray-600`}
+                  ? "bg-brand-600 text-white"
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+              } rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
             >
               <span className="sm:hidden">Q</span>
               <span className="hidden sm:inline">Quarter</span>
@@ -167,16 +167,16 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-max">
           {/* Timeline Header */}
-          <div className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="sticky top-0 z-10 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark">
             <div className="flex">
-              <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700 font-medium text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+              <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark font-medium text-xs sm:text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                 Item
               </div>
               <div className="flex-1 flex">
                 {columns.map((col, idx) => (
                   <div
                     key={idx}
-                    className="flex-1 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700 text-center text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300"
+                    className="flex-1 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark text-center text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
                   >
                     {col.label}
                   </div>
@@ -187,7 +187,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
           {/* Roadmap Items */}
           {sortedItems.length === 0 ? (
-            <div className="p-4 sm:p-8 text-center text-sm sm:text-base text-gray-500 dark:text-gray-400">
+            <div className="p-4 sm:p-8 text-center text-sm sm:text-base text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               No items with dates found. Add due dates to issues or create sprints to see them here.
             </div>
           ) : (
@@ -195,13 +195,13 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               {sortedItems.map((item) => (
                 <div
                   key={`${item.type}-${item.id}`}
-                  className="flex border-b border-gray-200 dark:border-gray-700"
+                  className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark"
                 >
                   {/* Item Info */}
-                  <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-gray-200 dark:border-gray-700">
+                  <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark">
                     <div className="flex items-center gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
-                        <span className="text-purple-600 dark:text-purple-400 text-xs font-medium px-1.5 sm:px-2 py-0.5 bg-purple-100 dark:bg-purple-900 rounded">
+                        <span className="text-accent-600 dark:text-accent-400 text-xs font-medium px-1.5 sm:px-2 py-0.5 bg-accent-100 dark:bg-accent-900 rounded">
                           Sprint
                         </span>
                       ) : (
@@ -212,7 +212,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                         </span>
                       )}
                     </div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 mt-1 truncate">
+                    <div className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
                       {item.title}
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                       {columns.map((_col, idx) => (
                         <div
                           key={idx}
-                          className="flex-1 border-r border-gray-200 dark:border-gray-700"
+                          className="flex-1 border-r border-ui-border-primary dark:border-ui-border-primary-dark"
                         />
                       ))}
                     </div>
@@ -265,12 +265,12 @@ function renderDateBar(item: any, rangeStart: Date, rangeEnd: Date, _columnCount
 
   const color =
     item.type === "sprint"
-      ? "bg-purple-500"
+      ? "bg-accent-500"
       : item.priority === "highest" || item.priority === "high"
-        ? "bg-red-500"
+        ? "bg-status-error"
         : item.priority === "medium"
-          ? "bg-yellow-500"
-          : "bg-blue-500";
+          ? "bg-status-warning"
+          : "bg-brand-500";
 
   return (
     <div
@@ -372,14 +372,14 @@ function getDateRange(currentDate: Date, timeScale: TimeScale) {
 function getIssueTypeStyle(type: string): string {
   switch (type) {
     case "epic":
-      return "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300";
+      return "bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300";
     case "story":
-      return "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300";
+      return "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success";
     case "task":
-      return "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300";
+      return "bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300";
     case "bug":
-      return "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300";
+      return "bg-status-error/10 dark:bg-status-error/20 text-status-error dark:text-status-error";
     default:
-      return "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300";
+      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark";
   }
 }
