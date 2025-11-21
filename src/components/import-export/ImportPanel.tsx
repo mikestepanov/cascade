@@ -79,7 +79,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
           Select Import Format
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -88,14 +88,14 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             className={`p-4 cursor-pointer transition-all ${
               importFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
             <div className="flex items-center gap-3">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">CSV</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Spreadsheet format</div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">CSV</div>
+                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">Spreadsheet format</div>
               </div>
             </div>
           </Card>
@@ -105,14 +105,14 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             className={`p-4 cursor-pointer transition-all ${
               importFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
             <div className="flex items-center gap-3">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">JSON</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">JSON</div>
+                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Data interchange format
                 </div>
               </div>
@@ -122,32 +122,32 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       </div>
 
       <div>
-        <div className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
           Select File
         </div>
         <input
           type="file"
           accept={importFormat === "csv" ? ".csv" : ".json"}
           onChange={handleFileChange}
-          className="block w-full text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 focus:outline-none"
+          className="block w-full text-sm text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg cursor-pointer bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark focus:outline-none"
         />
         {importFile && (
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Selected: {importFile.name} ({(importFile.size / 1024).toFixed(2)} KB)
           </p>
         )}
       </div>
 
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+      <div className="bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <div className="text-yellow-600 dark:text-yellow-400 text-xl">⚠️</div>
-          <div className="text-sm text-yellow-800 dark:text-yellow-200">
+          <div className="text-status-warning dark:text-status-warning text-xl">⚠️</div>
+          <div className="text-sm text-status-warning dark:text-status-warning">
             <p className="font-semibold mb-1">Import Requirements</p>
-            <ul className="list-disc list-inside space-y-1 text-yellow-700 dark:text-yellow-300">
+            <ul className="list-disc list-inside space-y-1 text-status-warning/90 dark:text-status-warning/80">
               <li>CSV must have a header row with column names</li>
               <li>
                 Required column:{" "}
-                <code className="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">title</code>
+                <code className="bg-status-warning/20 dark:bg-status-warning/30 px-1 rounded">title</code>
               </li>
               <li>Optional: type, priority, description, labels, estimated hours, due date</li>
               <li>All imported issues will be created in the first workflow state</li>
