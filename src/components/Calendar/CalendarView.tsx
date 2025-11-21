@@ -8,6 +8,24 @@ import { EventDetailsModal } from "./EventDetailsModal";
 
 type ViewMode = "week" | "month";
 
+/**
+ * Format hour for display (e.g., "12 AM", "1 PM")
+ */
+function formatHour(hour: number, isMobile: boolean): string {
+  if (isMobile) {
+    // Mobile: Compact format
+    if (hour === 0) return "12a";
+    if (hour < 12) return `${hour}a`;
+    if (hour === 12) return "12p";
+    return `${hour - 12}p`;
+  }
+  // Desktop: Full format
+  if (hour === 0) return "12 AM";
+  if (hour < 12) return `${hour} AM`;
+  if (hour === 12) return "12 PM";
+  return `${hour - 12} PM`;
+}
+
 export function CalendarView() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -227,24 +245,8 @@ function WeekView({
                 key={hour}
                 className="h-12 sm:h-16 border-b border-ui-border-primary dark:border-ui-border-primary-dark px-1 sm:px-2 py-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               >
-                <span className="hidden sm:inline">
-                  {hour === 0
-                    ? "12 AM"
-                    : hour < 12
-                      ? `${hour} AM`
-                      : hour === 12
-                        ? "12 PM"
-                        : `${hour - 12} PM`}
-                </span>
-                <span className="sm:hidden">
-                  {hour === 0
-                    ? "12a"
-                    : hour < 12
-                      ? `${hour}a`
-                      : hour === 12
-                        ? "12p"
-                        : `${hour - 12}p`}
-                </span>
+                <span className="hidden sm:inline">{formatHour(hour, false)}</span>
+                <span className="sm:hidden">{formatHour(hour, true)}</span>
               </div>
             ))}
           </div>

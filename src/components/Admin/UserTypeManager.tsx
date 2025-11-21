@@ -70,6 +70,31 @@ function buildProfileData(formData: {
   };
 }
 
+// Helper: Extract form state from profile for editing
+function extractFormStateFromProfile(profile: UserProfileWithUser) {
+  return {
+    profileType: profile.employmentType,
+    profileMaxWeekly: profile.maxHoursPerWeek?.toString() || "",
+    profileMaxDaily: profile.maxHoursPerDay?.toString() || "",
+    profileRequiresApproval: profile.requiresApproval ?? null,
+    profileCanOvertime: profile.canWorkOvertime ?? null,
+    profileDepartment: profile.department || "",
+    profileJobTitle: profile.jobTitle || "",
+    profileStartDate: profile.startDate
+      ? new Date(profile.startDate).toISOString().split("T")[0]
+      : "",
+    profileEndDate: profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "",
+    profileIsActive: profile.isActive,
+    profileHasEquity: profile.hasEquity ?? false,
+    profileEquityPercentage: profile.equityPercentage?.toString() || "",
+    profileRequiredEquityWeekly: profile.requiredEquityHoursPerWeek?.toString() || "",
+    profileRequiredEquityMonthly: profile.requiredEquityHoursPerMonth?.toString() || "",
+    profileMaxEquityWeekly: profile.maxEquityHoursPerWeek?.toString() || "",
+    profileEquityHourlyValue: profile.equityHourlyValue?.toString() || "",
+    profileEquityNotes: profile.equityNotes || "",
+  };
+}
+
 export function UserTypeManager() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -192,25 +217,24 @@ export function UserTypeManager() {
 
   const handleEditProfile = (profile: UserProfileWithUser) => {
     setSelectedUserId(profile.userId);
-    setProfileType(profile.employmentType);
-    setProfileMaxWeekly(profile.maxHoursPerWeek?.toString() || "");
-    setProfileMaxDaily(profile.maxHoursPerDay?.toString() || "");
-    setProfileRequiresApproval(profile.requiresApproval ?? null);
-    setProfileCanOvertime(profile.canWorkOvertime ?? null);
-    setProfileDepartment(profile.department || "");
-    setProfileJobTitle(profile.jobTitle || "");
-    setProfileStartDate(
-      profile.startDate ? new Date(profile.startDate).toISOString().split("T")[0] : "",
-    );
-    setProfileEndDate(profile.endDate ? new Date(profile.endDate).toISOString().split("T")[0] : "");
-    setProfileIsActive(profile.isActive);
-    setProfileHasEquity(profile.hasEquity ?? false);
-    setProfileEquityPercentage(profile.equityPercentage?.toString() || "");
-    setProfileRequiredEquityWeekly(profile.requiredEquityHoursPerWeek?.toString() || "");
-    setProfileRequiredEquityMonthly(profile.requiredEquityHoursPerMonth?.toString() || "");
-    setProfileMaxEquityWeekly(profile.maxEquityHoursPerWeek?.toString() || "");
-    setProfileEquityHourlyValue(profile.equityHourlyValue?.toString() || "");
-    setProfileEquityNotes(profile.equityNotes || "");
+    const formState = extractFormStateFromProfile(profile);
+    setProfileType(formState.profileType);
+    setProfileMaxWeekly(formState.profileMaxWeekly);
+    setProfileMaxDaily(formState.profileMaxDaily);
+    setProfileRequiresApproval(formState.profileRequiresApproval);
+    setProfileCanOvertime(formState.profileCanOvertime);
+    setProfileDepartment(formState.profileDepartment);
+    setProfileJobTitle(formState.profileJobTitle);
+    setProfileStartDate(formState.profileStartDate);
+    setProfileEndDate(formState.profileEndDate);
+    setProfileIsActive(formState.profileIsActive);
+    setProfileHasEquity(formState.profileHasEquity);
+    setProfileEquityPercentage(formState.profileEquityPercentage);
+    setProfileRequiredEquityWeekly(formState.profileRequiredEquityWeekly);
+    setProfileRequiredEquityMonthly(formState.profileRequiredEquityMonthly);
+    setProfileMaxEquityWeekly(formState.profileMaxEquityWeekly);
+    setProfileEquityHourlyValue(formState.profileEquityHourlyValue);
+    setProfileEquityNotes(formState.profileEquityNotes);
     setShowAssignModal(true);
   };
 

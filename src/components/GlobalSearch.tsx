@@ -21,6 +21,152 @@ type SearchResult =
       type: "document";
     };
 
+// Helper function to get filtered results based on active tab
+function getFilteredResults(
+  activeTab: "all" | "issues" | "documents",
+  issueResults: Doc<"issues">[],
+  documentResults: Doc<"documents">[],
+): SearchResult[] {
+  const issueSearchResults = issueResults.map((r) => ({ ...r, type: "issue" as const }));
+  const documentSearchResults = documentResults.map((r) => ({ ...r, type: "document" as const }));
+
+  if (activeTab === "all") {
+    return [...issueSearchResults, ...documentSearchResults];
+  }
+  if (activeTab === "issues") {
+    return issueSearchResults;
+  }
+  return documentSearchResults;
+}
+
+// Helper function to get total count based on active tab
+function getTotalCount(
+  activeTab: "all" | "issues" | "documents",
+  issueTotal: number,
+  documentTotal: number,
+): number {
+  if (activeTab === "all") {
+    return issueTotal + documentTotal;
+  }
+  if (activeTab === "issues") {
+    return issueTotal;
+  }
+  return documentTotal;
+}
+
+// Helper function to check if there are more results
+function getHasMore(
+  activeTab: "all" | "issues" | "documents",
+  issueHasMore: boolean,
+  documentHasMore: boolean,
+): boolean {
+  if (activeTab === "all") {
+    return issueHasMore || documentHasMore;
+  }
+  if (activeTab === "issues") {
+    return issueHasMore;
+  }
+  return documentHasMore;
+}
+
+// Tab button component
+function SearchTab({
+  label,
+  isActive,
+  count,
+  showCount,
+  onClick,
+}: {
+  label: string;
+  isActive: boolean;
+  count: number;
+  showCount: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+        isActive
+          ? "border-brand-500 text-brand-600 dark:text-brand-400"
+          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+      }`}
+    >
+      {label} {showCount && <span className="text-xs">({count})</span>}
+    </button>
+  );
+}
+
+// Search result item component
+function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
+  const href =
+    result.type === "issue"
+      ? `/project/${result.projectId}?issue=${result._id}`
+      : `/document/${result._id}`;
+
+  return (
+    <a
+      href={href}
+      onClick={onClose}
+      className="block p-3 sm:p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+    >
+      <div className="flex items-start gap-3">
+        {/* Icon */}
+        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
+          {result.type === "issue" ? (
+            <svg
+              aria-hidden="true"
+              className="w-5 h-5 text-brand-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                clipRule="evenodd"
+              />
+            </svg>
+          ) : (
+            <svg
+              aria-hidden="true"
+              className="w-5 h-5 text-accent-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            {result.type === "issue" && (
+              <span className="text-xs font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                {result.key}
+              </span>
+            )}
+            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark rounded-full">
+              {result.type}
+            </span>
+          </div>
+          <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
+            {result.title}
+          </p>
+          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 line-clamp-2">
+            {result.description || "No description"}
+          </p>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -77,47 +223,22 @@ export function GlobalSearch() {
   const issueHasMore = issueSearchResult?.hasMore ?? false;
   const documentHasMore = documentSearchResult?.hasMore ?? false;
 
-  // Apply fuzzy matching for better typo tolerance
-  const fuzzyIssues = query.length >= 2 ? issueResults : [];
-  const fuzzyDocuments = query.length >= 2 ? documentResults : [];
-
-  const allResults: SearchResult[] = [
-    ...(fuzzyIssues?.map((r: Doc<"issues">) => ({ ...r, type: "issue" as const })) ?? []),
-    ...(fuzzyDocuments?.map((r: Doc<"documents">) => ({ ...r, type: "document" as const })) ?? []),
-  ];
-
+  // Get filtered results based on active tab
   const filteredResults =
-    activeTab === "all"
-      ? allResults
-      : activeTab === "issues"
-        ? (fuzzyIssues?.map((r: Doc<"issues">) => ({ ...r, type: "issue" as const })) ?? [])
-        : (fuzzyDocuments?.map((r: Doc<"documents">) => ({ ...r, type: "document" as const })) ??
-          []);
+    query.length >= 2 ? getFilteredResults(activeTab, issueResults, documentResults) : [];
 
-  const totalCount =
-    activeTab === "all"
-      ? issueTotal + documentTotal
-      : activeTab === "issues"
-        ? issueTotal
-        : documentTotal;
-
-  const hasMore =
-    activeTab === "all"
-      ? issueHasMore || documentHasMore
-      : activeTab === "issues"
-        ? issueHasMore
-        : documentHasMore;
+  const totalCount = getTotalCount(activeTab, issueTotal, documentTotal);
+  const hasMore = getHasMore(activeTab, issueHasMore, documentHasMore);
 
   const handleLoadMore = () => {
-    if (activeTab === "all" || activeTab === "issues") {
-      if (issueHasMore) {
-        setIssueOffset(issueOffset + LIMIT);
-      }
+    const shouldLoadIssues = (activeTab === "all" || activeTab === "issues") && issueHasMore;
+    const shouldLoadDocs = (activeTab === "all" || activeTab === "documents") && documentHasMore;
+
+    if (shouldLoadIssues) {
+      setIssueOffset(issueOffset + LIMIT);
     }
-    if (activeTab === "all" || activeTab === "documents") {
-      if (documentHasMore) {
-        setDocumentOffset(documentOffset + LIMIT);
-      }
+    if (shouldLoadDocs) {
+      setDocumentOffset(documentOffset + LIMIT);
     }
   };
 
@@ -187,42 +308,27 @@ export function GlobalSearch() {
 
             {/* Tabs with counts */}
             <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark overflow-x-auto">
-              <button
-                type="button"
+              <SearchTab
+                label="All"
+                isActive={activeTab === "all"}
+                count={issueTotal + documentTotal}
+                showCount={query.length >= 2}
                 onClick={() => setActiveTab("all")}
-                className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === "all"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
-              >
-                All{" "}
-                {query.length >= 2 && (
-                  <span className="text-xs">({issueTotal + documentTotal})</span>
-                )}
-              </button>
-              <button
-                type="button"
+              />
+              <SearchTab
+                label="Issues"
+                isActive={activeTab === "issues"}
+                count={issueTotal}
+                showCount={query.length >= 2}
                 onClick={() => setActiveTab("issues")}
-                className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === "issues"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
-              >
-                Issues {query.length >= 2 && <span className="text-xs">({issueTotal})</span>}
-              </button>
-              <button
-                type="button"
+              />
+              <SearchTab
+                label="Documents"
+                isActive={activeTab === "documents"}
+                count={documentTotal}
+                showCount={query.length >= 2}
                 onClick={() => setActiveTab("documents")}
-                className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === "documents"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
-              >
-                Documents {query.length >= 2 && <span className="text-xs">({documentTotal})</span>}
-              </button>
+              />
             </div>
 
             {/* Results */}
@@ -240,69 +346,11 @@ export function GlobalSearch() {
                 <>
                   <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {filteredResults.map((result) => (
-                      <a
+                      <SearchResultItem
                         key={result._id}
-                        href={
-                          result.type === "issue"
-                            ? `/project/${result.projectId}?issue=${result._id}`
-                            : `/document/${result._id}`
-                        }
-                        onClick={() => setIsOpen(false)}
-                        className="block p-3 sm:p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
-                      >
-                        <div className="flex items-start gap-3">
-                          {/* Icon */}
-                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
-                            {result.type === "issue" ? (
-                              <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-brand-600"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                aria-hidden="true"
-                                className="w-5 h-5 text-accent-600"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {result.type === "issue" && (
-                                <span className="text-xs font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                                  {result.key}
-                                </span>
-                              )}
-                              <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark rounded-full">
-                                {result.type}
-                              </span>
-                            </div>
-                            <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
-                              {result.title}
-                            </p>
-                            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 line-clamp-2">
-                              {result.description || "No description"}
-                            </p>
-                          </div>
-                        </div>
-                      </a>
+                        result={result}
+                        onClose={() => setIsOpen(false)}
+                      />
                     ))}
                   </div>
 

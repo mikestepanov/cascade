@@ -7,6 +7,22 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
+/**
+ * Get relative time string (e.g., "5 minutes ago")
+ * Returns null if diff is >= 7 days
+ */
+function getRelativeTimeString(diffMs: number): string | null {
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? "minute" : "minutes"} ago`;
+  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
+  if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? "day" : "days"} ago`;
+  return null;
+}
+
 interface VersionHistoryProps {
   documentId: Id<"documents">;
   isOpen: boolean;
@@ -47,22 +63,9 @@ export function VersionHistory({
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) {
-      return "Just now";
-    }
-    if (diffMins < 60) {
-      return `${diffMins} ${diffMins === 1 ? "minute" : "minutes"} ago`;
-    }
-    if (diffHours < 24) {
-      return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
-    }
-    if (diffDays < 7) {
-      return `${diffDays} ${diffDays === 1 ? "day" : "days"} ago`;
-    }
+    const relativeTime = getRelativeTimeString(diffMs);
+    if (relativeTime) return relativeTime;
 
     return date.toLocaleDateString("en-US", {
       month: "short",

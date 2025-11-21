@@ -3,7 +3,7 @@ import { useState } from "react";
 import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
 
 interface TimeTrackerProps {
@@ -12,6 +12,127 @@ interface TimeTrackerProps {
   issueTitle: string;
   estimatedHours?: number;
   loggedHours?: number;
+}
+
+/**
+ * Time progress section with progress bar
+ */
+function TimeProgress({
+  estimatedHours,
+  totalLoggedHours,
+}: {
+  estimatedHours: number;
+  totalLoggedHours: number;
+}) {
+  const remainingHours = estimatedHours > 0 ? estimatedHours - totalLoggedHours : null;
+  const isOverEstimate = remainingHours !== null && remainingHours < 0;
+
+  if (estimatedHours > 0) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
+          </span>
+          {remainingHours !== null && (
+            <span
+              className={
+                isOverEstimate
+                  ? "text-status-error dark:text-status-error-dark font-medium"
+                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
+              }
+            >
+              {isOverEstimate ? "+" : ""}
+              {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
+          <div
+            className={`h-2 rounded-full transition-all duration-300 ${
+              isOverEstimate ? "bg-status-error" : "bg-brand-600"
+            }`}
+            style={{
+              width: `${Math.min((totalLoggedHours / estimatedHours) * 100, 100)}%`,
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (totalLoggedHours > 0) {
+    return (
+      <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <span className="font-semibold">{totalLoggedHours.toFixed(1)}h</span> logged (no estimate
+        set)
+      </div>
+    );
+  }
+
+  return (
+    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      No time logged yet
+    </p>
+  );
+}
+
+/**
+ * Time entries list component
+ */
+function TimeEntriesList({
+  entries,
+}: {
+  entries: (Doc<"timeEntries"> & { totalCost?: number })[];
+}) {
+  return (
+    <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark space-y-2">
+      {entries.map((entry) => {
+        const hours = formatHours(entry.duration);
+        const entryDate = formatDate(entry.date);
+
+        return (
+          <div
+            key={entry._id}
+            className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  {hours}h
+                </div>
+                {entry.description && (
+                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                    {entry.description}
+                  </p>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    {entryDate}
+                  </span>
+                  {entry.activity && (
+                    <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
+                      {entry.activity}
+                    </span>
+                  )}
+                  {entry.billable && (
+                    <span className="text-xs px-2 py-0.5 bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark rounded">
+                      Billable
+                    </span>
+                  )}
+                </div>
+              </div>
+              {entry.totalCost && (
+                <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  {formatCurrency(entry.totalCost)}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export function TimeTracker({
@@ -42,9 +163,6 @@ export function TimeTracker({
   const totalLoggedHours = timeEntries
     ? timeEntries.reduce((sum, entry) => sum + entry.duration / 3600, 0)
     : 0;
-
-  const remainingHours = estimatedHours > 0 ? estimatedHours - totalLoggedHours : null;
-  const isOverEstimate = remainingHours !== null && remainingHours < 0;
 
   const handleStartTimer = async () => {
     try {
@@ -136,50 +254,7 @@ export function TimeTracker({
         </div>
 
         {/* Progress Bar */}
-        {estimatedHours > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
-              </span>
-              {remainingHours !== null && (
-                <span
-                  className={
-                    isOverEstimate
-                      ? "text-status-error dark:text-status-error-dark font-medium"
-                      : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
-                  }
-                >
-                  {isOverEstimate ? "+" : ""}
-                  {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
-                </span>
-              )}
-            </div>
-            <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  isOverEstimate ? "bg-status-error" : "bg-brand-600"
-                }`}
-                style={{
-                  width: `${Math.min((totalLoggedHours / estimatedHours) * 100, 100)}%`,
-                }}
-              />
-            </div>
-          </div>
-        )}
-
-        {estimatedHours === 0 && totalLoggedHours > 0 && (
-          <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            <span className="font-semibold">{totalLoggedHours.toFixed(1)}h</span> logged (no
-            estimate set)
-          </div>
-        )}
-
-        {estimatedHours === 0 && totalLoggedHours === 0 && (
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            No time logged yet
-          </p>
-        )}
+        <TimeProgress estimatedHours={estimatedHours} totalLoggedHours={totalLoggedHours} />
       </div>
 
       {/* Time Entries Toggle */}
@@ -203,54 +278,7 @@ export function TimeTracker({
       )}
 
       {/* Time Entries List */}
-      {showEntries && timeEntries && (
-        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark space-y-2">
-          {timeEntries.map((entry) => {
-            const hours = formatHours(entry.duration);
-            const entryDate = formatDate(entry.date);
-
-            return (
-              <div
-                key={entry._id}
-                className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {hours}h
-                    </div>
-                    {entry.description && (
-                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-                        {entry.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {entryDate}
-                      </span>
-                      {entry.activity && (
-                        <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                          {entry.activity}
-                        </span>
-                      )}
-                      {entry.billable && (
-                        <span className="text-xs px-2 py-0.5 bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark rounded">
-                          Billable
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {entry.totalCost && (
-                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {formatCurrency(entry.totalCost)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {showEntries && timeEntries && <TimeEntriesList entries={timeEntries} />}
 
       {/* Log Time Modal */}
       {showLogModal && (

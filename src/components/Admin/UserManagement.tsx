@@ -2,12 +2,68 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+
+/**
+ * User row component for displaying user information in table
+ */
+function UserRow({
+  user,
+}: {
+  user: Doc<"users"> & { projectsCreated: number; projectMemberships: number };
+}) {
+  return (
+    <tr>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center">
+          {user.image ? (
+            <img
+              src={user.image}
+              alt={user.name || user.email || "User"}
+              className="h-8 w-8 rounded-full mr-3"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-semibold mr-3">
+              {(user.name || user.email || "?")[0].toUpperCase()}
+            </div>
+          )}
+          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            {user.name || "Anonymous"}
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        {user.email || "No email"}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        {user.isAnonymous ? (
+          <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            Anonymous
+          </span>
+        ) : user.emailVerificationTime ? (
+          <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark">
+            Verified
+          </span>
+        ) : (
+          <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark">
+            Unverified
+          </span>
+        )}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        {user.projectsCreated}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        {user.projectMemberships}
+      </td>
+    </tr>
+  );
+}
 
 export function UserManagement() {
   const [activeTab, setActiveTab] = useState<"invites" | "users">("invites");
@@ -389,50 +445,7 @@ export function UserManagement() {
                   </thead>
                   <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {users.map((user) => (
-                      <tr key={user._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            {user.image ? (
-                              <img
-                                src={user.image}
-                                alt={user.name || user.email || "User"}
-                                className="h-8 w-8 rounded-full mr-3"
-                              />
-                            ) : (
-                              <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-semibold mr-3">
-                                {(user.name || user.email || "?")[0].toUpperCase()}
-                              </div>
-                            )}
-                            <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                              {user.name || "Anonymous"}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {user.email || "No email"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {user.isAnonymous ? (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                              Anonymous
-                            </span>
-                          ) : user.emailVerificationTime ? (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark">
-                              Verified
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark">
-                              Unverified
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {user.projectsCreated}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {user.projectMemberships}
-                        </td>
-                      </tr>
+                      <UserRow key={user._id} user={user} />
                     ))}
                   </tbody>
                 </table>

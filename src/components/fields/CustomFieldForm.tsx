@@ -11,6 +11,19 @@ import { Textarea } from "../ui/form/Textarea";
 
 type FieldType = "text" | "number" | "select" | "multiselect" | "date" | "checkbox" | "url";
 
+/**
+ * Parse options string for select/multiselect fields
+ */
+function parseFieldOptions(fieldType: FieldType, options: string): string[] | undefined {
+  if (fieldType !== "select" && fieldType !== "multiselect") {
+    return undefined;
+  }
+  return options
+    .split(",")
+    .map((o) => o.trim())
+    .filter((o) => o);
+}
+
 interface CustomFieldFormProps {
   projectId: Id<"projects">;
   field?: {
@@ -67,16 +80,10 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
       return;
     }
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
-      const optionsArray =
-        fieldType === "select" || fieldType === "multiselect"
-          ? options
-              .split(",")
-              .map((o) => o.trim())
-              .filter((o) => o)
-          : undefined;
+      const optionsArray = parseFieldOptions(fieldType, options);
+      const descriptionValue = description || undefined;
 
       if (field) {
         await updateField({
@@ -84,7 +91,7 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
           name,
           options: optionsArray,
           isRequired,
-          description: description || undefined,
+          description: descriptionValue,
         });
         showSuccess("Field updated");
       } else {
@@ -95,7 +102,7 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
           fieldType,
           options: optionsArray,
           isRequired,
-          description: description || undefined,
+          description: descriptionValue,
         });
         showSuccess("Field created");
       }

@@ -110,6 +110,26 @@ export function formatTimeForInput(timestamp: number): string {
   return `${hours}:${minutes}`;
 }
 
+// Helper function to get the appropriate time unit and value
+function getRelativeTimeUnit(absDiff: number): {
+  value: number;
+  unit: Intl.RelativeTimeFormatUnit;
+} {
+  const seconds = Math.floor(absDiff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) return { value: years, unit: "year" };
+  if (months > 0) return { value: months, unit: "month" };
+  if (days > 0) return { value: days, unit: "day" };
+  if (hours > 0) return { value: hours, unit: "hour" };
+  if (minutes > 0) return { value: minutes, unit: "minute" };
+  return { value: seconds, unit: "second" };
+}
+
 /**
  * Format relative time (e.g., "2 hours ago", "in 3 days")
  * @param timestamp - Unix timestamp in milliseconds
@@ -120,21 +140,10 @@ export function formatRelativeTime(timestamp: number): string {
   const diff = timestamp - now;
   const absDiff = Math.abs(diff);
 
-  const seconds = Math.floor(absDiff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(days / 365);
-
+  const { value, unit } = getRelativeTimeUnit(absDiff);
   const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-  if (years > 0) return formatter.format(diff > 0 ? years : -years, "year");
-  if (months > 0) return formatter.format(diff > 0 ? months : -months, "month");
-  if (days > 0) return formatter.format(diff > 0 ? days : -days, "day");
-  if (hours > 0) return formatter.format(diff > 0 ? hours : -hours, "hour");
-  if (minutes > 0) return formatter.format(diff > 0 ? minutes : -minutes, "minute");
-  return formatter.format(diff > 0 ? seconds : -seconds, "second");
+  return formatter.format(diff > 0 ? value : -value, unit);
 }
 
 /**

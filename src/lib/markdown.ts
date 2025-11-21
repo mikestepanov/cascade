@@ -87,70 +87,56 @@ async function blocksToMarkdown(blocks: Block[]): Promise<string> {
   return lines.join("\n\n");
 }
 
+// Helper to get text content from block
+function getTextContent(content: unknown): string {
+  return Array.isArray(content) && content.length > 0
+    ? content.map((item: ContentItem) => item.text || "").join("")
+    : "";
+}
+
+// Helper to convert block type to markdown
+function convertBlockType(block: Block, textContent: string, indent: string): string {
+  const props = block.props as BlockProps;
+
+  if (block.type === "heading") {
+    const headingLevel = (props?.level as number) || 1;
+    return `${"#".repeat(headingLevel)} ${textContent}`;
+  }
+
+  if (block.type === "paragraph") return textContent;
+  if (block.type === "bulletListItem") return `${indent}- ${textContent}`;
+  if (block.type === "numberedListItem") return `${indent}1. ${textContent}`;
+
+  if (block.type === "checkListItem") {
+    const checked = props?.checked ? "x" : " ";
+    return `${indent}- [${checked}] ${textContent}`;
+  }
+
+  if (block.type === "codeBlock") {
+    const language = (props?.language as string) || "";
+    return `\`\`\`${language}\n${textContent}\n\`\`\``;
+  }
+
+  if (block.type === "table") {
+    return "| Table | Content |\n|-------|---------|";
+  }
+
+  if (block.type === "image") {
+    const imageUrl = (props?.url as string) || "";
+    const imageCaption = (props?.caption as string) || "";
+    return `![${imageCaption}](${imageUrl})`;
+  }
+
+  return textContent;
+}
+
 /**
  * Convert a single block to markdown
  */
 async function blockToMarkdown(block: Block, level: number): Promise<string> {
   const indent = "  ".repeat(level);
-  let result = "";
-
-  // Get text content if available
-  const content = block.content as unknown;
-  const textContent =
-    Array.isArray(content) && content.length > 0
-      ? content.map((item: ContentItem) => item.text || "").join("")
-      : "";
-
-  // Convert based on block type
-  switch (block.type) {
-    case "heading": {
-      const props = block.props as BlockProps;
-      const headingLevel = (props?.level as number) || 1;
-      result = `${"#".repeat(headingLevel)} ${textContent}`;
-      break;
-    }
-
-    case "paragraph":
-      result = textContent;
-      break;
-
-    case "bulletListItem":
-      result = `${indent}- ${textContent}`;
-      break;
-
-    case "numberedListItem":
-      result = `${indent}1. ${textContent}`;
-      break;
-
-    case "checkListItem": {
-      const props = block.props as BlockProps;
-      const checked = props?.checked ? "x" : " ";
-      result = `${indent}- [${checked}] ${textContent}`;
-      break;
-    }
-
-    case "codeBlock": {
-      const props = block.props as BlockProps;
-      const language = (props?.language as string) || "";
-      result = `\`\`\`${language}\n${textContent}\n\`\`\``;
-      break;
-    }
-
-    case "table":
-      result = "| Table | Content |\n|-------|---------|";
-      break;
-
-    case "image": {
-      const props = block.props as BlockProps;
-      const imageUrl = (props?.url as string) || "";
-      const imageCaption = (props?.caption as string) || "";
-      result = `![${imageCaption}](${imageUrl})`;
-      break;
-    }
-
-    default:
-      result = textContent;
-  }
+  const textContent = getTextContent(block.content as unknown);
+  let result = convertBlockType(block, textContent, indent);
 
   // Process children recursively
   const children = block.children || [];
@@ -209,6 +195,76 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
  * Simple markdown parser as fallback
  * Handles common markdown syntax
  */
+// Helper to try parsing heading
+function tryParseHeading(line: string, blocks: Block[]): boolean {
+  const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+  if (!headingMatch) return false;
+
+  blocks.push({
+    type: "heading",
+    props: { level: headingMatch[1].length },
+    content: [{ type: "text", text: headingMatch[2], styles: {} }],
+    children: [],
+  } as Block);
+  return true;
+}
+
+// Helper to try parsing list items
+function tryParseListItem(line: string, blocks: Block[]): boolean {
+  // Checklist items
+  if (line.match(/^\s*[-*]\s+\[[ x]\]/)) {
+    const checked = line.includes("[x]");
+    const text = line.replace(/^\s*[-*]\s+\[[ x]\]\s*/, "");
+    blocks.push({
+      type: "checkListItem",
+      props: { checked },
+      content: [{ type: "text", text, styles: {} }],
+      children: [],
+    } as Block);
+    return true;
+  }
+
+  // Bullet items
+  if (line.match(/^\s*[-*]\s+/)) {
+    const text = line.replace(/^\s*[-*]\s+/, "");
+    blocks.push({
+      type: "bulletListItem",
+      props: {},
+      content: [{ type: "text", text, styles: {} }],
+      children: [],
+    } as Block);
+    return true;
+  }
+
+  // Numbered items
+  if (line.match(/^\s*\d+\.\s+/)) {
+    const text = line.replace(/^\s*\d+\.\s+/, "");
+    blocks.push({
+      type: "numberedListItem",
+      props: {},
+      content: [{ type: "text", text, styles: {} }],
+      children: [],
+    } as Block);
+    return true;
+  }
+
+  return false;
+}
+
+// Helper to try parsing images
+function tryParseImage(line: string, blocks: Block[]): boolean {
+  const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+  if (!imageMatch) return false;
+
+  blocks.push({
+    type: "image",
+    props: { url: imageMatch[2], caption: imageMatch[1] },
+    content: [],
+    children: [],
+  } as Block);
+  return true;
+}
+
 function parseMarkdownSimple(markdown: string): Block[] {
   const blocks: Block[] = [];
   const lines = markdown.split("\n");
@@ -244,63 +300,12 @@ function parseMarkdownSimple(markdown: string): Block[] {
       continue;
     }
 
-    // Headings
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      blocks.push({
-        type: "heading",
-        props: { level: headingMatch[1].length },
-        content: [{ type: "text", text: headingMatch[2], styles: {} }],
-        children: [],
-      } as Block);
-      continue;
-    }
-
-    // Bullet lists
-    if (line.match(/^\s*[-*]\s+\[[ x]\]/)) {
-      const checked = line.includes("[x]");
-      const text = line.replace(/^\s*[-*]\s+\[[ x]\]\s*/, "");
-      blocks.push({
-        type: "checkListItem",
-        props: { checked },
-        content: [{ type: "text", text, styles: {} }],
-        children: [],
-      } as Block);
-      continue;
-    }
-
-    if (line.match(/^\s*[-*]\s+/)) {
-      const text = line.replace(/^\s*[-*]\s+/, "");
-      blocks.push({
-        type: "bulletListItem",
-        props: {},
-        content: [{ type: "text", text, styles: {} }],
-        children: [],
-      } as Block);
-      continue;
-    }
-
-    // Numbered lists
-    if (line.match(/^\s*\d+\.\s+/)) {
-      const text = line.replace(/^\s*\d+\.\s+/, "");
-      blocks.push({
-        type: "numberedListItem",
-        props: {},
-        content: [{ type: "text", text, styles: {} }],
-        children: [],
-      } as Block);
-      continue;
-    }
-
-    // Images
-    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-    if (imageMatch) {
-      blocks.push({
-        type: "image",
-        props: { url: imageMatch[2], caption: imageMatch[1] },
-        content: [],
-        children: [],
-      } as Block);
+    // Try parsing different markdown elements
+    if (
+      tryParseHeading(line, blocks) ||
+      tryParseListItem(line, blocks) ||
+      tryParseImage(line, blocks)
+    ) {
       continue;
     }
 
