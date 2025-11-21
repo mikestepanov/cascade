@@ -66,12 +66,12 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
-            <h4 className="font-medium text-gray-900 dark:text-gray-100">{rule.name}</h4>
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{rule.name}</h4>
             <span
               className={`text-xs px-2 py-1 rounded ${
                 rule.isActive
-                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                  : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-status-success/10 text-status-success dark:bg-status-success/30 dark:text-status-success"
+                  : "bg-ui-bg-tertiary text-ui-text-primary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
               }`}
             >
               {rule.isActive ? "Active" : "Inactive"}
@@ -79,26 +79,26 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           </div>
 
           {rule.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{rule.description}</p>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">{rule.description}</p>
           )}
 
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-gray-500 dark:text-gray-400">When:</span>
-              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+              <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">When:</span>
+              <span className="px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded">
                 {getTriggerLabel(rule.trigger)}
                 {rule.triggerValue && ` → ${rule.triggerValue}`}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-gray-500 dark:text-gray-400">Then:</span>
-              <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">
+              <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Then:</span>
+              <span className="px-2 py-1 bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 rounded">
                 {getActionLabel(rule.actionType)}
               </span>
             </div>
 
-            <div className="text-gray-500 dark:text-gray-400">
+            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Executed: {rule.executionCount} times
             </div>
           </div>
@@ -108,7 +108,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <button
             type="button"
             onClick={handleToggle}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
             title={rule.isActive ? "Disable rule" : "Enable rule"}
             aria-label={rule.isActive ? "Disable rule" : "Enable rule"}
           >
@@ -117,7 +117,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <button
             type="button"
             onClick={onEdit}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
             title="Edit rule"
             aria-label="Edit rule"
           >
@@ -126,7 +126,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <button
             type="button"
             onClick={onDelete}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
             title="Delete rule"
             aria-label="Delete rule"
           >
