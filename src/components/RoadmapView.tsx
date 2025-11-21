@@ -45,7 +45,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
           <Skeleton className="h-8 w-48 mb-2" />
           <Skeleton className="h-4 w-64" />
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-4">
           <div className="space-y-4">
             <Skeleton className="h-16 w-full" />
             <Skeleton className="h-16 w-full" />
@@ -120,8 +120,8 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Roadmap</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">Roadmap</h2>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Visualize issue timeline and dependencies
           </p>
         </div>
@@ -133,7 +133,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
             onChange={(e) =>
               setFilterEpic(e.target.value === "all" ? "all" : (e.target.value as Id<"issues">))
             }
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
             <option value="all">All Epics</option>
             {epics.map((epic) => (
@@ -144,14 +144,14 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
           </select>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <div className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1">
             <button
               type="button"
               onClick={() => setViewMode("months")}
               className={`px-3 py-1 rounded ${
                 viewMode === "months"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
+                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
               }`}
             >
               Months
@@ -161,8 +161,8 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
               onClick={() => setViewMode("weeks")}
               className={`px-3 py-1 rounded ${
                 viewMode === "weeks"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "text-gray-600 dark:text-gray-400"
+                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
+                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
               }`}
             >
               Weeks
@@ -172,18 +172,18 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       </div>
 
       {/* Timeline */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden">
         {/* Timeline Header */}
-        <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4">
           <div className="flex">
-            <div className="w-64 flex-shrink-0 font-medium text-gray-700 dark:text-gray-300">
+            <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Issue
             </div>
             <div className="flex-1 grid grid-cols-6">
               {timelineMonths.map((month) => (
                 <div
                   key={month.getTime()}
-                  className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 border-l border-gray-200 dark:border-gray-700 px-2"
+                  className="text-center text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark border-l border-ui-border-primary dark:border-ui-border-primary-dark px-2"
                 >
                   {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                 </div>
@@ -193,9 +193,9 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
         </div>
 
         {/* Timeline Body */}
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
           {filteredIssues.length === 0 ? (
-            <div className="p-12 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-12 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <p>No issues with due dates to display</p>
               <p className="text-sm mt-1">Add due dates to issues to see them on the roadmap</p>
             </div>
@@ -203,7 +203,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
             filteredIssues.map((issue) => (
               <div
                 key={issue._id}
-                className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                className="flex items-center p-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
               >
                 {/* Issue Info */}
                 <div className="w-64 flex-shrink-0 pr-4">
@@ -212,12 +212,12 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
                     <button
                       type="button"
                       onClick={() => setSelectedIssue(issue._id)}
-                      className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-primary dark:hover:text-primary truncate text-left"
+                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400 truncate text-left"
                     >
                       {issue.key}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{issue.title}</p>
+                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">{issue.title}</p>
                 </div>
 
                 {/* Timeline Bar */}
@@ -244,7 +244,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
 
                   {/* Today Indicator */}
                   <div
-                    className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
+                    className="absolute top-0 bottom-0 w-0.5 bg-status-error z-10"
                     style={{ left: `${getPositionOnTimeline(Date.now())}%` }}
                     title="Today"
                   />
