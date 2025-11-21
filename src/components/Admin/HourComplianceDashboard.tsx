@@ -98,13 +98,13 @@ export function HourComplianceDashboard() {
   const getStatusColor = (status: ComplianceStatus) => {
     switch (status) {
       case "compliant":
-        return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300";
+        return "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success";
       case "under_hours":
-        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300";
+        return "bg-status-warning/10 text-status-warning dark:bg-status-warning/20 dark:text-status-warning";
       case "over_hours":
-        return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300";
+        return "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error";
       case "equity_under":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
+        return "bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300";
     }
   };
 
@@ -137,10 +137,10 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {summary.complianceRate.toFixed(1)}%
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Compliance Rate</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">Compliance Rate</div>
               </div>
             </CardBody>
           </Card>
@@ -148,10 +148,10 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                <div className="text-2xl font-bold text-status-success dark:text-status-success">
                   {summary.compliant}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">✅ Compliant</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">✅ Compliant</div>
               </div>
             </CardBody>
           </Card>
@@ -159,10 +159,10 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                <div className="text-2xl font-bold text-status-warning dark:text-status-warning">
                   {summary.underHours}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">⚠️ Under Hours</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">⚠️ Under Hours</div>
               </div>
             </CardBody>
           </Card>
@@ -170,10 +170,10 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                <div className="text-2xl font-bold text-status-error dark:text-status-error">
                   {summary.overHours}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">🔴 Over Hours</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">🔴 Over Hours</div>
               </div>
             </CardBody>
           </Card>
@@ -181,10 +181,10 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
                   {summary.equityUnder}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">💎 Equity Short</div>
+                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">💎 Equity Short</div>
               </div>
             </CardBody>
           </Card>
@@ -235,7 +235,7 @@ export function HourComplianceDashboard() {
 
           {/* Records List */}
           {!records ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
           ) : records.length === 0 ? (
             <EmptyState
               icon="📊"
@@ -251,14 +251,14 @@ export function HourComplianceDashboard() {
               {records.map((record) => (
                 <div
                   key={record._id}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-xl">{getStatusIcon(record.status)}</span>
                         <div>
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                          <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {record.user?.name || record.user?.email || "Unknown User"}
                           </h4>
                           <div className="flex gap-2 mt-1">
@@ -267,11 +267,11 @@ export function HourComplianceDashboard() {
                             >
                               {getStatusLabel(record.status)}
                             </span>
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded capitalize">
+                            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
                               {record.periodType}ly
                             </span>
                             {record.reviewedBy && (
-                              <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded">
+                              <span className="text-xs px-2 py-0.5 bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 rounded">
                                 Reviewed
                               </span>
                             )}
@@ -281,27 +281,27 @@ export function HourComplianceDashboard() {
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400 text-xs">Period:</span>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">Period:</span>
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {formatDate(record.periodStart)} - {formatDate(record.periodEnd)}
                           </div>
                         </div>
 
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400 text-xs">
+                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                             Hours Worked:
                           </span>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
+                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {record.totalHoursWorked.toFixed(1)}h
                           </div>
                         </div>
 
                         {record.hoursDeficit && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Deficit:
                             </span>
-                            <div className="font-medium text-yellow-600 dark:text-yellow-400">
+                            <div className="font-medium text-status-warning dark:text-status-warning">
                               -{record.hoursDeficit.toFixed(1)}h
                             </div>
                           </div>
@@ -309,10 +309,10 @@ export function HourComplianceDashboard() {
 
                         {record.hoursExcess && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Excess:
                             </span>
-                            <div className="font-medium text-red-600 dark:text-red-400">
+                            <div className="font-medium text-status-error dark:text-status-error">
                               +{record.hoursExcess.toFixed(1)}h
                             </div>
                           </div>
@@ -320,10 +320,10 @@ export function HourComplianceDashboard() {
 
                         {record.equityHoursDeficit && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Equity Short:
                             </span>
-                            <div className="font-medium text-blue-600 dark:text-blue-400">
+                            <div className="font-medium text-brand-600 dark:text-brand-400">
                               -{record.equityHoursDeficit.toFixed(1)}h
                             </div>
                           </div>
@@ -331,10 +331,10 @@ export function HourComplianceDashboard() {
 
                         {record.totalEquityHours && (
                           <div>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
                               Equity Hours:
                             </span>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
+                            <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                               {record.totalEquityHours.toFixed(1)}h
                             </div>
                           </div>
@@ -396,7 +396,7 @@ export function HourComplianceDashboard() {
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add notes about this compliance record..."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-ui-text-primary dark:text-ui-text-primary-dark"
             />
           </div>
 
