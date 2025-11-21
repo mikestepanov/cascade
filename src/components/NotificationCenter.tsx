@@ -63,7 +63,7 @@ export function NotificationCenter() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        className="relative p-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
       >
         <svg
           aria-hidden="true"
@@ -81,7 +81,7 @@ export function NotificationCenter() {
         </svg>
         {/* Unread Badge */}
         {unreadCount && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -101,17 +101,17 @@ export function NotificationCenter() {
           />
 
           {/* Dropdown Panel */}
-          <div className="absolute right-0 mt-2 w-full sm:w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-20 max-h-[80vh] flex flex-col">
+          <div className="absolute right-0 mt-2 w-full sm:w-96 max-w-[calc(100vw-2rem)] bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-20 max-h-[80vh] flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800 rounded-t-lg">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Notifications
               </h3>
               {unreadCount && unreadCount > 0 && (
                 <button
                   type="button"
                   onClick={handleMarkAllAsRead}
-                  className="text-sm text-primary hover:text-primary-dark font-medium"
+                  className="text-sm text-brand-600 hover:text-brand-700 font-medium"
                 >
                   Mark all read
                 </button>
@@ -121,17 +121,17 @@ export function NotificationCenter() {
             {/* Notifications List */}
             <div className="flex-1 overflow-y-auto">
               {!notifications || notifications.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   <div className="text-4xl mb-2">📭</div>
                   <p>No notifications</p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                   {notifications.map((notification) => (
                     <div
                       key={notification._id}
-                      className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                        !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                      className={`p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors ${
+                        !notification.isRead ? "bg-brand-50 dark:bg-brand-900/20" : ""
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -144,22 +144,22 @@ export function NotificationCenter() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                                 {notification.title}
                               </p>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                                 {notification.message}
                               </p>
                               <div className="flex items-center gap-2 mt-1">
-                                <p className="text-xs text-gray-400 dark:text-gray-500">
+                                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                   {formatTime(notification.createdAt)}
                                 </p>
                                 {notification.actorName && (
                                   <>
-                                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                       •
                                     </span>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                       by {notification.actorName}
                                     </p>
                                   </>
@@ -173,7 +173,7 @@ export function NotificationCenter() {
                                 <button
                                   type="button"
                                   onClick={() => handleMarkAsRead(notification._id)}
-                                  className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded"
+                                  className="p-1 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded"
                                   title="Mark as read"
                                 >
                                   <svg
@@ -193,7 +193,7 @@ export function NotificationCenter() {
                               <button
                                 type="button"
                                 onClick={() => handleDelete(notification._id)}
-                                className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
+                                className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-bg-dark rounded"
                                 title="Delete"
                               >
                                 <svg
