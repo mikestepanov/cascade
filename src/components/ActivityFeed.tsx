@@ -39,18 +39,18 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   const getActionColor = (action: string) => {
     switch (action) {
       case "created":
-        return "text-green-600 dark:text-green-400";
+        return "text-status-success";
       case "updated":
-        return "text-blue-600 dark:text-blue-400";
+        return "text-brand-600 dark:text-brand-400";
       case "commented":
-        return "text-purple-600 dark:text-purple-400";
+        return "text-accent-600 dark:text-accent-400";
       case "assigned":
-        return "text-orange-600 dark:text-orange-400";
+        return "text-status-warning";
       case "linked":
       case "unlinked":
-        return "text-indigo-600 dark:text-indigo-400";
+        return "text-brand-500 dark:text-brand-300";
       default:
-        return "text-gray-600 dark:text-gray-400";
+        return "text-ui-text-secondary dark:text-ui-text-secondary-dark";
     }
   };
 
