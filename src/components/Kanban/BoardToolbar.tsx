@@ -23,7 +23,7 @@ export function BoardToolbar({
 }: BoardToolbarProps) {
   return (
     <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-2">
-      <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
         {sprintId ? "Sprint Board" : "Kanban Board"}
       </h2>
       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
@@ -33,12 +33,12 @@ export function BoardToolbar({
             type="button"
             onClick={onUndo}
             disabled={historyStack.length === 0}
-            className="p-2.5 sm:p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Undo (Ctrl+Z)"
           >
             <svg
               aria-hidden="true"
-              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary dark:text-ui-text-primary-dark"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -55,12 +55,12 @@ export function BoardToolbar({
             type="button"
             onClick={onRedo}
             disabled={redoStack.length === 0}
-            className="p-2.5 sm:p-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Redo (Ctrl+Shift+Z)"
           >
             <svg
               aria-hidden="true"
-              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary dark:text-ui-text-primary-dark"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -82,7 +82,7 @@ export function BoardToolbar({
           className={`px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors ${
             selectionMode
               ? "bg-primary text-white"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
           }`}
           aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}
         >
