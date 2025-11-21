@@ -46,7 +46,7 @@ export function PumbleIntegration() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
           >
             Add Webhook
           </button>
@@ -75,7 +75,7 @@ export function PumbleIntegration() {
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center space-x-1"
+            className="text-sm text-accent-600 dark:text-accent-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center space-x-1"
           >
             <span>How to create a Pumble incoming webhook</span>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,7 +103,7 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
     <div className="text-center py-12">
       <div className="mx-auto w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-4">
         <svg
-          className="w-8 h-8 text-purple-600 dark:text-purple-400"
+          className="w-8 h-8 text-accent-600 dark:text-accent-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -125,7 +125,7 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
       </p>
       <button
         onClick={onAddWebhook}
-        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+        className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
       >
         Add Your First Webhook
       </button>
@@ -208,7 +208,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.events.map((event: string) => (
           <span
             key={event}
-            className="px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded"
+            className="px-2 py-0.5 text-xs font-medium bg-accent-100 dark:bg-accent-900/30 text-purple-800 dark:text-purple-300 rounded"
           >
             {event.replace("issue.", "")}
           </span>
@@ -272,7 +272,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Error */}
       {webhook.lastError && (
-        <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-xs text-red-700 dark:text-red-400">
+        <div className="mb-3 p-2 bg-status-error/10 dark:bg-status-error/20 border border-red-200 dark:border-red-800 rounded text-xs text-red-700 dark:text-red-400">
           Last error: {webhook.lastError}
         </div>
       )}
@@ -281,7 +281,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       <div className="flex items-center space-x-2 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
         <button
           onClick={handleTest}
-          className="px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+          className="px-3 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
         >
           Test Webhook
         </button>
@@ -506,7 +506,7 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
             >
               Add Webhook
             </button>
@@ -615,7 +615,7 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-white dark:bg-gray-700 text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
@@ -680,7 +680,7 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
             >
               Save Changes
             </button>
