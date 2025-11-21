@@ -10,6 +10,7 @@ This document contains tasks that require **manual human intervention** - things
 ## 🚀 Quick Start Checklist
 
 **Minimum Required to Run Cascade:**
+
 1. [ ] Install dependencies: `pnpm install`
 2. [ ] Start Convex dev: `pnpm run dev:backend`
 3. [ ] Start frontend: `pnpm run dev:frontend`
@@ -18,6 +19,7 @@ This document contains tasks that require **manual human intervention** - things
 6. [ ] (Optional) Install testing dependencies for backend tests
 
 **To Enable Email Notifications:**
+
 1. [ ] Sign up for email provider (Resend or SendPulse)
 2. [ ] Get API credentials
 3. [ ] Add to `.env.local` (see template below)
@@ -75,16 +77,19 @@ APP_URL=http://localhost:5173
 ```
 
 **For Production/Vercel:**
+
 - Add same variables to your deployment platform's environment settings
 - **CRITICAL:** Update `APP_URL` to your production domain
 
 **For CI/CD:**
+
 ```bash
 # Required for deploying Convex from CI/CD
 CONVEX_DEPLOY_KEY=your_convex_deploy_key_from_dashboard
 ```
 
 **Getting Convex Deploy Key:**
+
 1. Go to https://dashboard.convex.dev/d/peaceful-salmon-964
 2. Settings → Deploy Keys
 3. Create new deploy key
@@ -99,6 +104,7 @@ CONVEX_DEPLOY_KEY=your_convex_deploy_key_from_dashboard
 **Decision Required:** Which email provider to use?
 
 #### Option A: Resend (Recommended for Getting Started)
+
 - **Pros:** Simple, React Email built-in, great DX, generous free tier
 - **Free Tier:** 3,000 emails/month, 100 emails/day
 - **Paid:** $20/month for 50,000 emails
@@ -109,6 +115,9 @@ CONVEX_DEPLOY_KEY=your_convex_deploy_key_from_dashboard
   4. [ ] Add to environment variables (see below)
 
 #### Option B: SendPulse (Better Free Tier for Growth)
+
+> **Note:** SendPulse integration is currently **NOT IMPLEMENTED** in the codebase. Use Resend for now.
+
 - **Pros:** 15,000 emails/month free, established service
 - **Free Tier:** 15,000 emails/month to 500 subscribers
 - **Setup:**
@@ -120,6 +129,7 @@ CONVEX_DEPLOY_KEY=your_convex_deploy_key_from_dashboard
 ### 2. Set Environment Variables
 
 **Local Development** (`.env.local`):
+
 ```bash
 # Email Provider (choose one)
 EMAIL_PROVIDER=resend  # or "sendpulse"
@@ -138,6 +148,7 @@ APP_URL=http://localhost:5173
 ```
 
 **Production** (Deployment Platform):
+
 - [ ] Add `EMAIL_PROVIDER` to production environment
 - [ ] Add email provider credentials (API key/ID/Secret)
 - [ ] Add `RESEND_FROM_EMAIL` or `SENDPULSE_FROM_EMAIL`
@@ -146,18 +157,21 @@ APP_URL=http://localhost:5173
 ### 3. Domain Verification (Production Only)
 
 **For Production Emails:**
+
 - [ ] Verify your domain with your email provider
 - [ ] Add SPF, DKIM records to DNS
 - [ ] Configure sender email address (e.g., `notifications@yourdomain.com`)
 - [ ] Test email deliverability
 
 **Testing Without Domain:**
+
 - Resend: Use `onboarding@resend.dev` (limited to 100 emails/day)
 - SendPulse: Use default sender
 
 ### 4. Convex Deployment
 
 **Deploy to Convex:**
+
 ```bash
 # Deploy backend with environment variables
 npx convex deploy
@@ -167,6 +181,7 @@ npx convex deploy --cmd 'pnpm run build'
 ```
 
 **Set Convex Environment Variables:**
+
 - [ ] Go to Convex Dashboard → Settings → Environment Variables
 - [ ] Add email provider credentials
 - [ ] Add `APP_URL` for production
@@ -175,6 +190,7 @@ npx convex deploy --cmd 'pnpm run build'
 ### 5. Test Email Sending
 
 **Manual Testing Checklist:**
+
 - [ ] Create a test issue and assign it to yourself
 - [ ] Verify assignment email arrives
 - [ ] @mention yourself in a comment
@@ -186,6 +202,7 @@ npx convex deploy --cmd 'pnpm run build'
 - [ ] Verify you stop receiving emails after unsubscribe
 
 **Digest Testing:**
+
 - [ ] Set digest preference to "daily" in notification settings
 - [ ] Wait for next scheduled run (9am UTC) OR trigger manually
 - [ ] Verify digest email arrives with recent notifications
@@ -206,12 +223,13 @@ npx convex deploy --cmd 'pnpm run build'
 - [ ] Test navigation to `/unsubscribe?token=xxx`
 
 **Example Implementation Needed:**
+
 ```tsx
 // In App.tsx, add route handling for /unsubscribe
 const urlParams = new URLSearchParams(window.location.search);
-const unsubscribeToken = urlParams.get('token');
+const unsubscribeToken = urlParams.get("token");
 
-if (window.location.pathname === '/unsubscribe' && unsubscribeToken) {
+if (window.location.pathname === "/unsubscribe" && unsubscribeToken) {
   return <UnsubscribePage token={unsubscribeToken} />;
 }
 ```
@@ -246,6 +264,7 @@ if (window.location.pathname === '/unsubscribe' && unsubscribeToken) {
 ### 9. Monitor Email Delivery
 
 **Ongoing:**
+
 - [ ] Monitor email bounce rates
 - [ ] Check spam reports
 - [ ] Monitor email delivery success in logs
@@ -254,6 +273,7 @@ if (window.location.pathname === '/unsubscribe' && unsubscribeToken) {
 ### 10. Cost Monitoring
 
 **Ongoing:**
+
 - [ ] Track monthly email volume
 - [ ] Monitor approaching free tier limits
 - [ ] Plan for paid tier if needed
@@ -284,6 +304,7 @@ Before launching email notifications to users:
 ### 11. User Authentication & Invitations
 
 **What's Already Configured:**
+
 - ✅ Email/Password authentication (works out of the box)
 - ✅ Anonymous authentication (works out of the box)
 - ✅ **User invitation system** (works out of the box!)
@@ -292,14 +313,17 @@ Before launching email notifications to users:
 
 **User Invitations - No Setup Required!**
 Admins can invite users directly from the UI:
+
 1. Go to Settings → Admin → User Management
 2. Click "Invite User"
 3. Enter email and select role (User/Admin)
 4. User receives invitation (requires email provider setup above)
+   > **Note:** Email sending for invites is currently pending implementation. You will need to manually share the invite link from the database or console logs.
 5. Invitation valid for 7 days
 6. Admins can revoke/resend invitations
 
 **Google OAuth Setup (Optional):**
+
 1. [ ] Create Google Cloud Project
 2. [ ] Enable Google+ API
 3. [ ] Create OAuth 2.0 credentials (Web application)
@@ -312,10 +336,11 @@ Admins can invite users directly from the UI:
    AUTH_GOOGLE_CLIENT_ID=your_google_client_id
    AUTH_GOOGLE_CLIENT_SECRET=your_google_client_secret
    ```
-7. [ ] Update `convex/auth.ts` (uncomment Google provider)
+7. [ ] Update `convex/auth.ts` (uncomment Google provider - currently commented out)
 8. [ ] Redeploy Convex backend
 
 **Testing:**
+
 - [ ] Visit sign-in page
 - [ ] Click "Sign in with Google" button
 - [ ] Complete OAuth flow
@@ -334,6 +359,7 @@ Admins can invite users directly from the UI:
 The REST API allows programmatic access to Cascade from CLI tools, AI assistants, and external scripts.
 
 **Features:**
+
 - Generate API keys with custom scopes
 - Rate limiting per key
 - Usage statistics tracking
@@ -342,6 +368,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
 **How to Use:**
 
 1. **Generate an API Key:**
+
    - Go to Settings → API Keys
    - Click "Generate Key"
    - Enter a name (e.g., "Claude Code Integration")
@@ -351,6 +378,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
    - **Important:** Copy the key immediately (shown only once!)
 
 2. **Use the API Key:**
+
    ```bash
    # Example: List issues for a project
    curl -H "Authorization: Bearer sk_casc_your_key_here" \
@@ -358,6 +386,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
    ```
 
 3. **Monitor Usage:**
+
    - Go to Settings → API Keys
    - Click "View Stats" on any key
    - See total calls, last 24h usage, success rate, response times
@@ -368,6 +397,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
    - Click "Delete" to remove permanently
 
 **Available Scopes:**
+
 - `issues:read` - View issues
 - `issues:write` - Create/update issues
 - `issues:delete` - Delete issues
@@ -376,6 +406,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
 - `*` - Full access (use with caution)
 
 **Documentation:**
+
 - See `docs/API.md` for complete API reference
 - Includes examples for bash, Python, Node.js, and Claude Code
 
@@ -392,6 +423,7 @@ The REST API allows programmatic access to Cascade from CLI tools, AI assistants
 The Pumble integration sends notifications to Pumble channels when issues are created, updated, or assigned.
 
 **Features:**
+
 - Webhook-based (no OAuth needed)
 - Event subscriptions (issue.created, issue.updated, etc.)
 - Rich message formatting with colors
@@ -401,6 +433,7 @@ The Pumble integration sends notifications to Pumble channels when issues are cr
 **Setup Steps:**
 
 1. **Get Pumble Webhook URL:**
+
    - [ ] Open Pumble and go to the channel where you want notifications
    - [ ] Click channel name → "Integrations"
    - [ ] Click "Incoming Webhooks"
@@ -408,6 +441,7 @@ The Pumble integration sends notifications to Pumble channels when issues are cr
    - [ ] Copy the Webhook URL (e.g., `https://api.pumble.com/workspaces/xxx/...`)
 
 2. **Add Webhook in Cascade:**
+
    - [ ] Go to Settings → Integrations → Pumble
    - [ ] Click "Add Webhook"
    - [ ] Enter webhook name (e.g., "Team Notifications")
@@ -427,6 +461,7 @@ The Pumble integration sends notifications to Pumble channels when issues are cr
    - [ ] Click "Add Webhook"
 
 3. **Test the Integration:**
+
    - [ ] Click "Test Webhook" button
    - [ ] Check your Pumble channel for test message
    - [ ] If successful, you'll see: "🎉 Cascade integration is working!"
@@ -439,6 +474,7 @@ The Pumble integration sends notifications to Pumble channels when issues are cr
    - Click "View Stats" for detailed usage
 
 **Troubleshooting:**
+
 - If test fails, verify webhook URL is correct
 - Ensure webhook URL contains "pumble.com"
 - Check webhook is active (toggle in settings)
@@ -455,6 +491,7 @@ The Pumble integration sends notifications to Pumble channels when issues are cr
 **Status:** Code implemented ✅ | OAuth setup required 🔴
 
 The GitHub integration is fully coded but requires OAuth app setup to work. This enables:
+
 - Linking GitHub repositories to projects
 - Tracking PRs and commits
 - Auto-linking commits to issues (e.g., "fixes PROJ-123")
@@ -463,6 +500,7 @@ The GitHub integration is fully coded but requires OAuth app setup to work. This
 **Setup Steps:**
 
 1. **Create GitHub OAuth App:**
+
    - [ ] Go to GitHub Settings → Developer settings → OAuth Apps
    - [ ] Click "New OAuth App"
    - [ ] **Application name:** Cascade (or your app name)
@@ -475,19 +513,23 @@ The GitHub integration is fully coded but requires OAuth app setup to work. This
 2. **Add GitHub Credentials to Environment:**
 
    **Local Development** (`.env.local`):
+
    ```bash
    GITHUB_CLIENT_ID=your_github_client_id_here
    GITHUB_CLIENT_SECRET=your_github_client_secret_here
    ```
 
    **Production** (Convex Dashboard or Deployment Platform):
+
    - [ ] Add `GITHUB_CLIENT_ID` to environment variables
    - [ ] Add `GITHUB_CLIENT_SECRET` to environment variables
    - [ ] Redeploy Convex backend
 
 3. **Update Auth Configuration:**
+
    - [ ] Open `convex/auth.config.ts`
    - [ ] Add GitHub provider (if not already added):
+
    ```typescript
    import GitHub from "@auth/core/providers/github";
 
@@ -503,6 +545,7 @@ The GitHub integration is fully coded but requires OAuth app setup to work. This
    ```
 
 4. **Set Up GitHub Webhook (Optional - for real-time sync):**
+
    - [ ] Go to your GitHub repository settings
    - [ ] Click "Webhooks" → "Add webhook"
    - [ ] **Payload URL:** `https://yourdomain.com/github/webhook`
@@ -522,6 +565,7 @@ The GitHub integration is fully coded but requires OAuth app setup to work. This
    - [ ] Verify PR appears in Settings → Integrations
 
 **Files to Reference:**
+
 - Backend: `convex/github.ts` - All GitHub functions
 - Frontend: `src/components/Settings.tsx` - GitHub integration UI
 - Documentation: `INTEGRATIONS_README.md` - Full setup guide
@@ -533,7 +577,8 @@ The GitHub integration is fully coded but requires OAuth app setup to work. This
 **Status:** Code implemented ✅ | OAuth setup required 🔴
 
 The Google Calendar integration is fully coded but requires OAuth setup. This enables:
-- Bi-directional calendar sync (Cascade ↔ Google Calendar)
+
+- Bi-directional calendar sync (Cascade ↔ Google Calendar) - **(Sync logic pending)**
 - Import Google events to Cascade
 - Export Cascade events to Google
 - Auto-sync on schedule
@@ -541,16 +586,19 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
 **Setup Steps:**
 
 1. **Create Google Cloud Project:**
+
    - [ ] Go to [Google Cloud Console](https://console.cloud.google.com/)
    - [ ] Create new project (or select existing)
    - [ ] Project name: "Cascade" (or your app name)
 
 2. **Enable Google Calendar API:**
+
    - [ ] In Google Cloud Console, go to "APIs & Services" → "Library"
    - [ ] Search for "Google Calendar API"
    - [ ] Click "Enable"
 
 3. **Create OAuth 2.0 Credentials:**
+
    - [ ] Go to "APIs & Services" → "Credentials"
    - [ ] Click "Create Credentials" → "OAuth client ID"
    - [ ] Configure consent screen if prompted:
@@ -568,19 +616,23 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
 4. **Add Google Credentials to Environment:**
 
    **Local Development** (`.env.local`):
+
    ```bash
    GOOGLE_CLIENT_ID=your_google_client_id_here.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=your_google_client_secret_here
    ```
 
    **Production** (Convex Dashboard or Deployment Platform):
+
    - [ ] Add `GOOGLE_CLIENT_ID` to environment variables
    - [ ] Add `GOOGLE_CLIENT_SECRET` to environment variables
    - [ ] Redeploy Convex backend
 
 5. **Update Auth Configuration:**
+
    - [ ] Open `convex/auth.config.ts`
    - [ ] Add Google provider (if not already added):
+
    ```typescript
    import Google from "@auth/core/providers/google";
 
@@ -592,7 +644,8 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
          authorization: {
            params: {
-             scope: "openid email profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events",
+             scope:
+               "openid email profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events",
              access_type: "offline",
              prompt: "consent",
            },
@@ -603,6 +656,7 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
    ```
 
 6. **Configure OAuth Consent Screen:**
+
    - [ ] Go to "APIs & Services" → "OAuth consent screen"
    - [ ] Fill in required information:
      - App name, support email, developer contact
@@ -629,11 +683,13 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
    - [ ] Check if it appears in Cascade
 
 **Files to Reference:**
+
 - Backend: `convex/googleCalendar.ts` - All Google Calendar functions
 - Frontend: `src/components/Settings.tsx` - Google Calendar integration UI
 - Documentation: `INTEGRATIONS_README.md` - Full setup guide
 
 **Important Notes:**
+
 - Refresh tokens expire after 7 days if app is in testing mode
 - Submit app for verification to get refresh tokens that don't expire
 - Sync runs on schedule (implement cron job in `convex/crons.ts`)
@@ -648,6 +704,7 @@ The Google Calendar integration is fully coded but requires OAuth setup. This en
 The offline mode and PWA features require **no manual setup** - they work automatically!
 
 **Features Already Working:**
+
 - ✅ Service Worker caching
 - ✅ IndexedDB for offline data
 - ✅ Offline mutation queue
@@ -659,6 +716,7 @@ The offline mode and PWA features require **no manual setup** - they work automa
 **No OAuth Required** - Unlike GitHub and Google, offline mode just works!
 
 **To Test:**
+
 1. Open app in browser
 2. Open DevTools → Application → Service Workers
 3. Check "Offline" to simulate offline mode
@@ -668,11 +726,13 @@ The offline mode and PWA features require **no manual setup** - they work automa
 7. Go to Settings → Offline Mode to see queue status
 
 **To Install as App:**
+
 1. Chrome/Edge: Click install icon in address bar
 2. Safari iOS: Share → Add to Home Screen
 3. Android: Chrome menu → Install app
 
 **Files to Reference:**
+
 - Service Worker: `src/service-worker.ts`
 - Offline utilities: `src/lib/offline.ts`
 - React hooks: `src/hooks/useOffline.ts`
@@ -702,6 +762,7 @@ npm install --save-dev convex-test@0.0.38
 **No additional environment variables needed for testing** - Tests run in isolated environment.
 
 **Verify Setup:**
+
 ```bash
 # Run backend tests
 pnpm test:backend
@@ -711,6 +772,7 @@ pnpm vitest convex/rbac.test.ts
 ```
 
 **Existing Test Coverage:**
+
 - ✅ 221 test cases across 9 modules
 - ✅ Modules tested: rbac, projects, issues, documents, sprints, analytics, notifications, automationRules, webhooks
 - ⚠️ 19 modules without tests yet (see TODO.md for details)
@@ -724,6 +786,7 @@ pnpm vitest convex/rbac.test.ts
 **Optional:** Enable product analytics and session replay
 
 **Setup:**
+
 1. [ ] Sign up at https://posthog.com
 2. [ ] Get project API key
 3. [ ] Add to environment variables:
@@ -735,6 +798,7 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 **Production:**
+
 - [ ] Add same variables to production environment
 - [ ] Verify analytics events are being captured
 - [ ] Set up dashboards for key metrics
@@ -746,17 +810,20 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ## 📚 Resources
 
 ### Documentation
+
 - Email Setup Guide: `convex/email/SETUP.md`
 - Email System Overview: `convex/email/README.md`
 - Environment Variables: `.env.example`
 
 ### External Links
+
 - Resend Dashboard: https://resend.com/dashboard
 - SendPulse Dashboard: https://login.sendpulse.com/
 - Convex Dashboard: https://dashboard.convex.dev/d/peaceful-salmon-964
 - React Email: https://react.email/docs
 
 ### Support
+
 - Resend Docs: https://resend.com/docs
 - SendPulse API: https://sendpulse.com/api
 - Convex Docs: https://docs.convex.dev/
@@ -775,19 +842,20 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 ## 📝 Quick Summary: What's Implemented vs What Needs Setup
 
-| Feature | Code Status | OAuth/Setup Required | Manual Steps |
-|---------|-------------|----------------------|--------------|
-| Email Notifications | ✅ Complete | 🔴 Yes | Email provider account + API keys |
-| REST API / API Keys | ✅ Complete | ✅ No | None - generate keys in Settings |
-| Pumble Integration | ✅ Complete | 🟡 Webhook URL | Get webhook URL from Pumble |
-| Google Calendar | ✅ Complete | 🔴 Yes | Google Cloud project + OAuth |
-| GitHub Integration | ✅ Complete | 🔴 Yes | GitHub OAuth app + credentials |
-| Offline Mode / PWA | ✅ Complete | ✅ No | None - works out of the box! |
-| Responsive Design | ✅ Complete | ✅ No | None - already applied |
-| Dark Mode | ✅ Complete | ✅ No | None - already implemented |
-| Onboarding Flow | ✅ Complete | ✅ No | None - auto-triggers for new users |
+| Feature             | Code Status | OAuth/Setup Required | Manual Steps                       |
+| ------------------- | ----------- | -------------------- | ---------------------------------- |
+| Email Notifications | ✅ Complete | 🔴 Yes               | Email provider account + API keys  |
+| REST API / API Keys | ✅ Complete | ✅ No                | None - generate keys in Settings   |
+| Pumble Integration  | ✅ Complete | 🟡 Webhook URL       | Get webhook URL from Pumble        |
+| Google Calendar     | ✅ Complete | 🔴 Yes               | Google Cloud project + OAuth       |
+| GitHub Integration  | ✅ Complete | 🔴 Yes               | GitHub OAuth app + credentials     |
+| Offline Mode / PWA  | ✅ Complete | ✅ No                | None - works out of the box!       |
+| Responsive Design   | ✅ Complete | ✅ No                | None - already applied             |
+| Dark Mode           | ✅ Complete | ✅ No                | None - already implemented         |
+| Onboarding Flow     | ✅ Complete | ✅ No                | None - auto-triggers for new users |
 
 **Priority Order for Production:**
+
 1. **Email Notifications** - Users expect this
 2. **REST API** - Already works, just generate keys
 3. **Pumble Integration** - Simple webhook setup
