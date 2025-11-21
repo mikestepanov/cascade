@@ -37,31 +37,31 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
   };
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
-            <h4 className="font-medium text-gray-900">{template.name}</h4>
-            <span className="text-xs px-2 py-0.5 bg-gray-200 text-gray-700 rounded capitalize">
+            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{template.name}</h4>
+            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
               {template.type}
             </span>
-            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded capitalize">
+            <span className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded capitalize">
               {template.defaultPriority}
             </span>
           </div>
-          <p className="text-sm text-gray-600 mb-1">
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
             <span className="font-medium">Title:</span> {template.titleTemplate}
           </p>
           {template.descriptionTemplate && (
-            <p className="text-xs text-gray-500 line-clamp-2">{template.descriptionTemplate}</p>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">{template.descriptionTemplate}</p>
           )}
           {template.defaultLabels && template.defaultLabels.length > 0 && (
             <div className="flex gap-1 mt-2">
               {template.defaultLabels.map((label) => (
                 <span
                   key={label}
-                  className="text-xs px-2 py-0.5 bg-white border border-gray-300 rounded"
+                  className="text-xs px-2 py-0.5 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded"
                 >
                   {label}
                 </span>
