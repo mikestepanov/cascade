@@ -8,7 +8,7 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn("animate-pulse bg-gray-200 dark:bg-gray-700 rounded", className)} />;
+  return <div className={cn("animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded", className)} />;
 }
 
 /**
@@ -18,7 +18,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4",
+        "animate-pulse bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4",
         className,
       )}
     >
@@ -69,7 +69,7 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={`skeleton-row-${i}`}
-          className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded"
+          className="flex items-center gap-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
         >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
@@ -88,7 +88,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: items }).map((_, i) => (
-        <div key={`skeleton-item-${i}`} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div key={`skeleton-item-${i}`} className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <div className="flex items-start gap-3">
             <SkeletonAvatar size="sm" />
             <div className="flex-1 space-y-2">
@@ -107,7 +107,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
  */
 export function SkeletonStatCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
       <div className="text-center space-y-3">
         <Skeleton className="h-3 w-24 mx-auto" />
         <Skeleton className="h-10 w-16 mx-auto" />
@@ -122,7 +122,7 @@ export function SkeletonStatCard() {
  */
 export function SkeletonKanbanCard() {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-2">
+    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3 space-y-2">
       <div className="flex items-center gap-2">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-3 w-12" />
@@ -142,7 +142,7 @@ export function SkeletonKanbanCard() {
  */
 export function SkeletonProjectCard() {
   return (
-    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2">
+    <div className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg space-y-2">
       <div className="flex items-center justify-between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-5 w-16" />
