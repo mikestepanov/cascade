@@ -91,14 +91,15 @@ export function VersionHistory({
               Version History
             </h2>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
+            className="p-1 min-h-0"
             aria-label="Close"
           >
             <X className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}

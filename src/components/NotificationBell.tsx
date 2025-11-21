@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Button } from "./ui/Button";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,11 +77,12 @@ export function NotificationBell() {
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Icon Button */}
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle notifications"
-        className="relative p-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
+        className="relative p-2 min-h-0"
       >
         <svg
           aria-hidden="true"
@@ -103,7 +105,7 @@ export function NotificationBell() {
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
-      </button>
+      </Button>
 
       {/* Dropdown Panel */}
       {isOpen && (
@@ -114,13 +116,14 @@ export function NotificationBell() {
               Notifications
             </h3>
             {notifications && notifications.length > 0 && (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => markAllAsRead()}
-                className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+                className="text-brand-600 dark:text-brand-500 hover:text-brand-700 dark:hover:text-brand-600 min-h-0 p-0"
               >
                 Mark all read
-              </button>
+              </Button>
             )}
           </div>
 
