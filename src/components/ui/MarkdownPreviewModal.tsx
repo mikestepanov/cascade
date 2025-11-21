@@ -33,24 +33,24 @@ export function MarkdownPreviewModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Preview Markdown Import" maxWidth="4xl">
       <div className="p-6">
         {/* File Info */}
-        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700 dark:text-gray-300">📄 {filename}</span>
-            <span className="text-gray-500 dark:text-gray-400">
+            <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">📄 {filename}</span>
+            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
           </div>
         </div>
 
         {/* Warning */}
-        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        <div className="mb-4 p-3 bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg">
           <div className="flex items-start gap-2">
-            <span className="text-yellow-600 dark:text-yellow-400 text-lg">⚠️</span>
+            <span className="text-status-warning dark:text-status-warning text-lg">⚠️</span>
             <div className="flex-1">
-              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+              <p className="text-sm font-medium text-status-warning dark:text-status-warning">
                 This will replace all current document content
               </p>
-              <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-1">
+              <p className="text-xs text-status-warning/90 dark:text-status-warning/80 mt-1">
                 Make sure you have a backup or export the current version first.
               </p>
             </div>
@@ -58,14 +58,14 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Tab Selector */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+        <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-4">
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "preview"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
             }`}
           >
             Preview
@@ -75,8 +75,8 @@ export function MarkdownPreviewModal({
             onClick={() => setActiveTab("raw")}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === "raw"
-                ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
             }`}
           >
             Raw Markdown
@@ -84,7 +84,7 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Content */}
-        <div className="max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+        <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose dark:prose-invert max-w-none">
               <div
@@ -93,7 +93,7 @@ export function MarkdownPreviewModal({
               />
             </div>
           ) : (
-            <pre className="p-4 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-mono">
+            <pre className="p-4 text-sm text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap font-mono">
               {markdown}
             </pre>
           )}
