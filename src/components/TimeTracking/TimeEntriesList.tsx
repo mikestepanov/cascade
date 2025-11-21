@@ -64,7 +64,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
     return (
       <div className="text-center p-8">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400"
+          className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -76,10 +76,10 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+        <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
           No time entries
         </h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           Start tracking time to see entries here.
         </p>
       </div>
@@ -103,7 +103,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         <button
           type="button"
           onClick={() => setShowManualEntryModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-2"
+          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -123,9 +123,9 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         return (
           <div key={date} className="space-y-2">
             {/* Date header */}
-            <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{date}</h3>
-              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center justify-between py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+              <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">{date}</h3>
+              <div className="flex items-center gap-4 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 <span>{formatDurationDisplay(totalDuration)}</span>
                 <span>{formatCurrency(totalCost, dateEntries[0]?.currency || "USD")}</span>
               </div>
@@ -136,10 +136,10 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
               {dateEntries.map((entry) => (
                 <div
                   key={entry._id}
-                  className="flex items-start gap-4 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                  className="flex items-start gap-4 p-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark transition-colors"
                 >
                   {/* Time range */}
-                  <div className="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400 w-24">
+                  <div className="flex-shrink-0 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark w-24">
                     {formatTime(entry.startTime)}
                     {entry.endTime && (
                       <>
@@ -152,14 +152,14 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     {entry.description && (
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {entry.description}
                       </p>
                     )}
 
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       {entry.activity && (
-                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+                        <span className="px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
                           {entry.activity}
                         </span>
                       )}
@@ -187,13 +187,13 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                       )}
 
                       {entry.billable && (
-                        <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">
+                        <span className="px-2 py-0.5 bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success rounded">
                           Billable
                         </span>
                       )}
 
                       {entry.isLocked && (
-                        <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                        <span className="flex items-center gap-1 text-status-warning dark:text-status-warning">
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
@@ -209,11 +209,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
                   {/* Duration and cost */}
                   <div className="flex-shrink-0 text-right">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                       {formatDurationDisplay(entry.duration)}
                     </div>
                     {entry.totalCost !== undefined && entry.totalCost > 0 && (
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                      <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {formatCurrency(entry.totalCost, entry.currency)}
                       </div>
                     )}
@@ -225,7 +225,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                       <button
                         type="button"
                         onClick={() => handleDelete(entry._id)}
-                        className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error transition-colors"
                         title="Delete entry"
                       >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
