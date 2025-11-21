@@ -47,8 +47,8 @@ function MessageItem({
       <div
         className={`relative max-w-[${AI_CONFIG.message.maxWidth.mobile}] md:max-w-[${AI_CONFIG.message.maxWidth.desktop}] rounded-lg px-4 py-3 ${
           message.role === "user"
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+            ? "bg-brand-600 text-white"
+            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
         }`}
       >
         {/* Copy button for assistant messages */}
@@ -56,7 +56,7 @@ function MessageItem({
           <button
             type="button"
             onClick={() => onCopy(message.content, messageId)}
-            className="absolute -right-2 -top-2 p-1.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md"
+            className="absolute -right-2 -top-2 p-1.5 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md"
             title="Copy message"
           >
             {isCopied ? (
@@ -76,7 +76,7 @@ function MessageItem({
               </svg>
             ) : (
               <svg
-                className="w-4 h-4 text-gray-600 dark:text-gray-400"
+                className="w-4 h-4 text-ui-text-secondary dark:text-ui-text-secondary-dark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -148,14 +148,14 @@ export const AIChat = React.memo(function AIChat({
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Starting new chat...</p>
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Starting new chat...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {!messages ? (
@@ -168,13 +168,13 @@ export const AIChat = React.memo(function AIChat({
           <div className="flex items-center justify-center h-full text-center">
             <div>
               <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 AI Assistant
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                 Ask me anything about your project, or use natural language commands.
               </p>
-              <div className="text-sm text-gray-500 dark:text-gray-500 space-y-1">
+              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark space-y-1">
                 <p>💡 "What's our team velocity?"</p>
                 <p>💡 "Which issues are blocking the sprint?"</p>
                 <p>💡 "Summarize this week's progress"</p>
@@ -197,23 +197,23 @@ export const AIChat = React.memo(function AIChat({
               ))}
             {isSending && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-3">
+                <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
                       <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
                         style={{ animationDelay: "0ms" }}
                       />
                       <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
                         style={{ animationDelay: "150ms" }}
                       />
                       <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
                         style={{ animationDelay: "300ms" }}
                       />
                     </div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       AI is thinking...
                     </span>
                   </div>
@@ -226,7 +226,7 @@ export const AIChat = React.memo(function AIChat({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 safe-area-inset-bottom">
+      <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark safe-area-inset-bottom">
         <div className="flex gap-2 items-end">
           <textarea
             ref={textareaRef}
@@ -235,7 +235,7 @@ export const AIChat = React.memo(function AIChat({
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about your project..."
             disabled={isSending}
-            className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
+            className="flex-1 resize-none rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary dark:text-ui-text-primary-dark placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}
             style={{
               minHeight: `${AI_CONFIG.textarea.minHeight}px`,
@@ -246,7 +246,7 @@ export const AIChat = React.memo(function AIChat({
             type="button"
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isSending}
-            className="flex-shrink-0 p-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
+            className="flex-shrink-0 p-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
             aria-label="Send message"
           >
             {isSending ? (
@@ -264,7 +264,7 @@ export const AIChat = React.memo(function AIChat({
             )}
           </button>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 hidden sm:block">
+        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2 hidden sm:block">
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>
