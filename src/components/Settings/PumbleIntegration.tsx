@@ -198,7 +198,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
           </div>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">{maskedUrl}</p>
           {project && (
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Project: {project.name}</p>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">Project: {project.name}</p>
           )}
         </div>
       </div>
@@ -402,7 +402,7 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark dark:hover:text-gray-200"
+              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -591,7 +591,7 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
             <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">Edit Webhook</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-ui-text-tertiary dark:text-ui-text-tertiary-dark dark:hover:text-gray-200"
+              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -615,7 +615,7 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-white dark:bg-gray-700 text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 

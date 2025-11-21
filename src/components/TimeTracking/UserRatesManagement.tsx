@@ -98,7 +98,7 @@ export function UserRatesManagement() {
                       className={`px-2 py-0.5 text-xs rounded ${
                         rate.rateType === "billable"
                           ? "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success"
-                          : "bg-gray-100 dark:bg-gray-700 text-ui-text-primary dark:text-ui-text-primary-dark"
+                          : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
                       }`}
                     >
                       {rate.rateType}

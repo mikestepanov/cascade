@@ -386,7 +386,7 @@ export function HourComplianceDashboard() {
           <div>
             <label
               htmlFor="review-notes"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2"
             >
               Review Notes (Optional)
             </label>
@@ -396,7 +396,7 @@ export function HourComplianceDashboard() {
               onChange={(e) => setReviewNotes(e.target.value)}
               placeholder="Add notes about this compliance record..."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-ui-text-primary dark:text-ui-text-primary-dark"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             />
           </div>
 

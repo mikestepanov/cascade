@@ -344,7 +344,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
                 {availableScopes.map((scope) => (
                   <div
                     key={scope.value}
-                    className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
                     onClick={() => toggleScope(scope.value)}
                   >
                     <Checkbox
@@ -401,7 +401,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </p>
 
               {/* Generated Key Display */}
-              <div className="mb-6 p-4 bg-gray-900 dark:bg-gray-950 rounded-lg">
+              <div className="mb-6 p-4 bg-slate-900 dark:bg-slate-950 rounded-lg">
                 <code className="text-sm font-mono text-green-400 break-all select-all">
                   {generatedKey}
                 </code>
@@ -450,7 +450,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
-            <p className="mt-2 text-sm text-gray-500">Loading statistics...</p>
+            <p className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading statistics...</p>
           </div>
         ) : (
           <div className="space-y-6">

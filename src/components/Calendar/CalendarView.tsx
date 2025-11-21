@@ -352,7 +352,7 @@ function MonthView({
                     ? "bg-brand-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs"
                     : isCurrentMonth
                       ? "text-ui-text-primary dark:text-ui-text-primary-dark"
-                      : "text-gray-400 dark:text-gray-600"
+                      : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
                 }`}
               >
                 {day.getDate()}

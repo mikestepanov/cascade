@@ -95,7 +95,7 @@ function MessageItem({
 
         {/* Message content with markdown for assistant */}
         {message.role === "assistant" ? (
-          <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-code:text-sm">
+          <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-code:text-sm">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
           </div>
         ) : (

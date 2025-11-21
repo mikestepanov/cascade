@@ -294,7 +294,7 @@ export function UserTypeManager() {
         />
         <CardBody>
           {!configs ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
           ) : configs.length === 0 ? (
             <EmptyState
               icon="⚙️"
@@ -414,7 +414,7 @@ export function UserTypeManager() {
 
           {/* Assigned users */}
           {!profiles ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading...</div>
           ) : profiles.length === 0 ? (
             <EmptyState
               icon="👥"
@@ -426,7 +426,7 @@ export function UserTypeManager() {
               {profiles.map((profile) => (
                 <div
                   key={profile._id}
-                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -777,7 +777,7 @@ export function UserTypeManager() {
                       onChange={(e) => setProfileEquityNotes(e.target.value)}
                       placeholder="Additional notes about equity arrangement..."
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
+                      className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
                     />
                   </div>
 
