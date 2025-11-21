@@ -1,8 +1,8 @@
 import { useState } from "react";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
-import type { Id } from "../../../convex/_generated/dataModel";
 
 interface WelcomeModalProps {
   onNavigateToProject?: (projectId: Id<"projects">) => void;

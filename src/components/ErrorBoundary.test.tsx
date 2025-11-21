@@ -16,7 +16,6 @@ describe("ErrorBoundary", () => {
   // biome-ignore lint/suspicious/noConsole: Test needs to mock console.error
   const originalError = console.error;
   beforeAll(() => {
-    // biome-ignore lint/suspicious/noConsole: Test needs to mock console.error
     console.error = vi.fn();
   });
 
