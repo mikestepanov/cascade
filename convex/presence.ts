@@ -52,6 +52,20 @@ export const list = query({
   },
 });
 
+export const updateRoomUser = mutation({
+  args: {
+    roomId: v.string(),
+    data: v.optional(v.any()),
+  },
+  handler: async (ctx, { roomId, data }) => {
+    const authUserId = await getAuthUserId(ctx);
+    if (!authUserId) {
+      throw new Error("Not authenticated");
+    }
+    return await presence.updateRoomUser(ctx, roomId, authUserId, data);
+  },
+});
+
 export const disconnect = mutation({
   args: { sessionToken: v.string() },
   handler: async (ctx, { sessionToken }) => {

@@ -1,10 +1,145 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  /* Font Family */
+  --font-family-sans: "Inter var", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Border Radius */
+  --radius: 8px;
+  --radius-secondary: 4px;
+  --radius-container: 12px;
+
+  /* Box Shadows */
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  /* Brand Colors */
+  --color-brand-50: #EEF2FF;
+  --color-brand-100: #E0E7FF;
+  --color-brand-200: #C7D2FE;
+  --color-brand-300: #A5B4FC;
+  --color-brand-400: #818CF8;
+  --color-brand-500: #6366F1;
+  --color-brand-600: #4F46E5;
+  --color-brand-700: #4338CA;
+  --color-brand-800: #3730A3;
+  --color-brand-900: #312E81;
+  --color-brand-950: #1E1B4B;
+
+  /* Accent Colors */
+  --color-accent-50: #FAF5FF;
+  --color-accent-100: #F3E8FF;
+  --color-accent-200: #E9D5FF;
+  --color-accent-300: #D8B4FE;
+  --color-accent-400: #C084FC;
+  --color-accent-500: #A855F7;
+  --color-accent-600: #9333EA;
+  --color-accent-700: #7E22CE;
+  --color-accent-800: #6B21A8;
+  --color-accent-900: #581C87;
+  --color-accent-950: #3B0764;
+
+  /* UI Background Colors */
+  --color-ui-bg-primary: #FFFFFF;
+  --color-ui-bg-secondary: #F9FAFB;
+  --color-ui-bg-tertiary: #F3F4F6;
+  --color-ui-bg-elevated: #FFFFFF;
+  --color-ui-bg-overlay: rgba(0, 0, 0, 0.5);
+  --color-ui-bg-primary-dark: #111827;
+  --color-ui-bg-secondary-dark: #1F2937;
+  --color-ui-bg-tertiary-dark: #374151;
+  --color-ui-bg-elevated-dark: #1F2937;
+  --color-ui-bg-overlay-dark: rgba(0, 0, 0, 0.75);
+
+  /* UI Text Colors */
+  --color-ui-text-primary: #111827;
+  --color-ui-text-secondary: #6B7280;
+  --color-ui-text-tertiary: #9CA3AF;
+  --color-ui-text-inverse: #FFFFFF;
+  --color-ui-text-primary-dark: #F9FAFB;
+  --color-ui-text-secondary-dark: #D1D5DB;
+  --color-ui-text-tertiary-dark: #9CA3AF;
+  --color-ui-text-inverse-dark: #111827;
+
+  /* UI Border Colors */
+  --color-ui-border-primary: #E5E7EB;
+  --color-ui-border-secondary: #D1D5DB;
+  --color-ui-border-focus: #4F46E5;
+  --color-ui-border-error: #EF4444;
+  --color-ui-border-primary-dark: #374151;
+  --color-ui-border-secondary-dark: #4B5563;
+  --color-ui-border-focus-dark: #6366F1;
+  --color-ui-border-error-dark: #F87171;
+
+  /* Status Colors */
+  --color-status-success: #10B981;
+  --color-status-success-bg: #D1FAE5;
+  --color-status-success-text: #065F46;
+  --color-status-success-bg-dark: #064E3B;
+  --color-status-success-text-dark: #6EE7B7;
+
+  --color-status-warning: #F59E0B;
+  --color-status-warning-bg: #FEF3C7;
+  --color-status-warning-text: #92400E;
+  --color-status-warning-bg-dark: #78350F;
+  --color-status-warning-text-dark: #FCD34D;
+
+  --color-status-error: #EF4444;
+  --color-status-error-bg: #FEE2E2;
+  --color-status-error-text: #991B1B;
+  --color-status-error-bg-dark: #7F1D1D;
+  --color-status-error-text-dark: #FCA5A5;
+
+  --color-status-info: #3B82F6;
+  --color-status-info-bg: #DBEAFE;
+  --color-status-info-text: #1E40AF;
+  --color-status-info-bg-dark: #1E3A8A;
+  --color-status-info-text-dark: #93C5FD;
+
+  /* Priority Colors */
+  --color-priority-lowest: #6B7280;
+  --color-priority-low: #3B82F6;
+  --color-priority-medium: #F59E0B;
+  --color-priority-high: #F97316;
+  --color-priority-highest: #EF4444;
+
+  /* Issue Type Colors */
+  --color-issue-type-task: #3B82F6;
+  --color-issue-type-bug: #EF4444;
+  --color-issue-type-story: #8B5CF6;
+  --color-issue-type-epic: #F59E0B;
+  --color-issue-type-subtask: #6B7280;
+
+  /* Legacy Primary/Secondary */
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-secondary: #6B7280;
+  --color-secondary-hover: #4B5563;
+
+  /* Custom Spacing */
+  --spacing-form-field: 16px;
+  --spacing-section: 32px;
+}
 
 :root {
   --color-light: #ffffff;
   --color-dark: #171717;
+}
+
+/* Keyframes for animations */
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slide-up {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* Consistent focus indicators for accessibility */
