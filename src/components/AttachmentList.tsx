@@ -30,7 +30,7 @@ export function AttachmentList({ attachmentIds, issueId, canEdit = false }: Atta
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium text-gray-700">Attachments ({attachmentIds.length})</h4>
+      <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Attachments ({attachmentIds.length})</h4>
       <div className="grid grid-cols-1 gap-2">
         {attachmentIds.map((storageId) => (
           <AttachmentItem
@@ -58,9 +58,9 @@ function AttachmentItem({
 
   if (!url) {
     return (
-      <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
-        <div className="animate-pulse h-8 w-8 bg-gray-200 rounded" />
-        <div className="flex-1 animate-pulse h-4 bg-gray-200 rounded" />
+      <div className="flex items-center gap-2 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
+        <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
       </div>
     );
   }
@@ -69,20 +69,20 @@ function AttachmentItem({
   const fileIcon = getFileIcon(filename);
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors">
+    <div className="flex items-center gap-2 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline truncate block"
+          className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline truncate block"
         >
           {filename}
         </a>
       </div>
       <div className="flex gap-1">
-        <a href={url} download className="text-gray-500 hover:text-gray-700">
+        <a href={url} download className="text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark">
           <svg
             aria-hidden="true"
             className="w-5 h-5"
@@ -103,7 +103,7 @@ function AttachmentItem({
             variant="ghost"
             size="sm"
             onClick={onRemove}
-            className="text-red-600 hover:text-red-800"
+            className="text-status-error dark:text-status-error-dark hover:text-status-error-hover dark:hover:text-status-error-hover-dark"
           >
             <svg
               aria-hidden="true"
