@@ -18,12 +18,12 @@ export function NotificationPreferences() {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/3" />
-          <div className="h-4 bg-gray-200 rounded w-2/3" />
+          <div className="h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded w-1/3" />
+          <div className="h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded w-2/3" />
           <div className="space-y-3">
-            <div className="h-10 bg-gray-200 rounded" />
-            <div className="h-10 bg-gray-200 rounded" />
-            <div className="h-10 bg-gray-200 rounded" />
+            <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
+            <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
+            <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
           </div>
         </div>
       </div>
@@ -58,22 +58,22 @@ export function NotificationPreferences() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
           Notification Preferences
         </h1>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           Control how and when you receive notifications from Cascade
         </p>
       </div>
 
       {/* Master Toggle */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Email Notifications
             </h3>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Master switch for all email notifications. Turn this off to stop receiving all emails.
             </p>
           </div>
@@ -85,26 +85,26 @@ export function NotificationPreferences() {
               disabled={isSaving}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary" />
+            <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600" />
           </label>
         </div>
       </div>
 
       {/* Individual Notification Types */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
+        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
           Notification Types
         </h3>
 
         <div className="space-y-4">
           {/* Mentions */}
-          <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">@</span>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">Mentions</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Mentions</h4>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When someone @mentions you in a comment or description
               </p>
             </div>
@@ -116,18 +116,18 @@ export function NotificationPreferences() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
+              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
             </label>
           </div>
 
           {/* Assignments */}
-          <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">👤</span>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">Assignments</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Assignments</h4>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When you are assigned to an issue
               </p>
             </div>
@@ -139,18 +139,18 @@ export function NotificationPreferences() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
+              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
             </label>
           </div>
 
           {/* Comments */}
-          <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">💬</span>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">Comments</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Comments</h4>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When someone comments on your issues
               </p>
             </div>
@@ -162,7 +162,7 @@ export function NotificationPreferences() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
+              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
             </label>
           </div>
 
@@ -171,9 +171,9 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🔄</span>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100">Status Changes</h4>
+                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Status Changes</h4>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 When issue status changes on issues you're watching
               </p>
             </div>
@@ -185,21 +185,21 @@ export function NotificationPreferences() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
+              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
             </label>
           </div>
         </div>
       </div>
 
       {/* Digest Emails */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Email Digests</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
+        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">Email Digests</h3>
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
           Receive a summary of activity instead of individual emails
         </p>
 
         <div className="space-y-2">
-          <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+          <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
             <input
               type="radio"
               name="digest"
@@ -207,17 +207,17 @@ export function NotificationPreferences() {
               checked={preferences.emailDigest === "none"}
               onChange={() => handleDigestChange("none")}
               disabled={isSaving || !preferences.emailEnabled}
-              className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">No digest</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">No digest</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Receive emails as events happen
               </div>
             </div>
           </label>
 
-          <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+          <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
             <input
               type="radio"
               name="digest"
@@ -225,17 +225,17 @@ export function NotificationPreferences() {
               checked={preferences.emailDigest === "daily"}
               onChange={() => handleDigestChange("daily")}
               disabled={isSaving || !preferences.emailEnabled}
-              className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">Daily digest</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Daily digest</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 One email per day with all activity (coming soon)
               </div>
             </div>
           </label>
 
-          <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+          <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
             <input
               type="radio"
               name="digest"
@@ -243,11 +243,11 @@ export function NotificationPreferences() {
               checked={preferences.emailDigest === "weekly"}
               onChange={() => handleDigestChange("weekly")}
               disabled={isSaving || !preferences.emailEnabled}
-              className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
             />
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">Weekly digest</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">Weekly digest</div>
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 One email per week with all activity (coming soon)
               </div>
             </div>
@@ -256,14 +256,14 @@ export function NotificationPreferences() {
       </div>
 
       {/* Help Text */}
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+      <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-950 rounded-lg border border-brand-200 dark:border-brand-800">
         <div className="flex gap-3">
-          <span className="text-blue-600 dark:text-blue-400 text-xl">ℹ️</span>
+          <span className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</span>
           <div className="flex-1">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+            <h4 className="font-medium text-brand-900 dark:text-brand-100 mb-1">
               Email Configuration
             </h4>
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+            <p className="text-sm text-brand-800 dark:text-brand-200">
               Email notifications require Resend API configuration. If you're not receiving emails,
               contact your administrator to set up email notifications.
             </p>
