@@ -126,7 +126,7 @@ export function OnboardingTour() {
 
       {/* Tooltip */}
       <div
-        className="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 max-w-sm transform -translate-x-1/2 -translate-y-1/2"
+        className="fixed z-50 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-2xl p-6 max-w-sm transform -translate-x-1/2 -translate-y-1/2"
         style={{
           top: `${tooltipPosition.top}px`,
           left: `${tooltipPosition.left}px`,
@@ -138,7 +138,7 @@ export function OnboardingTour() {
             <div
               key={tourStep.target}
               className={`h-1.5 flex-1 rounded-full ${
-                index <= step ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
+                index <= step ? "bg-brand-600" : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark"
               }`}
             />
           ))}
@@ -146,15 +146,15 @@ export function OnboardingTour() {
 
         {/* Content */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             {currentTourStep.title}
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{currentTourStep.content}</p>
+          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{currentTourStep.content}</p>
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {step + 1} of {TOUR_STEPS.length}
           </span>
           <div className="flex gap-2">
