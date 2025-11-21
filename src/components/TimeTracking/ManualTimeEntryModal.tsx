@@ -121,15 +121,15 @@ export function ManualTimeEntryModal({
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
           Log Time Manually
         </h2>
 
         <div className="space-y-4">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Date *
             </label>
             <input
@@ -137,7 +137,7 @@ export function ManualTimeEntryModal({
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={formatDateForInput(Date.now())}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               required
             />
           </div>
@@ -145,26 +145,26 @@ export function ManualTimeEntryModal({
           {/* Time Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Start Time *
               </label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 End Time *
               </label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
                 required
               />
             </div>
@@ -172,8 +172,8 @@ export function ManualTimeEntryModal({
 
           {/* Duration Display */}
           {duration > 0 && (
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+            <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+              <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
                 Duration: {formatDurationDisplay(duration)}
               </span>
             </div>
@@ -181,7 +181,7 @@ export function ManualTimeEntryModal({
 
           {/* Project Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Project
             </label>
             <select
@@ -190,7 +190,7 @@ export function ManualTimeEntryModal({
                 setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined);
                 setIssueId(undefined); // Reset issue when project changes
               }}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
             >
               <option value="">No project</option>
               {projects?.map((project) => (
@@ -204,7 +204,7 @@ export function ManualTimeEntryModal({
           {/* Issue Selection */}
           {projectId && projectIssues && projectIssues.length > 0 && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Issue (optional)
               </label>
               <select
@@ -212,7 +212,7 @@ export function ManualTimeEntryModal({
                 onChange={(e) =>
                   setIssueId(e.target.value ? (e.target.value as Id<"issues">) : undefined)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               >
                 <option value="">No issue</option>
                 {projectIssues.map((issue) => (
@@ -226,7 +226,7 @@ export function ManualTimeEntryModal({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Description
             </label>
             <textarea
@@ -234,19 +234,19 @@ export function ManualTimeEntryModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What did you work on?"
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 resize-none"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
             />
           </div>
 
           {/* Activity */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Activity
             </label>
             <select
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
             >
               <option value="">Select activity...</option>
               {ACTIVITY_TYPES.map((activityType) => (
@@ -259,7 +259,7 @@ export function ManualTimeEntryModal({
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               Tags
             </label>
             <div className="flex gap-2">
@@ -274,12 +274,12 @@ export function ManualTimeEntryModal({
                   }
                 }}
                 placeholder="Add tag..."
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               />
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-3 py-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
               >
                 Add
               </button>
@@ -289,13 +289,13 @@ export function ManualTimeEntryModal({
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="hover:text-blue-900 dark:hover:text-blue-100"
+                      className="hover:text-brand-900 dark:hover:text-brand-100"
                     >
                       ×
                     </button>
@@ -312,13 +312,13 @@ export function ManualTimeEntryModal({
                 type="checkbox"
                 checked={billable}
                 onChange={(e) => setBillable(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
               />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                 Billable time
               </span>
             </label>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
               Mark this time as billable to clients
             </p>
           </div>
@@ -328,7 +328,7 @@ export function ManualTimeEntryModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
           >
             Cancel
           </button>
@@ -336,7 +336,7 @@ export function ManualTimeEntryModal({
             type="button"
             onClick={handleSubmit}
             disabled={duration <= 0}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Entry
           </button>
