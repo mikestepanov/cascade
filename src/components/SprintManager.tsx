@@ -5,6 +5,7 @@ import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { SkeletonProjectCard } from "./ui/Skeleton";
@@ -160,11 +161,9 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                     <h3 className="text-base sm:text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                       {sprint.name}
                     </h3>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(sprint.status)}`}
-                    >
+                    <Badge size="md" className={getStatusColor(sprint.status)}>
                       {sprint.status}
-                    </span>
+                    </Badge>
                     <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       {sprint.issueCount} issues
                     </span>

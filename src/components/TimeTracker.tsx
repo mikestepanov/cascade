@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 
 interface TimeTrackerProps {
@@ -111,16 +112,8 @@ function TimeEntriesList({
                   <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     {entryDate}
                   </span>
-                  {entry.activity && (
-                    <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                      {entry.activity}
-                    </span>
-                  )}
-                  {entry.billable && (
-                    <span className="text-xs px-2 py-0.5 bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark rounded">
-                      Billable
-                    </span>
-                  )}
+                  {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
+                  {entry.billable && <Badge variant="success">Billable</Badge>}
                 </div>
               </div>
               {entry.totalCost && (

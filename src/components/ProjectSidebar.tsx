@@ -3,6 +3,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
@@ -156,27 +157,15 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                       <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                         {project.name}
                       </h3>
-                      <span className="text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 py-0.5 rounded">
-                        {project.key}
-                      </span>
+                      <Badge variant="neutral">{project.key}</Badge>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {project.issueCount} issues
                       </span>
-                      <span className="text-xs bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-400 px-2 py-0.5 rounded">
-                        {project.boardType}
-                      </span>
-                      {project.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark">
-                          Public
-                        </span>
-                      )}
-                      {project.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-400">
-                          Owner
-                        </span>
-                      )}
+                      <Badge variant="accent">{project.boardType}</Badge>
+                      {project.isPublic && <Badge variant="success">Public</Badge>}
+                      {project.isOwner && <Badge variant="primary">Owner</Badge>}
                     </div>
                     <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       by {project.creatorName}
