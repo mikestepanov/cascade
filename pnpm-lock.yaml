@@ -117,6 +117,9 @@ importers:
       autoprefixer:
         specifier: ~10.4.22
         version: 10.4.22(postcss@8.5.6)
+      convex-helpers:
+        specifier: ^0.1.105
+        version: 0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       convex-test:
         specifier: ^0.0.39
         version: 0.0.39(convex@1.29.3(react@19.2.0))
@@ -2115,6 +2118,28 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  convex-helpers@0.1.105:
+    resolution: {integrity: sha512-B6EUQsBpLFcXpa1g/9Zsc7EaFHdaeMlPLCa/snSD+4hRBFMWKJjT589dZ/0Z40taBOQWC2tb81ciTNr4ctJb2w==}
+    hasBin: true
+    peerDependencies:
+      '@standard-schema/spec': ^1.0.0
+      convex: ^1.24.0
+      hono: ^4.0.5
+      react: ^17.0.2 || ^18.0.0 || ^19.0.0
+      typescript: ^5.5
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      '@standard-schema/spec':
+        optional: true
+      hono:
+        optional: true
+      react:
+        optional: true
+      typescript:
+        optional: true
+      zod:
+        optional: true
 
   convex-test@0.0.39:
     resolution: {integrity: sha512-Oyc2jbKwQoC7MoX1Cnt9ciiry2cjzoAVpzNCH1tXp7TDfYmBfSZ2E0ClOPHJSf4gYa+vtabi6NZnydbxBDbx4w==}
@@ -6315,6 +6340,14 @@ snapshots:
   concat-map@0.0.1: {}
 
   convert-source-map@2.0.0: {}
+
+  convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3):
+    dependencies:
+      convex: 1.29.3(react@19.2.0)
+    optionalDependencies:
+      '@standard-schema/spec': 1.0.0
+      react: 19.2.0
+      typescript: 5.9.3
 
   convex-test@0.0.39(convex@1.29.3(react@19.2.0)):
     dependencies:
