@@ -212,11 +212,10 @@ export function TimeTracker({
               </Button>
             ) : (
               <Button
-                variant="primary"
+                variant="success"
                 size="sm"
                 onClick={handleStartTimer}
                 disabled={!!runningTimer}
-                className="bg-status-success hover:bg-status-success-hover"
                 title={runningTimer ? "Stop the current timer first" : "Start timer for this issue"}
                 leftIcon={
                   <svg
@@ -239,10 +238,9 @@ export function TimeTracker({
 
             {/* Log Time Button */}
             <Button
-              variant="ghost"
+              variant="secondary"
               size="sm"
               onClick={() => setShowLogModal(true)}
-              className="text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950 hover:bg-brand-100 dark:hover:bg-brand-900"
               leftIcon={
                 <svg
                   aria-hidden="true"

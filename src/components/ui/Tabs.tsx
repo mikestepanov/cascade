@@ -24,7 +24,6 @@ export function Tab({ value, isActive, onClick, children, className = "" }: TabP
           : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark",
         className,
       )}
-      aria-current={isActive ? "page" : undefined}
       role="tab"
       aria-selected={isActive}
       id={`tab-${value}`}

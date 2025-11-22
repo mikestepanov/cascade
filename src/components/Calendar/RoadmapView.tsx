@@ -215,7 +215,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                           Sprint
                         </Badge>
                       ) : (
-                        <Badge size="md" className={getIssueTypeStyle(item.issueType)}>
+                        <Badge variant={getIssueTypeVariant(item.issueType)} size="md">
                           {item.issueType}
                         </Badge>
                       )}
@@ -381,18 +381,20 @@ function getDateRange(currentDate: Date, timeScale: TimeScale) {
   }
 }
 
-// Get issue type styling
-function getIssueTypeStyle(type: string): string {
+// Get issue type variant for Badge component
+function getIssueTypeVariant(
+  type: string,
+): "primary" | "secondary" | "success" | "error" | "warning" | "info" | "neutral" | "brand" | "accent" {
   switch (type) {
     case "epic":
-      return "bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300";
+      return "accent";
     case "story":
-      return "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success";
+      return "success";
     case "task":
-      return "bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300";
+      return "brand";
     case "bug":
-      return "bg-status-error/10 dark:bg-status-error/20 text-status-error dark:text-status-error";
+      return "error";
     default:
-      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark";
+      return "neutral";
   }
 }

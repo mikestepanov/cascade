@@ -35,7 +35,7 @@ export function Badge({
     success:
       "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark",
     error:
-      "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
+      "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
     warning:
       "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
     info: "bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-300",
