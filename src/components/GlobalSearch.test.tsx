@@ -104,8 +104,8 @@ describe("GlobalSearch", () => {
     // Component calls useQuery twice per render: first for issues, second for documents
     (useQuery as vi.Mock).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return mockIssues; // Odd calls = issues
-      return mockDocuments; // Even calls = documents
+      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      return { results: mockDocuments, total: 1, hasMore: false }; // Even calls = documents
     });
 
     render(<GlobalSearch />);
@@ -205,8 +205,8 @@ describe("GlobalSearch", () => {
 
     (useQuery as vi.Mock).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return mockIssues; // Odd calls = issues
-      return []; // Even calls = documents
+      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 
     render(<GlobalSearch />);
@@ -236,8 +236,8 @@ describe("GlobalSearch", () => {
 
     (useQuery as vi.Mock).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return []; // Odd calls = issues (empty)
-      return mockDocuments; // Even calls = documents
+      if (queryCallCount % 2 === 1) return { results: [], total: 0, hasMore: false }; // Odd calls = issues (empty)
+      return { results: mockDocuments, total: 1, hasMore: false }; // Even calls = documents
     });
 
     render(<GlobalSearch />);
@@ -308,8 +308,8 @@ describe("GlobalSearch", () => {
 
     (useQuery as vi.Mock).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return mockIssues; // Odd calls = issues
-      return []; // Even calls = documents
+      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 3, hasMore: false }; // Odd calls = issues
+      return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 
     render(<GlobalSearch />);
@@ -342,8 +342,8 @@ describe("GlobalSearch", () => {
 
     (useQuery as vi.Mock).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return mockIssues; // Odd calls = issues
-      return []; // Even calls = documents
+      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 
     render(<GlobalSearch />);
