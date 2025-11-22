@@ -98,8 +98,9 @@ describe("ProjectBoard", () => {
 
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const spinner = document.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+    // Should render skeleton placeholders while loading
+    const skeleton = document.querySelector(".animate-pulse");
+    expect(skeleton).toBeInTheDocument();
   });
 
   it("should render project header with name and details", () => {
@@ -117,7 +118,7 @@ describe("ProjectBoard", () => {
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
     expect(screen.getByText("Sprints")).toBeInTheDocument();
-    expect(screen.getByText("📊 Analytics")).toBeInTheDocument();
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
   });
 
   it("should not render Sprints tab for kanban board", () => {
@@ -135,7 +136,7 @@ describe("ProjectBoard", () => {
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
     expect(screen.queryByText("Sprints")).not.toBeInTheDocument();
-    expect(screen.getByText("📊 Analytics")).toBeInTheDocument();
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
   });
 
   it("should show KanbanBoard by default", () => {
