@@ -12,8 +12,11 @@ import { IssueMetadataSection } from "./IssueDetail/IssueMetadataSection";
 import { SubtasksList } from "./IssueDetail/SubtasksList";
 import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
+import { XIcon } from "./ui/icons";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
 interface IssueDetailModalProps {
@@ -112,35 +115,21 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded ${getPriorityColor(issue.priority, "badge")}`}
-                  >
+                  <Badge size="md" className={getPriorityColor(issue.priority, "badge")}>
                     {issue.priority}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             </div>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onClose}
               aria-label="Close issue modal"
-              className="text-ui-text-tertiary hover:text-ui-text-secondary"
+              className="p-1 min-h-0"
             >
-              <svg
-                aria-hidden="true"
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+              <XIcon />
+            </Button>
           </div>
 
           {/* Content */}
