@@ -10,10 +10,7 @@ import { Button } from "./ui/Button";
 
 interface TimeTrackerProps {
   issueId: Id<"issues">;
-  issueKey: string;
-  issueTitle: string;
   estimatedHours?: number;
-  loggedHours?: number;
 }
 
 /**
@@ -129,13 +126,7 @@ function TimeEntriesList({
   );
 }
 
-export function TimeTracker({
-  issueId,
-  _issueKey,
-  _issueTitle,
-  estimatedHours = 0,
-  _loggedHours = 0,
-}: TimeTrackerProps) {
+export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
 
