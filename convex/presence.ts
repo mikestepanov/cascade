@@ -5,7 +5,9 @@ import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-export const presence = new Presence(components.presence);
+// Type assertion needed due to version mismatch between Presence types and component API
+// biome-ignore lint/suspicious/noExplicitAny: Type mismatch in @convex-dev/presence requires casting
+export const presence = new Presence(components.presence as any);
 
 export const getUserId = query({
   args: {},
@@ -49,20 +51,6 @@ export const list = query({
       }),
     );
     return listWithUserInfo;
-  },
-});
-
-export const updateRoomUser = mutation({
-  args: {
-    roomId: v.string(),
-    data: v.optional(v.any()),
-  },
-  handler: async (ctx, { roomId, data }) => {
-    const authUserId = await getAuthUserId(ctx);
-    if (!authUserId) {
-      throw new Error("Not authenticated");
-    }
-    return await presence.updateRoomUser(ctx, roomId, authUserId, data);
   },
 });
 
