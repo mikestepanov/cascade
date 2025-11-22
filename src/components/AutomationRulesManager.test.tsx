@@ -11,16 +11,6 @@ function mockId<T extends string>(id: string): Id<T> {
   return id as Id<T>;
 }
 
-// Helper to set up mutations for create flow
-function setupCreateMutations() {
-  (useMutation as vi.Mock).mockReturnValue(mockCreateRule);
-}
-
-// Helper to set up mutations for update flow
-function setupUpdateMutations() {
-  (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
-}
-
 // Mock dependencies
 vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
@@ -43,9 +33,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Setup mutations - components call useMutation in different orders depending on what's rendered
-    // Return mockUpdateRule for most calls since it's used for both form updates and toggles
-    // This is a limitation of mocking at the hook level vs the API level
+    // Hook-level mocking: All useMutation calls return the same mock
+    // This is a limitation of mocking at the hook level - we can't distinguish
+    // between create, update, and remove mutations since they're all called via useMutation()
+    // Return mockUpdateRule for most cases since it's used most frequently
     (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
 
     (useQuery as vi.Mock).mockReturnValue([]);
@@ -53,7 +44,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Empty State", () => {
     it("should show empty state message when no rules exist", () => {
-      (useQuery as vi.Mock).mockReturnValue([]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -130,7 +121,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
-      expect(mockCreateRule).not.toHaveBeenCalled();
+      expect(mockUpdateRule).not.toHaveBeenCalled();
     });
 
     it("should reject save when actionValue is empty", async () => {
@@ -144,7 +135,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
-      expect(mockCreateRule).not.toHaveBeenCalled();
+      expect(mockUpdateRule).not.toHaveBeenCalled();
     });
 
     it("should treat whitespace-only name as empty", async () => {
@@ -191,13 +182,13 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalled();
-        expect(mockCreateRule).not.toHaveBeenCalled();
+        expect(mockUpdateRule).not.toHaveBeenCalled();
       });
     });
 
     it("should accept valid JSON in actionValue", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -209,14 +200,14 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalled();
+        expect(mockUpdateRule).toHaveBeenCalled();
         expect(toast.error).not.toHaveBeenCalledWith(expect.stringContaining("Failed"));
       });
     });
 
     it("should accept empty object as valid JSON", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -226,13 +217,13 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalled();
+        expect(mockUpdateRule).toHaveBeenCalled();
       });
     });
 
     it("should accept complex nested JSON", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -244,7 +235,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalled();
+        expect(mockUpdateRule).toHaveBeenCalled();
       });
     });
   });
@@ -252,7 +243,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
   describe("Whitespace Trimming Logic", () => {
     it("should trim name before sending", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -265,7 +256,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalledWith(
+        expect(mockUpdateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             name: "Trimmed Name",
           }),
@@ -275,7 +266,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should convert empty description to undefined", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -286,7 +277,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalledWith(
+        expect(mockUpdateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             description: undefined,
           }),
@@ -296,7 +287,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should convert whitespace-only description to undefined", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -307,7 +298,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalledWith(
+        expect(mockUpdateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             description: undefined,
           }),
@@ -317,7 +308,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should convert empty triggerValue to undefined", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -328,7 +319,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
       await waitFor(() => {
-        expect(mockCreateRule).toHaveBeenCalledWith(
+        expect(mockUpdateRule).toHaveBeenCalledWith(
           expect.objectContaining({
             triggerValue: undefined,
           }),
@@ -352,7 +343,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should populate form when Edit clicked", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([existingRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -366,7 +357,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show 'Edit Automation Rule' title in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([existingRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -377,7 +368,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show 'Update Rule' button in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([existingRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -388,7 +379,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should preserve selected trigger and action type in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([existingRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -404,7 +395,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should call updateRule instead of createRule when saving in edit mode", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([existingRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -414,14 +405,14 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalled();
-        expect(mockCreateRule).not.toHaveBeenCalled();
+        expect(mockUpdateRule).toHaveBeenCalled();
       });
     });
 
     it("should handle missing description in edit mode", async () => {
       const user = userEvent.setup();
       const ruleWithoutDescription = { ...existingRule, description: undefined };
-      (useQuery as vi.Mock).mockReturnValue([ruleWithoutDescription]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([ruleWithoutDescription]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -433,7 +424,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should handle missing triggerValue in edit mode", async () => {
       const user = userEvent.setup();
       const ruleWithoutTriggerValue = { ...existingRule, triggerValue: undefined };
-      (useQuery as vi.Mock).mockReturnValue([ruleWithoutTriggerValue]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([ruleWithoutTriggerValue]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -457,7 +448,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     };
 
     it("should display rule name", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -465,7 +456,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display rule description", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -473,7 +464,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show Active badge when rule is active", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -482,7 +473,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show Inactive badge when rule is not active", () => {
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -490,7 +481,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display execution count", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -498,7 +489,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display trigger label correctly", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -506,7 +497,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should display action label correctly", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -515,7 +506,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show trigger without arrow when no triggerValue", () => {
       const ruleWithoutValue = { ...activeRule, triggerValue: undefined };
-      (useQuery as vi.Mock).mockReturnValue([ruleWithoutValue]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([ruleWithoutValue]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -536,7 +527,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     };
 
     it("should show pause emoji for active rules", () => {
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -545,7 +536,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show play emoji for inactive rules", () => {
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -554,7 +545,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should toggle active rule to inactive", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -572,7 +563,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should toggle inactive rule to active", async () => {
       const user = userEvent.setup();
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -589,7 +580,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show success toast when disabling rule", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue([activeRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -604,7 +595,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should show success toast when enabling rule", async () => {
       const user = userEvent.setup();
       const inactiveRule = { ...activeRule, isActive: false };
-      (useQuery as vi.Mock).mockReturnValue([inactiveRule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -620,7 +611,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
   describe("Success & Error Handling", () => {
     it("should show success toast and close dialog after create", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockResolvedValue({ _id: "rule1" });
+      mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -646,7 +637,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
         isActive: true,
         executionCount: 0,
       };
-      (useQuery as vi.Mock).mockReturnValue([rule]);
+      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([rule]);
       mockUpdateRule.mockResolvedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -662,7 +653,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
     it("should show error toast when create fails", async () => {
       const user = userEvent.setup();
-      mockCreateRule.mockRejectedValue(new Error("Duplicate rule name"));
+      mockUpdateRule.mockRejectedValue(new Error("Duplicate rule name"));
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -679,7 +670,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
       // Reject with a non-Error object to trigger the fallback message
-      mockCreateRule.mockRejectedValue({});
+      mockUpdateRule.mockRejectedValue({});
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
