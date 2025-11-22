@@ -11,6 +11,16 @@ function mockId<T extends string>(id: string): Id<T> {
   return id as Id<T>;
 }
 
+// Helper to set up mutations for create flow
+function setupCreateMutations() {
+  (useMutation as vi.Mock).mockReturnValue(mockCreateRule);
+}
+
+// Helper to set up mutations for update flow
+function setupUpdateMutations() {
+  (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
+}
+
 // Mock dependencies
 vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
@@ -33,15 +43,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Setup mutations to return in sequence for the 3 useMutation calls
-    // Component creates: removeRule, createRule, updateRule
-    let mutationCallCount = 0;
-    (useMutation as vi.Mock).mockImplementation(() => {
-      const mocks = [mockRemoveRule, mockCreateRule, mockUpdateRule];
-      const result = mocks[mutationCallCount % 3];
-      mutationCallCount++;
-      return result;
-    });
+    // Setup mutations - components call useMutation in different orders depending on what's rendered
+    // Return mockUpdateRule for most calls since it's used for both form updates and toggles
+    // This is a limitation of mocking at the hook level vs the API level
+    (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
 
     (useQuery as vi.Mock).mockReturnValue([]);
   });
