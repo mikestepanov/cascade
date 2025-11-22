@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Checkbox } from "../ui/form/Checkbox";
@@ -159,13 +160,9 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
               {apiKey.name}
             </h4>
             {apiKey.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success rounded">
-                Active
-              </span>
+              <Badge variant="success">Active</Badge>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error rounded">
-                Revoked
-              </span>
+              <Badge variant="error">Revoked</Badge>
             )}
           </div>
 
