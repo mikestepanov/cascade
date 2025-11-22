@@ -269,7 +269,7 @@ describe("GlobalSearch", () => {
     });
 
     // Find backdrop by role="button" and aria-label
-    const backdrop = screen.getByLabelText("Close search");
+    const backdrop = screen.getByLabelText("Close modal");
     await user.click(backdrop);
 
     await waitFor(() => {
