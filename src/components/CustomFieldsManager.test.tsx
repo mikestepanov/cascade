@@ -136,7 +136,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockUpdateField).not.toHaveBeenCalled();
@@ -150,7 +150,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Valid Name");
       // Leave field key empty
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockUpdateField).not.toHaveBeenCalled();
@@ -164,7 +164,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "   ");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "valid_key");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
     });
@@ -180,7 +180,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "UPPERCASE_KEY");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -200,7 +200,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "customer id value");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -220,7 +220,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "field    with     gaps");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -240,7 +240,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
-      expect(screen.queryByText(/Options \(comma-separated\)/i)).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(/Option 1, Option 2/i)).not.toBeInTheDocument();
     });
 
     it("should show options field when select type is chosen", async () => {
@@ -251,7 +251,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "select");
 
-      expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Option 1, Option 2/i)).toBeInTheDocument();
     });
 
     it("should show options field when multiselect type is chosen", async () => {
@@ -262,7 +262,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "multiselect");
 
-      expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Option 1, Option 2/i)).toBeInTheDocument();
     });
 
     it("should hide options field when switching from select to text", async () => {
@@ -273,11 +273,11 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "select");
 
-      expect(screen.getByText(/Options \(comma-separated\)/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Option 1, Option 2/i)).toBeInTheDocument();
 
       await user.selectOptions(screen.getByRole("combobox"), "text");
 
-      expect(screen.queryByText(/Options \(comma-separated\)/i)).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(/Option 1, Option 2/i)).not.toBeInTheDocument();
     });
   });
 
@@ -296,7 +296,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "Low, Medium, High");
 
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -321,7 +321,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "  Option A  ,  Option B  ,  Option C  ");
 
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -346,7 +346,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const optionsInput = screen.getByPlaceholderText(/Option 1, Option 2/i);
       await user.type(optionsInput, "Valid,,,,Another Valid,");
 
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -367,7 +367,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "test");
       // Leave as text type
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalledWith(
@@ -448,7 +448,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
-      expect(screen.getByRole("button", { name: /Update Field/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Save/i })).toBeInTheDocument();
     });
 
     it("should convert options array to comma-separated string in edit mode", async () => {
@@ -482,7 +482,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.clear(nameInput);
       await user.type(nameInput, "Updated Name");
 
-      await user.click(screen.getByRole("button", { name: /Update Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalled();
@@ -684,7 +684,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       const confirmSpy = vi.spyOn(window, "confirm");
       confirmSpy.mockReturnValue(true);
-      mockRemoveField.mockResolvedValue({});
+      mockUpdateField.mockResolvedValue({});
 
       const field = {
         _id: "field1" as Id<"customFields">,
@@ -700,7 +700,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
       await waitFor(() => {
-        expect(mockRemoveField).toHaveBeenCalledWith({ id: "field1" });
+        expect(mockUpdateField).toHaveBeenCalledWith({ id: "field1" });
       });
     });
   });
@@ -715,7 +715,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "test");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Field created");
@@ -738,7 +738,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
-      await user.click(screen.getByRole("button", { name: /Update Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith("Field updated");
@@ -771,14 +771,14 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
     it("should show error toast when create fails", async () => {
       const user = userEvent.setup();
-      mockCreateField.mockRejectedValue(new Error("Duplicate field key"));
+      mockUpdateField.mockRejectedValue(new Error("Duplicate field key"));
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "test");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Duplicate field key");
@@ -788,14 +788,14 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show generic error when error has no message", async () => {
       const user = userEvent.setup();
       // Reject with a non-Error object to trigger the fallback message
-      mockCreateField.mockRejectedValue({});
+      mockUpdateField.mockRejectedValue({});
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "test");
-      await user.click(screen.getByRole("button", { name: /Create Field/i }));
+      await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Failed to save field");
