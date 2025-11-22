@@ -6,6 +6,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AutomationRulesManager } from "./AutomationRulesManager";
 
+// Helper to create properly typed mock IDs
+function mockId<T extends string>(id: string): Id<T> {
+  return id as Id<T>;
+}
+
 // Mock dependencies
 vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
@@ -20,7 +25,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("AutomationRulesManager - Component Behavior", () => {
-  const mockProjectId = "project123" as Id<"projects">;
+  const mockProjectId = mockId<"projects">("project123");
   const mockCreateRule = vi.fn();
   const mockUpdateRule = vi.fn();
   const mockRemoveRule = vi.fn();
@@ -329,7 +334,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Edit Mode Behavior", () => {
     const existingRule = {
-      _id: "rule1" as Id<"automationRules">,
+      _id: mockId<"automationRules">("rule1"),
       name: "Existing Rule",
       description: "A description",
       trigger: "priority_changed",
@@ -435,7 +440,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Rule Display & Formatting", () => {
     const activeRule = {
-      _id: "rule1" as Id<"automationRules">,
+      _id: mockId<"automationRules">("rule1"),
       name: "Auto Label High Priority",
       description: "Adds urgent label to high priority items",
       trigger: "priority_changed",
@@ -516,7 +521,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Toggle Active/Inactive Logic", () => {
     const activeRule = {
-      _id: "rule1" as Id<"automationRules">,
+      _id: mockId<"automationRules">("rule1"),
       name: "Test Rule",
       trigger: "status_changed",
       actionType: "add_label",
@@ -628,7 +633,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     it("should show success toast and close dialog after update", async () => {
       const user = userEvent.setup();
       const rule = {
-        _id: "rule1" as Id<"automationRules">,
+        _id: mockId<"automationRules">("rule1"),
         name: "Test",
         trigger: "status_changed",
         actionType: "add_label",
