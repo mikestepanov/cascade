@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface BurnRateDashboardProps {
   projectId: Id<"projects">;
@@ -60,7 +61,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
   if (!(burnRate && teamCosts)) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600" />
+        <LoadingSpinner />
       </div>
     );
   }

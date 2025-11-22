@@ -7,6 +7,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface UnsubscribePageProps {
   token: string;
@@ -51,7 +52,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
       <div className="max-w-md w-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
+            <LoadingSpinner size="lg" className="mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
               Processing...
             </h2>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,7 +132,7 @@ export function NotificationBell() {
           <div className="overflow-y-auto flex-1">
             {!notifications ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600" />
+                <LoadingSpinner />
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">

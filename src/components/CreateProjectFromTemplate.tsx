@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Input, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
@@ -106,7 +107,7 @@ export function CreateProjectFromTemplate({
 
           {!templates ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 dark:border-brand-400" />
+              <LoadingSpinner />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

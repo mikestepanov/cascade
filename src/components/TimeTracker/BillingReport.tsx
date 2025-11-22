@@ -3,6 +3,7 @@ import { Clock, DollarSign, Download, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface BillingReportProps {
   projectId: Id<"projects">;
@@ -35,7 +36,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
   if (!(billing && project)) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ui-text-primary dark:border-ui-text-primary-dark" />
+        <LoadingSpinner />
       </div>
     );
   }

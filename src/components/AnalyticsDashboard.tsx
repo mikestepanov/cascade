@@ -101,7 +101,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
                 label: status,
                 value: count,
               }))}
-              color="bg-blue-500"
+              color="bg-status-info dark:bg-status-info"
             />
           </ChartCard>
 
@@ -114,7 +114,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
                 { label: "Story", value: analytics.issuesByType.story },
                 { label: "Epic", value: analytics.issuesByType.epic },
               ]}
-              color="bg-green-500"
+              color="bg-status-success dark:bg-status-success"
             />
           </ChartCard>
 
@@ -131,7 +131,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
                 { label: "Low", value: analytics.issuesByPriority.low },
                 { label: "Lowest", value: analytics.issuesByPriority.lowest },
               ]}
-              color="bg-red-500"
+              color="bg-status-warning dark:bg-status-warning"
             />
           </ChartCard>
 
@@ -143,7 +143,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
                   label: v.sprintName,
                   value: v.points,
                 }))}
-                color="bg-purple-500"
+                color="bg-accent-600 dark:bg-accent-500"
               />
             ) : (
               <div className="flex items-center justify-center h-full text-ui-text-secondary dark:text-ui-text-secondary-dark">
@@ -161,7 +161,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
                 label: a.name,
                 value: a.count,
               }))}
-              color="bg-indigo-500"
+              color="bg-brand-600 dark:bg-brand-500"
             />
           </ChartCard>
         )}

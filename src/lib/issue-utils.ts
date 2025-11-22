@@ -25,6 +25,7 @@ export function getTypeIcon(type: string): string {
 
 /**
  * Get the color classes for an issue priority
+ * Uses semantic theme tokens with full dark mode support
  * @param variant - The style variant: 'text', 'bg', or 'badge'
  */
 export function getPriorityColor(
@@ -33,29 +34,29 @@ export function getPriorityColor(
 ): string {
   const colors = {
     highest: {
-      text: "text-red-600",
-      bg: "bg-red-100 text-red-800",
-      badge: "text-red-600 bg-red-50",
+      text: "text-priority-highest",
+      bg: "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
+      badge: "text-priority-highest bg-status-error-bg dark:bg-status-error-bg-dark",
     },
     high: {
-      text: "text-orange-600",
-      bg: "bg-orange-100 text-orange-800",
-      badge: "text-orange-600 bg-orange-50",
+      text: "text-priority-high",
+      bg: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+      badge: "text-priority-high bg-status-warning-bg dark:bg-status-warning-bg-dark",
     },
     medium: {
-      text: "text-yellow-600",
-      bg: "bg-yellow-100 text-yellow-800",
-      badge: "text-yellow-600 bg-yellow-50",
+      text: "text-priority-medium",
+      bg: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+      badge: "text-priority-medium bg-status-warning-bg dark:bg-status-warning-bg-dark",
     },
     low: {
-      text: "text-blue-600",
-      bg: "bg-blue-100 text-blue-800",
-      badge: "text-blue-600 bg-blue-50",
+      text: "text-priority-low",
+      bg: "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
+      badge: "text-priority-low bg-status-info-bg dark:bg-status-info-bg-dark",
     },
     lowest: {
-      text: "text-gray-600",
-      bg: "bg-gray-100 text-gray-800",
-      badge: "text-gray-600 bg-gray-50",
+      text: "text-priority-lowest",
+      bg: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+      badge: "text-priority-lowest bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
     },
   };
 
@@ -122,21 +123,22 @@ export function getTypeLabel(type: string): string {
 
 /**
  * Get the color for a sprint/workflow status
+ * Uses semantic theme tokens with full dark mode support
  */
 export function getStatusColor(status: string): string {
   switch (status.toLowerCase()) {
     case "active":
     case "in progress":
-      return "bg-green-100 text-green-800";
+      return "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark";
     case "completed":
     case "done":
-      return "bg-gray-100 text-gray-800";
+      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
     case "future":
     case "todo":
-      return "bg-blue-100 text-blue-800";
+      return "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
     case "blocked":
-      return "bg-red-100 text-red-800";
+      return "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
   }
 }
