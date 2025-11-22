@@ -1,4 +1,5 @@
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { SkeletonProjectCard } from "../ui/Skeleton";
@@ -74,9 +75,9 @@ export function ProjectsList({
                   <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                     {project.name}
                   </h4>
-                  <span className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-400 rounded capitalize flex-shrink-0">
+                  <Badge variant="primary" className="capitalize flex-shrink-0">
                     {project.role}
-                  </span>
+                  </Badge>
                 </div>
                 <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   {project.myIssues} my issues • {project.totalIssues} total
