@@ -3,6 +3,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
@@ -228,9 +229,13 @@ export function DocumentTemplatesManager({
                                 {template.description}
                               </p>
                             )}
-                            <span className="inline-block mt-2 text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded capitalize">
+                            <Badge
+                              variant="primary"
+                              size="md"
+                              className="inline-block mt-2 capitalize"
+                            >
                               {template.category}
-                            </span>
+                            </Badge>
                           </div>
                         </div>
                       </button>
@@ -268,13 +273,13 @@ export function DocumentTemplatesManager({
                                 </p>
                               )}
                               <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
+                                <Badge variant="neutral" size="md" className="capitalize">
                                   {template.category}
-                                </span>
+                                </Badge>
                                 {template.isPublic && (
-                                  <span className="text-xs px-2 py-1 bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
+                                  <Badge variant="success" size="md">
                                     Public
-                                  </span>
+                                  </Badge>
                                 )}
                               </div>
                             </div>
