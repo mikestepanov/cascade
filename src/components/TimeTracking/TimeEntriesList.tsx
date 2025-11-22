@@ -5,6 +5,7 @@ import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -162,11 +163,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                     )}
 
                     <div className="flex items-center gap-3 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                      {entry.activity && (
-                        <span className="px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                          {entry.activity}
-                        </span>
-                      )}
+                      {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
 
                       {entry.project && (
                         <span className="flex items-center gap-1">
@@ -200,11 +197,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                         </span>
                       )}
 
-                      {entry.billable && (
-                        <span className="px-2 py-0.5 bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success rounded">
-                          Billable
-                        </span>
-                      )}
+                      {entry.billable && <Badge variant="success">Billable</Badge>}
 
                       {entry.isLocked && (
                         <span className="flex items-center gap-1 text-status-warning dark:text-status-warning">

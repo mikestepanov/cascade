@@ -1,6 +1,7 @@
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { UseListNavigationResult } from "../../hooks/useListNavigation";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
+import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { SkeletonList } from "../ui/Skeleton";
@@ -115,11 +116,9 @@ export function MyIssuesList({
                       <span className="text-lg" aria-hidden="true">
                         {getTypeIcon(issue.type)}
                       </span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(issue.priority, "bg")}`}
-                      >
+                      <Badge shape="pill" className={getPriorityColor(issue.priority, "bg")}>
                         {issue.priority}
-                      </span>
+                      </Badge>
                     </div>
                     <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                       {issue.title}

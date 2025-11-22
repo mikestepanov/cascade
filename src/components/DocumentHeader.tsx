@@ -2,6 +2,7 @@ import { History } from "lucide-react";
 import { useState } from "react";
 import type { Doc } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";
+import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";
 
 interface DocumentHeaderProps {
@@ -93,10 +94,11 @@ export function DocumentHeader({
           <PresenceIndicator roomId={document._id} userId={userId} />
 
           {/* Version History */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onShowVersionHistory}
-            className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors relative"
+            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark min-h-0"
             title="View version history"
             aria-label="Version history"
           >
@@ -109,14 +111,15 @@ export function DocumentHeader({
                 </span>
               )}
             </span>
-          </button>
+          </Button>
 
           {/* Import Markdown */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => void onImportMarkdown()}
             disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-2 sm:px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-800/40 min-h-0"
             title="Import from Markdown file"
             aria-label="Import from Markdown"
           >
@@ -137,14 +140,15 @@ export function DocumentHeader({
               </svg>
               <span className="hidden sm:inline">Import MD</span>
             </span>
-          </button>
+          </Button>
 
           {/* Export Markdown */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => void onExportMarkdown()}
             disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-2 sm:px-3 py-1 bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-800/40 min-h-0"
             title="Export as Markdown file"
             aria-label="Export as Markdown"
           >
@@ -165,20 +169,21 @@ export function DocumentHeader({
               </svg>
               <span className="hidden sm:inline">Export MD</span>
             </span>
-          </button>
+          </Button>
 
           {document.isOwner && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => void onTogglePublic()}
-              className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+              className={`px-2 sm:px-3 py-1 min-h-0 ${
                 document.isPublic
                   ? "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark hover:bg-status-success-bg dark:hover:bg-status-success-bg-dark hover:opacity-80"
                   : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
               }`}
             >
               {document.isPublic ? "Public" : "Private"}
-            </button>
+            </Button>
           )}
         </div>
       </div>

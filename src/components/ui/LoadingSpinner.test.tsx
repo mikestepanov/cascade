@@ -91,7 +91,7 @@ describe("LoadingSpinner", () => {
       const spinner = screen.getByRole("status");
       expect(spinner).toHaveClass("animate-spin");
       expect(spinner).toHaveClass("rounded-full");
-      expect(spinner).toHaveClass("border-gray-900");
+      expect(spinner).toHaveClass("border-ui-text-primary");
       expect(spinner).toHaveClass("border-t-transparent");
     });
 
@@ -141,7 +141,7 @@ describe("LoadingSpinner", () => {
 
       const message = container.querySelector("p");
       expect(message).toHaveClass("text-sm");
-      expect(message).toHaveClass("text-gray-600");
+      expect(message).toHaveClass("text-ui-text-secondary");
     });
 
     it("should handle long messages", () => {
@@ -228,7 +228,7 @@ describe("LoadingOverlay", () => {
       const overlay = container.querySelector(".absolute");
       expect(overlay).toBeInTheDocument();
       expect(overlay).toHaveClass("inset-0");
-      expect(overlay).toHaveClass("bg-white");
+      expect(overlay).toHaveClass("bg-ui-bg-primary");
       expect(overlay).toHaveClass("bg-opacity-90");
     });
 

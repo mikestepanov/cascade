@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { DocumentTemplatesManager } from "./DocumentTemplatesManager";
+import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { Checkbox, Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
@@ -246,16 +247,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                       <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         by {doc.creatorName}
                       </span>
-                      {doc.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark">
-                          Public
-                        </span>
-                      )}
-                      {doc.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-400">
-                          Owner
-                        </span>
-                      )}
+                      {doc.isPublic && <Badge variant="success">Public</Badge>}
+                      {doc.isOwner && <Badge variant="primary">Owner</Badge>}
                     </div>
                     <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
                       {new Date(doc.updatedAt).toLocaleDateString()}

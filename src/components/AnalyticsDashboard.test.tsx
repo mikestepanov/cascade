@@ -203,7 +203,7 @@ describe("AnalyticsDashboard", () => {
     // Find the unassigned metric card
     const unassignedCard = screen.getByText("Unassigned").closest("div.ring-2");
     expect(unassignedCard).toBeInTheDocument();
-    expect(unassignedCard).toHaveClass("ring-orange-500");
+    expect(unassignedCard).toHaveClass("ring-status-warning");
   });
 
   it("should show no completed sprints message when velocity data is empty", () => {

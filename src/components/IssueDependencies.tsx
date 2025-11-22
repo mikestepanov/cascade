@@ -3,6 +3,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Input, Select } from "./ui/form";
@@ -123,9 +124,9 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 rounded font-medium">
+                  <Badge variant="brand" size="md">
                     {getLinkTypeLabel(link.linkType, "outgoing")}
-                  </span>
+                  </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-sm">{getTypeIcon(link.issue.type)}</span>
@@ -165,9 +166,9 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-xs px-2 py-1 bg-accent-100 dark:bg-accent-900 text-accent-800 dark:text-accent-200 rounded font-medium">
+                  <Badge variant="accent" size="md">
                     {getLinkTypeLabel(link.linkType, "incoming")}
-                  </span>
+                  </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-sm">{getTypeIcon(link.issue.type)}</span>

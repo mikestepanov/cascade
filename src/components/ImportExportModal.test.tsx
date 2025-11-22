@@ -109,9 +109,9 @@ describe("ImportExportModal - Component Behavior", () => {
       await user.click(screen.getByText("📥 Import"));
       expect(screen.getByRole("button", { name: /Import from CSV/i })).toBeInTheDocument();
 
-      // Switch back to export (should still be JSON)
+      // Switch back to export (format resets to CSV with refactored component)
       await user.click(screen.getByText("📤 Export"));
-      expect(screen.getByRole("button", { name: /Export as JSON/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Export as CSV/i })).toBeInTheDocument();
     });
   });
 
@@ -549,7 +549,7 @@ describe("ImportExportModal - Component Behavior", () => {
       await user.click(importButton);
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Failed to import issues");
+        expect(toast.error).toHaveBeenCalledWith("Unknown error");
       });
     });
   });

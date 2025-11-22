@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Button } from "./ui/Button";
 
 interface Props {
   children: ReactNode;
@@ -52,13 +53,9 @@ export class ErrorBoundary extends Component<Props, State> {
                   </pre>
                 </details>
               )}
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-medium"
-              >
+              <Button onClick={() => window.location.reload()} size="lg">
                 Reload Page
-              </button>
+              </Button>
             </div>
           </div>
         </div>

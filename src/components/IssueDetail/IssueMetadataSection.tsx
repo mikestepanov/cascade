@@ -1,3 +1,5 @@
+import { Badge } from "../ui/Badge";
+
 interface IssueMetadataProps {
   status: string;
   type: string;
@@ -71,12 +73,9 @@ export function IssueMetadataSection({
           </h3>
           <div className="flex flex-wrap gap-2">
             {labels.map((label) => (
-              <span
-                key={label}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              >
+              <Badge key={label} variant="neutral" shape="pill" size="md">
                 {label}
-              </span>
+              </Badge>
             ))}
           </div>
         </div>

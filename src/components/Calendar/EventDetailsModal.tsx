@@ -6,6 +6,7 @@ import { formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -95,16 +96,12 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
         <div className="flex items-start justify-between p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded capitalize ${getEventTypeColor(event.eventType)}`}
-              >
+              <Badge size="md" className={`capitalize ${getEventTypeColor(event.eventType)}`}>
                 {event.eventType}
-              </span>
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded capitalize ${getStatusColor(event.status)}`}
-              >
+              </Badge>
+              <Badge size="md" className={`capitalize ${getStatusColor(event.status)}`}>
                 {event.status}
-              </span>
+              </Badge>
             </div>
             <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               {event.title}

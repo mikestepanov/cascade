@@ -1,3 +1,4 @@
+import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { SkeletonText } from "../ui/Skeleton";
@@ -80,9 +81,9 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="inline-block font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark px-2 py-0.5 rounded">
+                      <Badge variant="neutral" className="font-mono">
                         {activity.issueKey}
-                      </span>
+                      </Badge>
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       <span>{activity.projectName}</span>

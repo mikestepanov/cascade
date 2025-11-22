@@ -1,6 +1,7 @@
 import { ANIMATION } from "@/lib/constants";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
+import { Badge } from "../ui/Badge";
 
 interface WorkflowState {
   id: string;
@@ -70,9 +71,9 @@ export function KanbanColumn({
             <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
               {state.name}
             </h3>
-            <span className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-xs px-2 py-1 rounded-full flex-shrink-0">
+            <Badge variant="neutral" shape="pill" className="flex-shrink-0">
               {stateIssues.length}
-            </span>
+            </Badge>
           </div>
           <button
             type="button"

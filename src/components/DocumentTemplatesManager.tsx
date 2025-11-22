@@ -3,11 +3,12 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Input, Select, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface DocumentTemplatesManagerProps {
@@ -228,9 +229,13 @@ export function DocumentTemplatesManager({
                                 {template.description}
                               </p>
                             )}
-                            <span className="inline-block mt-2 text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded capitalize">
+                            <Badge
+                              variant="primary"
+                              size="md"
+                              className="inline-block mt-2 capitalize"
+                            >
                               {template.category}
-                            </span>
+                            </Badge>
                           </div>
                         </div>
                       </button>
@@ -268,13 +273,13 @@ export function DocumentTemplatesManager({
                                 </p>
                               )}
                               <div className="flex gap-2">
-                                <span className="text-xs px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
+                                <Badge variant="neutral" size="md" className="capitalize">
                                   {template.category}
-                                </span>
+                                </Badge>
                                 {template.isPublic && (
-                                  <span className="text-xs px-2 py-1 bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
+                                  <Badge variant="success" size="md">
                                     Public
-                                  </span>
+                                  </Badge>
                                 )}
                               </div>
                             </div>
@@ -345,7 +350,7 @@ export function DocumentTemplatesManager({
       >
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InputField
+            <Input
               label="Template Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -354,7 +359,7 @@ export function DocumentTemplatesManager({
               autoFocus
             />
 
-            <InputField
+            <Input
               label="Icon (Emoji)"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
@@ -364,7 +369,7 @@ export function DocumentTemplatesManager({
             />
           </div>
 
-          <TextareaField
+          <Textarea
             label="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -373,7 +378,7 @@ export function DocumentTemplatesManager({
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SelectField
+            <Select
               label="Category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -384,7 +389,7 @@ export function DocumentTemplatesManager({
               <option value="engineering">Engineering</option>
               <option value="design">Design</option>
               <option value="other">Other</option>
-            </SelectField>
+            </Select>
 
             <div className="flex items-center gap-2 pt-7">
               <input

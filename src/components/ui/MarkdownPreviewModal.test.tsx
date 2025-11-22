@@ -83,15 +83,15 @@ print("hello")
     render(<MarkdownPreviewModal {...defaultProps} />);
 
     // Should start on Preview tab
-    expect(screen.getByText("Preview")).toHaveClass("border-blue-500");
+    expect(screen.getByText("Preview")).toHaveClass("border-brand-500");
 
     // Click Raw tab
     const rawTab = screen.getByText("Raw Markdown");
     await user.click(rawTab);
 
     // Raw tab should now be active
-    expect(rawTab).toHaveClass("border-blue-500");
-    expect(screen.getByText("Preview")).not.toHaveClass("border-blue-500");
+    expect(rawTab).toHaveClass("border-brand-500");
+    expect(screen.getByText("Preview")).not.toHaveClass("border-brand-500");
   });
 
   it("should display raw markdown in Raw tab", async () => {

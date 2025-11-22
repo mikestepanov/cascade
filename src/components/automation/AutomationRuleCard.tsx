@@ -2,6 +2,7 @@ import { useMutation } from "convex/react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
 
 interface AutomationRuleCardProps {
@@ -69,15 +70,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {rule.name}
             </h4>
-            <span
-              className={`text-xs px-2 py-1 rounded ${
-                rule.isActive
-                  ? "bg-status-success/10 text-status-success dark:bg-status-success/30 dark:text-status-success"
-                  : "bg-ui-bg-tertiary text-ui-text-primary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
-              }`}
-            >
+            <Badge variant={rule.isActive ? "success" : "neutral"} size="md">
               {rule.isActive ? "Active" : "Inactive"}
-            </span>
+            </Badge>
           </div>
 
           {rule.description && (
@@ -89,17 +84,17 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">When:</span>
-              <span className="px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded">
+              <Badge variant="brand" size="md">
                 {getTriggerLabel(rule.trigger)}
                 {rule.triggerValue && ` → ${rule.triggerValue}`}
-              </span>
+              </Badge>
             </div>
 
             <div className="flex items-center gap-2">
               <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Then:</span>
-              <span className="px-2 py-1 bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 rounded">
+              <Badge variant="accent" size="md">
                 {getActionLabel(rule.actionType)}
-              </span>
+              </Badge>
             </div>
 
             <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">

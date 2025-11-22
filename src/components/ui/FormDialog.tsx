@@ -32,7 +32,7 @@ export function FormDialog({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} size={size}>
+    <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth={size}>
       <div className="space-y-4">
         {children}
 

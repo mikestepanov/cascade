@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
+  variant?: "primary" | "secondary" | "success" | "danger" | "ghost";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -25,6 +25,8 @@ export function Button({
       "bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500 dark:bg-brand-500 dark:hover:bg-brand-600 dark:focus:ring-brand-400",
     secondary:
       "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus:ring-brand-500 dark:focus:ring-brand-400",
+    success:
+      "bg-status-success text-white hover:bg-status-success/90 focus:ring-status-success dark:bg-status-success dark:hover:bg-status-success/90 dark:focus:ring-status-success",
     danger:
       "bg-status-error text-white hover:bg-status-error/90 focus:ring-status-error dark:bg-status-error dark:hover:bg-status-error/90 dark:focus:ring-status-error",
     ghost:

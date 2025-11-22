@@ -5,7 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { InputField, SelectField, TextareaField } from "./ui/FormField";
+import { Input, Select, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface CreateIssueModalProps {
@@ -144,7 +144,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
         {/* Template Selector */}
         {templates && templates.length > 0 && (
-          <SelectField
+          <Select
             label="Use Template (Optional)"
             value={selectedTemplate}
             onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
@@ -155,10 +155,10 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
                 {template.name} ({template.type})
               </option>
             ))}
-          </SelectField>
+          </Select>
         )}
 
-        <InputField
+        <Input
           label="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -194,7 +194,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           )}
         </div>
 
-        <TextareaField
+        <Textarea
           label="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -203,7 +203,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <SelectField
+          <Select
             label="Type"
             value={type}
             onChange={(e) =>
@@ -215,9 +215,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             <option value="story">📖 Story</option>
             <option value="epic">🎯 Epic</option>
             <option value="subtask">🔸 Sub-task</option>
-          </SelectField>
+          </Select>
 
-          <SelectField
+          <Select
             label="Priority"
             value={priority}
             onChange={(e) =>
@@ -229,10 +229,10 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             <option value="medium">➡️ Medium</option>
             <option value="high">↗️ High</option>
             <option value="highest">⬆️ Highest</option>
-          </SelectField>
+          </Select>
         </div>
 
-        <SelectField
+        <Select
           label="Assignee"
           value={assigneeId}
           onChange={(e) => setAssigneeId(e.target.value as Id<"users"> | "")}
@@ -243,9 +243,9 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
               {member.name}
             </option>
           ))}
-        </SelectField>
+        </Select>
 
-        <InputField
+        <Input
           label="Story Points"
           type="number"
           value={storyPoints}

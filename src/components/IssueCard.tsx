@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
 
 interface Issue {
   _id: Id<"issues">;
@@ -94,12 +95,9 @@ export const IssueCard = memo(function IssueCard({
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
           {issue.labels.slice(0, 3).map((label) => (
-            <span
-              key={label}
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-            >
+            <Badge key={label} variant="neutral">
               {label}
-            </span>
+            </Badge>
           ))}
           {issue.labels.length > 3 && (
             <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">

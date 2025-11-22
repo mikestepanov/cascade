@@ -1,4 +1,5 @@
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 
@@ -54,11 +55,7 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
               <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 {field.name}
               </h3>
-              {field.isRequired && (
-                <span className="text-xs px-2 py-0.5 bg-status-error/10 dark:bg-status-error/20 text-status-error dark:text-status-error rounded">
-                  Required
-                </span>
-              )}
+              {field.isRequired && <Badge variant="error">Required</Badge>}
             </div>
             <div className="flex items-center gap-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               <code className="px-2 py-0.5 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded font-mono text-xs">
@@ -75,12 +72,9 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
             {field.options && field.options.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {field.options.map((option) => (
-                  <span
-                    key={option}
-                    className="text-xs px-2 py-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded"
-                  >
+                  <Badge key={option} variant="secondary" size="md">
                     {option}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             )}

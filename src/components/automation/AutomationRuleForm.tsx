@@ -1,5 +1,5 @@
 import { useMutation } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -39,8 +39,8 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
   const createRule = useMutation(api.automationRules.create);
   const updateRule = useMutation(api.automationRules.update);
 
-  // Reset form when rule changes
-  useState(() => {
+  // Reset form when rule changes or dialog opens
+  useEffect(() => {
     if (rule) {
       setName(rule.name);
       setDescription(rule.description || "");
@@ -56,7 +56,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
       setActionType("add_label");
       setActionValue("");
     }
-  });
+  }, [rule, isOpen]);
 
   const handleSave = async () => {
     if (!(name.trim() && actionValue.trim())) {
@@ -108,6 +108,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
       onClose={onClose}
       onSave={handleSave}
       title={rule ? "Edit Automation Rule" : "Create Automation Rule"}
+      saveLabel={rule ? "Update Rule" : "Create Rule"}
       isLoading={isLoading}
       size="lg"
     >
