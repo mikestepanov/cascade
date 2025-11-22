@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -210,15 +211,13 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark">
                     <div className="flex items-center gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
-                        <span className="text-accent-600 dark:text-accent-400 text-xs font-medium px-1.5 sm:px-2 py-0.5 bg-accent-100 dark:bg-accent-900 rounded">
+                        <Badge variant="accent" size="md">
                           Sprint
-                        </span>
+                        </Badge>
                       ) : (
-                        <span
-                          className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 rounded ${getIssueTypeStyle(item.issueType)}`}
-                        >
+                        <Badge size="md" className={getIssueTypeStyle(item.issueType)}>
                           {item.issueType}
-                        </span>
+                        </Badge>
                       )}
                     </div>
                     <div className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
