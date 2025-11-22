@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
+import { XIcon } from "./icons";
 import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ModalProps {
@@ -67,20 +68,7 @@ export function Modal({
                 aria-label="Close modal"
                 className="p-1 min-h-0"
               >
-                <svg
-                  aria-hidden="true"
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XIcon />
               </Button>
             </div>
           )}
