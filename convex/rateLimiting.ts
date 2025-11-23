@@ -4,8 +4,8 @@
  * Provides rate limiting for mutations and actions to prevent abuse
  */
 
-import { customMutation } from "convex-helpers/server/customFunctions";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { customMutation } from "convex-helpers/server/customFunctions";
 import { mutation } from "./_generated/server";
 
 /**
@@ -63,9 +63,7 @@ function checkRateLimit(key: string, config: RateLimitConfig): boolean {
 /**
  * Rate limited mutation - limits requests per user
  */
-export function rateLimitedMutation<Args extends Record<string, any>>(
-  config: RateLimitConfig,
-) {
+export function rateLimitedMutation(config: RateLimitConfig) {
   return customMutation(mutation, {
     args: {},
     input: async (ctx, _args) => {

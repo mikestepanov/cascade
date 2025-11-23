@@ -92,6 +92,7 @@ export function MarkdownPreviewModal({
             <div className="p-4 prose dark:prose-invert max-w-none">
               <div
                 className="markdown-preview"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
                 dangerouslySetInnerHTML={{ __html: renderMarkdownPreview(markdown) }}
               />
             </div>

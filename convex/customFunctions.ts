@@ -8,12 +8,12 @@
  * - Improve code reusability
  */
 
-import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getUserRole } from "./rbac";
+import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
+import { getUserRole } from "./rbac";
 
 /**
  * Authenticated Query
@@ -73,7 +73,7 @@ export const projectQuery = customQuery(query, {
 
     // Check if user is member or project is public
     const role = await getUserRole(ctx, args.projectId, userId);
-    if (!role && !project.isPublic) {
+    if (!(role || project.isPublic)) {
       throw new Error("Access denied - not a project member");
     }
 
@@ -235,9 +235,38 @@ export type AuthenticatedQueryCtx = {
 export type ProjectQueryCtx = AuthenticatedQueryCtx & {
   projectId: Id<"projects">;
   role: "viewer" | "editor" | "admin" | null;
-  project: any;
+  project: {
+    _id: Id<"projects">;
+    _creationTime: number;
+    name: string;
+    key: string;
+    description?: string;
+    isPublic: boolean;
+    createdBy: Id<"users">;
+    workflowStates: Array<{
+      id: string;
+      name: string;
+      category: "todo" | "inProgress" | "done";
+      color: string;
+    }>;
+    boardType: "kanban" | "scrum";
+  };
 };
 
 export type IssueMutationCtx = ProjectQueryCtx & {
-  issue: any;
+  issue: {
+    _id: Id<"issues">;
+    _creationTime: number;
+    projectId: Id<"projects">;
+    key: string;
+    title: string;
+    description?: string;
+    type: "story" | "bug" | "task" | "epic";
+    status: string;
+    priority: "lowest" | "low" | "medium" | "high" | "highest";
+    assigneeId?: Id<"users">;
+    reporterId: Id<"users">;
+    sprintId?: Id<"sprints">;
+    epicId?: Id<"issues">;
+  };
 };

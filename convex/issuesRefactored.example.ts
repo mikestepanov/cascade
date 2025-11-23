@@ -125,12 +125,7 @@ export const create = editorMutation({
     // No need to check auth or permissions - it's already done ✅
 
     // Validate parent issue and epic
-    const resolvedEpicId = await validateParentIssue(
-      ctx,
-      args.parentId,
-      args.type,
-      args.epicId,
-    );
+    const resolvedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
     const issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
