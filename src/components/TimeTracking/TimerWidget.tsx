@@ -5,6 +5,7 @@ import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -103,12 +104,12 @@ export function TimerWidget() {
         <span className="hidden sm:inline">Start Timer</span>
       </Button>
 
-      {showStartModal && <StartTimerModal onClose={() => setShowStartModal(false)} />}
+      {showStartModal && <StartTimerModal isOpen={showStartModal} onClose={() => setShowStartModal(false)} />}
     </>
   );
 }
 
-function StartTimerModal({ onClose }: { onClose: () => void }) {
+function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const startTimer = useMutation(api.timeTracking.startTimer);
   const [description, setDescription] = useState("");
   const [activity, setActivity] = useState("");
@@ -127,66 +128,56 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true" />
-
-      {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-          Start Timer
-        </h2>
-
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="timer-description"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              What are you working on? (optional)
-            </label>
-            <input
-              id="timer-description"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., Fixing login bug..."
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="timer-activity"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Activity (optional)
-            </label>
-            <select
-              id="timer-activity"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            >
-              <option value="">Select activity...</option>
-              {ACTIVITY_TYPES.map((activityType) => (
-                <option key={activityType} value={activityType}>
-                  {activityType}
-                </option>
-              ))}
-            </select>
-          </div>
+    <Modal isOpen={isOpen} onClose={onClose} title="Start Timer" maxWidth="md">
+      <form onSubmit={(e) => { e.preventDefault(); void handleStart(); }} className="space-y-4">
+        <div>
+          <label
+            htmlFor="timer-description"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
+            What are you working on? (optional)
+          </label>
+          <input
+            id="timer-description"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="e.g., Fixing login bug..."
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          />
         </div>
 
-        <div className="flex justify-end gap-2 mt-6">
+        <div>
+          <label
+            htmlFor="timer-activity"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
+            Activity (optional)
+          </label>
+          <select
+            id="timer-activity"
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          >
+            <option value="">Select activity...</option>
+            {ACTIVITY_TYPES.map((activityType) => (
+              <option key={activityType} value={activityType}>
+                {activityType}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-4">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button onClick={handleStart} variant="primary">
+          <Button type="submit" variant="primary">
             Start Timer
           </Button>
         </div>
-      </div>
-    </>
+      </form>
+    </Modal>
   );
 }

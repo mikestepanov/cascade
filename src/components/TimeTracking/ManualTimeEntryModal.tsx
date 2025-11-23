@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -117,22 +118,8 @@ export function ManualTimeEntryModal({
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      <button
-        type="button"
-        className="fixed inset-0 bg-black/50 z-40 cursor-default"
-        onClick={onClose}
-        aria-label="Close modal"
-      />
-
-      {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-          Log Time Manually
-        </h2>
-
-        <div className="space-y-4">
+    <Modal isOpen={true} onClose={onClose} title="Log Time Manually" maxWidth="2xl">
+      <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-4">
           {/* Date */}
           <div>
             <label
@@ -358,17 +345,16 @@ export function ManualTimeEntryModal({
               Mark this time as billable to clients
             </p>
           </div>
-        </div>
 
-        <div className="flex justify-end gap-2 mt-6">
+        <div className="flex justify-end gap-2 pt-4">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} variant="primary" disabled={duration <= 0}>
+          <Button type="submit" variant="primary" disabled={duration <= 0}>
             Create Entry
           </Button>
         </div>
-      </div>
-    </>
+      </form>
+    </Modal>
   );
 }
