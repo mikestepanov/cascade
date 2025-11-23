@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
@@ -88,13 +89,14 @@ export function CalendarView() {
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-4">
-            <button
-              type="button"
+            <Button
               onClick={handleToday}
-              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
+              variant="secondary"
+              size="sm"
+              className="text-xs sm:text-sm"
             >
               Today
-            </button>
+            </Button>
             <div className="flex items-center gap-1 sm:gap-2">
               <button
                 type="button"
@@ -143,15 +145,16 @@ export function CalendarView() {
               </button>
             </div>
 
-            <button
-              type="button"
+            <Button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-xs sm:text-sm flex-shrink-0"
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus className="w-3 h-3 sm:w-4 sm:h-4" />}
+              className="flex-shrink-0"
             >
-              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">New Event</span>
               <span className="sm:hidden">New</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

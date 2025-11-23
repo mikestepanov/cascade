@@ -4,6 +4,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 
 interface CreateEventModalProps {
   onClose: () => void;
@@ -315,20 +316,16 @@ export function CreateEventModal({
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50 font-medium"
+              variant="primary"
+              isLoading={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create Event"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
