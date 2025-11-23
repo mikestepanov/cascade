@@ -1,4 +1,5 @@
 import { Anonymous } from "@convex-dev/auth/providers/Anonymous";
+import Google from "@auth/core/providers/google";
 import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth, getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "./_generated/server";
@@ -7,7 +8,7 @@ import { query } from "./_generated/server";
 // Convex Auth supports OAuth via environment variable configuration.
 // See docs/AUTHENTICATION.md for setup instructions.
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
-  providers: [Password, Anonymous],
+  providers: [Google, Password, Anonymous],
 });
 
 export const loggedInUser = query({

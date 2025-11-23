@@ -1,10 +1,20 @@
+
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import {
+  type MutationCtx,
+  mutation,
+  type QueryCtx,
+  query,
+} from "./_generated/server";
+import { sendEmail } from "./email/index";
 
 // Helper: Check if user is a platform admin
-async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
+async function isPlatformAdmin(
+  ctx: QueryCtx | MutationCtx,
+  userId: Id<"users">
+) {
   // For now, anyone who has created a project is considered admin
   // You can customize this logic based on your needs
   const createdProjects = await ctx.db
@@ -70,7 +80,9 @@ export const sendInvite = mutation({
     // Check if there's already a pending invite for this email
     const existingInvite = await ctx.db
       .query("invites")
-      .withIndex("by_email_status", (q) => q.eq("email", args.email).eq("status", "pending"))
+      .withIndex("by_email_status", (q) =>
+        q.eq("email", args.email).eq("status", "pending")
+      )
       .first();
 
     if (existingInvite) {
@@ -92,9 +104,23 @@ export const sendInvite = mutation({
       updatedAt: now,
     });
 
-    // TODO: Send email with invite link
-    // const inviteLink = `${process.env.SITE_URL}/invite/${token}`;
-    // await sendInviteEmail(args.email, inviteLink);
+    // Send email with invite link
+    const inviteLink = `${process.env.SITE_URL}/invite/${token}`;
+    
+    await sendEmail({
+      to: args.email,
+      subject: "You've been invited to Nixelo",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Welcome to Nixelo</h2>
+          <p>You have been invited to join Nixelo as a <strong>${args.role}</strong>.</p>
+          <p>Click the button below to accept your invitation:</p>
+          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
+          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
+        </div>
+      `,
+      text: `You have been invited to join Nixelo as a ${args.role}. Accept your invitation here: ${inviteLink}`,
+    });
 
     return { inviteId, token };
   },
@@ -173,9 +199,23 @@ export const resendInvite = mutation({
       updatedAt: Date.now(),
     });
 
-    // TODO: Send email with invite link again
-    // const inviteLink = `${process.env.SITE_URL}/invite/${invite.token}`;
-    // await sendInviteEmail(invite.email, inviteLink);
+    // Send email with invite link again
+    const inviteLink = `${process.env.SITE_URL}/invite/${invite.token}`;
+    
+    await sendEmail({
+      to: invite.email,
+      subject: "Invitation to Nixelo",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Invitation Reminder</h2>
+          <p>This is a reminder that you have been invited to join Nixelo.</p>
+          <p>Click the button below to accept your invitation:</p>
+          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
+          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
+        </div>
+      `,
+      text: `You have been invited to join Nixelo. Accept your invitation here: ${inviteLink}`,
+    });
 
     return { success: true };
   },
@@ -199,7 +239,8 @@ export const getInviteByToken = query({
     }
 
     // Check if expired (just for display, actual expiration check happens in acceptInvite)
-    const isExpired = invite.status === "pending" && invite.expiresAt < Date.now();
+    const isExpired =
+      invite.status === "pending" && invite.expiresAt < Date.now();
 
     // Get inviter name
     const inviter = await ctx.db.get(invite.invitedBy);
@@ -274,8 +315,8 @@ export const listInvites = query({
         v.literal("pending"),
         v.literal("accepted"),
         v.literal("revoked"),
-        v.literal("expired"),
-      ),
+        v.literal("expired")
+      )
     ),
   },
   handler: async (ctx, args) => {
@@ -303,18 +344,23 @@ export const listInvites = query({
     // Get inviter names
     const invitesWithNames = await Promise.all(
       invites.map(async (invite) => {
-        const inviter = (await ctx.db.get(invite.invitedBy)) as Doc<"users"> | null;
+        const inviter = (await ctx.db.get(
+          invite.invitedBy
+        )) as Doc<"users"> | null;
         let acceptedByName: string | undefined;
         if (invite.acceptedBy) {
-          const acceptedUser = (await ctx.db.get(invite.acceptedBy)) as Doc<"users"> | null;
-          acceptedByName = acceptedUser?.name || acceptedUser?.email || "Unknown";
+          const acceptedUser = (await ctx.db.get(
+            invite.acceptedBy
+          )) as Doc<"users"> | null;
+          acceptedByName =
+            acceptedUser?.name || acceptedUser?.email || "Unknown";
         }
         return {
           ...invite,
           inviterName: inviter?.name || inviter?.email || "Unknown",
           acceptedByName,
         };
-      }),
+      })
     );
 
     // Sort by created date (newest first)
@@ -364,7 +410,7 @@ export const listUsers = query({
           projectsCreated: projectsCreated.length,
           projectMemberships: projectMemberships.length,
         };
-      }),
+      })
     );
 
     return usersWithInfo;
