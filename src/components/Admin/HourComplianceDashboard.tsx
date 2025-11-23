@@ -356,11 +356,11 @@ export function HourComplianceDashboard() {
                       </div>
 
                       {record.reviewNotes && (
-                        <div className="mt-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-sm">
-                          <span className="font-medium text-purple-900 dark:text-purple-100">
+                        <div className="mt-3 p-2 bg-accent-50 dark:bg-accent-900/20 rounded text-sm">
+                          <span className="font-medium text-accent-900 dark:text-accent-100">
                             Review Notes:
                           </span>{" "}
-                          <span className="text-purple-700 dark:text-purple-300">
+                          <span className="text-accent-700 dark:text-accent-300">
                             {record.reviewNotes}
                           </span>
                         </div>

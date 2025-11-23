@@ -301,11 +301,11 @@ export function UserTypeManager() {
   const getTypeColor = (type: EmploymentType) => {
     switch (type) {
       case "employee":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
+        return "bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300";
       case "contractor":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300";
+        return "bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300";
       case "intern":
-        return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300";
+        return "bg-status-success-bg text-status-success-text dark:bg-status-success-bg-dark dark:text-status-success-text-dark";
     }
   };
 
@@ -425,8 +425,8 @@ export function UserTypeManager() {
         <CardBody>
           {/* Users without profiles */}
           {usersWithoutProfiles && usersWithoutProfiles.length > 0 && (
-            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <h4 className="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
+            <div className="mb-6 p-4 bg-status-warning-bg dark:bg-status-warning-bg-dark border border-status-warning dark:border-status-warning rounded-lg">
+              <h4 className="font-semibold text-status-warning-text dark:text-status-warning-text-dark mb-2">
                 Unassigned Users ({usersWithoutProfiles.length})
               </h4>
               <div className="space-y-2">
@@ -485,7 +485,7 @@ export function UserTypeManager() {
                               {profile.employmentType}
                             </span>
                             {!profile.isActive && (
-                              <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded">
+                              <span className="text-xs px-2 py-0.5 bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark rounded">
                                 Inactive
                               </span>
                             )}
@@ -737,9 +737,9 @@ export function UserTypeManager() {
 
           {/* Equity Compensation Section (Employees Only) */}
           {profileType === "employee" && (
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-sm text-blue-900 dark:text-blue-100">
+                <h4 className="font-medium text-sm text-brand-900 dark:text-brand-100">
                   💎 Equity Compensation
                 </h4>
                 <label className="flex items-center gap-2">
@@ -749,7 +749,7 @@ export function UserTypeManager() {
                     onChange={(e) => setProfileHasEquity(e.target.checked)}
                     className="w-4 h-4"
                   />
-                  <span className="text-xs font-medium text-blue-900 dark:text-blue-100">
+                  <span className="text-xs font-medium text-brand-900 dark:text-brand-100">
                     Has Equity
                   </span>
                 </label>
@@ -827,7 +827,7 @@ export function UserTypeManager() {
                     />
                   </div>
 
-                  <div className="text-xs text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 p-2 rounded">
+                  <div className="text-xs text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/40 p-2 rounded">
                     💡 Tip: Equity hours are non-paid hours compensated with equity. Set required
                     hours/week OR hours/month (not both). Max hours/week prevents overwork.
                   </div>
