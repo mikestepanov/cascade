@@ -64,7 +64,6 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     isPublic: v.boolean(),
-    members: v.array(v.id("users")), // Kept for backwards compatibility, deprecated
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
     workflowStates: v.array(
       v.object({

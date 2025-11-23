@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 /**
  * AI Provider Abstraction Layer
  * Unified interface for different AI providers

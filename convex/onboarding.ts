@@ -93,7 +93,6 @@ export const createSampleProject = mutation({
       createdAt: Date.now(),
       updatedAt: Date.now(),
       isPublic: false,
-      members: [userId], // Deprecated but kept for backwards compat
       boardType: "kanban",
       workflowStates: [
         { id: "todo", name: "To Do", category: "todo" as const, order: 0 },

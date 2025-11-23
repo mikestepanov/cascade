@@ -60,7 +60,6 @@ export const createFromTemplate = mutation({
       createdAt: now,
       updatedAt: now,
       isPublic: false,
-      members: [userId], // Deprecated but kept for compatibility
       boardType: template.boardType,
       workflowStates: template.workflowStates,
     });

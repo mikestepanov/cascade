@@ -4,7 +4,7 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
+import { type MutationCtx, mutation } from "../_generated/server";
 
 /**
  * Create a new AI chat
@@ -14,7 +14,7 @@ export const createChat = mutation({
     title: v.optional(v.string()),
     projectId: v.optional(v.id("projects")),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -40,7 +40,7 @@ export const updateChatTitle = mutation({
     chatId: v.id("aiChats"),
     title: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -63,7 +63,7 @@ export const deleteChat = mutation({
   args: {
     chatId: v.id("aiChats"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -99,7 +99,7 @@ export const addMessage = mutation({
     tokensUsed: v.optional(v.number()),
     responseTime: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -158,7 +158,7 @@ export const createSuggestion = mutation({
     modelUsed: v.string(),
     confidence: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const suggestionId = await ctx.db.insert("aiSuggestions", {
       userId: args.userId,
       projectId: args.projectId,
@@ -182,7 +182,7 @@ export const acceptSuggestion = mutation({
   args: {
     suggestionId: v.id("aiSuggestions"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -204,7 +204,7 @@ export const dismissSuggestion = mutation({
   args: {
     suggestionId: v.id("aiSuggestions"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -242,7 +242,7 @@ export const trackUsage = mutation({
     success: v.boolean(),
     errorMessage: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args) => {
     const usageId = await ctx.db.insert("aiUsage", {
       userId: args.userId,
       projectId: args.projectId,

@@ -43,7 +43,6 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
       isPublic: args.isPublic,
-      members: [userId],
       boardType: args.boardType,
       workflowStates: defaultWorkflowStates,
     });
@@ -69,30 +68,39 @@ export const list = query({
       return [];
     }
 
-    // Get projects where user is a member or creator, or public projects
-    const allProjects = await ctx.db.query("projects").collect();
+    // Get projects where user is a member
+    const memberInProjects = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_user", q => q.eq("userId", userId))
+      .collect();
+    const memberProjectIds = memberInProjects.map(m => m.projectId);
 
+    // Get all projects and filter for public, created by user, or member in
+    const allProjects = await ctx.db.query("projects").collect();
     const accessibleProjects = allProjects.filter(
-      (project) =>
-        project.isPublic || project.createdBy === userId || project.members.includes(userId),
+      project =>
+        project.isPublic ||
+        project.createdBy === userId ||
+        memberProjectIds.includes(project._id),
     );
 
     return await Promise.all(
-      accessibleProjects.map(async (project) => {
+      accessibleProjects.map(async project => {
         const creator = await ctx.db.get(project.createdBy);
         const issueCount = await ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", project._id))
+          .withIndex("by_project", q => q.eq("projectId", project._id))
           .collect()
-          .then((issues) => issues.length);
+          .then(issues => issues.length);
 
         const userRole = await getUserRole(ctx, project._id, userId);
+        const isMember = memberProjectIds.includes(project._id);
 
         return {
           ...project,
           creatorName: creator?.name || creator?.email || "Unknown",
           issueCount,
-          isMember: project.members.includes(userId),
+          isMember,
           isOwner: project.createdBy === userId,
           userRole, // Add user's role in the project
         };
@@ -112,11 +120,14 @@ export const get = query({
     }
 
     // Check access permissions
-    if (
-      !project.isPublic &&
-      project.createdBy !== userId &&
-      !(userId && project.members.includes(userId))
-    ) {
+    const isMember =
+      userId &&
+      (await ctx.db
+        .query("projectMembers")
+        .withIndex("by_project_user", q => q.eq("projectId", project._id).eq("userId", userId))
+        .first());
+
+    if (!project.isPublic && project.createdBy !== userId && !isMember) {
       throw new Error("Not authorized to access this project");
     }
 
@@ -148,7 +159,7 @@ export const get = query({
       ...project,
       creatorName: creator?.name || creator?.email || "Unknown",
       members,
-      isMember: userId ? project.members.includes(userId) : false,
+      isMember: !!isMember,
       isOwner: project.createdBy === userId,
       userRole,
     };
@@ -239,11 +250,6 @@ export const addMember = mutation({
       addedAt: now,
     });
 
-    // Also update the deprecated members array for backwards compatibility
-    await ctx.db.patch(args.projectId, {
-      members: [...project.members, user._id],
-      updatedAt: now,
-    });
   },
 });
 
@@ -325,11 +331,5 @@ export const removeMember = mutation({
     if (membership) {
       await ctx.db.delete(membership._id);
     }
-
-    // Also update deprecated members array
-    await ctx.db.patch(args.projectId, {
-      members: project.members.filter((id) => id !== args.memberId),
-      updatedAt: Date.now(),
-    });
   },
 });

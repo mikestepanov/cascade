@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 /**
  * AI Provider Configuration
  * Supports: Anthropic Claude, OpenAI, and custom providers
