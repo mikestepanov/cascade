@@ -232,7 +232,7 @@ describe("ProjectsList", () => {
 
     render(<ProjectsList {...defaultProps} projects={singleProject} />);
 
-    expect(screen.getByText("1 projects")).toBeInTheDocument();
+    expect(screen.getByText("1 project")).toBeInTheDocument();
     expect(screen.getByText("Project Alpha")).toBeInTheDocument();
   });
 
