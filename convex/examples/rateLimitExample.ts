@@ -5,8 +5,8 @@
  */
 
 import { v } from "convex/values";
-import { action } from "./_generated/server";
-import { rateLimit } from "./rateLimits";
+import { action } from "../_generated/server";
+import { rateLimit } from "../rateLimits";
 
 /**
  * Rate-limited AI chat

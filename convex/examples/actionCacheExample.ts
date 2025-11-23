@@ -1,3 +1,5 @@
+"use node";
+
 /**
  * Example: Using Action Cache for AI Suggestions
  *
@@ -8,7 +10,7 @@ import { openai } from "@ai-sdk/openai";
 import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { components } from "./_generated/api";
+import { components } from "../_generated/api";
 
 // Initialize action cache
 const cache = new ActionCache(components.actionCache, {

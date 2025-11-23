@@ -12,7 +12,7 @@ import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import { action, internalAction, internalMutation } from "./_generated/server";
+import { action, internalAction, internalMutation, internalQuery } from "./_generated/server";
 import { rateLimit } from "./rateLimits";
 
 /**
@@ -84,7 +84,7 @@ export const getIssueForEmbedding = internalAction({
 /**
  * Internal query to fetch issue
  */
-export const getIssueData = internalMutation({
+export const getIssueData = internalQuery({
   args: { issueId: v.id("issues") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.issueId);
@@ -187,7 +187,7 @@ Be concise, helpful, and professional.`;
     await ctx.runMutation(internal.ai.trackUsage, {
       userId: userId.subject,
       projectId: args.projectId,
-      provider: "anthropic",
+      provider: "openai",
       model: "gpt-4o-mini",
       operation: "chat",
       promptTokens: response.usage?.promptTokens || 0,
@@ -264,7 +264,7 @@ export const addMessage = internalMutation({
 /**
  * Get project context for AI
  */
-export const getProjectContext = internalMutation({
+export const getProjectContext = internalQuery({
   args: {
     projectId: v.id("projects"),
   },
