@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 // Type for time entry with computed hours field
 type TimeEntryWithHours = Doc<"timeEntries"> & {
@@ -20,7 +21,7 @@ export function Timesheet() {
   if (!timesheet) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ui-text-primary dark:border-ui-text-primary-dark" />
+        <LoadingSpinner />
       </div>
     );
   }

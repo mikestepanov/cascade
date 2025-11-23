@@ -3,6 +3,8 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
 import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
@@ -56,13 +58,14 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         </h2>
 
         {/* Create Project Button */}
-        <button
-          type="button"
+        <Button
           onClick={() => setShowCreateForm(true)}
-          className="w-full px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm font-medium hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors"
+          variant="primary"
+          size="sm"
+          className="w-full"
         >
           + New Project
-        </button>
+        </Button>
       </div>
 
       {/* Create Project Form */}
@@ -101,14 +104,14 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
               <option value="scrum">Scrum Board</option>
             </Select>
             <div className="flex space-x-2">
-              <button
-                type="submit"
-                className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm hover:bg-brand-700 dark:hover:bg-brand-600"
-              >
+              <Button type="submit" variant="primary" size="sm" className="flex-1">
                 Create
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
                 onClick={() => {
                   setShowCreateForm(false);
                   setNewProjectName("");
@@ -117,10 +120,9 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                   setNewProjectIsPublic(false);
                   setNewProjectBoardType("kanban");
                 }}
-                className="flex-1 px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -156,27 +158,15 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                       <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                         {project.name}
                       </h3>
-                      <span className="text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 py-0.5 rounded">
-                        {project.key}
-                      </span>
+                      <Badge variant="neutral">{project.key}</Badge>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {project.issueCount} issues
                       </span>
-                      <span className="text-xs bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-400 px-2 py-0.5 rounded">
-                        {project.boardType}
-                      </span>
-                      {project.isPublic && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark">
-                          Public
-                        </span>
-                      )}
-                      {project.isOwner && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-400">
-                          Owner
-                        </span>
-                      )}
+                      <Badge variant="accent">{project.boardType}</Badge>
+                      {project.isPublic && <Badge variant="success">Public</Badge>}
+                      {project.isOwner && <Badge variant="primary">Owner</Badge>}
                     </div>
                     <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       by {project.creatorName}

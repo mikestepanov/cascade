@@ -273,7 +273,7 @@ describe("EmptyState", () => {
 
       const button = screen.getByRole("button");
       expect(button).toHaveClass("inline-flex");
-      expect(button).toHaveClass("bg-blue-600");
+      expect(button).toHaveClass("bg-brand-600");
       expect(button).toHaveClass("text-white");
     });
   });

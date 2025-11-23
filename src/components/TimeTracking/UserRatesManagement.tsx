@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
@@ -19,6 +21,13 @@ export function UserRatesManagement() {
   const [rateType, setRateType] = useState<"internal" | "billable">("internal");
   const [notes, setNotes] = useState("");
 
+  const handleCloseModal = () => {
+    setShowAddRate(false);
+    setEditingUserId(null);
+    setHourlyRate("");
+    setNotes("");
+  };
+
   const handleSaveRate = async () => {
     if (!currentUser) return;
 
@@ -26,7 +35,7 @@ export function UserRatesManagement() {
     const rate = parseFloat(hourlyRate);
 
     if (Number.isNaN(rate) || rate <= 0) {
-      toast.error("Please enter a valid hourly rate");
+      showError("Please enter a valid hourly rate");
       return;
     }
 
@@ -40,14 +49,10 @@ export function UserRatesManagement() {
         notes: notes || undefined,
       });
 
-      toast.success("Hourly rate saved");
-      setShowAddRate(false);
-      setEditingUserId(null);
-      setHourlyRate("");
-      setNotes("");
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to save rate";
-      toast.error(errorMessage);
+      showSuccess("Hourly rate saved");
+      handleCloseModal();
+    } catch (error) {
+      showError(error, "Failed to save rate");
     }
   };
 
@@ -74,13 +79,9 @@ export function UserRatesManagement() {
             Manage hourly rates for cost tracking and burn rate calculations
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowAddRate(true)}
-          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
-        >
+        <Button onClick={() => setShowAddRate(true)} variant="primary">
           Set My Rate
-        </button>
+        </Button>
       </div>
 
       {/* Current Rates List */}
@@ -155,37 +156,16 @@ export function UserRatesManagement() {
           <p className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Set your hourly rate to enable cost tracking and burn rate calculations
           </p>
-          <button
-            type="button"
-            onClick={() => setShowAddRate(true)}
-            className="mt-4 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
-          >
+          <Button onClick={() => setShowAddRate(true)} variant="primary" className="mt-4">
             Set My Rate
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Add/Edit Rate Modal */}
       {showAddRate && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 bg-black/50 z-40 cursor-default"
-            onClick={() => {
-              setShowAddRate(false);
-              setEditingUserId(null);
-              setHourlyRate("");
-              setNotes("");
-            }}
-            aria-label="Close modal"
-          />
-
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
-            <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-              Set Hourly Rate
-            </h2>
-
-            <div className="space-y-4">
+        <Modal isOpen={showAddRate} onClose={handleCloseModal} title="Set Hourly Rate" maxWidth="md">
+          <div className="space-y-4">
               {/* Project Selection */}
               <div>
                 <label
@@ -327,29 +307,16 @@ export function UserRatesManagement() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddRate(false);
-                  setEditingUserId(null);
-                  setHourlyRate("");
-                  setNotes("");
-                }}
-                className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-              >
+            <div className="flex justify-end gap-2 pt-4">
+              <Button onClick={handleCloseModal} variant="secondary">
                 Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveRate}
-                className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
-              >
+              </Button>
+              <Button onClick={handleSaveRate} variant="primary">
                 Save Rate
-              </button>
+              </Button>
             </div>
           </div>
-        </>
+        </Modal>
       )}
     </div>
   );

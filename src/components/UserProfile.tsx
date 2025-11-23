@@ -4,7 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { InputField } from "./ui/InputField";
+import { Input } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Modal } from "./ui/Modal";
 
@@ -134,13 +134,13 @@ function ProfileHeader({
       <div className="flex-1">
         {isEditing ? (
           <div className="space-y-3">
-            <InputField
+            <Input
               label="Name"
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               placeholder="Your name"
             />
-            <InputField
+            <Input
               label="Email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}

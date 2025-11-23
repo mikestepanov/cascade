@@ -19,10 +19,10 @@ describe("Card", () => {
       const { container } = render(<Card>Content</Card>);
 
       const card = container.firstChild;
-      expect(card).toHaveClass("bg-white");
+      expect(card).toHaveClass("bg-ui-bg-primary");
       expect(card).toHaveClass("rounded-lg");
       expect(card).toHaveClass("border");
-      expect(card).toHaveClass("border-gray-200");
+      expect(card).toHaveClass("border-ui-border-primary");
     });
 
     it("should not have hover styles by default", () => {
@@ -51,7 +51,7 @@ describe("Card", () => {
       const { container } = render(<Card className="p-8 bg-blue-50">Content</Card>);
 
       const card = container.firstChild;
-      expect(card).toHaveClass("bg-white");
+      expect(card).toHaveClass("bg-ui-bg-primary");
       expect(card).toHaveClass("p-8");
       expect(card).toHaveClass("bg-blue-50");
     });
@@ -256,7 +256,7 @@ describe("CardHeader", () => {
       const heading = screen.getByRole("heading");
       expect(heading).toHaveClass("text-lg");
       expect(heading).toHaveClass("font-semibold");
-      expect(heading).toHaveClass("text-gray-900");
+      expect(heading).toHaveClass("text-ui-text-primary");
     });
 
     it("should not render description when not provided", () => {
@@ -293,7 +293,7 @@ describe("CardHeader", () => {
 
       const description = container.querySelector("p");
       expect(description).toHaveClass("text-sm");
-      expect(description).toHaveClass("text-gray-500");
+      expect(description).toHaveClass("text-ui-text-secondary");
       expect(description).toHaveClass("mt-1");
     });
 
@@ -359,7 +359,7 @@ describe("CardHeader", () => {
       const header = container.firstChild;
       expect(header).toHaveClass("p-4");
       expect(header).toHaveClass("border-b");
-      expect(header).toHaveClass("border-gray-200");
+      expect(header).toHaveClass("border-ui-border-primary");
       expect(header).toHaveClass("flex");
       expect(header).toHaveClass("items-center");
       expect(header).toHaveClass("justify-between");

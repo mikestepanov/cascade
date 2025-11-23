@@ -6,6 +6,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Skeleton } from "../ui/Skeleton";
 import { AI_CONFIG } from "./config";
 import { useAIChat } from "./hooks";
@@ -45,7 +46,7 @@ function MessageItem({
       className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
     >
       <div
-        className={`relative max-w-[${AI_CONFIG.message.maxWidth.mobile}] md:max-w-[${AI_CONFIG.message.maxWidth.desktop}] rounded-lg px-4 py-3 ${
+        className={`relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3 ${
           message.role === "user"
             ? "bg-brand-600 text-white"
             : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -61,7 +62,7 @@ function MessageItem({
           >
             {isCopied ? (
               <svg
-                className="w-4 h-4 text-green-600"
+                className="w-4 h-4 text-status-success dark:text-status-success"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -146,12 +147,7 @@ export const AIChat = React.memo(function AIChat({
   if (!chatId) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Starting new chat...
-          </p>
-        </div>
+        <LoadingSpinner message="Starting new chat..." />
       </div>
     );
   }

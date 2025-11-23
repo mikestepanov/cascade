@@ -1,11 +1,14 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2, X } from "lucide-react";
+import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -22,11 +25,11 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
 
   if (!event) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl p-6">
+      <Modal isOpen={true} onClose={onClose} title="Event Details" maxWidth="2xl">
+        <div className="flex justify-center p-8">
           <LoadingSpinner size="lg" />
         </div>
-      </div>
+      </Modal>
     );
   }
 
@@ -89,39 +92,20 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded capitalize ${getEventTypeColor(event.eventType)}`}
-              >
-                {event.eventType}
-              </span>
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded capitalize ${getStatusColor(event.status)}`}
-              >
-                {event.status}
-              </span>
-            </div>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-              {event.title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close event details modal"
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
-          >
-            <X className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          </button>
+    <Modal isOpen={true} onClose={onClose} title={event.title} maxWidth="2xl">
+      <div className="space-y-4">
+        {/* Badges */}
+        <div className="flex items-center gap-2">
+          <Badge size="md" className={`capitalize ${getEventTypeColor(event.eventType)}`}>
+            {event.eventType}
+          </Badge>
+          <Badge size="md" className={`capitalize ${getStatusColor(event.status)}`}>
+            {event.status}
+          </Badge>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="space-y-4">
           {/* Date and Time */}
           <div className="flex items-start gap-3">
             <Calendar className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
@@ -302,24 +286,22 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
 
         {/* Actions */}
         <div className="flex justify-between gap-3 p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-          <button
-            type="button"
+          <Button
             onClick={handleDelete}
-            disabled={isDeleting}
-            className="flex items-center gap-2 px-4 py-2 text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-dark rounded-md disabled:opacity-50"
+            variant="danger"
+            isLoading={isDeleting}
+            leftIcon={<Trash2 className="w-4 h-4" />}
           >
-            <Trash2 className="w-4 h-4" />
             {isDeleting ? "Deleting..." : "Delete Event"}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={onClose}
-            className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+            variant="secondary"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

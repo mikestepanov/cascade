@@ -6,7 +6,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { FilterCheckboxGroup } from "./AdvancedSearchModal/FilterCheckboxGroup";
 import { SearchResultsList } from "./AdvancedSearchModal/SearchResultsList";
 import { Button } from "./ui/Button";
-import { InputField } from "./ui/InputField";
+import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface AdvancedSearchModalProps {
@@ -74,16 +74,14 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
       <div className="space-y-6">
         {/* Search Input */}
         <div>
-          <InputField
+          <Input
             label="Search Issues"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, key, or description..."
             autoFocus
+            helperText="Type at least 2 characters to search"
           />
-          <p className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Type at least 2 characters to search
-          </p>
         </div>
 
         {/* Filters */}

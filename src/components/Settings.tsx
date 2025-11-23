@@ -8,6 +8,7 @@ import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration"
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
 import { PumbleIntegration } from "./Settings/PumbleIntegration";
+import { Tab, Tabs } from "./ui/Tabs";
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState<
@@ -28,80 +29,39 @@ export function Settings() {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-6 sm:mb-8 overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-          <nav className="-mb-px flex gap-4 sm:gap-8 min-w-max" aria-label="Settings tabs">
-            <button
-              type="button"
-              onClick={() => setActiveTab("integrations")}
-              className={`
-                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
-                ${
-                  activeTab === "integrations"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark"
-                }
-              `}
-            >
-              Integrations
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("apikeys")}
-              className={`
-                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
-                ${
-                  activeTab === "apikeys"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark"
-                }
-              `}
-            >
-              API Keys
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("offline")}
-              className={`
-                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
-                ${
-                  activeTab === "offline"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark"
-                }
-              `}
-            >
-              Offline Mode
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("preferences")}
-              className={`
-                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
-                ${
-                  activeTab === "preferences"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark"
-                }
-              `}
-            >
-              Preferences
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("admin")}
-              className={`
-                py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
-                ${
-                  activeTab === "admin"
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-primary dark:hover:border-ui-border-primary-dark"
-                }
-              `}
-            >
-              Admin
-            </button>
-          </nav>
-        </div>
+        <Tabs className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0" aria-label="Settings tabs">
+          <Tab
+            value="integrations"
+            isActive={activeTab === "integrations"}
+            onClick={() => setActiveTab("integrations")}
+          >
+            Integrations
+          </Tab>
+          <Tab
+            value="apikeys"
+            isActive={activeTab === "apikeys"}
+            onClick={() => setActiveTab("apikeys")}
+          >
+            API Keys
+          </Tab>
+          <Tab
+            value="offline"
+            isActive={activeTab === "offline"}
+            onClick={() => setActiveTab("offline")}
+          >
+            Offline Mode
+          </Tab>
+          <Tab
+            value="preferences"
+            isActive={activeTab === "preferences"}
+            onClick={() => setActiveTab("preferences")}
+          >
+            Preferences
+          </Tab>
+          <Tab value="admin" isActive={activeTab === "admin"} onClick={() => setActiveTab("admin")}>
+            Admin
+          </Tab>
+        </Tabs>
 
         {/* Tab Content */}
         <div>

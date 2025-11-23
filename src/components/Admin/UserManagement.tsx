@@ -359,22 +359,24 @@ export function UserManagement() {
                           <div className="flex justify-end gap-2">
                             {invite.status === "pending" && (
                               <>
-                                <button
-                                  type="button"
+                                <Button
                                   onClick={() => handleResendInvite(invite._id)}
+                                  variant="ghost"
+                                  size="sm"
                                   className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
-                                  title="Resend invitation"
+                                  aria-label="Resend invitation"
                                 >
                                   Resend
-                                </button>
-                                <button
-                                  type="button"
+                                </Button>
+                                <Button
                                   onClick={() => handleRevokeInvite(invite._id)}
-                                  className="text-status-error hover:text-status-error-hover dark:hover:text-status-error"
-                                  title="Revoke invitation"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-status-error hover:text-status-error dark:hover:text-status-error"
+                                  aria-label="Revoke invitation"
                                 >
                                   Revoke
-                                </button>
+                                </Button>
                               </>
                             )}
                             {invite.status === "accepted" && invite.acceptedByName && (

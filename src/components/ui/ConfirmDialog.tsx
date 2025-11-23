@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ConfirmDialogProps {
@@ -24,12 +25,6 @@ export function ConfirmDialog({
   isLoading = false,
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
-
-  const variantStyles = {
-    danger: "bg-status-error hover:bg-status-error/90 focus:ring-status-error",
-    warning: "bg-status-warning hover:bg-status-warning/90 focus:ring-status-warning",
-    info: "bg-brand-600 hover:bg-brand-700 focus:ring-brand-500",
-  };
 
   const variantIcons = {
     danger: "⚠️",
@@ -78,22 +73,16 @@ export function ConfirmDialog({
           </div>
 
           <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 flex gap-3 justify-end rounded-b-lg">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 transition-colors"
-            >
+            <Button variant="secondary" onClick={onClose} disabled={isLoading}>
               {cancelLabel}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant={variant === "info" ? "primary" : "danger"}
               onClick={handleConfirm}
-              disabled={isLoading}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50 ${variantStyles[variant]}`}
+              isLoading={isLoading}
             >
-              {isLoading ? "Processing..." : confirmLabel}
-            </button>
+              {confirmLabel}
+            </Button>
           </div>
         </div>
       </div>

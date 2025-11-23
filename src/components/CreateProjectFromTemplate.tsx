@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { InputField } from "./ui/InputField";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Input, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface CreateProjectFromTemplateProps {
@@ -106,7 +107,7 @@ export function CreateProjectFromTemplate({
 
           {!templates ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 dark:border-brand-400" />
+              <LoadingSpinner />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -166,7 +167,7 @@ export function CreateProjectFromTemplate({
 
           {/* Form */}
           <div className="space-y-4">
-            <InputField
+            <Input
               label="Project Name"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
@@ -174,7 +175,7 @@ export function CreateProjectFromTemplate({
               required
             />
 
-            <InputField
+            <Input
               label="Project Key"
               value={projectKey}
               onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
@@ -183,18 +184,13 @@ export function CreateProjectFromTemplate({
               helperText="Short code for issue keys (e.g., MAP-123)"
             />
 
-            <div>
-              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                Description (Optional)
-              </div>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                placeholder="Project description..."
-              />
-            </div>
+            <Textarea
+              label="Description (Optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Project description..."
+            />
           </div>
 
           {/* Preview */}

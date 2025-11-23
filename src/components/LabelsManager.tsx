@@ -8,7 +8,7 @@ import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ColorPicker } from "./ui/ColorPicker";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
-import { InputField } from "./ui/FormField";
+import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
 interface LabelsManagerProps {
@@ -201,7 +201,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         maxWidth="md"
       >
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          <InputField
+          <Input
             label="Label Name"
             value={name}
             onChange={(e) => setName(e.target.value)}

@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Clock, Link as LinkIcon, MapPin, X } from "lucide-react";
+import { Calendar, Clock, Link as LinkIcon, MapPin } from "lucide-react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 interface CreateEventModalProps {
   onClose: () => void;
@@ -76,25 +78,8 @@ export function CreateEventModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-            Create Event
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close create event modal"
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg"
-          >
-            <X className="w-5 h-5 text-ui-text-secondary dark:text-ui-text-secondary-dark" />
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+    <Modal isOpen={true} onClose={onClose} title="Create Event" maxWidth="2xl">
+      <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
             <label
@@ -315,23 +300,18 @@ export function CreateEventModal({
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50 font-medium"
+              variant="primary"
+              isLoading={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create Event"}
-            </button>
+            </Button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }

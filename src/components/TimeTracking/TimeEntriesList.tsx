@@ -1,10 +1,13 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -62,29 +65,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
   if (entries.length === 0) {
     return (
-      <div className="text-center p-8">
-        <svg
-          className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          role="img"
-          aria-label="Clock icon"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-          No time entries
-        </h3>
-        <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Start tracking time to see entries here.
-        </p>
-      </div>
+      <EmptyState
+        icon="⏱️"
+        title="No time entries"
+        description="Start tracking time to see entries here."
+      />
     );
   }
 
@@ -102,20 +87,22 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
     <div className="space-y-6">
       {/* Add Time Entry Button */}
       <div className="flex justify-end">
-        <button
-          type="button"
+        <Button
           onClick={() => setShowManualEntryModal(true)}
-          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium flex items-center gap-2"
+          variant="primary"
+          size="sm"
+          leftIcon={
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          }
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path
-              fillRule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clipRule="evenodd"
-            />
-          </svg>
           Add Time Entry
-        </button>
+        </Button>
       </div>
 
       {Object.entries(groupedEntries).map(([date, dateEntries]) => {
@@ -162,11 +149,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                     )}
 
                     <div className="flex items-center gap-3 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                      {entry.activity && (
-                        <span className="px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                          {entry.activity}
-                        </span>
-                      )}
+                      {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
 
                       {entry.project && (
                         <span className="flex items-center gap-1">
@@ -200,11 +183,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                         </span>
                       )}
 
-                      {entry.billable && (
-                        <span className="px-2 py-0.5 bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success rounded">
-                          Billable
-                        </span>
-                      )}
+                      {entry.billable && <Badge variant="success">Billable</Badge>}
 
                       {entry.isLocked && (
                         <span className="flex items-center gap-1 text-status-warning dark:text-status-warning">
@@ -241,10 +220,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   {/* Actions */}
                   {!(entry.isLocked || entry.billed) && (
                     <div className="flex-shrink-0">
-                      <button
-                        type="button"
+                      <Button
                         onClick={() => handleDelete(entry._id)}
-                        className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error"
                         aria-label="Delete entry"
                       >
                         <svg
@@ -259,7 +239,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                             clipRule="evenodd"
                           />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>

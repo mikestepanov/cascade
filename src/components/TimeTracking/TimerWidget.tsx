@@ -4,6 +4,8 @@ import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -69,42 +71,45 @@ export function TimerWidget() {
         </div>
 
         {/* Stop button */}
-        <button
-          type="button"
+        <Button
           onClick={handleStop}
-          className="px-2 py-1 text-xs font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800 rounded transition-colors"
-          title="Stop timer"
+          variant="ghost"
+          size="sm"
+          className="text-xs text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800"
+          aria-label="Stop timer"
         >
           Stop
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <>
-      <button
-        type="button"
+      <Button
         onClick={() => setShowStartModal(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-        title="Start timer"
+        variant="secondary"
+        size="sm"
+        leftIcon={
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clipRule="evenodd"
+            />
+          </svg>
+        }
+        aria-label="Start timer"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-            clipRule="evenodd"
-          />
-        </svg>
         <span className="hidden sm:inline">Start Timer</span>
-      </button>
+      </Button>
 
-      {showStartModal && <StartTimerModal onClose={() => setShowStartModal(false)} />}
+      {showStartModal && <StartTimerModal isOpen={showStartModal} onClose={() => setShowStartModal(false)} />}
     </>
   );
 }
 
-function StartTimerModal({ onClose }: { onClose: () => void }) {
+function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const startTimer = useMutation(api.timeTracking.startTimer);
   const [description, setDescription] = useState("");
   const [activity, setActivity] = useState("");
@@ -123,74 +128,56 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true" />
-
-      {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl z-50 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-          Start Timer
-        </h2>
-
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="timer-description"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              What are you working on? (optional)
-            </label>
-            <input
-              id="timer-description"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., Fixing login bug..."
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="timer-activity"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Activity (optional)
-            </label>
-            <select
-              id="timer-activity"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            >
-              <option value="">Select activity...</option>
-              {ACTIVITY_TYPES.map((activityType) => (
-                <option key={activityType} value={activityType}>
-                  {activityType}
-                </option>
-              ))}
-            </select>
-          </div>
+    <Modal isOpen={isOpen} onClose={onClose} title="Start Timer" maxWidth="md">
+      <form onSubmit={(e) => { e.preventDefault(); void handleStart(); }} className="space-y-4">
+        <div>
+          <label
+            htmlFor="timer-description"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
+            What are you working on? (optional)
+          </label>
+          <input
+            id="timer-description"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="e.g., Fixing login bug..."
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          />
         </div>
 
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
+        <div>
+          <label
+            htmlFor="timer-activity"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
           >
+            Activity (optional)
+          </label>
+          <select
+            id="timer-activity"
+            value={activity}
+            onChange={(e) => setActivity(e.target.value)}
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          >
+            <option value="">Select activity...</option>
+            {ACTIVITY_TYPES.map((activityType) => (
+              <option key={activityType} value={activityType}>
+                {activityType}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-4">
+          <Button onClick={onClose} variant="secondary">
             Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleStart}
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
-          >
+          </Button>
+          <Button type="submit" variant="primary">
             Start Timer
-          </button>
+          </Button>
         </div>
-      </div>
-    </>
+      </form>
+    </Modal>
   );
 }

@@ -2,6 +2,9 @@ import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
+import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
+import { EmptyState } from "./ui/EmptyState";
 import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
@@ -151,9 +154,9 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
                 {result.key}
               </span>
             )}
-            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark rounded-full">
+            <Badge variant="neutral" shape="pill">
               {result.type}
-            </span>
+            </Badge>
           </div>
           <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
             {result.title}
@@ -245,11 +248,12 @@ export function GlobalSearch() {
   return (
     <>
       {/* Search Button */}
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setIsOpen(true)}
         aria-label="Open search (⌘K)"
-        className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+        className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
       >
         <svg
           aria-hidden="true"
@@ -269,7 +273,7 @@ export function GlobalSearch() {
         <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded">
           ⌘K
         </kbd>
-      </button>
+      </Button>
 
       {/* Search Modal */}
       {isOpen && (
@@ -338,10 +342,7 @@ export function GlobalSearch() {
                   <p className="text-sm">Type at least 2 characters to search</p>
                 </div>
               ) : filteredResults.length === 0 ? (
-                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  <div className="text-4xl mb-2">🔍</div>
-                  <p>No results found</p>
-                </div>
+                <EmptyState icon="🔍" title="No results found" />
               ) : (
                 <>
                   <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
@@ -357,13 +358,14 @@ export function GlobalSearch() {
                   {/* Load More Button */}
                   {hasMore && (
                     <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={handleLoadMore}
-                        className="w-full px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 rounded-lg transition-colors"
+                        className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
                       >
                         Load More ({totalCount - filteredResults.length} remaining)
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </>

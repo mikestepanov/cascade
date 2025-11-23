@@ -156,7 +156,7 @@ describe("IssueDetailModal", () => {
 
     render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
 
-    expect(screen.getByText(/TimeTracker for TEST-123/i)).toBeInTheDocument();
+    expect(screen.getByText(/Time Tracking/i)).toBeInTheDocument();
   });
 
   it("should close modal when close button is clicked", async () => {

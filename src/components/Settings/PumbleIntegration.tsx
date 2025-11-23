@@ -3,6 +3,8 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
@@ -45,13 +47,13 @@ export function PumbleIntegration() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
+          <Button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+            variant="primary"
+            className="bg-accent-600 hover:bg-accent-700"
           >
             Add Webhook
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -135,13 +137,13 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
         Connect Cascade to Pumble channels to receive notifications when issues are created,
         updated, or assigned.
       </p>
-      <button
-        type="button"
+      <Button
         onClick={onAddWebhook}
-        className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+        variant="primary"
+        className="bg-accent-600 hover:bg-accent-700"
       >
         Add Your First Webhook
-      </button>
+      </Button>
     </div>
   );
 }
@@ -298,34 +300,36 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Actions */}
       <div className="flex items-center space-x-2 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-        <button
-          type="button"
+        <Button
           onClick={handleTest}
-          className="px-3 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+          variant="ghost"
+          size="sm"
+          className="text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
         >
           Test Webhook
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={handleToggleActive}
-          className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
+          variant="secondary"
+          size="sm"
         >
           {webhook.isActive ? "Disable" : "Enable"}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={() => setShowEditModal(true)}
-          className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
+          variant="secondary"
+          size="sm"
         >
           Edit
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={handleDelete}
-          className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors ml-auto"
+          variant="danger"
+          size="sm"
+          className="ml-auto"
         >
           Delete
-        </button>
+        </Button>
       </div>
 
       {/* Edit Modal */}
@@ -416,38 +420,8 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Add Pumble Webhook
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <Modal isOpen={true} onClose={onClose} title="Add Pumble Webhook" maxWidth="2xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <Input
             label="Webhook Name"
@@ -528,23 +502,19 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+              variant="primary"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               Add Webhook
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -615,38 +585,8 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Edit Webhook
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <Modal isOpen={true} onClose={onClose} title="Edit Webhook" maxWidth="2xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
             <label
@@ -716,22 +656,18 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+              variant="primary"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               Save Changes
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

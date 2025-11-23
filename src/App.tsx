@@ -41,8 +41,6 @@ export default function App() {
         <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
           <Toaster />
           <Content />
-          <WelcomeModal />
-          <OnboardingTour />
         </div>
       </OnboardingProvider>
     </ErrorBoundary>
@@ -581,6 +579,15 @@ function Content() {
           </div>
         </div>
       </Unauthenticated>
+
+      {/* Onboarding Modals */}
+      <WelcomeModal
+        onNavigateToProject={(projectId) => {
+          setActiveView("projects");
+          setSelectedProjectId(projectId);
+        }}
+      />
+      <OnboardingTour />
     </>
   );
 }

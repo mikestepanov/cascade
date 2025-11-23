@@ -98,8 +98,9 @@ describe("ProjectBoard", () => {
 
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const spinner = document.querySelector(".animate-spin");
-    expect(spinner).toBeInTheDocument();
+    // Should render skeleton placeholders while loading
+    const skeleton = document.querySelector(".animate-pulse");
+    expect(skeleton).toBeInTheDocument();
   });
 
   it("should render project header with name and details", () => {
@@ -117,7 +118,7 @@ describe("ProjectBoard", () => {
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
     expect(screen.getByText("Sprints")).toBeInTheDocument();
-    expect(screen.getByText("📊 Analytics")).toBeInTheDocument();
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
   });
 
   it("should not render Sprints tab for kanban board", () => {
@@ -135,7 +136,7 @@ describe("ProjectBoard", () => {
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
     expect(screen.queryByText("Sprints")).not.toBeInTheDocument();
-    expect(screen.getByText("📊 Analytics")).toBeInTheDocument();
+    expect(screen.getByText("Analytics")).toBeInTheDocument();
   });
 
   it("should show KanbanBoard by default", () => {
@@ -172,7 +173,7 @@ describe("ProjectBoard", () => {
     const user = userEvent.setup();
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const analyticsTab = screen.getByText("📊 Analytics");
+    const analyticsTab = screen.getByRole("button", { name: "Analytics view" });
     await user.click(analyticsTab);
 
     expect(screen.getByTestId("analytics-dashboard")).toBeInTheDocument();
@@ -184,14 +185,14 @@ describe("ProjectBoard", () => {
     const user = userEvent.setup();
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const boardTab = screen.getByText("Board");
-    expect(boardTab).toHaveClass("border-blue-500", "text-blue-600");
+    const boardTab = screen.getByRole("button", { name: "Board view" });
+    expect(boardTab).toHaveClass("border-brand-600", "text-brand-600");
 
-    const analyticsTab = screen.getByText("📊 Analytics");
+    const analyticsTab = screen.getByRole("button", { name: "Analytics view" });
     await user.click(analyticsTab);
 
-    expect(analyticsTab).toHaveClass("border-blue-500", "text-blue-600");
-    expect(boardTab).not.toHaveClass("border-blue-500");
+    expect(analyticsTab).toHaveClass("border-brand-600", "text-brand-600");
+    expect(boardTab).not.toHaveClass("border-brand-600");
   });
 
   it("should show sprint selector for scrum board on Board tab", () => {

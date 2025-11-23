@@ -16,6 +16,7 @@ import { SectionErrorFallback } from "./SectionErrorFallback";
 import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { BillingReport } from "./TimeTracker/BillingReport";
+import { Badge } from "./ui/Badge";
 import { SkeletonText } from "./ui/Skeleton";
 import { WebhooksManager } from "./WebhooksManager";
 
@@ -247,12 +248,12 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-xs sm:text-sm bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              <Badge variant="neutral" size="md">
                 {project.key}
-              </span>
-              <span className="text-xs sm:text-sm bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded">
+              </Badge>
+              <Badge variant="accent" size="md">
                 {project.boardType}
-              </span>
+              </Badge>
             </div>
           </div>
         </div>
