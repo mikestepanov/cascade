@@ -26,7 +26,6 @@ export const sendChatMessage = action({
     const startTime = Date.now();
 
     // Get chat history for context
-    // @ts-expect-error - Convex types will be generated on next dev server run
     const messages = await ctx.runQuery(api.ai.queries.getChatMessages, {
       chatId: args.chatId,
     });
@@ -36,7 +35,6 @@ export const sendChatMessage = action({
       "You are a helpful AI assistant for Cascade, a project management platform.";
 
     if (args.projectId) {
-      // @ts-expect-error - Convex types will be generated on next dev server run
       const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
         projectId: args.projectId,
       });
@@ -67,7 +65,6 @@ export const sendChatMessage = action({
     const responseTime = Date.now() - startTime;
 
     // Store user message
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.addMessage, {
       chatId: args.chatId,
       role: "user",
@@ -75,7 +72,6 @@ export const sendChatMessage = action({
     });
 
     // Store AI response
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.addMessage, {
       chatId: args.chatId,
       role: "assistant",
@@ -86,7 +82,6 @@ export const sendChatMessage = action({
     });
 
     // Track usage
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
       projectId: args.projectId,
@@ -131,7 +126,6 @@ export const generateIssueSuggestions = action({
     const startTime = Date.now();
 
     // Get project context
-    // @ts-expect-error - Convex types will be generated on next dev server run
     const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
       projectId: args.projectId,
     });
@@ -183,7 +177,6 @@ Format your response as JSON with keys: description, priority, priorityReason, l
     }
 
     // Track usage
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
       projectId: args.projectId,
@@ -288,7 +281,6 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     // Store insights as suggestions
     if (insights.risks && Array.isArray(insights.risks)) {
       for (const risk of insights.risks) {
-        // @ts-expect-error - Convex types will be generated on next dev server run
         await ctx.runMutation(api.ai.mutations.createSuggestion, {
           userId,
           projectId: args.projectId,
@@ -300,7 +292,6 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     }
 
     // Track usage
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
       projectId: args.projectId,
@@ -333,7 +324,6 @@ export const answerQuestion = action({
     const startTime = Date.now();
 
     // Get project context
-    // @ts-expect-error - Convex types will be generated on next dev server run
     const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
       projectId: args.projectId,
     });
@@ -372,7 +362,6 @@ Team: ${projectData.members.map((m: { name: string }) => m.name).join(", ")}`;
     const responseTime = Date.now() - startTime;
 
     // Track usage
-    // @ts-expect-error - Convex types will be generated on next dev server run
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
       projectId: args.projectId,

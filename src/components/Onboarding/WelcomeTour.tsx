@@ -1,4 +1,5 @@
 import { useMutation } from "convex/react";
+import type { driver as driverFunction } from "driver.js";
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 
@@ -13,7 +14,7 @@ interface WelcomeTourProps {
  */
 export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
-  const [Driver, setDriver] = useState<any>(null);
+  const [driverFn, setDriverFn] = useState<typeof driverFunction | null>(null);
 
   // Lazy load driver.js
   useEffect(() => {
@@ -28,7 +29,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
         ]);
 
         if (mounted) {
-          setDriver(() => driver);
+          setDriverFn(() => driver);
         }
       } catch (error) {
         // biome-ignore lint/suspicious/noConsole: Intentional error logging for driver.js load failures
@@ -45,9 +46,9 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
 
   // Start the tour once Driver is loaded
   useEffect(() => {
-    if (!Driver) return;
+    if (!driverFn) return;
 
-    const driverObj = Driver({
+    const driverObj = driverFn({
       showProgress: true,
       showButtons: ["next", "previous", "close"],
       steps: [
@@ -142,7 +143,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
       clearTimeout(timer);
       driverObj.destroy();
     };
-  }, [Driver, onComplete, onSkip, updateOnboarding]);
+  }, [driverFn, onComplete, onSkip, updateOnboarding]);
 
   return null; // This component doesn't render anything - it just controls the tour
 }

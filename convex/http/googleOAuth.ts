@@ -1,5 +1,5 @@
-import { httpAction } from "../_generated/server";
 import { api } from "../_generated/api";
+import { httpAction } from "../_generated/server";
 
 /**
  * Google OAuth Integration
@@ -11,6 +11,29 @@ import { api } from "../_generated/api";
  * 2. Google redirects back → GET /google/callback (exchanges code for token)
  * 3. Save tokens to database → User is connected
  */
+
+// Google Calendar API Types
+interface GoogleCalendarEventDateTime {
+  dateTime?: string;
+  date?: string;
+  timeZone?: string;
+}
+
+interface GoogleCalendarAttendee {
+  email: string;
+  displayName?: string;
+  responseStatus?: string;
+}
+
+interface GoogleCalendarEvent {
+  id: string;
+  summary?: string;
+  description?: string;
+  start: GoogleCalendarEventDateTime;
+  end: GoogleCalendarEventDateTime;
+  location?: string;
+  attendees?: GoogleCalendarAttendee[];
+}
 
 // OAuth configuration (will be in environment variables)
 const getGoogleOAuthConfig = () => {
@@ -273,15 +296,15 @@ export const triggerSync = httpAction(async (ctx, _request) => {
     const events = data.items || [];
 
     // Transform Google Calendar events to Cascade format
-    const cascadeEvents = events.map((event: any) => ({
+    const cascadeEvents = events.map((event: GoogleCalendarEvent) => ({
       googleEventId: event.id,
       title: event.summary || "Untitled Event",
       description: event.description,
-      startTime: new Date(event.start.dateTime || event.start.date).getTime(),
-      endTime: new Date(event.end.dateTime || event.end.date).getTime(),
+      startTime: new Date(event.start.dateTime || event.start.date || "").getTime(),
+      endTime: new Date(event.end.dateTime || event.end.date || "").getTime(),
       allDay: !!event.start.date, // If date instead of dateTime, it's all-day
       location: event.location,
-      attendees: event.attendees?.map((a: any) => a.email) || [],
+      attendees: event.attendees?.map((a: GoogleCalendarAttendee) => a.email) || [],
     }));
 
     // Sync events to Cascade
@@ -302,7 +325,6 @@ export const triggerSync = httpAction(async (ctx, _request) => {
       },
     );
   } catch (error) {
-    console.error("Sync error:", error);
     return new Response(
       JSON.stringify({
         success: false,

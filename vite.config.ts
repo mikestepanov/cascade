@@ -145,50 +145,32 @@ window.addEventListener('message', async (message) => {
       output: {
         // Manual chunks for better caching
         manualChunks: (id) => {
-          // React and React DOM
-          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
-            return "react-vendor";
+          // Check if it's in node_modules
+          if (!id.includes("node_modules/")) {
+            return undefined;
           }
 
-          // Convex (backend)
-          if (id.includes("node_modules/convex/") || id.includes("node_modules/@convex-dev/")) {
-            return "convex";
+          // Chunk mapping for vendor dependencies
+          const chunkMap = [
+            { patterns: ["react/", "react-dom/"], chunk: "react-vendor" },
+            { patterns: ["convex/", "@convex-dev/"], chunk: "convex" },
+            { patterns: ["@blocknote/"], chunk: "editor" },
+            { patterns: ["@mantine/"], chunk: "mantine" },
+            { patterns: ["lucide-react/"], chunk: "icons" },
+            { patterns: ["posthog-js/"], chunk: "analytics" },
+            { patterns: ["driver.js/"], chunk: "tour" },
+            { patterns: ["react-markdown/", "remark-"], chunk: "markdown" },
+          ];
+
+          // Find matching chunk
+          for (const { patterns, chunk } of chunkMap) {
+            if (patterns.some((pattern) => id.includes(pattern))) {
+              return chunk;
+            }
           }
 
-          // BlockNote editor (HEAVY - lazy load this!)
-          if (id.includes("node_modules/@blocknote/")) {
-            return "editor";
-          }
-
-          // Mantine UI (HEAVY)
-          if (id.includes("node_modules/@mantine/")) {
-            return "mantine";
-          }
-
-          // Icons
-          if (id.includes("node_modules/lucide-react/")) {
-            return "icons";
-          }
-
-          // Analytics (can be lazy loaded)
-          if (id.includes("node_modules/posthog-js/")) {
-            return "analytics";
-          }
-
-          // Onboarding tour
-          if (id.includes("node_modules/driver.js/")) {
-            return "tour";
-          }
-
-          // Markdown rendering
-          if (id.includes("node_modules/react-markdown/") || id.includes("node_modules/remark-")) {
-            return "markdown";
-          }
-
-          // Other vendor chunks
-          if (id.includes("node_modules/")) {
-            return "vendor";
-          }
+          // Default vendor chunk for other node_modules
+          return "vendor";
         },
         // Optimize chunk names
         chunkFileNames: "assets/[name]-[hash].js",
