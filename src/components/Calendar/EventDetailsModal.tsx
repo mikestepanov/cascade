@@ -7,6 +7,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -299,22 +300,20 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
 
         {/* Actions */}
         <div className="flex justify-between gap-3 p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-          <button
-            type="button"
+          <Button
             onClick={handleDelete}
-            disabled={isDeleting}
-            className="flex items-center gap-2 px-4 py-2 text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-dark rounded-md disabled:opacity-50"
+            variant="danger"
+            isLoading={isDeleting}
+            leftIcon={<Trash2 className="w-4 h-4" />}
           >
-            <Trash2 className="w-4 h-4" />
             {isDeleting ? "Deleting..." : "Delete Event"}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={onClose}
-            className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+            variant="secondary"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

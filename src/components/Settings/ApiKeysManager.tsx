@@ -171,14 +171,15 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             <code className="text-sm font-mono bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
               {apiKey.keyPrefix}...
             </code>
-            <button
-              type="button"
+            <Button
               onClick={copyKeyPrefix}
-              className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark transition-colors"
-              title="Copy key prefix"
+              variant="ghost"
+              size="sm"
+              className="p-1 min-w-0"
+              aria-label="Copy key prefix"
             >
               <Copy className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
 
           {/* Scopes */}
@@ -221,34 +222,37 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
         {/* Actions */}
         <div className="flex items-center gap-2 ml-4">
-          <button
-            type="button"
+          <Button
             onClick={onViewStats}
-            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-            title="View usage statistics"
+            variant="ghost"
+            size="sm"
+            className="p-2 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400"
+            aria-label="View usage statistics"
           >
             <TrendingUp className="h-4 w-4" />
-          </button>
+          </Button>
           {apiKey.isActive && (
-            <button
-              type="button"
+            <Button
               onClick={handleRevoke}
-              disabled={isRevoking}
-              className="px-3 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
-              title="Revoke key"
+              variant="ghost"
+              size="sm"
+              isLoading={isRevoking}
+              className="text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              aria-label="Revoke key"
             >
               {isRevoking ? "Revoking..." : "Revoke"}
-            </button>
+            </Button>
           )}
-          <button
-            type="button"
+          <Button
             onClick={handleDelete}
-            disabled={isDeleting}
-            className="p-2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-red-400 transition-colors"
-            title="Delete key"
+            variant="ghost"
+            size="sm"
+            isLoading={isDeleting}
+            className="p-2 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error"
+            aria-label="Delete key"
           >
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>
