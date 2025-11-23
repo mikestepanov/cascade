@@ -20,6 +20,12 @@ importers:
       '@blocknote/react':
         specifier: ^0.42.3
         version: 0.42.3(@floating-ui/dom@1.7.4)(@tiptap/extensions@3.11.0(@tiptap/core@3.11.0(@tiptap/pm@3.11.0))(@tiptap/pm@3.11.0))(@types/hast@3.0.4)(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@convex-dev/action-cache':
+        specifier: ^0.3.0
+        version: 0.3.0(convex@1.29.3(react@19.2.0))
+      '@convex-dev/aggregate':
+        specifier: ^0.2.0
+        version: 0.2.0(convex@1.29.3(react@19.2.0))
       '@convex-dev/auth':
         specifier: ^0.0.90
         version: 0.0.90(@auth/core@0.37.4)(convex@1.29.3(react@19.2.0))(react@19.2.0)
@@ -32,6 +38,9 @@ importers:
       '@convex-dev/rag':
         specifier: ^0.6.1
         version: 0.6.1(@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0)))(convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))(zod@4.1.12)
+      '@convex-dev/rate-limiter':
+        specifier: ^0.3.0
+        version: 0.3.0(convex@1.29.3(react@19.2.0))(react@19.2.0)
       '@mantine/core':
         specifier: ^8.3.9
         version: 8.3.9(@mantine/hooks@8.3.9(react@19.2.0))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -837,6 +846,16 @@ packages:
       react: ^18.0 || ^19.0 || >= 19.0.0-rc
       react-dom: ^18.0 || ^19.0 || >= 19.0.0-rc
 
+  '@convex-dev/action-cache@0.3.0':
+    resolution: {integrity: sha512-B3GsOgwPv81whdu1mHaMKBwbIYHhNXsv3Fr5oMjynIOrRy1laGLUo9zRWDKWJgtKXfVnn8X/uxYD9RyWmPIbPQ==}
+    peerDependencies:
+      convex: ^1.24.8
+
+  '@convex-dev/aggregate@0.2.0':
+    resolution: {integrity: sha512-AKHa6SilQ9w1gnqBghCbQj77sdE2SJSZ8n3FHH/0PX/MSHsvmDT6Z+ZzIVK6EnmqItwxyRAIfA2E+znnHQVvOQ==}
+    peerDependencies:
+      convex: ^1.24.8
+
   '@convex-dev/auth@0.0.90':
     resolution: {integrity: sha512-aqw88EB042HvnaF4wcf/f/wTocmT2Bus2VDQRuV79cM0+8kORM0ICK/ByZ6XsHgQ9qr6TmidNbXm6QAgndrdpQ==}
     hasBin: true
@@ -886,6 +905,15 @@ packages:
       '@convex-dev/workpool': ^0.3.0
       convex: ^1.24.8
       convex-helpers: ^0.1.94
+
+  '@convex-dev/rate-limiter@0.3.0':
+    resolution: {integrity: sha512-8R1gos0KoGU9+1bahTpOuZgU04d4aAmk7SJw6D37HXLn7DLylAIKegaWmDgdcpaOGHDDDfnvuoEmC1AnoqHruA==}
+    peerDependencies:
+      convex: ^1.24.8
+      react: ^18.2.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@convex-dev/workpool@0.3.0':
     resolution: {integrity: sha512-nY8Ub0pmfuxZ2rcnNwVeESYPyJqLU4h+afodEdg8Ifnr+vcFUuee/p69vMFmeqC2y4yo9IDPHrdiVZVyjbBE7A==}
@@ -5334,6 +5362,14 @@ snapshots:
       - sugar-high
       - supports-color
 
+  '@convex-dev/action-cache@0.3.0(convex@1.29.3(react@19.2.0))':
+    dependencies:
+      convex: 1.29.3(react@19.2.0)
+
+  '@convex-dev/aggregate@0.2.0(convex@1.29.3(react@19.2.0))':
+    dependencies:
+      convex: 1.29.3(react@19.2.0)
+
   '@convex-dev/auth@0.0.90(@auth/core@0.37.4)(convex@1.29.3(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@auth/core': 0.37.4
@@ -5376,6 +5412,12 @@ snapshots:
       convex-helpers: 0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
     transitivePeerDependencies:
       - zod
+
+  '@convex-dev/rate-limiter@0.3.0(convex@1.29.3(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      convex: 1.29.3(react@19.2.0)
+    optionalDependencies:
+      react: 19.2.0
 
   '@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(@standard-schema/spec@1.0.0)(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))':
     dependencies:
