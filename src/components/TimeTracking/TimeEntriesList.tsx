@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
@@ -64,29 +65,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
   if (entries.length === 0) {
     return (
-      <div className="text-center p-8">
-        <svg
-          className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          role="img"
-          aria-label="Clock icon"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-          No time entries
-        </h3>
-        <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Start tracking time to see entries here.
-        </p>
-      </div>
+      <EmptyState
+        icon="⏱️"
+        title="No time entries"
+        description="Start tracking time to see entries here."
+      />
     );
   }
 

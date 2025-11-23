@@ -341,10 +341,7 @@ export function GlobalSearch() {
                   <p className="text-sm">Type at least 2 characters to search</p>
                 </div>
               ) : filteredResults.length === 0 ? (
-                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  <div className="text-4xl mb-2">🔍</div>
-                  <p>No results found</p>
-                </div>
+                <EmptyState icon="🔍" title="No results found" />
               ) : (
                 <>
                   <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
