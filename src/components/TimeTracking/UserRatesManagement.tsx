@@ -164,157 +164,161 @@ export function UserRatesManagement() {
 
       {/* Add/Edit Rate Modal */}
       {showAddRate && (
-        <Modal isOpen={showAddRate} onClose={handleCloseModal} title="Set Hourly Rate" maxWidth="md">
+        <Modal
+          isOpen={showAddRate}
+          onClose={handleCloseModal}
+          title="Set Hourly Rate"
+          maxWidth="md"
+        >
           <div className="space-y-4">
-              {/* Project Selection */}
-              <div>
-                <label
-                  htmlFor="rate-apply-to"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Apply To
-                </label>
-                <select
-                  id="rate-apply-to"
-                  value={selectedProject}
-                  onChange={(e) =>
-                    setSelectedProject(
-                      e.target.value === "default" ? "default" : (e.target.value as Id<"projects">),
-                    )
-                  }
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                >
-                  <option value="default">All Projects (Default)</option>
-                  {projects?.map((project) => (
-                    <option key={project._id} value={project._id}>
-                      {project.name} (Override)
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-                  Project-specific rates override the default rate
-                </p>
-              </div>
+            {/* Project Selection */}
+            <div>
+              <label
+                htmlFor="rate-apply-to"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Apply To
+              </label>
+              <select
+                id="rate-apply-to"
+                value={selectedProject}
+                onChange={(e) =>
+                  setSelectedProject(
+                    e.target.value === "default" ? "default" : (e.target.value as Id<"projects">),
+                  )
+                }
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+              >
+                <option value="default">All Projects (Default)</option>
+                {projects?.map((project) => (
+                  <option key={project._id} value={project._id}>
+                    {project.name} (Override)
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                Project-specific rates override the default rate
+              </p>
+            </div>
 
-              {/* Rate Type */}
-              <div>
-                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-                  Rate Type
-                </div>
-                <div className="flex gap-3">
-                  <label
-                    className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
-                      rateType === "internal"
-                        ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                        : "border-ui-border-primary dark:border-ui-border-primary-dark"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="rateType"
-                      checked={rateType === "internal"}
-                      onChange={() => setRateType("internal")}
-                      className="w-4 h-4 text-brand-600"
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Internal Cost
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        What you pay
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
-                      rateType === "billable"
-                        ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                        : "border-ui-border-primary dark:border-ui-border-primary-dark"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="rateType"
-                      checked={rateType === "billable"}
-                      onChange={() => setRateType("billable")}
-                      className="w-4 h-4 text-brand-600"
-                    />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Billable Rate
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        Charge clients
-                      </div>
-                    </div>
-                  </label>
-                </div>
+            {/* Rate Type */}
+            <div>
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                Rate Type
               </div>
-
-              {/* Hourly Rate */}
-              <div>
+              <div className="flex gap-3">
                 <label
-                  htmlFor="rate-hourly-rate"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                    rateType === "internal"
+                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark"
+                  }`}
                 >
-                  Hourly Rate
-                </label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      $
-                    </span>
-                    <input
-                      id="rate-hourly-rate"
-                      type="number"
-                      value={hourlyRate}
-                      onChange={(e) => setHourlyRate(e.target.value)}
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0"
-                      className="w-full pl-8 pr-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                    />
+                  <input
+                    type="radio"
+                    name="rateType"
+                    checked={rateType === "internal"}
+                    onChange={() => setRateType("internal")}
+                    className="w-4 h-4 text-brand-600"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      Internal Cost
+                    </div>
+                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      What you pay
+                    </div>
                   </div>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  >
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                    <option value="CAD">CAD</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Notes */}
-              <div>
-                <label
-                  htmlFor="rate-notes"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Notes (optional)
                 </label>
-                <textarea
-                  id="rate-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g., Senior developer rate, Contract rate for Q1 2024..."
-                  rows={2}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
-                />
+                <label
+                  className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                    rateType === "billable"
+                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="rateType"
+                    checked={rateType === "billable"}
+                    onChange={() => setRateType("billable")}
+                    className="w-4 h-4 text-brand-600"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      Billable Rate
+                    </div>
+                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      Charge clients
+                    </div>
+                  </div>
+                </label>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button onClick={handleCloseModal} variant="secondary">
-                Cancel
-              </Button>
-              <Button onClick={handleSaveRate} variant="primary">
-                Save Rate
-              </Button>
+            {/* Hourly Rate */}
+            <div>
+              <label
+                htmlFor="rate-hourly-rate"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Hourly Rate
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    $
+                  </span>
+                  <input
+                    id="rate-hourly-rate"
+                    type="number"
+                    value={hourlyRate}
+                    onChange={(e) => setHourlyRate(e.target.value)}
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0"
+                    className="w-full pl-8 pr-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                  />
+                </div>
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="CAD">CAD</option>
+                </select>
+              </div>
             </div>
+
+            {/* Notes */}
+            <div>
+              <label
+                htmlFor="rate-notes"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Notes (optional)
+              </label>
+              <textarea
+                id="rate-notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g., Senior developer rate, Contract rate for Q1 2024..."
+                rows={2}
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button onClick={handleCloseModal} variant="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveRate} variant="primary">
+              Save Rate
+            </Button>
           </div>
         </Modal>
       )}

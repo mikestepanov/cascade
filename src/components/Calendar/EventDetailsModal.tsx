@@ -294,10 +294,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           >
             {isDeleting ? "Deleting..." : "Delete Event"}
           </Button>
-          <Button
-            onClick={onClose}
-            variant="secondary"
-          >
+          <Button onClick={onClose} variant="secondary">
             Close
           </Button>
         </div>

@@ -384,7 +384,16 @@ function getDateRange(currentDate: Date, timeScale: TimeScale) {
 // Get issue type variant for Badge component
 function getIssueTypeVariant(
   type: string,
-): "primary" | "secondary" | "success" | "error" | "warning" | "info" | "neutral" | "brand" | "accent" {
+):
+  | "primary"
+  | "secondary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "neutral"
+  | "brand"
+  | "accent" {
   switch (type) {
     case "epic":
       return "accent";

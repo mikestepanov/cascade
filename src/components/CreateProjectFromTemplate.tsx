@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Input, Textarea } from "./ui/form";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Modal } from "./ui/Modal";
 
 interface CreateProjectFromTemplateProps {

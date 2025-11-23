@@ -4,10 +4,10 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { Modal } from "../ui/Modal";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
+import { Modal } from "../ui/Modal";
 
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -308,26 +308,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         >
           Test Webhook
         </Button>
-        <Button
-          onClick={handleToggleActive}
-          variant="secondary"
-          size="sm"
-        >
+        <Button onClick={handleToggleActive} variant="secondary" size="sm">
           {webhook.isActive ? "Disable" : "Enable"}
         </Button>
-        <Button
-          onClick={() => setShowEditModal(true)}
-          variant="secondary"
-          size="sm"
-        >
+        <Button onClick={() => setShowEditModal(true)} variant="secondary" size="sm">
           Edit
         </Button>
-        <Button
-          onClick={handleDelete}
-          variant="danger"
-          size="sm"
-          className="ml-auto"
-        >
+        <Button onClick={handleDelete} variant="danger" size="sm" className="ml-auto">
           Delete
         </Button>
       </div>
@@ -422,98 +409,94 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
   return (
     <Modal isOpen={true} onClose={onClose} title="Add Pumble Webhook" maxWidth="2xl">
       <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <Input
-            label="Webhook Name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Team Notifications"
-          />
+        {/* Name */}
+        <Input
+          label="Webhook Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Team Notifications"
+        />
 
-          {/* Webhook URL */}
-          <Input
-            label="Webhook URL"
-            type="url"
-            value={webhookUrl}
-            onChange={(e) => setWebhookUrl(e.target.value)}
-            placeholder="https://api.pumble.com/workspaces/.../..."
-            className="font-mono text-sm"
-            helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
-          />
+        {/* Webhook URL */}
+        <Input
+          label="Webhook URL"
+          type="url"
+          value={webhookUrl}
+          onChange={(e) => setWebhookUrl(e.target.value)}
+          placeholder="https://api.pumble.com/workspaces/.../..."
+          className="font-mono text-sm"
+          helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
+        />
 
-          {/* Project */}
-          <Select
-            label="Project (Optional)"
-            value={projectId || ""}
-            onChange={(e) =>
-              setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
-            }
-            helperText="Leave empty to receive notifications from all projects"
-          >
-            <option value="">All Projects</option>
-            {projects.map((project) => (
-              <option key={project._id} value={project._id}>
-                {project.name}
-              </option>
+        {/* Project */}
+        <Select
+          label="Project (Optional)"
+          value={projectId || ""}
+          onChange={(e) =>
+            setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
+          }
+          helperText="Leave empty to receive notifications from all projects"
+        >
+          <option value="">All Projects</option>
+          {projects.map((project) => (
+            <option key={project._id} value={project._id}>
+              {project.name}
+            </option>
+          ))}
+        </Select>
+
+        {/* Events */}
+        <div>
+          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            Events to Send
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {availableEvents.map((event) => (
+              <Checkbox
+                key={event.value}
+                label={event.label}
+                checked={selectedEvents.includes(event.value)}
+                onChange={() => toggleEvent(event.value)}
+              />
             ))}
-          </Select>
-
-          {/* Events */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Events to Send
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {availableEvents.map((event) => (
-                <Checkbox
-                  key={event.value}
-                  label={event.label}
-                  checked={selectedEvents.includes(event.value)}
-                  onChange={() => toggleEvent(event.value)}
-                />
-              ))}
-            </div>
           </div>
+        </div>
 
-          {/* Additional Settings */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Additional Settings
-            </div>
-            <div className="space-y-2">
-              <Checkbox
-                label="Send notifications for @mentions"
-                checked={sendMentions}
-                onChange={(e) => setSendMentions(e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for assignments"
-                checked={sendAssignments}
-                onChange={(e) => setSendAssignments(e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for status changes"
-                checked={sendStatusChanges}
-                onChange={(e) => setSendStatusChanges(e.target.checked)}
-              />
-            </div>
+        {/* Additional Settings */}
+        <div>
+          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            Additional Settings
           </div>
+          <div className="space-y-2">
+            <Checkbox
+              label="Send notifications for @mentions"
+              checked={sendMentions}
+              onChange={(e) => setSendMentions(e.target.checked)}
+            />
+            <Checkbox
+              label="Send notifications for assignments"
+              checked={sendAssignments}
+              onChange={(e) => setSendAssignments(e.target.checked)}
+            />
+            <Checkbox
+              label="Send notifications for status changes"
+              checked={sendStatusChanges}
+              onChange={(e) => setSendStatusChanges(e.target.checked)}
+            />
+          </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <Button onClick={onClose} variant="secondary">
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              className="bg-accent-600 hover:bg-accent-700"
-            >
-              Add Webhook
-            </Button>
-          </div>
-        </form>
+        {/* Actions */}
+        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Button onClick={onClose} variant="secondary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
+            Add Webhook
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 }
@@ -587,87 +570,83 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
   return (
     <Modal isOpen={true} onClose={onClose} title="Edit Webhook" maxWidth="2xl">
       <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <div>
-            <label
-              htmlFor="webhook-name"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-            >
-              Webhook Name
-            </label>
-            <input
-              id="webhook-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        {/* Name */}
+        <div>
+          <label
+            htmlFor="webhook-name"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+          >
+            Webhook Name
+          </label>
+          <input
+            id="webhook-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+        </div>
+
+        {/* Webhook URL */}
+        <Input
+          label="Webhook URL"
+          type="url"
+          value={webhookUrl}
+          onChange={(e) => setWebhookUrl(e.target.value)}
+          className="font-mono text-sm"
+        />
+
+        {/* Events */}
+        <div>
+          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            Events to Send
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {availableEvents.map((event) => (
+              <Checkbox
+                key={event.value}
+                label={event.label}
+                checked={selectedEvents.includes(event.value)}
+                onChange={() => toggleEvent(event.value)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Additional Settings */}
+        <div>
+          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            Additional Settings
+          </div>
+          <div className="space-y-2">
+            <Checkbox
+              label="Send notifications for @mentions"
+              checked={sendMentions}
+              onChange={(e) => setSendMentions(e.target.checked)}
+            />
+            <Checkbox
+              label="Send notifications for assignments"
+              checked={sendAssignments}
+              onChange={(e) => setSendAssignments(e.target.checked)}
+            />
+            <Checkbox
+              label="Send notifications for status changes"
+              checked={sendStatusChanges}
+              onChange={(e) => setSendStatusChanges(e.target.checked)}
             />
           </div>
+        </div>
 
-          {/* Webhook URL */}
-          <Input
-            label="Webhook URL"
-            type="url"
-            value={webhookUrl}
-            onChange={(e) => setWebhookUrl(e.target.value)}
-            className="font-mono text-sm"
-          />
-
-          {/* Events */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Events to Send
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {availableEvents.map((event) => (
-                <Checkbox
-                  key={event.value}
-                  label={event.label}
-                  checked={selectedEvents.includes(event.value)}
-                  onChange={() => toggleEvent(event.value)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Additional Settings */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Additional Settings
-            </div>
-            <div className="space-y-2">
-              <Checkbox
-                label="Send notifications for @mentions"
-                checked={sendMentions}
-                onChange={(e) => setSendMentions(e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for assignments"
-                checked={sendAssignments}
-                onChange={(e) => setSendAssignments(e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for status changes"
-                checked={sendStatusChanges}
-                onChange={(e) => setSendStatusChanges(e.target.checked)}
-              />
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <Button onClick={onClose} variant="secondary">
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              className="bg-accent-600 hover:bg-accent-700"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </form>
+        {/* Actions */}
+        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Button onClick={onClose} variant="secondary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
+            Save Changes
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 }

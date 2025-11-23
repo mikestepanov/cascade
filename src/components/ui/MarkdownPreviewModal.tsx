@@ -1,3 +1,4 @@
+import DOMPurify from "isomorphic-dompurify";
 import { useState } from "react";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
@@ -91,7 +92,6 @@ export function MarkdownPreviewModal({
             <div className="p-4 prose dark:prose-invert max-w-none">
               <div
                 className="markdown-preview"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe context - user previewing own markdown file before import
                 dangerouslySetInnerHTML={{ __html: renderMarkdownPreview(markdown) }}
               />
             </div>
@@ -119,6 +119,7 @@ export function MarkdownPreviewModal({
 /**
  * Simple markdown to HTML renderer for preview
  * Basic implementation for common syntax
+ * Sanitized with DOMPurify to prevent XSS attacks
  */
 function renderMarkdownPreview(markdown: string): string {
   let html = markdown;
@@ -160,5 +161,27 @@ function renderMarkdownPreview(markdown: string): string {
   html = html.replace(/\n\n/g, "</p><p>");
   html = `<p>${html}</p>`;
 
-  return html;
+  // Sanitize HTML to prevent XSS attacks
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "strong",
+      "em",
+      "code",
+      "pre",
+      "a",
+      "img",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+    ],
+    ALLOWED_ATTR: ["href", "src", "alt", "class", "target"],
+  });
 }
