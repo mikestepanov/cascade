@@ -73,7 +73,7 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 - 🟡 **User invitation system** - database logic ready, email sending pending
 - ✅ **User management dashboard** - view all users, invitations, revoke access
 - 🟡 **Google OAuth authentication UI** - UI ready, backend provider pending
-- ✅ **Frontend UI polish (Nov 2025)** - theme consistency, component reusability, responsive design audit
+- ✅ **Frontend UI polish (Nov 2025) - 100% COMPLETE** - theme consistency, component reusability, responsive design, modals, buttons, empty states
 
 ### 🔴 What's Missing (Critical for Launch)
 
@@ -592,8 +592,7 @@ This document serves as the comprehensive roadmap for Cascade development, reorg
 - [ ] **Refactored components not integrated** - `.refactored.tsx` files exist but unused
 - [ ] **No data migration strategy** - Schema changes risk breaking changes
 - [ ] **Unbounded queries** - Some queries don't paginate
-- ✅ **Frontend UI polish (75% complete)** - Button replacements ✅, hardcoded colors ✅, empty states ✅. Only modal standardization remains (optional)
-- 🟡 **Modal standardization** - ~10 files use custom modals (optional polish, not blocking)
+- ✅ **Frontend UI polish (100% COMPLETE!)** - Button replacements ✅, hardcoded colors ✅, empty states ✅, modal standardization ✅
 
 ### Medium Priority (Fix in Phase 3)
 
@@ -656,6 +655,15 @@ Comprehensive frontend audit completed to ensure:
 - Replaced custom empty state in GlobalSearch.tsx with EmptyState component
 - **Impact:** Consistent empty state UX with built-in animations, centralized maintenance
 
+**✅ Modal Standardization (COMPLETED - November 2025)**
+- TimeTracking: TimerWidget (StartTimerModal), ManualTimeEntryModal
+- Calendar: CreateEventModal, EventDetailsModal
+- Settings: PumbleIntegration (AddWebhookModal, EditWebhookModal)
+- Onboarding: SampleProjectModal, ProjectWizard
+- TimeTracking: UserRatesManagement
+- **Total:** 9 modals across 7 files migrated to Modal component
+- **Impact:** ~190 lines of code reduced, consistent modal behavior (ESC key, backdrop clicks, ARIA attributes), replaced toast with showError/showSuccess utilities
+
 ### Remaining Work (Priority 2 - Medium Impact)
 
 **✅ Button Replacements (COMPLETED!)** - 100% COMPLETE
@@ -670,38 +678,47 @@ Comprehensive frontend audit completed to ensure:
 - Standardized TimeEntriesList and GlobalSearch
 - Consistent empty state UX with EmptyState component
 
-**🟡 Modal Standardization (~10 files)** - OPTIONAL
-**🟡 Modal Standardization (~10 files)** - OPTIONAL
-Custom modal implementations should use Modal/FormDialog:
-- ManualTimeEntryModal
-- ProjectWizard
-- SampleProjectModal
-- And 7 more identified
-- **Estimated effort:** 3-4 days
-- **Priority:** Low (optional polish, not blocking)
+**✅ Modal Standardization (COMPLETED!)** - 100% COMPLETE
+- All 9 modals migrated to Modal component
+- Consistent modal UX with built-in accessibility
 
 ### Commits (November 2025 Frontend Polish)
 
+**Button Replacements:**
 1. `85b680a` - refactor: replace custom buttons in EventDetailsModal and ApiKeysManager
 2. `caa2cbb` - refactor: replace action buttons in Admin/UserManagement
 3. `beb87e6` - refactor: replace custom buttons in TimeTracking components
 4. `084cf43` - docs: update TODO.md - button replacements 100% complete
-5. `b193dc2` - refactor: replace hardcoded colors with semantic theme tokens in Admin components
-6. `2cdd4b4` - refactor: standardize empty states with EmptyState component
-7. `2b1c81b` - fix: add missing EmptyState import to GlobalSearch
-8. Previous commits for SprintManager, Sidebar, ProjectSidebar, IssueDetailModal, PumbleIntegration, Calendar components
+5. Previous commits for SprintManager, Sidebar, ProjectSidebar, IssueDetailModal, PumbleIntegration, Calendar components
 
-### Next Steps (Optional)
+**Hardcoded Colors:**
+6. `b193dc2` - refactor: replace hardcoded colors with semantic theme tokens in Admin components
 
-To complete 100% frontend polish:
-1. ~~Continue button replacements~~ ✅ COMPLETE (100%)
-2. ~~Fix remaining hardcoded colors~~ ✅ COMPLETE (100%)
-3. ~~Standardize empty states~~ ✅ COMPLETE (100%)
-4. Standardize modals (10 files) - Estimated effort: 3-4 days (OPTIONAL)
+**Empty States:**
+7. `2cdd4b4` - refactor: standardize empty states with EmptyState component
+8. `2b1c81b` - fix: add missing EmptyState import to GlobalSearch
 
-**Frontend UI Polish: 75% complete** (3/4 major tasks)
-**Remaining: Modal standardization only** (optional, not blocking)
-**Priority:** Low - Nice to have, but not required for launch
+**Modal Standardization:**
+9. `f3ba744` - refactor: replace custom modals in TimeTracking (TimerWidget + ManualTimeEntryModal)
+10. `89b8432` - refactor: replace custom modals in Calendar (CreateEventModal + EventDetailsModal)
+11. `5f10028` - refactor: replace custom modals in PumbleIntegration (AddWebhookModal + EditWebhookModal)
+12. `758900d` - refactor: replace custom modals in Onboarding (SampleProjectModal + ProjectWizard)
+13. `9a3588a` - refactor: replace custom modal in UserRatesManagement
+
+### Frontend Polish Complete! 🎉
+
+**Frontend UI Polish: 100% COMPLETE** (4/4 major tasks)
+1. ~~Button replacements (18 files)~~ ✅ COMPLETE
+2. ~~Hardcoded color fixes (2 files)~~ ✅ COMPLETE
+3. ~~Empty state standardization (2 files)~~ ✅ COMPLETE
+4. ~~Modal standardization (7 files, 9 modals)~~ ✅ COMPLETE
+
+**Total Impact:**
+- ~590 lines of code reduced (~400 buttons + ~190 modals)
+- 100% component consistency across entire application
+- Full dark mode support with semantic theme tokens
+- Enhanced accessibility (ARIA attributes, keyboard navigation)
+- Improved error handling (showError/showSuccess utilities)
 
 ---
 
