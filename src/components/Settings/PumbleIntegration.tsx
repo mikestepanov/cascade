@@ -420,38 +420,8 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Add Pumble Webhook
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <Modal isOpen={true} onClose={onClose} title="Add Pumble Webhook" maxWidth="2xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <Input
             label="Webhook Name"
@@ -544,8 +514,7 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -616,38 +585,8 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Edit Webhook
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-primary-dark"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <Modal isOpen={true} onClose={onClose} title="Edit Webhook" maxWidth="2xl">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
             <label
@@ -729,7 +668,6 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
