@@ -59,9 +59,11 @@ describe("Analytics", () => {
 
       // Get workflow states
       const project = await t.query(api.projects.get, { id: projectId });
-      const todoState = project?.workflowStates.find((s) => s.name === "To Do");
-      const inProgressState = project?.workflowStates.find((s) => s.name === "In Progress");
-      const doneState = project?.workflowStates.find((s) => s.name === "Done");
+      const todoState = project?.workflowStates.find((s: { name: string }) => s.name === "To Do");
+      const inProgressState = project?.workflowStates.find(
+        (s: { name: string }) => s.name === "In Progress",
+      );
+      const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create issues in different states
       const _issue1 = await t.mutation(api.issues.create, {
@@ -281,7 +283,7 @@ describe("Analytics", () => {
 
       // Get done state
       const project = await t.query(api.projects.get, { id: projectId });
-      const doneState = project?.workflowStates.find((s) => s.name === "Done");
+      const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create issues
       const issue1 = await t.mutation(api.issues.create, {
@@ -435,7 +437,7 @@ describe("Analytics", () => {
 
       // Get done state
       const project = await t.query(api.projects.get, { id: projectId });
-      const doneState = project?.workflowStates.find((s) => s.name === "Done");
+      const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create and complete sprint 1
       const sprint1Id = await t.mutation(api.sprints.create, {
@@ -557,7 +559,7 @@ describe("Analytics", () => {
       t.withIdentity({ subject: userId });
 
       const project = await t.query(api.projects.get, { id: projectId });
-      const doneState = project?.workflowStates.find((s) => s.name === "Done");
+      const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       const sprintId = await t.mutation(api.sprints.create, {
         projectId,

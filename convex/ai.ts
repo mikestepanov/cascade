@@ -26,11 +26,11 @@ export const generateEmbedding = internalAction({
     // Use OpenAI's text-embedding-3-small model (1536 dimensions)
     const model = openai.embedding("text-embedding-3-small");
 
-    const { embedding } = await model.doEmbed({
+    const { embeddings } = await model.doEmbed({
       values: [args.text],
     });
 
-    return embedding[0]; // Return first (and only) embedding
+    return embeddings[0]; // Return first (and only) embedding
   },
 });
 
@@ -190,8 +190,13 @@ Be concise, helpful, and professional.`;
       provider: "openai",
       model: "gpt-4o-mini",
       operation: "chat",
-      promptTokens: response.usage?.promptTokens || 0,
-      completionTokens: response.usage?.completionTokens || 0,
+      // Use actual token counts if available, otherwise estimate from totalTokens
+      promptTokens:
+        response.usage?.promptTokens ??
+        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.7) : 0),
+      completionTokens:
+        response.usage?.completionTokens ??
+        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.3) : 0),
       totalTokens: response.usage?.totalTokens || 0,
       success: true,
     });
