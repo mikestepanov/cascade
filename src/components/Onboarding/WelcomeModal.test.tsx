@@ -152,7 +152,7 @@ describe("WelcomeModal", () => {
     expect(getStartedButton).toBeDisabled();
 
     // Resolve the promise to finish the test
-    resolveCreate!("proj123" as Id<"projects">);
+    resolveCreate?.("proj123" as Id<"projects">);
     await waitFor(() => {
       expect(mockSetShowWelcome).toHaveBeenCalledWith(false);
     });
@@ -184,7 +184,7 @@ describe("WelcomeModal", () => {
     expect(mockSkipOnboarding).toHaveBeenCalled();
   });
 
-  it("should call skipOnboarding when closing modal", async () => {
+  it("should call skipOnboarding when closing modal", () => {
     render(<WelcomeModal />);
 
     // Modal component should call onClose when user closes it
@@ -279,7 +279,7 @@ describe("WelcomeModal", () => {
     });
 
     // Resolve the promise
-    resolveCreate!("proj123" as Id<"projects">);
+    resolveCreate?.("proj123" as Id<"projects">);
 
     await waitFor(() => {
       expect(mockSetShowWelcome).toHaveBeenCalledWith(false);
@@ -287,7 +287,7 @@ describe("WelcomeModal", () => {
   });
 
   it("should render header with correct text size", () => {
-    const { container } = render(<WelcomeModal />);
+    render(<WelcomeModal />);
 
     const heading = screen.getByText("Welcome to Cascade!");
     expect(heading.tagName).toBe("H1");

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useMutation } from "convex/react";
+import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 
 interface WelcomeTourProps {
@@ -31,6 +31,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
           setDriver(() => driver);
         }
       } catch (error) {
+        // biome-ignore lint/suspicious/noConsole: Intentional error logging for driver.js load failures
         console.warn("Failed to load driver.js:", error);
       }
     };

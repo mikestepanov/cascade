@@ -8,11 +8,11 @@
  */
 
 import { openai } from "@ai-sdk/openai";
-import { generateText, streamText } from "ai";
+import { generateText } from "ai";
 import { v } from "convex/values";
-import { action, internalAction, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
+import { action, internalAction, internalMutation } from "./_generated/server";
 import { rateLimit } from "./rateLimits";
 
 /**
@@ -22,7 +22,7 @@ export const generateEmbedding = internalAction({
   args: {
     text: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     // Use OpenAI's text-embedding-3-small model (1536 dimensions)
     const model = openai.embedding("text-embedding-3-small");
 

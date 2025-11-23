@@ -1,9 +1,9 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig } from "vite";
 import viteCompression from "vite-plugin-compression";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -151,10 +151,7 @@ window.addEventListener('message', async (message) => {
           }
 
           // Convex (backend)
-          if (
-            id.includes("node_modules/convex/") ||
-            id.includes("node_modules/@convex-dev/")
-          ) {
+          if (id.includes("node_modules/convex/") || id.includes("node_modules/@convex-dev/")) {
             return "convex";
           }
 
@@ -184,10 +181,7 @@ window.addEventListener('message', async (message) => {
           }
 
           // Markdown rendering
-          if (
-            id.includes("node_modules/react-markdown/") ||
-            id.includes("node_modules/remark-")
-          ) {
+          if (id.includes("node_modules/react-markdown/") || id.includes("node_modules/remark-")) {
             return "markdown";
           }
 
@@ -207,14 +201,7 @@ window.addEventListener('message', async (message) => {
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "convex/react",
-      "sonner",
-      "clsx",
-      "tailwind-merge",
-    ],
+    include: ["react", "react-dom", "convex/react", "sonner", "clsx", "tailwind-merge"],
     exclude: [
       // Lazy load these
       "@blocknote/core",

@@ -93,9 +93,7 @@ describe("MyIssuesList", () => {
   });
 
   it("should render empty state when no created issues", () => {
-    render(
-      <MyIssuesList {...defaultProps} issueFilter="created" displayIssues={[]} />,
-    );
+    render(<MyIssuesList {...defaultProps} issueFilter="created" displayIssues={[]} />);
 
     expect(screen.getByText("No issues found")).toBeInTheDocument();
     expect(
@@ -133,7 +131,9 @@ describe("MyIssuesList", () => {
     const onFilterChange = vi.fn();
     const user = userEvent.setup();
 
-    render(<MyIssuesList {...defaultProps} onFilterChange={onFilterChange} issueFilter="created" />);
+    render(
+      <MyIssuesList {...defaultProps} onFilterChange={onFilterChange} issueFilter="created" />,
+    );
 
     const assignedTab = screen.getByLabelText("Show assigned issues");
     await user.click(assignedTab);
@@ -204,7 +204,13 @@ describe("MyIssuesList", () => {
     const onNavigateToProjects = vi.fn();
     const user = userEvent.setup();
 
-    render(<MyIssuesList {...defaultProps} displayIssues={[]} onNavigateToProjects={onNavigateToProjects} />);
+    render(
+      <MyIssuesList
+        {...defaultProps}
+        displayIssues={[]}
+        onNavigateToProjects={onNavigateToProjects}
+      />,
+    );
 
     const button = screen.getByText("View My Projects");
     await user.click(button);
@@ -213,13 +219,7 @@ describe("MyIssuesList", () => {
   });
 
   it("should not render View My Projects button when onNavigateToProjects is not provided", () => {
-    render(
-      <MyIssuesList
-        {...defaultProps}
-        displayIssues={[]}
-        onNavigateToProjects={undefined}
-      />,
-    );
+    render(<MyIssuesList {...defaultProps} displayIssues={[]} onNavigateToProjects={undefined} />);
 
     expect(screen.queryByText("View My Projects")).not.toBeInTheDocument();
   });
@@ -227,9 +227,9 @@ describe("MyIssuesList", () => {
   it("should render multiple issues with staggered animation", () => {
     render(<MyIssuesList {...defaultProps} />);
 
-    const issueButtons = screen.getAllByRole("button").filter((btn) =>
-      btn.textContent?.includes("PROJ-")
-    );
+    const issueButtons = screen
+      .getAllByRole("button")
+      .filter((btn) => btn.textContent?.includes("PROJ-"));
 
     expect(issueButtons).toHaveLength(2);
 
@@ -250,12 +250,7 @@ describe("MyIssuesList", () => {
 
   it("should handle zero issues gracefully", () => {
     render(
-      <MyIssuesList
-        {...defaultProps}
-        myIssues={[]}
-        myCreatedIssues={[]}
-        displayIssues={[]}
-      />,
+      <MyIssuesList {...defaultProps} myIssues={[]} myCreatedIssues={[]} displayIssues={[]} />,
     );
 
     expect(screen.getByText("Assigned (0)")).toBeInTheDocument();

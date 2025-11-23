@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Check, Clock, LinkIcon, MapPin, Trash2 } from "@/lib/icons";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
+import { Calendar, Check, Clock, LinkIcon, MapPin, Trash2 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";

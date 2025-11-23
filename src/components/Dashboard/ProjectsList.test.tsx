@@ -88,9 +88,7 @@ describe("ProjectsList", () => {
   });
 
   it("should not render Go to Projects button when onNavigateToProjects is not provided", () => {
-    render(
-      <ProjectsList {...defaultProps} projects={[]} onNavigateToProjects={undefined} />,
-    );
+    render(<ProjectsList {...defaultProps} projects={[]} onNavigateToProjects={undefined} />);
 
     expect(screen.queryByText("Go to Projects")).not.toBeInTheDocument();
   });
@@ -139,9 +137,9 @@ describe("ProjectsList", () => {
   it("should render projects with staggered animation", () => {
     render(<ProjectsList {...defaultProps} />);
 
-    const projectButtons = screen.getAllByRole("button").filter((btn) =>
-      btn.textContent?.includes("Project")
-    );
+    const projectButtons = screen
+      .getAllByRole("button")
+      .filter((btn) => btn.textContent?.includes("Project"));
 
     expect(projectButtons).toHaveLength(3);
 
@@ -154,9 +152,9 @@ describe("ProjectsList", () => {
   it("should apply navigation props to project items", () => {
     render(<ProjectsList {...defaultProps} />);
 
-    const projectButtons = screen.getAllByRole("button").filter((btn) =>
-      btn.textContent?.includes("Project")
-    );
+    const projectButtons = screen
+      .getAllByRole("button")
+      .filter((btn) => btn.textContent?.includes("Project"));
 
     // First item should have tabIndex 0 (focused)
     expect(projectButtons[0]).toHaveAttribute("tabindex", "0");
@@ -169,9 +167,9 @@ describe("ProjectsList", () => {
   it("should have correct button types", () => {
     render(<ProjectsList {...defaultProps} />);
 
-    const projectButtons = screen.getAllByRole("button").filter((btn) =>
-      btn.textContent?.includes("Project")
-    );
+    const projectButtons = screen
+      .getAllByRole("button")
+      .filter((btn) => btn.textContent?.includes("Project"));
 
     for (const button of projectButtons) {
       expect(button).toHaveAttribute("type", "button");

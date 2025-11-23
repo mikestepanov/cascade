@@ -1,13 +1,14 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
-import { canAccessProject } from "./rbac";
 import {
+  issueCountByAssignee,
+  issueCountByPriority,
   issueCountByStatus,
   issueCountByType,
-  issueCountByPriority,
-  issueCountByAssignee,
 } from "./aggregates";
+import { canAccessProject } from "./rbac";
 
 /**
  * Get project analytics overview
@@ -77,7 +78,7 @@ export const getProjectAnalytics = query({
       Object.entries(assigneeCounts)
         .filter(([assigneeId]) => assigneeId !== "unassigned")
         .map(async ([assigneeId, count]) => {
-          const user = await ctx.db.get(assigneeId as any);
+          const user = await ctx.db.get(assigneeId as Id<"users">);
           issuesByAssignee[assigneeId] = {
             count,
             name: user?.name || user?.email || "Unknown",

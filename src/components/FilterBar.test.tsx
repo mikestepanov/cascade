@@ -18,7 +18,7 @@ vi.mock("sonner", () => ({
   },
 }));
 
-import { useQuery, useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 
 const mockUseQuery = useQuery as ReturnType<typeof vi.fn>;

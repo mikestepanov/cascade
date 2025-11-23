@@ -13,51 +13,51 @@ import { components } from "./_generated/api";
  * Usage: issueCountByStatus.lookup(ctx, { projectId })
  * Returns: { "status-id-1": 10, "status-id-2": 5, ... }
  */
-export const issueCountByStatus = new Aggregate<
-  { projectId: string; status: string },
-  number
->(components.aggregate, {
-  name: "issueCountByStatus",
-  groupBy: (doc) => ({
-    projectId: doc.projectId,
-    status: doc.status,
-  }),
-  sum: () => 1, // Count each issue as 1
-});
+export const issueCountByStatus = new Aggregate<{ projectId: string; status: string }, number>(
+  components.aggregate,
+  {
+    name: "issueCountByStatus",
+    groupBy: (doc) => ({
+      projectId: doc.projectId,
+      status: doc.status,
+    }),
+    sum: () => 1, // Count each issue as 1
+  },
+);
 
 /**
  * Issue count by type and project
  * Usage: issueCountByType.lookup(ctx, { projectId })
  * Returns: { task: 10, bug: 5, story: 3, epic: 2 }
  */
-export const issueCountByType = new Aggregate<
-  { projectId: string; type: string },
-  number
->(components.aggregate, {
-  name: "issueCountByType",
-  groupBy: (doc) => ({
-    projectId: doc.projectId,
-    type: doc.type,
-  }),
-  sum: () => 1,
-});
+export const issueCountByType = new Aggregate<{ projectId: string; type: string }, number>(
+  components.aggregate,
+  {
+    name: "issueCountByType",
+    groupBy: (doc) => ({
+      projectId: doc.projectId,
+      type: doc.type,
+    }),
+    sum: () => 1,
+  },
+);
 
 /**
  * Issue count by priority and project
  * Usage: issueCountByPriority.lookup(ctx, { projectId })
  * Returns: { lowest: 2, low: 5, medium: 10, high: 8, highest: 3 }
  */
-export const issueCountByPriority = new Aggregate<
-  { projectId: string; priority: string },
-  number
->(components.aggregate, {
-  name: "issueCountByPriority",
-  groupBy: (doc) => ({
-    projectId: doc.projectId,
-    priority: doc.priority,
-  }),
-  sum: () => 1,
-});
+export const issueCountByPriority = new Aggregate<{ projectId: string; priority: string }, number>(
+  components.aggregate,
+  {
+    name: "issueCountByPriority",
+    groupBy: (doc) => ({
+      projectId: doc.projectId,
+      priority: doc.priority,
+    }),
+    sum: () => 1,
+  },
+);
 
 /**
  * Issue count by assignee and project
@@ -81,30 +81,27 @@ export const issueCountByAssignee = new Aggregate<
  * Usage: sprintVelocity.lookup(ctx, { sprintId })
  * Returns: Object with points by status
  */
-export const sprintVelocity = new Aggregate<
-  { sprintId: string; isDone: boolean },
-  number
->(components.aggregate, {
-  name: "sprintVelocity",
-  groupBy: (doc) => ({
-    sprintId: doc.sprintId || "backlog",
-    isDone: doc.status === "done", // Simplified - will be enhanced
-  }),
-  sum: (doc) => {
-    // Sum story points or estimated hours
-    return doc.storyPoints || doc.estimatedHours || 0;
+export const sprintVelocity = new Aggregate<{ sprintId: string; isDone: boolean }, number>(
+  components.aggregate,
+  {
+    name: "sprintVelocity",
+    groupBy: (doc) => ({
+      sprintId: doc.sprintId || "backlog",
+      isDone: doc.status === "done", // Simplified - will be enhanced
+    }),
+    sum: (doc) => {
+      // Sum story points or estimated hours
+      return doc.storyPoints || doc.estimatedHours || 0;
+    },
   },
-});
+);
 
 /**
  * Total story points by sprint
  * Usage: totalSprintPoints.lookup(ctx, { sprintId })
  * Returns: Total points in sprint
  */
-export const totalSprintPoints = new Aggregate<
-  { sprintId: string },
-  number
->(components.aggregate, {
+export const totalSprintPoints = new Aggregate<{ sprintId: string }, number>(components.aggregate, {
   name: "totalSprintPoints",
   groupBy: (doc) => ({
     sprintId: doc.sprintId || "backlog",

@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import type { PostHogProvider as PostHogProviderType } from "posthog-js/react";
+import { type ReactNode, useEffect, useState } from "react";
 
 interface LazyPostHogProps {
   apiKey: string;
@@ -14,7 +15,7 @@ interface LazyPostHogProps {
  * whichever comes first.
  */
 export function LazyPostHog({ apiKey, options, children }: LazyPostHogProps) {
-  const [PostHogProvider, setPostHogProvider] = useState<any>(null);
+  const [PostHogProvider, setPostHogProvider] = useState<typeof PostHogProviderType | null>(null);
 
   useEffect(() => {
     if (!apiKey) {
@@ -30,10 +31,12 @@ export function LazyPostHog({ apiKey, options, children }: LazyPostHogProps) {
 
       try {
         const { PostHogProvider: Provider } = await import("posthog-js/react");
+        // Re-check mounted after async import completes (component may have unmounted)
         if (mounted) {
           setPostHogProvider(() => Provider);
         }
       } catch (error) {
+        // biome-ignore lint/suspicious/noConsole: Intentional error logging for PostHog load failures
         console.warn("Failed to load PostHog:", error);
       }
     };

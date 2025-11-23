@@ -6,23 +6,23 @@
 
 import { Aggregate } from "@convex-dev/aggregate";
 import { v } from "convex/values";
-import { query } from "./_generated/server";
 import { components } from "./_generated/api";
+import { query } from "./_generated/server";
 
 // Define aggregates
-const issueCountByStatus = new Aggregate<
-  { projectId: string; status: string },
-  number
->(components.aggregate, {
-  name: "issueCountByStatus",
-  // Group by project and status
-  groupBy: (doc) => ({
-    projectId: doc.projectId,
-    status: doc.status,
-  }),
-  // Sum operation (count issues)
-  sum: () => 1,
-});
+const issueCountByStatus = new Aggregate<{ projectId: string; status: string }, number>(
+  components.aggregate,
+  {
+    name: "issueCountByStatus",
+    // Group by project and status
+    groupBy: (doc) => ({
+      projectId: doc.projectId,
+      status: doc.status,
+    }),
+    // Sum operation (count issues)
+    sum: () => 1,
+  },
+);
 
 /**
  * Get issue counts by status - FAST!
@@ -64,10 +64,7 @@ export const getTotalIssues = query({
 /**
  * Sprint velocity (story points completed)
  */
-const sprintVelocity = new Aggregate<
-  { sprintId: string },
-  number
->(components.aggregate, {
+const sprintVelocity = new Aggregate<{ sprintId: string }, number>(components.aggregate, {
   name: "sprintVelocity",
   groupBy: (doc) => ({
     sprintId: doc.sprintId || "backlog",

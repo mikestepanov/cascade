@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { LoadingSpinner } from "../ui/LoadingSpinner";

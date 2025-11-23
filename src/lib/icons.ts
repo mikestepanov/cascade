@@ -13,41 +13,34 @@
 
 // Calendar & Time
 export { default as Calendar } from "lucide-react/dist/esm/icons/calendar";
-export { default as Clock } from "lucide-react/dist/esm/icons/clock";
+// Actions
+export { default as Check } from "lucide-react/dist/esm/icons/check";
 
 // Navigation & Arrows
 export { default as ChevronDown } from "lucide-react/dist/esm/icons/chevron-down";
 export { default as ChevronLeft } from "lucide-react/dist/esm/icons/chevron-left";
 export { default as ChevronRight } from "lucide-react/dist/esm/icons/chevron-right";
 export { default as ChevronUp } from "lucide-react/dist/esm/icons/chevron-up";
-
-// Actions
-export { default as Check } from "lucide-react/dist/esm/icons/check";
+export { default as Clock } from "lucide-react/dist/esm/icons/clock";
 export { default as Copy } from "lucide-react/dist/esm/icons/copy";
+// Business
+export { default as DollarSign } from "lucide-react/dist/esm/icons/dollar-sign";
 export { default as Download } from "lucide-react/dist/esm/icons/download";
+// Integration & Services
+export { default as Github } from "lucide-react/dist/esm/icons/github";
+// History & Versioning
+export { default as History } from "lucide-react/dist/esm/icons/history";
+export { default as Key } from "lucide-react/dist/esm/icons/key";
+// Links & Connection
+export { default as Link, default as LinkIcon } from "lucide-react/dist/esm/icons/link";
+// Location & Analytics
+export { default as MapPin } from "lucide-react/dist/esm/icons/map-pin";
 export { default as Plus } from "lucide-react/dist/esm/icons/plus";
 export { default as RefreshCw } from "lucide-react/dist/esm/icons/refresh-cw";
 export { default as RotateCcw } from "lucide-react/dist/esm/icons/rotate-ccw";
 export { default as Trash2 } from "lucide-react/dist/esm/icons/trash-2";
-export { default as X } from "lucide-react/dist/esm/icons/x";
-
-// Links & Connection
-export { default as Link } from "lucide-react/dist/esm/icons/link";
-export { default as LinkIcon } from "lucide-react/dist/esm/icons/link"; // Alias for Link
-
-// Location & Analytics
-export { default as MapPin } from "lucide-react/dist/esm/icons/map-pin";
 export { default as TrendingUp } from "lucide-react/dist/esm/icons/trending-up";
-
-// History & Versioning
-export { default as History } from "lucide-react/dist/esm/icons/history";
-
-// Integration & Services
-export { default as Github } from "lucide-react/dist/esm/icons/github";
+export { default as Users } from "lucide-react/dist/esm/icons/users";
 export { default as Wifi } from "lucide-react/dist/esm/icons/wifi";
 export { default as WifiOff } from "lucide-react/dist/esm/icons/wifi-off";
-
-// Business
-export { default as DollarSign } from "lucide-react/dist/esm/icons/dollar-sign";
-export { default as Key } from "lucide-react/dist/esm/icons/key";
-export { default as Users } from "lucide-react/dist/esm/icons/users";
+export { default as X } from "lucide-react/dist/esm/icons/x";

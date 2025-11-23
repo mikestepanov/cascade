@@ -1,5 +1,5 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
@@ -9,7 +9,10 @@ import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
 
 // Lazy load heavy BlockNote editor (~400-500 KB)
-const DocumentEditor = lazy(() => import("./components/DocumentEditor").then(m => ({ default: m.DocumentEditor })));
+const DocumentEditor = lazy(() =>
+  import("./components/DocumentEditor").then((m) => ({ default: m.DocumentEditor })),
+);
+
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";

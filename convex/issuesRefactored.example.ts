@@ -21,10 +21,13 @@ async function validateParentIssue(
   epicId: Id<"issues"> | undefined,
 ) {
   if (!parentId) {
-    if (issueType === "epic" && parentId) {
-      throw new Error("Epics cannot be sub-tasks");
-    }
+    // No parent - this is a top-level issue
     return epicId;
+  }
+
+  // Epics cannot have a parent (cannot be sub-tasks)
+  if (issueType === "epic") {
+    throw new Error("Epics cannot be sub-tasks");
   }
 
   const parentIssue = await ctx.db.get(parentId);

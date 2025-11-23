@@ -5,8 +5,8 @@
  */
 
 import { v } from "convex/values";
-import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { action } from "../_generated/server";
 import { rateLimit } from "../rateLimits";
 
 /**
@@ -74,7 +74,7 @@ export const getRelatedIssues = action({
       issueId: args.issueId,
     });
 
-    if (!issue || !issue.embedding) {
+    if (!issue?.embedding) {
       return [];
     }
 

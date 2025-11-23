@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
-import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";

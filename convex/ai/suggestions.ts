@@ -5,13 +5,12 @@
  */
 
 import { openai } from "@ai-sdk/openai";
+import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { action, mutation, query } from "../_generated/server";
-import { internal } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { ActionCache } from "@convex-dev/action-cache";
-import { components } from "../_generated/api";
+import { action, mutation, query } from "../_generated/server";
 import { rateLimit } from "../rateLimits";
 
 /**
