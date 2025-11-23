@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -103,20 +104,22 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
     <div className="space-y-6">
       {/* Add Time Entry Button */}
       <div className="flex justify-end">
-        <button
-          type="button"
+        <Button
           onClick={() => setShowManualEntryModal(true)}
-          className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium flex items-center gap-2"
+          variant="primary"
+          size="sm"
+          leftIcon={
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          }
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path
-              fillRule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clipRule="evenodd"
-            />
-          </svg>
           Add Time Entry
-        </button>
+        </Button>
       </div>
 
       {Object.entries(groupedEntries).map(([date, dateEntries]) => {
@@ -234,10 +237,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   {/* Actions */}
                   {!(entry.isLocked || entry.billed) && (
                     <div className="flex-shrink-0">
-                      <button
-                        type="button"
+                      <Button
                         onClick={() => handleDelete(entry._id)}
-                        className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error"
                         aria-label="Delete entry"
                       >
                         <svg
@@ -252,7 +256,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                             clipRule="evenodd"
                           />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>

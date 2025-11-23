@@ -4,6 +4,7 @@ import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
+import { Button } from "../ui/Button";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -69,35 +70,38 @@ export function TimerWidget() {
         </div>
 
         {/* Stop button */}
-        <button
-          type="button"
+        <Button
           onClick={handleStop}
-          className="px-2 py-1 text-xs font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800 rounded transition-colors"
-          title="Stop timer"
+          variant="ghost"
+          size="sm"
+          className="text-xs text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800"
+          aria-label="Stop timer"
         >
           Stop
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <>
-      <button
-        type="button"
+      <Button
         onClick={() => setShowStartModal(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-        title="Start timer"
+        variant="secondary"
+        size="sm"
+        leftIcon={
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clipRule="evenodd"
+            />
+          </svg>
+        }
+        aria-label="Start timer"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-            clipRule="evenodd"
-          />
-        </svg>
         <span className="hidden sm:inline">Start Timer</span>
-      </button>
+      </Button>
 
       {showStartModal && <StartTimerModal onClose={() => setShowStartModal(false)} />}
     </>
@@ -175,20 +179,12 @@ function StartTimerModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary">
             Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleStart}
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors"
-          >
+          </Button>
+          <Button onClick={handleStart} variant="primary">
             Start Timer
-          </button>
+          </Button>
         </div>
       </div>
     </>

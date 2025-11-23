@@ -5,6 +5,7 @@ import { formatDateForInput } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -313,13 +314,9 @@ export function ManualTimeEntryModal({
                 placeholder="Add tag..."
                 className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               />
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className="px-3 py-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
-              >
+              <Button onClick={handleAddTag} variant="secondary" size="sm">
                 Add
-              </button>
+              </Button>
             </div>
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
@@ -329,13 +326,15 @@ export function ManualTimeEntryModal({
                     className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
                   >
                     {tag}
-                    <button
-                      type="button"
+                    <Button
                       onClick={() => handleRemoveTag(tag)}
-                      className="hover:text-brand-900 dark:hover:text-brand-100"
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
+                      aria-label={`Remove tag ${tag}`}
                     >
                       ×
-                    </button>
+                    </Button>
                   </span>
                 ))}
               </div>
@@ -362,21 +361,12 @@ export function ManualTimeEntryModal({
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary">
             Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={duration <= 0}
-            className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          </Button>
+          <Button onClick={handleSubmit} variant="primary" disabled={duration <= 0}>
             Create Entry
-          </button>
+          </Button>
         </div>
       </div>
     </>
