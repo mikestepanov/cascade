@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
 import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
@@ -57,13 +58,14 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         </h2>
 
         {/* Create Project Button */}
-        <button
-          type="button"
+        <Button
           onClick={() => setShowCreateForm(true)}
-          className="w-full px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm font-medium hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors"
+          variant="primary"
+          size="sm"
+          className="w-full"
         >
           + New Project
-        </button>
+        </Button>
       </div>
 
       {/* Create Project Form */}
@@ -102,14 +104,14 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
               <option value="scrum">Scrum Board</option>
             </Select>
             <div className="flex space-x-2">
-              <button
-                type="submit"
-                className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm hover:bg-brand-700 dark:hover:bg-brand-600"
-              >
+              <Button type="submit" variant="primary" size="sm" className="flex-1">
                 Create
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
                 onClick={() => {
                   setShowCreateForm(false);
                   setNewProjectName("");
@@ -118,10 +120,9 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                   setNewProjectIsPublic(false);
                   setNewProjectBoardType("kanban");
                 }}
-                className="flex-1 px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
         </div>

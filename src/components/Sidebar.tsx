@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { DocumentTemplatesManager } from "./DocumentTemplatesManager";
 import { Badge } from "./ui/Badge";
+import { Button } from "./ui/Button";
 import { EmptyState } from "./ui/EmptyState";
 import { Checkbox, Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
@@ -114,26 +115,27 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
 
         {/* Create Document Buttons */}
         <div className="flex gap-2">
-          <button
-            type="button"
+          <Button
             onClick={() => {
               setSelectedTemplateId(null);
               setShowCreateForm(true);
             }}
-            className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm font-medium hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors"
+            variant="primary"
+            size="sm"
+            className="flex-1"
             aria-label="Create new document"
           >
             + New
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={() => setShowTemplateModal(true)}
-            className="px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm font-medium hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+            variant="secondary"
+            size="sm"
             aria-label="Create from template"
             title="Create from template"
           >
             📄
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -165,24 +167,23 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
               onChange={(e) => setNewDocIsPublic(e.target.checked)}
             />
             <div className="flex space-x-2">
-              <button
-                type="submit"
-                className="flex-1 px-3 py-2 bg-brand-600 dark:bg-brand-500 text-white rounded-md text-sm hover:bg-brand-700 dark:hover:bg-brand-600"
-              >
+              <Button type="submit" variant="primary" size="sm" className="flex-1">
                 Create
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
                 onClick={() => {
                   setShowCreateForm(false);
                   setNewDocTitle("");
                   setNewDocIsPublic(false);
                   setSelectedTemplateId(null);
                 }}
-                className="flex-1 px-3 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-md text-sm hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </form>
         </div>
