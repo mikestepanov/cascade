@@ -1,0 +1,159 @@
+/**
+ * Example: Assignee Search Dropdown with Fuzzy Matching
+ *
+ * Shows how to integrate useFuzzySearch with Convex queries
+ * for a real-world use case.
+ */
+
+import { useQuery } from "convex/react";
+import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
+import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
+
+interface AssigneeSearchDropdownProps {
+  /**
+   * Project ID to get members from
+   */
+  projectId: Id<"projects">;
+
+  /**
+   * Currently selected assignee (optional)
+   */
+  value?: Id<"users"> | null;
+
+  /**
+   * Called when assignee is selected
+   */
+  onChange: (assigneeId: Id<"users"> | null) => void;
+
+  /**
+   * Placeholder text
+   */
+  placeholder?: string;
+
+  /**
+   * CSS classes
+   */
+  className?: string;
+}
+
+export function AssigneeSearchDropdown({
+  projectId,
+  value,
+  onChange,
+  placeholder = "Search assignee...",
+  className = "",
+}: AssigneeSearchDropdownProps) {
+  // Step 1: Load members from Convex (permission-filtered)
+  const members = useQuery(api.projects.getMembers, { projectId });
+
+  // Step 2: Apply fuzzy search on loaded data
+  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);
+
+  // Get selected user details
+  const selectedUser = members?.find((m) => m._id === value);
+
+  if (!members) {
+    return <div className="text-sm text-gray-500">Loading members...</div>;
+  }
+
+  return (
+    <div className={className}>
+      {/* Show selected user */}
+      {selectedUser && !query && (
+        <div className="flex items-center justify-between p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">
+              {selectedUser.name?.charAt(0).toUpperCase() || "?"}
+            </div>
+            <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            className="text-gray-500 hover:text-red-500"
+            aria-label="Clear assignee"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <title>Clear</title>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Fuzzy search input */}
+      <FuzzySearchInput
+        results={results}
+        query={query}
+        onSearch={search}
+        onSelect={(user) => {
+          onChange(user._id);
+          clear();
+        }}
+        onClear={() => onChange(null)}
+        getKey={(user) => user._id}
+        placeholder={placeholder}
+        showScore={false}
+        isLoading={isDebouncing}
+        aria-label="Search for assignee"
+        renderItem={({ item: user, matches }) => {
+          // Find the match for highlighting
+          const nameMatch = matches?.find((m) => m.key === "name");
+
+          return (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
+                {user.name?.charAt(0).toUpperCase() || "?"}
+              </div>
+              <div>
+                <div className="text-sm font-medium">
+                  {nameMatch ? (
+                    <HighlightedText text={user.name || "Unknown"} matches={nameMatch.indices} />
+                  ) : (
+                    user.name || "Unknown"
+                  )}
+                </div>
+                {user.email && (
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
+                )}
+              </div>
+            </div>
+          );
+        }}
+      />
+
+      {/* Helper text */}
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        Search by name or email • Supports typos
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Usage Example:
+ *
+ * ```tsx
+ * function CreateIssueModal({ projectId }) {
+ *   const [assigneeId, setAssigneeId] = useState<Id<"users"> | null>(null);
+ *
+ *   return (
+ *     <div>
+ *       <label>Assignee</label>
+ *       <AssigneeSearchDropdown
+ *         projectId={projectId}
+ *         value={assigneeId}
+ *         onChange={setAssigneeId}
+ *       />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
