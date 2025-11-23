@@ -13,6 +13,7 @@ import { v } from "convex/values";
 import { action, internalAction, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
+import { rateLimit } from "./rateLimits";
 
 /**
  * Generate embedding for text using OpenAI
@@ -119,6 +120,13 @@ export const chat = action({
     if (!userId) {
       throw new Error("Not authenticated");
     }
+
+    // Rate limit: 10 messages per minute per user
+    await rateLimit(ctx, {
+      name: "aiChat",
+      key: userId.subject,
+      throws: true,
+    });
 
     // Create or get chat
     let chatId = args.chatId;

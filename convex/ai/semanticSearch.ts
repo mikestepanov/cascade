@@ -7,6 +7,7 @@
 import { v } from "convex/values";
 import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { rateLimit } from "../rateLimits";
 
 /**
  * Search for similar issues using semantic search
@@ -18,6 +19,18 @@ export const searchSimilarIssues = action({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await ctx.auth.getUserIdentity();
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    // Rate limit: 30 searches per minute per user
+    await rateLimit(ctx, {
+      name: "semanticSearch",
+      key: userId.subject,
+      throws: true,
+    });
+
     // Generate embedding for search query
     const queryEmbedding = await ctx.runAction(internal.ai.generateEmbedding, {
       text: args.query,

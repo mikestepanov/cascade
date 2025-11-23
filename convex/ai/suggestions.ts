@@ -10,6 +10,43 @@ import { v } from "convex/values";
 import { action, mutation, query } from "../_generated/server";
 import { internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
+import { ActionCache } from "@convex-dev/action-cache";
+import { components } from "../_generated/api";
+import { rateLimit } from "../rateLimits";
+
+/**
+ * Action cache for AI suggestions
+ * Caches expensive AI calls to save money and improve speed
+ */
+const descriptionCache = new ActionCache(components.actionCache, {
+  action: async (prompt: string) => {
+    const response = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt,
+    });
+    return response.text;
+  },
+});
+
+const priorityCache = new ActionCache(components.actionCache, {
+  action: async (prompt: string) => {
+    const response = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt,
+    });
+    return response.text;
+  },
+});
+
+const labelsCache = new ActionCache(components.actionCache, {
+  action: async (prompt: string) => {
+    const response = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt,
+    });
+    return response.text;
+  },
+});
 
 /**
  * Generate AI suggestion for issue description
@@ -25,6 +62,13 @@ export const suggestIssueDescription = action({
     if (!userId) {
       throw new Error("Not authenticated");
     }
+
+    // Rate limit: 20 suggestions per hour per user
+    await rateLimit(ctx, {
+      name: "aiSuggestion",
+      key: userId.subject,
+      throws: true,
+    });
 
     // Get project context
     const project = await ctx.runQuery(internal.ai.getProjectContext, {
@@ -46,9 +90,12 @@ Requirements:
 
 Description:`;
 
-    const response = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
+    // Use cache with 1 hour TTL - same title + type = cached result
+    const cacheKey = `desc:${args.type}:${args.title}`;
+    const suggestion = await descriptionCache.fetch(ctx, {
+      key: cacheKey,
+      action: prompt,
+      ttl: 3600000, // 1 hour
     });
 
     // Store suggestion
@@ -57,11 +104,11 @@ Description:`;
       projectId: args.projectId,
       suggestionType: "issue_description",
       targetId: args.title,
-      suggestion: response.text,
+      suggestion,
       modelUsed: "gpt-4o-mini",
     });
 
-    return response.text;
+    return suggestion;
   },
 });
 
@@ -81,6 +128,13 @@ export const suggestPriority = action({
       throw new Error("Not authenticated");
     }
 
+    // Rate limit: 20 suggestions per hour per user
+    await rateLimit(ctx, {
+      name: "aiSuggestion",
+      key: userId.subject,
+      throws: true,
+    });
+
     const prompt = `Analyze this issue and suggest a priority (highest, high, medium, low, lowest):
 
 Type: ${args.type}
@@ -97,12 +151,15 @@ Respond with ONLY ONE of these words: highest, high, medium, low, lowest
 
 Priority:`;
 
-    const response = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
+    // Use cache with 1 hour TTL
+    const cacheKey = `priority:${args.type}:${args.title}:${args.description || ""}`;
+    const response = await priorityCache.fetch(ctx, {
+      key: cacheKey,
+      action: prompt,
+      ttl: 3600000, // 1 hour
     });
 
-    const priority = response.text.trim().toLowerCase();
+    const priority = response.trim().toLowerCase();
 
     // Validate priority
     const validPriorities = ["highest", "high", "medium", "low", "lowest"];
@@ -138,6 +195,13 @@ export const suggestLabels = action({
       throw new Error("Not authenticated");
     }
 
+    // Rate limit: 20 suggestions per hour per user
+    await rateLimit(ctx, {
+      name: "aiSuggestion",
+      key: userId.subject,
+      throws: true,
+    });
+
     // Get existing project labels
     const existingLabels = await ctx.runQuery(internal.ai.getProjectLabels, {
       projectId: args.projectId,
@@ -161,12 +225,15 @@ Respond with a comma-separated list of labels only.
 
 Labels:`;
 
-    const response = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
+    // Use cache with 1 hour TTL
+    const cacheKey = `labels:${args.type}:${args.title}:${args.description || ""}`;
+    const response = await labelsCache.fetch(ctx, {
+      key: cacheKey,
+      action: prompt,
+      ttl: 3600000, // 1 hour
     });
 
-    const suggestedLabels = response.text
+    const suggestedLabels = response
       .split(",")
       .map((label) => label.trim().toLowerCase())
       .filter((label) => label.length > 0)
