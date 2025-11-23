@@ -1,7 +1,9 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -26,19 +28,19 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
   const handleNext = () => {
     if (step === 1) {
       if (!projectName.trim()) {
-        toast.error("Project name is required");
+        showError("Project name is required");
         return;
       }
       if (!projectKey.trim()) {
-        toast.error("Project key is required");
+        showError("Project key is required");
         return;
       }
       if (projectKey.length < 2 || projectKey.length > 10) {
-        toast.error("Project key must be 2-10 characters");
+        showError("Project key must be 2-10 characters");
         return;
       }
       if (!/^[A-Z]+$/.test(projectKey)) {
-        toast.error("Project key must be uppercase letters only");
+        showError("Project key must be uppercase letters only");
         return;
       }
     }
@@ -67,11 +69,11 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
       });
 
       // Confetti effect (optional - would need react-confetti package)
-      toast.success("🎉 Project created successfully!");
+      showSuccess("🎉 Project created successfully!");
 
       onComplete(projectId);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create project");
+      showError(error, "Failed to create project");
     }
   };
 
@@ -84,8 +86,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Modal isOpen={true} onClose={onCancel} maxWidth="2xl">
+      <div className="space-y-6">
         {/* Progress indicator */}
         <div className="mb-6">
           <div className="flex justify-between mb-2">
@@ -283,8 +285,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               ))}
             </div>
 
-            <button
-              type="button"
+            <Button
               onClick={() => {
                 const newId = `custom-${workflowStates.length}`;
                 setWorkflowStates([
@@ -297,10 +298,12 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                   },
                 ]);
               }}
-              className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:underline"
+              variant="ghost"
+              size="sm"
+              className="text-brand-600 dark:text-brand-400"
             >
               + Add another status
-            </button>
+            </Button>
           </div>
         )}
 
@@ -364,46 +367,30 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="flex justify-between pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <div>
             {step > 1 && (
-              <button
-                type="button"
-                onClick={handlePrevious}
-                className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-md"
-              >
+              <Button onClick={handlePrevious} variant="secondary">
                 Previous
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-md"
-            >
+            <Button onClick={onCancel} variant="secondary">
               Cancel
-            </button>
+            </Button>
             {step < 4 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
-              >
+              <Button onClick={handleNext} variant="primary">
                 Next
-              </button>
+              </Button>
             ) : (
-              <button
-                type="button"
-                onClick={handleFinish}
-                className="px-6 py-2 bg-status-success text-white rounded-md hover:bg-status-success/90 font-medium"
-              >
+              <Button onClick={handleFinish} variant="primary" className="font-medium">
                 Create Project 🚀
-              </button>
+              </Button>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
