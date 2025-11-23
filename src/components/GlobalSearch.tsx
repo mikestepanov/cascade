@@ -4,6 +4,7 @@ import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { EmptyState } from "./ui/EmptyState";
 import { Input } from "./ui/form/Input";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
