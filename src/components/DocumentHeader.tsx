@@ -1,4 +1,4 @@
-import { History } from "lucide-react";
+import { History } from "@/lib/icons";
 import { useState } from "react";
 import type { Doc } from "../../convex/_generated/dataModel";
 import { PresenceIndicator } from "./PresenceIndicator";

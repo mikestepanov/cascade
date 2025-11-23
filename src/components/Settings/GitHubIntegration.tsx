@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Github } from "lucide-react";
+import { Github } from "@/lib/icons";
 import { useState } from "react";
 import { toast } from "sonner";
 import { showError, showSuccess } from "@/lib/toast";

@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { Clock, DollarSign, Download, TrendingUp, Users } from "lucide-react";
+import { Clock, DollarSign, Download, TrendingUp, Users } from "@/lib/icons";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";

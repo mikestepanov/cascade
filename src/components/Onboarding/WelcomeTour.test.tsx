@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock driver.js
@@ -22,6 +22,9 @@ vi.mock("driver.js", () => ({
     };
   }),
 }));
+
+// Mock driver.js CSS import
+vi.mock("driver.js/dist/driver.css", () => ({}));
 
 // Mock Convex
 const mockUpdateOnboarding = vi.fn();
@@ -48,18 +51,27 @@ describe("WelcomeTour", () => {
     vi.useRealTimers();
   });
 
-  it("should initialize driver with correct configuration", () => {
+  it("should initialize driver with correct configuration", async () => {
     render(<WelcomeTour />);
 
-    expect(mockDriver).toHaveBeenCalled();
+    // Wait for driver to be lazy loaded
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
+
     expect(lastDriverConfig).toBeDefined();
     expect(lastDriverConfig.showProgress).toBe(true);
     expect(lastDriverConfig.showButtons).toEqual(["next", "previous", "close"]);
     expect(lastDriverConfig.steps).toHaveLength(6);
   });
 
-  it("should have correct tour steps", () => {
+  it("should have correct tour steps", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to be lazy loaded
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     const steps = lastDriverConfig.steps;
 
@@ -72,20 +84,34 @@ describe("WelcomeTour", () => {
     expect(steps[5].popover.title).toBe("Ready to Get Started? 🚀");
   });
 
-  it("should start tour after 500ms delay", () => {
+  it("should start tour after 500ms delay", async () => {
     render(<WelcomeTour />);
 
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
+
+    // Drive should not have been called yet
     expect(mockDrive).not.toHaveBeenCalled();
 
     // Fast-forward 500ms
     vi.advanceTimersByTime(500);
 
-    expect(mockDrive).toHaveBeenCalled();
+    // Now drive should be called
+    await waitFor(() => {
+      expect(mockDrive).toHaveBeenCalled();
+    });
   });
 
-  it("should call onComplete when tour is completed", () => {
+  it("should call onComplete when tour is completed", async () => {
     const mockOnComplete = vi.fn();
     render(<WelcomeTour onComplete={mockOnComplete} />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     // Fast-forward to start tour
     vi.advanceTimersByTime(500);
@@ -107,9 +133,14 @@ describe("WelcomeTour", () => {
     });
   });
 
-  it("should call onSkip when tour is skipped", () => {
+  it("should call onSkip when tour is skipped", async () => {
     const mockOnSkip = vi.fn();
     render(<WelcomeTour onSkip={mockOnSkip} />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     // Fast-forward to start tour
     vi.advanceTimersByTime(500);
@@ -130,8 +161,13 @@ describe("WelcomeTour", () => {
     });
   });
 
-  it("should update onboarding status when tour is completed", () => {
+  it("should update onboarding status when tour is completed", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 
@@ -149,8 +185,13 @@ describe("WelcomeTour", () => {
     });
   });
 
-  it("should update onboarding status when tour is skipped", () => {
+  it("should update onboarding status when tour is skipped", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 
@@ -222,8 +263,13 @@ describe("WelcomeTour", () => {
     }).not.toThrow();
   });
 
-  it("should call destroy on driver when tour ends", () => {
+  it("should call destroy on driver when tour ends", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 
@@ -237,8 +283,13 @@ describe("WelcomeTour", () => {
     expect(mockDestroy).toHaveBeenCalled();
   });
 
-  it("should have command palette step with keyboard shortcuts", () => {
+  it("should have command palette step with keyboard shortcuts", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     const commandPaletteStep = lastDriverConfig.steps[1];
 
@@ -247,8 +298,13 @@ describe("WelcomeTour", () => {
     expect(commandPaletteStep.popover.description).toContain("Ctrl+K");
   });
 
-  it("should have create project step", () => {
+  it("should have create project step", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     const createProjectStep = lastDriverConfig.steps[2];
 
@@ -256,8 +312,13 @@ describe("WelcomeTour", () => {
     expect(createProjectStep.popover.title).toBe("Create Your First Project");
   });
 
-  it("should have dashboard step", () => {
+  it("should have dashboard step", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     const dashboardStep = lastDriverConfig.steps[3];
 
@@ -265,8 +326,13 @@ describe("WelcomeTour", () => {
     expect(dashboardStep.popover.title).toBe("Your Dashboard");
   });
 
-  it("should have sidebar step", () => {
+  it("should have sidebar step", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     const sidebarStep = lastDriverConfig.steps[4];
 
@@ -274,8 +340,13 @@ describe("WelcomeTour", () => {
     expect(sidebarStep.popover.title).toBe("Document Sidebar");
   });
 
-  it("should set onboardingCompleted to false on completion", () => {
+  it("should set onboardingCompleted to false on completion", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 
@@ -290,8 +361,13 @@ describe("WelcomeTour", () => {
     expect(callArgs.onboardingCompleted).toBe(false);
   });
 
-  it("should not set onboardingCompleted when skipped", () => {
+  it("should not set onboardingCompleted when skipped", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 
@@ -305,8 +381,13 @@ describe("WelcomeTour", () => {
     expect(callArgs.onboardingCompleted).toBeUndefined();
   });
 
-  it("should have correct popover positioning", () => {
+  it("should have correct popover positioning", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     expect(lastDriverConfig.steps[0].popover.side).toBe("top");
     expect(lastDriverConfig.steps[1].popover.side).toBe("bottom");
@@ -315,8 +396,13 @@ describe("WelcomeTour", () => {
     expect(lastDriverConfig.steps[4].popover.side).toBe("right");
   });
 
-  it("should detect skip when user closes tour with previous step available", () => {
+  it("should detect skip when user closes tour with previous step available", async () => {
     render(<WelcomeTour />);
+
+    // Wait for driver to load
+    await waitFor(() => {
+      expect(mockDriver).toHaveBeenCalled();
+    });
 
     vi.advanceTimersByTime(500);
 

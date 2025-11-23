@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 

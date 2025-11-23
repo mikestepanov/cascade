@@ -1,4 +1,4 @@
-import { RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff } from "@/lib/icons";
 import { toast } from "sonner";
 import { useOfflineSyncStatus, useOnlineStatus } from "../../hooks/useOffline";
 import { Button } from "../ui/Button";

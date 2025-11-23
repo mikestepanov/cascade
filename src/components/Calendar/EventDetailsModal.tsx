@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { Calendar, Check, Clock, Link as LinkIcon, MapPin, Trash2 } from "lucide-react";
+import { Calendar, Check, Clock, LinkIcon, MapPin, Trash2 } from "@/lib/icons";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
