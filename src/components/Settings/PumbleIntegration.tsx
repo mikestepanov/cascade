@@ -299,34 +299,36 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Actions */}
       <div className="flex items-center space-x-2 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-        <button
-          type="button"
+        <Button
           onClick={handleTest}
-          className="px-3 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+          variant="ghost"
+          size="sm"
+          className="text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
         >
           Test Webhook
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={handleToggleActive}
-          className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
+          variant="secondary"
+          size="sm"
         >
           {webhook.isActive ? "Disable" : "Enable"}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={() => setShowEditModal(true)}
-          className="px-3 py-1.5 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded transition-colors"
+          variant="secondary"
+          size="sm"
         >
           Edit
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={handleDelete}
-          className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors ml-auto"
+          variant="danger"
+          size="sm"
+          className="ml-auto"
         >
           Delete
-        </button>
+        </Button>
       </div>
 
       {/* Edit Modal */}
@@ -529,19 +531,16 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+              variant="primary"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               Add Webhook
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -717,19 +716,16 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+              variant="primary"
+              className="bg-accent-600 hover:bg-accent-700"
             >
               Save Changes
-            </button>
+            </Button>
           </div>
         </form>
       </div>
