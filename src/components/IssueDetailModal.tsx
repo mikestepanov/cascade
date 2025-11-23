@@ -181,20 +181,12 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             {/* Edit Actions */}
             {isEditing && (
               <div className="flex space-x-2">
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="px-4 py-2 bg-brand-600 text-white rounded hover:bg-brand-700"
-                >
+                <Button onClick={handleSave} variant="primary">
                   Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                >
+                </Button>
+                <Button onClick={() => setIsEditing(false)} variant="secondary">
                   Cancel
-                </button>
+                </Button>
               </div>
             )}
 

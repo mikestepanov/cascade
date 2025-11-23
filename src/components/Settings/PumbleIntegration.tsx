@@ -3,6 +3,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
@@ -45,13 +46,13 @@ export function PumbleIntegration() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
+          <Button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+            variant="primary"
+            className="bg-accent-600 hover:bg-accent-700"
           >
             Add Webhook
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -135,13 +136,13 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
         Connect Cascade to Pumble channels to receive notifications when issues are created,
         updated, or assigned.
       </p>
-      <button
-        type="button"
+      <Button
         onClick={onAddWebhook}
-        className="px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white font-medium rounded-lg transition-colors"
+        variant="primary"
+        className="bg-accent-600 hover:bg-accent-700"
       >
         Add Your First Webhook
-      </button>
+      </Button>
     </div>
   );
 }
