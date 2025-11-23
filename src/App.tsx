@@ -1,5 +1,5 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import type { Id } from "../convex/_generated/dataModel";
@@ -7,7 +7,12 @@ import { AIAssistantButton, AIAssistantPanel } from "./components/AI";
 import { UnifiedCalendarView } from "./components/Calendar/UnifiedCalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
-import { DocumentEditor } from "./components/DocumentEditor";
+
+// Lazy load heavy BlockNote editor (~400-500 KB)
+const DocumentEditor = lazy(() =>
+  import("./components/DocumentEditor").then((m) => ({ default: m.DocumentEditor })),
+);
+
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
@@ -26,6 +31,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./components/TimeTracking/TimerWidget";
 import { TimeTrackingPage } from "./components/TimeTracking/TimeTrackingPage";
+import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { ModalBackdrop } from "./components/ui/ModalBackdrop";
 import { createKeyboardShortcuts, createKeySequences } from "./config/keyboardShortcuts";
 import { OnboardingProvider } from "./contexts/OnboardingContext";
@@ -123,7 +129,11 @@ function MainContentView({
 
   if (activeView === "documents") {
     if (selectedDocumentId) {
-      return <DocumentEditor documentId={selectedDocumentId} />;
+      return (
+        <Suspense fallback={<LoadingSpinner />}>
+          <DocumentEditor documentId={selectedDocumentId} />
+        </Suspense>
+      );
     }
     return (
       <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">

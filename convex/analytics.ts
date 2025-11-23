@@ -1,6 +1,13 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+import {
+  issueCountByAssignee,
+  issueCountByPriority,
+  issueCountByStatus,
+  issueCountByType,
+} from "./aggregates";
 import { canAccessProject } from "./rbac";
 
 /**
@@ -24,68 +31,66 @@ export const getProjectAnalytics = query({
       throw new Error("Not authorized to access this project");
     }
 
-    // Get all issues for the project
-    const allIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+    // Use aggregates for fast O(log n) counting instead of O(n)
+    const statusCounts = await issueCountByStatus.lookup(ctx, {
+      projectId: args.projectId,
+    });
+    const typeCounts = await issueCountByType.lookup(ctx, {
+      projectId: args.projectId,
+    });
+    const priorityCounts = await issueCountByPriority.lookup(ctx, {
+      projectId: args.projectId,
+    });
+    const assigneeCounts = await issueCountByAssignee.lookup(ctx, {
+      projectId: args.projectId,
+    });
 
-    // Issue count by status
+    // Initialize with zeros for all workflow states
     const issuesByStatus: Record<string, number> = {};
     project.workflowStates.forEach((state) => {
-      issuesByStatus[state.id] = 0;
-    });
-    allIssues.forEach((issue) => {
-      issuesByStatus[issue.status] = (issuesByStatus[issue.status] || 0) + 1;
+      issuesByStatus[state.id] = statusCounts[state.id] || 0;
     });
 
-    // Issue count by type
+    // Ensure all types are present
     const issuesByType = {
-      task: 0,
-      bug: 0,
-      story: 0,
-      epic: 0,
-      subtask: 0,
+      task: typeCounts.task || 0,
+      bug: typeCounts.bug || 0,
+      story: typeCounts.story || 0,
+      epic: typeCounts.epic || 0,
+      subtask: typeCounts.subtask || 0,
     };
-    allIssues.forEach((issue) => {
-      issuesByType[issue.type]++;
-    });
 
-    // Issue count by priority
+    // Ensure all priorities are present
     const issuesByPriority = {
-      lowest: 0,
-      low: 0,
-      medium: 0,
-      high: 0,
-      highest: 0,
+      lowest: priorityCounts.lowest || 0,
+      low: priorityCounts.low || 0,
+      medium: priorityCounts.medium || 0,
+      high: priorityCounts.high || 0,
+      highest: priorityCounts.highest || 0,
     };
-    allIssues.forEach((issue) => {
-      issuesByPriority[issue.priority]++;
-    });
 
-    // Issue count by assignee
+    // Get unassigned count
+    const unassignedCount = assigneeCounts.unassigned || 0;
+
+    // Enrich assignee data with user info
     const issuesByAssignee: Record<string, { count: number; name: string }> = {};
     await Promise.all(
-      allIssues.map(async (issue) => {
-        if (issue.assigneeId) {
-          const key = issue.assigneeId;
-          if (!issuesByAssignee[key]) {
-            const user = await ctx.db.get(issue.assigneeId);
-            issuesByAssignee[key] = {
-              count: 0,
-              name: user?.name || user?.email || "Unknown",
-            };
-          }
-          issuesByAssignee[key].count++;
-        }
-      }),
+      Object.entries(assigneeCounts)
+        .filter(([assigneeId]) => assigneeId !== "unassigned")
+        .map(async ([assigneeId, count]) => {
+          const user = await ctx.db.get(assigneeId as Id<"users">);
+          issuesByAssignee[assigneeId] = {
+            count,
+            name: user?.name || user?.email || "Unknown",
+          };
+        }),
     );
 
-    // Unassigned count
-    const unassignedCount = allIssues.filter((i) => !i.assigneeId).length;
+    // Calculate total issues
+    const totalIssues = Object.values(typeCounts).reduce((sum, count) => sum + count, 0);
 
     return {
-      totalIssues: allIssues.length,
+      totalIssues,
       issuesByStatus,
       issuesByType,
       issuesByPriority,

@@ -1,0 +1,153 @@
+/**
+ * Semantic Search using Vector Embeddings
+ *
+ * Find similar issues based on meaning, not just keywords
+ */
+
+import { v } from "convex/values";
+import { internal } from "../_generated/api";
+import { action } from "../_generated/server";
+import { rateLimit } from "../rateLimits";
+
+/**
+ * Search for similar issues using semantic search
+ */
+export const searchSimilarIssues = action({
+  args: {
+    query: v.string(),
+    projectId: v.id("projects"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await ctx.auth.getUserIdentity();
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    // Rate limit: 30 searches per minute per user
+    await rateLimit(ctx, {
+      name: "semanticSearch",
+      key: userId.subject,
+      throws: true,
+    });
+
+    // Generate embedding for search query
+    const queryEmbedding = await ctx.runAction(internal.ai.generateEmbedding, {
+      text: args.query,
+    });
+
+    // Vector search for similar issues
+    const results = await ctx.vectorSearch("issues", "by_embedding", {
+      vector: queryEmbedding,
+      limit: args.limit || 10,
+      filter: (q) => q.eq("projectId", args.projectId),
+    });
+
+    // Fetch full issue details
+    const issues = await Promise.all(
+      results.map(async (result) => {
+        const issue = await ctx.runQuery(internal.ai.getIssueData, {
+          issueId: result._id,
+        });
+        return {
+          ...issue,
+          similarity: result._score,
+        };
+      }),
+    );
+
+    return issues.filter(Boolean);
+  },
+});
+
+/**
+ * Get related issues for a specific issue
+ */
+export const getRelatedIssues = action({
+  args: {
+    issueId: v.id("issues"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // Get the issue
+    const issue = await ctx.runQuery(internal.ai.getIssueData, {
+      issueId: args.issueId,
+    });
+
+    if (!issue?.embedding) {
+      return [];
+    }
+
+    // Vector search using the issue's embedding
+    const results = await ctx.vectorSearch("issues", "by_embedding", {
+      vector: issue.embedding,
+      limit: (args.limit || 5) + 1, // +1 to exclude self
+      filter: (q) => q.eq("projectId", issue.projectId),
+    });
+
+    // Filter out the original issue and fetch details
+    const relatedIssues = await Promise.all(
+      results
+        .filter((result) => result._id !== args.issueId)
+        .slice(0, args.limit || 5)
+        .map(async (result) => {
+          const relatedIssue = await ctx.runQuery(internal.ai.getIssueData, {
+            issueId: result._id,
+          });
+          return {
+            ...relatedIssue,
+            similarity: result._score,
+          };
+        }),
+    );
+
+    return relatedIssues.filter(Boolean);
+  },
+});
+
+/**
+ * Find duplicate issues using semantic similarity
+ */
+export const findPotentialDuplicates = action({
+  args: {
+    title: v.string(),
+    description: v.optional(v.string()),
+    projectId: v.id("projects"),
+    threshold: v.optional(v.number()), // Similarity threshold (0-1)
+  },
+  handler: async (ctx, args) => {
+    // Combine title and description
+    const text = `${args.title}\n\n${args.description || ""}`.trim();
+
+    // Generate embedding
+    const embedding = await ctx.runAction(internal.ai.generateEmbedding, {
+      text,
+    });
+
+    // Search for similar issues
+    const results = await ctx.vectorSearch("issues", "by_embedding", {
+      vector: embedding,
+      limit: 10,
+      filter: (q) => q.eq("projectId", args.projectId),
+    });
+
+    const threshold = args.threshold || 0.85; // High similarity threshold
+
+    // Fetch issues above threshold
+    const duplicates = await Promise.all(
+      results
+        .filter((result) => result._score >= threshold)
+        .map(async (result) => {
+          const issue = await ctx.runQuery(internal.ai.getIssueData, {
+            issueId: result._id,
+          });
+          return {
+            ...issue,
+            similarity: result._score,
+          };
+        }),
+    );
+
+    return duplicates.filter(Boolean);
+  },
+});

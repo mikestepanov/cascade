@@ -1,7 +1,5 @@
-import { driver } from "driver.js";
-import { useEffect } from "react";
-import "driver.js/dist/driver.css";
 import { useMutation } from "convex/react";
+import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 
 interface WelcomeTourProps {
@@ -9,11 +7,47 @@ interface WelcomeTourProps {
   onSkip?: () => void;
 }
 
+/**
+ * WelcomeTour component that lazy loads Driver.js (~50 KB)
+ * to improve initial page load performance.
+ */
 export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
+  const [Driver, setDriver] = useState<any>(null);
 
+  // Lazy load driver.js
   useEffect(() => {
-    const driverObj = driver({
+    let mounted = true;
+
+    const loadDriver = async () => {
+      try {
+        // Dynamically import both driver and its CSS
+        const [{ driver }, _] = await Promise.all([
+          import("driver.js"),
+          import("driver.js/dist/driver.css"),
+        ]);
+
+        if (mounted) {
+          setDriver(() => driver);
+        }
+      } catch (error) {
+        // biome-ignore lint/suspicious/noConsole: Intentional error logging for driver.js load failures
+        console.warn("Failed to load driver.js:", error);
+      }
+    };
+
+    loadDriver();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Start the tour once Driver is loaded
+  useEffect(() => {
+    if (!Driver) return;
+
+    const driverObj = Driver({
       showProgress: true,
       showButtons: ["next", "previous", "close"],
       steps: [
@@ -108,7 +142,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
       clearTimeout(timer);
       driverObj.destroy();
     };
-  }, [onComplete, onSkip, updateOnboarding]);
+  }, [Driver, onComplete, onSkip, updateOnboarding]);
 
   return null; // This component doesn't render anything - it just controls the tour
 }

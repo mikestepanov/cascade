@@ -21,7 +21,7 @@ vi.mock("sonner", () => ({
 
 describe("CustomFieldsManager - Component Behavior", () => {
   const mockProjectId = "project123" as Id<"projects">;
-  const mockCreateField = vi.fn();
+  const _mockCreateField = vi.fn();
   const mockUpdateField = vi.fn();
   const mockRemoveField = vi.fn();
 
@@ -219,7 +219,10 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
-      await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "field    with     gaps");
+      await user.type(
+        screen.getByPlaceholderText(/e.g., sprint_points/i),
+        "field    with     gaps",
+      );
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {

@@ -35,9 +35,12 @@ export function ProjectsList({
   onNavigateToProject,
   onNavigateToProjects,
 }: ProjectsListProps) {
+  const count = projects?.length || 0;
+  const projectsLabel = count === 1 ? "project" : "projects";
+
   return (
     <Card>
-      <CardHeader title="My Projects" description={`${projects?.length || 0} projects`} />
+      <CardHeader title="My Projects" description={`${count} ${projectsLabel}`} />
       <CardBody>
         {!projects ? (
           /* Loading skeleton */

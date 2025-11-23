@@ -1,6 +1,8 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
+import viteCompression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
@@ -39,6 +41,8 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
+        // TEMPORARY: Increase limit until bundle is optimized
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MB
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         runtimeCaching: [
           {
@@ -72,13 +76,30 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       devOptions: {
-        enabled: true, // Enable in development
+        enabled: true,
         type: "module",
       },
     }),
-    // The code below enables dev tools like taking screenshots of your site
-    // while it is being developed on chef.convex.dev.
-    // Feel free to remove this code if you're no longer developing your app with Chef.
+    // Gzip compression
+    viteCompression({
+      algorithm: "gzip",
+      ext: ".gz",
+    }),
+    // Brotli compression (better than gzip)
+    viteCompression({
+      algorithm: "brotliCompress",
+      ext: ".br",
+    }),
+    // Bundle analyzer
+    mode === "analyze"
+      ? visualizer({
+          open: true,
+          filename: "dist/stats.html",
+          gzipSize: true,
+          brotliSize: true,
+        })
+      : null,
+    // Chef dev mode
     mode === "development"
       ? {
           name: "inject-chef-dev",
@@ -103,11 +124,91 @@ window.addEventListener('message', async (message) => {
           },
         }
       : null,
-    // End of code for taking screenshots on chef.convex.dev.
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  build: {
+    // Target modern browsers for smaller bundle
+    target: "esnext",
+    // Enable minification
+    minify: "esbuild",
+    // Source maps for production debugging
+    sourcemap: mode === "production" ? "hidden" : true,
+    // CSS code splitting
+    cssCodeSplit: true,
+    // Chunk size warnings
+    chunkSizeWarningLimit: 500, // KB
+    rollupOptions: {
+      output: {
+        // Manual chunks for better caching
+        manualChunks: (id) => {
+          // React and React DOM
+          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
+            return "react-vendor";
+          }
+
+          // Convex (backend)
+          if (id.includes("node_modules/convex/") || id.includes("node_modules/@convex-dev/")) {
+            return "convex";
+          }
+
+          // BlockNote editor (HEAVY - lazy load this!)
+          if (id.includes("node_modules/@blocknote/")) {
+            return "editor";
+          }
+
+          // Mantine UI (HEAVY)
+          if (id.includes("node_modules/@mantine/")) {
+            return "mantine";
+          }
+
+          // Icons
+          if (id.includes("node_modules/lucide-react/")) {
+            return "icons";
+          }
+
+          // Analytics (can be lazy loaded)
+          if (id.includes("node_modules/posthog-js/")) {
+            return "analytics";
+          }
+
+          // Onboarding tour
+          if (id.includes("node_modules/driver.js/")) {
+            return "tour";
+          }
+
+          // Markdown rendering
+          if (id.includes("node_modules/react-markdown/") || id.includes("node_modules/remark-")) {
+            return "markdown";
+          }
+
+          // Other vendor chunks
+          if (id.includes("node_modules/")) {
+            return "vendor";
+          }
+        },
+        // Optimize chunk names
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
+      },
+    },
+    // Increase chunk size for better compression
+    reportCompressedSize: true,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ["react", "react-dom", "convex/react", "sonner", "clsx", "tailwind-merge"],
+    exclude: [
+      // Lazy load these
+      "@blocknote/core",
+      "@blocknote/react",
+      "@blocknote/mantine",
+      "driver.js",
+      "posthog-js",
+    ],
   },
 }));

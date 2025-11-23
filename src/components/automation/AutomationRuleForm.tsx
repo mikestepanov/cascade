@@ -56,7 +56,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
       setActionType("add_label");
       setActionValue("");
     }
-  }, [rule, isOpen]);
+  }, [rule]);
 
   const handleSave = async () => {
     if (!(name.trim() && actionValue.trim())) {

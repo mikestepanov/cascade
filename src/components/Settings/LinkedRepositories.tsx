@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
-import { Github, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Github, Trash2 } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";

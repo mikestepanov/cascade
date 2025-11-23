@@ -203,8 +203,7 @@ export function IssueDetailModal({ issueId, onClose }: IssueDetailModalProps) {
             {/* Time Tracking */}
             <div>
               <h3 className="text-sm font-medium text-ui-text-primary mb-3">Time Tracking</h3>
-              <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours}
-              />
+              <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours} />
             </div>
 
             {/* File Attachments */}

@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
@@ -384,7 +384,16 @@ function getDateRange(currentDate: Date, timeScale: TimeScale) {
 // Get issue type variant for Badge component
 function getIssueTypeVariant(
   type: string,
-): "primary" | "secondary" | "success" | "error" | "warning" | "info" | "neutral" | "brand" | "accent" {
+):
+  | "primary"
+  | "secondary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "neutral"
+  | "brand"
+  | "accent" {
   switch (type) {
     case "epic":
       return "accent";

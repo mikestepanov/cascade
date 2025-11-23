@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
-import { Check, ChevronDown, ChevronUp, X } from "lucide-react";
 import { useState } from "react";
+import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 
 interface ChecklistItem {

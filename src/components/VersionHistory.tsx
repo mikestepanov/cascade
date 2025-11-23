@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
-import { Clock, History, RotateCcw, X } from "lucide-react";
 import { useState } from "react";
+import { Clock, History, RotateCcw, X } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";

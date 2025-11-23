@@ -104,7 +104,9 @@ export function TimerWidget() {
         <span className="hidden sm:inline">Start Timer</span>
       </Button>
 
-      {showStartModal && <StartTimerModal isOpen={showStartModal} onClose={() => setShowStartModal(false)} />}
+      {showStartModal && (
+        <StartTimerModal isOpen={showStartModal} onClose={() => setShowStartModal(false)} />
+      )}
     </>
   );
 }
@@ -129,7 +131,13 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Start Timer" maxWidth="md">
-      <form onSubmit={(e) => { e.preventDefault(); void handleStart(); }} className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleStart();
+        }}
+        className="space-y-4"
+      >
         <div>
           <label
             htmlFor="timer-description"

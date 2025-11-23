@@ -1,7 +1,7 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import { PostHogProvider } from "posthog-js/react";
 import { createRoot } from "react-dom/client";
+import { LazyPostHog } from "./components/LazyPostHog";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { promptInstall, register as registerServiceWorker } from "./lib/serviceWorker";
 import "./index.css";
@@ -26,10 +26,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <ThemeProvider>
-    <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
+    <LazyPostHog apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
       <ConvexAuthProvider client={convex}>
         <App />
       </ConvexAuthProvider>
-    </PostHogProvider>
+    </LazyPostHog>
   </ThemeProvider>,
 );

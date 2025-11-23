@@ -133,6 +133,8 @@ const applicationTables = {
     linkedDocuments: v.array(v.id("documents")),
     attachments: v.array(v.id("_storage")),
     order: v.number(), // For ordering within status columns
+    // AI/Semantic Search
+    embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
   })
     .index("by_project", ["projectId"])
     .index("by_assignee", ["assigneeId"])
@@ -145,6 +147,11 @@ const applicationTables = {
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["projectId", "type", "status", "priority"],
+    })
+    .vectorIndex("by_embedding", {
+      vectorField: "embedding",
+      dimensions: 1536, // OpenAI text-embedding-3-small dimension
+      filterFields: ["projectId"],
     }),
 
   issueComments: defineTable({
