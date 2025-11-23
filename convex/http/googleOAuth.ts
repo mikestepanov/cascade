@@ -1,4 +1,5 @@
 import { httpAction } from "../_generated/server";
+import { api } from "../_generated/api";
 
 /**
  * Google OAuth Integration
@@ -235,16 +236,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
  * NOTE: This endpoint is not yet implemented.
  * TODO: Complete Google Calendar sync implementation
  */
-export const triggerSync = httpAction((_ctx, _request) => {
-  // Temporarily disabled - needs proper implementation
-  return Promise.resolve(
-    new Response(JSON.stringify({ error: "Google Calendar sync is not yet implemented" }), {
-      status: 501,
-      headers: { "Content-Type": "application/json" },
-    }),
-  );
-
-  /* TODO: Implement this properly
+export const triggerSync = httpAction(async (ctx, _request) => {
   try {
     // Get user's Google Calendar connection
     const connection = await ctx.runQuery(api.googleCalendar.getConnection);
@@ -322,5 +314,4 @@ export const triggerSync = httpAction((_ctx, _request) => {
       },
     );
   }
-  */
 });
