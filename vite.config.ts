@@ -151,7 +151,9 @@ window.addEventListener('message', async (message) => {
           }
 
           // Chunk mapping for vendor dependencies
+          // NOTE: Order matters! More specific patterns must come first to avoid false matches
           const chunkMap = [
+            { patterns: ["react-markdown/", "remark-"], chunk: "markdown" },
             { patterns: ["react/", "react-dom/"], chunk: "react-vendor" },
             { patterns: ["convex/", "@convex-dev/"], chunk: "convex" },
             { patterns: ["@blocknote/"], chunk: "editor" },
@@ -159,7 +161,6 @@ window.addEventListener('message', async (message) => {
             { patterns: ["lucide-react/"], chunk: "icons" },
             { patterns: ["posthog-js/"], chunk: "analytics" },
             { patterns: ["driver.js/"], chunk: "tour" },
-            { patterns: ["react-markdown/", "remark-"], chunk: "markdown" },
           ];
 
           // Find matching chunk

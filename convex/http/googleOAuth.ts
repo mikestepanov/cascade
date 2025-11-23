@@ -296,16 +296,23 @@ export const triggerSync = httpAction(async (ctx, _request) => {
     const events = data.items || [];
 
     // Transform Google Calendar events to Cascade format
-    const cascadeEvents = events.map((event: GoogleCalendarEvent) => ({
-      googleEventId: event.id,
-      title: event.summary || "Untitled Event",
-      description: event.description,
-      startTime: new Date(event.start.dateTime || event.start.date || "").getTime(),
-      endTime: new Date(event.end.dateTime || event.end.date || "").getTime(),
-      allDay: !!event.start.date, // If date instead of dateTime, it's all-day
-      location: event.location,
-      attendees: event.attendees?.map((a: GoogleCalendarAttendee) => a.email) || [],
-    }));
+    // Filter out events with missing or invalid dates
+    const cascadeEvents = events
+      .filter((event: GoogleCalendarEvent) => {
+        const hasValidStart = event.start?.dateTime || event.start?.date;
+        const hasValidEnd = event.end?.dateTime || event.end?.date;
+        return hasValidStart && hasValidEnd;
+      })
+      .map((event: GoogleCalendarEvent) => ({
+        googleEventId: event.id,
+        title: event.summary || "Untitled Event",
+        description: event.description,
+        startTime: new Date(event.start.dateTime || event.start.date || "").getTime(),
+        endTime: new Date(event.end.dateTime || event.end.date || "").getTime(),
+        allDay: !!event.start.date, // If date instead of dateTime, it's all-day
+        location: event.location,
+        attendees: event.attendees?.map((a: GoogleCalendarAttendee) => a.email) || [],
+      }));
 
     // Sync events to Cascade
     const result = await ctx.runMutation(api.googleCalendar.syncFromGoogle, {

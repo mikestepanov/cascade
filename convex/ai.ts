@@ -190,11 +190,13 @@ Be concise, helpful, and professional.`;
       provider: "openai",
       model: "gpt-4o-mini",
       operation: "chat",
-      // TODO: Fix after AI SDK v5 type definitions are updated
-      promptTokens: response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.7) : 0,
-      completionTokens: response.usage?.totalTokens
-        ? Math.floor(response.usage.totalTokens * 0.3)
-        : 0,
+      // Use actual token counts if available, otherwise estimate from totalTokens
+      promptTokens:
+        response.usage?.promptTokens ??
+        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.7) : 0),
+      completionTokens:
+        response.usage?.completionTokens ??
+        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.3) : 0),
       totalTokens: response.usage?.totalTokens || 0,
       success: true,
     });
