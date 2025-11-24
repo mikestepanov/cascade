@@ -200,7 +200,7 @@ export const issueMutation = customMutation(mutation, {
       throw new Error("Project not found");
     }
 
-    const role = await getUserRole(ctx, issue.projectId, userId);
+    const role = await getProjectRole(ctx, issue.projectId, userId);
 
     // Check minimum role
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
