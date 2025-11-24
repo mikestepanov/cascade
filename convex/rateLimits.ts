@@ -29,12 +29,14 @@ export const rateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunMutationCtx,
   name: Name,
   options?: Parameters<typeof rateLimiter.limit<Name>>[2],
+  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
 ) => rateLimiter.limit(ctx, name, options);
 
 export const checkRateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunQueryCtx,
   name: Name,
   options?: Parameters<typeof rateLimiter.check<Name>>[2],
+  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
 ) => rateLimiter.check(ctx, name, options);
 
 export const resetRateLimit = <Name extends keyof typeof rateLimiter.limits>(

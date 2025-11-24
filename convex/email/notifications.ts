@@ -199,7 +199,7 @@ export const sendNotificationEmail = internalAction({
     dueDate: v.optional(v.number()),
     commentText: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; id?: string; error?: string }> => {
     const {
       to,
       userId,
@@ -218,7 +218,6 @@ export const sendNotificationEmail = internalAction({
     // Send appropriate email based on type
     switch (type) {
       case "mention":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendMentionEmail, {
           to,
           userId,
@@ -231,7 +230,6 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "assigned":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendAssignmentEmail, {
           to,
           userId,
@@ -246,7 +244,6 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "comment":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendCommentEmail, {
           to,
           userId,

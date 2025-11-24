@@ -284,7 +284,7 @@ export const updateWebhookStats = mutation({
  */
 export const testWebhook = action({
   args: { webhookId: v.id("pumbleWebhooks") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<unknown> => {
     return await ctx.runAction(api.pumble.sendMessage, {
       webhookId: args.webhookId,
       text: "🎉 Cascade integration is working!",

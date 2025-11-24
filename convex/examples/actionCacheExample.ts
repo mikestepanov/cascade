@@ -1,5 +1,5 @@
-"use node";
 // @ts-nocheck - Example file requires component types from `npx convex dev`
+"use node";
 
 /**
  * Example: Using Action Cache for AI Suggestions
