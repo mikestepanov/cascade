@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Helper: Generate next issue key for a project
 async function generateNextIssueKey(
@@ -252,7 +252,7 @@ export const exportIssuesCSV = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     // Get project to access workflow states
     const project = await ctx.db.get(args.projectId);
@@ -350,7 +350,7 @@ export const exportAnalytics = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
@@ -421,7 +421,7 @@ export const exportIssuesJSON = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
@@ -493,7 +493,7 @@ export const importIssuesJSON = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
@@ -541,7 +541,7 @@ export const importIssuesCSV = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");

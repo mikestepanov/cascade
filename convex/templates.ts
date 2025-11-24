@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Create an issue template
 export const create = mutation({
@@ -26,7 +26,7 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user can edit project (requires editor role or higher)
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const templateId = await ctx.db.insert("issueTemplates", {
       projectId: args.projectId,
@@ -57,7 +57,7 @@ export const listByProject = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
@@ -93,7 +93,7 @@ export const get = query({
     if (!template) return null;
 
     // Check if user has access to project
-    await assertMinimumRole(ctx, template.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, template.projectId, userId);
 
     return template;
   },
@@ -125,7 +125,7 @@ export const update = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertMinimumRole(ctx, template.projectId, userId, "editor");
+    await assertCanEditProject(ctx, template.projectId, userId);
 
     const updates: Partial<typeof template> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -150,7 +150,7 @@ export const remove = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertMinimumRole(ctx, template.projectId, userId, "editor");
+    await assertCanEditProject(ctx, template.projectId, userId);
 
     await ctx.db.delete(args.id);
   },

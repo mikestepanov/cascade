@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Create a new label
 export const create = mutation({
@@ -15,7 +15,7 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user can edit project (requires editor role or higher)
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     // Check if label with same name already exists in project
     const existing = await ctx.db
@@ -47,7 +47,7 @@ export const listByProject = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project (viewer or higher)
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const labels = await ctx.db
       .query("labels")
@@ -73,7 +73,7 @@ export const update = mutation({
     if (!label) throw new Error("Label not found");
 
     // Check if user can edit project
-    await assertMinimumRole(ctx, label.projectId, userId, "editor");
+    await assertCanEditProject(ctx, label.projectId, userId);
 
     // If name is changing, check for duplicates
     if (args.name && args.name !== label.name) {
@@ -107,7 +107,7 @@ export const remove = mutation({
     if (!label) throw new Error("Label not found");
 
     // Check if user can edit project
-    await assertMinimumRole(ctx, label.projectId, userId, "editor");
+    await assertCanEditProject(ctx, label.projectId, userId);
 
     // Remove label from all issues
     const issues = await ctx.db
