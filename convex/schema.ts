@@ -1108,4 +1108,24 @@ const applicationTables = {
 export default defineSchema({
   ...authTables,
   ...applicationTables,
+  // Override users table to add custom fields (must include all auth fields)
+  users: defineTable({
+    // Required auth fields from @convex-dev/auth
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    image: v.optional(v.string()),
+    isAnonymous: v.optional(v.boolean()),
+    // Custom fields for Cascade
+    timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
+    bio: v.optional(v.string()), // User bio/description
+    emailNotifications: v.optional(v.boolean()), // Email notification preference
+    desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
+  })
+    .index("email", ["email"])
+    .index("emailVerificationTime", ["emailVerificationTime"])
+    .index("phone", ["phone"])
+    .index("phoneVerificationTime", ["phoneVerificationTime"]),
 });

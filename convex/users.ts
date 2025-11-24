@@ -23,7 +23,7 @@ export const updateProfile = mutation({
     email: v.optional(v.string()),
     avatar: v.optional(v.string()),
     bio: v.optional(v.string()),
-    timezone: v.optional(v.string()),
+    timezone: v.optional(v.string()), // IANA timezone e.g. "America/New_York"
     emailNotifications: v.optional(v.boolean()),
     desktopNotifications: v.optional(v.boolean()),
   },
@@ -33,11 +33,24 @@ export const updateProfile = mutation({
       throw new Error("Not authenticated");
     }
 
-    const updates: { name?: string; email?: string; image?: string } = {};
+    const updates: {
+      name?: string;
+      email?: string;
+      image?: string;
+      bio?: string;
+      timezone?: string;
+      emailNotifications?: boolean;
+      desktopNotifications?: boolean;
+    } = {};
+
     if (args.name !== undefined) updates.name = args.name;
     if (args.email !== undefined) updates.email = args.email;
     if (args.avatar !== undefined) updates.image = args.avatar;
-    // Note: bio, timezone, emailNotifications, desktopNotifications would need to be added to user schema
+    if (args.bio !== undefined) updates.bio = args.bio;
+    if (args.timezone !== undefined) updates.timezone = args.timezone;
+    if (args.emailNotifications !== undefined) updates.emailNotifications = args.emailNotifications;
+    if (args.desktopNotifications !== undefined)
+      updates.desktopNotifications = args.desktopNotifications;
 
     await ctx.db.patch(userId, updates);
   },
