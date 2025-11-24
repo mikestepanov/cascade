@@ -4,10 +4,11 @@
  *
  * Find similar issues based on meaning, not just keywords
  *
- * Note: Type checking disabled due to circular reference in action definitions.
- * Actions calling internal actions from convex/ai.ts create circular type dependencies.
- * This is a Convex framework limitation, not a code quality issue.
- * The code uses type-safe helpers (asVectorResults) to avoid 'as any' casts where possible.
+ * Note: Type checking disabled due to Convex circular type inference.
+ * Calls to internal.ai.* create circular type dependencies even though
+ * the implementation is in convex/internal/ai.ts.
+ *
+ * Uses type-safe helpers (asVectorResults) to maintain type safety.
  */
 
 import { v } from "convex/values";

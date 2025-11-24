@@ -7,18 +7,19 @@
  * - Semantic issue search (vector embeddings)
  * - AI suggestions (descriptions, priorities, labels)
  *
- * Note: Type checking disabled due to circular reference in Convex action definitions.
- * Actions calling internal actions in the same file create circular type dependencies.
- * This is a Convex framework limitation, not a code quality issue.
- * The code uses type-safe helpers (extractUsage) to avoid 'as any' casts where possible.
+ * Note: Type checking disabled due to Convex framework limitation.
+ * Even with internal functions extracted to convex/internal/ai.ts, TypeScript
+ * infers circular types through the wrapper functions. This is unavoidable
+ * without removing backward-compatible wrappers entirely.
+ *
+ * The code uses type-safe helpers (extractUsage) to maintain type safety.
  */
 
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
-import { action, internalAction, internalMutation, internalQuery } from "./_generated/server";
+import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { rateLimit } from "./rateLimits";
 
@@ -29,15 +30,8 @@ export const generateEmbedding = internalAction({
   args: {
     text: v.string(),
   },
-  handler: async (_ctx, args) => {
-    // Use OpenAI's text-embedding-3-small model (1536 dimensions)
-    const model = openai.embedding("text-embedding-3-small");
-
-    const { embeddings } = await model.doEmbed({
-      values: [args.text],
-    });
-
-    return embeddings[0]; // Return first (and only) embedding
+  handler: async (ctx, args) => {
+    return await ctx.runAction(internal.internal.ai.generateEmbedding, args);
   },
 });
 
@@ -50,7 +44,7 @@ export const generateIssueEmbedding = internalAction({
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const issue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
+    const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
 
@@ -62,12 +56,12 @@ export const generateIssueEmbedding = internalAction({
     const text = `${issue.title}\n\n${issue.description || ""}`.trim();
 
     // Generate embedding
-    const embedding = await ctx.runAction(internal.ai.generateEmbedding, {
+    const embedding = await ctx.runAction(internal.internal.ai.generateEmbedding, {
       text,
     });
 
     // Store embedding
-    await ctx.runMutation(internal.ai.storeIssueEmbedding, {
+    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, {
       issueId: args.issueId,
       embedding,
     });
@@ -84,32 +78,30 @@ export const getIssueForEmbedding = internalAction({
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    return await ctx.runQuery(internal.ai.getIssueData, { issueId: args.issueId });
+    return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });
 
 /**
- * Internal query to fetch issue
+ * Internal query to fetch issue (kept for backward compatibility)
  */
-export const getIssueData = internalQuery({
+export const getIssueData = internalAction({
   args: { issueId: v.id("issues") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.issueId);
+    return await ctx.runQuery(internal.internal.ai.getIssueData, args);
   },
 });
 
 /**
- * Store embedding in issue document
+ * Store embedding in issue document (kept for backward compatibility)
  */
-export const storeIssueEmbedding = internalMutation({
+export const storeIssueEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
     embedding: v.array(v.float64()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.issueId, {
-      embedding: args.embedding,
-    });
+    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, args);
   },
 });
 
@@ -137,7 +129,7 @@ export const chat = action({
     // Create or get chat
     let chatId = args.chatId;
     if (!chatId) {
-      chatId = await ctx.runMutation(internal.ai.createChat, {
+      chatId = await ctx.runMutation(internal.internal.ai.createChat, {
         userId: userId.subject,
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
@@ -145,7 +137,7 @@ export const chat = action({
     }
 
     // Store user message
-    await ctx.runMutation(internal.ai.addMessage, {
+    await ctx.runMutation(internal.internal.ai.addMessage, {
       chatId,
       role: "user",
       content: args.message,
@@ -154,7 +146,7 @@ export const chat = action({
     // Get project context if available
     let context = "";
     if (args.projectId) {
-      context = await ctx.runQuery(internal.ai.getProjectContext, {
+      context = await ctx.runQuery(internal.internal.ai.getProjectContext, {
         projectId: args.projectId,
       });
     }
@@ -184,7 +176,7 @@ Be concise, helpful, and professional.`;
     const usage = extractUsage(response.usage);
 
     // Store AI response
-    await ctx.runMutation(internal.ai.addMessage, {
+    await ctx.runMutation(internal.internal.ai.addMessage, {
       chatId,
       role: "assistant",
       content: response.text,
@@ -193,7 +185,7 @@ Be concise, helpful, and professional.`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.ai.trackUsage, {
+    await ctx.runMutation(internal.internal.ai.trackUsage, {
       userId: userId.subject,
       projectId: args.projectId,
       provider: "openai",
@@ -212,40 +204,19 @@ Be concise, helpful, and professional.`;
   },
 });
 
-/**
- * Create new AI chat
- */
-export const createChat = internalMutation({
+// Re-export internal functions for backward compatibility
+export const createChat = internalAction({
   args: {
     userId: v.string(),
     projectId: v.optional(v.id("projects")),
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return await ctx.db.insert("aiChats", {
-      userId: user._id as Id<"users">,
-      projectId: args.projectId,
-      title: args.title,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
+    return await ctx.runMutation(internal.internal.ai.createChat, args);
   },
 });
 
-/**
- * Add message to chat
- */
-export const addMessage = internalMutation({
+export const addMessage = internalAction({
   args: {
     chatId: v.id("aiChats"),
     role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
@@ -254,70 +225,20 @@ export const addMessage = internalMutation({
     tokensUsed: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("aiMessages", {
-      chatId: args.chatId,
-      role: args.role,
-      content: args.content,
-      modelUsed: args.modelUsed,
-      tokensUsed: args.tokensUsed,
-      createdAt: Date.now(),
-    });
-
-    // Update chat timestamp
-    await ctx.db.patch(args.chatId, {
-      updatedAt: Date.now(),
-    });
+    await ctx.runMutation(internal.internal.ai.addMessage, args);
   },
 });
 
-/**
- * Get project context for AI
- */
-export const getProjectContext = internalQuery({
+export const getProjectContext = internalAction({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) return "";
-
-    // Get active sprint
-    const activeSprint = await ctx.db
-      .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    // Get issues summary
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .take(100); // Limit for context
-
-    const issuesByStatus = issues.reduce(
-      (acc, issue) => {
-        acc[issue.status] = (acc[issue.status] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-
-    return `
-Project: ${project.name} (${project.key})
-Description: ${project.description || "No description"}
-Active Sprint: ${activeSprint ? activeSprint.name : "None"}
-Total Issues: ${issues.length}
-Issues by Status: ${Object.entries(issuesByStatus)
-      .map(([status, count]) => `${status}: ${count}`)
-      .join(", ")}
-    `.trim();
+    return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
   },
 });
 
-/**
- * Track AI usage
- */
-export const trackUsage = internalMutation({
+export const trackUsage = internalAction({
   args: {
     userId: v.string(),
     projectId: v.optional(v.id("projects")),
@@ -335,28 +256,6 @@ export const trackUsage = internalMutation({
     success: v.boolean(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    await ctx.db.insert("aiUsage", {
-      userId: user._id as Id<"users">,
-      projectId: args.projectId,
-      provider: args.provider,
-      model: args.model,
-      operation: args.operation,
-      promptTokens: args.promptTokens,
-      completionTokens: args.completionTokens,
-      totalTokens: args.totalTokens,
-      responseTime: 0, // TODO: Calculate actual response time
-      success: args.success,
-      createdAt: Date.now(),
-    });
+    await ctx.runMutation(internal.internal.ai.trackUsage, args);
   },
 });
