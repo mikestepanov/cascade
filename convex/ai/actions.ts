@@ -1,10 +1,10 @@
+/// <reference types="node" />
 /**
  * AI Actions - Convex actions for AI operations
  * These run on Convex backend and can make external API calls
  */
 
 import { getAuthUserId } from "@convex-dev/auth/server";
-/// <reference types="node" />
 
 import { v } from "convex/values";
 import { api } from "../_generated/api";

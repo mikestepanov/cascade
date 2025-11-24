@@ -254,7 +254,9 @@ export const getUsageStats = query({
 
     const byProvider = filtered.reduce<Record<AIProvider, number>>(
       (acc, u) => {
-        acc[u.provider] = (acc[u.provider] || 0) + u.totalTokens;
+        if (u.provider === "anthropic" || u.provider === "openai" || u.provider === "custom") {
+          acc[u.provider] = (acc[u.provider] || 0) + u.totalTokens;
+        }
         return acc;
       },
       { anthropic: 0, openai: 0, custom: 0 },
@@ -262,7 +264,9 @@ export const getUsageStats = query({
 
     const byOperation = filtered.reduce<Record<AIOperation, number>>(
       (acc, u) => {
-        acc[u.operation] = (acc[u.operation] || 0) + 1;
+        if (u.operation === "chat" || u.operation === "suggestion" || u.operation === "automation" || u.operation === "analysis") {
+          acc[u.operation] = (acc[u.operation] || 0) + 1;
+        }
         return acc;
       },
       { chat: 0, suggestion: 0, automation: 0, analysis: 0 },
