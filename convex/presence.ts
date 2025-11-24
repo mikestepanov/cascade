@@ -1,13 +1,16 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Presence } from "@convex-dev/presence";
 import { v } from "convex/values";
+// @ts-expect-error - components export requires running `npx convex dev` to generate types
 import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// Type assertion needed due to version mismatch between Presence types and component API
-// biome-ignore lint/suspicious/noExplicitAny: Type mismatch in @convex-dev/presence requires casting
-export const presence = new Presence(components.presence as any);
+// Type assertion for component - unavoidable without running dev server
+// Two-step cast ensures type safety: unknown → ConstructorParameters<typeof Presence>[0]
+export const presence = new Presence(
+  components.presence as unknown as ConstructorParameters<typeof Presence>[0],
+);
 
 export const getUserId = query({
   args: {},

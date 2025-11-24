@@ -64,7 +64,6 @@ export async function sendEmailNotification(
   }
 
   // Schedule email to be sent (using action)
-  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
   await ctx.scheduler.runAfter(0, internal.email.notifications.sendNotificationEmail, {
     to: user.email as string,
     type,

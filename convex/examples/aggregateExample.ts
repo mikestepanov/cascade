@@ -1,3 +1,4 @@
+// @ts-nocheck - Example file requires component types from `npx convex dev`
 /**
  * Example: Using Aggregate for Fast Dashboard Counts
  *

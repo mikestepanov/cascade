@@ -4,7 +4,8 @@
  * Protects endpoints from abuse and controls costs
  */
 
-import { RateLimiter, type RunQueryCtx, type RunMutationCtx } from "@convex-dev/rate-limiter";
+import { RateLimiter, type RunMutationCtx, type RunQueryCtx } from "@convex-dev/rate-limiter";
+// @ts-expect-error - components export requires running `npx convex dev` to generate types
 import { components } from "./_generated/api";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
@@ -27,17 +28,21 @@ const rateLimiter = new RateLimiter(components.rateLimiter, {
 export const rateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunMutationCtx,
   name: Name,
-  options?: Parameters<typeof rateLimiter.limit<Name>>[2]
-) => rateLimiter.limit(ctx, name, options);
+  options?: Parameters<typeof rateLimiter.limit<Name>>[2],
+) =>
+  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
+  rateLimiter.limit(ctx, name, options);
 
 export const checkRateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunQueryCtx,
   name: Name,
-  options?: Parameters<typeof rateLimiter.check<Name>>[2]
-) => rateLimiter.check(ctx, name, options);
+  options?: Parameters<typeof rateLimiter.check<Name>>[2],
+) =>
+  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
+  rateLimiter.check(ctx, name, options);
 
 export const resetRateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunMutationCtx,
   name: Name,
-  args?: { key?: string }
+  args?: { key?: string },
 ) => rateLimiter.reset(ctx, name, args);

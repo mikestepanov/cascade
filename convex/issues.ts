@@ -2,7 +2,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import {
+  assertCanAccessProject,
+  assertCanEditProject,
+  assertIsProjectAdmin,
+  canAccessProject,
+} from "./projectAccess";
 
 // Helper: Validate parent issue and get inherited epic
 async function validateParentIssue(
@@ -98,7 +103,7 @@ export const create = mutation({
     }
 
     // Check if user can create issues (requires editor role or higher)
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
@@ -166,11 +171,8 @@ export const listByProject = query({
     }
 
     // Check access permissions
-    if (
-      !project.isPublic &&
-      project.createdBy !== userId &&
-      !(userId && project.members.includes(userId))
-    ) {
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
       return [];
     }
 
@@ -238,12 +240,16 @@ export const get = query({
     }
 
     // Check access permissions
-    if (
-      !project.isPublic &&
-      project.createdBy !== userId &&
-      !(userId && project.members.includes(userId))
-    ) {
-      throw new Error("Not authorized to access this issue");
+    if (userId) {
+      const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
+      if (!hasAccess) {
+        throw new Error("Not authorized to access this issue");
+      }
+    } else {
+      // Unauthenticated users can only access public projects
+      if (!project.isPublic) {
+        throw new Error("Not authorized to access this issue");
+      }
     }
 
     const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
@@ -430,7 +436,7 @@ export const updateStatus = mutation({
     }
 
     // Check permissions (requires editor role or higher)
-    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const oldStatus = issue.status;
     const now = Date.now();
@@ -603,7 +609,7 @@ export const update = mutation({
     }
 
     // Check permissions (requires editor role or higher)
-    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const now = Date.now();
     const changes: Array<{
@@ -674,7 +680,7 @@ export const addComment = mutation({
     }
 
     // Check permissions (any role can comment, even viewers)
-    await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, issue.projectId, userId);
 
     const now = Date.now();
     const mentions = args.mentions || [];
@@ -893,7 +899,7 @@ export const search = query({
     for (const issue of searchResults) {
       // Check access permissions
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
+        await assertCanAccessProject(ctx, issue.projectId, userId);
       } catch {
         continue; // User doesn't have access, skip this issue
       }
@@ -990,7 +996,7 @@ export const bulkUpdateStatus = mutation({
 
       // Check permissions
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue; // Skip issues user doesn't have access to
       }
@@ -1047,7 +1053,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1095,7 +1101,7 @@ export const bulkAssign = mutation({
       if (!issue) continue;
 
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1143,7 +1149,7 @@ export const bulkAddLabels = mutation({
       if (!issue) continue;
 
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1192,7 +1198,7 @@ export const bulkMoveToSprint = mutation({
       if (!issue) continue;
 
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1295,7 +1301,7 @@ export const bulkDelete = mutation({
       if (!issue) continue;
 
       try {
-        await assertMinimumRole(ctx, issue.projectId, userId, "admin");
+        await assertIsProjectAdmin(ctx, issue.projectId, userId);
       } catch {
         continue; // Only admins can delete
       }

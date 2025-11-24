@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject } from "./projectAccess";
 
 const filtersValidator = v.object({
   type: v.optional(
@@ -38,7 +38,7 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("savedFilters", {
@@ -64,7 +64,7 @@ export const list = query({
     }
 
     try {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
     } catch {
       return [];
     }

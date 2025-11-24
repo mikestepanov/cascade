@@ -16,7 +16,6 @@ const crons = cronJobs();
 crons.daily(
   "send daily digests",
   { hourUTC: 9, minuteUTC: 0 },
-  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
   internal.email.digests.sendDailyDigests,
 );
 
@@ -27,7 +26,6 @@ crons.daily(
 crons.weekly(
   "send weekly digests",
   { dayOfWeek: "monday", hourUTC: 9, minuteUTC: 0 },
-  // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
   internal.email.digests.sendWeeklyDigests,
 );
 

@@ -6,8 +6,16 @@ import { sendEmail } from "./email/index";
 
 // Helper: Check if user is a platform admin
 async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
-  // For now, anyone who has created a project is considered admin
-  // You can customize this logic based on your needs
+  // Primary: Check if user is admin or owner in any company
+  const companyMembership = await ctx.db
+    .query("companyMembers")
+    .withIndex("by_user", (q) => q.eq("userId", userId))
+    .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
+    .first();
+
+  if (companyMembership) return true;
+
+  // Fallback: Check if user has created a project (backward compatibility)
   const createdProjects = await ctx.db
     .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
@@ -15,7 +23,7 @@ async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">)
 
   if (createdProjects) return true;
 
-  // Also check if user has admin role in any project
+  // Fallback: Check if user has admin role in any project (backward compatibility)
   const adminMembership = await ctx.db
     .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))

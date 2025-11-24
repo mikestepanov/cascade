@@ -60,10 +60,19 @@ const applicationTables = {
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
-    createdBy: v.id("users"),
+    // New multi-tenancy fields
+    companyId: v.optional(v.id("companies")), // Company this project belongs to (optional for backward compat)
+    teamId: v.optional(v.id("teams")), // Team that owns this project
+    ownerId: v.optional(v.id("users")), // User that owns this project (personal project)
+    isCompanyPublic: v.optional(v.boolean()), // Visible to all company members
+    sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
+    // Legacy field (deprecated, use isCompanyPublic instead)
+    isPublic: v.optional(v.boolean()), // Legacy: project visibility
+    // Audit
+    createdBy: v.id("users"), // Who created it (for audit trail)
     createdAt: v.number(),
     updatedAt: v.number(),
-    isPublic: v.boolean(),
+    // Board configuration
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
     workflowStates: v.array(
       v.object({
@@ -81,9 +90,13 @@ const applicationTables = {
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
+    .index("by_company", ["companyId"])
+    .index("by_team", ["teamId"])
+    .index("by_owner", ["ownerId"])
+    .index("by_company_public", ["companyId", "isCompanyPublic"])
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["isPublic", "createdBy"],
+      filterFields: ["isPublic", "createdBy", "companyId", "isCompanyPublic"],
     }),
 
   projectMembers: defineTable({
@@ -1082,6 +1095,7 @@ const applicationTables = {
   invites: defineTable({
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
+    companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
     invitedBy: v.id("users"), // Admin who sent the invite
     token: v.string(), // Unique invitation token
     expiresAt: v.number(), // Expiration timestamp
@@ -1102,10 +1116,113 @@ const applicationTables = {
     .index("by_token", ["token"])
     .index("by_status", ["status"])
     .index("by_invited_by", ["invitedBy"])
-    .index("by_email_status", ["email", "status"]),
+    .index("by_email_status", ["email", "status"])
+    .index("by_company", ["companyId"]),
+
+  // Companies/Organizations (Multi-tenant support)
+  companies: defineTable({
+    name: v.string(), // Company name
+    slug: v.string(), // URL-friendly slug: "acme-corp", "example-agency"
+    timezone: v.string(), // Company default timezone (IANA): "America/New_York", "Europe/London"
+    // Company settings
+    settings: v.optional(
+      v.object({
+        defaultMaxHoursPerWeek: v.number(), // Company-wide default max hours per week
+        defaultMaxHoursPerDay: v.number(), // Company-wide default max hours per day
+        requiresTimeApproval: v.boolean(), // Require time entry approval by default
+        billingEnabled: v.boolean(), // Enable billing features
+      }),
+    ),
+    // Metadata
+    createdBy: v.id("users"), // Company creator (becomes owner)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_creator", ["createdBy"])
+    .searchIndex("search_name", {
+      searchField: "name",
+    }),
+
+  // Company Members (User-Company relationships with roles)
+  companyMembers: defineTable({
+    companyId: v.id("companies"),
+    userId: v.id("users"),
+    role: v.union(
+      v.literal("owner"), // Company owner (creator, can't be removed, full control)
+      v.literal("admin"), // Company admin (can manage members, settings, billing)
+      v.literal("member"), // Regular member (can use company resources)
+    ),
+    addedBy: v.id("users"), // Who added this member
+    addedAt: v.number(),
+  })
+    .index("by_company", ["companyId"])
+    .index("by_user", ["userId"])
+    .index("by_company_user", ["companyId", "userId"])
+    .index("by_role", ["role"])
+    .index("by_company_role", ["companyId", "role"]),
+
+  // Teams (within a company - for data isolation and grouping)
+  teams: defineTable({
+    companyId: v.id("companies"), // Company this team belongs to
+    name: v.string(), // Team name: "Product Team", "Dev Team", "Design Team"
+    slug: v.string(), // URL-friendly slug: "product-team", "dev-team"
+    description: v.optional(v.string()),
+    // Team settings
+    isPrivate: v.boolean(), // If true, team projects are private by default
+    // Metadata
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_company", ["companyId"])
+    .index("by_company_slug", ["companyId", "slug"])
+    .index("by_creator", ["createdBy"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["companyId"],
+    }),
+
+  // Team Members (User-Team relationships)
+  teamMembers: defineTable({
+    teamId: v.id("teams"),
+    userId: v.id("users"),
+    role: v.union(
+      v.literal("lead"), // Team lead (can manage team members and settings)
+      v.literal("member"), // Regular team member
+    ),
+    addedBy: v.id("users"),
+    addedAt: v.number(),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_user", ["userId"])
+    .index("by_team_user", ["teamId", "userId"])
+    .index("by_role", ["role"]),
 };
 
 export default defineSchema({
   ...authTables,
   ...applicationTables,
+  // Override users table to add custom fields (must include all auth fields)
+  users: defineTable({
+    // Required auth fields from @convex-dev/auth
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    image: v.optional(v.string()),
+    isAnonymous: v.optional(v.boolean()),
+    // Custom fields for Cascade
+    defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
+    timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
+    bio: v.optional(v.string()), // User bio/description
+    emailNotifications: v.optional(v.boolean()), // Email notification preference
+    desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
+  })
+    .index("email", ["email"])
+    .index("emailVerificationTime", ["emailVerificationTime"])
+    .index("phone", ["phone"])
+    .index("phoneVerificationTime", ["phoneVerificationTime"])
+    .index("defaultCompany", ["defaultCompanyId"]),
 });

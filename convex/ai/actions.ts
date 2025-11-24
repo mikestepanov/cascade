@@ -47,13 +47,13 @@ export const sendChatMessage = action({
 - Total Issues: ${projectData.stats.totalIssues}
 - In Progress: ${projectData.stats.inProgress}
 - Completed: ${projectData.stats.completed}
-- Team Members: ${projectData.members.map(m => m.name).join(", ")}`;
+- Team Members: ${projectData.members.map((m: { name?: string }) => m.name).join(", ")}`;
     }
 
     // Build message array for AI
     const aiMessages: AIMessage[] = [
       { role: "system", content: systemContext },
-      ...messages.map(m => ({
+      ...messages.map((m: { role: string; content: string }) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       })),
@@ -140,8 +140,8 @@ ${args.issueDescription ? `Description: ${args.issueDescription}` : ""}
 
 Project Context:
 - Project: ${projectData.project.name}
-- Available Labels: ${projectData.labels.map(l => l.name).join(", ")}
-- Team Members: ${projectData.members.map(m => m.name).join(", ")}
+- Available Labels: ${projectData.labels.map((l: { name: string }) => l.name).join(", ")}
+- Team Members: ${projectData.members.map((m: { name?: string }) => m.name).join(", ")}
 
 Please provide:
 ${args.suggestionTypes.includes("description") ? "- A detailed description (if missing or brief)\n" : ""}
@@ -237,12 +237,12 @@ Issue Distribution:
 - By Priority: ${JSON.stringify(analytics.issuesByPriority)}
 
 Team Velocity (last ${velocity.velocityData.length} sprints):
-${velocity.velocityData.map(v => `- ${v.sprintName}: ${v.points} points`).join("\n")}
+${velocity.velocityData.map((v: { sprintName: string; points: number }) => `- ${v.sprintName}: ${v.points} points`).join("\n")}
 
 Recent Activity (last 20 events):
 ${recentActivity
   .slice(0, 10)
-  .map(a => `- ${a.action}: ${a.issueTitle}`)
+  .map((a: { action: string; issueTitle?: string }) => `- ${a.action}: ${a.issueTitle}`)
   .join("\n")}
 
 Please provide:
@@ -347,7 +347,7 @@ Distribution:
 - By Priority: ${JSON.stringify(analytics.issuesByPriority)}
 
 Active Sprint: ${projectData.activeSprint?.name || "None"}
-Team: ${projectData.members.map(m => m.name).join(", ")}`;
+Team: ${projectData.members.map((m: { name?: string }) => m.name).join(", ")}`;
 
     const aiMessages: AIMessage[] = [
       {

@@ -8,7 +8,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertIsProjectAdmin } from "./projectAccess";
 
 // Create a webhook
 export const create = mutation({
@@ -24,7 +24,7 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Only admins can create webhooks
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const webhookId = await ctx.db.insert("webhooks", {
       projectId: args.projectId,
@@ -49,7 +49,7 @@ export const listByProject = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Only admins can view webhooks
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const webhooks = await ctx.db
       .query("webhooks")
@@ -78,7 +78,7 @@ export const update = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can update webhooks
-    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -102,7 +102,7 @@ export const remove = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can delete webhooks
-    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     await ctx.db.delete(args.id);
   },
@@ -217,7 +217,7 @@ export const listExecutions = query({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can view webhook logs
-    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const executions = await ctx.db
       .query("webhookExecutions")
@@ -240,7 +240,7 @@ export const test = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can test webhooks
-    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the test webhook delivery
     await ctx.scheduler.runAfter(0, internal.webhooks.deliverTestWebhook, {
@@ -367,7 +367,7 @@ export const retryExecution = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
-    await assertMinimumRole(ctx, webhook.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the retry
     await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {

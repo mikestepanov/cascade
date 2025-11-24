@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 /**
  * Native Time Tracking - Kimai-like Features
@@ -73,7 +73,7 @@ export const startTimer = mutation({
 
     // Check project permissions if specified
     if (args.projectId) {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
     }
 
     // Get user's current rate
@@ -170,7 +170,7 @@ export const createTimeEntry = mutation({
 
     // Check project permissions if specified
     if (args.projectId) {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
     }
 
     // Validate time range
@@ -455,7 +455,7 @@ export const getBurnRate = query({
     }
 
     // Check permissions
-    await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     // Get all time entries in date range
     const entries = await ctx.db
@@ -537,7 +537,7 @@ export const getTeamCosts = query({
     // Get all time entries in date range
     let entries: Doc<"timeEntries">[];
     if (args.projectId) {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
@@ -623,7 +623,7 @@ export const setUserRate = mutation({
 
     // Check permissions - must be admin of project or setting own rate
     if (args.projectId) {
-      await assertMinimumRole(ctx, args.projectId, currentUserId, "admin");
+      await assertIsProjectAdmin(ctx, args.projectId, currentUserId);
     } else if (args.userId !== currentUserId) {
       throw new Error("Not authorized");
     }
@@ -689,7 +689,7 @@ export const listUserRates = query({
 
     // Check permissions if project-specific
     if (args.projectId) {
-      await assertMinimumRole(ctx, args.projectId, userId, "admin");
+      await assertIsProjectAdmin(ctx, args.projectId, userId);
     }
 
     const rates = args.projectId

@@ -199,7 +199,7 @@ export const sendNotificationEmail = internalAction({
     dueDate: v.optional(v.number()),
     commentText: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; id?: string; error?: string }> => {
     const {
       to,
       userId,
@@ -218,7 +218,6 @@ export const sendNotificationEmail = internalAction({
     // Send appropriate email based on type
     switch (type) {
       case "mention":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendMentionEmail, {
           to,
           userId,
@@ -231,7 +230,6 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "assigned":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendAssignmentEmail, {
           to,
           userId,
@@ -246,7 +244,6 @@ export const sendNotificationEmail = internalAction({
         });
 
       case "comment":
-        // @ts-expect-error - Convex bug: subdirectory modules not typed in internal export
         return await ctx.runAction(internal.email.notifications.sendCommentEmail, {
           to,
           userId,
@@ -313,7 +310,8 @@ export const sendDigestEmail = internalAction({
     const { DigestEmail } = await import("../../emails/DigestEmail");
 
     // Format notifications into digest items
-    const items = notifications.map((n) => ({
+    // biome-ignore lint/suspicious/noExplicitAny: Notification query result type is complex union
+    const items = notifications.map((n: any) => ({
       type: n.type as "mention" | "assignment" | "comment",
       issueKey: n.issueKey || "Unknown",
       issueTitle: n.title,
@@ -340,7 +338,8 @@ export const sendDigestEmail = internalAction({
       to: user.email,
       subject: `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`,
       html,
-      text: `Your ${frequency} digest:\n\n${items.map((i) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
+      // biome-ignore lint/suspicious/noExplicitAny: Digest item type inferred from map above
+      text: `Your ${frequency} digest:\n\n${items.map((i: any) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
     return result;

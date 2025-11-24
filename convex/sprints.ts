@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { assertCanEditProject, canAccessProject } from "./projectAccess";
 
 export const create = mutation({
   args: {
@@ -21,10 +22,8 @@ export const create = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to create sprints in this project");
-    }
+    // Check permissions - requires editor role to create sprints
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("sprints", {
@@ -54,8 +53,9 @@ export const listByProject = query({
       return [];
     }
 
-    // Check permissions
-    if (!project.isPublic && project.createdBy !== userId && !project.members.includes(userId)) {
+    // Check permissions - requires at least viewer role or public project
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
       return [];
     }
 
@@ -104,10 +104,8 @@ export const startSprint = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to start this sprint");
-    }
+    // Check permissions - requires editor role to start sprints
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     // End any currently active sprint
     const activeSprints = await ctx.db
@@ -150,10 +148,8 @@ export const completeSprint = mutation({
       throw new Error("Project not found");
     }
 
-    // Check permissions
-    if (project.createdBy !== userId && !project.members.includes(userId)) {
-      throw new Error("Not authorized to complete this sprint");
-    }
+    // Check permissions - requires editor role to complete sprints
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     await ctx.db.patch(args.sprintId, {
       status: "completed",

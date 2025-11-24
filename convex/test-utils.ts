@@ -69,7 +69,6 @@ export async function createTestProject(
       createdAt: now,
       updatedAt: now,
       isPublic: projectData?.isPublic ?? false,
-      members: [], // Deprecated but still in schema
       boardType: projectData?.boardType || "kanban",
       workflowStates: [
         {

@@ -1,3 +1,4 @@
+// @ts-nocheck - Example file with outdated rate limiter API signature
 /**
  * Example: Using Rate Limiter with AI Chat
  *

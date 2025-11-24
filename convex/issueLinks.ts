@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanEditProject } from "./projectAccess";
 
 export const create = mutation({
   args: {
@@ -20,7 +20,7 @@ export const create = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertMinimumRole(ctx, fromIssue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, fromIssue.projectId, userId);
 
     // Check if link already exists
     const existing = await ctx.db
@@ -79,7 +79,7 @@ export const remove = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     await ctx.db.delete(args.linkId);
 

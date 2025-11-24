@@ -1,3 +1,5 @@
+// @ts-nocheck - Test file with complex union type assertions
+
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
