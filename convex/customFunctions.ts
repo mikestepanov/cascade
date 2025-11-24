@@ -13,7 +13,7 @@ import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getUserRole } from "./rbac";
+import { getProjectRole } from "./projectAccess";
 
 /**
  * Authenticated Query
@@ -72,7 +72,7 @@ export const projectQuery = customQuery(query, {
     }
 
     // Check if user is member or project is public
-    const role = await getUserRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     if (!(role || project.isPublic)) {
       throw new Error("Access denied - not a project member");
     }
@@ -101,7 +101,7 @@ export const viewerMutation = customMutation(mutation, {
       throw new Error("Project not found");
     }
 
-    const role = await getUserRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     if (!role) {
       throw new Error("Access denied - must be a project member");
     }
@@ -130,7 +130,7 @@ export const editorMutation = customMutation(mutation, {
       throw new Error("Project not found");
     }
 
-    const role = await getUserRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
 
     // Check minimum role
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
@@ -165,7 +165,7 @@ export const adminMutation = customMutation(mutation, {
       throw new Error("Project not found");
     }
 
-    const role = await getUserRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
 
     if (role !== "admin") {
       throw new Error("Access denied - admin role required");

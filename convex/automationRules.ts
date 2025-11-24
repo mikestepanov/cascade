@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 export const list = query({
   args: {
@@ -12,7 +12,7 @@ export const list = query({
     if (!userId) return [];
 
     try {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
     } catch {
       return [];
     }
@@ -40,7 +40,7 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("automationRules", {
@@ -82,7 +82,7 @@ export const update = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertMinimumRole(ctx, rule.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, rule.projectId, userId);
 
     const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
@@ -112,7 +112,7 @@ export const remove = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertMinimumRole(ctx, rule.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, rule.projectId, userId);
 
     await ctx.db.delete(args.id);
   },

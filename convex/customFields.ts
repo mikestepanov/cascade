@@ -2,7 +2,11 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import {
+  assertCanAccessProject,
+  assertCanEditProject,
+  assertIsProjectAdmin,
+} from "./projectAccess";
 
 // Helper: Validate number field value
 function validateNumberField(value: string): void {
@@ -55,7 +59,7 @@ export const list = query({
     if (!userId) return [];
 
     try {
-      await assertMinimumRole(ctx, args.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, args.projectId, userId);
     } catch {
       return [];
     }
@@ -92,7 +96,7 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Check if field key already exists for this project
     const existing = await ctx.db
@@ -140,7 +144,7 @@ export const update = mutation({
       throw new Error("Field not found");
     }
 
-    await assertMinimumRole(ctx, field.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, field.projectId, userId);
 
     const updates: Partial<typeof field> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -168,7 +172,7 @@ export const remove = mutation({
       throw new Error("Field not found");
     }
 
-    await assertMinimumRole(ctx, field.projectId, userId, "admin");
+    await assertIsProjectAdmin(ctx, field.projectId, userId);
 
     // Delete all values for this field
     const values = await ctx.db
@@ -197,7 +201,7 @@ export const getValuesForIssue = query({
     if (!issue) return [];
 
     try {
-      await assertMinimumRole(ctx, issue.projectId, userId, "viewer");
+      await assertCanAccessProject(ctx, issue.projectId, userId);
     } catch {
       return [];
     }
@@ -240,7 +244,7 @@ export const setValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const field = await ctx.db.get(args.fieldId);
     if (!field) {
@@ -299,7 +303,7 @@ export const removeValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertMinimumRole(ctx, issue.projectId, userId, "editor");
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const existing = await ctx.db
       .query("customFieldValues")

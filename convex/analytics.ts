@@ -14,7 +14,7 @@ import {
   issueCountByStatus,
   issueCountByType,
 } from "./aggregates";
-import { canAccessProject } from "./rbac";
+import { canAccessProject } from "./projectAccess";
 
 /**
  * Get project analytics overview
