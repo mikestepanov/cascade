@@ -6,12 +6,14 @@
  *
  * Note: Type checking disabled due to circular reference in action definitions.
  * Actions calling internal actions from convex/ai.ts create circular type dependencies.
- * This is a TypeScript limitation and does not affect runtime behavior.
+ * This is a Convex framework limitation, not a code quality issue.
+ * The code uses type-safe helpers (asVectorResults) to avoid 'as any' casts where possible.
  */
 
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { action } from "../_generated/server";
+import { asVectorResults } from "../lib/vectorSearchHelpers";
 import { rateLimit } from "../rateLimits";
 
 /**
@@ -47,10 +49,12 @@ export const searchSimilarIssues = action({
       filter: (q) => q.eq("projectId", args.projectId),
     });
 
+    // Convert vector search results to typed format
+    const typedResults = asVectorResults<"issues">(results);
+
     // Fetch full issue details
     const issues = await Promise.all(
-      // biome-ignore lint/suspicious/noExplicitAny: Vector search result ID type is generic
-      results.map(async (result: { _id: any; _score: number }) => {
+      typedResults.map(async (result) => {
         const issue = await ctx.runQuery(internal.ai.getIssueData, {
           issueId: result._id,
         });
@@ -84,11 +88,14 @@ export const getRelatedIssues = action({
     }
 
     // Vector search using the issue's embedding
-    const results = await ctx.vectorSearch("issues", "by_embedding", {
+    const rawResults = await ctx.vectorSearch("issues", "by_embedding", {
       vector: issue.embedding,
       limit: (args.limit || 5) + 1, // +1 to exclude self
       filter: (q) => q.eq("projectId", issue.projectId),
     });
+
+    // Convert to typed results
+    const results = asVectorResults<"issues">(rawResults);
 
     // Filter out the original issue and fetch details
     const relatedIssues = await Promise.all(
@@ -130,11 +137,14 @@ export const findPotentialDuplicates = action({
     });
 
     // Search for similar issues
-    const results = await ctx.vectorSearch("issues", "by_embedding", {
+    const rawResults = await ctx.vectorSearch("issues", "by_embedding", {
       vector: embedding,
       limit: 10,
       filter: (q) => q.eq("projectId", args.projectId),
     });
+
+    // Convert to typed results
+    const results = asVectorResults<"issues">(rawResults);
 
     const threshold = args.threshold || 0.85; // High similarity threshold
 

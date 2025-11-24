@@ -6,9 +6,11 @@ import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// Type assertion needed due to version mismatch between Presence types and component API
-// biome-ignore lint/suspicious/noExplicitAny: Type mismatch in @convex-dev/presence requires casting
-export const presence = new Presence(components.presence as any);
+// Type assertion for component - unavoidable without running dev server
+// Using 'unknown' first makes this a safe two-step cast instead of direct 'any'
+export const presence = new Presence(
+  components.presence as unknown as ConstructorParameters<typeof Presence>[0],
+);
 
 export const getUserId = query({
   args: {},

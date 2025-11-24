@@ -8,9 +8,9 @@
  * - AI suggestions (descriptions, priorities, labels)
  *
  * Note: Type checking disabled due to circular reference in Convex action definitions.
- * TypeScript cannot infer types when actions call other internal actions in the same file.
- * This is a known limitation and does not affect runtime behavior.
- * See: https://github.com/get-convex/convex-js/issues/circular-action-types
+ * Actions calling internal actions in the same file create circular type dependencies.
+ * This is a Convex framework limitation, not a code quality issue.
+ * The code uses type-safe helpers (extractUsage) to avoid 'as any' casts where possible.
  */
 
 import { openai } from "@ai-sdk/openai";
@@ -19,6 +19,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { action, internalAction, internalMutation, internalQuery } from "./_generated/server";
+import { extractUsage } from "./lib/aiHelpers";
 import { rateLimit } from "./rateLimits";
 
 /**
@@ -179,14 +180,16 @@ Be concise, helpful, and professional.`;
       ],
     });
 
+    // Extract usage information type-safely
+    const usage = extractUsage(response.usage);
+
     // Store AI response
     await ctx.runMutation(internal.ai.addMessage, {
       chatId,
       role: "assistant",
       content: response.text,
       modelUsed: "gpt-4o-mini",
-      // biome-ignore lint/suspicious/noExplicitAny: AI SDK usage types are provider-specific
-      tokensUsed: (response.usage as any)?.totalTokens,
+      tokensUsed: usage.totalTokens,
     });
 
     // Track usage
@@ -196,20 +199,9 @@ Be concise, helpful, and professional.`;
       provider: "openai",
       model: "gpt-4o-mini",
       operation: "chat",
-      // Use actual token counts if available, otherwise estimate from totalTokens
-      // Note: AI SDK v4 usage types may vary by provider
-      promptTokens:
-        // biome-ignore lint/suspicious/noExplicitAny: AI SDK v4 usage object structure varies by provider
-        (response.usage as any)?.promptTokens ??
-        // biome-ignore lint/suspicious/noExplicitAny: AI SDK v4 usage object structure varies by provider
-        Math.floor(((response.usage as any)?.totalTokens ?? 0) * 0.7),
-      completionTokens:
-        // biome-ignore lint/suspicious/noExplicitAny: AI SDK v4 usage object structure varies by provider
-        (response.usage as any)?.completionTokens ??
-        // biome-ignore lint/suspicious/noExplicitAny: AI SDK v4 usage object structure varies by provider
-        Math.floor(((response.usage as any)?.totalTokens ?? 0) * 0.3),
-      // biome-ignore lint/suspicious/noExplicitAny: AI SDK v4 usage object structure varies by provider
-      totalTokens: (response.usage as any)?.totalTokens ?? 0,
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
       success: true,
     });
 
