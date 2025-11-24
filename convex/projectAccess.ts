@@ -1,4 +1,4 @@
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
 import { getTeamRole } from "./teams";
@@ -6,6 +6,84 @@ import { getTeamRole } from "./teams";
 // ============================================================================
 // Project Access Control Helpers
 // ============================================================================
+
+/**
+ * Check company-level access permissions
+ */
+async function checkCompanyAccess(
+  ctx: QueryCtx | MutationCtx,
+  project: Doc<"projects">,
+  userId: Id<"users">,
+): Promise<boolean> {
+  const companyId = project.companyId;
+  if (!companyId) return false;
+
+  // 1. Company admin has full access
+  const isAdmin = await isCompanyAdmin(ctx, companyId, userId);
+  if (isAdmin) return true;
+
+  // 2. Company-public project + user is company member
+  if (project.isCompanyPublic) {
+    const companyMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_company_user", (q) => q.eq("companyId", companyId).eq("userId", userId))
+      .first();
+
+    if (companyMembership) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check team-level access permissions
+ */
+async function checkTeamAccess(
+  ctx: QueryCtx | MutationCtx,
+  project: Doc<"projects">,
+  userId: Id<"users">,
+): Promise<boolean> {
+  // 1. User is member of owning team
+  if (project.teamId) {
+    const teamRole = await getTeamRole(ctx, project.teamId, userId);
+    if (teamRole) return true;
+  }
+
+  // 2. User is member of shared team
+  if (project.sharedWithTeamIds) {
+    for (const sharedTeamId of project.sharedWithTeamIds) {
+      const teamRole = await getTeamRole(ctx, sharedTeamId, userId);
+      if (teamRole) return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check direct user access (Owner, Creator, Collaborator)
+ */
+async function checkDirectAccess(
+  ctx: QueryCtx | MutationCtx,
+  project: Doc<"projects">,
+  userId: Id<"users">,
+): Promise<boolean> {
+  // 1. User owns the project
+  if (project.ownerId === userId) return true;
+
+  // 2. Legacy: creator has access
+  if (project.createdBy === userId) return true;
+
+  // 3. User is individual collaborator (projectMembers)
+  const projectMembership = await ctx.db
+    .query("projectMembers")
+    .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .first();
+
+  if (projectMembership) return true;
+
+  return false;
+}
 
 /**
  * Check if user can access a project (read access)
@@ -26,53 +104,13 @@ export async function canAccessProject(
   const project = await ctx.db.get(projectId);
   if (!project) return false;
 
-  // 1. Company admin has full access (if project belongs to company)
-  if (project.companyId) {
-    const isAdmin = await isCompanyAdmin(ctx, project.companyId, userId);
-    if (isAdmin) return true;
-  }
-
-  // 2. Company-public project + user is company member
-  if (project.isCompanyPublic && project.companyId) {
-    const companyId = project.companyId; // Extract to help TypeScript narrow type
-    const companyMembership = await ctx.db
-      .query("companyMembers")
-      .withIndex("by_company_user", (q) => q.eq("companyId", companyId).eq("userId", userId))
-      .first();
-
-    if (companyMembership) return true;
-  }
-
   // Legacy: check isPublic field for backward compatibility
   if (project.isPublic) return true;
 
-  // 3. User owns the project
-  if (project.ownerId === userId) return true;
-
-  // Legacy: creator has access
-  if (project.createdBy === userId) return true;
-
-  // 4. User is member of owning team
-  if (project.teamId) {
-    const teamRole = await getTeamRole(ctx, project.teamId, userId);
-    if (teamRole) return true;
-  }
-
-  // 5. User is individual collaborator (projectMembers)
-  const projectMembership = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .first();
-
-  if (projectMembership) return true;
-
-  // 6. User is member of shared team
-  if (project.sharedWithTeamIds) {
-    for (const sharedTeamId of project.sharedWithTeamIds) {
-      const teamRole = await getTeamRole(ctx, sharedTeamId, userId);
-      if (teamRole) return true;
-    }
-  }
+  // Check access levels in order of likelihood/performance
+  if (await checkDirectAccess(ctx, project, userId)) return true;
+  if (await checkTeamAccess(ctx, project, userId)) return true;
+  if (await checkCompanyAccess(ctx, project, userId)) return true;
 
   return false;
 }
