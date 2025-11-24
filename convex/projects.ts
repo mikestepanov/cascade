@@ -1,15 +1,22 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole, getUserRole } from "./rbac";
+import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 
 export const create = mutation({
   args: {
     name: v.string(),
     key: v.string(),
     description: v.optional(v.string()),
-    isPublic: v.boolean(),
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    // New ownership fields
+    companyId: v.optional(v.id("companies")), // Company this project belongs to
+    teamId: v.optional(v.id("teams")), // Team owner (optional)
+    ownerId: v.optional(v.id("users")), // User owner (optional, defaults to creator if not team project)
+    isCompanyPublic: v.optional(v.boolean()), // Share with company
+    sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
+    // Legacy field for backward compatibility
+    isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -35,6 +42,9 @@ export const create = mutation({
       { id: "done", name: "Done", category: "done" as const, order: 3 },
     ];
 
+    // Determine ownership: if teamId provided, it's a team project; otherwise user-owned
+    const ownerId = args.teamId ? undefined : args.ownerId || userId;
+
     const projectId = await ctx.db.insert("projects", {
       name: args.name,
       key: args.key.toUpperCase(),
@@ -42,12 +52,19 @@ export const create = mutation({
       createdBy: userId,
       createdAt: now,
       updatedAt: now,
-      isPublic: args.isPublic,
       boardType: args.boardType,
       workflowStates: defaultWorkflowStates,
+      // Ownership & sharing
+      companyId: args.companyId,
+      teamId: args.teamId,
+      ownerId,
+      isCompanyPublic: args.isCompanyPublic ?? false,
+      sharedWithTeamIds: args.sharedWithTeamIds ?? [],
+      // Legacy
+      isPublic: args.isPublic ?? false,
     });
 
-    // Add creator as admin in projectMembers table
+    // Add creator as admin in projectMembers table (for individual access control)
     await ctx.db.insert("projectMembers", {
       projectId,
       userId,
@@ -68,19 +85,16 @@ export const list = query({
       return [];
     }
 
-    // Get projects where user is a member
-    const memberInProjects = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
-    const memberProjectIds = memberInProjects.map((m) => m.projectId);
-
-    // Get all projects and filter for public, created by user, or member in
+    // Get all projects and filter using new access control
     const allProjects = await ctx.db.query("projects").collect();
-    const accessibleProjects = allProjects.filter(
-      (project) =>
-        project.isPublic || project.createdBy === userId || memberProjectIds.includes(project._id),
-    );
+    const accessibleProjects = [];
+
+    for (const project of allProjects) {
+      const hasAccess = await canAccessProject(ctx, project._id, userId);
+      if (hasAccess) {
+        accessibleProjects.push(project);
+      }
+    }
 
     return await Promise.all(
       accessibleProjects.map(async (project) => {
@@ -91,16 +105,14 @@ export const list = query({
           .collect()
           .then((issues) => issues.length);
 
-        const userRole = await getUserRole(ctx, project._id, userId);
-        const isMember = memberProjectIds.includes(project._id);
+        const userRole = await getProjectRole(ctx, project._id, userId);
 
         return {
           ...project,
           creatorName: creator?.name || creator?.email || "Unknown",
           issueCount,
-          isMember,
-          isOwner: project.createdBy === userId,
-          userRole, // Add user's role in the project
+          isOwner: project.ownerId === userId || project.createdBy === userId,
+          userRole,
         };
       }),
     );
@@ -117,16 +129,17 @@ export const get = query({
       return null;
     }
 
-    // Check access permissions
-    const isMember =
-      userId &&
-      (await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
-        .first());
-
-    if (!project.isPublic && project.createdBy !== userId && !isMember) {
-      throw new Error("Not authorized to access this project");
+    // Check access permissions using new access control
+    if (userId) {
+      const hasAccess = await canAccessProject(ctx, project._id, userId);
+      if (!hasAccess) {
+        throw new Error("Not authorized to access this project");
+      }
+    } else {
+      // Unauthenticated users can only access public projects
+      if (!project.isPublic) {
+        throw new Error("Not authorized to access this project");
+      }
     }
 
     const creator = await ctx.db.get(project.createdBy);
@@ -151,14 +164,13 @@ export const get = query({
       }),
     );
 
-    const userRole = userId ? await getUserRole(ctx, project._id, userId) : null;
+    const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
 
     return {
       ...project,
       creatorName: creator?.name || creator?.email || "Unknown",
       members,
-      isMember: !!isMember,
-      isOwner: project.createdBy === userId,
+      isOwner: project.ownerId === userId || project.createdBy === userId,
       userRole,
     };
   },
@@ -187,8 +199,8 @@ export const updateWorkflow = mutation({
       throw new Error("Project not found");
     }
 
-    // Only admins can modify workflow
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    // Only project admins can modify workflow
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     await ctx.db.patch(args.projectId, {
       workflowStates: args.workflowStates,
@@ -214,8 +226,8 @@ export const addMember = mutation({
       throw new Error("Project not found");
     }
 
-    // Only admins can add members
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    // Only project admins can add members
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Find user by email
     const user = await ctx.db
@@ -267,12 +279,12 @@ export const updateMemberRole = mutation({
       throw new Error("Project not found");
     }
 
-    // Only admins can change roles
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    // Only project admins can change roles
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
-    // Can't change creator's role
-    if (project.createdBy === args.memberId) {
-      throw new Error("Cannot change project creator's role");
+    // Can't change project owner's role
+    if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
+      throw new Error("Cannot change project owner's role");
     }
 
     // Find membership
@@ -309,12 +321,12 @@ export const removeMember = mutation({
       throw new Error("Project not found");
     }
 
-    // Only admins can remove members
-    await assertMinimumRole(ctx, args.projectId, userId, "admin");
+    // Only project admins can remove members
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
-    // Can't remove the creator
-    if (project.createdBy === args.memberId) {
-      throw new Error("Cannot remove project creator");
+    // Can't remove the project owner
+    if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
+      throw new Error("Cannot remove project owner");
     }
 
     // Find and delete membership
