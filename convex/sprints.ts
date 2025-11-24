@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertMinimumRole, canAccessProject } from "./rbac";
+import { assertCanEditProject, canAccessProject } from "./projectAccess";
 
 export const create = mutation({
   args: {
@@ -23,7 +23,7 @@ export const create = mutation({
     }
 
     // Check permissions - requires editor role to create sprints
-    await assertMinimumRole(ctx, args.projectId, userId, "editor");
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("sprints", {
@@ -105,7 +105,7 @@ export const startSprint = mutation({
     }
 
     // Check permissions - requires editor role to start sprints
-    await assertMinimumRole(ctx, sprint.projectId, userId, "editor");
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     // End any currently active sprint
     const activeSprints = await ctx.db
@@ -149,7 +149,7 @@ export const completeSprint = mutation({
     }
 
     // Check permissions - requires editor role to complete sprints
-    await assertMinimumRole(ctx, sprint.projectId, userId, "editor");
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     await ctx.db.patch(args.sprintId, {
       status: "completed",
