@@ -107,7 +107,7 @@ export async function canAccessProject(
   // Legacy: check isPublic field for backward compatibility
   if (project.isPublic) return true;
 
-  // Check access levels in order of likelihood/performance
+  // Check access levels in order of specificity: direct, then team, then company
   if (await checkDirectAccess(ctx, project, userId)) return true;
   if (await checkTeamAccess(ctx, project, userId)) return true;
   if (await checkCompanyAccess(ctx, project, userId)) return true;
