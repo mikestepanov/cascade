@@ -60,6 +60,7 @@ const applicationTables = {
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
+    companyId: v.optional(v.id("companies")), // Company that owns this project (optional)
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -81,9 +82,10 @@ const applicationTables = {
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
+    .index("by_company", ["companyId"])
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["isPublic", "createdBy"],
+      filterFields: ["isPublic", "createdBy", "companyId"],
     }),
 
   projectMembers: defineTable({
@@ -1082,6 +1084,7 @@ const applicationTables = {
   invites: defineTable({
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
+    companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
     invitedBy: v.id("users"), // Admin who sent the invite
     token: v.string(), // Unique invitation token
     expiresAt: v.number(), // Expiration timestamp
@@ -1102,7 +1105,51 @@ const applicationTables = {
     .index("by_token", ["token"])
     .index("by_status", ["status"])
     .index("by_invited_by", ["invitedBy"])
-    .index("by_email_status", ["email", "status"]),
+    .index("by_email_status", ["email", "status"])
+    .index("by_company", ["companyId"]),
+
+  // Companies/Organizations (Multi-tenant support)
+  companies: defineTable({
+    name: v.string(), // Company name
+    slug: v.string(), // URL-friendly slug: "acme-corp", "example-agency"
+    timezone: v.string(), // Company default timezone (IANA): "America/New_York", "Europe/London"
+    // Company settings
+    settings: v.optional(
+      v.object({
+        defaultMaxHoursPerWeek: v.number(), // Company-wide default max hours per week
+        defaultMaxHoursPerDay: v.number(), // Company-wide default max hours per day
+        requiresTimeApproval: v.boolean(), // Require time entry approval by default
+        billingEnabled: v.boolean(), // Enable billing features
+      }),
+    ),
+    // Metadata
+    createdBy: v.id("users"), // Company creator (becomes owner)
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_creator", ["createdBy"])
+    .searchIndex("search_name", {
+      searchField: "name",
+    }),
+
+  // Company Members (User-Company relationships with roles)
+  companyMembers: defineTable({
+    companyId: v.id("companies"),
+    userId: v.id("users"),
+    role: v.union(
+      v.literal("owner"), // Company owner (creator, can't be removed, full control)
+      v.literal("admin"), // Company admin (can manage members, settings, billing)
+      v.literal("member"), // Regular member (can use company resources)
+    ),
+    addedBy: v.id("users"), // Who added this member
+    addedAt: v.number(),
+  })
+    .index("by_company", ["companyId"])
+    .index("by_user", ["userId"])
+    .index("by_company_user", ["companyId", "userId"])
+    .index("by_role", ["role"])
+    .index("by_company_role", ["companyId", "role"]),
 };
 
 export default defineSchema({
@@ -1119,6 +1166,7 @@ export default defineSchema({
     image: v.optional(v.string()),
     isAnonymous: v.optional(v.boolean()),
     // Custom fields for Cascade
+    defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
     timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
     bio: v.optional(v.string()), // User bio/description
     emailNotifications: v.optional(v.boolean()), // Email notification preference
@@ -1127,5 +1175,6 @@ export default defineSchema({
     .index("email", ["email"])
     .index("emailVerificationTime", ["emailVerificationTime"])
     .index("phone", ["phone"])
-    .index("phoneVerificationTime", ["phoneVerificationTime"]),
+    .index("phoneVerificationTime", ["phoneVerificationTime"])
+    .index("defaultCompany", ["defaultCompanyId"]),
 });
