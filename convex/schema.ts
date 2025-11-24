@@ -60,11 +60,19 @@ const applicationTables = {
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
-    companyId: v.optional(v.id("companies")), // Company that owns this project (optional)
-    createdBy: v.id("users"),
+    // New multi-tenancy fields
+    companyId: v.optional(v.id("companies")), // Company this project belongs to (optional for backward compat)
+    teamId: v.optional(v.id("teams")), // Team that owns this project
+    ownerId: v.optional(v.id("users")), // User that owns this project (personal project)
+    isCompanyPublic: v.optional(v.boolean()), // Visible to all company members
+    sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
+    // Legacy field (deprecated, use isCompanyPublic instead)
+    isPublic: v.optional(v.boolean()), // Legacy: project visibility
+    // Audit
+    createdBy: v.id("users"), // Who created it (for audit trail)
     createdAt: v.number(),
     updatedAt: v.number(),
-    isPublic: v.boolean(),
+    // Board configuration
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
     workflowStates: v.array(
       v.object({
@@ -83,9 +91,12 @@ const applicationTables = {
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
     .index("by_company", ["companyId"])
+    .index("by_team", ["teamId"])
+    .index("by_owner", ["ownerId"])
+    .index("by_company_public", ["companyId", "isCompanyPublic"])
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["isPublic", "createdBy", "companyId"],
+      filterFields: ["isPublic", "createdBy", "companyId", "isCompanyPublic"],
     }),
 
   projectMembers: defineTable({
@@ -1150,6 +1161,43 @@ const applicationTables = {
     .index("by_company_user", ["companyId", "userId"])
     .index("by_role", ["role"])
     .index("by_company_role", ["companyId", "role"]),
+
+  // Teams (within a company - for data isolation and grouping)
+  teams: defineTable({
+    companyId: v.id("companies"), // Company this team belongs to
+    name: v.string(), // Team name: "Product Team", "Dev Team", "Design Team"
+    slug: v.string(), // URL-friendly slug: "product-team", "dev-team"
+    description: v.optional(v.string()),
+    // Team settings
+    isPrivate: v.boolean(), // If true, team projects are private by default
+    // Metadata
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_company", ["companyId"])
+    .index("by_company_slug", ["companyId", "slug"])
+    .index("by_creator", ["createdBy"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["companyId"],
+    }),
+
+  // Team Members (User-Team relationships)
+  teamMembers: defineTable({
+    teamId: v.id("teams"),
+    userId: v.id("users"),
+    role: v.union(
+      v.literal("lead"), // Team lead (can manage team members and settings)
+      v.literal("member"), // Regular team member
+    ),
+    addedBy: v.id("users"),
+    addedAt: v.number(),
+  })
+    .index("by_team", ["teamId"])
+    .index("by_user", ["userId"])
+    .index("by_team_user", ["teamId", "userId"])
+    .index("by_role", ["role"]),
 };
 
 export default defineSchema({
