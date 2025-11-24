@@ -4,7 +4,10 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import type { AIProvider } from "./config";
+import { type QueryCtx, query } from "../_generated/server";
+
+type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
 
 /**
  * Get all AI chats for current user
@@ -13,7 +16,7 @@ export const getUserChats = query({
   args: {
     projectId: v.optional(v.id("projects")),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
@@ -38,7 +41,7 @@ export const getChatMessages = query({
   args: {
     chatId: v.id("aiChats"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
@@ -64,7 +67,7 @@ export const getProjectContext = query({
   args: {
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -115,11 +118,11 @@ export const getProjectContext = query({
     // Get project members with details
     const memberRecords = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", q => q.eq("projectId", args.projectId))
       .collect();
 
     const members = await Promise.all(
-      memberRecords.map(async (m) => {
+      memberRecords.map(async m => {
         const user = await ctx.db.get(m.userId);
         return {
           id: m.userId,
@@ -184,7 +187,7 @@ export const getProjectSuggestions = query({
     ),
     includeResponded: v.optional(v.boolean()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
@@ -218,7 +221,7 @@ export const getUsageStats = query({
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
@@ -249,20 +252,24 @@ export const getUsageStats = query({
         ? filtered.reduce((sum, u) => sum + u.responseTime, 0) / filtered.length
         : 0;
 
-    const byProvider = filtered.reduce(
+    const byProvider = filtered.reduce<Record<AIProvider, number>>(
       (acc, u) => {
-        acc[u.provider] = (acc[u.provider] || 0) + u.totalTokens;
+        if (u.provider === "anthropic" || u.provider === "openai" || u.provider === "custom") {
+          acc[u.provider] = (acc[u.provider] || 0) + u.totalTokens;
+        }
         return acc;
       },
-      {} as Record<string, number>,
+      { anthropic: 0, openai: 0, custom: 0 },
     );
 
-    const byOperation = filtered.reduce(
+    const byOperation = filtered.reduce<Record<AIOperation, number>>(
       (acc, u) => {
-        acc[u.operation] = (acc[u.operation] || 0) + 1;
+        if (u.operation === "chat" || u.operation === "suggestion" || u.operation === "automation" || u.operation === "analysis") {
+          acc[u.operation] = (acc[u.operation] || 0) + 1;
+        }
         return acc;
       },
-      {} as Record<string, number>,
+      { chat: 0, suggestion: 0, automation: 0, analysis: 0 },
     );
 
     return {
