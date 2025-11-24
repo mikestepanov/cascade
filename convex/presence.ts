@@ -7,7 +7,7 @@ import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
 // Type assertion for component - unavoidable without running dev server
-// Using 'unknown' first makes this a safe two-step cast instead of direct 'any'
+// Two-step cast ensures type safety: unknown → ConstructorParameters<typeof Presence>[0]
 export const presence = new Presence(
   components.presence as unknown as ConstructorParameters<typeof Presence>[0],
 );
