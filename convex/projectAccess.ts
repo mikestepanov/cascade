@@ -154,13 +154,16 @@ export async function isProjectAdmin(
   // 2. User owns the project
   if (project.ownerId === userId) return true;
 
-  // 3. User is team lead of owning team
+  // 3. Legacy: creator has admin access (backward compatibility)
+  if (project.createdBy === userId) return true;
+
+  // 4. User is team lead of owning team
   if (project.teamId) {
     const teamRole = await getTeamRole(ctx, project.teamId, userId);
     if (teamRole === "lead") return true;
   }
 
-  // 4. User is admin in projectMembers
+  // 5. User is admin in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
     .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
