@@ -1,6 +1,10 @@
 /**
  * RBAC (Role-Based Access Control) utilities for Cascade
  *
+ * @deprecated Most functions in this file are replaced by projectAccess.ts
+ * Use projectAccess.ts for comprehensive access control with teams and companies.
+ * This file is kept for backward compatibility and utility functions.
+ *
  * Roles:
  * - admin: Full control - manage settings, members, delete project
  * - editor: Can create/edit/delete issues, sprints, documents
@@ -9,32 +13,22 @@
 
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
+import * as ProjectAccess from "./projectAccess";
 
 export type ProjectRole = "admin" | "editor" | "viewer";
 
 /**
  * Get user's role in a project
+ * @deprecated Use getProjectRole from projectAccess.ts for comprehensive team/company support
+ * This is kept for backward compatibility
  */
 export async function getUserRole(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<ProjectRole | null> {
-  const project = await ctx.db.get(projectId);
-  if (!project) return null;
-
-  // Creator is always admin
-  if (project.createdBy === userId) {
-    return "admin";
-  }
-
-  // Check projectMembers table
-  const membership = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .first();
-
-  return membership?.role || null;
+  // Delegate to new access control system
+  return await ProjectAccess.getProjectRole(ctx, projectId, userId);
 }
 
 /**
@@ -55,52 +49,56 @@ export function hasMinimumRole(userRole: ProjectRole | null, requiredRole: Proje
 
 /**
  * Check if user can access project (any role or public)
+ * @deprecated Use canAccessProject from projectAccess.ts for comprehensive team/company support
+ * This is kept for backward compatibility
  */
 export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users"> | null,
 ): Promise<boolean> {
-  const project = await ctx.db.get(projectId);
-  if (!project) return false;
+  if (!userId) {
+    // For unauthenticated users, check if project is public
+    const project = await ctx.db.get(projectId);
+    return project?.isPublic ?? false;
+  }
 
-  // Public projects are accessible to everyone
-  if (project.isPublic) return true;
-
-  // Must be authenticated for private projects
-  if (!userId) return false;
-
-  // Check if user has any role
-  const role = await getUserRole(ctx, projectId, userId);
-  return role !== null;
+  // Delegate to new access control system
+  return await ProjectAccess.canAccessProject(ctx, projectId, userId);
 }
 
 /**
  * Check if user can edit in project (editor or admin)
+ * @deprecated Use canEditProject from projectAccess.ts for comprehensive team/company support
+ * This is kept for backward compatibility
  */
 export async function canEditProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const role = await getUserRole(ctx, projectId, userId);
-  return hasMinimumRole(role, "editor");
+  // Delegate to new access control system
+  return await ProjectAccess.canEditProject(ctx, projectId, userId);
 }
 
 /**
  * Check if user can manage project (admin only)
+ * @deprecated Use isProjectAdmin from projectAccess.ts for comprehensive team/company support
+ * This is kept for backward compatibility
  */
 export async function canManageProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const role = await getUserRole(ctx, projectId, userId);
-  return hasMinimumRole(role, "admin");
+  // Delegate to new access control system
+  return await ProjectAccess.isProjectAdmin(ctx, projectId, userId);
 }
 
 /**
  * Assert user has minimum role, throw error if not
+ * @deprecated Use assertCanEditProject or assertIsProjectAdmin from projectAccess.ts
+ * This is kept for backward compatibility
  */
 export async function assertMinimumRole(
   ctx: QueryCtx | MutationCtx,
@@ -112,10 +110,13 @@ export async function assertMinimumRole(
     throw new Error("Not authenticated");
   }
 
-  const role = await getUserRole(ctx, projectId, userId);
-  if (!hasMinimumRole(role, requiredRole)) {
-    throw new Error(
-      `Insufficient permissions. Required role: ${requiredRole}, your role: ${role || "none"}`,
-    );
+  // Use new access control assertions
+  if (requiredRole === "admin") {
+    await ProjectAccess.assertIsProjectAdmin(ctx, projectId, userId);
+  } else if (requiredRole === "editor") {
+    await ProjectAccess.assertCanEditProject(ctx, projectId, userId);
+  } else {
+    // viewer level - just check access
+    await ProjectAccess.assertCanAccessProject(ctx, projectId, userId);
   }
 }
