@@ -122,8 +122,7 @@ export const chat = action({
     }
 
     // Rate limit: 10 messages per minute per user
-    await rateLimit(ctx, {
-      name: "aiChat",
+    await rateLimit(ctx, "aiChat", {
       key: userId.subject,
       throws: true,
     });
@@ -180,7 +179,8 @@ Be concise, helpful, and professional.`;
       role: "assistant",
       content: response.text,
       modelUsed: "gpt-4o-mini",
-      tokensUsed: response.usage?.totalTokens,
+      // biome-ignore lint/suspicious/noExplicitAny: AI SDK usage types are provider-specific
+      tokensUsed: (response.usage as any)?.totalTokens,
     });
 
     // Track usage
@@ -191,13 +191,17 @@ Be concise, helpful, and professional.`;
       model: "gpt-4o-mini",
       operation: "chat",
       // Use actual token counts if available, otherwise estimate from totalTokens
+      // Note: AI SDK v4 usage types may vary by provider
+      // biome-ignore lint/suspicious/noExplicitAny: AI SDK usage types are provider-specific
       promptTokens:
-        response.usage?.promptTokens ??
-        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.7) : 0),
+        (response.usage as any)?.promptTokens ??
+        Math.floor(((response.usage as any)?.totalTokens ?? 0) * 0.7),
+      // biome-ignore lint/suspicious/noExplicitAny: AI SDK usage types are provider-specific
       completionTokens:
-        response.usage?.completionTokens ??
-        (response.usage?.totalTokens ? Math.floor(response.usage.totalTokens * 0.3) : 0),
-      totalTokens: response.usage?.totalTokens || 0,
+        (response.usage as any)?.completionTokens ??
+        Math.floor(((response.usage as any)?.totalTokens ?? 0) * 0.3),
+      // biome-ignore lint/suspicious/noExplicitAny: AI SDK usage types are provider-specific
+      totalTokens: (response.usage as any)?.totalTokens ?? 0,
       success: true,
     });
 

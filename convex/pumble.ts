@@ -184,7 +184,6 @@ export const sendMessage = action({
   },
   handler: async (ctx, args) => {
     // Get webhook
-    // @ts-expect-error - Convex types need regeneration after adding pumble module
     const webhook = await ctx.runQuery(api.pumble.getWebhook, {
       webhookId: args.webhookId,
     });
@@ -239,7 +238,6 @@ export const sendMessage = action({
       }
 
       // Update webhook stats
-      // @ts-expect-error - Convex types need regeneration after adding pumble module
       await ctx.runMutation(api.pumble.updateWebhookStats, {
         webhookId: args.webhookId,
         success: true,
@@ -248,7 +246,6 @@ export const sendMessage = action({
       return { success: true };
     } catch (error) {
       // Update webhook stats with error
-      // @ts-expect-error - Convex types need regeneration after adding pumble module
       await ctx.runMutation(api.pumble.updateWebhookStats, {
         webhookId: args.webhookId,
         success: false,
@@ -288,7 +285,6 @@ export const updateWebhookStats = mutation({
 export const testWebhook = action({
   args: { webhookId: v.id("pumbleWebhooks") },
   handler: async (ctx, args) => {
-    // @ts-expect-error - Convex types need regeneration after adding pumble module
     return await ctx.runAction(api.pumble.sendMessage, {
       webhookId: args.webhookId,
       text: "🎉 Cascade integration is working!",
@@ -329,7 +325,6 @@ export const sendIssueNotification = action({
     if (!issue) return;
 
     // Find active webhooks for this project
-    // @ts-expect-error - Convex types need regeneration after adding pumble module
     const webhooks = (await ctx.runQuery(api.pumble.listWebhooks, {})) as Doc<"pumbleWebhooks">[];
 
     const activeWebhooks = webhooks.filter(
@@ -345,7 +340,6 @@ export const sendIssueNotification = action({
         const color = getColorForEvent(args.event);
         const title = getTitleForEvent(args.event, issue);
 
-        // @ts-expect-error - Convex types need regeneration after adding pumble module
         await ctx.runAction(api.pumble.sendMessage, {
           webhookId: webhook._id,
           text: issue.description || "No description",

@@ -313,7 +313,8 @@ export const sendDigestEmail = internalAction({
     const { DigestEmail } = await import("../../emails/DigestEmail");
 
     // Format notifications into digest items
-    const items = notifications.map((n) => ({
+    // biome-ignore lint/suspicious/noExplicitAny: Notification query result type is complex union
+    const items = notifications.map((n: any) => ({
       type: n.type as "mention" | "assignment" | "comment",
       issueKey: n.issueKey || "Unknown",
       issueTitle: n.title,
@@ -340,7 +341,8 @@ export const sendDigestEmail = internalAction({
       to: user.email,
       subject: `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`,
       html,
-      text: `Your ${frequency} digest:\n\n${items.map((i) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
+      // biome-ignore lint/suspicious/noExplicitAny: Digest item type inferred from map above
+      text: `Your ${frequency} digest:\n\n${items.map((i: any) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
     return result;

@@ -33,7 +33,6 @@ export const handler = httpAction(async (ctx, request) => {
     const apiKey = extractApiKey(request.headers);
     if (!apiKey) return createErrorResponse(401, "Missing API key");
 
-    // @ts-expect-error - Convex types need regeneration after adding apiKeys module
     const auth = await ctx.runQuery(api.apiKeys.validateApiKey, { apiKey });
     if (!auth) return createErrorResponse(401, "Invalid or expired API key");
 

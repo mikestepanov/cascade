@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { assertMinimumRole } from "./rbac";
+import { assertMinimumRole, canAccessProject } from "./rbac";
 
 // Helper: Validate parent issue and get inherited epic
 async function validateParentIssue(
@@ -166,11 +166,8 @@ export const listByProject = query({
     }
 
     // Check access permissions
-    if (
-      !project.isPublic &&
-      project.createdBy !== userId &&
-      !(userId && project.members.includes(userId))
-    ) {
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
       return [];
     }
 
@@ -238,11 +235,8 @@ export const get = query({
     }
 
     // Check access permissions
-    if (
-      !project.isPublic &&
-      project.createdBy !== userId &&
-      !(userId && project.members.includes(userId))
-    ) {
+    const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
+    if (!hasAccess) {
       throw new Error("Not authorized to access this issue");
     }
 

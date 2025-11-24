@@ -25,8 +25,7 @@ export const searchSimilarIssues = action({
     }
 
     // Rate limit: 30 searches per minute per user
-    await rateLimit(ctx, {
-      name: "semanticSearch",
+    await rateLimit(ctx, "semanticSearch", {
       key: userId.subject,
       throws: true,
     });
@@ -45,7 +44,8 @@ export const searchSimilarIssues = action({
 
     // Fetch full issue details
     const issues = await Promise.all(
-      results.map(async (result) => {
+      // biome-ignore lint/suspicious/noExplicitAny: Vector search result ID type is generic
+      results.map(async (result: { _id: any; _score: number }) => {
         const issue = await ctx.runQuery(internal.ai.getIssueData, {
           issueId: result._id,
         });

@@ -4,8 +4,8 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { AIProvider } from "./config";
 import { type QueryCtx, query } from "../_generated/server";
+import type { AIProvider } from "./config";
 
 type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
 
@@ -118,11 +118,11 @@ export const getProjectContext = query({
     // Get project members with details
     const memberRecords = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project", q => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     const members = await Promise.all(
-      memberRecords.map(async m => {
+      memberRecords.map(async (m) => {
         const user = await ctx.db.get(m.userId);
         return {
           id: m.userId,
@@ -264,7 +264,12 @@ export const getUsageStats = query({
 
     const byOperation = filtered.reduce<Record<AIOperation, number>>(
       (acc, u) => {
-        if (u.operation === "chat" || u.operation === "suggestion" || u.operation === "automation" || u.operation === "analysis") {
+        if (
+          u.operation === "chat" ||
+          u.operation === "suggestion" ||
+          u.operation === "automation" ||
+          u.operation === "analysis"
+        ) {
           acc[u.operation] = (acc[u.operation] || 0) + 1;
         }
         return acc;
