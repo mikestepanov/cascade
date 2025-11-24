@@ -4,9 +4,10 @@
  * Protects endpoints from abuse and controls costs
  */
 
-import { defineRateLimits } from "@convex-dev/rate-limiter";
+import { RateLimiter } from "@convex-dev/rate-limiter";
+import { components } from "./_generated/api";
 
-export const { checkRateLimit, rateLimit, resetRateLimit } = defineRateLimits({
+const rateLimiter = new RateLimiter(components.rateLimiter, {
   // AI Chat: 10 messages per minute per user
   aiChat: { kind: "fixed window", rate: 10, period: 60_000 }, // 1 minute
 
@@ -22,3 +23,7 @@ export const { checkRateLimit, rateLimit, resetRateLimit } = defineRateLimits({
   // API Endpoints: General rate limit
   apiEndpoint: { kind: "fixed window", rate: 100, period: 60_000 }, // 100/min
 });
+
+export const rateLimit = rateLimiter.limit.bind(rateLimiter);
+export const checkRateLimit = rateLimiter.check.bind(rateLimiter);
+export const resetRateLimit = rateLimiter.reset.bind(rateLimiter);

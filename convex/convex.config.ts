@@ -8,8 +8,8 @@ import { defineApp } from "convex/server";
 const app = defineApp();
 app.use(prosemirrorSync);
 app.use(presence);
+app.use(rateLimiter);
 app.use(aggregate);
 app.use(actionCache);
-app.use(rateLimiter);
 
 export default app;

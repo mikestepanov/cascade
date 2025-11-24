@@ -8,15 +8,23 @@
  * @module
  */
 
-import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+import type * as aggregates from "../aggregates.js";
+import type * as ai from "../ai.js";
 import type * as ai_actions from "../ai/actions.js";
 import type * as ai_config from "../ai/config.js";
 import type * as ai_mutations from "../ai/mutations.js";
 import type * as ai_providers from "../ai/providers.js";
 import type * as ai_queries from "../ai/queries.js";
+import type * as ai_semanticSearch from "../ai/semanticSearch.js";
+import type * as ai_suggestions from "../ai/suggestions.js";
 import type * as analytics from "../analytics.js";
-import type * as api_issues from "../api/issues.js";
 import type * as apiKeys from "../apiKeys.js";
+import type * as api_issues from "../api/issues.js";
 import type * as attachments from "../attachments.js";
 import type * as auth from "../auth.js";
 import type * as automationRules from "../automationRules.js";
@@ -27,6 +35,7 @@ import type * as calendarEvents from "../calendarEvents.js";
 import type * as calendarEventsAttendance from "../calendarEventsAttendance.js";
 import type * as crons from "../crons.js";
 import type * as customFields from "../customFields.js";
+import type * as customFunctions from "../customFunctions.js";
 import type * as dashboard from "../dashboard.js";
 import type * as documentTemplates from "../documentTemplates.js";
 import type * as documentVersions from "../documentVersions.js";
@@ -38,13 +47,16 @@ import type * as email_notifications from "../email/notifications.js";
 import type * as email_provider from "../email/provider.js";
 import type * as email_resend from "../email/resend.js";
 import type * as email_sendpulse from "../email/sendpulse.js";
+import type * as examples_actionCacheExample from "../examples/actionCacheExample.js";
+import type * as examples_aggregateExample from "../examples/aggregateExample.js";
+import type * as examples_rateLimitExample from "../examples/rateLimitExample.js";
 import type * as export_ from "../export.js";
 import type * as files from "../files.js";
 import type * as github from "../github.js";
 import type * as googleCalendar from "../googleCalendar.js";
 import type * as hourCompliance from "../hourCompliance.js";
-import type * as http_googleOAuth from "../http/googleOAuth.js";
 import type * as http from "../http.js";
+import type * as http_googleOAuth from "../http/googleOAuth.js";
 import type * as invites from "../invites.js";
 import type * as issueLinks from "../issueLinks.js";
 import type * as issues from "../issues.js";
@@ -59,6 +71,8 @@ import type * as projectTemplates from "../projectTemplates.js";
 import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
 import type * as pumble from "../pumble.js";
+import type * as rateLimiting from "../rateLimiting.js";
+import type * as rateLimits from "../rateLimits.js";
 import type * as rbac from "../rbac.js";
 import type * as router from "../router.js";
 import type * as savedFilters from "../savedFilters.js";
@@ -82,14 +96,18 @@ import type * as webhooks from "../webhooks.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  aggregates: typeof aggregates;
+  ai: typeof ai;
   "ai/actions": typeof ai_actions;
   "ai/config": typeof ai_config;
   "ai/mutations": typeof ai_mutations;
   "ai/providers": typeof ai_providers;
   "ai/queries": typeof ai_queries;
+  "ai/semanticSearch": typeof ai_semanticSearch;
+  "ai/suggestions": typeof ai_suggestions;
   analytics: typeof analytics;
-  "api/issues": typeof api_issues;
   apiKeys: typeof apiKeys;
+  "api/issues": typeof api_issues;
   attachments: typeof attachments;
   auth: typeof auth;
   automationRules: typeof automationRules;
@@ -100,6 +118,7 @@ declare const fullApi: ApiFromModules<{
   calendarEventsAttendance: typeof calendarEventsAttendance;
   crons: typeof crons;
   customFields: typeof customFields;
+  customFunctions: typeof customFunctions;
   dashboard: typeof dashboard;
   documentTemplates: typeof documentTemplates;
   documentVersions: typeof documentVersions;
@@ -111,13 +130,16 @@ declare const fullApi: ApiFromModules<{
   "email/provider": typeof email_provider;
   "email/resend": typeof email_resend;
   "email/sendpulse": typeof email_sendpulse;
+  "examples/actionCacheExample": typeof examples_actionCacheExample;
+  "examples/aggregateExample": typeof examples_aggregateExample;
+  "examples/rateLimitExample": typeof examples_rateLimitExample;
   export: typeof export_;
   files: typeof files;
   github: typeof github;
   googleCalendar: typeof googleCalendar;
   hourCompliance: typeof hourCompliance;
-  "http/googleOAuth": typeof http_googleOAuth;
   http: typeof http;
+  "http/googleOAuth": typeof http_googleOAuth;
   invites: typeof invites;
   issueLinks: typeof issueLinks;
   issues: typeof issues;
@@ -132,6 +154,8 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   prosemirror: typeof prosemirror;
   pumble: typeof pumble;
+  rateLimiting: typeof rateLimiting;
+  rateLimits: typeof rateLimits;
   rbac: typeof rbac;
   router: typeof router;
   savedFilters: typeof savedFilters;
@@ -146,5 +170,11 @@ declare const fullApi: ApiFromModules<{
   watchers: typeof watchers;
   webhooks: typeof webhooks;
 }>;
-export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "public">>;
-export declare const internal: FilterApi<typeof fullApi, FunctionReference<any, "internal">>;
+export declare const api: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "public">
+>;
+export declare const internal: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "internal">
+>;
