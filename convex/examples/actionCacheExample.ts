@@ -15,7 +15,6 @@ import { components, internal } from "../_generated/api";
 import { action, internalAction } from "../_generated/server";
 
 // Initialize action cache
-// Initialize action cache
 export const generateTextAction = internalAction({
   args: { text: v.string() },
   handler: async (_ctx, args) => {
