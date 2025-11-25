@@ -8,7 +8,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
-import { Toggle } from "./ui/Toggle";
+import { Switch } from "./ui/Switch";
 
 export function NotificationPreferences() {
   const preferences = useQuery(api.notificationPreferences.get);
@@ -78,9 +78,9 @@ export function NotificationPreferences() {
               Master switch for all email notifications. Turn this off to stop receiving all emails.
             </p>
           </div>
-          <Toggle
+          <Switch
             checked={preferences.emailEnabled}
-            onChange={(value) => handleToggle("emailEnabled", value)}
+            onCheckedChange={(value) => handleToggle("emailEnabled", value)}
             disabled={isSaving}
             className="ml-4"
           />
@@ -107,9 +107,9 @@ export function NotificationPreferences() {
                 When someone @mentions you in a comment or description
               </p>
             </div>
-            <Toggle
+            <Switch
               checked={preferences.emailMentions}
-              onChange={(value) => handleToggle("emailMentions", value)}
+              onCheckedChange={(value) => handleToggle("emailMentions", value)}
               disabled={isSaving || !preferences.emailEnabled}
               className="ml-4"
             />
@@ -128,9 +128,9 @@ export function NotificationPreferences() {
                 When you are assigned to an issue
               </p>
             </div>
-            <Toggle
+            <Switch
               checked={preferences.emailAssignments}
-              onChange={(value) => handleToggle("emailAssignments", value)}
+              onCheckedChange={(value) => handleToggle("emailAssignments", value)}
               disabled={isSaving || !preferences.emailEnabled}
               className="ml-4"
             />
@@ -149,9 +149,9 @@ export function NotificationPreferences() {
                 When someone comments on your issues
               </p>
             </div>
-            <Toggle
+            <Switch
               checked={preferences.emailComments}
-              onChange={(value) => handleToggle("emailComments", value)}
+              onCheckedChange={(value) => handleToggle("emailComments", value)}
               disabled={isSaving || !preferences.emailEnabled}
               className="ml-4"
             />
@@ -170,9 +170,9 @@ export function NotificationPreferences() {
                 When issue status changes on issues you're watching
               </p>
             </div>
-            <Toggle
+            <Switch
               checked={preferences.emailStatusChanges}
-              onChange={(value) => handleToggle("emailStatusChanges", value)}
+              onCheckedChange={(value) => handleToggle("emailStatusChanges", value)}
               disabled={isSaving || !preferences.emailEnabled}
               className="ml-4"
             />

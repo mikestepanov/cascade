@@ -57,10 +57,16 @@ export function KeyboardShortcut({
       "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
   };
 
+  // Create keys with unique identifiers for stable rendering
+  const keysWithIds = keys.map((key, idx) => ({
+    key,
+    id: `${shortcut.replace(/\+/g, "-")}-${idx}`,
+  }));
+
   return (
     <span className={cn("inline-flex items-center gap-1", className)}>
-      {keys.map((key, index) => (
-        <span key={index} className="contents">
+      {keysWithIds.map(({ key, id }, index) => (
+        <span key={id} className="contents">
           <kbd
             className={cn(
               "inline-flex items-center justify-center font-mono rounded",
@@ -70,10 +76,8 @@ export function KeyboardShortcut({
           >
             {formatKey(key)}
           </kbd>
-          {index < keys.length - 1 && (
-            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-0.5">
-              +
-            </span>
+          {index < keysWithIds.length - 1 && (
+            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-0.5">+</span>
           )}
         </span>
       ))}
@@ -125,11 +129,8 @@ interface ShortcutListProps {
 export function ShortcutList({ shortcuts, className = "" }: ShortcutListProps) {
   return (
     <div className={cn("space-y-2", className)}>
-      {shortcuts.map((shortcut, index) => (
-        <div
-          key={index}
-          className="flex items-center justify-between gap-4 text-sm"
-        >
+      {shortcuts.map((shortcut) => (
+        <div key={shortcut.keys} className="flex items-center justify-between gap-4 text-sm">
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             {shortcut.description}
           </span>

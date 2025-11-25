@@ -76,11 +76,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
             >
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <Avatar
-                  name={comment.author.name}
-                  src={comment.author.image}
-                  size="lg"
-                />
+                <Avatar name={comment.author.name} src={comment.author.image} size="lg" />
               </div>
 
               {/* Comment Content */}

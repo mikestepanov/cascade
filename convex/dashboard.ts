@@ -26,8 +26,12 @@ export const getMyIssues = query({
       Promise.all(userIds.map((id) => ctx.db.get(id))),
     ]);
 
-    const projectMap = new Map(projects.filter(Boolean).map((p) => [p!._id, p!]));
-    const userMap = new Map(users.filter(Boolean).map((u) => [u!._id, u!]));
+    const projectMap = new Map(
+      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
+    );
+    const userMap = new Map(
+      users.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
+    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
@@ -62,15 +66,21 @@ export const getMyCreatedIssues = query({
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [...new Set(issues.map((i) => i.projectId))];
-    const assigneeIds = [...new Set(issues.map((i) => i.assigneeId).filter(Boolean))] as Id<"users">[];
+    const assigneeIds = [
+      ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
+    ] as Id<"users">[];
 
     const [projects, assignees] = await Promise.all([
       Promise.all(projectIds.map((id) => ctx.db.get(id))),
       Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
     ]);
 
-    const projectMap = new Map(projects.filter(Boolean).map((p) => [p!._id, p!]));
-    const assigneeMap = new Map(assignees.filter(Boolean).map((u) => [u!._id, u!]));
+    const projectMap = new Map(
+      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
+    );
+    const assigneeMap = new Map(
+      assignees.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
+    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {

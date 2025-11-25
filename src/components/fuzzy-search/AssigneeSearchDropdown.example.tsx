@@ -56,7 +56,11 @@ export function AssigneeSearchDropdown({
   const selectedUser = members?.find((m) => m._id === value);
 
   if (!members) {
-    return <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading members...</div>;
+    return (
+      <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+        Loading members...
+      </div>
+    );
   }
 
   return (
@@ -118,7 +122,9 @@ export function AssigneeSearchDropdown({
                   )}
                 </div>
                 {user.email && (
-                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{user.email}</div>
+                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    {user.email}
+                  </div>
                 )}
               </div>
             </div>

@@ -159,9 +159,7 @@ export function ToggleField({
 }: ToggleFieldProps) {
   const labelContent = (
     <div className={cn("flex-1", labelPosition === "right" && "order-2")}>
-      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-        {label}
-      </div>
+      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{label}</div>
       {description && (
         <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
           {description}
@@ -171,12 +169,7 @@ export function ToggleField({
   );
 
   return (
-    <div
-      className={cn(
-        "flex items-start justify-between gap-4",
-        className,
-      )}
-    >
+    <div className={cn("flex items-start justify-between gap-4", className)}>
       {labelPosition === "left" && labelContent}
       <Toggle {...toggleProps} className={labelPosition === "right" ? "order-1" : ""} />
       {labelPosition === "right" && labelContent}

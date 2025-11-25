@@ -88,11 +88,7 @@ import type * as users from "../users.js";
 import type * as watchers from "../watchers.js";
 import type * as webhooks from "../webhooks.js";
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
+import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   aggregates: typeof aggregates;
@@ -184,10 +180,7 @@ declare const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "public">
->;
+export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "public">>;
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -197,20 +190,12 @@ export declare const api: FilterApi<
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "internal">
->;
+export declare const internal: FilterApi<typeof fullApi, FunctionReference<any, "internal">>;
 
 export declare const components: {
   prosemirrorSync: {
     lib: {
-      deleteDocument: FunctionReference<
-        "mutation",
-        "internal",
-        { id: string },
-        null
-      >;
+      deleteDocument: FunctionReference<"mutation", "internal", { id: string }, null>;
       deleteSnapshots: FunctionReference<
         "mutation",
         "internal",
@@ -244,12 +229,7 @@ export declare const components: {
           version: number;
         }
       >;
-      latestVersion: FunctionReference<
-        "query",
-        "internal",
-        { id: string },
-        null | number
-      >;
+      latestVersion: FunctionReference<"query", "internal", { id: string }, null | number>;
       submitSnapshot: FunctionReference<
         "mutation",
         "internal",
@@ -281,12 +261,7 @@ export declare const components: {
   };
   presence: {
     public: {
-      disconnect: FunctionReference<
-        "mutation",
-        "internal",
-        { sessionToken: string },
-        null
-      >;
+      disconnect: FunctionReference<"mutation", "internal", { sessionToken: string }, null>;
       heartbeat: FunctionReference<
         "mutation",
         "internal",
@@ -321,12 +296,7 @@ export declare const components: {
         { limit?: number; onlineOnly?: boolean; userId: string },
         Array<{ lastDisconnected: number; online: boolean; roomId: string }>
       >;
-      removeRoom: FunctionReference<
-        "mutation",
-        "internal",
-        { roomId: string },
-        null
-      >;
+      removeRoom: FunctionReference<"mutation", "internal", { roomId: string }, null>;
       removeRoomUser: FunctionReference<
         "mutation",
         "internal",
@@ -374,12 +344,7 @@ export declare const components: {
         },
         { ok: true; retryAfter?: number } | { ok: false; retryAfter: number }
       >;
-      clearAll: FunctionReference<
-        "mutation",
-        "internal",
-        { before?: number },
-        null
-      >;
+      clearAll: FunctionReference<"mutation", "internal", { before?: number }, null>;
       getServerTime: FunctionReference<"mutation", "internal", {}, number>;
       getValue: FunctionReference<
         "query",
@@ -555,22 +520,12 @@ export declare const components: {
         { cursor?: string; limit: number },
         { cursor: string; isDone: boolean; page: Array<any> }
       >;
-      validate: FunctionReference<
-        "query",
-        "internal",
-        { namespace?: any },
-        any
-      >;
+      validate: FunctionReference<"query", "internal", { namespace?: any }, any>;
     };
     inspect: {
       display: FunctionReference<"query", "internal", { namespace?: any }, any>;
       dump: FunctionReference<"query", "internal", { namespace?: any }, string>;
-      inspectNode: FunctionReference<
-        "query",
-        "internal",
-        { namespace?: any; node?: string },
-        null
-      >;
+      inspectNode: FunctionReference<"query", "internal", { namespace?: any; node?: string }, null>;
       listTreeNodes: FunctionReference<
         "query",
         "internal",
@@ -603,18 +558,8 @@ export declare const components: {
         { maxNodeSize?: number; namespace?: any; rootLazy?: boolean },
         null
       >;
-      delete_: FunctionReference<
-        "mutation",
-        "internal",
-        { key: any; namespace?: any },
-        null
-      >;
-      deleteIfExists: FunctionReference<
-        "mutation",
-        "internal",
-        { key: any; namespace?: any },
-        any
-      >;
+      delete_: FunctionReference<"mutation", "internal", { key: any; namespace?: any }, null>;
+      deleteIfExists: FunctionReference<"mutation", "internal", { key: any; namespace?: any }, any>;
       init: FunctionReference<
         "mutation",
         "internal",
@@ -627,12 +572,7 @@ export declare const components: {
         { key: any; namespace?: any; summand?: number; value: any },
         null
       >;
-      makeRootLazy: FunctionReference<
-        "mutation",
-        "internal",
-        { namespace?: any },
-        null
-      >;
+      makeRootLazy: FunctionReference<"mutation", "internal", { namespace?: any }, null>;
       replace: FunctionReference<
         "mutation",
         "internal",
@@ -663,12 +603,7 @@ export declare const components: {
   };
   actionCache: {
     crons: {
-      purge: FunctionReference<
-        "mutation",
-        "internal",
-        { expiresAt?: number },
-        null
-      >;
+      purge: FunctionReference<"mutation", "internal", { expiresAt?: number }, null>;
     };
     lib: {
       get: FunctionReference<
@@ -689,12 +624,7 @@ export declare const components: {
         },
         { cacheHit: boolean; deletedExpiredEntry: boolean }
       >;
-      remove: FunctionReference<
-        "mutation",
-        "internal",
-        { args: any; name: string },
-        null
-      >;
+      remove: FunctionReference<"mutation", "internal", { args: any; name: string }, null>;
       removeAll: FunctionReference<
         "mutation",
         "internal",

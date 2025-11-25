@@ -1,44 +1,69 @@
+import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface AvatarProps {
-  /**
-   * User's name - used to generate initials
-   */
+const avatarVariants = cva("relative flex shrink-0 overflow-hidden rounded-full", {
+  variants: {
+    size: {
+      xs: "w-5 h-5",
+      sm: "w-6 h-6",
+      md: "w-8 h-8",
+      lg: "w-10 h-10",
+      xl: "w-12 h-12",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+const fallbackVariants = cva(
+  "flex h-full w-full items-center justify-center rounded-full font-medium",
+  {
+    variants: {
+      size: {
+        xs: "text-xs",
+        sm: "text-xs",
+        md: "text-sm",
+        lg: "text-base",
+        xl: "text-lg",
+      },
+      variant: {
+        brand: "bg-brand-600 dark:bg-brand-500 text-white",
+        accent: "bg-accent-600 dark:bg-accent-500 text-white",
+        neutral:
+          "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+        success: "bg-status-success text-white",
+        warning: "bg-status-warning text-white",
+        error: "bg-status-error text-white",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      variant: "brand",
+    },
+  },
+);
+
+export interface AvatarProps extends VariantProps<typeof avatarVariants> {
+  /** User's name - used to generate initials */
   name?: string | null;
-
-  /**
-   * User's email - fallback for initials if name is missing
-   */
+  /** User's email - fallback for initials if name is missing */
   email?: string | null;
-
-  /**
-   * Image URL for the avatar
-   */
+  /** Image URL for the avatar */
   src?: string | null;
-
-  /**
-   * Size variant
-   */
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
-
-  /**
-   * Color variant for the background
-   */
+  /** Color variant for the background */
   variant?: "brand" | "accent" | "neutral" | "success" | "warning" | "error";
-
-  /**
-   * Additional CSS classes
-   */
+  /** Additional CSS classes */
   className?: string;
-
-  /**
-   * Alt text for image (defaults to name)
-   */
+  /** Alt text for image (defaults to name) */
   alt?: string;
 }
 
 /**
- * Avatar component for displaying user profile images or initials
+ * Avatar component for displaying user profile images or initials.
+ * Built on Radix UI Avatar for accessibility.
  *
  * @example
  * // With initials
@@ -56,54 +81,28 @@ export function Avatar({
   src,
   size = "md",
   variant = "brand",
-  className = "",
+  className,
   alt,
 }: AvatarProps) {
   const initials = getInitials(name, email);
-
-  const sizeClasses = {
-    xs: "w-5 h-5 text-xs",
-    sm: "w-6 h-6 text-xs",
-    md: "w-8 h-8 text-sm",
-    lg: "w-10 h-10 text-base",
-    xl: "w-12 h-12 text-lg",
-  };
-
-  const variantClasses = {
-    brand: "bg-brand-600 dark:bg-brand-500 text-white",
-    accent: "bg-accent-600 dark:bg-accent-500 text-white",
-    neutral: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
-    success: "bg-status-success dark:bg-status-success text-white",
-    warning: "bg-status-warning dark:bg-status-warning text-white",
-    error: "bg-status-error dark:bg-status-error text-white",
-  };
-
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={alt || name || email || "User avatar"}
-        className={cn(
-          "rounded-full object-cover",
-          sizeClasses[size],
-          className,
-        )}
-      />
-    );
-  }
+  const altText = alt || name || email || "User avatar";
 
   return (
-    <div
-      className={cn(
-        "rounded-full flex items-center justify-center font-medium",
-        sizeClasses[size],
-        variantClasses[variant],
-        className,
+    <AvatarPrimitive.Root className={cn(avatarVariants({ size }), className)}>
+      {src && (
+        <AvatarPrimitive.Image
+          src={src}
+          alt={altText}
+          className="aspect-square h-full w-full object-cover"
+        />
       )}
-      aria-label={alt || name || email || "User avatar"}
-    >
-      {initials}
-    </div>
+      <AvatarPrimitive.Fallback
+        className={cn(fallbackVariants({ size, variant }))}
+        delayMs={src ? 600 : 0}
+      >
+        {initials}
+      </AvatarPrimitive.Fallback>
+    </AvatarPrimitive.Root>
   );
 }
 
@@ -136,7 +135,7 @@ interface AvatarGroupProps {
   className?: string;
 }
 
-export function AvatarGroup({ children, max, size = "md", className = "" }: AvatarGroupProps) {
+export function AvatarGroup({ children, max, size = "md", className }: AvatarGroupProps) {
   const childArray = React.Children.toArray(children);
   const visibleChildren = max ? childArray.slice(0, max) : childArray;
   const overflow = max ? Math.max(0, childArray.length - max) : 0;
@@ -151,17 +150,20 @@ export function AvatarGroup({ children, max, size = "md", className = "" }: Avat
 
   return (
     <div className={cn("flex items-center", className)}>
-      {visibleChildren.map((child, index) => (
-        <div
-          key={index}
-          className={cn(
-            "ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark rounded-full",
-            index > 0 && overlapClasses[size],
-          )}
-        >
-          {child}
-        </div>
-      ))}
+      {visibleChildren.map((child, index) => {
+        const key = React.isValidElement(child) && child.key ? child.key : `avatar-${index}`;
+        return (
+          <div
+            key={key}
+            className={cn(
+              "ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark rounded-full",
+              index > 0 && overlapClasses[size],
+            )}
+          >
+            {child}
+          </div>
+        );
+      })}
       {overflow > 0 && (
         <div
           className={cn(
@@ -180,6 +182,3 @@ export function AvatarGroup({ children, max, size = "md", className = "" }: Avat
     </div>
   );
 }
-
-// Need to import React for Children.toArray
-import React from "react";

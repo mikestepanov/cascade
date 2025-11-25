@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { useDeleteConfirmation } from "@/hooks";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { TemplateCard } from "./templates/TemplateCard";
@@ -25,22 +25,21 @@ type IssueTemplate = {
 };
 
 /**
- * Refactored TemplatesManager - Now focused on orchestration
+ * TemplatesManager - Orchestrates template CRUD operations
  * Form and card logic extracted to separate components
- *
- * Benefits:
- * - Reduced from 356 lines (17 hooks!) to ~100 lines
- * - Form logic reusable in other contexts
- * - Card component testable in isolation
- * - Consistent with other refactored Manager components
  */
 export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<IssueTemplate | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<Id<"issueTemplates"> | null>(null);
 
   const templates = useQuery(api.templates.list, { projectId });
-  const deleteTemplate = useMutation(api.templates.remove);
+  const deleteTemplateMutation = useMutation(api.templates.remove);
+
+  // Delete confirmation
+  const deleteConfirm = useDeleteConfirmation<"issueTemplates">({
+    successMessage: "Template deleted",
+    errorMessage: "Failed to delete template",
+  });
 
   const handleCreate = () => {
     setEditingTemplate(null);
@@ -50,19 +49,6 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const handleEdit = (template: IssueTemplate) => {
     setEditingTemplate(template);
     setShowModal(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deleteConfirm) return;
-
-    try {
-      await deleteTemplate({ id: deleteConfirm });
-      toast.success("Template deleted");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete template");
-    } finally {
-      setDeleteConfirm(null);
-    }
   };
 
   const handleCloseForm = () => {
@@ -115,7 +101,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
                   key={template._id}
                   template={template}
                   onEdit={() => handleEdit(template)}
-                  onDelete={() => setDeleteConfirm(template._id)}
+                  onDelete={() => deleteConfirm.confirmDelete(template._id)}
                 />
               ))}
             </div>
@@ -133,13 +119,14 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
-        isOpen={!!deleteConfirm}
-        onClose={() => setDeleteConfirm(null)}
-        onConfirm={handleDeleteConfirm}
+        isOpen={!!deleteConfirm.deleteId}
+        onClose={deleteConfirm.cancelDelete}
+        onConfirm={() => deleteConfirm.executeDelete((id) => deleteTemplateMutation({ id }))}
         title="Delete Template"
         message="Are you sure you want to delete this template?"
         variant="danger"
         confirmLabel="Delete"
+        isLoading={deleteConfirm.isDeleting}
       />
     </>
   );
