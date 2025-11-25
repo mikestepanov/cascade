@@ -5,7 +5,7 @@
  */
 
 import { RateLimiter, type RunMutationCtx, type RunQueryCtx } from "@convex-dev/rate-limiter";
-// @ts-expect-error - components export requires running `npx convex dev` to generate types
+
 import { components } from "./_generated/api";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {

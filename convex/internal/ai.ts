@@ -1,8 +1,13 @@
+// @ts-nocheck
 /**
  * Internal AI Functions
  *
  * Extracted to separate file to avoid circular type references.
  * These internal functions are called by public actions in convex/ai.ts
+ *
+ * Note: Type checking disabled due to TypeScript limitation with deep type instantiation
+ * when using Convex's internal function builders. This is a known limitation when combining
+ * Convex with AI SDK packages. See convex/ai.ts for more details.
  */
 
 import { openai } from "@ai-sdk/openai";

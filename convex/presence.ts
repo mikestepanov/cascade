@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Presence } from "@convex-dev/presence";
 import { v } from "convex/values";
-// @ts-expect-error - components export requires running `npx convex dev` to generate types
+
 import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";

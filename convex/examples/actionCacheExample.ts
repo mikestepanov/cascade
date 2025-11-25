@@ -12,13 +12,13 @@ import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
-import { internalAction, action } from "../_generated/server";
+import { action, internalAction } from "../_generated/server";
 
 // Initialize action cache
 // Initialize action cache
 export const generateTextAction = internalAction({
   args: { text: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     // Expensive AI call
     const response = await generateText({
       model: openai("gpt-4o-mini"),
