@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CommentRenderer } from "./CommentRenderer";
 import { MentionInput } from "./MentionInput";
+import { Avatar } from "./ui/Avatar";
 import { Button } from "./ui/Button";
 
 interface IssueCommentsProps {
@@ -75,17 +76,11 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
             >
               {/* Avatar */}
               <div className="flex-shrink-0">
-                {comment.author.image ? (
-                  <img
-                    src={comment.author.image}
-                    alt={comment.author.name}
-                    className="w-10 h-10 rounded-full"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-medium">
-                    {comment.author.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <Avatar
+                  name={comment.author.name}
+                  src={comment.author.image}
+                  size="lg"
+                />
               </div>
 
               {/* Comment Content */}

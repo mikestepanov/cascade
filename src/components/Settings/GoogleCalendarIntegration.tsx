@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Toggle } from "../ui/Toggle";
 
 /**
  * Google Calendar integration card
@@ -151,22 +152,11 @@ export function GoogleCalendarIntegration() {
                   Automatically sync events between Cascade and Google Calendar
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleToggleSync}
+              <Toggle
+                checked={calendarConnection.syncEnabled}
+                onChange={handleToggleSync}
                 disabled={isSaving}
-                className={`
-                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
-                  ${calendarConnection.syncEnabled ? "bg-brand-600" : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark"}
-                `}
-              >
-                <span
-                  className={`
-                    pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-                    ${calendarConnection.syncEnabled ? "translate-x-5" : "translate-x-0"}
-                  `}
-                />
-              </button>
+              />
             </div>
 
             {/* Sync Direction */}

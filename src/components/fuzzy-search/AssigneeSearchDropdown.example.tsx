@@ -9,6 +9,7 @@ import { useQuery } from "convex/react";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Avatar } from "../ui/Avatar";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
 
 interface AssigneeSearchDropdownProps {
@@ -55,24 +56,22 @@ export function AssigneeSearchDropdown({
   const selectedUser = members?.find((m) => m._id === value);
 
   if (!members) {
-    return <div className="text-sm text-gray-500">Loading members...</div>;
+    return <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Loading members...</div>;
   }
 
   return (
     <div className={className}>
       {/* Show selected user */}
       {selectedUser && !query && (
-        <div className="flex items-center justify-between p-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-2">
+        <div className="flex items-center justify-between p-2 border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded-lg mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">
-              {selectedUser.name?.charAt(0).toUpperCase() || "?"}
-            </div>
+            <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
             <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
           </div>
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="text-gray-500 hover:text-red-500"
+            className="text-ui-text-tertiary hover:text-status-error"
             aria-label="Clear assignee"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,9 +108,7 @@ export function AssigneeSearchDropdown({
 
           return (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
-                {user.name?.charAt(0).toUpperCase() || "?"}
-              </div>
+              <Avatar name={user.name} email={user.email} size="md" />
               <div>
                 <div className="text-sm font-medium">
                   {nameMatch ? (
@@ -121,7 +118,7 @@ export function AssigneeSearchDropdown({
                   )}
                 </div>
                 {user.email && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
+                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">{user.email}</div>
                 )}
               </div>
             </div>
@@ -130,7 +127,7 @@ export function AssigneeSearchDropdown({
       />
 
       {/* Helper text */}
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
         Search by name or email • Supports typos
       </p>
     </div>

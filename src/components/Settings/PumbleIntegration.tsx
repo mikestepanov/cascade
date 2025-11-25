@@ -113,7 +113,7 @@ export function PumbleIntegration() {
 function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
   return (
     <div className="text-center py-12">
-      <div className="mx-auto w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-4">
+      <div className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full flex items-center justify-center mb-4">
         <svg
           className="w-8 h-8 text-accent-600 dark:text-accent-400"
           fill="none"
@@ -204,7 +204,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               {webhook.name}
             </h4>
             {webhook.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
                 Active
               </span>
             ) : (
@@ -304,7 +304,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
           onClick={handleTest}
           variant="ghost"
           size="sm"
-          className="text-accent-600 dark:text-accent-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+          className="text-accent-600 dark:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20"
         >
           Test Webhook
         </Button>

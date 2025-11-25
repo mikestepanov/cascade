@@ -334,7 +334,7 @@ function Content() {
           {shouldShowSidebar(activeView) && (
             <ErrorBoundary
               fallback={
-                <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+                <div className="w-64 bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark">
                   <SectionErrorFallback
                     title="Sidebar Error"
                     message="Failed to load sidebar. Please refresh the page."
@@ -373,14 +373,14 @@ function Content() {
 
           <div className="flex-1 flex flex-col min-w-0">
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
+            <header className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
               <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
                 {/* Mobile Hamburger Menu */}
                 {shouldShowSidebar(activeView) && (
                   <button
                     type="button"
                     onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                    className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    className="lg:hidden p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
                     aria-label="Toggle sidebar menu"
                   >
                     <svg
@@ -401,7 +401,7 @@ function Content() {
                 )}
                 {/* View Switcher */}
                 <nav
-                  className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 overflow-x-auto"
+                  className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1 overflow-x-auto"
                   aria-label="Main navigation"
                 >
                   <ViewSwitcherButton
@@ -466,7 +466,7 @@ function Content() {
                   />
                 </nav>
 
-                <h1 className="hidden md:block text-base lg:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
+                <h1 className="hidden md:block text-base lg:text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                   {getHeaderTitle(activeView, selectedDocumentId, selectedProjectId)}
                 </h1>
               </div>
@@ -474,7 +474,7 @@ function Content() {
                 <button
                   type="button"
                   onClick={() => setShowCommandPalette(true)}
-                  className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-tertiary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg hover:bg-ui-border-primary dark:hover:bg-ui-border-secondary-dark transition-colors"
                   aria-label="Open command palette"
                   data-tour="command-palette"
                 >
@@ -493,14 +493,14 @@ function Content() {
                     />
                   </svg>
                   <span className="hidden sm:inline">Commands</span>
-                  <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                  <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded">
                     ⌘K
                   </kbd>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowShortcutsHelp(true)}
-                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
                   aria-label="Keyboard shortcuts"
                 >
                   <svg
@@ -528,7 +528,7 @@ function Content() {
 
             {/* Main Content */}
             <main
-              className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900"
+              className="flex-1 overflow-auto bg-ui-bg-secondary dark:bg-ui-bg-primary-dark"
               data-tour={activeView === "dashboard" ? "dashboard" : ""}
             >
               <ErrorBoundary
@@ -578,10 +578,10 @@ function Content() {
         <div className="flex items-center justify-center w-full p-4">
           <div className="w-full max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              <h1 className="text-3xl sm:text-4xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
                 Collaborative Workspace
               </h1>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+              <p className="text-base sm:text-lg text-ui-text-secondary dark:text-ui-text-tertiary-dark">
                 Create documents and manage projects together in real-time
               </p>
             </div>

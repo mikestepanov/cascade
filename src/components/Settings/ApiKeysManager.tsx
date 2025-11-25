@@ -237,7 +237,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
               variant="ghost"
               size="sm"
               isLoading={isRevoking}
-              className="text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              className="text-status-warning hover:bg-status-warning-bg dark:hover:bg-status-warning-bg-dark"
               aria-label="Revoke key"
             >
               {isRevoking ? "Revoking..." : "Revoke"}
@@ -406,8 +406,8 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
           <>
             {/* Success - Show Generated Key */}
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
-                <Key className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4">
+                <Key className="h-6 w-6 text-status-success dark:text-status-success" />
               </div>
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 API Key Generated!
@@ -417,15 +417,15 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </p>
 
               {/* Generated Key Display */}
-              <div className="mb-6 p-4 bg-slate-900 dark:bg-slate-950 rounded-lg">
-                <code className="text-sm font-mono text-green-400 break-all select-all">
+              <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
+                <code className="text-sm font-mono text-status-success break-all select-all">
                   {generatedKey}
                 </code>
               </div>
 
               {/* Copy Instructions */}
-              <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">
+              <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
+                <p className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
                   Usage Example:
                 </p>
                 <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
@@ -496,7 +496,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Success Rate
                 </p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                <p className="text-2xl font-bold text-status-success dark:text-status-success">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
                     : 100}

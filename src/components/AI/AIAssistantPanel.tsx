@@ -58,7 +58,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             <div className="text-2xl">🤖</div>
             <div>
               <h2 className="text-lg font-semibold text-white">AI Assistant</h2>
-              <p className="text-xs text-blue-100">
+              <p className="text-xs text-brand-100">
                 {projectId ? "Project-specific context" : "General chat"}
               </p>
             </div>
@@ -66,7 +66,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+            className="p-2 text-white hover:bg-ui-bg-primary/20 rounded-lg transition-colors"
             aria-label="Close AI assistant"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

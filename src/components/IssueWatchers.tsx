@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Avatar } from "./ui/Avatar";
 import { Button } from "./ui/Button";
 
 interface IssueWatchersProps {
@@ -85,9 +86,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
                 className="flex items-center gap-3 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
-                  {watcher.userName.charAt(0).toUpperCase()}
-                </div>
+                <Avatar name={watcher.userName} size="md" />
 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
