@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
-import { createTestUser } from "./test-utils";
+import { createTestUser } from "./testUtils";
 import { modules } from "./testSetup";
 
 describe("Notifications", () => {
