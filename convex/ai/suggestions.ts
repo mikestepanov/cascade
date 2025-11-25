@@ -14,41 +14,65 @@ import { generateText } from "ai";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { action, mutation, query } from "../_generated/server";
+import { action, internalAction, mutation, query } from "../_generated/server";
 import { rateLimit } from "../rateLimits";
 
 /**
  * Action cache for AI suggestions
  * Caches expensive AI calls to save money and improve speed
  */
-const descriptionCache = new ActionCache(components.actionCache, {
-  action: async (prompt: string) => {
+/**
+ * Generate description text
+ */
+export const generateDescription = internalAction({
+  args: { prompt: v.string() },
+  handler: async (ctx, args) => {
     const response = await generateText({
       model: openai("gpt-4o-mini"),
-      prompt,
+      prompt: args.prompt,
+    });
+    return response.text;
+  },
+});
+
+const descriptionCache = new ActionCache(components.actionCache, {
+  action: internal.ai.suggestions.generateDescription,
+});
+
+/**
+ * Generate priority text
+ */
+export const generatePriority = internalAction({
+  args: { prompt: v.string() },
+  handler: async (ctx, args) => {
+    const response = await generateText({
+      model: openai("gpt-4o-mini"),
+      prompt: args.prompt,
     });
     return response.text;
   },
 });
 
 const priorityCache = new ActionCache(components.actionCache, {
-  action: async (prompt: string) => {
+  action: internal.ai.suggestions.generatePriority,
+});
+
+/**
+ * Generate labels text
+ */
+export const generateLabels = internalAction({
+  args: { prompt: v.string() },
+  handler: async (ctx, args) => {
     const response = await generateText({
       model: openai("gpt-4o-mini"),
-      prompt,
+      prompt: args.prompt,
     });
     return response.text;
   },
 });
 
 const labelsCache = new ActionCache(components.actionCache, {
-  action: async (prompt: string) => {
-    const response = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt,
-    });
-    return response.text;
-  },
+  action: internal.ai.suggestions.generateLabels,
 });
 
 /**
