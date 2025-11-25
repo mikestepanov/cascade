@@ -12,7 +12,7 @@ import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
-import { internalAction } from "../_generated/server";
+import { internalAction, action } from "../_generated/server";
 
 // Initialize action cache
 // Initialize action cache
@@ -35,7 +35,10 @@ const cache = new ActionCache(components.actionCache, {
 /**
  * Cached AI suggestion - saves money on repeated queries
  */
-export const cachedSuggestion = cache.wrapAction({
+/**
+ * Cached AI suggestion - saves money on repeated queries
+ */
+export const cachedSuggestion = action({
   args: {
     title: v.string(),
     type: v.string(),
