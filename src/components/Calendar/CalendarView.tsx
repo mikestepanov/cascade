@@ -447,16 +447,11 @@ function formatTime(timestamp: number): string {
 }
 
 function getEventColor(eventType: string): string {
-  switch (eventType) {
-    case "meeting":
-      return "#3B82F6"; // Blue
-    case "deadline":
-      return "#EF4444"; // Red
-    case "timeblock":
-      return "#10B981"; // Green
-    case "personal":
-      return "#8B5CF6"; // Purple
-    default:
-      return "#6B7280"; // Gray
-  }
+  const colors: Record<string, string> = {
+    meeting: "var(--color-event-meeting)",
+    deadline: "var(--color-event-deadline)",
+    timeblock: "var(--color-event-timeblock)",
+    personal: "var(--color-event-personal)",
+  };
+  return colors[eventType] || "var(--color-event-default)";
 }

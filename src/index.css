@@ -111,6 +111,13 @@
   --color-issue-type-epic: #F59E0B;
   --color-issue-type-subtask: #6B7280;
 
+  /* Calendar Event Type Colors */
+  --color-event-meeting: #3B82F6;
+  --color-event-deadline: #EF4444;
+  --color-event-timeblock: #10B981;
+  --color-event-personal: #8B5CF6;
+  --color-event-default: #6B7280;
+
   /* Legacy Primary/Secondary */
   --color-primary: #4F46E5;
   --color-primary-hover: #4338CA;

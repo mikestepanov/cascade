@@ -8,8 +8,10 @@ import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ColorPicker } from "./ui/ColorPicker";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
+import { Flex } from "./ui/Flex";
 import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
+import { Stack } from "./ui/Stack";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;
@@ -20,9 +22,12 @@ interface LabelFormData {
   color: string;
 }
 
+// Default to brand-500 color from theme
+const DEFAULT_LABEL_COLOR = "#6366F1";
+
 const DEFAULT_FORM: LabelFormData = {
   name: "",
-  color: "#3B82F6",
+  color: DEFAULT_LABEL_COLOR,
 };
 
 export function LabelsManager({ projectId }: LabelsManagerProps) {
@@ -131,13 +136,15 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               }}
             />
           ) : (
-            <div className="space-y-2">
+            <Stack gap="sm">
               {labels.map((label) => (
-                <div
+                <Flex
                   key={label._id}
-                  className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+                  justify="between"
+                  align="center"
+                  className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
                 >
-                  <div className="flex items-center gap-3">
+                  <Flex gap="md" align="center">
                     <span
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
                       style={{ backgroundColor: label.color }}
@@ -147,9 +154,9 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                     <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       {label.color}
                     </span>
-                  </div>
+                  </Flex>
 
-                  <div className="flex gap-2">
+                  <Flex gap="sm">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -196,10 +203,10 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                     >
                       Delete
                     </Button>
-                  </div>
-                </div>
+                  </Flex>
+                </Flex>
               ))}
-            </div>
+            </Stack>
           )}
         </CardBody>
       </Card>
@@ -211,48 +218,50 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         title={form.editingId ? "Edit Label" : "Create Label"}
         maxWidth="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          <Input
-            label="Label Name"
-            value={form.formData.name}
-            onChange={(e) => form.updateField("name", e.target.value)}
-            placeholder="e.g., bug, feature, urgent"
-            required
-            autoFocus
-          />
+        <form onSubmit={handleSubmit}>
+          <Stack gap="lg" className="p-6">
+            <Input
+              label="Label Name"
+              value={form.formData.name}
+              onChange={(e) => form.updateField("name", e.target.value)}
+              placeholder="e.g., bug, feature, urgent"
+              required
+              autoFocus
+            />
 
-          <ColorPicker
-            value={form.formData.color}
-            onChange={(color) => form.updateField("color", color)}
-            label="Color"
-          />
+            <ColorPicker
+              value={form.formData.color}
+              onChange={(color) => form.updateField("color", color)}
+              label="Color"
+            />
 
-          {/* Preview */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-              Preview
+            {/* Preview */}
+            <div>
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                Preview
+              </div>
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
+                style={{ backgroundColor: form.formData.color }}
+              >
+                {form.formData.name || "Label name"}
+              </span>
             </div>
-            <span
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
-              style={{ backgroundColor: form.formData.color }}
-            >
-              {form.formData.name || "Label name"}
-            </span>
-          </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" isLoading={isSubmitting}>
-              {form.editingId ? "Update" : "Create"} Label
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCloseModal}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-          </div>
+            <Flex gap="sm" className="pt-4">
+              <Button type="submit" isLoading={isSubmitting}>
+                {form.editingId ? "Update" : "Create"} Label
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleCloseModal}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </Stack>
         </form>
       </Modal>
 
