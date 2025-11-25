@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
-import { createTestProject, createTestUser } from "./test-utils";
+import { createTestProject, createTestUser } from "./testUtils";
 import { modules } from "./testSetup";
 
 describe("Automation Rules", () => {

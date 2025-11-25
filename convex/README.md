@@ -7,6 +7,7 @@ This directory contains backend tests for Cascade's Convex functions. The testin
 ## Quick Start (Local Development)
 
 ### Prerequisites
+
 1. **Active Convex deployment** - You must have Convex configured locally
 2. **Environment file** - `.env` or `.env.local` with your Convex deployment settings
 
@@ -29,12 +30,16 @@ pnpm run test:convex:coverage
 ## Test Structure
 
 ### Pure Function Tests
+
 Tests for utility functions that don't require database access:
+
 - ✅ Can run anywhere (even without Convex deployment)
 - Example: `hasMinimumRole()` in `rbac.test.ts`
 
 ### Integration Tests
+
 Tests for queries/mutations that interact with the database:
+
 - ⚠️ Require active Convex deployment
 - Use `convexTest()` to create isolated test database
 - Example: `getUserRole()`, `canAccessProject()` in `rbac.test.ts`
@@ -57,14 +62,14 @@ convex/
 // Create a test user
 const userId = await createTestUser(t, {
   name: "Test User",
-  email: "test@example.com"
+  email: "test@example.com",
 });
 
 // Create a test project
 const projectId = await createTestProject(t, userId, {
   name: "Test Project",
   key: "TEST",
-  isPublic: false
+  isPublic: false,
 });
 
 // Add a member to a project
@@ -74,7 +79,7 @@ await addProjectMember(t, projectId, memberId, "editor", adminId);
 const issueId = await createTestIssue(t, projectId, reporterId, {
   title: "Test Issue",
   type: "task",
-  priority: "high"
+  priority: "high",
 });
 ```
 
@@ -87,7 +92,7 @@ import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import schema from "./schema";
 import { modules } from "./testSetup";
-import { createTestUser, createTestProject } from "./test-utils";
+import { createTestUser, createTestProject } from "./testUtils";
 
 describe("MyModule", () => {
   it("should do something", async () => {
@@ -117,11 +122,12 @@ describe("MyModule", () => {
 
 ## Troubleshooting
 
-### Error: "Could not find the _generated directory"
+### Error: "Could not find the \_generated directory"
 
 **Cause:** `convex-test` needs an active Convex deployment to discover modules.
 
 **Solution:**
+
 ```bash
 # Make sure Convex dev server is running
 npx convex dev
@@ -135,6 +141,7 @@ pnpm run test:convex
 **Cause:** Missing Convex configuration.
 
 **Solution:**
+
 1. Check your `.env` or `.env.local` file exists
 2. Run `npx convex dev` to set up deployment
 3. Follow Convex setup instructions
@@ -145,12 +152,14 @@ pnpm run test:convex
 
 **Solution:**
 Add Convex deployment configuration to CI:
+
 1. Add `CONVEX_DEPLOY_KEY` secret to GitHub
 2. Update CI workflow to run `npx convex deploy` before tests
 
 ## What's Next
 
 See `TESTING_STATUS.md` for:
+
 - Current implementation status
 - Known blockers
 - Roadmap for additional test coverage
