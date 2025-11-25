@@ -3,6 +3,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
+import { Flex } from "../ui/Flex";
 
 interface WelcomeModalProps {
   onNavigateToProject?: (projectId: Id<"projects">) => void;
@@ -85,7 +86,7 @@ export function WelcomeModal({ onNavigateToProject }: WelcomeModalProps = {}) {
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <Flex direction="column" gap="md" justify="center" className="sm:flex-row">
           <Button
             onClick={handleGetStarted}
             size="lg"
@@ -97,7 +98,7 @@ export function WelcomeModal({ onNavigateToProject }: WelcomeModalProps = {}) {
           <Button onClick={handleSkip} variant="secondary" size="lg" className="text-base px-8">
             Skip Tour
           </Button>
-        </div>
+        </Flex>
 
         {/* Footer Note */}
         <p className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-6">

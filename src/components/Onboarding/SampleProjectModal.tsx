@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
+import { Flex } from "../ui/Flex";
 
 interface SampleProjectModalProps {
   onCreateSampleProject: (projectId: Id<"projects">) => void;
@@ -32,14 +33,14 @@ export function SampleProjectModal({
         <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
           Would you like us to create a sample project with demo issues to help you explore Cascade?
         </p>
-        <div className="flex gap-3 pt-2">
+        <Flex gap="md" className="pt-2">
           <Button onClick={handleCreateSample} variant="primary" className="flex-1">
             Yes, show me around!
           </Button>
           <Button onClick={onStartFromScratch} variant="secondary" className="flex-1">
             I'll start from scratch
           </Button>
-        </div>
+        </Flex>
       </div>
     </Modal>
   );

@@ -11,7 +11,6 @@ import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
 import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
-import { Stack } from "./ui/Stack";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;
@@ -136,7 +135,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               }}
             />
           ) : (
-            <Stack gap="sm">
+            <Flex direction="column" gap="sm">
               {labels.map((label) => (
                 <Flex
                   key={label._id}
@@ -206,7 +205,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                   </Flex>
                 </Flex>
               ))}
-            </Stack>
+            </Flex>
           )}
         </CardBody>
       </Card>
@@ -219,7 +218,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         maxWidth="md"
       >
         <form onSubmit={handleSubmit}>
-          <Stack gap="lg" className="p-6">
+          <Flex direction="column" gap="lg" className="p-6">
             <Input
               label="Label Name"
               value={form.formData.name}
@@ -261,7 +260,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                 Cancel
               </Button>
             </Flex>
-          </Stack>
+          </Flex>
         </form>
       </Modal>
 

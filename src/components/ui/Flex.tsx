@@ -1,9 +1,15 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+type Direction = "row" | "column";
 type GapSize = "none" | "xs" | "sm" | "md" | "lg" | "xl";
 type Align = "start" | "center" | "end" | "stretch" | "baseline";
 type Justify = "start" | "center" | "end" | "between" | "around" | "evenly";
+
+const directionClasses: Record<Direction, string> = {
+  row: "flex-row",
+  column: "flex-col",
+};
 
 const gapClasses: Record<GapSize, string> = {
   none: "gap-0",
@@ -32,6 +38,8 @@ const justifyClasses: Record<Justify, string> = {
 };
 
 export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Direction of flex layout */
+  direction?: Direction;
   /** Gap between items */
   gap?: GapSize;
   /** Align items on cross axis */
@@ -47,15 +55,25 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Flex layout component - horizontal by default.
+ * Flex layout component for one-dimensional layouts.
  *
  * @example
+ * // Horizontal row (default)
  * <Flex gap="sm" align="center">
  *   <Icon />
  *   <span>Label</span>
  * </Flex>
  *
  * @example
+ * // Vertical column
+ * <Flex direction="column" gap="md">
+ *   <Input label="Name" />
+ *   <Input label="Email" />
+ *   <Button>Submit</Button>
+ * </Flex>
+ *
+ * @example
+ * // Space between
  * <Flex justify="between" align="center">
  *   <h1>Title</h1>
  *   <Button>Action</Button>
@@ -64,6 +82,7 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
   (
     {
+      direction = "row",
       gap = "none",
       align,
       justify,
@@ -81,6 +100,7 @@ export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
         ref={ref}
         className={cn(
           inline ? "inline-flex" : "flex",
+          directionClasses[direction],
           gapClasses[gap],
           align && alignClasses[align],
           justify && justifyClasses[justify],

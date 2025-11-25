@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Plus } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
@@ -84,11 +85,15 @@ export function CalendarView() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-4">
+        <Flex
+          direction="column"
+          gap="md"
+          className="sm:flex-row items-stretch sm:items-center justify-between"
+        >
+          <Flex gap="lg" align="center" className="gap-2 sm:gap-4">
             <Button
               onClick={handleToday}
               variant="secondary"
@@ -97,7 +102,7 @@ export function CalendarView() {
             >
               Today
             </Button>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
               <button
                 type="button"
                 onClick={handlePrevious}
@@ -112,13 +117,13 @@ export function CalendarView() {
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
-            </div>
+            </Flex>
             <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
               {getHeaderText()}
             </h2>
-          </div>
+          </Flex>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <Flex gap="md" align="center" className="gap-2 sm:gap-3">
             {/* View Mode Toggle */}
             <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-1 sm:flex-initial">
               <button
@@ -155,8 +160,8 @@ export function CalendarView() {
               <span className="hidden sm:inline">New Event</span>
               <span className="sm:hidden">New</span>
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </div>
 
       {/* Calendar Grid */}
@@ -180,7 +185,7 @@ export function CalendarView() {
       {selectedEventId && (
         <EventDetailsModal eventId={selectedEventId} onClose={() => setSelectedEventId(null)} />
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -203,7 +208,7 @@ function WeekView({
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   return (
-    <div className="flex flex-col h-full">
+    <Flex direction="column" className="h-full">
       {/* Day Headers */}
       <div className="grid grid-cols-8 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         <div className="p-1 sm:p-2 text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
@@ -303,7 +308,7 @@ function WeekView({
           ))}
         </div>
       </div>
-    </div>
+    </Flex>
   );
 }
 
@@ -333,7 +338,7 @@ function MonthView({
   });
 
   return (
-    <div className="flex flex-col h-full">
+    <Flex direction="column" className="h-full">
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, _idx) => (
@@ -375,7 +380,7 @@ function MonthView({
                 {day.getDate()}
               </div>
 
-              <div className="space-y-0.5 sm:space-y-1">
+              <Flex direction="column" gap="xs" className="space-y-0.5 sm:space-y-1">
                 {dayEvents.slice(0, 2).map((event) => (
                   <button
                     type="button"
@@ -397,12 +402,12 @@ function MonthView({
                     +{dayEvents.length - 2}
                   </div>
                 )}
-              </div>
+              </Flex>
             </div>
           );
         })}
       </div>
-    </div>
+    </Flex>
   );
 }
 

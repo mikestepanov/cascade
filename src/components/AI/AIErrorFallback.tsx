@@ -2,6 +2,8 @@
  * AIErrorFallback - Error boundary fallback for AI components
  */
 
+import { Flex } from "../ui/Flex";
+
 export interface AIErrorFallbackProps {
   error?: Error;
   onRetry?: () => void;
@@ -16,7 +18,11 @@ export function AIErrorFallback({
   message = "Something went wrong with the AI assistant. Please try again.",
 }: AIErrorFallbackProps) {
   return (
-    <div className="flex items-center justify-center h-full p-6 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex
+      align="center"
+      justify="center"
+      className="h-full p-6 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+    >
       <div className="text-center max-w-md">
         <div className="text-6xl mb-4">⚠️</div>
         <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
@@ -44,6 +50,6 @@ export function AIErrorFallback({
           </button>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }

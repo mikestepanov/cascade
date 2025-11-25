@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 interface ManualTimeEntryModalProps {
@@ -292,7 +293,7 @@ export function ManualTimeEntryModal({
           >
             Tags
           </label>
-          <div className="flex gap-2">
+          <Flex gap="sm">
             <input
               id="time-entry-tags"
               type="text"
@@ -310,9 +311,10 @@ export function ManualTimeEntryModal({
             <Button onClick={handleAddTag} variant="secondary" size="sm">
               Add
             </Button>
-          </div>
+          </Flex>
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2">
+            <Flex gap="sm" className="flex-wrap">
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -330,13 +332,15 @@ export function ManualTimeEntryModal({
                   </Button>
                 </span>
               ))}
+            </Flex>
             </div>
           )}
         </div>
 
         {/* Billable */}
         <div>
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="cursor-pointer">
+          <Flex align="center" gap="sm">
             <input
               type="checkbox"
               checked={billable}
@@ -346,20 +350,21 @@ export function ManualTimeEntryModal({
             <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Billable time
             </span>
+          </Flex>
           </label>
           <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
             Mark this time as billable to clients
           </p>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4">
+        <Flex justify="end" gap="sm" className="pt-4">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
           <Button type="submit" variant="primary" disabled={duration <= 0}>
             Create Entry
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );

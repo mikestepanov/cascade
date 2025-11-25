@@ -9,6 +9,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Checkbox } from "../ui/form/Checkbox";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Modal } from "../ui/Modal";
@@ -27,11 +28,13 @@ export function ApiKeysManager() {
     <Card>
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <Flex justify="between" align="center" className="mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              API Keys
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Flex gap="sm" align="center">
+                <Key className="h-5 w-5" />
+                API Keys
+              </Flex>
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
@@ -41,12 +44,13 @@ export function ApiKeysManager() {
             variant="primary"
             size="sm"
             onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-2"
           >
-            <Plus className="h-4 w-4" />
-            Generate Key
+            <Flex gap="sm" align="center">
+              <Plus className="h-4 w-4" />
+              Generate Key
+            </Flex>
           </Button>
-        </div>
+        </Flex>
 
         {/* API Keys List */}
         {!apiKeys || apiKeys.length === 0 ? (
@@ -62,10 +66,12 @@ export function ApiKeysManager() {
               variant="primary"
               size="sm"
               onClick={() => setShowGenerateModal(true)}
-              className="flex items-center gap-2 mx-auto"
+              className="mx-auto"
             >
-              <Plus className="h-4 w-4" />
-              Generate Your First Key
+              <Flex gap="sm" align="center">
+                <Plus className="h-4 w-4" />
+                Generate Your First Key
+              </Flex>
             </Button>
           </div>
         ) : (

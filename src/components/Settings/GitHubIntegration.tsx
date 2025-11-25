@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { LinkedRepositories } from "./LinkedRepositories";
 
 /**
@@ -46,8 +47,8 @@ export function GitHubIntegration() {
   return (
     <Card>
       <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-4">
+        <Flex justify="between" align="start">
+          <Flex gap="lg" align="center">
             <div className="p-3 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
               <Github className="h-6 w-6 text-ui-text-primary dark:text-ui-text-primary-dark" />
             </div>
@@ -64,7 +65,7 @@ export function GitHubIntegration() {
                 </p>
               )}
             </div>
-          </div>
+          </Flex>
           <div>
             {githubConnection ? (
               <Button
@@ -81,7 +82,7 @@ export function GitHubIntegration() {
               </Button>
             )}
           </div>
-        </div>
+        </Flex>
 
         {githubConnection && (
           <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">

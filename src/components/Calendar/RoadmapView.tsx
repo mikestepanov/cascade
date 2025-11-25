@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
+import { Flex } from "../ui/Flex";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -96,11 +97,15 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Header */}
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-2 sm:gap-4">
+        <Flex
+          direction="column"
+          gap="md"
+          className="sm:flex-row items-stretch sm:items-center justify-between sm:gap-4"
+        >
+          <Flex gap="lg" align="center" className="gap-2 sm:gap-4">
             <button
               type="button"
               onClick={handleToday}
@@ -108,7 +113,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             >
               Today
             </button>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
               <button
                 type="button"
                 onClick={handlePrevious}
@@ -125,11 +130,11 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
               </button>
-            </div>
+            </Flex>
             <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
               {getHeaderText()}
             </h2>
-          </div>
+          </Flex>
 
           {/* Time Scale Toggle */}
           <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-shrink-0">
@@ -170,7 +175,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <span className="hidden sm:inline">Quarter</span>
             </button>
           </div>
-        </div>
+        </Flex>
       </div>
 
       {/* Roadmap Grid */}
@@ -209,7 +214,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                 >
                   {/* Item Info */}
                   <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark">
-                    <div className="flex items-center gap-1 sm:gap-2">
+                    <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
                         <Badge variant="accent" size="md">
                           Sprint
@@ -219,7 +224,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                           {item.issueType}
                         </Badge>
                       )}
-                    </div>
+                    </Flex>
                     <div className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
                       {item.title}
                     </div>
@@ -247,7 +252,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           )}
         </div>
       </div>
-    </div>
+    </Flex>
   );
 }
 

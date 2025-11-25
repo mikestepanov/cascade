@@ -6,6 +6,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Skeleton } from "../ui/Skeleton";
 import { AI_CONFIG } from "./config";
@@ -104,7 +105,7 @@ function MessageItem({
         )}
 
         {/* Message metadata */}
-        <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
+        <Flex align="center" gap="sm" className="mt-2 text-xs opacity-70">
           <span>
             {new Date(message.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
@@ -119,7 +120,7 @@ function MessageItem({
           {message.role === "assistant" && message.responseTime && (
             <span className="hidden md:inline">• {(message.responseTime / 1000).toFixed(1)}s</span>
           )}
-        </div>
+        </Flex>
       </div>
     </div>
   );
@@ -146,24 +147,24 @@ export const AIChat = React.memo(function AIChat({
 
   if (!chatId) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner message="Starting new chat..." />
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <Flex direction="column" gap="lg" className="flex-1 overflow-y-auto p-4">
         {!messages ? (
-          <div className="space-y-4">
+          <Flex direction="column" gap="lg">
             <Skeleton className="h-16 w-3/4" />
             <Skeleton className="h-16 w-2/3 ml-auto" />
             <Skeleton className="h-20 w-3/4" />
-          </div>
+          </Flex>
         ) : messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-center">
+          <Flex align="center" justify="center" className="h-full text-center">
             <div>
               <div className="text-4xl mb-4">🤖</div>
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
@@ -172,13 +173,17 @@ export const AIChat = React.memo(function AIChat({
               <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                 Ask me anything about your project, or use natural language commands.
               </p>
-              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark space-y-1">
+              <Flex
+                direction="column"
+                gap="xs"
+                className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+              >
                 <p>💡 "What's our team velocity?"</p>
                 <p>💡 "Which issues are blocking the sprint?"</p>
                 <p>💡 "Summarize this week's progress"</p>
-              </div>
+              </Flex>
             </div>
-          </div>
+          </Flex>
         ) : (
           <>
             {messages
@@ -196,8 +201,8 @@ export const AIChat = React.memo(function AIChat({
             {isSending && (
               <div className="flex justify-start">
                 <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
+                  <Flex align="center" gap="sm">
+                    <Flex gap="xs">
                       <div
                         className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
                         style={{ animationDelay: "0ms" }}
@@ -210,22 +215,22 @@ export const AIChat = React.memo(function AIChat({
                         className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
                         style={{ animationDelay: "300ms" }}
                       />
-                    </div>
+                    </Flex>
                     <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       AI is thinking...
                     </span>
-                  </div>
+                  </Flex>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </>
         )}
-      </div>
+      </Flex>
 
       {/* Input Area */}
       <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark safe-area-inset-bottom">
-        <div className="flex gap-2 items-end">
+        <Flex gap="sm" align="end">
           <textarea
             ref={textareaRef}
             value={inputMessage}
@@ -261,11 +266,11 @@ export const AIChat = React.memo(function AIChat({
               </svg>
             )}
           </button>
-        </div>
+        </Flex>
         <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2 hidden sm:block">
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>
-    </div>
+    </Flex>
   );
 });

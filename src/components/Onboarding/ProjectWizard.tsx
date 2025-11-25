@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Modal } from "../ui/Modal";
+import { Flex } from "../ui/Flex";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -90,14 +91,14 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
       <div className="space-y-6">
         {/* Progress indicator */}
         <div className="mb-6">
-          <div className="flex justify-between mb-2">
+          <Flex justify="between" className="mb-2">
             <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Step {step} of 4
             </span>
             <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {Math.round((step / 4) * 100)}% complete
             </span>
-          </div>
+          </Flex>
           <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
             <div
               className="bg-brand-600 h-2 rounded-full transition-all duration-300"
@@ -250,9 +251,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               the defaults.
             </p>
 
-            <div className="space-y-3">
+            <Flex direction="column" gap="md">
               {workflowStates.map((state, index) => (
-                <div key={state.id} className="flex items-center gap-3">
+                <Flex key={state.id} gap="md" align="center">
                   <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark font-mono text-sm w-6">
                     {index + 1}.
                   </span>
@@ -281,9 +282,9 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                         ? "In Progress"
                         : "Done"}
                   </span>
-                </div>
+                </Flex>
               ))}
-            </div>
+            </Flex>
 
             <Button
               onClick={() => {
@@ -346,7 +347,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                 <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                   Workflow States:
                 </span>
-                <div className="flex flex-wrap gap-2 mt-1">
+                <Flex wrap gap="sm" className="mt-1">
                   {workflowStates.map((state) => (
                     <span
                       key={state.id}
@@ -355,7 +356,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                       {state.name}
                     </span>
                   ))}
-                </div>
+                </Flex>
               </div>
             </div>
 
@@ -367,7 +368,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex justify="between" className="pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <div>
             {step > 1 && (
               <Button onClick={handlePrevious} variant="secondary">
@@ -375,7 +376,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               </Button>
             )}
           </div>
-          <div className="flex gap-2">
+          <Flex gap="sm">
             <Button onClick={onCancel} variant="secondary">
               Cancel
             </Button>
@@ -388,8 +389,8 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
                 Create Project 🚀
               </Button>
             )}
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </div>
     </Modal>
   );

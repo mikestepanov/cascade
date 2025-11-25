@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 
 interface TourStep {
   target: string; // CSS selector
@@ -133,7 +134,7 @@ export function OnboardingTour() {
         }}
       >
         {/* Progress */}
-        <div className="flex items-center gap-1 mb-4">
+        <Flex gap="xs" align="center" className="mb-4">
           {TOUR_STEPS.map((tourStep, index) => (
             <div
               key={tourStep.target}
@@ -142,7 +143,7 @@ export function OnboardingTour() {
               }`}
             />
           ))}
-        </div>
+        </Flex>
 
         {/* Content */}
         <div className="mb-4">
@@ -155,19 +156,19 @@ export function OnboardingTour() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between">
+        <Flex justify="between" align="center">
           <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {step + 1} of {TOUR_STEPS.length}
           </span>
-          <div className="flex gap-2">
+          <Flex gap="sm">
             <Button onClick={handleSkip} variant="secondary" size="sm">
               Skip Tour
             </Button>
             <Button onClick={handleNext} size="sm">
               {isLastStep ? "Get Started" : "Next"}
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       </div>
     </>
   );

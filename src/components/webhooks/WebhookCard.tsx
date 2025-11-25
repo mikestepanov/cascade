@@ -1,5 +1,6 @@
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 
 interface WebhookCardProps {
   webhook: {
@@ -21,9 +22,9 @@ interface WebhookCardProps {
 export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
   return (
     <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
-      <div className="flex items-start justify-between">
+      <Flex justify="between" align="start">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+          <Flex gap="sm" align="center" className="mb-2">
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {webhook.name}
             </h4>

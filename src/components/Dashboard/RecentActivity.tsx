@@ -1,6 +1,7 @@
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
+import { Flex } from "../ui/Flex";
 import { SkeletonText } from "../ui/Skeleton";
 
 interface Activity {
@@ -43,15 +44,15 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       <CardBody>
         {!activities ? (
           /* Loading skeleton */
-          <div className="space-y-3">
+          <Flex direction="column" gap="md">
             <SkeletonText lines={2} />
             <SkeletonText lines={2} />
             <SkeletonText lines={2} />
-          </div>
+          </Flex>
         ) : activities.length === 0 ? (
           <EmptyState icon="📊" title="No activity" description="No recent activity to show" />
         ) : (
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+          <Flex direction="column" gap="md" className="max-h-[400px] overflow-y-auto">
             {activities.map((activity, activityIndex) => (
               <div
                 key={activity._id}
@@ -63,13 +64,17 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                   <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark" />
                 )}
 
-                <div className="flex items-start gap-3">
+                <Flex gap="md" align="start">
                   {/* Icon circle with background */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center relative z-10">
+                  <Flex
+                    align="center"
+                    justify="center"
+                    className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 relative z-10"
+                  >
                     <span className="text-sm" aria-hidden="true">
                       {getActionIcon(activity.action)}
                     </span>
-                  </div>
+                  </Flex>
 
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="text-sm">
@@ -85,16 +90,20 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                         {activity.issueKey}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Flex
+                      gap="sm"
+                      align="center"
+                      className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                    >
                       <span>{activity.projectName}</span>
                       <span>•</span>
                       <span>{new Date(activity.createdAt).toLocaleDateString()}</span>
-                    </div>
+                    </Flex>
                   </div>
-                </div>
+                </Flex>
               </div>
             ))}
-          </div>
+          </Flex>
         )}
       </CardBody>
     </Card>

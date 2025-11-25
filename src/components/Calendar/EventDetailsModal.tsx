@@ -8,6 +8,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 interface EventDetailsModalProps {
@@ -26,9 +27,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
   if (!event) {
     return (
       <Modal isOpen={true} onClose={onClose} title="Event Details" maxWidth="2xl">
-        <div className="flex justify-center p-8">
+        <Flex justify="center" className="p-8">
           <LoadingSpinner size="lg" />
-        </div>
+        </Flex>
       </Modal>
     );
   }
@@ -93,21 +94,21 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
 
   return (
     <Modal isOpen={true} onClose={onClose} title={event.title} maxWidth="2xl">
-      <div className="space-y-4">
+      <Flex direction="column" gap="lg">
         {/* Badges */}
-        <div className="flex items-center gap-2">
+        <Flex gap="sm" align="center">
           <Badge size="md" className={`capitalize ${getEventTypeColor(event.eventType)}`}>
             {event.eventType}
           </Badge>
           <Badge size="md" className={`capitalize ${getStatusColor(event.status)}`}>
             {event.status}
           </Badge>
-        </div>
+        </Flex>
 
         {/* Content */}
-        <div className="space-y-4">
+        <Flex direction="column" gap="lg">
           {/* Date and Time */}
-          <div className="flex items-start gap-3">
+          <Flex gap="md" align="start">
             <Calendar className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
             <div>
               <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -129,10 +130,10 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 )}
               </div>
             </div>
-          </div>
+          </Flex>
 
           {/* Organizer */}
-          <div className="flex items-start gap-3">
+          <Flex gap="md" align="start">
             <div className="w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-0.5">
               {event.organizerName?.[0]?.toUpperCase()}
             </div>
@@ -149,7 +150,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 </div>
               )}
             </div>
-          </div>
+          </Flex>
 
           {/* Description */}
           {event.description && (
@@ -165,7 +166,11 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
 
           {/* Location */}
           {event.location && (
-            <div className="flex items-start gap-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
+            <Flex
+              gap="md"
+              align="start"
+              className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4"
+            >
               <MapPin className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
               <div>
                 <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
@@ -175,12 +180,16 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                   {event.location}
                 </div>
               </div>
-            </div>
+            </Flex>
           )}
 
           {/* Meeting URL */}
           {event.meetingUrl && (
-            <div className="flex items-start gap-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
+            <Flex
+              gap="md"
+              align="start"
+              className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4"
+            >
               <LinkIcon className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
               <div>
                 <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
@@ -195,7 +204,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                   Join Meeting
                 </a>
               </div>
-            </div>
+            </Flex>
           )}
 
           {/* Notes */}
@@ -213,31 +222,33 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           {/* Recurring */}
           {event.isRecurring && (
             <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
-              <div className="flex items-center gap-2">
+              <Flex gap="sm" align="center">
                 <Clock className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
                 <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Recurring event
                 </span>
-              </div>
+              </Flex>
             </div>
           )}
 
           {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
           {event.isRequired && attendance && (
             <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
-              <div className="flex items-center justify-between mb-3">
+              <Flex justify="between" align="center" className="mb-3">
                 <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                   Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
                 </h4>
-              </div>
+              </Flex>
 
-              <div className="space-y-2">
+              <Flex direction="column" gap="sm">
                 {attendance.attendees.map((attendee) => (
-                  <div
+                  <Flex
                     key={attendee.userId}
-                    className="flex items-center justify-between p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-md"
+                    justify="between"
+                    align="center"
+                    className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-md"
                   >
-                    <div className="flex items-center gap-2 flex-1">
+                    <Flex gap="sm" align="center" className="flex-1">
                       {/* Status Icon */}
                       {attendee.status === "present" && (
                         <Check className="w-4 h-4 text-status-success" />
@@ -252,7 +263,7 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                       <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {attendee.userName}
                       </span>
-                    </div>
+                    </Flex>
 
                     {/* Status Dropdown */}
                     <select
@@ -271,9 +282,9 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                       <option value="tardy">⏰ Tardy</option>
                       <option value="absent">✗ Absent</option>
                     </select>
-                  </div>
+                  </Flex>
                 ))}
-              </div>
+              </Flex>
 
               {attendance.totalAttendees === 0 && (
                 <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center py-4">
@@ -282,10 +293,14 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
               )}
             </div>
           )}
-        </div>
+        </Flex>
 
         {/* Actions */}
-        <div className="flex justify-between gap-3 p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex
+          justify="between"
+          gap="md"
+          className="p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
           <Button
             onClick={handleDelete}
             variant="danger"
@@ -297,8 +312,8 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
           <Button onClick={onClose} variant="secondary">
             Close
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </Modal>
   );
 }

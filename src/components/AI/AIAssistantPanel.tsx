@@ -7,6 +7,7 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ErrorBoundary } from "../ErrorBoundary";
+import { Flex } from "../ui/Flex";
 import { ModalBackdrop } from "../ui/ModalBackdrop";
 import { AIChat } from "./AIChat";
 import { AIErrorFallback } from "./AIErrorFallback";
@@ -53,8 +54,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600">
-          <div className="flex items-center gap-3">
+        <Flex
+          justify="between"
+          align="center"
+          className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600"
+        >
+          <Flex align="center" gap="md">
             <div className="text-2xl">🤖</div>
             <div>
               <h2 className="text-lg font-semibold text-white">AI Assistant</h2>
@@ -62,7 +67,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
                 {projectId ? "Project-specific context" : "General chat"}
               </p>
             </div>
-          </div>
+          </Flex>
           <button
             type="button"
             onClick={onClose}
@@ -79,7 +84,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
               />
             </svg>
           </button>
-        </div>
+        </Flex>
 
         {/* Tabs */}
         <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">

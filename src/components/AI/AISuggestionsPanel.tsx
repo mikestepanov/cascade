@@ -4,6 +4,7 @@
 
 import React from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { Skeleton } from "../ui/Skeleton";
 import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
@@ -28,41 +29,43 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
 
   if (!projectId) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <Flex align="center" justify="center" className="h-full">
         <div className="text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <p>Select a project to view AI suggestions</p>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
       {/* Action Bar */}
       <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         <button
           type="button"
           onClick={handleGenerateInsights}
           disabled={isGenerating}
-          className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 touch-manipulation"
+          className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
         >
-          {isGenerating ? (
-            <>
-              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span className="hidden sm:inline">Analyzing Project...</span>
-              <span className="sm:hidden">Analyzing...</span>
-            </>
-          ) : (
-            <>
-              <span>✨</span>
-              <span className="hidden sm:inline">Generate AI Insights</span>
-              <span className="sm:hidden">Generate Insights</span>
-            </>
-          )}
+          <Flex align="center" justify="center" gap="sm">
+            {isGenerating ? (
+              <>
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="hidden sm:inline">Analyzing Project...</span>
+                <span className="sm:hidden">Analyzing...</span>
+              </>
+            ) : (
+              <>
+                <span>✨</span>
+                <span className="hidden sm:inline">Generate AI Insights</span>
+                <span className="sm:hidden">Generate Insights</span>
+              </>
+            )}
+          </Flex>
         </button>
 
         {/* Filter Tabs */}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <Flex wrap gap="sm" className="mt-3">
           <FilterButton
             active={!selectedType}
             onClick={() => setSelectedType(undefined)}
@@ -86,19 +89,19 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
             label="📅 Planning"
             variant="green"
           />
-        </div>
+        </Flex>
       </div>
 
       {/* Suggestions List */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-4">
         {!suggestions ? (
-          <div className="space-y-3">
+          <Flex direction="column" gap="md">
             <Skeleton className="h-24 w-full" />
             <Skeleton className="h-24 w-full" />
             <Skeleton className="h-24 w-full" />
-          </div>
+          </Flex>
         ) : suggestions.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-center px-4">
+          <Flex align="center" justify="center" className="h-full text-center px-4">
             <div>
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
@@ -109,9 +112,9 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
                 recommendations.
               </p>
             </div>
-          </div>
+          </Flex>
         ) : (
-          <div className="space-y-3">
+          <Flex direction="column" gap="md">
             {suggestions.map((suggestion) => (
               <SuggestionCard
                 key={suggestion._id}
@@ -120,10 +123,10 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
                 onDismiss={handleDismissSuggestion}
               />
             ))}
-          </div>
+          </Flex>
         )}
       </div>
-    </div>
+    </Flex>
   );
 });
 
@@ -180,17 +183,17 @@ const SuggestionCard = React.memo(function SuggestionCard({
 
   return (
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-3">
+      <Flex align="start" gap="md">
         <div className="text-2xl flex-shrink-0">{metadata?.icon || "💡"}</div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
+          <Flex align="center" gap="sm" className="mb-2">
             <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200">
               {metadata?.label || suggestion.suggestionType}
             </span>
             <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {new Date(suggestion.createdAt).toLocaleDateString()}
             </span>
-          </div>
+          </Flex>
           <p className="text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap break-words">
             {suggestion.suggestion}
           </p>
@@ -201,7 +204,11 @@ const SuggestionCard = React.memo(function SuggestionCard({
           )}
           {suggestion.confidence !== undefined && (
             <div className="mt-2">
-              <div className="flex items-center gap-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+              <Flex
+                align="center"
+                gap="sm"
+                className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+              >
                 <span>Confidence:</span>
                 <div className="flex-1 max-w-[100px] bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
                   <div
@@ -210,11 +217,11 @@ const SuggestionCard = React.memo(function SuggestionCard({
                   />
                 </div>
                 <span>{Math.round(suggestion.confidence * 100)}%</span>
-              </div>
+              </Flex>
             </div>
           )}
           {!(suggestion.accepted || suggestion.dismissed) && (
-            <div className="flex gap-2 mt-3">
+            <Flex gap="sm" className="mt-3">
               <button
                 type="button"
                 onClick={() => onAccept(suggestion._id)}
@@ -229,22 +236,30 @@ const SuggestionCard = React.memo(function SuggestionCard({
               >
                 ✗ Dismiss
               </button>
-            </div>
+            </Flex>
           )}
           {suggestion.accepted && (
-            <div className="mt-3 text-sm text-status-success dark:text-status-success flex items-center gap-1">
+            <Flex
+              align="center"
+              gap="xs"
+              className="mt-3 text-sm text-status-success dark:text-status-success"
+            >
               <span>✓</span>
               <span>Accepted</span>
-            </div>
+            </Flex>
           )}
           {suggestion.dismissed && (
-            <div className="mt-3 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark flex items-center gap-1">
+            <Flex
+              align="center"
+              gap="xs"
+              className="mt-3 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+            >
               <span>✗</span>
               <span>Dismissed</span>
-            </div>
+            </Flex>
           )}
         </div>
-      </div>
+      </Flex>
     </div>
   );
 });

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
+import { Flex } from "../ui/Flex";
 
 interface ChecklistItem {
   id: string;
@@ -74,8 +75,8 @@ export function OnboardingChecklist() {
   return (
     <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-40">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <div className="flex items-center gap-2">
+      <Flex justify="between" align="center" className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex gap="sm" align="center">
           <span className="text-lg">🚀</span>
           <div>
             <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -85,8 +86,8 @@ export function OnboardingChecklist() {
               {completedCount} of {totalCount} complete
             </p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
+        </Flex>
+        <Flex gap="sm" align="center">
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -105,8 +106,8 @@ export function OnboardingChecklist() {
           >
             <X className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
           </button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Progress Bar */}
       <div className="px-4 pt-3">
@@ -120,9 +121,9 @@ export function OnboardingChecklist() {
 
       {/* Checklist Items */}
       {isExpanded && (
-        <div className="p-4 space-y-3">
+        <Flex direction="column" gap="md" className="p-4">
           {items.map((item) => (
-            <div key={item.id} className="flex items-start gap-3">
+            <Flex key={item.id} gap="md" align="start">
               <div
                 className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all ${
                   item.completed
@@ -146,7 +147,7 @@ export function OnboardingChecklist() {
                   {item.description}
                 </p>
               </div>
-            </div>
+            </Flex>
           ))}
 
           {/* Completion Message */}
@@ -160,7 +161,7 @@ export function OnboardingChecklist() {
               </p>
             </div>
           )}
-        </div>
+        </Flex>
       )}
     </div>
   );

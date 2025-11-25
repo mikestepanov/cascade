@@ -6,6 +6,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
+import { Flex } from "../ui/Flex";
 import { Input, Select } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
@@ -130,7 +131,7 @@ export function HourComplianceDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Summary Stats */}
       {summary && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -265,15 +266,15 @@ export function HourComplianceDashboard() {
                   key={record._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
                 >
-                  <div className="flex items-start justify-between">
+                  <Flex justify="between" align="start">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                      <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getStatusIcon(record.status)}</span>
                         <div>
                           <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {record.user?.name || record.user?.email || "Unknown User"}
                           </h4>
-                          <div className="flex gap-2 mt-1">
+                          <Flex gap="sm" className="mt-1">
                             <span
                               className={`text-xs px-2 py-0.5 rounded ${getStatusColor(record.status)}`}
                             >
@@ -287,9 +288,9 @@ export function HourComplianceDashboard() {
                                 Reviewed
                               </span>
                             )}
-                          </div>
+                          </Flex>
                         </div>
-                      </div>
+                      </Flex>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         <div>
@@ -367,7 +368,7 @@ export function HourComplianceDashboard() {
                       )}
                     </div>
 
-                    <div className="flex gap-2 ml-4">
+                    <Flex gap="sm" className="ml-4">
                       {!record.reviewedBy && (
                         <Button
                           variant="ghost"
@@ -377,8 +378,8 @@ export function HourComplianceDashboard() {
                           Review
                         </Button>
                       )}
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
                 </div>
               ))}
             </div>
@@ -396,42 +397,44 @@ export function HourComplianceDashboard() {
         title="Review Compliance Record"
         maxWidth="lg"
       >
-        <form onSubmit={handleReview} className="p-6 space-y-4">
-          <div>
-            <label
-              htmlFor="review-notes"
-              className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2"
-            >
-              Review Notes (Optional)
-            </label>
-            <textarea
-              id="review-notes"
-              value={reviewNotes}
-              onChange={(e) => setReviewNotes(e.target.value)}
-              placeholder="Add notes about this compliance record..."
-              rows={4}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-            />
-          </div>
+        <form onSubmit={handleReview} className="p-6">
+          <Flex direction="column" gap="lg">
+            <div>
+              <label
+                htmlFor="review-notes"
+                className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2"
+              >
+                Review Notes (Optional)
+              </label>
+              <textarea
+                id="review-notes"
+                value={reviewNotes}
+                onChange={(e) => setReviewNotes(e.target.value)}
+                placeholder="Add notes about this compliance record..."
+                rows={4}
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+              />
+            </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" isLoading={isSubmitting}>
-              Mark as Reviewed
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                setReviewingRecord(null);
-                setReviewNotes("");
-              }}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-          </div>
+            <Flex gap="sm" className="pt-4">
+              <Button type="submit" isLoading={isSubmitting}>
+                Mark as Reviewed
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setReviewingRecord(null);
+                  setReviewNotes("");
+                }}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </Flex>
         </form>
       </Modal>
-    </div>
+    </Flex>
   );
 }
