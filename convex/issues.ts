@@ -987,11 +987,15 @@ export const bulkUpdateStatus = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const now = Date.now();
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       // Check permissions
@@ -1045,11 +1049,15 @@ export const bulkUpdatePriority = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const now = Date.now();
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       try {
@@ -1093,11 +1101,15 @@ export const bulkAssign = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const now = Date.now();
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       try {
@@ -1141,11 +1153,15 @@ export const bulkAddLabels = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const now = Date.now();
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       try {
@@ -1190,11 +1206,15 @@ export const bulkMoveToSprint = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const now = Date.now();
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       try {
@@ -1294,10 +1314,14 @@ export const bulkDelete = mutation({
       throw new Error("Not authenticated");
     }
 
+    // Batch fetch all issues at once to avoid N+1
+    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+
     const results = [];
 
-    for (const issueId of args.issueIds) {
-      const issue = await ctx.db.get(issueId);
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i];
+      const issueId = args.issueIds[i];
       if (!issue) continue;
 
       try {

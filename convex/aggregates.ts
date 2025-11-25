@@ -1,4 +1,4 @@
-// @ts-nocheck - TODO: Fix aggregate component types after running convex dev
+// @ts-nocheck - Aggregate library API requires component types from npx convex dev
 /**
  * Aggregate Definitions for Fast Analytics
  *

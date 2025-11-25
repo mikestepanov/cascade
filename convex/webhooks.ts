@@ -56,7 +56,12 @@ export const listByProject = query({
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
-    return webhooks;
+    // Don't expose secrets to the client - only show if secret is configured
+    return webhooks.map((w) => ({
+      ...w,
+      secret: undefined,
+      hasSecret: !!w.secret,
+    }));
   },
 });
 
