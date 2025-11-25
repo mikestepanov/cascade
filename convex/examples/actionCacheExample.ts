@@ -11,18 +11,25 @@ import { openai } from "@ai-sdk/openai";
 import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { components } from "../_generated/api";
+import { components, internal } from "../_generated/api";
+import { internalAction } from "../_generated/server";
 
 // Initialize action cache
-const cache = new ActionCache(components.actionCache, {
-  action: async (text: string) => {
+// Initialize action cache
+export const generateTextAction = internalAction({
+  args: { text: v.string() },
+  handler: async (ctx, args) => {
     // Expensive AI call
     const response = await generateText({
       model: openai("gpt-4o-mini"),
-      prompt: text,
+      prompt: args.text,
     });
     return response.text;
   },
+});
+
+const cache = new ActionCache(components.actionCache, {
+  action: internal.examples.actionCacheExample.generateTextAction,
 });
 
 /**
