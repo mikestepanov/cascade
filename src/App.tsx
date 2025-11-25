@@ -44,7 +44,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <OnboardingProvider>
-        <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen flex bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
           <Toaster />
           <Content />
         </div>
@@ -74,8 +74,8 @@ function ViewSwitcherButton({
       onClick={onClick}
       className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
         isActive
-          ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+          ? "bg-ui-bg-primary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
       }`}
       aria-label={label}
       aria-current={isActive ? "page" : undefined}
@@ -136,9 +136,9 @@ function MainContentView({
       );
     }
     return (
-      <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+      <div className="flex items-center justify-center h-full text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4">
         <div className="text-center">
-          <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
             Welcome to your workspace
           </h2>
           <p>Select a document from the sidebar or create a new one to get started.</p>
@@ -165,9 +165,9 @@ function MainContentView({
   }
 
   return (
-    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+    <div className="flex items-center justify-center h-full text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4">
       <div className="text-center">
-        <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
           Welcome to project management
         </h2>
         <p>Select a project from the sidebar or create a new one to get started.</p>
@@ -259,7 +259,7 @@ function Content() {
   if (loggedInUser === undefined) {
     return (
       <div className="flex justify-center items-center w-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ui-text-primary dark:border-ui-text-primary-dark" />
       </div>
     );
   }

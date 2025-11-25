@@ -101,7 +101,7 @@
 - [x] N+1 query patterns (fixed in bulk operations and dashboard queries)
 
 ### High Priority
-- [ ] Refactored components not integrated (`.refactored.tsx` files)
+- [x] Refactored components (deleted duplicate `.refactored.tsx` files - were artifacts)
 - [ ] Unbounded queries (no pagination)
 
 ### Medium Priority
