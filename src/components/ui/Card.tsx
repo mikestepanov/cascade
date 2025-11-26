@@ -71,9 +71,9 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     // Support both structured props and children
     if (children) {
       return (
-        <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props}>
+        <Flex ref={ref} direction="column" gap="xs" className={cn("p-6", className)} {...props}>
           {children}
-        </div>
+        </Flex>
       );
     }
 

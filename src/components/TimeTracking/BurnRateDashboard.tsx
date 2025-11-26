@@ -173,38 +173,38 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                 >
                   <div className="mb-2">
                     <Flex justify="between" align="center">
-                    <Flex align="center" gap="md">
-                      {member.user?.image ? (
-                        <img
-                          src={member.user.image}
-                          alt={member.user.name}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {member.user?.name?.[0] || "?"}
+                      <Flex align="center" gap="md">
+                        {member.user?.image ? (
+                          <img
+                            src={member.user.image}
+                            alt={member.user.name}
+                            className="w-8 h-8 rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {member.user?.name?.[0] || "?"}
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {member.user?.name || "Unknown"}
+                          </div>
+                          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                            {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
+                            billable)
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                          {member.user?.name || "Unknown"}
+                      </Flex>
+
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {formatCurrency(member.cost)}
                         </div>
                         <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                          {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
-                          billable)
+                          {percentOfTotal.toFixed(0)}% of total
                         </div>
                       </div>
                     </Flex>
-
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {formatCurrency(member.cost)}
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {percentOfTotal.toFixed(0)}% of total
-                      </div>
-                    </div>
-                  </Flex>
                   </div>
 
                   {/* Progress bar */}

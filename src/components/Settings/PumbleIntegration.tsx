@@ -4,8 +4,8 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { Checkbox } from "../ui/form/Checkbox";
 import { Flex } from "../ui/Flex";
+import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
 import { Modal } from "../ui/Modal";
@@ -85,21 +85,21 @@ export function PumbleIntegration() {
             className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
           >
             <Flex gap="xs" align="center">
-            <span>How to create a Pumble incoming webhook</span>
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
+              <span>How to create a Pumble incoming webhook</span>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
             </Flex>
           </a>
         </div>
@@ -302,7 +302,11 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       )}
 
       {/* Actions */}
-      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+      <Flex
+        gap="sm"
+        align="center"
+        className="pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+      >
         <Button
           onClick={handleTest}
           variant="ghost"
@@ -491,7 +495,12 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
         </div>
 
         {/* Actions */}
-        <Flex justify="end" gap="md" align="center" className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex
+          justify="end"
+          gap="md"
+          align="center"
+          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
@@ -641,7 +650,12 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
         </div>
 
         {/* Actions */}
-        <Flex justify="end" gap="md" align="center" className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex
+          justify="end"
+          gap="md"
+          align="center"
+          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>

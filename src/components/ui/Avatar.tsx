@@ -2,6 +2,7 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 const avatarVariants = cva("relative flex shrink-0 overflow-hidden rounded-full", {
   variants: {
@@ -149,7 +150,7 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
   };
 
   return (
-    <div className={cn("flex items-center", className)}>
+    <Flex align="center" className={className}>
       {visibleChildren.map((child, index) => {
         const key = React.isValidElement(child) && child.key ? child.key : `avatar-${index}`;
         return (
@@ -165,9 +166,11 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
         );
       })}
       {overflow > 0 && (
-        <div
+        <Flex
+          align="center"
+          justify="center"
           className={cn(
-            "rounded-full flex items-center justify-center font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark",
+            "rounded-full font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark",
             overlapClasses[size],
             size === "xs" && "w-5 h-5 text-xs",
             size === "sm" && "w-6 h-6 text-xs",
@@ -177,8 +180,8 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
           )}
         >
           +{overflow}
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   );
 }

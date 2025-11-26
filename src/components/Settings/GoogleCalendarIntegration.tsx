@@ -142,7 +142,11 @@ export function GoogleCalendarIntegration() {
         </Flex>
 
         {calendarConnection && (
-          <Flex direction="column" gap="xl" className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Flex
+            direction="column"
+            gap="xl"
+            className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+          >
             {/* Sync Toggle */}
             <Flex justify="between" align="center">
               <div>
@@ -168,65 +172,77 @@ export function GoogleCalendarIntegration() {
                 </h4>
                 <Flex direction="column" gap="sm">
                   <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                    <input
-                      type="radio"
-                      name="syncDirection"
-                      checked={calendarConnection.syncDirection === "bidirectional"}
-                      onChange={() => handleChangeSyncDirection("bidirectional")}
-                      disabled={isSaving}
-                      className="h-4 w-4 text-brand-600"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Bidirectional
-                      </p>
-                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        Sync both ways (recommended)
-                      </p>
-                    </div>
+                    <Flex
+                      gap="md"
+                      align="center"
+                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                    >
+                      <input
+                        type="radio"
+                        name="syncDirection"
+                        checked={calendarConnection.syncDirection === "bidirectional"}
+                        onChange={() => handleChangeSyncDirection("bidirectional")}
+                        disabled={isSaving}
+                        className="h-4 w-4 text-brand-600"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          Bidirectional
+                        </p>
+                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          Sync both ways (recommended)
+                        </p>
+                      </div>
                     </Flex>
                   </label>
 
                   <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                    <input
-                      type="radio"
-                      name="syncDirection"
-                      checked={calendarConnection.syncDirection === "import"}
-                      onChange={() => handleChangeSyncDirection("import")}
-                      disabled={isSaving}
-                      className="h-4 w-4 text-brand-600"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Import Only
-                      </p>
-                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        Only import from Google → Cascade
-                      </p>
-                    </div>
+                    <Flex
+                      gap="md"
+                      align="center"
+                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                    >
+                      <input
+                        type="radio"
+                        name="syncDirection"
+                        checked={calendarConnection.syncDirection === "import"}
+                        onChange={() => handleChangeSyncDirection("import")}
+                        disabled={isSaving}
+                        className="h-4 w-4 text-brand-600"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          Import Only
+                        </p>
+                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          Only import from Google → Cascade
+                        </p>
+                      </div>
                     </Flex>
                   </label>
 
                   <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                    <input
-                      type="radio"
-                      name="syncDirection"
-                      checked={calendarConnection.syncDirection === "export"}
-                      onChange={() => handleChangeSyncDirection("export")}
-                      disabled={isSaving}
-                      className="h-4 w-4 text-brand-600"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Export Only
-                      </p>
-                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        Only export from Cascade → Google
-                      </p>
-                    </div>
+                    <Flex
+                      gap="md"
+                      align="center"
+                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                    >
+                      <input
+                        type="radio"
+                        name="syncDirection"
+                        checked={calendarConnection.syncDirection === "export"}
+                        onChange={() => handleChangeSyncDirection("export")}
+                        disabled={isSaving}
+                        className="h-4 w-4 text-brand-600"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          Export Only
+                        </p>
+                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          Only export from Cascade → Google
+                        </p>
+                      </div>
                     </Flex>
                   </label>
                 </Flex>

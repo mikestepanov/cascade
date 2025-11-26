@@ -51,9 +51,11 @@ describe("Card", () => {
       const { container } = render(<Card className="p-8 bg-blue-50">Content</Card>);
 
       const card = container.firstChild;
-      expect(card).toHaveClass("bg-ui-bg-primary");
+      // tailwind-merge removes conflicting bg- classes, keeping custom bg-blue-50
       expect(card).toHaveClass("p-8");
       expect(card).toHaveClass("bg-blue-50");
+      expect(card).toHaveClass("rounded-lg");
+      expect(card).toHaveClass("border");
     });
   });
 

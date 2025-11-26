@@ -5,10 +5,10 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Modal } from "../ui/Modal";
-import { Flex } from "../ui/Flex";
 
 interface WebhookFormProps {
   projectId: Id<"projects">;

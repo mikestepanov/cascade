@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Input, Select, Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
-import { Flex } from "../ui/Flex";
 
 type IssueType = "task" | "bug" | "story" | "epic";
 type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";

@@ -2,6 +2,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import * as React from "react";
 import { Check } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 export interface CheckboxProps
   extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
@@ -60,7 +61,7 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
     }
 
     return (
-      <div className="flex items-start gap-3">
+      <Flex align="start" gap="md">
         {checkboxElement}
         <div className="grid gap-1 leading-none">
           {label && (
@@ -77,7 +78,7 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
             </p>
           )}
         </div>
-      </div>
+      </Flex>
     );
   },
 );

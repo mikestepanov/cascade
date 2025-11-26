@@ -1,11 +1,11 @@
 import { useQuery } from "convex/react";
-import { Flex } from "../ui/Flex";
 import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ExportPanelProps {
@@ -125,7 +125,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                   Spreadsheet format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
 
           <Card
@@ -146,7 +146,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                   Data interchange format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
         </div>
       </div>
@@ -166,19 +166,19 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
               </li>
             </ul>
           </div>
-        </div>
+        </Flex>
       </div>
 
       <Button onClick={handleExport} disabled={isExporting} className="w-full">
         {isExporting ? (
-          <div className="flex items-center justify-center gap-2">
+          <Flex align="center" justify="center" gap="sm">
             <LoadingSpinner size="sm" color="white" />
             Exporting...
-          </div>
+          </Flex>
         ) : (
           `Export as ${exportFormat.toUpperCase()}`
         )}
       </Button>
-    </div>
+    </Flex>
   );
 }

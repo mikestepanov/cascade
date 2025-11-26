@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
+import { Flex } from "./Flex";
 import { XIcon } from "./icons";
 import { ModalBackdrop } from "./ModalBackdrop";
-import { Flex } from "./Flex";
 
 interface ModalProps {
   isOpen: boolean;
@@ -57,7 +57,11 @@ export function Modal({
           onKeyDown={(e) => e.stopPropagation()}
         >
           {title && (
-            <Flex align="center" justify="between" className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 rounded-t-lg z-10">
+            <Flex
+              align="center"
+              justify="between"
+              className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 rounded-t-lg z-10"
+            >
               <h2
                 id="modal-title"
                 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark"

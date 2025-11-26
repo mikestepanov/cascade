@@ -6,11 +6,11 @@
  */
 
 import { useQuery } from "convex/react";
-import { Flex } from "../ui/Flex";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Avatar } from "../ui/Avatar";
+import { Flex } from "../ui/Flex";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
 
 interface AssigneeSearchDropdownProps {
@@ -72,7 +72,7 @@ export function AssigneeSearchDropdown({
           <Flex gap="sm" align="center">
             <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
             <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
-          </div>
+          </Flex>
           <button
             type="button"
             onClick={() => onChange(null)}
@@ -128,7 +128,7 @@ export function AssigneeSearchDropdown({
                   </div>
                 )}
               </div>
-            </div>
+            </Flex>
           );
         }}
       />

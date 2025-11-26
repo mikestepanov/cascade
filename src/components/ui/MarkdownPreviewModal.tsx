@@ -1,8 +1,8 @@
 import DOMPurify from "isomorphic-dompurify";
 import { useState } from "react";
 import { Button } from "./Button";
-import { Modal } from "./Modal";
 import { Flex } from "./Flex";
+import { Modal } from "./Modal";
 
 interface MarkdownPreviewModalProps {
   isOpen: boolean;

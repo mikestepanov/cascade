@@ -8,8 +8,8 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { Checkbox } from "../ui/form/Checkbox";
 import { Flex } from "../ui/Flex";
+import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Modal } from "../ui/Modal";
@@ -40,11 +40,7 @@ export function ApiKeysManager() {
               Generate API keys for CLI tools, AI agents, and external integrations
             </p>
           </div>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setShowGenerateModal(true)}
-          >
+          <Button variant="primary" size="sm" onClick={() => setShowGenerateModal(true)}>
             <Flex gap="sm" align="center">
               <Plus className="h-4 w-4" />
               Generate Key
@@ -201,7 +197,11 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
           </Flex>
 
           {/* Stats */}
-          <Flex gap="lg" align="center" className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Flex
+            gap="lg"
+            align="center"
+            className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+          >
             <span>
               <strong>{apiKey.usageCount}</strong> API calls
             </span>
@@ -412,7 +412,11 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
           <>
             {/* Success - Show Generated Key */}
             <div className="text-center">
-              <Flex justify="center" align="center" className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4">
+              <Flex
+                justify="center"
+                align="center"
+                className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4"
+              >
                 <Key className="h-6 w-6 text-status-success dark:text-status-success" />
               </Flex>
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
@@ -442,11 +446,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
 
               {/* Actions */}
               <Flex gap="md">
-                <Button
-                  variant="primary"
-                  onClick={copyAndClose}
-                  className="flex-1"
-                >
+                <Button variant="primary" onClick={copyAndClose} className="flex-1">
                   <Flex justify="center" gap="sm" align="center">
                     <Copy className="h-4 w-4" />
                     Copy & Close
@@ -556,7 +556,11 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                           {log.statusCode}
                         </span>
                       </Flex>
-                      <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      <Flex
+                        gap="lg"
+                        align="center"
+                        className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+                      >
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>

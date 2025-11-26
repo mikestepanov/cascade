@@ -75,7 +75,11 @@ export function OnboardingChecklist() {
   return (
     <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-40">
       {/* Header */}
-      <Flex justify="between" align="center" className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+      <Flex
+        justify="between"
+        align="center"
+        className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+      >
         <Flex gap="sm" align="center">
           <span className="text-lg">🚀</span>
           <div>

@@ -113,11 +113,19 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         return (
           <Flex key={date} direction="column" gap="sm">
             {/* Date header */}
-            <Flex justify="between" align="center" className="py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+            <Flex
+              justify="between"
+              align="center"
+              className="py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+            >
               <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 {date}
               </h3>
-              <Flex align="center" gap="lg" className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Flex
+                align="center"
+                gap="lg"
+                className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark"
+              >
                 <span>{formatDurationDisplay(totalDuration)}</span>
                 <span>{formatCurrency(totalCost, dateEntries[0]?.currency || "USD")}</span>
               </Flex>
@@ -149,7 +157,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                       </p>
                     )}
 
-                    <Flex align="center" gap="md" className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Flex
+                      align="center"
+                      gap="md"
+                      className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                    >
                       {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
 
                       {entry.project && (
@@ -187,7 +199,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                       {entry.billable && <Badge variant="success">Billable</Badge>}
 
                       {entry.isLocked && (
-                        <Flex align="center" gap="xs" className="inline-flex text-status-warning dark:text-status-warning">
+                        <Flex
+                          align="center"
+                          gap="xs"
+                          className="inline-flex text-status-warning dark:text-status-warning"
+                        >
                           <svg
                             className="w-3 h-3"
                             fill="currentColor"

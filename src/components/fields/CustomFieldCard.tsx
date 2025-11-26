@@ -58,7 +58,11 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
               </h3>
               {field.isRequired && <Badge variant="error">Required</Badge>}
             </Flex>
-            <Flex gap="sm" align="center" className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            <Flex
+              gap="sm"
+              align="center"
+              className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1"
+            >
               <code className="px-2 py-0.5 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded font-mono text-xs">
                 {field.fieldKey}
               </code>

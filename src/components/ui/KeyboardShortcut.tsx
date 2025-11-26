@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 interface KeyboardShortcutProps {
   /**
@@ -64,7 +65,7 @@ export function KeyboardShortcut({
   }));
 
   return (
-    <span className={cn("inline-flex items-center gap-1", className)}>
+    <Flex as="span" inline align="center" gap="xs" className={className}>
       {keysWithIds.map(({ key, id }, index) => (
         <span key={id} className="contents">
           <kbd
@@ -81,7 +82,7 @@ export function KeyboardShortcut({
           )}
         </span>
       ))}
-    </span>
+    </Flex>
   );
 }
 
@@ -128,15 +129,15 @@ interface ShortcutListProps {
 
 export function ShortcutList({ shortcuts, className = "" }: ShortcutListProps) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <Flex direction="column" gap="sm" className={className}>
       {shortcuts.map((shortcut) => (
-        <div key={shortcut.keys} className="flex items-center justify-between gap-4 text-sm">
+        <Flex key={shortcut.keys} align="center" justify="between" gap="lg" className="text-sm">
           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             {shortcut.description}
           </span>
           <KeyboardShortcut shortcut={shortcut.keys} />
-        </div>
+        </Flex>
       ))}
-    </div>
+    </Flex>
   );
 }

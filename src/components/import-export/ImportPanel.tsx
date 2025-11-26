@@ -1,11 +1,11 @@
 import { useMutation } from "convex/react";
-import { Flex } from "../ui/Flex";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ImportPanelProps {
@@ -102,7 +102,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                   Spreadsheet format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
 
           <Card
@@ -123,7 +123,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                   Data interchange format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
         </div>
       </div>
@@ -162,19 +162,19 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
               <li>All imported issues will be created in the first workflow state</li>
             </ul>
           </div>
-        </div>
+        </Flex>
       </div>
 
       <Button onClick={handleImport} disabled={!importData || isImporting} className="w-full">
         {isImporting ? (
-          <div className="flex items-center justify-center gap-2">
+          <Flex align="center" justify="center" gap="sm">
             <LoadingSpinner size="sm" color="white" />
             Importing...
-          </div>
+          </Flex>
         ) : (
           `Import from ${importFormat.toUpperCase()}`
         )}
       </Button>
-    </div>
+    </Flex>
   );
 }

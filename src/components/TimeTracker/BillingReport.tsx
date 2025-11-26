@@ -92,8 +92,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
             className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
           >
             <Flex align="center" gap="sm">
-            <Download className="w-4 h-4" />
-            Export
+              <Download className="w-4 h-4" />
+              Export
             </Flex>
           </button>
         </Flex>
@@ -102,7 +102,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex
+            align="center"
+            gap="sm"
+            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
+          >
             <DollarSign className="w-4 h-4" />
             Total Revenue
           </Flex>
@@ -118,7 +122,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex
+            align="center"
+            gap="sm"
+            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
+          >
             <Clock className="w-4 h-4" />
             Billable Hours
           </Flex>
@@ -131,7 +139,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex
+            align="center"
+            gap="sm"
+            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
+          >
             <TrendingUp className="w-4 h-4" />
             Utilization Rate
           </Flex>
@@ -142,7 +154,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex
+            align="center"
+            gap="sm"
+            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
+          >
             <DollarSign className="w-4 h-4" />
             Avg Hourly Rate
           </Flex>

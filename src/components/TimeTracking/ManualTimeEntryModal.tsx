@@ -314,25 +314,25 @@ export function ManualTimeEntryModal({
           </Flex>
           {tags.length > 0 && (
             <div className="mt-2">
-            <Flex gap="sm" className="flex-wrap">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                >
-                  {tag}
-                  <Button
-                    onClick={() => handleRemoveTag(tag)}
-                    variant="ghost"
-                    size="sm"
-                    className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
-                    aria-label={`Remove tag ${tag}`}
+              <Flex gap="sm" className="flex-wrap">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
                   >
-                    ×
-                  </Button>
-                </span>
-              ))}
-            </Flex>
+                    {tag}
+                    <Button
+                      onClick={() => handleRemoveTag(tag)}
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      ×
+                    </Button>
+                  </span>
+                ))}
+              </Flex>
             </div>
           )}
         </div>
@@ -340,17 +340,17 @@ export function ManualTimeEntryModal({
         {/* Billable */}
         <div>
           <label className="cursor-pointer">
-          <Flex align="center" gap="sm">
-            <input
-              type="checkbox"
-              checked={billable}
-              onChange={(e) => setBillable(e.target.checked)}
-              className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-            />
-            <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              Billable time
-            </span>
-          </Flex>
+            <Flex align="center" gap="sm">
+              <input
+                type="checkbox"
+                checked={billable}
+                onChange={(e) => setBillable(e.target.checked)}
+                className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+              />
+              <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                Billable time
+              </span>
+            </Flex>
           </label>
           <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
             Mark this time as billable to clients

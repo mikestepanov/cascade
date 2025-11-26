@@ -147,7 +147,11 @@ export function SkeletonStatCard() {
  */
 export function SkeletonKanbanCard() {
   return (
-    <Flex direction="column" gap="sm" className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3">
+    <Flex
+      direction="column"
+      gap="sm"
+      className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+    >
       <Flex align="center" gap="sm">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-3 w-12" />
@@ -167,7 +171,11 @@ export function SkeletonKanbanCard() {
  */
 export function SkeletonProjectCard() {
   return (
-    <Flex direction="column" gap="sm" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+    <Flex
+      direction="column"
+      gap="sm"
+      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+    >
       <Flex align="center" justify="between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-5 w-16" />

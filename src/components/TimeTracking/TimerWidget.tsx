@@ -50,7 +50,11 @@ export function TimerWidget() {
 
   if (runningTimer) {
     return (
-      <Flex align="center" gap="sm" className="px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+      <Flex
+        align="center"
+        gap="sm"
+        className="px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg"
+      >
         <Flex align="center" gap="sm">
           {/* Pulsing dot */}
           <div className="relative">
@@ -139,53 +143,53 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
         }}
       >
         <Flex direction="column" gap="lg">
-        <div>
-          <label
-            htmlFor="timer-description"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            What are you working on? (optional)
-          </label>
-          <input
-            id="timer-description"
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g., Fixing login bug..."
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-          />
-        </div>
+          <div>
+            <label
+              htmlFor="timer-description"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              What are you working on? (optional)
+            </label>
+            <input
+              id="timer-description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g., Fixing login bug..."
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="timer-activity"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Activity (optional)
-          </label>
-          <select
-            id="timer-activity"
-            value={activity}
-            onChange={(e) => setActivity(e.target.value)}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-          >
-            <option value="">Select activity...</option>
-            {ACTIVITY_TYPES.map((activityType) => (
-              <option key={activityType} value={activityType}>
-                {activityType}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label
+              htmlFor="timer-activity"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Activity (optional)
+            </label>
+            <select
+              id="timer-activity"
+              value={activity}
+              onChange={(e) => setActivity(e.target.value)}
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            >
+              <option value="">Select activity...</option>
+              {ACTIVITY_TYPES.map((activityType) => (
+                <option key={activityType} value={activityType}>
+                  {activityType}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <Flex justify="end" gap="sm" className="pt-4">
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary">
-            Start Timer
-          </Button>
-        </Flex>
+          <Flex justify="end" gap="sm" className="pt-4">
+            <Button onClick={onClose} variant="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary">
+              Start Timer
+            </Button>
+          </Flex>
         </Flex>
       </form>
     </Modal>

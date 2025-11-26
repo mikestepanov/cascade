@@ -1,5 +1,4 @@
 import { ANIMATION } from "@/lib/constants";
-import { Flex } from "../ui/Flex";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";

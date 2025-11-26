@@ -1,6 +1,6 @@
 import { Button } from "./Button";
-import { ModalBackdrop } from "./ModalBackdrop";
 import { Flex } from "./Flex";
+import { ModalBackdrop } from "./ModalBackdrop";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -75,7 +75,11 @@ export function ConfirmDialog({
             </Flex>
           </div>
 
-          <Flex gap="md" justify="end" className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 rounded-b-lg">
+          <Flex
+            gap="md"
+            justify="end"
+            className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 rounded-b-lg"
+          >
             <Button variant="secondary" onClick={onClose} disabled={isLoading}>
               {cancelLabel}
             </Button>

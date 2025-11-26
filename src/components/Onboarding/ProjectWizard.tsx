@@ -3,8 +3,8 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
-import { Modal } from "../ui/Modal";
 import { Flex } from "../ui/Flex";
+import { Modal } from "../ui/Modal";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -368,7 +368,10 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
         )}
 
         {/* Navigation Buttons */}
-        <Flex justify="between" className="pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex
+          justify="between"
+          className="pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
           <div>
             {step > 1 && (
               <Button onClick={handlePrevious} variant="secondary">

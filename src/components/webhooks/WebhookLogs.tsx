@@ -4,8 +4,8 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { Modal } from "../ui/Modal";
 import { Flex } from "../ui/Flex";
+import { Modal } from "../ui/Modal";
 
 interface WebhookLogsProps {
   webhookId: Id<"webhooks">;

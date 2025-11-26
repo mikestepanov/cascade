@@ -188,7 +188,11 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             )}
           </button>
           {showAISuggestions && (
-            <Flex align="center" gap="xs" className="text-sm text-status-success dark:text-status-success">
+            <Flex
+              align="center"
+              gap="xs"
+              className="text-sm text-status-success dark:text-status-success"
+            >
               <span>✓</span>
               <span>AI suggestions applied</span>
             </Flex>

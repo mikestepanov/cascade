@@ -32,8 +32,8 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
 
 export function LoadingOverlay({ message }: { message?: string }) {
   return (
-    <Flex align="center" justify="center" className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 z-10 rounded-lg">
+    <div className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 z-10 rounded-lg flex items-center justify-center">
       <LoadingSpinner size="lg" message={message} />
-    </Flex>
+    </div>
   );
 }

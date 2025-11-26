@@ -61,7 +61,11 @@ function AttachmentItem({
 
   if (!url) {
     return (
-      <Flex align="center" gap="sm" className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
+      <Flex
+        align="center"
+        gap="sm"
+        className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark"
+      >
         <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
         <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
       </Flex>
@@ -72,7 +76,11 @@ function AttachmentItem({
   const fileIcon = getFileIcon(filename);
 
   return (
-    <Flex align="center" gap="sm" className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
+    <Flex
+      align="center"
+      gap="sm"
+      className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+    >
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
         <a

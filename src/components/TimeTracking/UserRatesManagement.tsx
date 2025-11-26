@@ -216,21 +216,21 @@ export function UserRatesManagement() {
                   }`}
                 >
                   <Flex align="center" gap="sm">
-                  <input
-                    type="radio"
-                    name="rateType"
-                    checked={rateType === "internal"}
-                    onChange={() => setRateType("internal")}
-                    className="w-4 h-4 text-brand-600"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Internal Cost
+                    <input
+                      type="radio"
+                      name="rateType"
+                      checked={rateType === "internal"}
+                      onChange={() => setRateType("internal")}
+                      className="w-4 h-4 text-brand-600"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        Internal Cost
+                      </div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        What you pay
+                      </div>
                     </div>
-                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      What you pay
-                    </div>
-                  </div>
                   </Flex>
                 </label>
                 <label
@@ -241,21 +241,21 @@ export function UserRatesManagement() {
                   }`}
                 >
                   <Flex align="center" gap="sm">
-                  <input
-                    type="radio"
-                    name="rateType"
-                    checked={rateType === "billable"}
-                    onChange={() => setRateType("billable")}
-                    className="w-4 h-4 text-brand-600"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Billable Rate
+                    <input
+                      type="radio"
+                      name="rateType"
+                      checked={rateType === "billable"}
+                      onChange={() => setRateType("billable")}
+                      className="w-4 h-4 text-brand-600"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        Billable Rate
+                      </div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        Charge clients
+                      </div>
                     </div>
-                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      Charge clients
-                    </div>
-                  </div>
                   </Flex>
                 </label>
               </Flex>
@@ -316,14 +316,15 @@ export function UserRatesManagement() {
               />
             </div>
 
-          <Flex justify="end" gap="sm" className="pt-4">
-            <Button onClick={handleCloseModal} variant="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleSaveRate} variant="primary">
-              Save Rate
-            </Button>
-          </Flex>
+            <Flex justify="end" gap="sm" className="pt-4">
+              <Button onClick={handleCloseModal} variant="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveRate} variant="primary">
+                Save Rate
+              </Button>
+            </Flex>
+          </div>
         </Modal>
       )}
     </Flex>
