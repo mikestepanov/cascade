@@ -31,3 +31,5 @@ package-lock.json
 
 # Test coverage
 coverage/
+
+.vercel
