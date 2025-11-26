@@ -5,6 +5,7 @@ import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 export function TimerWidget() {
@@ -49,8 +50,8 @@ export function TimerWidget() {
 
   if (runningTimer) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-        <div className="flex items-center gap-2">
+      <Flex align="center" gap="sm" className="px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+        <Flex align="center" gap="sm">
           {/* Pulsing dot */}
           <div className="relative">
             <div className="w-2 h-2 bg-brand-600 rounded-full" />
@@ -68,7 +69,7 @@ export function TimerWidget() {
               {runningTimer.description}
             </span>
           )}
-        </div>
+        </Flex>
 
         {/* Stop button */}
         <Button
@@ -80,7 +81,7 @@ export function TimerWidget() {
         >
           Stop
         </Button>
-      </div>
+      </Flex>
     );
   }
 
@@ -136,8 +137,8 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           e.preventDefault();
           void handleStart();
         }}
-        className="space-y-4"
       >
+        <Flex direction="column" gap="lg">
         <div>
           <label
             htmlFor="timer-description"
@@ -177,14 +178,15 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
           </select>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4">
+        <Flex justify="end" gap="sm" className="pt-4">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
           <Button type="submit" variant="primary">
             Start Timer
           </Button>
-        </div>
+        </Flex>
+        </Flex>
       </form>
     </Modal>
   );

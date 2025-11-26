@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Checkbox } from "../ui/form/Checkbox";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
 import { Modal } from "../ui/Modal";
@@ -18,8 +19,8 @@ export function PumbleIntegration() {
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark">
       {/* Header */}
       <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
+        <Flex justify="between" align="start">
+          <Flex gap="md" align="center">
             <div className="flex-shrink-0">
               <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <svg
@@ -46,7 +47,7 @@ export function PumbleIntegration() {
                 Send notifications to Pumble channels when issues are created or updated
               </p>
             </div>
-          </div>
+          </Flex>
           <Button
             onClick={() => setShowAddModal(true)}
             variant="primary"
@@ -54,7 +55,7 @@ export function PumbleIntegration() {
           >
             Add Webhook
           </Button>
-        </div>
+        </Flex>
       </div>
 
       {/* Content */}
@@ -68,11 +69,11 @@ export function PumbleIntegration() {
         ) : webhooks.length === 0 ? (
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
         ) : (
-          <div className="space-y-4">
+          <Flex direction="column" gap="lg">
             {webhooks.map((webhook) => (
               <WebhookCard key={webhook._id} webhook={webhook} projects={projects || []} />
             ))}
-          </div>
+          </Flex>
         )}
 
         {/* Documentation Link */}
@@ -81,8 +82,9 @@ export function PumbleIntegration() {
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 flex items-center space-x-1"
+            className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
           >
+            <Flex gap="xs" align="center">
             <span>How to create a Pumble incoming webhook</span>
             <svg
               className="w-4 h-4"
@@ -98,6 +100,7 @@ export function PumbleIntegration() {
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
               />
             </svg>
+            </Flex>
           </a>
         </div>
       </div>
@@ -197,9 +200,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
   return (
     <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
-      <div className="flex items-start justify-between mb-3">
+      <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-1">
+          <Flex gap="sm" align="center" className="mb-1">
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {webhook.name}
             </h4>
@@ -212,7 +215,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
                 Inactive
               </span>
             )}
-          </div>
+          </Flex>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
             {maskedUrl}
           </p>
@@ -222,10 +225,10 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
             </p>
           )}
         </div>
-      </div>
+      </Flex>
 
       {/* Events */}
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <Flex className="flex-wrap gap-1.5 mb-3">
         {webhook.events.map((event: string) => (
           <span
             key={event}
@@ -234,12 +237,12 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
             {event.replace("issue.", "")}
           </span>
         ))}
-      </div>
+      </Flex>
 
       {/* Settings */}
-      <div className="flex flex-wrap gap-3 mb-3 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <Flex className="flex-wrap gap-md mb-3 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
         {webhook.sendMentions && (
-          <span className="flex items-center space-x-1">
+          <Flex gap="xs" align="center">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
@@ -248,10 +251,10 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               />
             </svg>
             <span>Mentions</span>
-          </span>
+          </Flex>
         )}
         {webhook.sendAssignments && (
-          <span className="flex items-center space-x-1">
+          <Flex gap="xs" align="center">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
@@ -260,10 +263,10 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               />
             </svg>
             <span>Assignments</span>
-          </span>
+          </Flex>
         )}
         {webhook.sendStatusChanges && (
-          <span className="flex items-center space-x-1">
+          <Flex gap="xs" align="center">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
@@ -272,12 +275,12 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               />
             </svg>
             <span>Status Changes</span>
-          </span>
+          </Flex>
         )}
-      </div>
+      </Flex>
 
       {/* Stats */}
-      <div className="flex items-center space-x-4 mb-3 text-sm">
+      <Flex gap="lg" align="center" className="mb-3 text-sm">
         <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
             {webhook.messagesSent}
@@ -289,7 +292,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
             Last: {new Date(webhook.lastMessageAt).toLocaleDateString()}
           </div>
         )}
-      </div>
+      </Flex>
 
       {/* Error */}
       {webhook.lastError && (
@@ -299,7 +302,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       )}
 
       {/* Actions */}
-      <div className="flex items-center space-x-2 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
         <Button
           onClick={handleTest}
           variant="ghost"
@@ -317,7 +320,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         <Button onClick={handleDelete} variant="danger" size="sm" className="ml-auto">
           Delete
         </Button>
-      </div>
+      </Flex>
 
       {/* Edit Modal */}
       {showEditModal && (
@@ -488,14 +491,14 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex justify="end" gap="md" align="center" className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
           <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
             Add Webhook
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );
@@ -638,14 +641,14 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex justify="end" gap="md" align="center" className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
           <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
             Save Changes
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );

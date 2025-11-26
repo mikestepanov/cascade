@@ -2,6 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 const cardVariants = cva(
   "bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark",
@@ -77,10 +78,12 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     }
 
     return (
-      <div
+      <Flex
         ref={ref}
+        align="center"
+        justify="between"
         className={cn(
-          "p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between",
+          "p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark",
           className,
         )}
         {...props}
@@ -98,7 +101,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
           )}
         </div>
         {action && <div>{action}</div>}
-      </div>
+      </Flex>
     );
   },
 );
@@ -145,7 +148,7 @@ CardBody.displayName = "CardBody";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+    <Flex ref={ref} align="center" className={cn("p-6 pt-0", className)} {...props} />
   ),
 );
 CardFooter.displayName = "CardFooter";

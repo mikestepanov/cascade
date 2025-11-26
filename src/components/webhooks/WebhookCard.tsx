@@ -37,11 +37,11 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
             >
               {webhook.isActive ? "Active" : "Inactive"}
             </span>
-          </div>
+          </Flex>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 font-mono break-all">
             {webhook.url}
           </p>
-          <div className="flex flex-wrap gap-1">
+          <Flex wrap gap="xs">
             {webhook.events.map((event) => (
               <span
                 key={event}
@@ -50,7 +50,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
                 {event}
               </span>
             ))}
-          </div>
+          </Flex>
           {webhook.lastTriggered && (
             <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2">
               Last triggered: {new Date(webhook.lastTriggered).toLocaleString()}
@@ -58,7 +58,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
           )}
         </div>
 
-        <div className="flex gap-2 ml-4">
+        <Flex gap="sm" className="ml-4">
           <Button
             variant="ghost"
             size="sm"
@@ -105,8 +105,8 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
           >
             Delete
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </div>
   );
 }

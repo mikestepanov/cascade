@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
+import { Flex } from "../ui/Flex";
 
 interface Subtask {
   _id: Id<"issues">;
@@ -57,7 +58,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
+      <Flex justify="between" align="center" className="mb-3">
         <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
           Sub-tasks
           {totalSubtasks > 0 && (
@@ -73,7 +74,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
         >
           + Add Sub-task
         </button>
-      </div>
+      </Flex>
 
       {/* Progress bar */}
       {totalSubtasks > 0 && (
@@ -104,7 +105,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
             }}
             autoFocus
           />
-          <div className="flex gap-2">
+          <Flex gap="sm">
             <button
               type="button"
               onClick={handleCreateSubtask}
@@ -122,17 +123,19 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
             >
               Cancel
             </button>
-          </div>
+          </Flex>
         </div>
       )}
 
       {/* Sub-task list */}
       {subtasks && subtasks.length > 0 ? (
-        <div className="space-y-2">
+        <Flex direction="column" gap="sm">
           {subtasks.map((subtask) => (
-            <div
+            <Flex
               key={subtask._id}
-              className="flex items-start gap-2 p-2 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark group"
+              gap="sm"
+              align="start"
+              className="p-2 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark group"
             >
               <Checkbox
                 checked={subtask.status === "done" || subtask.status === "completed"}
@@ -143,23 +146,23 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 className="mt-1"
               />
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex gap="sm" align="center">
                   <span className="text-xs font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     {subtask.key}
                   </span>
                   <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                     {subtask.title}
                   </span>
-                </div>
+                </Flex>
                 {subtask.assignee && (
                   <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     Assigned to {subtask.assignee.name}
                   </span>
                 )}
               </div>
-            </div>
+            </Flex>
           ))}
-        </div>
+        </Flex>
       ) : (
         !isCreatingSubtask && (
           <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic">

@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 
 interface ActivityFeedProps {
@@ -143,29 +144,30 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   }
 
   return (
-    <div className="space-y-4">
+    <Flex direction="column" gap="lg">
       {activities.map((activity, index) => (
-        <div
+        <Flex
           key={`${activity._id}-${index}`}
-          className={`flex gap-4 ${
+          gap="lg"
+          className={
             compact
               ? "py-2"
               : "p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark"
-          }`}
+          }
         >
           {/* Timeline dot */}
-          <div className="flex flex-col items-center flex-shrink-0">
+          <Flex direction="column" align="center" className="flex-shrink-0">
             <div className={`text-2xl ${compact ? "text-lg" : ""}`}>
               {getActionIcon(activity.action)}
             </div>
             {!compact && index < activities.length - 1 && (
               <div className="w-0.5 flex-1 bg-ui-border-primary dark:bg-ui-border-primary-dark mt-2" />
             )}
-          </div>
+          </Flex>
 
           {/* Activity content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
+            <Flex align="start" justify="between" gap="sm">
               <div className="flex-1 min-w-0">
                 <p
                   className={`${compact ? "text-sm" : "text-base"} text-ui-text-primary dark:text-ui-text-primary-dark`}
@@ -193,10 +195,10 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               >
                 {formatRelativeTime(activity.createdAt)}
               </span>
-            </div>
+            </Flex>
           </div>
-        </div>
+        </Flex>
       ))}
-    </div>
+    </Flex>
   );
 }

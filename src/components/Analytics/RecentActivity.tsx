@@ -1,3 +1,5 @@
+import { Flex } from "../ui/Flex";
+
 /**
  * Recent activity timeline for analytics dashboard
  * Extracted from AnalyticsDashboard for better organization
@@ -21,11 +23,13 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
       <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
         Recent Activity
       </h3>
-      <div className="space-y-3">
+      <Flex direction="column" gap="md">
         {activities.map((activity) => (
-          <div
+          <Flex
             key={activity._id}
-            className="flex items-start gap-3 text-sm border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3 last:border-0"
+            gap="md"
+            align="start"
+            className="text-sm border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3 last:border-0"
           >
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs font-medium">
               {activity.userName.charAt(0).toUpperCase()}
@@ -46,9 +50,9 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
                 {new Date(activity.createdAt).toLocaleString()}
               </p>
             </div>
-          </div>
+          </Flex>
         ))}
-      </div>
+      </Flex>
     </div>
   );
 }

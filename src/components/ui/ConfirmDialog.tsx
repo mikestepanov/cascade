@@ -1,5 +1,6 @@
 import { Button } from "./Button";
 import { ModalBackdrop } from "./ModalBackdrop";
+import { Flex } from "./Flex";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -43,8 +44,10 @@ export function ConfirmDialog({
       <ModalBackdrop onClick={onClose} zIndex="z-50" />
 
       {/* Dialog */}
-      <div
-        className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      <Flex
+        align="center"
+        justify="center"
+        className="fixed inset-0 z-50 p-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
@@ -56,7 +59,7 @@ export function ConfirmDialog({
           onKeyDown={(e) => e.stopPropagation()}
         >
           <div className="p-6">
-            <div className="flex items-start gap-4">
+            <Flex align="start" gap="lg">
               <div className="text-4xl flex-shrink-0">{variantIcons[variant]}</div>
               <div className="flex-1">
                 <h3
@@ -69,10 +72,10 @@ export function ConfirmDialog({
                   {message}
                 </p>
               </div>
-            </div>
+            </Flex>
           </div>
 
-          <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 flex gap-3 justify-end rounded-b-lg">
+          <Flex gap="md" justify="end" className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-6 py-4 rounded-b-lg">
             <Button variant="secondary" onClick={onClose} disabled={isLoading}>
               {cancelLabel}
             </Button>
@@ -83,9 +86,9 @@ export function ConfirmDialog({
             >
               {confirmLabel}
             </Button>
-          </div>
+          </Flex>
         </div>
-      </div>
+      </Flex>
     </>
   );
 }

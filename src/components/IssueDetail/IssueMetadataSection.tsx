@@ -1,4 +1,5 @@
 import { Badge } from "../ui/Badge";
+import { Flex } from "../ui/Flex";
 
 interface IssueMetadataProps {
   status: string;
@@ -71,13 +72,13 @@ export function IssueMetadataSection({
           <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Labels
           </h3>
-          <div className="flex flex-wrap gap-2">
+          <Flex wrap gap="sm">
             {labels.map((label) => (
               <Badge key={label} variant="neutral" shape="pill" size="md">
                 {label}
               </Badge>
             ))}
-          </div>
+          </Flex>
         </div>
       )}
     </>

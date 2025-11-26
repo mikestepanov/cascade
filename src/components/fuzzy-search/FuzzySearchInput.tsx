@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { Flex } from "../ui/Flex";
 import { type FuzzySearchResult, highlightMatches } from "@/hooks/useFuzzySearch";
 
 interface FuzzySearchInputProps<T> {

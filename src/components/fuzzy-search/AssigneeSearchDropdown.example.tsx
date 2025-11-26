@@ -6,6 +6,7 @@
  */
 
 import { useQuery } from "convex/react";
+import { Flex } from "../ui/Flex";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -68,7 +69,7 @@ export function AssigneeSearchDropdown({
       {/* Show selected user */}
       {selectedUser && !query && (
         <div className="flex items-center justify-between p-2 border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded-lg mb-2">
-          <div className="flex items-center gap-2">
+          <Flex gap="sm" align="center">
             <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
             <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
           </div>
@@ -111,7 +112,7 @@ export function AssigneeSearchDropdown({
           const nameMatch = matches?.find((m) => m.key === "name");
 
           return (
-            <div className="flex items-center gap-2">
+            <Flex gap="sm" align="center">
               <Avatar name={user.name} email={user.email} size="md" />
               <div>
                 <div className="text-sm font-medium">

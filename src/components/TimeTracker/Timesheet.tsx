@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 // Type for time entry with computed hours field
@@ -20,9 +21,9 @@ export function Timesheet() {
 
   if (!timesheet) {
     return (
-      <div className="flex justify-center items-center p-8">
+      <Flex justify="center" align="center" className="p-8">
         <LoadingSpinner />
-      </div>
+      </Flex>
     );
   }
 
@@ -71,7 +72,7 @@ export function Timesheet() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <Flex justify="between" align="center" className="mb-4">
           <div>
             <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               My Timesheet
@@ -80,7 +81,7 @@ export function Timesheet() {
               Week of {formatDate(timesheet.startDate)}
             </p>
           </div>
-          <div className="flex gap-4">
+          <Flex gap="lg">
             <div className="text-right">
               <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                 Total Hours
@@ -107,8 +108,8 @@ export function Timesheet() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
+          </Flex>
+        </Flex>
 
         {/* Progress bar */}
         <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
@@ -156,13 +157,13 @@ export function Timesheet() {
               </div>
 
               {/* Time entries */}
-              <div className="space-y-2">
+              <Flex direction="column" gap="sm">
                 {day.entries.map((entry: TimeEntryWithHours) => (
                   <div
                     key={entry._id}
                     className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark"
                   >
-                    <div className="flex items-start justify-between mb-1">
+                    <Flex justify="between" align="start" className="mb-1">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                           {entry.projectKey}
@@ -174,8 +175,8 @@ export function Timesheet() {
                       {entry.billable && (
                         <DollarSign className="w-3 h-3 text-status-success flex-shrink-0" />
                       )}
-                    </div>
-                    <div className="flex items-center justify-between">
+                    </Flex>
+                    <Flex justify="between" align="center">
                       <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {formatHours(entry.hours)}h
                       </span>
@@ -187,7 +188,7 @@ export function Timesheet() {
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
-                    </div>
+                    </Flex>
                     {entry.description && (
                       <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 line-clamp-1">
                         {entry.description}
@@ -195,7 +196,7 @@ export function Timesheet() {
                     )}
                   </div>
                 ))}
-              </div>
+              </Flex>
             </div>
           );
         })}

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
 import { ModalBackdrop } from "./ui/ModalBackdrop";
 
@@ -71,9 +72,9 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
   return (
     <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4">
-      <div className="flex items-center gap-3 flex-wrap">
+      <Flex align="center" gap="md" className="flex-wrap">
         {/* Saved Filters Dropdown */}
-        <div className="flex items-center gap-2">
+        <Flex align="center" gap="sm">
           <label
             htmlFor="savedFilters"
             className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -101,7 +102,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               </option>
             ))}
           </select>
-        </div>
+        </Flex>
 
         {/* Save Current Filter */}
         {hasActiveFilters && (
@@ -123,7 +124,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
             {Object.keys(activeFilters).length} filter(s) active
           </div>
         )}
-      </div>
+      </Flex>
 
       {/* Save Filter Dialog */}
       {showSaveDialog && (
@@ -155,7 +156,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                   onChange={(e) => setIsPublic(e.target.checked)}
                 />
 
-                <div className="flex gap-3 justify-end">
+                <Flex gap="md" justify="end">
                   <Button
                     variant="secondary"
                     onClick={() => {
@@ -167,7 +168,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                     Cancel
                   </Button>
                   <Button onClick={handleSaveFilter}>Save</Button>
-                </div>
+                </Flex>
               </div>
             </div>
           </div>

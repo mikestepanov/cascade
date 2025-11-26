@@ -7,6 +7,7 @@ import { CustomFieldCard } from "./fields/CustomFieldCard";
 import { CustomFieldForm } from "./fields/CustomFieldForm";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
+import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface CustomFieldsManagerProps {
@@ -69,9 +70,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex align="center" justify="between">
         <div>
           <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Custom Fields
@@ -81,13 +82,13 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
           </p>
         </div>
         <Button onClick={handleCreate}>+ Add Field</Button>
-      </div>
+      </Flex>
 
       {/* Fields List */}
       {!customFields ? (
-        <div className="flex items-center justify-center py-8">
+        <Flex align="center" justify="center" className="py-8">
           <LoadingSpinner />
-        </div>
+        </Flex>
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-4xl mb-3">📋</div>
@@ -96,7 +97,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
           </p>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <Flex direction="column" gap="md">
           {customFields.map((field) => (
             <CustomFieldCard
               key={field._id}
@@ -105,7 +106,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
               onDelete={() => handleDelete(field._id)}
             />
           ))}
-        </div>
+        </Flex>
       )}
 
       {/* Form Dialog */}
@@ -115,6 +116,6 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
         isOpen={showFormDialog}
         onClose={handleCloseForm}
       />
-    </div>
+    </Flex>
   );
 }

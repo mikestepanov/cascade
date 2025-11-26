@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 interface ToggleProps {
   /**
@@ -169,10 +170,10 @@ export function ToggleField({
   );
 
   return (
-    <div className={cn("flex items-start justify-between gap-4", className)}>
+    <Flex align="start" justify="between" gap="lg" className={className}>
       {labelPosition === "left" && labelContent}
       <Toggle {...toggleProps} className={labelPosition === "right" ? "order-1" : ""} />
       {labelPosition === "right" && labelContent}
-    </div>
+    </Flex>
   );
 }

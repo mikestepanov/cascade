@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { Switch } from "../ui/Switch";
 
 /**
@@ -96,8 +97,8 @@ export function GoogleCalendarIntegration() {
   return (
     <Card>
       <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-4">
+        <Flex justify="between" align="start">
+          <Flex gap="lg" align="center">
             <div className="p-3 bg-brand-500 rounded-lg">
               <Calendar className="h-6 w-6 text-white" />
             </div>
@@ -109,7 +110,7 @@ export function GoogleCalendarIntegration() {
                 Sync calendar events between Cascade and Google Calendar
               </p>
               {calendarConnection && (
-                <div className="mt-2 space-y-1">
+                <Flex direction="column" gap="xs" className="mt-2">
                   <p className="text-sm text-status-success dark:text-status-success">
                     ✓ Connected to {calendarConnection.providerAccountId}
                   </p>
@@ -118,10 +119,10 @@ export function GoogleCalendarIntegration() {
                       Last synced: {new Date(calendarConnection.lastSyncAt).toLocaleString()}
                     </p>
                   )}
-                </div>
+                </Flex>
               )}
             </div>
-          </div>
+          </Flex>
           <div>
             {calendarConnection ? (
               <Button
@@ -138,12 +139,12 @@ export function GoogleCalendarIntegration() {
               </Button>
             )}
           </div>
-        </div>
+        </Flex>
 
         {calendarConnection && (
-          <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark space-y-6">
+          <Flex direction="column" gap="xl" className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             {/* Sync Toggle */}
-            <div className="flex items-center justify-between">
+            <Flex justify="between" align="center">
               <div>
                 <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                   Enable Sync
@@ -157,7 +158,7 @@ export function GoogleCalendarIntegration() {
                 onCheckedChange={handleToggleSync}
                 disabled={isSaving}
               />
-            </div>
+            </Flex>
 
             {/* Sync Direction */}
             {calendarConnection.syncEnabled && (
@@ -165,8 +166,9 @@ export function GoogleCalendarIntegration() {
                 <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
                   Sync Direction
                 </h4>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                <Flex direction="column" gap="sm">
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
                     <input
                       type="radio"
                       name="syncDirection"
@@ -183,9 +185,11 @@ export function GoogleCalendarIntegration() {
                         Sync both ways (recommended)
                       </p>
                     </div>
+                    </Flex>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
                     <input
                       type="radio"
                       name="syncDirection"
@@ -202,9 +206,11 @@ export function GoogleCalendarIntegration() {
                         Only import from Google → Cascade
                       </p>
                     </div>
+                    </Flex>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
                     <input
                       type="radio"
                       name="syncDirection"
@@ -221,11 +227,12 @@ export function GoogleCalendarIntegration() {
                         Only export from Cascade → Google
                       </p>
                     </div>
+                    </Flex>
                   </label>
-                </div>
+                </Flex>
               </div>
             )}
-          </div>
+          </Flex>
         )}
       </div>
     </Card>

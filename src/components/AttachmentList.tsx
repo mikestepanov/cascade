@@ -3,6 +3,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Flex } from "./ui/Flex";
 
 interface AttachmentListProps {
   attachmentIds: Id<"_storage">[];
@@ -60,10 +61,10 @@ function AttachmentItem({
 
   if (!url) {
     return (
-      <div className="flex items-center gap-2 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
+      <Flex align="center" gap="sm" className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
         <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
         <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
-      </div>
+      </Flex>
     );
   }
 
@@ -71,7 +72,7 @@ function AttachmentItem({
   const fileIcon = getFileIcon(filename);
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
+    <Flex align="center" gap="sm" className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
         <a
@@ -83,7 +84,7 @@ function AttachmentItem({
           {filename}
         </a>
       </div>
-      <div className="flex gap-1">
+      <Flex gap="xs">
         <a
           href={url}
           download
@@ -128,8 +129,8 @@ function AttachmentItem({
             </svg>
           </Button>
         )}
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
 

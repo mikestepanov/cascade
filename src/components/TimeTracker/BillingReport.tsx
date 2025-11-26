@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Clock, DollarSign, Download, TrendingUp, Users } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface BillingReportProps {
@@ -35,9 +36,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
 
   if (!(billing && project)) {
     return (
-      <div className="flex justify-center items-center p-8">
+      <Flex justify="center" align="center" className="p-8">
         <LoadingSpinner />
-      </div>
+      </Flex>
     );
   }
 
@@ -62,7 +63,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <Flex justify="between" align="center" className="mb-6">
         <div>
           <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             Billing Report
@@ -71,7 +72,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
             {project.name} {project.clientName && `• ${project.clientName}`}
           </p>
         </div>
-        <div className="flex gap-2">
+        <Flex gap="sm">
           <select
             value={dateRange}
             onChange={(e) => {
@@ -88,21 +89,23 @@ export function BillingReport({ projectId }: BillingReportProps) {
           </select>
           <button
             type="button"
-            className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
+            className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"
           >
+            <Flex align="center" gap="sm">
             <Download className="w-4 h-4" />
             Export
+            </Flex>
           </button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <div className="flex items-center gap-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
             <DollarSign className="w-4 h-4" />
             Total Revenue
-          </div>
+          </Flex>
           <div className="text-3xl font-bold text-status-success">
             {formatCurrency(billing.totalRevenue)}
           </div>
@@ -115,10 +118,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <div className="flex items-center gap-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
             <Clock className="w-4 h-4" />
             Billable Hours
-          </div>
+          </Flex>
           <div className="text-3xl font-bold text-brand-600">
             {formatHours(billing.billableHours)}
           </div>
@@ -128,10 +131,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <div className="flex items-center gap-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
             <TrendingUp className="w-4 h-4" />
             Utilization Rate
-          </div>
+          </Flex>
           <div className="text-3xl font-bold text-accent-600">{utilizationRate.toFixed(0)}%</div>
           <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
             {billing.nonBillableHours.toFixed(2)}h non-billable
@@ -139,10 +142,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
         </div>
 
         <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <div className="flex items-center gap-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2">
             <DollarSign className="w-4 h-4" />
             Avg Hourly Rate
-          </div>
+          </Flex>
           <div className="text-3xl font-bold text-status-warning">
             {formatCurrency(averageRate)}
           </div>
@@ -154,19 +157,19 @@ export function BillingReport({ projectId }: BillingReportProps) {
 
       {/* Team Breakdown */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-6">
-        <div className="flex items-center gap-2 mb-4">
+        <Flex align="center" gap="sm" className="mb-4">
           <Users className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Team Breakdown
           </h3>
-        </div>
+        </Flex>
 
         {sortedUsers.length === 0 ? (
           <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             No time entries recorded yet
           </div>
         ) : (
-          <div className="space-y-3">
+          <Flex direction="column" gap="md">
             {sortedUsers.map(([userName, stats]) => {
               const userUtilization =
                 stats.hours > 0 ? (stats.billableHours / stats.hours) * 100 : 0;
@@ -176,7 +179,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                   key={userName}
                   className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <Flex justify="between" align="center" className="mb-2">
                     <div>
                       <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {userName}
@@ -194,7 +197,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                         revenue
                       </div>
                     </div>
-                  </div>
+                  </Flex>
 
                   {/* Progress bar */}
                   <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
@@ -206,7 +209,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                 </div>
               );
             })}
-          </div>
+          </Flex>
         )}
       </div>
 

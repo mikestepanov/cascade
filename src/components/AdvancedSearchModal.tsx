@@ -6,6 +6,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { FilterCheckboxGroup } from "./AdvancedSearchModal/FilterCheckboxGroup";
 import { SearchResultsList } from "./AdvancedSearchModal/SearchResultsList";
 import { Button } from "./ui/Button";
+import { Flex } from "./ui/Flex";
 import { Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
@@ -116,7 +117,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
 
         {/* Results */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <Flex align="center" justify="between" className="mb-3">
             <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
             </h3>
@@ -135,7 +136,7 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
                 Clear Filters
               </button>
             )}
-          </div>
+          </Flex>
 
           <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg overflow-hidden">
             <SearchResultsList
@@ -150,11 +151,11 @@ export function AdvancedSearchModal({ isOpen, onClose, onSelectIssue }: Advanced
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end">
+        <Flex justify="end">
           <Button onClick={onClose} variant="secondary">
             Close
           </Button>
-        </div>
+        </Flex>
       </div>
     </Modal>
   );

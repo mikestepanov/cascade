@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
 import { Card, CardBody, CardHeader } from "./Card";
+import { Flex } from "./Flex";
 
 interface EntityCardProps {
   title: string;
@@ -26,7 +27,7 @@ export function EntityCard({
   badge,
 }: EntityCardProps) {
   const defaultActions = (
-    <div className="flex gap-2">
+    <Flex gap="sm">
       {onEdit && (
         <Button variant="secondary" size="sm" onClick={onEdit}>
           Edit
@@ -37,17 +38,17 @@ export function EntityCard({
           Delete
         </Button>
       )}
-    </div>
+    </Flex>
   );
 
   return (
     <Card>
       <CardHeader
         title={
-          <div className="flex items-center gap-2">
+          <Flex gap="sm" align="center">
             {title}
             {badge}
-          </div>
+          </Flex>
         }
         description={description}
         action={actions || defaultActions}
