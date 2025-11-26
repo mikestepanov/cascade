@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
 import { ImportExportModal } from "./ImportExportModal";
-import { Flex } from "./ui/Flex";
 
 interface ExportButtonProps {
   projectId: Id<"projects">;
@@ -14,12 +13,10 @@ export function ExportButton({ projectId, sprintId, status }: ExportButtonProps)
 
   return (
     <>
-      <Flex
-        as="button"
-        align="center"
-        gap="sm"
+      <button
+        type="button"
         onClick={() => setIsModalOpen(true)}
-        className="px-3 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
       >
         <svg
           aria-hidden="true"
@@ -36,7 +33,7 @@ export function ExportButton({ projectId, sprintId, status }: ExportButtonProps)
           />
         </svg>
         <span>Import / Export</span>
-      </Flex>
+      </button>
 
       <ImportExportModal
         isOpen={isModalOpen}
