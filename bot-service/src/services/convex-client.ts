@@ -1,48 +1,29 @@
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../../convex/_generated/api";
 import type { TranscriptionResult } from "./transcription.js";
 import type { MeetingSummary } from "./summary.js";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 /**
  * Client for communicating with the Convex backend
- * Makes HTTP requests to Convex mutations
+ * Uses ConvexHttpClient for proper mutation calls with API key authentication
  */
 export class ConvexClient {
-  private convexUrl: string;
+  private client: ConvexHttpClient;
+  private apiKey: string;
 
   constructor() {
-    this.convexUrl = process.env.CONVEX_URL || "";
-    if (!this.convexUrl) {
-      console.warn("CONVEX_URL not configured");
-    }
-  }
-
-  private async callMutation(name: string, args: Record<string, unknown>): Promise<unknown> {
-    if (!this.convexUrl) {
-      console.error("CONVEX_URL not configured, skipping mutation:", name);
-      return null;
+    const convexUrl = process.env.CONVEX_URL;
+    if (!convexUrl) {
+      throw new Error("CONVEX_URL environment variable not set");
     }
 
-    try {
-      const response = await fetch(`${this.convexUrl}/api/mutation`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          path: name,
-          args,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Convex mutation failed: ${error}`);
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error(`Failed to call Convex mutation ${name}:`, error);
-      throw error;
+    this.apiKey = process.env.BOT_SERVICE_API_KEY || "";
+    if (!this.apiKey) {
+      console.warn("BOT_SERVICE_API_KEY not configured - mutations will fail auth");
     }
+
+    this.client = new ConvexHttpClient(convexUrl);
   }
 
   async updateRecordingStatus(
@@ -50,9 +31,10 @@ export class ConvexClient {
     status: string,
     data?: Record<string, unknown>
   ): Promise<void> {
-    await this.callMutation("meetingBot:updateRecordingStatus", {
-      recordingId,
-      status,
+    await this.client.mutation(api.meetingBot.updateRecordingStatus, {
+      apiKey: this.apiKey,
+      recordingId: recordingId as Id<"meetingRecordings">,
+      status: status as "scheduled" | "joining" | "recording" | "processing" | "transcribing" | "summarizing" | "completed" | "cancelled" | "failed",
       ...data,
     });
   }
@@ -61,8 +43,9 @@ export class ConvexClient {
     recordingId: string,
     transcription: TranscriptionResult
   ): Promise<string> {
-    const result = await this.callMutation("meetingBot:saveTranscript", {
-      recordingId,
+    const result = await this.client.mutation(api.meetingBot.saveTranscript, {
+      apiKey: this.apiKey,
+      recordingId: recordingId as Id<"meetingRecordings">,
       fullText: transcription.fullText,
       segments: transcription.segments.map((seg) => ({
         startTime: seg.startTime,
@@ -86,9 +69,10 @@ export class ConvexClient {
     transcriptId: string,
     summary: MeetingSummary
   ): Promise<string> {
-    const result = await this.callMutation("meetingBot:saveSummary", {
-      recordingId,
-      transcriptId,
+    const result = await this.client.mutation(api.meetingBot.saveSummary, {
+      apiKey: this.apiKey,
+      recordingId: recordingId as Id<"meetingRecordings">,
+      transcriptId: transcriptId as Id<"meetingTranscripts">,
       executiveSummary: summary.executiveSummary,
       keyPoints: summary.keyPoints,
       actionItems: summary.actionItems.map((item) => ({
@@ -123,14 +107,21 @@ export class ConvexClient {
       isHost: boolean;
     }>
   ): Promise<void> {
-    await this.callMutation("meetingBot:saveParticipants", {
-      recordingId,
+    await this.client.mutation(api.meetingBot.saveParticipants, {
+      apiKey: this.apiKey,
+      recordingId: recordingId as Id<"meetingRecordings">,
       participants: participants.map((p) => ({
         displayName: p.displayName,
         email: p.email,
         isHost: p.isHost,
         isExternal: true, // Will be updated when matched to users
       })),
+    });
+  }
+
+  async getPendingJobs() {
+    return this.client.query(api.meetingBot.getPendingJobs, {
+      apiKey: this.apiKey,
     });
   }
 }

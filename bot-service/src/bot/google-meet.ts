@@ -1,5 +1,4 @@
 import { chromium, type Browser, type Page, type BrowserContext } from "playwright";
-import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
@@ -25,6 +24,12 @@ export class GoogleMeetBot {
   async join(): Promise<void> {
     try {
       // Launch browser with audio capture enabled
+      // SECURITY NOTE: The flags below disable browser security features.
+      // This is REQUIRED for the bot to join Google Meet and capture audio:
+      // - disable-web-security: Allows cross-origin access to media streams
+      // - IsolateOrigins/site-per-process: Required for audio element access
+      // This bot runs in an isolated container (Railway) and only visits trusted
+      // meeting URLs. Never expose this service directly to the internet.
       this.browser = await chromium.launch({
         headless: true, // Set to false for debugging
         args: [
@@ -168,7 +173,15 @@ export class GoogleMeetBot {
     this.audioFilePath = path.join(os.tmpdir(), `meeting-${Date.now()}.webm`);
 
     // Inject audio capture script
+    // Note: We use declare global to extend Window interface for type safety
     await this.page.evaluate(() => {
+      // Extend window interface for Cascade audio capture
+      interface CascadeWindow extends Window {
+        __cascadeAudioStream?: MediaStream;
+        __cascadeAudioContext?: AudioContext;
+      }
+      const cascadeWindow = window as CascadeWindow;
+
       // This runs in the browser context
       // We'll capture the audio stream from the meeting
       const audioContext = new AudioContext();
@@ -196,8 +209,8 @@ export class GoogleMeetBot {
       observer.observe(document.body, { childList: true, subtree: true });
 
       // Store for later access
-      (window as unknown as Record<string, unknown>).__cascadeAudioStream = destination.stream;
-      (window as unknown as Record<string, unknown>).__cascadeAudioContext = audioContext;
+      cascadeWindow.__cascadeAudioStream = destination.stream;
+      cascadeWindow.__cascadeAudioContext = audioContext;
     });
 
     // Note: Full audio recording requires additional setup with MediaRecorder
@@ -225,6 +238,9 @@ export class GoogleMeetBot {
   private monitorMeetingEnd(): void {
     if (!this.page) return;
 
+    let consecutiveAloneChecks = 0;
+    const aloneThreshold = 3; // Need 3 consecutive checks (30 seconds) before leaving
+
     // Check periodically if meeting has ended
     const checkInterval = setInterval(async () => {
       if (!this.page || !this.isRecording) {
@@ -241,18 +257,23 @@ export class GoogleMeetBot {
         if (leftMeeting || meetingEnded || returnHome) {
           clearInterval(checkInterval);
           await this.handleMeetingEnd();
+          return;
         }
 
         // Check if we're alone (everyone else left)
         const participantCount = await this.getParticipantCount();
         if (participantCount <= 1) {
-          // We're alone, wait a bit then leave
-          await this.page.waitForTimeout(30000); // Wait 30 seconds
-          const newCount = await this.getParticipantCount();
-          if (newCount <= 1) {
+          consecutiveAloneChecks++;
+          if (consecutiveAloneChecks >= aloneThreshold) {
             clearInterval(checkInterval);
+            this.emitStatus("alone_timeout", {
+              message: "Left meeting after being alone for 30 seconds",
+            });
             await this.leave();
           }
+        } else {
+          // Reset counter if others join
+          consecutiveAloneChecks = 0;
         }
       } catch {
         // Page might be closed
@@ -366,15 +387,17 @@ export class GoogleMeetBot {
     return new Promise((resolve) => {
       this.endPromiseResolve = resolve;
 
-      // Also set a max duration (4 hours)
-      setTimeout(
-        () => {
-          if (this.isRecording) {
-            this.leave();
-          }
-        },
-        4 * 60 * 60 * 1000
-      );
+      // Set a max duration (4 hours)
+      const maxDurationMs = 4 * 60 * 60 * 1000;
+      setTimeout(() => {
+        if (this.isRecording) {
+          this.emitStatus("max_duration_reached", {
+            message: "Meeting exceeded 4-hour maximum duration limit",
+            durationMs: maxDurationMs,
+          });
+          this.leave();
+        }
+      }, maxDurationMs);
     });
   }
 

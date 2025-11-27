@@ -1449,6 +1449,15 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_scheduled_time", ["scheduledTime"])
     .index("by_next_attempt", ["nextAttemptAt"]),
+
+  // System settings for configuration
+  systemSettings: defineTable({
+    key: v.string(), // Setting key: "botServiceApiKeyHash", etc.
+    value: v.string(), // Setting value
+    description: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_key", ["key"]),
 };
 
 export default defineSchema({

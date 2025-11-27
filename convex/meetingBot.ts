@@ -2,7 +2,61 @@ import { v } from "convex/values";
 import { mutation, query, internalMutation, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import type { Id } from "./_generated/dataModel";
+import type { Id, Doc } from "./_generated/dataModel";
+import type { QueryCtx, MutationCtx } from "./_generated/server";
+
+// ===========================================
+// Bot Service Authentication
+// ===========================================
+
+/**
+ * Validate bot service API key
+ * The bot service uses a dedicated API key stored in environment variables
+ * This is simpler than the user API key system since there's only one bot service
+ */
+async function validateBotApiKey(
+  ctx: QueryCtx | MutationCtx,
+  apiKey: string
+): Promise<boolean> {
+  // Get the expected API key from system settings or environment
+  // For now, we store the hashed key in a systemSettings table
+  const settings = await ctx.db
+    .query("systemSettings")
+    .withIndex("by_key", (q) => q.eq("key", "botServiceApiKeyHash"))
+    .first();
+
+  if (!settings) {
+    // Fallback: check if it matches a hardcoded test key in development
+    // In production, this should always use the database
+    console.warn("Bot service API key not configured in database");
+    return false;
+  }
+
+  // Hash the provided key and compare
+  const encoder = new TextEncoder();
+  const data = encoder.encode(apiKey);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const keyHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  return keyHash === settings.value;
+}
+
+/**
+ * Validate bot API key and throw if invalid
+ */
+async function requireBotApiKey(
+  ctx: QueryCtx | MutationCtx,
+  apiKey: string | undefined
+): Promise<void> {
+  if (!apiKey) {
+    throw new Error("Bot service API key required");
+  }
+  const isValid = await validateBotApiKey(ctx, apiKey);
+  if (!isValid) {
+    throw new Error("Invalid bot service API key");
+  }
+}
 
 // ===========================================
 // Queries
@@ -154,9 +208,15 @@ export const getSummary = query({
 });
 
 // Get pending bot jobs (for the bot service to poll)
+// Requires bot service API key authentication
 export const getPendingJobs = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    apiKey: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Validate bot service API key
+    await requireBotApiKey(ctx, args.apiKey);
+
     const now = Date.now();
 
     // Get jobs that are pending and scheduled to start within next 5 minutes
@@ -200,6 +260,7 @@ export const scheduleRecording = mutation({
     projectId: v.optional(v.id("projects")),
     isPublic: v.optional(v.boolean()),
   },
+  returns: v.id("meetingRecordings"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -258,6 +319,7 @@ export const startRecordingNow = mutation({
     ),
     projectId: v.optional(v.id("projects")),
   },
+  returns: v.id("meetingRecordings"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -301,6 +363,7 @@ export const startRecordingNow = mutation({
 // Cancel a scheduled recording
 export const cancelRecording = mutation({
   args: { recordingId: v.id("meetingRecordings") },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -338,8 +401,10 @@ export const cancelRecording = mutation({
 });
 
 // Update recording status (called by bot service)
+// Requires bot service API key authentication
 export const updateRecordingStatus = mutation({
   args: {
+    apiKey: v.string(),
     recordingId: v.id("meetingRecordings"),
     status: v.union(
       v.literal("scheduled"),
@@ -349,6 +414,7 @@ export const updateRecordingStatus = mutation({
       v.literal("transcribing"),
       v.literal("summarizing"),
       v.literal("completed"),
+      v.literal("cancelled"),
       v.literal("failed")
     ),
     errorMessage: v.optional(v.string()),
@@ -358,7 +424,11 @@ export const updateRecordingStatus = mutation({
     actualEndTime: v.optional(v.number()),
     duration: v.optional(v.number()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
+    // Validate bot service API key
+    await requireBotApiKey(ctx, args.apiKey);
+
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
@@ -375,9 +445,11 @@ export const updateRecordingStatus = mutation({
   },
 });
 
-// Save transcript (called after Whisper processing)
+// Save transcript (called after transcription processing)
+// Requires bot service API key authentication
 export const saveTranscript = mutation({
   args: {
+    apiKey: v.string(),
     recordingId: v.id("meetingRecordings"),
     fullText: v.string(),
     segments: v.array(
@@ -396,7 +468,11 @@ export const saveTranscript = mutation({
     wordCount: v.number(),
     speakerCount: v.optional(v.number()),
   },
+  returns: v.id("meetingTranscripts"),
   handler: async (ctx, args) => {
+    // Validate bot service API key
+    await requireBotApiKey(ctx, args.apiKey);
+
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
@@ -423,8 +499,10 @@ export const saveTranscript = mutation({
 });
 
 // Save summary (called after Claude processing)
+// Requires bot service API key authentication
 export const saveSummary = mutation({
   args: {
+    apiKey: v.string(),
     recordingId: v.id("meetingRecordings"),
     transcriptId: v.id("meetingTranscripts"),
     executiveSummary: v.string(),
@@ -457,7 +535,11 @@ export const saveSummary = mutation({
     completionTokens: v.optional(v.number()),
     processingTime: v.optional(v.number()),
   },
+  returns: v.id("meetingSummaries"),
   handler: async (ctx, args) => {
+    // Validate bot service API key
+    await requireBotApiKey(ctx, args.apiKey);
+
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
@@ -502,8 +584,10 @@ export const saveSummary = mutation({
 });
 
 // Save participants
+// Requires bot service API key authentication
 export const saveParticipants = mutation({
   args: {
+    apiKey: v.string(),
     recordingId: v.id("meetingRecordings"),
     participants: v.array(
       v.object({
@@ -518,7 +602,11 @@ export const saveParticipants = mutation({
       })
     ),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
+    // Validate bot service API key
+    await requireBotApiKey(ctx, args.apiKey);
+
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
@@ -651,6 +739,7 @@ export const triggerBotJob = internalMutation({
       jobId: job._id,
       recordingId: args.recordingId,
       meetingUrl: recording.meetingUrl ?? "",
+      platform: recording.meetingPlatform,
     });
   },
 });
@@ -661,6 +750,12 @@ export const notifyBotService = internalAction({
     jobId: v.id("meetingBotJobs"),
     recordingId: v.id("meetingRecordings"),
     meetingUrl: v.string(),
+    platform: v.union(
+      v.literal("google_meet"),
+      v.literal("zoom"),
+      v.literal("teams"),
+      v.literal("other")
+    ),
   },
   handler: async (ctx, args) => {
     // Get bot service URL from environment
@@ -688,7 +783,7 @@ export const notifyBotService = internalAction({
           jobId: args.jobId,
           recordingId: args.recordingId,
           meetingUrl: args.meetingUrl,
-          platform: "google_meet", // For now, hardcoded
+          platform: args.platform,
           botName: "Cascade Notetaker",
           // Callback URLs for the bot to report status
           callbackUrl: process.env.CONVEX_SITE_URL,

@@ -5,19 +5,20 @@ import {
   ForgotPasswordForm,
   ResetPasswordForm,
   GoogleSignInButton,
+  EmailVerificationForm,
 } from "./components/auth";
 
-type AuthView = "credentials" | "forgot" | "reset";
+type AuthView = "credentials" | "forgot" | "reset" | "verify";
 
 export function SignInForm() {
   const [view, setView] = useState<AuthView>("credentials");
-  const [resetEmail, setResetEmail] = useState("");
+  const [email, setEmail] = useState("");
 
   if (view === "forgot") {
     return (
       <ForgotPasswordForm
-        onCodeSent={(email) => {
-          setResetEmail(email);
+        onCodeSent={(sentEmail) => {
+          setEmail(sentEmail);
           setView("reset");
         }}
         onBack={() => setView("credentials")}
@@ -28,14 +29,29 @@ export function SignInForm() {
   if (view === "reset") {
     return (
       <ResetPasswordForm
-        email={resetEmail}
+        email={email}
         onSuccess={() => {
           setView("credentials");
-          setResetEmail("");
+          setEmail("");
         }}
         onRetry={() => {
           setView("forgot");
-          setResetEmail("");
+          setEmail("");
+        }}
+      />
+    );
+  }
+
+  if (view === "verify") {
+    return (
+      <EmailVerificationForm
+        email={email}
+        onVerified={() => {
+          setView("credentials");
+          setEmail("");
+        }}
+        onResend={() => {
+          // Stay on verify view, just resend
         }}
       />
     );
@@ -43,7 +59,13 @@ export function SignInForm() {
 
   return (
     <div className="w-full">
-      <CredentialsForm onForgotPassword={() => setView("forgot")} />
+      <CredentialsForm
+        onForgotPassword={() => setView("forgot")}
+        onSignUpNeedsVerification={(signUpEmail) => {
+          setEmail(signUpEmail);
+          setView("verify");
+        }}
+      />
       <div className="flex items-center justify-center my-3">
         <hr className="my-4 grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary dark:text-ui-text-secondary-dark">or</span>

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useConfirmDialog } from "@/hooks/useConfirmDialog";
 import {
   CheckCircle,
   ChevronDown,
@@ -17,6 +18,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
 
 interface MeetingRecordingSectionProps {
@@ -34,6 +36,8 @@ export function MeetingRecordingSection({
 }: MeetingRecordingSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isScheduling, setIsScheduling] = useState(false);
+  const { dialogState, isConfirming, openConfirm, closeConfirm, handleConfirm } =
+    useConfirmDialog();
 
   // Check if there's already a recording for this event
   const recordings = useQuery(api.meetingBot.listRecordings, { limit: 100 });
@@ -69,10 +73,18 @@ export function MeetingRecordingSection({
     }
   };
 
-  const handleCancelRecording = async () => {
+  const handleCancelRecording = () => {
     if (!recording) return;
-    if (!confirm("Cancel the scheduled recording?")) return;
+    openConfirm({
+      title: "Cancel Recording",
+      message: "Cancel the scheduled recording?",
+      confirmLabel: "Cancel Recording",
+      variant: "warning",
+    });
+  };
 
+  const executeCancelRecording = async () => {
+    if (!recording) return;
     try {
       await cancelRecording({ recordingId: recording._id });
       showSuccess("Recording cancelled");
@@ -232,6 +244,17 @@ export function MeetingRecordingSection({
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={dialogState.isOpen}
+        onClose={closeConfirm}
+        onConfirm={() => handleConfirm(executeCancelRecording)}
+        title={dialogState.title}
+        message={dialogState.message}
+        confirmLabel={dialogState.confirmLabel}
+        variant={dialogState.variant}
+        isLoading={isConfirming}
+      />
     </div>
   );
 }

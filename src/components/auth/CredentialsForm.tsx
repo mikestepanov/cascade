@@ -4,9 +4,10 @@ import { toast } from "sonner";
 
 interface CredentialsFormProps {
   onForgotPassword: () => void;
+  onSignUpNeedsVerification: (email: string) => void;
 }
 
-export function CredentialsForm({ onForgotPassword }: CredentialsFormProps) {
+export function CredentialsForm({ onForgotPassword, onSignUpNeedsVerification }: CredentialsFormProps) {
   const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [submitting, setSubmitting] = useState(false);
@@ -16,11 +17,18 @@ export function CredentialsForm({ onForgotPassword }: CredentialsFormProps) {
     setSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
     formData.set("flow", flow);
 
     void signIn("password", formData)
       .then(() => {
-        // Success - auth state will update automatically
+        // For signUp, Convex Auth with verify option will send OTP automatically
+        // The user needs to verify before they can access the app
+        if (flow === "signUp") {
+          toast.success("Check your email for a verification code");
+          onSignUpNeedsVerification(email);
+        }
+        // For signIn, auth state will update automatically
       })
       .catch((error) => {
         let message = "";

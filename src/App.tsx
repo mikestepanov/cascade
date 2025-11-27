@@ -39,6 +39,7 @@ import { useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts"
 import { SignInForm } from "./SignInForm";
 import { NixeloLanding } from "./components/NixeloLanding";
 import { SignOutButton } from "./SignOutButton";
+import { EmailVerificationRequired } from "./components/auth";
 import { type AppView, shouldShowSidebar } from "./utils/viewHelpers";
 
 export default function App() {
@@ -263,6 +264,17 @@ function Content() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ui-text-primary dark:border-ui-text-primary-dark" />
       </div>
     );
+  }
+
+  // Check if user is authenticated but email not verified (password users only)
+  // Google OAuth users are automatically verified
+  const needsEmailVerification =
+    loggedInUser &&
+    loggedInUser.email &&
+    !loggedInUser.emailVerificationTime;
+
+  if (needsEmailVerification) {
+    return <EmailVerificationRequired />;
   }
 
   return (

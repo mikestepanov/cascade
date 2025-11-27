@@ -4,6 +4,17 @@ import { TranscriptionService } from "../services/transcription.js";
 import { SummaryService } from "../services/summary.js";
 import { ConvexClient } from "../services/convex-client.js";
 
+type ConvexRecordingStatus =
+  | "scheduled"
+  | "joining"
+  | "recording"
+  | "processing"
+  | "transcribing"
+  | "summarizing"
+  | "completed"
+  | "cancelled"
+  | "failed";
+
 export interface BotJob {
   id: string;
   recordingId: string;
@@ -187,10 +198,8 @@ export class MeetingBotManager {
     await this.convexClient.updateRecordingStatus(job.recordingId, convexStatus, data);
   }
 
-  private mapStatus(
-    status: string
-  ): "scheduled" | "joining" | "recording" | "processing" | "transcribing" | "summarizing" | "completed" | "failed" {
-    const statusMap: Record<string, typeof status> = {
+  private mapStatus(status: string): ConvexRecordingStatus {
+    const statusMap: Record<string, ConvexRecordingStatus> = {
       pending: "scheduled",
       joining: "joining",
       recording: "recording",
@@ -200,7 +209,7 @@ export class MeetingBotManager {
       completed: "completed",
       failed: "failed",
     };
-    return (statusMap[status] || "processing") as ReturnType<typeof this.mapStatus>;
+    return statusMap[status] || "processing";
   }
 
   getJob(jobId: string): BotJob | undefined {
