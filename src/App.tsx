@@ -585,11 +585,9 @@ function Content() {
             unreadCount={unreadAISuggestions}
           />
         )}
-      {console.log("[AUTH] Rendering Authenticated - user IS logged in")}
       </Authenticated>
 
       <Unauthenticated>
-        {console.log("[AUTH] Rendering Unauthenticated - user not logged in")}
         <NixeloLanding />
       </Unauthenticated>
 
