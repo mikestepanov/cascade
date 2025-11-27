@@ -84,7 +84,8 @@ export function EmailVerificationRequired() {
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
             className="auth-input-field text-center text-xl tracking-widest"
-            type="text"
+            type="tel"
+            inputMode="numeric"
             name="code"
             placeholder="Enter 8-digit code"
             required

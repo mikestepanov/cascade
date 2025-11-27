@@ -95,7 +95,7 @@ export async function takeScreenshot(
   name: string,
   options?: { fullPage?: boolean }
 ): Promise<void> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").replace(/[<>:"/\\|?*]/g, "_");
   await page.screenshot({
     path: `test-results/screenshots/${name}-${timestamp}.png`,
     fullPage: options?.fullPage ?? false,

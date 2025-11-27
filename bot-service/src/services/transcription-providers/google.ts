@@ -149,7 +149,7 @@ export class GoogleCloudSTTProvider implements TranscriptionProvider {
         await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
       }
 
-      if (!result!) {
+      if (!result) {
         throw new Error("Google Cloud STT transcription timed out");
       }
     } else {
