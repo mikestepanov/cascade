@@ -32,4 +32,9 @@ package-lock.json
 # Test coverage
 coverage/
 
+# Playwright
+e2e/.auth/
+playwright-report/
+test-results/
+
 .vercel

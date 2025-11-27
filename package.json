@@ -21,6 +21,11 @@
     "test:convex:coverage": "vitest --config vitest.convex.config.ts --coverage",
     "test:all": "pnpm run test run && pnpm run test:convex run",
     "check": "pnpm run typecheck && pnpm run lint:check && pnpm run test:all",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug",
+    "e2e:setup-auth": "npx tsx e2e/setup-auth.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -74,6 +79,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.7",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
