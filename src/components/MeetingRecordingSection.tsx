@@ -39,13 +39,10 @@ export function MeetingRecordingSection({
   const { dialogState, isConfirming, openConfirm, closeConfirm, handleConfirm } =
     useConfirmDialog();
 
-  // Check if there's already a recording for this event
-  const recordings = useQuery(api.meetingBot.listRecordings, { limit: 100 });
+  // Check if there's already a recording for this event (optimized query)
+  const recording = useQuery(api.meetingBot.getRecordingByCalendarEvent, { calendarEventId });
   const scheduleRecording = useMutation(api.meetingBot.scheduleRecording);
   const cancelRecording = useMutation(api.meetingBot.cancelRecording);
-
-  // Find recording for this calendar event
-  const recording = recordings?.find((r) => r.calendarEventId === calendarEventId);
 
   const detectPlatform = (url: string): "google_meet" | "zoom" | "teams" | "other" => {
     if (url.includes("meet.google.com")) return "google_meet";

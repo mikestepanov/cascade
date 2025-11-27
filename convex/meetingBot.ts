@@ -115,6 +115,44 @@ export const listRecordings = query({
   },
 });
 
+// Get recording by calendar event ID (optimized for MeetingRecordingSection)
+export const getRecordingByCalendarEvent = query({
+  args: { calendarEventId: v.id("calendarEvents") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const recording = await ctx.db
+      .query("meetingRecordings")
+      .withIndex("by_calendar_event", (q) => q.eq("calendarEventId", args.calendarEventId))
+      .first();
+
+    if (!recording) return null;
+
+    // Check access
+    if (recording.createdBy !== userId && !recording.isPublic) {
+      return null;
+    }
+
+    const summary = await ctx.db
+      .query("meetingSummaries")
+      .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
+      .first();
+
+    const job = await ctx.db
+      .query("meetingBotJobs")
+      .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
+      .first();
+
+    return {
+      ...recording,
+      hasSummary: !!summary,
+      summary,
+      job,
+    };
+  },
+});
+
 // Get a single recording with all details
 export const getRecording = query({
   args: { recordingId: v.id("meetingRecordings") },

@@ -65,11 +65,18 @@ export async function waitForToast(page: Page, text: string, timeout = 5000): Pr
 /**
  * Dismiss all toasts
  */
-export async function dismissAllToasts(page: Page): Promise<void> {
+export async function dismissAllToasts(page: Page, maxAttempts = 10): Promise<void> {
   const toasts = page.locator("[data-sonner-toast]");
-  const count = await toasts.count();
-  for (let i = 0; i < count; i++) {
-    await toasts.nth(0).click(); // Always click first since they disappear
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    const count = await toasts.count();
+    if (count === 0) break;
+
+    await toasts.nth(0).click();
+    // Wait briefly for toast to disappear
+    await page.waitForTimeout(100);
+    attempts++;
   }
 }
 
