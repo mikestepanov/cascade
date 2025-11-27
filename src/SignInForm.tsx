@@ -3,11 +3,134 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+type FlowType = "signIn" | "signUp" | "forgot" | "reset-verification";
+
 export function SignInForm() {
   const { signIn } = useAuthActions();
-  const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
+  const [flow, setFlow] = useState<FlowType>("signIn");
   const [submitting, setSubmitting] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
+  // Forgot password - step 1: enter email
+  if (flow === "forgot") {
+    return (
+      <div className="w-full">
+        <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          Reset your password
+        </h2>
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+          Enter your email and we'll send you a code to reset your password.
+        </p>
+        <form
+          className="flex flex-col gap-form-field"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitting(true);
+            const formData = new FormData(e.target as HTMLFormElement);
+            const email = formData.get("email") as string;
+            formData.set("flow", "reset");
+            void signIn("password", formData)
+              .then(() => {
+                setResetEmail(email);
+                setFlow("reset-verification");
+                toast.success("Check your email for the reset code");
+              })
+              .catch((error) => {
+                console.error("Reset error:", error);
+                toast.error("Could not send reset code. Please check your email.");
+              })
+              .finally(() => setSubmitting(false));
+          }}
+        >
+          <input
+            className="auth-input-field"
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+          <button className="auth-button" type="submit" disabled={submitting}>
+            {submitting ? "Sending..." : "Send reset code"}
+          </button>
+          <button
+            type="button"
+            className="text-sm text-brand-600 dark:text-brand-500 hover:underline"
+            onClick={() => setFlow("signIn")}
+          >
+            Back to sign in
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Forgot password - step 2: enter code + new password
+  if (flow === "reset-verification") {
+    return (
+      <div className="w-full">
+        <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          Enter reset code
+        </h2>
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+          We sent a code to <strong>{resetEmail}</strong>. Enter it below with your new password.
+        </p>
+        <form
+          className="flex flex-col gap-form-field"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitting(true);
+            const formData = new FormData(e.target as HTMLFormElement);
+            formData.set("email", resetEmail);
+            formData.set("flow", "reset-verification");
+            void signIn("password", formData)
+              .then(() => {
+                toast.success("Password reset successfully!");
+                setFlow("signIn");
+                setResetEmail("");
+              })
+              .catch((error) => {
+                console.error("Verification error:", error);
+                toast.error("Invalid code or password. Please try again.");
+              })
+              .finally(() => setSubmitting(false));
+          }}
+        >
+          <input
+            className="auth-input-field"
+            type="text"
+            name="code"
+            placeholder="8-digit code"
+            required
+            pattern="[0-9]{8}"
+            maxLength={8}
+          />
+          <input
+            className="auth-input-field"
+            type="password"
+            name="newPassword"
+            placeholder="New password"
+            required
+            minLength={8}
+          />
+          <button className="auth-button" type="submit" disabled={submitting}>
+            {submitting ? "Resetting..." : "Reset password"}
+          </button>
+          <button
+            type="button"
+            className="text-sm text-brand-600 dark:text-brand-500 hover:underline"
+            onClick={() => {
+              setFlow("forgot");
+              setResetEmail("");
+            }}
+          >
+            Didn't receive a code? Try again
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Default: sign in / sign up form
   return (
     <div className="w-full">
       <form
@@ -60,6 +183,17 @@ export function SignInForm() {
             {flow === "signIn" ? "Sign up instead" : "Sign in instead"}
           </button>
         </div>
+        {flow === "signIn" && (
+          <div className="text-center">
+            <button
+              type="button"
+              className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-brand-600 dark:hover:text-brand-500 hover:underline"
+              onClick={() => setFlow("forgot")}
+            >
+              Forgot password?
+            </button>
+          </div>
+        )}
       </form>
       <div className="flex items-center justify-center my-3">
         <hr className="my-4 grow border-ui-border-primary dark:border-ui-border-primary-dark" />

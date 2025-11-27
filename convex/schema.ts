@@ -1353,6 +1353,70 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_email", ["email"]),
 
+  // ============================================
+  // Service Usage Tracking (Free Tier Rotation)
+  // ============================================
+
+  // Track usage per service provider per month
+  serviceUsage: defineTable({
+    serviceType: v.union(
+      v.literal("transcription"),
+      v.literal("email"),
+      v.literal("sms"),
+      v.literal("ai"), // For future AI provider rotation
+    ),
+    provider: v.string(), // "whisper", "speechmatics", "gladia", "resend", "sendpulse", etc.
+    month: v.string(), // "2025-11" format
+    // Usage metrics
+    unitsUsed: v.number(), // Minutes for transcription, emails sent, etc.
+    freeUnitsLimit: v.number(), // Free tier limit for this provider
+    // Cost tracking (when free tier exceeded)
+    paidUnitsUsed: v.number(), // Units beyond free tier
+    estimatedCost: v.number(), // Estimated cost in cents
+    // Metadata
+    lastUpdatedAt: v.number(),
+  })
+    .index("by_service_type", ["serviceType"])
+    .index("by_provider", ["provider"])
+    .index("by_month", ["month"])
+    .index("by_service_month", ["serviceType", "month"])
+    .index("by_provider_month", ["provider", "month"]),
+
+  // Provider configuration (free tier limits, priority order)
+  serviceProviders: defineTable({
+    serviceType: v.union(
+      v.literal("transcription"),
+      v.literal("email"),
+      v.literal("sms"),
+      v.literal("ai"),
+    ),
+    provider: v.string(), // "speechmatics", "gladia", "resend", etc.
+    // Free tier info
+    freeUnitsPerMonth: v.number(), // 0 = no free tier
+    freeUnitsType: v.union(
+      v.literal("monthly"), // Resets each month
+      v.literal("one_time"), // One-time credit
+      v.literal("yearly"), // Resets yearly
+    ),
+    oneTimeUnitsRemaining: v.optional(v.number()), // For one-time credits
+    // Pricing after free tier
+    costPerUnit: v.number(), // Cost per unit in cents (e.g., $0.006/min = 0.6 cents)
+    unitType: v.string(), // "minute", "email", "message", "token"
+    // Provider status
+    isEnabled: v.boolean(),
+    isConfigured: v.boolean(), // Has API key set
+    priority: v.number(), // Lower = preferred (1 = first choice)
+    // Metadata
+    displayName: v.string(),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_service_type", ["serviceType"])
+    .index("by_provider", ["provider"])
+    .index("by_service_enabled", ["serviceType", "isEnabled"])
+    .index("by_service_priority", ["serviceType", "priority"]),
+
   // Bot job queue - for scheduling bots to join meetings
   meetingBotJobs: defineTable({
     recordingId: v.id("meetingRecordings"),
