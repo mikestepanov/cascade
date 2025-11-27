@@ -68,6 +68,51 @@ export const listRecordings = query({
     projectId: v.optional(v.id("projects")),
     limit: v.optional(v.number()),
   },
+  returns: v.array(
+    v.object({
+      _id: v.id("meetingRecordings"),
+      _creationTime: v.number(),
+      calendarEventId: v.optional(v.id("calendarEvents")),
+      meetingUrl: v.optional(v.string()),
+      meetingPlatform: v.union(
+        v.literal("google_meet"),
+        v.literal("zoom"),
+        v.literal("teams"),
+        v.literal("other")
+      ),
+      title: v.string(),
+      recordingFileId: v.optional(v.id("_storage")),
+      recordingUrl: v.optional(v.string()),
+      duration: v.optional(v.number()),
+      fileSize: v.optional(v.number()),
+      status: v.union(
+        v.literal("scheduled"),
+        v.literal("joining"),
+        v.literal("recording"),
+        v.literal("processing"),
+        v.literal("transcribing"),
+        v.literal("summarizing"),
+        v.literal("completed"),
+        v.literal("cancelled"),
+        v.literal("failed")
+      ),
+      errorMessage: v.optional(v.string()),
+      scheduledStartTime: v.optional(v.number()),
+      actualStartTime: v.optional(v.number()),
+      actualEndTime: v.optional(v.number()),
+      botJoinedAt: v.optional(v.number()),
+      botLeftAt: v.optional(v.number()),
+      botName: v.string(),
+      createdBy: v.id("users"),
+      projectId: v.optional(v.id("projects")),
+      isPublic: v.boolean(),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      calendarEvent: v.union(v.any(), v.null()),
+      hasTranscript: v.boolean(),
+      hasSummary: v.boolean(),
+    })
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");

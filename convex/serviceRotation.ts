@@ -35,6 +35,17 @@ export const selectProvider = query({
     ),
     unitsNeeded: v.optional(v.number()), // Estimate of units needed (optional)
   },
+  returns: v.union(
+    v.object({
+      provider: v.string(),
+      displayName: v.string(),
+      freeUnitsRemaining: v.number(),
+      isUsingFreeTier: v.boolean(),
+      costPerUnit: v.number(),
+      unitType: v.string(),
+    }),
+    v.null()
+  ),
   handler: async (ctx, args) => {
     const month = getCurrentMonth();
 
@@ -115,6 +126,36 @@ export const getUsageSummary = query({
     ),
     month: v.optional(v.string()),
   },
+  returns: v.object({
+    month: v.string(),
+    serviceType: v.union(
+      v.literal("transcription"),
+      v.literal("email"),
+      v.literal("sms"),
+      v.literal("ai")
+    ),
+    providers: v.array(
+      v.object({
+        provider: v.string(),
+        displayName: v.string(),
+        isEnabled: v.boolean(),
+        isConfigured: v.boolean(),
+        priority: v.number(),
+        freeUnitsPerMonth: v.number(),
+        freeUnitsType: v.union(v.literal("monthly"), v.literal("one_time"), v.literal("yearly")),
+        unitsUsed: v.number(),
+        freeUnitsRemaining: v.number(),
+        paidUnitsUsed: v.number(),
+        estimatedCost: v.number(),
+        unitType: v.string(),
+      })
+    ),
+    totals: v.object({
+      freeUnitsRemaining: v.number(),
+      unitsUsed: v.number(),
+      estimatedCostCents: v.number(),
+    }),
+  }),
   handler: async (ctx, args) => {
     const month = args.month ?? getCurrentMonth();
 
@@ -197,6 +238,13 @@ export const recordUsage = mutation({
     provider: v.string(),
     unitsUsed: v.number(),
   },
+  returns: v.object({
+    provider: v.string(),
+    unitsUsed: v.number(),
+    totalUnitsThisMonth: v.number(),
+    freeUnitsRemaining: v.number(),
+    isUsingFreeTier: v.boolean(),
+  }),
   handler: async (ctx, args) => {
     const month = getCurrentMonth();
 
@@ -294,6 +342,7 @@ export const upsertProvider = mutation({
     priority: v.number(),
     notes: v.optional(v.string()),
   },
+  returns: v.id("serviceProviders"),
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("serviceProviders")
@@ -327,6 +376,7 @@ export const upsertProvider = mutation({
  */
 export const seedProviders = mutation({
   args: {},
+  returns: v.object({ seeded: v.boolean() }),
   handler: async (ctx) => {
     const now = Date.now();
 
@@ -475,6 +525,7 @@ export const setProviderConfigured = mutation({
     provider: v.string(),
     isConfigured: v.boolean(),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("serviceProviders")
