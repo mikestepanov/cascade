@@ -2,10 +2,10 @@
 
 /**
  * AI Provider Configuration
- * Supports: Anthropic Claude, OpenAI, and custom providers
+ * Uses Anthropic Claude exclusively
  */
 
-export type AIProvider = "anthropic" | "openai" | "custom";
+export type AIProvider = "anthropic";
 
 export interface AIConfig {
   provider: AIProvider;
@@ -16,68 +16,45 @@ export interface AIConfig {
 }
 
 /**
- * Default models for each provider
+ * Claude models (using aliases - auto-point to latest snapshot)
+ */
+export const CLAUDE_MODELS = {
+  opus: "claude-opus-4-5",
+  haiku: "claude-haiku-4-5",
+} as const;
+
+/**
+ * Default model for each use case
  */
 export const DEFAULT_MODELS = {
-  anthropic: "claude-3-5-sonnet-20241022",
-  openai: "gpt-4-turbo-preview",
-  custom: "custom-model",
+  chat: CLAUDE_MODELS.opus, // High quality for chat
+  suggestions: CLAUDE_MODELS.haiku, // Fast/cheap for suggestions
+  summary: CLAUDE_MODELS.opus, // High quality for meeting summaries
 } as const;
 
 /**
  * Get AI configuration from environment variables
  */
 export function getAIConfig(): AIConfig {
-  // Check for Anthropic API key first
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  if (anthropicKey) {
-    return {
-      provider: "anthropic",
-      apiKey: anthropicKey,
-      model: process.env.ANTHROPIC_MODEL || DEFAULT_MODELS.anthropic,
-      temperature: 0.7,
-      maxTokens: 4096,
-    };
+  if (!anthropicKey) {
+    throw new Error(
+      "ANTHROPIC_API_KEY not configured. Set ANTHROPIC_API_KEY in environment variables.",
+    );
   }
 
-  // Check for OpenAI API key
-  const openaiKey = process.env.OPENAI_API_KEY;
-  if (openaiKey) {
-    return {
-      provider: "openai",
-      apiKey: openaiKey,
-      model: process.env.OPENAI_MODEL || DEFAULT_MODELS.openai,
-      temperature: 0.7,
-      maxTokens: 4096,
-    };
-  }
-
-  // Check for custom provider
-  const customKey = process.env.CUSTOM_AI_API_KEY;
-  const customEndpoint = process.env.CUSTOM_AI_ENDPOINT;
-  if (customKey && customEndpoint) {
-    return {
-      provider: "custom",
-      apiKey: customKey,
-      model: process.env.CUSTOM_AI_MODEL || DEFAULT_MODELS.custom,
-      temperature: 0.7,
-      maxTokens: 4096,
-    };
-  }
-
-  throw new Error(
-    "No AI provider configured. Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or CUSTOM_AI_API_KEY in environment variables.",
-  );
+  return {
+    provider: "anthropic",
+    apiKey: anthropicKey,
+    model: process.env.ANTHROPIC_MODEL || DEFAULT_MODELS.chat,
+    temperature: 0.7,
+    maxTokens: 4096,
+  };
 }
 
 /**
  * Check if AI is configured
  */
 export function isAIConfigured(): boolean {
-  try {
-    getAIConfig();
-    return true;
-  } catch {
-    return false;
-  }
+  return !!process.env.ANTHROPIC_API_KEY;
 }

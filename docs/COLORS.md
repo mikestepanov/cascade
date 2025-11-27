@@ -1,9 +1,6 @@
-# Cascade Color System
+# Nixelo Color System
 
-> **Last Updated:** 2025-11-20
-> **Version:** 2.0.0 - Semantic Color Tokens
-
-Complete guide to Cascade's semantic color system for consistent theming and easy brand changes.
+Complete guide to Nixelo's semantic color system for consistent theming and easy brand changes.
 
 ---
 
@@ -412,3 +409,7 @@ When adding new components:
 ---
 
 **Need help?** Check `tailwind.config.js` for the complete color definitions.
+
+---
+
+*Last Updated: 2025-11-27*

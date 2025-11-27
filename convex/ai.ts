@@ -1,6 +1,6 @@
 // @ts-nocheck - Circular type inference through internal wrappers
 /**
- * AI Integration with OpenAI
+ * AI Integration with Anthropic Claude
  *
  * Provides AI-powered features:
  * - Project assistant (chat)
@@ -15,7 +15,7 @@
  * The code uses type-safe helpers (extractUsage) to maintain type safety.
  */
 
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
@@ -23,8 +23,12 @@ import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { rateLimit } from "./rateLimits";
 
+// Claude models (using aliases - auto-point to latest snapshot)
+const CLAUDE_OPUS = "claude-opus-4-5";
+const CLAUDE_HAIKU = "claude-haiku-4-5";
+
 /**
- * Generate embedding for text using OpenAI
+ * Generate embedding for text using Voyage AI (Anthropic recommended)
  */
 export const generateEmbedding = internalAction({
   args: {
@@ -107,6 +111,7 @@ export const storeIssueEmbedding = internalAction({
 
 /**
  * AI Chat - Send message and get AI response
+ * Uses Claude Opus 4.5 for high-quality responses
  */
 export const chat = action({
   args: {
@@ -151,7 +156,7 @@ export const chat = action({
       });
     }
 
-    // Generate AI response
+    // Generate AI response using Claude Opus 4.5
     const systemPrompt = `You are a helpful project management assistant for Cascade, a collaborative project management platform.
 
 ${context ? `Project Context:\n${context}\n\n` : ""}
@@ -165,7 +170,7 @@ Help users with:
 Be concise, helpful, and professional.`;
 
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: anthropic(CLAUDE_OPUS),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: args.message },
@@ -180,7 +185,7 @@ Be concise, helpful, and professional.`;
       chatId,
       role: "assistant",
       content: response.text,
-      modelUsed: "gpt-4o-mini",
+      modelUsed: CLAUDE_OPUS,
       tokensUsed: usage.totalTokens,
     });
 
@@ -188,8 +193,8 @@ Be concise, helpful, and professional.`;
     await ctx.runMutation(internal.internal.ai.trackUsage, {
       userId: userId.subject,
       projectId: args.projectId,
-      provider: "openai",
-      model: "gpt-4o-mini",
+      provider: "anthropic",
+      model: CLAUDE_OPUS,
       operation: "chat",
       promptTokens: usage.promptTokens,
       completionTokens: usage.completionTokens,
@@ -242,7 +247,7 @@ export const trackUsage = internalAction({
   args: {
     userId: v.string(),
     projectId: v.optional(v.id("projects")),
-    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
       v.literal("chat"),

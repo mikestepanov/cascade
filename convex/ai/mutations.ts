@@ -226,7 +226,7 @@ export const trackUsage = mutation({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
-    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
       v.literal("chat"),

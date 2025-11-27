@@ -2,7 +2,7 @@
 
 ## Overview
 
-Cascade uses a **hybrid search approach** combining Convex and Fuse.js:
+Nixelo uses a **hybrid search approach** combining Convex and Fuse.js:
 
 - **Convex Search** - Server-side, permission-filtered, exact/prefix matching
 - **Fuse.js** - Client-side, typo-tolerant, fuzzy matching
@@ -351,6 +351,4 @@ describe("useFuzzySearch", () => {
 
 ---
 
-**Last Updated:** 2025-11-23
-**Dependencies:** fuse.js@7.1.0
-**Performance:** Optimized for < 1000 items per search
+*Last Updated: 2025-11-27*

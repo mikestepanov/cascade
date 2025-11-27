@@ -1,12 +1,12 @@
 # Google Calendar Integration Setup
 
-Complete guide to setting up Google Calendar integration with Cascade for bi-directional calendar syncing.
+Complete guide to setting up Google Calendar integration with Nixelo for bi-directional calendar syncing.
 
 ## Overview
 
 The Google Calendar integration allows you to:
-- ✅ **Import** events from Google Calendar to Cascade
-- ✅ **Export** events from Cascade to Google Calendar
+- ✅ **Import** events from Google Calendar to Nixelo
+- ✅ **Export** events from Nixelo to Google Calendar
 - ✅ **Bidirectional Sync** (recommended) - Keep both calendars in sync
 - ✅ **OAuth 2.0** authentication for secure access
 - ✅ **Automatic sync** in background (or manual trigger)
@@ -18,7 +18,7 @@ The Google Calendar integration allows you to:
 
 - Google Cloud Console access
 - Google account for calendar access
-- Cascade instance running (development or production)
+- Nixelo instance running (development or production)
 
 ---
 
@@ -26,7 +26,7 @@ The Google Calendar integration allows you to:
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Click "Select a project" → "New Project"
-3. Enter project name: `Cascade Calendar Integration`
+3. Enter project name: `Nixelo Calendar Integration`
 4. Click "Create"
 
 ---
@@ -46,7 +46,7 @@ The Google Calendar integration allows you to:
 2. Click **"+ Create Credentials"** → **"OAuth client ID"**
 3. If prompted, configure OAuth consent screen first:
    - User Type: **External** (unless you have Google Workspace)
-   - App name: `Cascade`
+   - App name: `Nixelo`
    - User support email: Your email
    - Developer contact: Your email
    - Scopes: Add `../auth/calendar` and `../auth/calendar.events`
@@ -54,7 +54,7 @@ The Google Calendar integration allows you to:
 
 4. Create OAuth Client ID:
    - Application type: **Web application**
-   - Name: `Cascade Web Client`
+   - Name: `Nixelo Web Client`
 
 5. **Authorized redirect URIs** - Add these:
    ```
@@ -70,7 +70,7 @@ The Google Calendar integration allows you to:
 
 ---
 
-## Step 4: Configure Cascade Environment Variables
+## Step 4: Configure Nixelo Environment Variables
 
 ### Development Setup
 
@@ -108,17 +108,17 @@ The Google Calendar integration allows you to:
 
 ---
 
-## Step 5: Connect Google Calendar in Cascade
+## Step 5: Connect Google Calendar in Nixelo
 
 ### For End Users
 
-1. Log in to Cascade
+1. Log in to Nixelo
 2. Go to **Settings** → **Integrations**
 3. Find the **Google Calendar** card
 4. Click **"Connect Google"**
 5. A popup window will open
 6. Sign in to your Google account
-7. Grant Cascade permission to access your calendar
+7. Grant Nixelo permission to access your calendar
 8. Popup will close automatically
 9. You're now connected! ✅
 
@@ -137,19 +137,19 @@ After connecting, configure how syncing works:
 Choose how calendar events should sync:
 
 #### 1. **Bidirectional** (Recommended)
-- Syncs events both ways: Google ↔ Cascade
+- Syncs events both ways: Google ↔ Nixelo
 - Best for: Users who manage calendars in both places
 - Changes in either calendar update the other
 
 #### 2. **Import Only**
-- Only imports events from Google Calendar → Cascade
-- Best for: Viewing Google events in Cascade (read-only)
-- Cascade events won't appear in Google Calendar
+- Only imports events from Google Calendar → Nixelo
+- Best for: Viewing Google events in Nixelo (read-only)
+- Nixelo events won't appear in Google Calendar
 
 #### 3. **Export Only**
-- Only exports events from Cascade → Google Calendar
+- Only exports events from Nixelo → Google Calendar
 - Best for: Using Google Calendar as the primary calendar
-- Google events won't appear in Cascade
+- Google events won't appear in Nixelo
 
 ---
 
@@ -179,7 +179,7 @@ Trigger a manual sync:
 
 ## What Gets Synced?
 
-### From Google Calendar to Cascade
+### From Google Calendar to Nixelo
 - ✅ Event title
 - ✅ Description
 - ✅ Start/end time
@@ -187,8 +187,8 @@ Trigger a manual sync:
 - ✅ Location
 - ✅ Attendees (as external emails)
 
-### From Cascade to Google Calendar
-- ✅ Calendar events created in Cascade
+### From Nixelo to Google Calendar
+- ✅ Calendar events created in Nixelo
 - ✅ Project meetings
 - ✅ Sprint planning sessions
 - ✅ Team standups
@@ -262,7 +262,7 @@ Trigger a manual sync:
 **Problem**: OAuth token needs refresh
 
 **Solution**:
-- Automatic: Cascade will auto-refresh the token using the refresh token
+- Automatic: Nixelo will auto-refresh the token using the refresh token
 - Manual: Disconnect and reconnect Google Calendar
 - This should rarely happen (tokens refresh automatically)
 
@@ -400,8 +400,8 @@ const filteredEvents = events.filter(event =>
 
 1. Create event in Google Calendar
 2. Trigger sync (wait for auto-sync or use manual sync endpoint)
-3. Check Cascade calendar view for imported event
-4. Create event in Cascade
+3. Check Nixelo calendar view for imported event
+4. Create event in Nixelo
 5. Check Google Calendar for exported event
 
 ### Test Disconnect
@@ -458,10 +458,8 @@ Before deploying Google Calendar integration to production:
 - [ ] Multiple calendar support
 - [ ] Conflict resolution UI
 - [ ] Calendar color mapping
-- [ ] Attendee mapping to Cascade users
+- [ ] Attendee mapping to Nixelo users
 
 ---
 
-**Last Updated**: 2025-11-20
-**Cascade Version**: 1.0.0
-**Google Calendar API Version**: v3
+*Last Updated: 2025-11-27*

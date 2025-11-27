@@ -1,13 +1,11 @@
 # PWA (Progressive Web App) Setup
 
-> **Last Updated:** 2025-11-20
-
-Cascade is now configured as a Progressive Web App! This allows users to install the application on their devices and use it offline.
+Nixelo is now configured as a Progressive Web App! This allows users to install the application on their devices and use it offline.
 
 ## Features Included
 
 ✅ **Offline Support** - Service worker caches assets for offline use
-✅ **Installable** - Users can install Cascade as a native app
+✅ **Installable** - Users can install Nixelo as a native app
 ✅ **Auto-Updates** - Automatic detection and notification of new versions
 ✅ **App Shortcuts** - Quick access to common actions from the home screen
 ✅ **Responsive** - Optimized for mobile, tablet, and desktop
@@ -238,3 +236,7 @@ For issues or questions about the PWA implementation, check:
 - Browser DevTools → Application tab
 - Console for service worker logs (prefixed with `[SW]`)
 - Lighthouse PWA audit for compliance issues
+
+---
+
+*Last Updated: 2025-11-27*

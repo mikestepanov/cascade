@@ -1,7 +1,5 @@
 # Setup & Configuration Guide
 
-> **Last Updated:** 2025-11-25
-
 Manual setup tasks that can't be automated through code.
 
 ---
@@ -29,7 +27,7 @@ Copy to `.env.local`:
 # EMAIL (Required for notifications)
 EMAIL_PROVIDER=resend
 RESEND_API_KEY=re_xxxxxxxxxxxxx
-RESEND_FROM_EMAIL="Cascade <notifications@yourdomain.com>"
+RESEND_FROM_EMAIL="Nixelo <notifications@yourdomain.com>"
 APP_URL=http://localhost:5173
 
 # GOOGLE OAUTH (Optional)
@@ -78,7 +76,7 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 1. In Pumble: Channel → Integrations → Incoming Webhooks
 2. Copy webhook URL
-3. In Cascade: Settings → Integrations → Pumble → Add Webhook
+3. In Nixelo: Settings → Integrations → Pumble → Add Webhook
 4. Test with "Test Webhook" button
 
 ---
@@ -135,3 +133,7 @@ pnpm run build
 | GitHub Integration | ✅ | GitHub OAuth app |
 | Offline/PWA | ✅ | None |
 | User Invitations | ✅ | Email provider |
+
+---
+
+*Last Updated: 2025-11-27*

@@ -81,7 +81,7 @@ Important:
     try {
       const response = await retryApi(() =>
         this.anthropic.messages.create({
-          model: "claude-opus-4-5-20251101",
+          model: "claude-opus-4-5",
           max_tokens: 4096,
           messages: [
             {
@@ -127,7 +127,7 @@ Important:
           endTime: topic.endTime,
         })),
         overallSentiment: parsed.overallSentiment || "neutral",
-        modelUsed: "claude-opus-4-5-20251101",
+        modelUsed: "claude-opus-4-5",
         promptTokens: response.usage?.input_tokens,
         completionTokens: response.usage?.output_tokens,
         processingTime,
@@ -142,7 +142,7 @@ Important:
   async quickSummary(transcript: string): Promise<string> {
     const response = await retryApi(() =>
       this.anthropic.messages.create({
-        model: "claude-opus-4-5-20251101",
+        model: "claude-opus-4-5",
         max_tokens: 500,
         messages: [
           {

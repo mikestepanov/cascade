@@ -25,6 +25,9 @@ This document provides comprehensive guidance for AI assistants working on the C
 - **Multi-provider authentication** (Email/Password, Google OAuth, Anonymous)
 - **User invitation system** (Admin-controlled, email-based invites with expiration)
 - **User management dashboard** (Admin view of all users and invitations)
+- **Email notifications** (Multi-provider, user preferences, React Email templates)
+- **Text AI** (AI chat, semantic search, suggestions, duplicate detection)
+- **Voice AI** (Meeting bot, transcription, AI summarization)
 
 ## Tech Stack
 
@@ -70,7 +73,8 @@ cascade/
 │   │   ├── IssueCard.tsx        # Individual issue card
 │   │   ├── CreateIssueModal.tsx # Issue creation modal
 │   │   ├── SprintManager.tsx    # Sprint management UI
-│   │   └── PresenceIndicator.tsx # User presence display
+│   │   ├── PresenceIndicator.tsx # User presence display
+│   │   └── AI/                  # AI components (chat, suggestions)
 │   ├── lib/                     # Utility functions
 │   │   └── utils.ts             # cn() for className merging
 │   ├── App.tsx                  # Main app component with routing logic
@@ -92,7 +96,32 @@ cascade/
 │   ├── http.ts                  # HTTP API endpoints
 │   ├── router.ts                # HTTP route configuration
 │   ├── auth.config.ts           # Auth provider configuration
-│   └── convex.config.ts         # Convex app configuration
+│   ├── convex.config.ts         # Convex app configuration
+│   ├── ai/                      # Text AI backend (chat, search, suggestions)
+│   └── email/                   # Email notification system
+│
+├── emails/                       # React Email templates
+│   ├── _components/             # Shared email components
+│   ├── MentionEmail.tsx         # @mention notification
+│   ├── AssignmentEmail.tsx      # Assignment notification
+│   └── CommentEmail.tsx         # Comment notification
+│
+├── bot-service/                  # Voice AI - Meeting bot service
+│   └── src/                     # Bot implementation
+│
+├── docs/                         # Feature documentation
+│   ├── email/                   # Email system docs
+│   │   ├── README.md            # Overview & architecture
+│   │   └── SETUP.md             # Provider setup guide
+│   └── ai/                      # AI features docs
+│       ├── README.md            # AI overview
+│       ├── text/                # Text AI (chat, search)
+│       │   ├── README.md
+│       │   └── SETUP.md
+│       └── voice/               # Voice AI (meeting bot)
+│           ├── README.md
+│           ├── SETUP.md
+│           └── ARCHITECTURE.md
 │
 ├── package.json                  # Dependencies and scripts
 ├── tsconfig.json                 # TypeScript configuration (base)
@@ -541,6 +570,83 @@ const activity = useQuery(api.analytics.getRecentActivity, { projectId, limit: 1
 - **Velocity:** Average points completed per sprint
 - **Burndown:** Ideal vs. actual progress over sprint duration
 
+### Email Notifications
+
+Multi-provider email notification system with user preferences.
+
+**Features:**
+- Provider rotation (Resend, SendPulse, Mailgun, SendGrid)
+- React Email templates for consistent branding
+- User notification preferences
+- Automatic triggers on mentions, assignments, comments
+
+**Documentation:** See [docs/email/](./docs/email/) for full documentation.
+
+**Quick Usage:**
+```typescript
+import { sendEmail } from "./email";
+
+await sendEmail({
+  to: "user@example.com",
+  subject: "Notification",
+  html: "<p>Hello!</p>",
+});
+```
+
+### AI Features
+
+Cascade includes two AI systems:
+
+#### Text AI (Project Assistant)
+
+Intelligent text-based assistance for project management.
+
+**Features:**
+- AI Chat - Ask questions about projects in natural language
+- Semantic Search - Find issues by meaning using vector embeddings
+- Duplicate Detection - Prevent duplicate issues before creation
+- AI Suggestions - Generate descriptions, priority, labels
+
+**Documentation:** See [docs/ai/text/](./docs/ai/text/) for full documentation.
+
+**Quick Usage:**
+```typescript
+// Semantic search
+const results = await searchSimilarIssues({
+  query: "login button not working",
+  projectId,
+});
+
+// AI suggestions
+const description = await suggestIssueDescription({
+  title: "Add dark mode",
+  type: "task",
+  projectId,
+});
+```
+
+#### Voice AI (Meeting Bot)
+
+Automated meeting recording, transcription, and summarization.
+
+**Features:**
+- Automatic meeting joining (Google Meet, Zoom planned)
+- Multi-provider transcription (Whisper, Google, Azure, etc.)
+- AI summarization with Claude
+- Action item extraction
+
+**Documentation:** See [docs/ai/voice/](./docs/ai/voice/) for full documentation.
+
+**Quick Usage:**
+```typescript
+// Schedule a recording
+await scheduleRecording({
+  eventId: "calendar-event-id",
+  meetingUrl: "https://meet.google.com/xxx-yyyy-zzz",
+  platform: "google_meet",
+});
+```
+
 ### Common Tasks
 
 **Adding a new Convex function:**
@@ -700,6 +806,13 @@ The project includes Chef (Convex's development platform) integration:
 
 ## Resources
 
+### Internal Documentation
+- [Email System](./docs/email/README.md) - Email notifications setup & usage
+- [AI Overview](./docs/ai/README.md) - AI features overview
+- [Text AI](./docs/ai/text/README.md) - Chat, search, suggestions
+- [Voice AI](./docs/ai/voice/README.md) - Meeting bot, transcription
+
+### External Documentation
 - [Convex Documentation](https://docs.convex.dev/)
 - [React 19 Documentation](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
@@ -728,7 +841,7 @@ The project includes Chef (Convex's development platform) integration:
 
 ---
 
-**Last Updated:** 2025-11-20
+**Last Updated:** 2025-11-27
 **Convex Deployment:** peaceful-salmon-964
 **Node Version:** 18+
 **Package Manager:** pnpm (preferred)

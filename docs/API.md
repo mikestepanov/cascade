@@ -1,8 +1,6 @@
-# Cascade REST API Documentation
+# Nixelo REST API Documentation
 
-> **Last Updated:** 2025-11-20
-
-Complete API reference for accessing Cascade programmatically from CLI tools, AI agents, and external integrations.
+Complete API reference for accessing Nixelo programmatically from CLI tools, AI agents, and external integrations.
 
 ## Base URL
 
@@ -21,7 +19,7 @@ Authorization: Bearer sk_casc_your_api_key_here
 
 ### Generating API Keys
 
-1. Log in to Cascade
+1. Log in to Nixelo
 2. Go to Settings → API Keys
 3. Click "Generate New API Key"
 4. Name your key (e.g., "CLI Tool", "GitHub Actions")
@@ -635,4 +633,8 @@ curl -X POST https://your-domain.com/api/issues \
 - **Status**: https://status.cascade.app
 - **Issues**: support@cascade.app
 
-For questions or feature requests, contact your Cascade administrator.
+For questions or feature requests, contact your Nixelo administrator.
+
+---
+
+*Last Updated: 2025-11-27*

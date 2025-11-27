@@ -3,12 +3,13 @@
  * AI-Powered Suggestions
  *
  * Generate intelligent suggestions for issues, sprints, and projects
+ * Uses Claude Haiku 4.5 for fast, cost-effective suggestions
  *
  * NOTE: This file requires Convex dev server to be running to generate
  * component types. Run `npx convex dev` to generate the required types.
  */
 
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
@@ -16,6 +17,9 @@ import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { action, internalAction, mutation, query } from "../_generated/server";
 import { rateLimit } from "../rateLimits";
+
+// Claude Haiku 4.5 for fast, cheap suggestions (alias auto-points to latest)
+const CLAUDE_HAIKU = "claude-haiku-4-5";
 
 /**
  * Action cache for AI suggestions
@@ -28,7 +32,7 @@ export const generateDescription = internalAction({
   args: { prompt: v.string() },
   handler: async (_ctx, args) => {
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
     return response.text;
@@ -46,7 +50,7 @@ export const generatePriority = internalAction({
   args: { prompt: v.string() },
   handler: async (_ctx, args) => {
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
     return response.text;
@@ -64,7 +68,7 @@ export const generateLabels = internalAction({
   args: { prompt: v.string() },
   handler: async (_ctx, args) => {
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
     return response.text;
@@ -132,7 +136,7 @@ Description:`;
       suggestionType: "issue_description",
       targetId: args.title,
       suggestion,
-      modelUsed: "gpt-4o-mini",
+      modelUsed: CLAUDE_HAIKU,
     });
 
     return suggestion;
@@ -199,7 +203,7 @@ Priority:`;
       suggestionType: "issue_priority",
       targetId: args.title,
       suggestion: suggestedPriority,
-      modelUsed: "gpt-4o-mini",
+      modelUsed: CLAUDE_HAIKU,
     });
 
     return suggestedPriority as "highest" | "high" | "medium" | "low" | "lowest";
@@ -273,7 +277,7 @@ Labels:`;
       suggestionType: "issue_labels",
       targetId: args.title,
       suggestion: suggestedLabels.join(", "),
-      modelUsed: "gpt-4o-mini",
+      modelUsed: CLAUDE_HAIKU,
     });
 
     return suggestedLabels;

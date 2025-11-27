@@ -7,12 +7,15 @@
  * Cache expensive AI calls to save money and improve speed
  */
 
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
 import { action, internalAction } from "../_generated/server";
+
+// Claude Haiku for fast, cheap suggestions (alias auto-points to latest)
+const CLAUDE_HAIKU = "claude-haiku-4-5";
 
 // Initialize action cache
 export const generateTextAction = internalAction({
@@ -20,7 +23,7 @@ export const generateTextAction = internalAction({
   handler: async (_ctx, args) => {
     // Expensive AI call
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: anthropic(CLAUDE_HAIKU),
       prompt: args.text,
     });
     return response.text;
