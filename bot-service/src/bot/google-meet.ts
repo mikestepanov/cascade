@@ -1,6 +1,7 @@
 import { chromium, type Browser, type Page, type BrowserContext } from "playwright";
 import * as path from "path";
 import * as os from "os";
+import * as fs from "fs";
 
 export interface GoogleMeetBotOptions {
   meetingUrl: string;
@@ -15,6 +16,7 @@ export class GoogleMeetBot {
   private page: Page | null = null;
   private isRecording = false;
   private audioFilePath: string | null = null;
+  private audioFileStream: fs.WriteStream | null = null;
   private endPromiseResolve: ((audioPath: string) => void) | null = null;
 
   constructor(options: GoogleMeetBotOptions) {
@@ -171,32 +173,60 @@ export class GoogleMeetBot {
 
     // Create temp file for audio
     this.audioFilePath = path.join(os.tmpdir(), `meeting-${Date.now()}.webm`);
+    this.audioFileStream = fs.createWriteStream(this.audioFilePath);
 
-    // Inject audio capture script
-    // Note: We use declare global to extend Window interface for type safety
+    // Expose function to receive audio chunks from browser
+    await this.page.exposeFunction("__cascadeSendAudioChunk", (chunk: number[]) => {
+      if (this.audioFileStream && chunk.length > 0) {
+        this.audioFileStream.write(Buffer.from(chunk));
+      }
+    });
+
+    // Expose function to signal recording stopped
+    await this.page.exposeFunction("__cascadeRecordingStopped", () => {
+      if (this.audioFileStream) {
+        this.audioFileStream.end();
+        this.audioFileStream = null;
+      }
+    });
+
+    // Inject audio capture script with MediaRecorder
     await this.page.evaluate(() => {
       // Extend window interface for Cascade audio capture
       interface CascadeWindow extends Window {
         __cascadeAudioStream?: MediaStream;
         __cascadeAudioContext?: AudioContext;
+        __cascadeMediaRecorder?: MediaRecorder;
+        __cascadeConnectedElements?: WeakSet<HTMLMediaElement>;
+        __cascadeSendAudioChunk?: (chunk: number[]) => void;
+        __cascadeRecordingStopped?: () => void;
+        __cascadeStopRecording?: () => void;
       }
       const cascadeWindow = window as CascadeWindow;
 
-      // This runs in the browser context
-      // We'll capture the audio stream from the meeting
+      // Track which elements we've already connected
+      cascadeWindow.__cascadeConnectedElements = new WeakSet();
+
+      // Create audio context and destination for mixing
       const audioContext = new AudioContext();
       const destination = audioContext.createMediaStreamDestination();
 
-      // Get all audio elements and connect them
+      // Get all audio/video elements and connect them
       const connectAudio = () => {
         const audioElements = document.querySelectorAll("audio, video");
         audioElements.forEach((element) => {
+          const mediaElement = element as HTMLMediaElement;
+          // Skip if already connected
+          if (cascadeWindow.__cascadeConnectedElements?.has(mediaElement)) {
+            return;
+          }
           try {
-            const source = audioContext.createMediaElementSource(element as HTMLMediaElement);
+            const source = audioContext.createMediaElementSource(mediaElement);
             source.connect(destination);
             source.connect(audioContext.destination); // Also play locally
+            cascadeWindow.__cascadeConnectedElements?.add(mediaElement);
           } catch {
-            // Element might already be connected
+            // Element might already be connected or not ready
           }
         });
       };
@@ -208,14 +238,72 @@ export class GoogleMeetBot {
       const observer = new MutationObserver(() => connectAudio());
       observer.observe(document.body, { childList: true, subtree: true });
 
-      // Store for later access
+      // Store references
       cascadeWindow.__cascadeAudioStream = destination.stream;
       cascadeWindow.__cascadeAudioContext = audioContext;
+
+      // Create MediaRecorder to capture the mixed audio
+      const mediaRecorder = new MediaRecorder(destination.stream, {
+        mimeType: "audio/webm;codecs=opus",
+      });
+
+      // Send chunks to Node.js as they become available
+      mediaRecorder.ondataavailable = async (event) => {
+        if (event.data.size > 0 && cascadeWindow.__cascadeSendAudioChunk) {
+          const arrayBuffer = await event.data.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+          cascadeWindow.__cascadeSendAudioChunk(Array.from(uint8Array));
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        if (cascadeWindow.__cascadeRecordingStopped) {
+          cascadeWindow.__cascadeRecordingStopped();
+        }
+      };
+
+      // Start recording with 1-second chunks
+      mediaRecorder.start(1000);
+      cascadeWindow.__cascadeMediaRecorder = mediaRecorder;
+
+      // Expose stop function
+      cascadeWindow.__cascadeStopRecording = () => {
+        if (mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+        audioContext.close();
+        observer.disconnect();
+      };
     });
 
-    // Note: Full audio recording requires additional setup with MediaRecorder
-    // For now, we'll use Google Meet's captions as a fallback
+    this.emitStatus("audio_capture_started");
+
+    // Also enable captions as a backup for transcript
     await this.enableCaptions();
+  }
+
+  private async stopAudioCapture(): Promise<void> {
+    if (!this.page) return;
+
+    try {
+      await this.page.evaluate(() => {
+        interface CascadeWindow extends Window {
+          __cascadeStopRecording?: () => void;
+        }
+        const cascadeWindow = window as CascadeWindow;
+        if (cascadeWindow.__cascadeStopRecording) {
+          cascadeWindow.__cascadeStopRecording();
+        }
+      });
+    } catch {
+      // Page might be closed
+    }
+
+    // Ensure file stream is closed
+    if (this.audioFileStream) {
+      this.audioFileStream.end();
+      this.audioFileStream = null;
+    }
   }
 
   private async enableCaptions(): Promise<void> {
@@ -356,6 +444,9 @@ export class GoogleMeetBot {
   private async handleMeetingEnd(): Promise<void> {
     this.isRecording = false;
     this.emitStatus("ended");
+
+    // Stop audio capture and save file
+    await this.stopAudioCapture();
 
     // Clean up browser
     await this.cleanup();

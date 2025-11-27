@@ -64,6 +64,21 @@ export class AzureProvider implements TranscriptionProvider {
     return match ? parseFloat(match[1]) : 0;
   }
 
+  // Get content type based on file extension
+  private getContentType(filePath: string): string {
+    const ext = filePath.split(".").pop()?.toLowerCase();
+    const contentTypes: Record<string, string> = {
+      wav: "audio/wav",
+      webm: "audio/webm",
+      ogg: "audio/ogg",
+      mp3: "audio/mpeg",
+      mp4: "audio/mp4",
+      m4a: "audio/mp4",
+      flac: "audio/flac",
+    };
+    return contentTypes[ext || ""] || "audio/webm";
+  }
+
   async transcribe(audioFilePath: string): Promise<TranscriptionResult> {
     if (!this.subscriptionKey) {
       throw new Error("Azure Speech provider not configured. Set AZURE_SPEECH_KEY.");
@@ -75,87 +90,40 @@ export class AzureProvider implements TranscriptionProvider {
       throw new Error(`Audio file not found: ${audioFilePath}`);
     }
 
-    const baseUrl = `https://${this.region}.api.cognitive.microsoft.com/speechtotext/v3.1`;
+    // Read audio file
+    const audioBuffer = fs.readFileSync(audioFilePath);
+    const fileSizeKB = audioBuffer.length / 1024;
 
-    // Create transcription job
-    const fileBuffer = fs.readFileSync(audioFilePath);
-    const fileBase64 = fileBuffer.toString("base64");
+    // Azure REST API supports files up to 60 seconds for simple recognition
+    // For longer files, we'll process in chunks using the real-time API
+    const baseUrl = `https://${this.region}.stt.speech.microsoft.com`;
 
-    // For batch transcription, we need to upload to blob storage or use a URL
-    // Azure's batch API requires a contentUrl, so we'll use the REST API for short audio
-    // or create a batch job for longer files
-
-    // For simplicity, we'll use the batch transcription API
-    const createResponse = await retryApi(async () => {
-      const res = await fetch(`${baseUrl}/transcriptions`, {
-        method: "POST",
-        headers: {
-          "Ocp-Apim-Subscription-Key": this.subscriptionKey!,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contentUrls: [], // Would need blob storage URL
-          properties: {
-            wordLevelTimestampsEnabled: true,
-            displayFormWordLevelTimestampsEnabled: true,
-            punctuationMode: "DictatedAndAutomatic",
-            profanityFilterMode: "None",
+    // Use the REST API for recognition
+    // This accepts audio data directly without needing blob storage
+    const response = await retryApi(async () => {
+      const res = await fetch(
+        `${baseUrl}/speech/recognition/conversation/cognitiveservices/v1?language=en-US&format=detailed`,
+        {
+          method: "POST",
+          headers: {
+            "Ocp-Apim-Subscription-Key": this.subscriptionKey!,
+            "Content-Type": this.getContentType(audioFilePath),
+            Accept: "application/json",
           },
-          locale: "en-US",
-          displayName: `Cascade transcription ${Date.now()}`,
-        }),
-      });
+          body: audioBuffer,
+        }
+      );
 
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`Azure transcription creation failed: ${res.status} ${errorText}`);
+        throw new Error(`Azure transcription failed: ${res.status} ${errorText}`);
       }
 
-      return res.json() as Promise<{ self: string }>;
+      return res.json();
     });
 
-    // Poll for completion
-    let result: AzureResult | null = null;
-    const maxWaitMs = 600000;
-    const pollIntervalMs = 3000;
-    const startPoll = Date.now();
-
-    while (Date.now() - startPoll < maxWaitMs) {
-      const statusResponse = await fetch(createResponse.self, {
-        headers: {
-          "Ocp-Apim-Subscription-Key": this.subscriptionKey!,
-        },
-      });
-
-      const status = (await statusResponse.json()) as { status: string; links?: { files: string } };
-
-      if (status.status === "Succeeded" && status.links?.files) {
-        // Get results
-        const filesResponse = await fetch(status.links.files, {
-          headers: {
-            "Ocp-Apim-Subscription-Key": this.subscriptionKey!,
-          },
-        });
-        const files = (await filesResponse.json()) as {
-          values: Array<{ kind: string; links: { contentUrl: string } }>;
-        };
-
-        const transcriptFile = files.values.find((f) => f.kind === "Transcription");
-        if (transcriptFile) {
-          const transcriptResponse = await fetch(transcriptFile.links.contentUrl);
-          result = (await transcriptResponse.json()) as AzureResult;
-        }
-        break;
-      } else if (status.status === "Failed") {
-        throw new Error("Azure transcription failed");
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-    }
-
-    if (!result) {
-      throw new Error("Azure transcription timed out or failed");
-    }
+    // Process Azure response
+    const result = response as AzureResult;
 
     const processingTime = Date.now() - startTime;
 

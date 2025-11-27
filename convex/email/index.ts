@@ -166,8 +166,9 @@ export async function sendEmail(
   // Send email
   const result = await selectedProvider.provider.send(params);
 
-  // Record usage if we have a Convex context and send was successful
-  if (ctx && result.success && "db" in ctx) {
+  // Record usage if we have a Convex mutation context and send was successful
+  // MutationCtx has `scheduler` property that QueryCtx doesn't have
+  if (ctx && result.success && "scheduler" in ctx) {
     try {
       await recordEmailUsage(ctx as MutationCtx, selectedProvider.name, 1);
     } catch (error) {
