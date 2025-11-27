@@ -106,7 +106,7 @@ export class GoogleCloudSTTProvider implements TranscriptionProvider {
 
     const authParam = this.apiKey ? `?key=${this.apiKey}` : "";
 
-    let result: GoogleResponse;
+    let result: GoogleResponse | undefined;
 
     if (useAsync) {
       // Long-running recognition for files > 1 minute

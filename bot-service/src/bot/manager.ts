@@ -235,6 +235,13 @@ export class MeetingBotManager {
     }
   }
 
+  async stopAllJobs(): Promise<void> {
+    const stopPromises = Array.from(this.activeBots.keys()).map((jobId) =>
+      this.stopJob(jobId).catch((err) => console.error(`Failed to stop job ${jobId}:`, err))
+    );
+    await Promise.all(stopPromises);
+  }
+
   async handleStatusUpdate(
     jobId: string,
     status: string,

@@ -9,6 +9,7 @@
 import * as fs from "fs";
 import { retryApi } from "../../utils/retry.js";
 import type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
+import { getAudioContentType } from "./provider.js";
 
 interface AzureRecognizedPhrase {
   recognitionStatus: string;
@@ -64,21 +65,6 @@ export class AzureProvider implements TranscriptionProvider {
     return match ? parseFloat(match[1]) : 0;
   }
 
-  // Get content type based on file extension
-  private getContentType(filePath: string): string {
-    const ext = filePath.split(".").pop()?.toLowerCase();
-    const contentTypes: Record<string, string> = {
-      wav: "audio/wav",
-      webm: "audio/webm",
-      ogg: "audio/ogg",
-      mp3: "audio/mpeg",
-      mp4: "audio/mp4",
-      m4a: "audio/mp4",
-      flac: "audio/flac",
-    };
-    return contentTypes[ext || ""] || "audio/webm";
-  }
-
   async transcribe(audioFilePath: string): Promise<TranscriptionResult> {
     if (!this.subscriptionKey) {
       throw new Error("Azure Speech provider not configured. Set AZURE_SPEECH_KEY.");
@@ -107,7 +93,7 @@ export class AzureProvider implements TranscriptionProvider {
           method: "POST",
           headers: {
             "Ocp-Apim-Subscription-Key": this.subscriptionKey!,
-            "Content-Type": this.getContentType(audioFilePath),
+            "Content-Type": getAudioContentType(audioFilePath),
             Accept: "application/json",
           },
           body: audioBuffer,

@@ -97,6 +97,29 @@ app.post("/api/internal/status", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`🤖 Meeting Bot Service running on port ${port}`);
 });
+
+// Graceful shutdown
+const shutdown = async (signal: string) => {
+  console.log(`\n${signal} received, shutting down gracefully...`);
+
+  // Stop accepting new connections
+  server.close(() => {
+    console.log("HTTP server closed");
+  });
+
+  // Stop all active bots
+  try {
+    await botManager.stopAllJobs();
+    console.log("All bot jobs stopped");
+  } catch (error) {
+    console.error("Error stopping jobs:", error);
+  }
+
+  process.exit(0);
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
