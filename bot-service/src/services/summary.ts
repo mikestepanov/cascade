@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { retryApi } from "../utils/retry.js";
 
 export interface ActionItem {
   description: string;
@@ -78,17 +79,19 @@ Important:
 - Keep summaries concise but informative`;
 
     try {
-      const response = await this.anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
-        messages: [
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
-        system: systemPrompt,
-      });
+      const response = await retryApi(() =>
+        this.anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 4096,
+          messages: [
+            {
+              role: "user",
+              content: userPrompt,
+            },
+          ],
+          system: systemPrompt,
+        })
+      );
 
       const processingTime = Date.now() - startTime;
 
@@ -137,16 +140,18 @@ Important:
 
   // Quick summary for shorter content
   async quickSummary(transcript: string): Promise<string> {
-    const response = await this.anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 500,
-      messages: [
-        {
-          role: "user",
-          content: `Summarize this meeting in 2-3 sentences:\n\n${transcript.substring(0, 4000)}`,
-        },
-      ],
-    });
+    const response = await retryApi(() =>
+      this.anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        messages: [
+          {
+            role: "user",
+            content: `Summarize this meeting in 2-3 sentences:\n\n${transcript.substring(0, 4000)}`,
+          },
+        ],
+      })
+    );
 
     const textContent = response.content.find((c) => c.type === "text");
     return textContent?.type === "text" ? textContent.text : "Unable to generate summary";

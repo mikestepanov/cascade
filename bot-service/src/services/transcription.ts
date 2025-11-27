@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import * as fs from "fs";
+import { retryApi } from "../utils/retry.js";
 
 export interface TranscriptSegment {
   startTime: number;
@@ -37,13 +38,15 @@ export class TranscriptionService {
         throw new Error(`Audio file not found: ${audioFilePath}`);
       }
 
-      // Use Whisper API with verbose output for timestamps
-      const response = await this.openai.audio.transcriptions.create({
-        file: fs.createReadStream(audioFilePath),
-        model: "whisper-1",
-        response_format: "verbose_json",
-        timestamp_granularities: ["segment"],
-      });
+      // Use Whisper API with verbose output for timestamps (with retry)
+      const response = await retryApi(() =>
+        this.openai.audio.transcriptions.create({
+          file: fs.createReadStream(audioFilePath),
+          model: "whisper-1",
+          response_format: "verbose_json",
+          timestamp_granularities: ["segment"],
+        })
+      );
 
       const processingTime = Date.now() - startTime;
 
