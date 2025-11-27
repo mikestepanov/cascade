@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as ResendOTPPasswordReset from "../ResendOTPPasswordReset.js";
 import type * as aggregates from "../aggregates.js";
 import type * as ai from "../ai.js";
 import type * as ai_actions from "../ai/actions.js";
@@ -39,6 +40,7 @@ import type * as documents from "../documents.js";
 import type * as email_digests from "../email/digests.js";
 import type * as email_helpers from "../email/helpers.js";
 import type * as email_index from "../email/index.js";
+import type * as email_mailgun from "../email/mailgun.js";
 import type * as email_notifications from "../email/notifications.js";
 import type * as email_provider from "../email/provider.js";
 import type * as email_resend from "../email/resend.js";
@@ -61,6 +63,7 @@ import type * as labels from "../labels.js";
 import type * as lib_aiHelpers from "../lib/aiHelpers.js";
 import type * as lib_apiAuth from "../lib/apiAuth.js";
 import type * as lib_vectorSearchHelpers from "../lib/vectorSearchHelpers.js";
+import type * as meetingBot from "../meetingBot.js";
 import type * as notificationPreferences from "../notificationPreferences.js";
 import type * as notifications from "../notifications.js";
 import type * as offlineSync from "../offlineSync.js";
@@ -76,6 +79,7 @@ import type * as rateLimits from "../rateLimits.js";
 import type * as rbac from "../rbac.js";
 import type * as router from "../router.js";
 import type * as savedFilters from "../savedFilters.js";
+import type * as serviceRotation from "../serviceRotation.js";
 import type * as sprints from "../sprints.js";
 import type * as teams from "../teams.js";
 import type * as templates from "../templates.js";
@@ -95,6 +99,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  ResendOTPPasswordReset: typeof ResendOTPPasswordReset;
   aggregates: typeof aggregates;
   ai: typeof ai;
   "ai/actions": typeof ai_actions;
@@ -126,6 +131,7 @@ declare const fullApi: ApiFromModules<{
   "email/digests": typeof email_digests;
   "email/helpers": typeof email_helpers;
   "email/index": typeof email_index;
+  "email/mailgun": typeof email_mailgun;
   "email/notifications": typeof email_notifications;
   "email/provider": typeof email_provider;
   "email/resend": typeof email_resend;
@@ -148,6 +154,7 @@ declare const fullApi: ApiFromModules<{
   "lib/aiHelpers": typeof lib_aiHelpers;
   "lib/apiAuth": typeof lib_apiAuth;
   "lib/vectorSearchHelpers": typeof lib_vectorSearchHelpers;
+  meetingBot: typeof meetingBot;
   notificationPreferences: typeof notificationPreferences;
   notifications: typeof notifications;
   offlineSync: typeof offlineSync;
@@ -163,6 +170,7 @@ declare const fullApi: ApiFromModules<{
   rbac: typeof rbac;
   router: typeof router;
   savedFilters: typeof savedFilters;
+  serviceRotation: typeof serviceRotation;
   sprints: typeof sprints;
   teams: typeof teams;
   templates: typeof templates;

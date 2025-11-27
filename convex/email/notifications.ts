@@ -52,8 +52,8 @@ export const sendMentionEmail = internalAction({
       }),
     );
 
-    // Send email
-    const result = await sendEmail({
+    // Send email (null ctx because internalAction doesn't have db access)
+    const result = await sendEmail(null, {
       to,
       subject: `${mentionedByName} mentioned you in ${issueKey}`,
       html,
@@ -117,7 +117,7 @@ export const sendAssignmentEmail = internalAction({
       }),
     );
 
-    const result = await sendEmail({
+    const result = await sendEmail(null, {
       to,
       subject: `You were assigned to ${issueKey}: ${issueTitle}`,
       html,
@@ -167,7 +167,7 @@ export const sendCommentEmail = internalAction({
       }),
     );
 
-    const result = await sendEmail({
+    const result = await sendEmail(null, {
       to,
       subject: `${commenterName} commented on ${issueKey}`,
       html,
@@ -333,8 +333,8 @@ export const sendDigestEmail = internalAction({
       }),
     );
 
-    // Send email
-    const result = await sendEmail({
+    // Send email (null ctx because internalAction doesn't have db access)
+    const result = await sendEmail(null, {
       to: user.email,
       subject: `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`,
       html,

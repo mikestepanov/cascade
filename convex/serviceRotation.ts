@@ -320,13 +320,18 @@ export const upsertProvider = mutation({
 
 /**
  * Seed default provider configurations
+ *
+ * Only includes providers with PERMANENT monthly-reset free tiers.
+ * One-time credit providers (AssemblyAI, Deepgram) are excluded.
+ * See docs/service-providers-research.md for full provider analysis.
  */
 export const seedProviders = mutation({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
 
-    // Transcription providers
+    // Transcription providers - ONLY monthly reset free tiers
+    // Total free capacity: 22 hours/month (8 + 8 + 5 + 1)
     const transcriptionProviders = [
       {
         serviceType: "transcription" as const,
@@ -339,7 +344,7 @@ export const seedProviders = mutation({
         isEnabled: true,
         isConfigured: false,
         priority: 1,
-        notes: "8 hrs/month free, resets monthly",
+        notes: "8 hrs/month free, resets monthly. Best accuracy for accents.",
       },
       {
         serviceType: "transcription" as const,
@@ -352,7 +357,7 @@ export const seedProviders = mutation({
         isEnabled: true,
         isConfigured: false,
         priority: 2,
-        notes: "8 hrs/month free, resets monthly",
+        notes: "8 hrs/month free, resets monthly. Good accuracy, includes translation.",
       },
       {
         serviceType: "transcription" as const,
@@ -365,52 +370,28 @@ export const seedProviders = mutation({
         isEnabled: true,
         isConfigured: false,
         priority: 3,
-        notes: "5 hrs/month free, resets monthly",
+        notes: "5 hrs/month free, resets monthly. Enterprise-grade reliability.",
       },
       {
         serviceType: "transcription" as const,
-        provider: "assemblyai",
-        displayName: "AssemblyAI",
-        freeUnitsPerMonth: 6000, // 100 hours one-time
-        freeUnitsType: "one_time" as const,
-        oneTimeUnitsRemaining: 6000,
-        costPerUnit: 0.25, // $0.0025/min
+        provider: "google",
+        displayName: "Google Cloud STT",
+        freeUnitsPerMonth: 60, // 1 hour
+        freeUnitsType: "monthly" as const,
+        costPerUnit: 2.4, // $0.024/min = 2.4 cents
         unitType: "minute",
         isEnabled: true,
         isConfigured: false,
         priority: 4,
-        notes: "100 hrs one-time free credit",
+        notes: "1 hr/month free, resets monthly. Google infrastructure reliability.",
       },
-      {
-        serviceType: "transcription" as const,
-        provider: "deepgram",
-        displayName: "Deepgram",
-        freeUnitsPerMonth: 12000, // ~$200 credit at $0.0043/min ≈ 775 hrs, but let's say ~200 hrs
-        freeUnitsType: "one_time" as const,
-        oneTimeUnitsRemaining: 12000,
-        costPerUnit: 0.43, // $0.0043/min
-        unitType: "minute",
-        isEnabled: true,
-        isConfigured: false,
-        priority: 5,
-        notes: "$200 one-time credit (never expires)",
-      },
-      {
-        serviceType: "transcription" as const,
-        provider: "whisper",
-        displayName: "OpenAI Whisper",
-        freeUnitsPerMonth: 0, // No free tier
-        freeUnitsType: "monthly" as const,
-        costPerUnit: 0.6, // $0.006/min
-        unitType: "minute",
-        isEnabled: true,
-        isConfigured: false,
-        priority: 99, // Last resort (paid)
-        notes: "No free tier, $0.006/min",
-      },
+      // NOTE: AssemblyAI and Deepgram excluded - one-time credits only
+      // NOTE: OpenAI Whisper excluded - no free tier
+      // See docs/service-providers-research.md for details
     ];
 
-    // Email providers
+    // Email providers - ONLY monthly reset free tiers
+    // Total free capacity: 22,000 emails/month (3000 + 15000 + 1000 + 3000)
     const emailProviders = [
       {
         serviceType: "email" as const,
@@ -418,12 +399,12 @@ export const seedProviders = mutation({
         displayName: "Resend",
         freeUnitsPerMonth: 3000, // 3000 emails/month
         freeUnitsType: "monthly" as const,
-        costPerUnit: 0.1, // $0.001/email = 0.1 cents (after free tier)
+        costPerUnit: 0.1, // $0.001/email = 0.1 cents
         unitType: "email",
         isEnabled: true,
         isConfigured: false,
         priority: 1,
-        notes: "3000 emails/month free",
+        notes: "3000 emails/month free (100/day limit). Excellent deliverability.",
       },
       {
         serviceType: "email" as const,
@@ -436,7 +417,7 @@ export const seedProviders = mutation({
         isEnabled: true,
         isConfigured: false,
         priority: 2,
-        notes: "15000 emails/month free (up to 500 subscribers)",
+        notes: "15000 emails/month free (up to 500 subscribers). Most generous.",
       },
       {
         serviceType: "email" as const,
@@ -449,7 +430,20 @@ export const seedProviders = mutation({
         isEnabled: true,
         isConfigured: false,
         priority: 3,
-        notes: "1000 emails/month on flex plan",
+        notes: "1000 emails/month on flex plan. Excellent deliverability.",
+      },
+      {
+        serviceType: "email" as const,
+        provider: "sendgrid",
+        displayName: "SendGrid",
+        freeUnitsPerMonth: 3000, // 100/day × 30 = ~3000/month
+        freeUnitsType: "monthly" as const,
+        costPerUnit: 0.1, // $0.001/email
+        unitType: "email",
+        isEnabled: true,
+        isConfigured: false,
+        priority: 4,
+        notes: "100 emails/day free (~3000/month). Industry leader, excellent deliverability.",
       },
     ];
 
