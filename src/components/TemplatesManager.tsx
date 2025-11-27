@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useDeleteConfirmation } from "@/hooks";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { TemplateCard } from "./templates/TemplateCard";

@@ -1,5 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
-import { useAsyncMutation, useDeleteConfirmation, useEntityForm, useModal } from "@/hooks";
+import { useAsyncMutation } from "@/hooks/useAsyncMutation";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import { useEntityForm } from "@/hooks/useEntityForm";
+import { useModal } from "@/hooks/useModal";
 import { showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";

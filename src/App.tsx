@@ -37,6 +37,7 @@ import { createKeyboardShortcuts, createKeySequences } from "./config/keyboardSh
 import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
+import { NixeloLanding } from "./components/NixeloLanding";
 import { SignOutButton } from "./SignOutButton";
 import { type AppView, shouldShowSidebar } from "./utils/viewHelpers";
 
@@ -572,22 +573,12 @@ function Content() {
             unreadCount={unreadAISuggestions}
           />
         )}
+      {console.log("[AUTH] Rendering Authenticated - user IS logged in")}
       </Authenticated>
 
       <Unauthenticated>
-        <div className="flex items-center justify-center w-full p-4">
-          <div className="w-full max-w-md mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
-                Collaborative Workspace
-              </h1>
-              <p className="text-base sm:text-lg text-ui-text-secondary dark:text-ui-text-tertiary-dark">
-                Create documents and manage projects together in real-time
-              </p>
-            </div>
-            <SignInForm />
-          </div>
-        </div>
+        {console.log("[AUTH] Rendering Unauthenticated - user not logged in")}
+        <NixeloLanding />
       </Unauthenticated>
 
       {/* Onboarding Modals */}
