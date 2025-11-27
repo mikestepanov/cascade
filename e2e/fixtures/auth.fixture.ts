@@ -1,5 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { AuthPage, DashboardPage } from "../pages";
 
 /**
@@ -12,6 +13,8 @@ import { AuthPage, DashboardPage } from "../pages";
  * @see https://playwright.dev/docs/auth
  */
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
 const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
@@ -67,7 +70,7 @@ export async function setupAuthState(): Promise<void> {
   console.log("  2. Wait for the dashboard to load");
   console.log("  3. Press Enter in this terminal\n");
 
-  await page.goto("http://localhost:5173");
+  await page.goto(process.env.BASE_URL || "http://localhost:5555");
 
   // Wait for user to complete login
   const rl = readline.createInterface({

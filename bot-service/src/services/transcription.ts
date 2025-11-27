@@ -6,7 +6,7 @@
  */
 
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "../../../convex/_generated/api.js";
+import { api } from "../convex-api.js";
 import {
   getProvider,
   getConfiguredProviders,

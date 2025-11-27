@@ -1,8 +1,7 @@
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../convex-api.js";
 import type { TranscriptionResult } from "./transcription.js";
 import type { MeetingSummary } from "./summary.js";
-import type { Id } from "../../../convex/_generated/dataModel";
 
 /**
  * Client for communicating with the Convex backend
@@ -33,8 +32,8 @@ export class ConvexClient {
   ): Promise<void> {
     await this.client.mutation(api.meetingBot.updateRecordingStatus, {
       apiKey: this.apiKey,
-      recordingId: recordingId as Id<"meetingRecordings">,
-      status: status as "scheduled" | "joining" | "recording" | "processing" | "transcribing" | "summarizing" | "completed" | "cancelled" | "failed",
+      recordingId,
+      status,
       ...data,
     });
   }
@@ -45,7 +44,7 @@ export class ConvexClient {
   ): Promise<string> {
     const result = await this.client.mutation(api.meetingBot.saveTranscript, {
       apiKey: this.apiKey,
-      recordingId: recordingId as Id<"meetingRecordings">,
+      recordingId,
       fullText: transcription.fullText,
       segments: transcription.segments.map((seg) => ({
         startTime: seg.startTime,
@@ -71,8 +70,8 @@ export class ConvexClient {
   ): Promise<string> {
     const result = await this.client.mutation(api.meetingBot.saveSummary, {
       apiKey: this.apiKey,
-      recordingId: recordingId as Id<"meetingRecordings">,
-      transcriptId: transcriptId as Id<"meetingTranscripts">,
+      recordingId,
+      transcriptId,
       executiveSummary: summary.executiveSummary,
       keyPoints: summary.keyPoints,
       actionItems: summary.actionItems.map((item) => ({
@@ -109,7 +108,7 @@ export class ConvexClient {
   ): Promise<void> {
     await this.client.mutation(api.meetingBot.saveParticipants, {
       apiKey: this.apiKey,
-      recordingId: recordingId as Id<"meetingRecordings">,
+      recordingId,
       participants: participants.map((p) => ({
         displayName: p.displayName,
         email: p.email,

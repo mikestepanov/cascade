@@ -7,6 +7,34 @@ import { test, expect } from "./fixtures";
  * Uses Page Object Model for maintainability.
  */
 
+test.describe("Landing Page", () => {
+  test("shows landing page for unauthenticated users", async ({
+    landingPage,
+  }) => {
+    await landingPage.goto();
+    await landingPage.expectLandingPage();
+  });
+
+  test("can navigate to login from hero CTA", async ({ landingPage }) => {
+    await landingPage.goto();
+    await landingPage.clickGetStarted();
+    await landingPage.expectLoginSection();
+  });
+
+  test("can navigate to login from nav", async ({ landingPage }) => {
+    await landingPage.goto();
+    await landingPage.clickNavGetStarted();
+    await landingPage.expectLoginSection();
+  });
+
+  test("can go back to landing from login", async ({ landingPage }) => {
+    await landingPage.goto();
+    await landingPage.clickGetStarted();
+    await landingPage.goBackToHome();
+    await landingPage.expectLandingPage();
+  });
+});
+
 test.describe("Sign In / Sign Up", () => {
   test.beforeEach(async ({ authPage }) => {
     await authPage.goto();

@@ -1,0 +1,8 @@
+node_modules
+bot-service/node_modules
+bot-service/dist
+dist
+.env
+.env.*
+*.log
+.git

@@ -39,8 +39,8 @@ export default defineConfig({
 
   // Shared settings for all projects
   use: {
-    // Base URL for navigation
-    baseURL: process.env.BASE_URL || "http://localhost:5173",
+    // Base URL for navigation (use port 5555 to avoid conflicts with main dev server)
+    baseURL: process.env.BASE_URL || "http://localhost:5555",
 
     // Trace on first retry (for debugging CI failures)
     trace: "on-first-retry",
@@ -92,10 +92,10 @@ export default defineConfig({
     // },
   ],
 
-  // Dev server configuration
+  // Dev server configuration (Vite runs on port 5555)
   webServer: {
     command: "pnpm run dev:frontend",
-    url: "http://localhost:5173",
+    url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     stdout: "ignore",

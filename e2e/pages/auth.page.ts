@@ -72,7 +72,32 @@ export class AuthPage extends BasePage {
   // Navigation
   // ===================
 
+  /**
+   * Navigate to the auth page
+   * Since unauthenticated users land on NixeloLanding, we need to click through
+   */
   async goto() {
+    await this.page.goto("/");
+    await this.waitForLoad();
+
+    // Check if we're on the landing page (unauthenticated)
+    // The landing page has a "Get Started Free" button
+    const getStartedButton = this.page.getByRole("button", {
+      name: /get started free/i,
+    });
+
+    // If the landing page is shown, click to get to auth form
+    if (await getStartedButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await getStartedButton.click();
+      // Wait for the auth form to appear
+      await this.page.getByRole("heading", { name: /welcome back/i }).waitFor();
+    }
+  }
+
+  /**
+   * Navigate directly to landing page without clicking through
+   */
+  async gotoLanding() {
     await this.page.goto("/");
     await this.waitForLoad();
   }
