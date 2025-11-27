@@ -91,9 +91,6 @@ export function SignInForm() {
         </svg>
         <span>Sign in with Google</span>
       </button>
-      <button type="button" className="auth-button mt-3" onClick={() => void signIn("anonymous")}>
-        Sign in anonymously
-      </button>
     </div>
   );
 }

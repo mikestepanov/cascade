@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
-import { Calendar, Check, Clock, LinkIcon, MapPin, Trash2 } from "@/lib/icons";
+import { Calendar, Check, Clock, LinkIcon, MapPin, Mic, Trash2 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -10,6 +10,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+import { MeetingRecordingSection } from "../MeetingRecordingSection";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -229,6 +230,16 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                 </span>
               </Flex>
             </div>
+          )}
+
+          {/* Meeting Recording Section (for meetings with a meeting URL) */}
+          {event.eventType === "meeting" && event.meetingUrl && (
+            <MeetingRecordingSection
+              calendarEventId={eventId}
+              meetingUrl={event.meetingUrl}
+              meetingTitle={event.title}
+              scheduledStartTime={event.startTime}
+            />
           )}
 
           {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
