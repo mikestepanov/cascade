@@ -16,9 +16,7 @@ export async function waitForNetworkIdle(page: Page, timeout = 5000): Promise<vo
  */
 export async function waitForAnimations(page: Page): Promise<void> {
   await page.evaluate(() => {
-    return Promise.all(
-      document.getAnimations().map((animation) => animation.finished)
-    );
+    return Promise.all(document.getAnimations().map((animation) => animation.finished));
   });
 }
 
@@ -44,7 +42,7 @@ export function generateTestPassword(): string {
 export async function mockApiResponse(
   page: Page,
   urlPattern: string | RegExp,
-  response: { status?: number; body?: unknown }
+  response: { status?: number; body?: unknown },
 ): Promise<void> {
   await page.route(urlPattern, (route) => {
     route.fulfill({
@@ -100,9 +98,12 @@ export async function slowMo(page: Page, ms = 100): Promise<void> {
 export async function takeScreenshot(
   page: Page,
   name: string,
-  options?: { fullPage?: boolean }
+  options?: { fullPage?: boolean },
 ): Promise<void> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").replace(/[<>:"/\\|?*]/g, "_");
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[:.]/g, "-")
+    .replace(/[<>:"/\\|?*]/g, "_");
   await page.screenshot({
     path: `test-results/screenshots/${name}-${timestamp}.png`,
     fullPage: options?.fullPage ?? false,
@@ -113,16 +114,12 @@ export async function takeScreenshot(
  * Log page console messages (for debugging)
  */
 export function logConsoleMessages(page: Page): void {
-  page.on("console", (msg) => {
-    console.log(`[Browser ${msg.type()}]: ${msg.text()}`);
-  });
+  page.on("console", (_msg) => {});
 }
 
 /**
  * Log page errors (for debugging)
  */
 export function logPageErrors(page: Page): void {
-  page.on("pageerror", (error) => {
-    console.error(`[Browser Error]: ${error.message}`);
-  });
+  page.on("pageerror", (_error) => {});
 }

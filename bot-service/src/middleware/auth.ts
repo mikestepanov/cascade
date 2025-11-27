@@ -1,9 +1,9 @@
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing or invalid authorization header" });
   }
 
@@ -11,7 +11,6 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   const expectedToken = process.env.BOT_SERVICE_API_KEY;
 
   if (!expectedToken) {
-    console.error("BOT_SERVICE_API_KEY not configured");
     return res.status(500).json({ error: "Server misconfigured" });
   }
 

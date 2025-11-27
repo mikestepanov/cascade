@@ -6,7 +6,7 @@
  */
 
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 // Service types
 export type ServiceType = "transcription" | "email" | "sms" | "ai";
@@ -31,7 +31,7 @@ export const selectProvider = query({
       v.literal("transcription"),
       v.literal("email"),
       v.literal("sms"),
-      v.literal("ai")
+      v.literal("ai"),
     ),
     unitsNeeded: v.optional(v.number()), // Estimate of units needed (optional)
   },
@@ -44,7 +44,7 @@ export const selectProvider = query({
       costPerUnit: v.number(),
       unitType: v.string(),
     }),
-    v.null()
+    v.null(),
   ),
   handler: async (ctx, args) => {
     const month = getCurrentMonth();
@@ -53,7 +53,7 @@ export const selectProvider = query({
     const providers = await ctx.db
       .query("serviceProviders")
       .withIndex("by_service_enabled", (q) =>
-        q.eq("serviceType", args.serviceType).eq("isEnabled", true)
+        q.eq("serviceType", args.serviceType).eq("isEnabled", true),
       )
       .collect();
 
@@ -66,7 +66,7 @@ export const selectProvider = query({
         const usage = await ctx.db
           .query("serviceUsage")
           .withIndex("by_provider_month", (q) =>
-            q.eq("provider", provider.provider).eq("month", month)
+            q.eq("provider", provider.provider).eq("month", month),
           )
           .first();
 
@@ -87,7 +87,7 @@ export const selectProvider = query({
           freeUnitsRemaining,
           hasCapacity: freeUnitsRemaining > 0,
         };
-      })
+      }),
     );
 
     // Find first provider with free capacity
@@ -122,7 +122,7 @@ export const getUsageSummary = query({
       v.literal("transcription"),
       v.literal("email"),
       v.literal("sms"),
-      v.literal("ai")
+      v.literal("ai"),
     ),
     month: v.optional(v.string()),
   },
@@ -132,7 +132,7 @@ export const getUsageSummary = query({
       v.literal("transcription"),
       v.literal("email"),
       v.literal("sms"),
-      v.literal("ai")
+      v.literal("ai"),
     ),
     providers: v.array(
       v.object({
@@ -148,7 +148,7 @@ export const getUsageSummary = query({
         paidUnitsUsed: v.number(),
         estimatedCost: v.number(),
         unitType: v.string(),
-      })
+      }),
     ),
     totals: v.object({
       freeUnitsRemaining: v.number(),
@@ -169,7 +169,7 @@ export const getUsageSummary = query({
         const usage = await ctx.db
           .query("serviceUsage")
           .withIndex("by_provider_month", (q) =>
-            q.eq("provider", provider.provider).eq("month", month)
+            q.eq("provider", provider.provider).eq("month", month),
           )
           .first();
 
@@ -196,7 +196,7 @@ export const getUsageSummary = query({
           estimatedCost: usage?.estimatedCost ?? 0,
           unitType: provider.unitType,
         };
-      })
+      }),
     );
 
     // Sort by priority
@@ -233,7 +233,7 @@ export const recordUsage = mutation({
       v.literal("transcription"),
       v.literal("email"),
       v.literal("sms"),
-      v.literal("ai")
+      v.literal("ai"),
     ),
     provider: v.string(),
     unitsUsed: v.number(),
@@ -261,9 +261,7 @@ export const recordUsage = mutation({
     // Get or create usage record for this month
     const existingUsage = await ctx.db
       .query("serviceUsage")
-      .withIndex("by_provider_month", (q) =>
-        q.eq("provider", args.provider).eq("month", month)
-      )
+      .withIndex("by_provider_month", (q) => q.eq("provider", args.provider).eq("month", month))
       .first();
 
     const currentUnitsUsed = existingUsage?.unitsUsed ?? 0;
@@ -328,7 +326,7 @@ export const upsertProvider = mutation({
       v.literal("transcription"),
       v.literal("email"),
       v.literal("sms"),
-      v.literal("ai")
+      v.literal("ai"),
     ),
     provider: v.string(),
     displayName: v.string(),

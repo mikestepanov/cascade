@@ -26,8 +26,7 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
         toast.success("Email verified successfully!");
         onVerified();
       })
-      .catch((error) => {
-        console.error("Verification error:", error);
+      .catch((_error) => {
         toast.error("Invalid code. Please try again.");
       })
       .finally(() => setSubmitting(false));
@@ -69,7 +68,6 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
           required
           pattern="[0-9]{8}"
           maxLength={8}
-          autoFocus
         />
         <button className="auth-button" type="submit" disabled={submitting}>
           {submitting ? "Verifying..." : "Verify email"}

@@ -25,7 +25,7 @@ import { rateLimit } from "./rateLimits";
 
 // Claude models (using aliases - auto-point to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";
-const CLAUDE_HAIKU = "claude-haiku-4-5";
+const _CLAUDE_HAIKU = "claude-haiku-4-5";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)

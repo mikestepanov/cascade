@@ -94,7 +94,10 @@ export function MeetingRecordingSection({
     switch (status) {
       case "scheduled":
         return (
-          <Badge size="sm" className="bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200">
+          <Badge
+            size="sm"
+            className="bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200"
+          >
             <Clock className="w-3 h-3 mr-1" />
             Scheduled
           </Badge>
@@ -117,7 +120,10 @@ export function MeetingRecordingSection({
       case "transcribing":
       case "summarizing":
         return (
-          <Badge size="sm" className="bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200">
+          <Badge
+            size="sm"
+            className="bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200"
+          >
             <LoadingSpinner size="xs" className="mr-1" />
             Processing...
           </Badge>

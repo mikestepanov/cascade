@@ -1,7 +1,7 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex-api.js";
-import type { TranscriptionResult } from "./transcription.js";
 import type { MeetingSummary } from "./summary.js";
+import type { TranscriptionResult } from "./transcription.js";
 
 /**
  * Client for communicating with the Convex backend
@@ -19,7 +19,7 @@ export class ConvexClient {
 
     this.apiKey = process.env.BOT_SERVICE_API_KEY || "";
     if (!this.apiKey) {
-      console.warn("BOT_SERVICE_API_KEY not configured - mutations will fail auth");
+      // API key not set - will fail on first mutation attempt
     }
 
     this.client = new ConvexHttpClient(convexUrl);
@@ -28,7 +28,7 @@ export class ConvexClient {
   async updateRecordingStatus(
     recordingId: string,
     status: string,
-    data?: Record<string, unknown>
+    data?: Record<string, unknown>,
   ): Promise<void> {
     await this.client.mutation(api.meetingBot.updateRecordingStatus, {
       apiKey: this.apiKey,
@@ -38,10 +38,7 @@ export class ConvexClient {
     });
   }
 
-  async saveTranscript(
-    recordingId: string,
-    transcription: TranscriptionResult
-  ): Promise<string> {
+  async saveTranscript(recordingId: string, transcription: TranscriptionResult): Promise<string> {
     const result = await this.client.mutation(api.meetingBot.saveTranscript, {
       apiKey: this.apiKey,
       recordingId,
@@ -66,7 +63,7 @@ export class ConvexClient {
   async saveSummary(
     recordingId: string,
     transcriptId: string,
-    summary: MeetingSummary
+    summary: MeetingSummary,
   ): Promise<string> {
     const result = await this.client.mutation(api.meetingBot.saveSummary, {
       apiKey: this.apiKey,
@@ -104,7 +101,7 @@ export class ConvexClient {
       displayName: string;
       email?: string;
       isHost: boolean;
-    }>
+    }>,
   ): Promise<void> {
     await this.client.mutation(api.meetingBot.saveParticipants, {
       apiKey: this.apiKey,

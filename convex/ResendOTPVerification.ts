@@ -1,11 +1,12 @@
 import Resend from "@auth/core/providers/resend";
-import { Resend as ResendAPI } from "resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
+import { Resend as ResendAPI } from "resend";
 
 export const ResendOTPVerification = Resend({
   id: "resend-otp-verification",
   apiKey: process.env.RESEND_API_KEY,
+  // biome-ignore lint/suspicious/useAwait: Required by @auth/core provider interface
   async generateVerificationToken() {
     const random: RandomReader = {
       read(bytes: Uint8Array) {

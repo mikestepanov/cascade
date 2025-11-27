@@ -24,7 +24,7 @@ export class SendPulseProvider implements EmailProvider {
   private clientSecret: string | null = null;
   private defaultFrom: string;
   private accessToken: string | null = null;
-  private tokenExpiry: number = 0;
+  private tokenExpiry = 0;
   private baseUrl = "https://api.sendpulse.com";
 
   constructor() {
@@ -81,7 +81,8 @@ export class SendPulseProvider implements EmailProvider {
       return {
         id: "not-configured",
         success: false,
-        error: "SendPulse provider not configured. Set SENDPULSE_ID and SENDPULSE_SECRET environment variables.",
+        error:
+          "SendPulse provider not configured. Set SENDPULSE_ID and SENDPULSE_SECRET environment variables.",
       };
     }
 

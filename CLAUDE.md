@@ -716,76 +716,65 @@ const applicationTables = {
 
 ## Testing
 
-The project uses **Vitest** with **React Testing Library** for frontend testing.
+Cascade uses a comprehensive testing strategy with three layers.
 
-### Setup
+**Full documentation:** [docs/testing/](./docs/testing/)
 
-Testing infrastructure is already configured:
-- **Vitest 4** - Fast unit test runner
-- **@testing-library/react** - React component testing utilities
-- **@testing-library/jest-dom** - Custom matchers for DOM assertions
-- **@testing-library/user-event** - User interaction simulation
-- **jsdom** - DOM environment for tests
+### Testing Stack
 
-### Running Tests
+| Layer | Framework | Location | Purpose |
+|-------|-----------|----------|---------|
+| **Unit Tests** | Vitest + React Testing Library | `src/**/*.test.ts(x)` | Component & utility testing |
+| **Backend Tests** | Vitest + convex-test | `convex/**/*.test.ts` | Convex function testing |
+| **E2E Tests** | Playwright | `e2e/**/*.spec.ts` | Full user flow testing |
+
+### Quick Commands
 
 ```bash
-# Run tests in watch mode
-pnpm test
+# Unit tests
+pnpm test              # Watch mode
+pnpm test:ui           # Interactive UI
+pnpm test:coverage     # Coverage report
 
-# Run tests with UI
-pnpm test:ui
+# Backend tests (requires: npx convex dev)
+pnpm test:convex       # Run backend tests
+pnpm test:convex:ui    # Interactive UI
 
-# Run tests with coverage report
-pnpm test:coverage
+# E2E tests
+pnpm e2e               # Headless
+pnpm e2e:ui            # Interactive UI (recommended)
+pnpm e2e:headed        # Visible browser
+pnpm e2e:debug         # Debug mode
 
-# Run tests once (used in CI)
-pnpm test run
+# All checks (CI)
+pnpm run check         # Typecheck + lint + all tests
 ```
 
-### Test File Location
+### Selector Strategy
 
-- Place test files next to the code they test
-- Use `.test.ts` or `.test.tsx` extension
-- Example: `src/lib/utils.test.ts` tests `src/lib/utils.ts`
-
-### Example Component Test
+We use accessible selectors following Playwright best practices:
 
 ```typescript
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+// Preferred (accessible selectors)
+page.getByRole("button", { name: /submit/i })
+page.getByLabel("Email")
+page.getByPlaceholder("Enter email")
+page.getByText("Sign in")
 
-// Mock Convex hooks
-vi.mock("convex/react", () => ({
-  useQuery: vi.fn(),
-  useMutation: vi.fn(),
-}));
-
-describe("YourComponent", () => {
-  it("should render correctly", () => {
-    render(<YourComponent />);
-    expect(screen.getByText("Hello")).toBeInTheDocument();
-  });
-});
+// Last resort (test IDs)
+page.getByTestId("complex-widget")
 ```
 
-### Testing Convex Functions
+### AI-Assisted Testing (MCP)
 
-Convex functions require a different testing approach. See `convex/README.testing.md` for:
-- Setting up `convex-test` package
-- Testing queries and mutations
-- Mocking authentication
-- Testing permissions and access control
+Playwright MCP Server is configured at `.claude/mcp.json` for AI-assisted testing with Claude Code.
 
-### Best Practices
+### Detailed Documentation
 
-1. **Mock Convex hooks** - Use `vi.mock("convex/react")` to mock useQuery/useMutation
-2. **Test user interactions** - Use `@testing-library/user-event` for realistic interactions
-3. **Test accessibility** - Query by role, label, text (not test IDs)
-4. **Keep tests focused** - One concept per test
-5. **Use descriptive test names** - Describe what should happen
-6. **Clean up** - Automatic cleanup is configured in `src/test/setup.ts`
+- [Testing Overview](./docs/testing/README.md) - Quick start, commands, architecture
+- [E2E Testing](./docs/testing/e2e.md) - Playwright, page objects, authentication
+- [Unit Testing](./docs/testing/unit.md) - Vitest, React Testing Library, mocking
+- [Backend Testing](./docs/testing/backend.md) - convex-test, integration tests
 
 ## Analytics
 
@@ -807,6 +796,7 @@ The project includes Chef (Convex's development platform) integration:
 ## Resources
 
 ### Internal Documentation
+- [Testing Overview](./docs/testing/README.md) - Testing strategy, commands, architecture
 - [Email System](./docs/email/README.md) - Email notifications setup & usage
 - [AI Overview](./docs/ai/README.md) - AI features overview
 - [Text AI](./docs/ai/text/README.md) - Chat, search, suggestions

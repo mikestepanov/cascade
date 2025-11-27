@@ -2,6 +2,18 @@
  * Test utilities for Convex backend tests
  *
  * This file provides helper functions for creating test data and managing test authentication.
+ *
+ * IMPORTANT: Authentication in tests
+ * ----------------------------------
+ * The @convex-dev/auth library's getAuthUserId() function works by:
+ * 1. Calling ctx.auth.getUserIdentity()
+ * 2. Extracting the 'subject' field
+ * 3. Splitting by '|' delimiter and returning the first part as the user ID
+ *
+ * To properly authenticate in tests, use the asUser() helper which returns
+ * a test accessor with the correct identity format.
+ *
+ * @see https://labs.convex.dev/auth/api_reference/server
  */
 
 import type { TestConvex } from "convex-test";
@@ -9,6 +21,12 @@ import type { Id } from "./_generated/dataModel";
 import type schema from "./schema";
 
 type TestCtx = TestConvex<typeof schema>;
+
+/**
+ * TOKEN_SUB_CLAIM_DIVIDER used by @convex-dev/auth
+ * The subject field format is: `${userId}|${sessionId}`
+ */
+const TOKEN_SUB_CLAIM_DIVIDER = "|";
 
 /**
  * Create a test user
@@ -35,6 +53,30 @@ export async function createTestUser(
       image: undefined,
     });
   });
+}
+
+/**
+ * Create an authenticated test accessor for a user
+ *
+ * This properly sets up the identity so that getAuthUserId() from @convex-dev/auth
+ * correctly returns the user ID. The subject field must be formatted as:
+ * `${userId}|${sessionId}` (or just userId for tests).
+ *
+ * @param t - Convex test helper
+ * @param userId - User ID to authenticate as
+ * @returns Test accessor with proper authentication
+ *
+ * @example
+ * ```typescript
+ * const userId = await createTestUser(t);
+ * const asUser = asAuthenticatedUser(t, userId);
+ * const doc = await asUser.mutation(api.documents.create, { title: "Test" });
+ * ```
+ */
+export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
+  // Format: userId|sessionId - the getAuthUserId extracts the part before the delimiter
+  const subject = `${userId}${TOKEN_SUB_CLAIM_DIVIDER}test-session-${Date.now()}`;
+  return t.withIdentity({ subject });
 }
 
 /**

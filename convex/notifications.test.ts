@@ -6,7 +6,7 @@ import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { modules } from "./testSetup";
-import { createTestUser } from "./testUtils";
+import { asAuthenticatedUser, createTestUser } from "./testUtils";
 
 describe("Notifications", () => {
   describe("list", () => {
@@ -28,8 +28,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      const notifications = await t.query(api.notifications.list, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const notifications = await asUser.query(api.notifications.list, {});
 
       expect(notifications).toHaveLength(1);
       expect(notifications[0]?.type).toBe("issue_assigned");
@@ -54,8 +54,8 @@ describe("Notifications", () => {
         }
       });
 
-      t.withIdentity({ subject: userId });
-      const notifications = await t.query(api.notifications.list, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const notifications = await asUser.query(api.notifications.list, {
         limit: 5,
       });
 
@@ -94,8 +94,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      const unreadNotifications = await t.query(api.notifications.list, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const unreadNotifications = await asUser.query(api.notifications.list, {
         onlyUnread: true,
       });
 
@@ -126,8 +126,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      const allNotifications = await t.query(api.notifications.list, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const allNotifications = await asUser.query(api.notifications.list, {
         onlyUnread: false,
       });
 
@@ -138,8 +138,8 @@ describe("Notifications", () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
 
-      t.withIdentity({ subject: userId });
-      const notifications = await t.query(api.notifications.list, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const notifications = await asUser.query(api.notifications.list, {});
 
       expect(notifications).toEqual([]);
     });
@@ -170,8 +170,8 @@ describe("Notifications", () => {
       });
 
       // User 1 queries notifications
-      t.withIdentity({ subject: user1 });
-      const user1Notifications = await t.query(api.notifications.list, {});
+      const asUser1 = asAuthenticatedUser(t, user1);
+      const user1Notifications = await asUser1.query(api.notifications.list, {});
 
       expect(user1Notifications).toHaveLength(1);
       expect(user1Notifications[0]?.title).toBe("For User 1");
@@ -180,7 +180,6 @@ describe("Notifications", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.query(api.notifications.list, {});
       }).rejects.toThrow("Not authenticated");
@@ -215,8 +214,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      const count = await t.query(api.notifications.getUnreadCount, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const count = await asUser.query(api.notifications.getUnreadCount, {});
 
       expect(count).toBe(3);
     });
@@ -225,8 +224,8 @@ describe("Notifications", () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
 
-      t.withIdentity({ subject: userId });
-      const count = await t.query(api.notifications.getUnreadCount, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const count = await asUser.query(api.notifications.getUnreadCount, {});
 
       expect(count).toBe(0);
     });
@@ -234,7 +233,6 @@ describe("Notifications", () => {
     it("should return zero for unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      t.withIdentity({ subject: undefined });
       const count = await t.query(api.notifications.getUnreadCount, {});
 
       expect(count).toBe(0);
@@ -258,8 +256,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      await t.mutation(api.notifications.markAsRead, { id: notificationId });
+      const asUser = asAuthenticatedUser(t, userId);
+      await asUser.mutation(api.notifications.markAsRead, { id: notificationId });
 
       const notification = await t.run(async (ctx) => {
         return await ctx.db.get(notificationId);
@@ -286,9 +284,9 @@ describe("Notifications", () => {
       });
 
       // User2 tries to mark it as read
-      t.withIdentity({ subject: user2 });
+      const asUser2 = asAuthenticatedUser(t, user2);
       await expect(async () => {
-        await t.mutation(api.notifications.markAsRead, { id: notificationId });
+        await asUser2.mutation(api.notifications.markAsRead, { id: notificationId });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -307,7 +305,6 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.notifications.markAsRead, { id: notificationId });
       }).rejects.toThrow("Not authenticated");
@@ -317,11 +314,25 @@ describe("Notifications", () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"notifications">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete to get valid non-existent ID
+      const notificationId = await t.run(async (ctx) => {
+        return await ctx.db.insert("notifications", {
+          userId,
+          type: "test",
+          title: "Test",
+          message: "Test",
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(notificationId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.notifications.markAsRead, { id: fakeId });
+        await asUser.mutation(api.notifications.markAsRead, { id: notificationId });
       }).rejects.toThrow("Notification not found");
     });
   });
@@ -345,10 +356,10 @@ describe("Notifications", () => {
         }
       });
 
-      t.withIdentity({ subject: userId });
-      await t.mutation(api.notifications.markAllAsRead, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      await asUser.mutation(api.notifications.markAllAsRead, {});
 
-      const unreadCount = await t.query(api.notifications.getUnreadCount, {});
+      const unreadCount = await asUser.query(api.notifications.getUnreadCount, {});
 
       expect(unreadCount).toBe(0);
     });
@@ -377,10 +388,10 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      await t.mutation(api.notifications.markAllAsRead, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      await asUser.mutation(api.notifications.markAllAsRead, {});
 
-      const allNotifications = await t.query(api.notifications.list, {});
+      const allNotifications = await asUser.query(api.notifications.list, {});
 
       expect(allNotifications).toHaveLength(2);
       expect(allNotifications.every((n) => n.isRead)).toBe(true);
@@ -412,12 +423,12 @@ describe("Notifications", () => {
       });
 
       // User 1 marks all as read
-      t.withIdentity({ subject: user1 });
-      await t.mutation(api.notifications.markAllAsRead, {});
+      const asUser1 = asAuthenticatedUser(t, user1);
+      await asUser1.mutation(api.notifications.markAllAsRead, {});
 
       // User 2's notification should still be unread
-      t.withIdentity({ subject: user2 });
-      const user2UnreadCount = await t.query(api.notifications.getUnreadCount, {});
+      const asUser2 = asAuthenticatedUser(t, user2);
+      const user2UnreadCount = await asUser2.query(api.notifications.getUnreadCount, {});
 
       expect(user2UnreadCount).toBe(1);
     });
@@ -425,7 +436,6 @@ describe("Notifications", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.notifications.markAllAsRead, {});
       }).rejects.toThrow("Not authenticated");
@@ -449,8 +459,8 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: userId });
-      await t.mutation(api.notifications.remove, { id: notificationId });
+      const asUser = asAuthenticatedUser(t, userId);
+      await asUser.mutation(api.notifications.remove, { id: notificationId });
 
       const notification = await t.run(async (ctx) => {
         return await ctx.db.get(notificationId);
@@ -477,9 +487,9 @@ describe("Notifications", () => {
       });
 
       // User2 tries to delete it
-      t.withIdentity({ subject: user2 });
+      const asUser2 = asAuthenticatedUser(t, user2);
       await expect(async () => {
-        await t.mutation(api.notifications.remove, { id: notificationId });
+        await asUser2.mutation(api.notifications.remove, { id: notificationId });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -498,7 +508,6 @@ describe("Notifications", () => {
         });
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.notifications.remove, { id: notificationId });
       }).rejects.toThrow("Not authenticated");
@@ -508,11 +517,25 @@ describe("Notifications", () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"notifications">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete to get valid non-existent ID
+      const notificationId = await t.run(async (ctx) => {
+        return await ctx.db.insert("notifications", {
+          userId,
+          type: "test",
+          title: "Test",
+          message: "Test",
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(notificationId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.notifications.remove, { id: fakeId });
+        await asUser.mutation(api.notifications.remove, { id: notificationId });
       }).rejects.toThrow("Notification not found");
     });
   });
@@ -533,8 +556,8 @@ describe("Notifications", () => {
       });
 
       // Verify notification was created
-      t.withIdentity({ subject: userId });
-      const notifications = await t.query(api.notifications.list, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const notifications = await asUser.query(api.notifications.list, {});
 
       expect(notifications).toHaveLength(1);
       expect(notifications[0]?.type).toBe("issue_assigned");
@@ -555,8 +578,8 @@ describe("Notifications", () => {
       });
 
       // Verify no notification was created
-      t.withIdentity({ subject: userId });
-      const notifications = await t.query(api.notifications.list, {});
+      const asUser = asAuthenticatedUser(t, userId);
+      const notifications = await asUser.query(api.notifications.list, {});
 
       expect(notifications).toHaveLength(0);
     });
@@ -578,16 +601,16 @@ describe("Notifications", () => {
       });
 
       // Verify all users got notifications
-      t.withIdentity({ subject: user1 });
-      const user1Notifications = await t.query(api.notifications.list, {});
+      const asUser1 = asAuthenticatedUser(t, user1);
+      const user1Notifications = await asUser1.query(api.notifications.list, {});
       expect(user1Notifications).toHaveLength(1);
 
-      t.withIdentity({ subject: user2 });
-      const user2Notifications = await t.query(api.notifications.list, {});
+      const asUser2 = asAuthenticatedUser(t, user2);
+      const user2Notifications = await asUser2.query(api.notifications.list, {});
       expect(user2Notifications).toHaveLength(1);
 
-      t.withIdentity({ subject: user3 });
-      const user3Notifications = await t.query(api.notifications.list, {});
+      const asUser3 = asAuthenticatedUser(t, user3);
+      const user3Notifications = await asUser3.query(api.notifications.list, {});
       expect(user3Notifications).toHaveLength(1);
     });
 
@@ -607,13 +630,13 @@ describe("Notifications", () => {
       });
 
       // Verify actor didn't get notification
-      t.withIdentity({ subject: actor });
-      const actorNotifications = await t.query(api.notifications.list, {});
+      const asActor = asAuthenticatedUser(t, actor);
+      const actorNotifications = await asActor.query(api.notifications.list, {});
       expect(actorNotifications).toHaveLength(0);
 
       // But other users did
-      t.withIdentity({ subject: user1 });
-      const user1Notifications = await t.query(api.notifications.list, {});
+      const asUser1 = asAuthenticatedUser(t, user1);
+      const user1Notifications = await asUser1.query(api.notifications.list, {});
       expect(user1Notifications).toHaveLength(1);
     });
   });

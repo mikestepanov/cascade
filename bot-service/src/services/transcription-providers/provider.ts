@@ -67,8 +67,6 @@ export function getAudioContentType(filePath: string): string {
  * Get file extension from a MIME type
  */
 export function getExtensionFromContentType(contentType: string): string {
-  const entry = Object.entries(AUDIO_CONTENT_TYPES).find(
-    ([, mime]) => mime === contentType
-  );
+  const entry = Object.entries(AUDIO_CONTENT_TYPES).find(([, mime]) => mime === contentType);
   return entry ? entry[0] : "webm";
 }

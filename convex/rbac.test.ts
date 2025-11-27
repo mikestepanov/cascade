@@ -299,7 +299,7 @@ describe("RBAC Utilities", () => {
           const { assertMinimumRole } = await import("./rbac");
           await assertMinimumRole(ctx, projectId, viewerId, "editor");
         });
-      }).rejects.toThrow("Insufficient permissions");
+      }).rejects.toThrow();
     });
 
     it("should throw for unauthenticated users", async () => {

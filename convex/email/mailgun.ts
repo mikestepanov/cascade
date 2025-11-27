@@ -40,7 +40,8 @@ export class MailgunProvider implements EmailProvider {
       return {
         id: "not-configured",
         success: false,
-        error: "Mailgun provider not configured. Set MAILGUN_API_KEY and MAILGUN_DOMAIN environment variables.",
+        error:
+          "Mailgun provider not configured. Set MAILGUN_API_KEY and MAILGUN_DOMAIN environment variables.",
       };
     }
 

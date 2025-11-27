@@ -1,6 +1,6 @@
-import { test as base, expect } from "@playwright/test";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { test as base, expect } from "@playwright/test";
 import { AuthPage, DashboardPage } from "../pages";
 
 /**
@@ -56,19 +56,9 @@ export async function setupAuthState(): Promise<void> {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  console.log("╔════════════════════════════════════════════╗");
-  console.log("║  Playwright Auth State Setup               ║");
-  console.log("╚════════════════════════════════════════════╝\n");
-
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext();
   const page = await context.newPage();
-
-  console.log("Opening browser...\n");
-  console.log("Instructions:");
-  console.log("  1. Sign in with your test account");
-  console.log("  2. Wait for the dashboard to load");
-  console.log("  3. Press Enter in this terminal\n");
 
   await page.goto(process.env.BASE_URL || "http://localhost:5555");
 
@@ -87,9 +77,6 @@ export async function setupAuthState(): Promise<void> {
 
   // Save auth state
   await context.storageState({ path: AUTH_STATE_PATH });
-
-  console.log(`\n✓ Auth state saved to: ${AUTH_STATE_PATH}`);
-  console.log("  You can now run authenticated tests.\n");
 
   await browser.close();
 }

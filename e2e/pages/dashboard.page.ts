@@ -55,7 +55,9 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /commands/i });
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
     this.globalSearchButton = page.getByRole("button", { name: /search/i });
-    this.themeToggleButton = page.getByRole("button", { name: /toggle.*theme|dark.*mode|light.*mode/i });
+    this.themeToggleButton = page.getByRole("button", {
+      name: /toggle.*theme|dark.*mode|light.*mode/i,
+    });
     this.notificationButton = page.getByRole("button", { name: /notifications/i });
     this.signOutButton = page.getByRole("button", { name: /sign out/i });
 
@@ -78,7 +80,9 @@ export class DashboardPage extends BasePage {
     await this.waitForLoad();
   }
 
-  async navigateTo(tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings") {
+  async navigateTo(
+    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+  ) {
     const tabs = {
       dashboard: this.dashboardTab,
       documents: this.documentsTab,
@@ -143,7 +147,9 @@ export class DashboardPage extends BasePage {
     await expect(this.mainContent).toBeVisible();
   }
 
-  async expectActiveTab(tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings") {
+  async expectActiveTab(
+    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+  ) {
     const tabs = {
       dashboard: this.dashboardTab,
       documents: this.documentsTab,

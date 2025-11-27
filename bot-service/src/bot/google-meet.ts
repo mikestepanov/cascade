@@ -1,7 +1,7 @@
-import { chromium, type Browser, type Page, type BrowserContext } from "playwright";
-import * as path from "path";
-import * as os from "os";
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
 
 export interface GoogleMeetBotOptions {
   meetingUrl: string;
@@ -83,7 +83,9 @@ export class GoogleMeetBot {
 
     try {
       // Enter name if there's a name input
-      const nameInput = await this.page.$('input[aria-label*="name" i], input[placeholder*="name" i]');
+      const nameInput = await this.page.$(
+        'input[aria-label*="name" i], input[placeholder*="name" i]',
+      );
       if (nameInput) {
         await nameInput.fill(this.options.botName);
         await this.page.waitForTimeout(500);
@@ -129,11 +131,10 @@ export class GoogleMeetBot {
       }
 
       // Verify we're in the meeting
-      await this.page.waitForSelector('[data-participant-id], [data-self-name]', {
+      await this.page.waitForSelector("[data-participant-id], [data-self-name]", {
         timeout: 30000,
       });
     } catch (error) {
-      console.error("Error during join flow:", error);
       throw new Error(`Failed to join meeting: ${(error as Error).message}`);
     }
   }
@@ -144,7 +145,7 @@ export class GoogleMeetBot {
     try {
       // Turn off camera
       const cameraButton = await this.page.$(
-        'button[aria-label*="camera" i], button[data-is-muted="false"][aria-label*="video" i]'
+        'button[aria-label*="camera" i], button[data-is-muted="false"][aria-label*="video" i]',
       );
       if (cameraButton) {
         const isEnabled = await cameraButton.getAttribute("data-is-muted");
@@ -155,7 +156,7 @@ export class GoogleMeetBot {
 
       // Turn off microphone
       const micButton = await this.page.$(
-        'button[aria-label*="microphone" i], button[data-is-muted="false"][aria-label*="mic" i]'
+        'button[aria-label*="microphone" i], button[data-is-muted="false"][aria-label*="mic" i]',
       );
       if (micButton) {
         const isEnabled = await micButton.getAttribute("data-is-muted");
@@ -163,9 +164,7 @@ export class GoogleMeetBot {
           await micButton.click();
         }
       }
-    } catch (error) {
-      console.warn("Could not turn off camera/mic:", error);
-    }
+    } catch (_error) {}
   }
 
   private async startAudioCapture(): Promise<void> {
@@ -312,15 +311,13 @@ export class GoogleMeetBot {
     try {
       // Try to enable captions for transcript
       const captionsButton = await this.page.$(
-        'button[aria-label*="caption" i], button[aria-label*="subtitle" i]'
+        'button[aria-label*="caption" i], button[aria-label*="subtitle" i]',
       );
       if (captionsButton) {
         await captionsButton.click();
         this.emitStatus("captions_enabled");
       }
-    } catch (error) {
-      console.warn("Could not enable captions:", error);
-    }
+    } catch (_error) {}
   }
 
   private monitorMeetingEnd(): void {
@@ -331,7 +328,7 @@ export class GoogleMeetBot {
 
     // Check periodically if meeting has ended
     const checkInterval = setInterval(async () => {
-      if (!this.page || !this.isRecording) {
+      if (!(this.page && this.isRecording)) {
         clearInterval(checkInterval);
         return;
       }
@@ -375,7 +372,9 @@ export class GoogleMeetBot {
 
     try {
       // Try to get participant count from the UI
-      const countElement = await this.page.$('[data-participant-count], [aria-label*="participant" i]');
+      const countElement = await this.page.$(
+        '[data-participant-count], [aria-label*="participant" i]',
+      );
       if (countElement) {
         const text = await countElement.textContent();
         const match = text?.match(/\d+/);
@@ -391,7 +390,7 @@ export class GoogleMeetBot {
     if (!this.page) return;
 
     const captureInterval = setInterval(async () => {
-      if (!this.page || !this.isRecording) {
+      if (!(this.page && this.isRecording)) {
         clearInterval(captureInterval);
         return;
       }
@@ -419,7 +418,7 @@ export class GoogleMeetBot {
 
         // Try different selectors for participant names
         const participantElements = document.querySelectorAll(
-          '[data-participant-id] [data-self-name], [data-participant-id] [data-participant-name]'
+          "[data-participant-id] [data-self-name], [data-participant-id] [data-participant-name]",
         );
 
         participantElements.forEach((el) => {

@@ -1320,7 +1320,12 @@ const applicationTables = {
     ),
     // Sentiment/tone analysis (optional)
     overallSentiment: v.optional(
-      v.union(v.literal("positive"), v.literal("neutral"), v.literal("negative"), v.literal("mixed")),
+      v.union(
+        v.literal("positive"),
+        v.literal("neutral"),
+        v.literal("negative"),
+        v.literal("mixed"),
+      ),
     ),
     // Processing info
     modelUsed: v.string(), // Claude model: "claude-3-5-sonnet", etc.
@@ -1456,8 +1461,7 @@ const applicationTables = {
     value: v.string(), // Setting value
     description: v.optional(v.string()),
     updatedAt: v.number(),
-  })
-    .index("by_key", ["key"]),
+  }).index("by_key", ["key"]),
 };
 
 export default defineSchema({

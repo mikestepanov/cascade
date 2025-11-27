@@ -2,10 +2,10 @@
 import { useState } from "react";
 import {
   CredentialsForm,
-  ForgotPasswordForm,
-  ResetPasswordForm,
-  GoogleSignInButton,
   EmailVerificationForm,
+  ForgotPasswordForm,
+  GoogleSignInButton,
+  ResetPasswordForm,
 } from "./components/auth";
 
 type AuthView = "credentials" | "forgot" | "reset" | "verify";

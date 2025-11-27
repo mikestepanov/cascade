@@ -6,7 +6,7 @@ import { api, internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { modules } from "./testSetup";
-import { createTestProject, createTestUser } from "./testUtils";
+import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
 
 describe("Webhooks", () => {
   describe("create", () => {
@@ -15,9 +15,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Issue Webhook",
         url: "https://example.com/webhook",
@@ -44,9 +44,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Simple Webhook",
         url: "https://example.com/hook",
@@ -70,17 +70,17 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       // Editor tries to create webhook
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.mutation(api.webhooks.create, {
+        await asEditor.mutation(api.webhooks.create, {
           projectId,
           name: "Webhook",
           url: "https://example.com/hook",
@@ -94,7 +94,6 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.webhooks.create, {
           projectId,
@@ -112,23 +111,23 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
       // Create multiple webhooks
-      await t.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook 1",
         url: "https://example.com/hook1",
         events: ["issue.created"],
       });
-      await t.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook 2",
         url: "https://example.com/hook2",
         events: ["issue.updated"],
       });
 
-      const webhooks = await t.query(api.webhooks.listByProject, {
+      const webhooks = await asUser.query(api.webhooks.listByProject, {
         projectId,
       });
 
@@ -142,9 +141,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhooks = await t.query(api.webhooks.listByProject, {
+      const webhooks = await asUser.query(api.webhooks.listByProject, {
         projectId,
       });
 
@@ -161,17 +160,17 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       // Editor tries to list webhooks
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.query(api.webhooks.listByProject, { projectId });
+        await asEditor.query(api.webhooks.listByProject, { projectId });
       }).rejects.toThrow();
     });
 
@@ -180,7 +179,6 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.query(api.webhooks.listByProject, { projectId });
       }).rejects.toThrow("Not authenticated");
@@ -193,16 +191,16 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Original Name",
         url: "https://example.com/original",
         events: ["issue.created"],
       });
 
-      await t.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.update, {
         id: webhookId,
         name: "Updated Name",
         url: "https://example.com/updated",
@@ -223,9 +221,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -233,7 +231,7 @@ describe("Webhooks", () => {
       });
 
       // Deactivate
-      await t.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.update, {
         id: webhookId,
         isActive: false,
       });
@@ -244,7 +242,7 @@ describe("Webhooks", () => {
       expect(webhook?.isActive).toBe(false);
 
       // Reactivate
-      await t.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.update, {
         id: webhookId,
         isActive: true,
       });
@@ -260,9 +258,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Original Name",
         url: "https://example.com/original",
@@ -270,7 +268,7 @@ describe("Webhooks", () => {
       });
 
       // Update only name
-      await t.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.update, {
         id: webhookId,
         name: "New Name",
       });
@@ -293,14 +291,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -308,9 +306,9 @@ describe("Webhooks", () => {
       });
 
       // Editor tries to update
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.mutation(api.webhooks.update, {
+        await asEditor.mutation(api.webhooks.update, {
           id: webhookId,
           name: "Hacked",
         });
@@ -322,15 +320,14 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.webhooks.update, {
           id: webhookId,
@@ -342,13 +339,24 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhooks">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete a webhook to get a valid but non-existent ID
+      const webhookId = await asUser.mutation(api.webhooks.create, {
+        projectId,
+        name: "Temp",
+        url: "https://example.com/temp",
+        events: ["issue.created"],
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(webhookId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.update, {
-          id: fakeId,
+        await asUser.mutation(api.webhooks.update, {
+          id: webhookId,
           name: "Test",
         });
       }).rejects.toThrow("Webhook not found");
@@ -361,16 +369,16 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "To Delete",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      await t.mutation(api.webhooks.remove, { id: webhookId });
+      await asUser.mutation(api.webhooks.remove, { id: webhookId });
 
       const webhook = await t.run(async (ctx) => {
         return await ctx.db.get(webhookId);
@@ -389,14 +397,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -404,9 +412,9 @@ describe("Webhooks", () => {
       });
 
       // Editor tries to delete
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.mutation(api.webhooks.remove, { id: webhookId });
+        await asEditor.mutation(api.webhooks.remove, { id: webhookId });
       }).rejects.toThrow();
     });
 
@@ -415,15 +423,14 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.webhooks.remove, { id: webhookId });
       }).rejects.toThrow("Not authenticated");
@@ -432,12 +439,23 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhooks">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete a webhook to get a valid but non-existent ID
+      const webhookId = await asUser.mutation(api.webhooks.create, {
+        projectId,
+        name: "Temp",
+        url: "https://example.com/temp",
+        events: ["issue.created"],
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(webhookId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.remove, { id: fakeId });
+        await asUser.mutation(api.webhooks.remove, { id: webhookId });
       }).rejects.toThrow("Webhook not found");
     });
   });
@@ -448,9 +466,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -481,7 +499,7 @@ describe("Webhooks", () => {
         });
       });
 
-      const executions = await t.query(api.webhooks.listExecutions, {
+      const executions = await asUser.query(api.webhooks.listExecutions, {
         webhookId,
       });
 
@@ -493,9 +511,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -517,7 +535,7 @@ describe("Webhooks", () => {
         }
       });
 
-      const executions = await t.query(api.webhooks.listExecutions, {
+      const executions = await asUser.query(api.webhooks.listExecutions, {
         webhookId,
         limit: 5,
       });
@@ -535,14 +553,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -550,9 +568,9 @@ describe("Webhooks", () => {
       });
 
       // Editor tries to view executions
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.query(api.webhooks.listExecutions, { webhookId });
+        await asEditor.query(api.webhooks.listExecutions, { webhookId });
       }).rejects.toThrow();
     });
 
@@ -561,15 +579,14 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.query(api.webhooks.listExecutions, { webhookId });
       }).rejects.toThrow("Not authenticated");
@@ -578,12 +595,23 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhooks">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete a webhook to get a valid but non-existent ID
+      const webhookId = await asUser.mutation(api.webhooks.create, {
+        projectId,
+        name: "Temp",
+        url: "https://example.com/temp",
+        events: ["issue.created"],
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(webhookId);
+      });
 
       await expect(async () => {
-        await t.query(api.webhooks.listExecutions, { webhookId: fakeId });
+        await asUser.query(api.webhooks.listExecutions, { webhookId });
       }).rejects.toThrow("Webhook not found");
     });
   });
@@ -594,16 +622,16 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      const result = await t.mutation(api.webhooks.test, { id: webhookId });
+      const result = await asUser.mutation(api.webhooks.test, { id: webhookId });
 
       expect(result.success).toBe(true);
     });
@@ -618,14 +646,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -633,9 +661,9 @@ describe("Webhooks", () => {
       });
 
       // Editor tries to test webhook
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.mutation(api.webhooks.test, { id: webhookId });
+        await asEditor.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow();
     });
 
@@ -644,15 +672,14 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow("Not authenticated");
@@ -661,12 +688,23 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhooks">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create and delete a webhook to get a valid but non-existent ID
+      const webhookId = await asUser.mutation(api.webhooks.create, {
+        projectId,
+        name: "Temp",
+        url: "https://example.com/temp",
+        events: ["issue.created"],
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(webhookId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.test, { id: fakeId });
+        await asUser.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow("Webhook not found");
     });
   });
@@ -677,9 +715,9 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -700,7 +738,7 @@ describe("Webhooks", () => {
         });
       });
 
-      const result = await t.mutation(api.webhooks.retryExecution, {
+      const result = await asUser.mutation(api.webhooks.retryExecution, {
         id: executionId,
       });
 
@@ -717,14 +755,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, owner);
 
       // Add editor
-      t.withIdentity({ subject: owner });
-      await t.mutation(api.projects.addMember, {
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.projects.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -743,9 +781,9 @@ describe("Webhooks", () => {
       });
 
       // Editor tries to retry
-      t.withIdentity({ subject: editor });
+      const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await t.mutation(api.webhooks.retryExecution, { id: executionId });
+        await asEditor.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow();
     });
 
@@ -754,8 +792,8 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const webhookId = await t.mutation(api.webhooks.create, {
+      const asUser = asAuthenticatedUser(t, userId);
+      const webhookId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -773,7 +811,6 @@ describe("Webhooks", () => {
         });
       });
 
-      t.withIdentity({ subject: undefined });
       await expect(async () => {
         await t.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow("Not authenticated");
@@ -782,12 +819,34 @@ describe("Webhooks", () => {
     it("should throw error for non-existent execution", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
-      const fakeId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"webhookExecutions">;
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const webhookId = await asUser.mutation(api.webhooks.create, {
+        projectId,
+        name: "Temp",
+        url: "https://example.com/temp",
+        events: ["issue.created"],
+      });
+
+      // Create and delete an execution to get a valid but non-existent ID
+      const executionId = await t.run(async (ctx) => {
+        return await ctx.db.insert("webhookExecutions", {
+          webhookId,
+          event: "issue.created",
+          requestPayload: '{"test": true}',
+          status: "failed",
+          attempts: 1,
+          createdAt: Date.now(),
+        });
+      });
+      await t.run(async (ctx) => {
+        await ctx.db.delete(executionId);
+      });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.retryExecution, { id: fakeId });
+        await asUser.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow("Execution not found");
     });
   });
@@ -798,23 +857,23 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
       // Create webhooks for different events
-      await t.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Issue Webhook",
         url: "https://example.com/hook1",
         events: ["issue.created", "issue.updated"],
       });
-      await t.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Comment Webhook",
         url: "https://example.com/hook2",
         events: ["comment.created"],
       });
 
-      // Get webhooks for issue.created event
+      // Get webhooks for issue.created event (internal query doesn't need auth)
       const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
         projectId,
         event: "issue.created",
@@ -829,10 +888,10 @@ describe("Webhooks", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      t.withIdentity({ subject: userId });
+      const asUser = asAuthenticatedUser(t, userId);
 
       // Create active webhook
-      await t.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Active Webhook",
         url: "https://example.com/hook1",
@@ -840,17 +899,18 @@ describe("Webhooks", () => {
       });
 
       // Create and deactivate webhook
-      const inactiveId = await t.mutation(api.webhooks.create, {
+      const inactiveId = await asUser.mutation(api.webhooks.create, {
         projectId,
         name: "Inactive Webhook",
         url: "https://example.com/hook2",
         events: ["issue.created"],
       });
-      await t.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.update, {
         id: inactiveId,
         isActive: false,
       });
 
+      // Get webhooks (internal query doesn't need auth)
       const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
         projectId,
         event: "issue.created",

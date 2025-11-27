@@ -90,7 +90,7 @@ Important:
             },
           ],
           system: systemPrompt,
-        })
+        }),
       );
 
       const processingTime = Date.now() - startTime;
@@ -133,7 +133,6 @@ Important:
         processingTime,
       };
     } catch (error) {
-      console.error("Summary generation failed:", error);
       throw new Error(`Summary generation failed: ${(error as Error).message}`);
     }
   }
@@ -150,7 +149,7 @@ Important:
             content: `Summarize this meeting in 2-3 sentences:\n\n${transcript.substring(0, 4000)}`,
           },
         ],
-      })
+      }),
     );
 
     const textContent = response.content.find((c) => c.type === "text");

@@ -11,6 +11,7 @@ Track and optimize Nixelo's bundle size over time.
 
 | Date | Total Size | Notes |
 |------|------------|-------|
+| 2025-11-27 | See [results](./RESULTS_2025-11-27.md) | Vendor chunk split (-46%) |
 | 2025-11-23 | See [results](./RESULTS_2025-11-23.md) | Initial optimization |
 
 ## Adding New Results

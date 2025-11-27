@@ -9,7 +9,6 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex-api.js";
 import {
   getProvider,
-  getConfiguredProviders,
   PROVIDER_PRIORITY,
   type TranscriptionResult,
 } from "./transcription-providers/index.js";
@@ -45,8 +44,7 @@ export class TranscriptionService {
         serviceType: "transcription",
       });
       return selected;
-    } catch (error) {
-      console.warn("Failed to query Convex for provider selection:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -61,8 +59,7 @@ export class TranscriptionService {
         provider,
         unitsUsed: Math.ceil(minutesUsed), // Round up to nearest minute
       });
-    } catch (error) {
-      console.error("Failed to record transcription usage:", error);
+    } catch (_error) {
       // Don't throw - usage tracking shouldn't block transcription
     }
   }
@@ -90,9 +87,6 @@ export class TranscriptionService {
 
     if (selection) {
       providerName = selection.provider;
-      console.log(
-        `Selected provider: ${selection.displayName} (${selection.freeUnitsRemaining} free minutes remaining)`
-      );
     } else {
       // Fallback to first configured provider
       const fallback = this.getFallbackProvider();
@@ -100,22 +94,17 @@ export class TranscriptionService {
         throw new Error("No transcription providers configured");
       }
       providerName = fallback;
-      console.log(`Using fallback provider: ${providerName}`);
     }
 
     const provider = getProvider(providerName);
-    if (!provider || !provider.isConfigured()) {
+    if (!provider?.isConfigured()) {
       throw new Error(`Provider ${providerName} is not configured`);
     }
 
     // Transcribe
     const startTime = Date.now();
     const result = await provider.transcribe(audioFilePath);
-    const elapsedMs = Date.now() - startTime;
-
-    console.log(
-      `Transcription completed in ${elapsedMs}ms using ${providerName} (${result.durationMinutes.toFixed(2)} minutes of audio)`
-    );
+    const _elapsedMs = Date.now() - startTime;
 
     // Record usage
     await this.recordUsage(providerName, result.durationMinutes);
@@ -131,7 +120,7 @@ export class TranscriptionService {
    */
   async transcribeWithProvider(
     audioFilePath: string,
-    providerName: string
+    providerName: string,
   ): Promise<TranscriptionResult & { provider: string }> {
     const provider = getProvider(providerName);
     if (!provider) {
@@ -160,8 +149,7 @@ export class TranscriptionService {
       return await this.convex.query(api.serviceRotation.getUsageSummary, {
         serviceType: "transcription",
       });
-    } catch (error) {
-      console.error("Failed to get usage summary:", error);
+    } catch (_error) {
       return null;
     }
   }
