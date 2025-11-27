@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query, action, internalMutation, internalAction } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { mutation, query, internalMutation, internalAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
 
@@ -313,13 +313,12 @@ export const cancelRecording = mutation({
     }
 
     if (recording.status !== "scheduled") {
-      throw new Error("Can only cancel scheduled recordings");
+      throw new Error(`Cannot cancel recording with status '${recording.status}'. Only scheduled recordings can be cancelled.`);
     }
 
     // Update recording status
     await ctx.db.patch(args.recordingId, {
-      status: "failed",
-      errorMessage: "Cancelled by user",
+      status: "cancelled",
       updatedAt: Date.now(),
     });
 

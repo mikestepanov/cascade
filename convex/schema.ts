@@ -1229,6 +1229,7 @@ const applicationTables = {
       v.literal("transcribing"), // Sending to Whisper
       v.literal("summarizing"), // Sending to Claude
       v.literal("completed"), // All done
+      v.literal("cancelled"), // Cancelled by user
       v.literal("failed"), // Something went wrong
     ),
     errorMessage: v.optional(v.string()), // Error details if failed
