@@ -1,67 +1,65 @@
 import { test, expect } from "./fixtures";
 
-test.describe("Authentication - Sign In/Up Flow", () => {
+/**
+ * Authentication E2E Tests
+ *
+ * Tests the sign in, sign up, password reset, and email verification flows.
+ * Uses Page Object Model for maintainability.
+ */
+
+test.describe("Sign In / Sign Up", () => {
   test.beforeEach(async ({ authPage }) => {
     await authPage.goto();
   });
 
-  test("shows sign in form for unauthenticated users", async ({ authPage }) => {
-    await expect(authPage.emailInput).toBeVisible();
-    await expect(authPage.passwordInput).toBeVisible();
-    await expect(authPage.submitButton).toBeVisible();
-    await expect(authPage.googleSignInButton).toBeVisible();
+  test("displays sign in form by default", async ({ authPage }) => {
+    await authPage.expectSignInForm();
   });
 
-  test("can switch between sign in and sign up", async ({ authPage }) => {
-    // Initially on sign in
+  test("can toggle between sign in and sign up", async ({ authPage }) => {
+    // Start on sign in
     await expect(authPage.submitButton).toHaveText(/sign in/i);
-
-    // Switch to sign up
-    await authPage.toggleFlowButton.click();
-    await expect(authPage.submitButton).toHaveText(/sign up/i);
-
-    // Switch back to sign in
-    await authPage.toggleFlowButton.click();
-    await expect(authPage.submitButton).toHaveText(/sign in/i);
-  });
-
-  test("shows forgot password link only on sign in", async ({ authPage }) => {
-    // On sign in - forgot password visible
     await expect(authPage.forgotPasswordButton).toBeVisible();
 
-    // Switch to sign up - forgot password hidden
-    await authPage.toggleFlowButton.click();
+    // Switch to sign up
+    await authPage.switchToSignUp();
+    await expect(authPage.submitButton).toHaveText(/sign up/i);
     await expect(authPage.forgotPasswordButton).not.toBeVisible();
+
+    // Switch back to sign in
+    await authPage.switchToSignIn();
+    await expect(authPage.submitButton).toHaveText(/sign in/i);
   });
 
-  test("validates email format", async ({ authPage }) => {
-    await expect(authPage.emailInput).toHaveAttribute("type", "email");
+  test("shows Google sign in option", async ({ authPage }) => {
+    await expect(authPage.googleSignInButton).toBeVisible();
+    await expect(authPage.googleSignInButton).toContainText(/google/i);
+  });
+
+  test("validates required fields", async ({ authPage }) => {
+    // Email required
     await expect(authPage.emailInput).toHaveAttribute("required", "");
-  });
+    await expect(authPage.emailInput).toHaveAttribute("type", "email");
 
-  test("validates password required", async ({ authPage }) => {
+    // Password required
     await expect(authPage.passwordInput).toHaveAttribute("required", "");
   });
 });
 
-test.describe("Authentication - Password Reset Flow", () => {
+test.describe("Password Reset", () => {
   test.beforeEach(async ({ authPage }) => {
     await authPage.goto();
   });
 
   test("can navigate to forgot password", async ({ authPage }) => {
     await authPage.goToForgotPassword();
-
-    await expect(authPage.resetHeading).toBeVisible();
-    await expect(authPage.sendResetCodeButton).toBeVisible();
-    await expect(authPage.backToSignInButton).toBeVisible();
+    await authPage.expectForgotPasswordForm();
   });
 
-  test("can go back from forgot password", async ({ authPage }) => {
+  test("can go back to sign in", async ({ authPage }) => {
     await authPage.goToForgotPassword();
-    await authPage.backToSignInButton.click();
+    await authPage.goBackToSignIn();
 
-    // Should be back at sign in
     await expect(authPage.submitButton).toBeVisible();
     await expect(authPage.forgotPasswordButton).toBeVisible();
   });
@@ -71,39 +69,43 @@ test.describe("Authentication - Password Reset Flow", () => {
 
     await expect(authPage.emailInput).toBeVisible();
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
+    await expect(authPage.emailInput).toHaveAttribute("required", "");
   });
 });
 
-test.describe("Authentication - Google OAuth", () => {
-  test("shows Google sign in button", async ({ authPage }) => {
+/**
+ * Integration tests - require running backend
+ * These test the full flow including API calls
+ */
+test.describe("Integration", () => {
+  // Skip by default - enable when running against real backend
+  test.describe.configure({ mode: "serial" });
+
+  test.skip("sign up flow sends verification email", async ({ authPage }) => {
     await authPage.goto();
 
-    await expect(authPage.googleSignInButton).toBeVisible();
-    await expect(authPage.googleSignInButton).toContainText(/google/i);
+    // Sign up with test email
+    await authPage.signUp("test@example.com", "TestPassword123!");
+
+    // Should show verification form
+    await authPage.expectVerificationForm();
   });
-});
 
-// Tests requiring actual authentication - skip by default
-test.describe("Authentication - Integration", () => {
-  test.skip("sign up sends verification email", async ({ authPage }) => {
-    // This would require:
-    // 1. Test email service (e.g., Mailosaur)
-    // 2. Real Convex backend running
+  test.skip("password reset flow sends code", async ({ authPage }) => {
     await authPage.goto();
-    await authPage.signUp("test@example.com", "password123");
 
-    // Would check for verification form
-    await expect(authPage.verifyHeading).toBeVisible();
+    // Request password reset
+    await authPage.requestPasswordReset("existing@example.com");
+
+    // Should show code entry form
+    await authPage.expectResetCodeForm();
   });
 
   test.skip("can complete email verification", async ({ authPage }) => {
-    // This would require getting OTP from test email service
+    // This would require:
+    // 1. Getting OTP from test email service
+    // 2. Entering the code
     await authPage.goto();
-
-    // Assume we're on verification screen
     await authPage.verifyEmail("12345678");
-
-    // Should redirect to dashboard
-    // await expect(dashboardPage.dashboardTab).toBeVisible();
   });
 });

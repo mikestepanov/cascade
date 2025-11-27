@@ -1,30 +1,31 @@
-import { test as base } from "@playwright/test";
-import { AuthPage, DashboardPage } from "../pages";
+import { test as base, expect } from "@playwright/test";
 import path from "node:path";
+import { AuthPage, DashboardPage } from "../pages";
 
 /**
- * Test fixtures for authenticated user tests
+ * Authentication fixtures for tests requiring logged-in state
  *
- * Usage:
- * 1. Run `pnpm e2e:setup-auth` to create auth state (manual login)
- * 2. Tests using `authenticatedTest` will reuse that state
+ * Setup:
+ * 1. Run `pnpm e2e:setup-auth` to create auth state
+ * 2. Use `authenticatedTest` instead of `test`
  *
- * See: https://playwright.dev/docs/auth
+ * @see https://playwright.dev/docs/auth
  */
 
-const AUTH_STATE_PATH = path.join(__dirname, "../.auth/user.json");
+const AUTH_DIR = path.join(__dirname, "../.auth");
+const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
-type AuthFixtures = {
+export type AuthFixtures = {
   authPage: AuthPage;
   dashboardPage: DashboardPage;
 };
 
 /**
  * Test fixture that uses saved authentication state
- * Requires running auth setup first
+ * Tests will start already logged in
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
-  // Use saved auth state
+  // Use saved storage state (cookies, localStorage)
   storageState: AUTH_STATE_PATH,
 
   authPage: async ({ page }, use) => {
@@ -37,30 +38,45 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 });
 
 /**
- * Setup function to create auth state interactively
- * Run with: pnpm e2e:setup-auth
+ * Interactive setup to create auth state
+ * Opens browser for manual login, then saves state
+ *
+ * Run with: `pnpm e2e:setup-auth`
  */
-export async function setupAuthState() {
+export async function setupAuthState(): Promise<void> {
   const { chromium } = await import("@playwright/test");
+  const fs = await import("node:fs");
+  const readline = await import("node:readline");
+
+  // Ensure .auth directory exists
+  if (!fs.existsSync(AUTH_DIR)) {
+    fs.mkdirSync(AUTH_DIR, { recursive: true });
+  }
+
+  console.log("╔════════════════════════════════════════════╗");
+  console.log("║  Playwright Auth State Setup               ║");
+  console.log("╚════════════════════════════════════════════╝\n");
+
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  console.log("Opening browser for manual login...");
-  console.log("Please sign in with your test account.");
-  console.log("Press Enter in the terminal when done.\n");
+  console.log("Opening browser...\n");
+  console.log("Instructions:");
+  console.log("  1. Sign in with your test account");
+  console.log("  2. Wait for the dashboard to load");
+  console.log("  3. Press Enter in this terminal\n");
 
   await page.goto("http://localhost:5173");
 
   // Wait for user to complete login
-  const readline = await import("node:readline");
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
   await new Promise<void>((resolve) => {
-    rl.question("Press Enter after logging in...", () => {
+    rl.question("Press Enter after logging in... ", () => {
       rl.close();
       resolve();
     });
@@ -68,9 +84,11 @@ export async function setupAuthState() {
 
   // Save auth state
   await context.storageState({ path: AUTH_STATE_PATH });
-  console.log(`\nAuth state saved to ${AUTH_STATE_PATH}`);
+
+  console.log(`\n✓ Auth state saved to: ${AUTH_STATE_PATH}`);
+  console.log("  You can now run authenticated tests.\n");
 
   await browser.close();
 }
 
-export { expect } from "@playwright/test";
+export { expect };

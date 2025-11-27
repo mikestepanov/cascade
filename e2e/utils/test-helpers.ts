@@ -1,0 +1,121 @@
+import type { Page } from "@playwright/test";
+
+/**
+ * Test utility helpers
+ */
+
+/**
+ * Wait for network to be idle (no pending requests)
+ */
+export async function waitForNetworkIdle(page: Page, timeout = 5000): Promise<void> {
+  await page.waitForLoadState("networkidle", { timeout });
+}
+
+/**
+ * Wait for all animations to complete
+ */
+export async function waitForAnimations(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    return Promise.all(
+      document.getAnimations().map((animation) => animation.finished)
+    );
+  });
+}
+
+/**
+ * Generate a unique email for testing
+ */
+export function generateTestEmail(prefix = "test"): string {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(7);
+  return `${prefix}+${timestamp}-${random}@example.com`;
+}
+
+/**
+ * Generate a random password meeting requirements
+ */
+export function generateTestPassword(): string {
+  return `Test${Date.now()}!`;
+}
+
+/**
+ * Mock API responses for testing
+ */
+export async function mockApiResponse(
+  page: Page,
+  urlPattern: string | RegExp,
+  response: { status?: number; body?: unknown }
+): Promise<void> {
+  await page.route(urlPattern, (route) => {
+    route.fulfill({
+      status: response.status ?? 200,
+      contentType: "application/json",
+      body: JSON.stringify(response.body ?? {}),
+    });
+  });
+}
+
+/**
+ * Wait for a specific toast message
+ */
+export async function waitForToast(page: Page, text: string, timeout = 5000): Promise<void> {
+  await page.locator("[data-sonner-toast]").filter({ hasText: text }).waitFor({ timeout });
+}
+
+/**
+ * Dismiss all toasts
+ */
+export async function dismissAllToasts(page: Page): Promise<void> {
+  const toasts = page.locator("[data-sonner-toast]");
+  const count = await toasts.count();
+  for (let i = 0; i < count; i++) {
+    await toasts.nth(0).click(); // Always click first since they disappear
+  }
+}
+
+/**
+ * Check if running in CI environment
+ */
+export function isCI(): boolean {
+  return !!process.env.CI;
+}
+
+/**
+ * Slow down test execution (for debugging)
+ */
+export async function slowMo(page: Page, ms = 100): Promise<void> {
+  await page.waitForTimeout(ms);
+}
+
+/**
+ * Screenshot helper with auto-naming
+ */
+export async function takeScreenshot(
+  page: Page,
+  name: string,
+  options?: { fullPage?: boolean }
+): Promise<void> {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  await page.screenshot({
+    path: `test-results/screenshots/${name}-${timestamp}.png`,
+    fullPage: options?.fullPage ?? false,
+  });
+}
+
+/**
+ * Log page console messages (for debugging)
+ */
+export function logConsoleMessages(page: Page): void {
+  page.on("console", (msg) => {
+    console.log(`[Browser ${msg.type()}]: ${msg.text()}`);
+  });
+}
+
+/**
+ * Log page errors (for debugging)
+ */
+export function logPageErrors(page: Page): void {
+  page.on("pageerror", (error) => {
+    console.error(`[Browser Error]: ${error.message}`);
+  });
+}
