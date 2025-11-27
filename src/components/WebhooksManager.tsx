@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { showError, showSuccess } from "@/lib/toast";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
@@ -25,22 +25,21 @@ type Webhook = {
 };
 
 /**
- * Refactored WebhooksManager - Now focused on orchestration
+ * WebhooksManager - Orchestrates webhook CRUD operations
  * Form and card logic extracted to separate components
- *
- * Benefits:
- * - Reduced from 332 lines to ~100 lines
- * - Form logic reusable in other contexts
- * - Card component testable in isolation
- * - Consistent with other refactored Manager components
  */
 export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingWebhook, setEditingWebhook] = useState<Webhook | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<Id<"webhooks"> | null>(null);
 
   const webhooks = useQuery(api.webhooks.listByProject, { projectId });
-  const deleteWebhook = useMutation(api.webhooks.remove);
+  const deleteWebhookMutation = useMutation(api.webhooks.remove);
+
+  // Delete confirmation
+  const deleteConfirm = useDeleteConfirmation<"webhooks">({
+    successMessage: "Webhook deleted",
+    errorMessage: "Failed to delete webhook",
+  });
 
   const handleCreate = () => {
     setEditingWebhook(null);
@@ -50,19 +49,6 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   const handleEdit = (webhook: Webhook) => {
     setEditingWebhook(webhook);
     setShowModal(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deleteConfirm) return;
-
-    try {
-      await deleteWebhook({ id: deleteConfirm });
-      showSuccess("Webhook deleted");
-    } catch (error) {
-      showError(error instanceof Error ? error.message : "Failed to delete webhook");
-    } finally {
-      setDeleteConfirm(null);
-    }
   };
 
   const handleCloseForm = () => {
@@ -115,7 +101,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
                   key={webhook._id}
                   webhook={webhook}
                   onEdit={() => handleEdit(webhook)}
-                  onDelete={() => setDeleteConfirm(webhook._id)}
+                  onDelete={() => deleteConfirm.confirmDelete(webhook._id)}
                 />
               ))}
             </div>
@@ -133,13 +119,14 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
-        isOpen={!!deleteConfirm}
-        onClose={() => setDeleteConfirm(null)}
-        onConfirm={handleDeleteConfirm}
+        isOpen={!!deleteConfirm.deleteId}
+        onClose={deleteConfirm.cancelDelete}
+        onConfirm={() => deleteConfirm.executeDelete((id) => deleteWebhookMutation({ id }))}
         title="Delete Webhook"
         message="Are you sure you want to delete this webhook? This action cannot be undone."
         variant="danger"
         confirmLabel="Delete"
+        isLoading={deleteConfirm.isDeleting}
       />
     </>
   );

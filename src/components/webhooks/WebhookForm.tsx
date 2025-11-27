@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Modal } from "../ui/Modal";
@@ -152,14 +153,14 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
           )}
         </div>
 
-        <div className="flex gap-2 pt-4">
+        <Flex gap="sm" className="pt-4">
           <Button type="submit" isLoading={isSubmitting}>
             {webhook ? "Update" : "Create"} Webhook
           </Button>
           <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );

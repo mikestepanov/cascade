@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Flex } from "./ui/Flex";
 
 interface BulkOperationsBarProps {
   projectId: Id<"projects">;
@@ -101,9 +102,9 @@ export function BulkOperationsBar({
     <>
       <div className="fixed bottom-0 left-0 right-0 bg-brand-600 text-white shadow-lg z-30 transition-transform">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
+          <Flex align="center" justify="between" gap="lg">
             {/* Selection Info */}
-            <div className="flex items-center gap-4">
+            <Flex align="center" gap="lg">
               <p className="font-medium">
                 {count} issue{count !== 1 ? "s" : ""} selected
               </p>
@@ -114,10 +115,10 @@ export function BulkOperationsBar({
               >
                 Clear selection
               </button>
-            </div>
+            </Flex>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <Flex align="center" gap="sm" className="flex-wrap">
               <button
                 type="button"
                 onClick={() => setShowActions(!showActions)}
@@ -133,8 +134,8 @@ export function BulkOperationsBar({
               >
                 Delete
               </button>
-            </div>
-          </div>
+            </Flex>
+          </Flex>
 
           {/* Expanded Actions */}
           {showActions && (

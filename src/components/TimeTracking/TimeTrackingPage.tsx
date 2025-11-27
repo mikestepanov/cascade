@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { BurnRateDashboard } from "./BurnRateDashboard";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { UserRatesManagement } from "./UserRatesManagement";
@@ -33,7 +34,7 @@ export function TimeTrackingPage() {
   const { startDate, endDate } = ranges[dateRange];
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <Flex direction="column" gap="xl" className="max-w-7xl mx-auto p-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -84,7 +85,7 @@ export function TimeTrackingPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4">
+      <Flex align="center" gap="lg" className="flex-wrap">
         {/* Project filter */}
         <div>
           <label
@@ -133,7 +134,7 @@ export function TimeTrackingPage() {
             </select>
           </div>
         )}
-      </div>
+      </Flex>
 
       {/* Content */}
       <div>
@@ -177,6 +178,6 @@ export function TimeTrackingPage() {
 
         {activeTab === "rates" && <UserRatesManagement />}
       </div>
-    </div>
+    </Flex>
   );
 }

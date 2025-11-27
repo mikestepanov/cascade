@@ -125,6 +125,9 @@ window.addEventListener('message', async (message) => {
         }
       : null,
   ].filter(Boolean),
+  server: {
+    port: 5555,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

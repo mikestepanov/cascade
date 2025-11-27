@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 @theme {
   /* Font Family */
@@ -110,6 +111,13 @@
   --color-issue-type-epic: #F59E0B;
   --color-issue-type-subtask: #6B7280;
 
+  /* Calendar Event Type Colors */
+  --color-event-meeting: #3B82F6;
+  --color-event-deadline: #EF4444;
+  --color-event-timeblock: #10B981;
+  --color-event-personal: #8B5CF6;
+  --color-event-default: #6B7280;
+
   /* Legacy Primary/Secondary */
   --color-primary: #4F46E5;
   --color-primary-hover: #4338CA;
@@ -196,17 +204,17 @@ body {
 
 /* BlockNote editor customizations for minimal design */
 .bn-container {
-  @apply bg-white dark:bg-gray-900;
+  @apply bg-ui-bg-primary dark:bg-ui-bg-primary-dark;
 }
 
 .bn-editor {
-  @apply text-gray-900 dark:text-gray-100;
+  @apply text-ui-text-primary dark:text-ui-text-primary-dark;
   font-size: 16px;
   line-height: 1.6;
 }
 
 .bn-block-content {
-  @apply text-gray-900 dark:text-gray-100;
+  @apply text-ui-text-primary dark:text-ui-text-primary-dark;
 }
 
 /* Customize the editor to have more whitespace and minimal styling */
@@ -220,15 +228,15 @@ body {
 }
 
 .ProseMirror h1 {
-  @apply text-3xl font-bold mb-6 mt-8 text-gray-900 dark:text-gray-100;
+  @apply text-3xl font-bold mb-6 mt-8 text-ui-text-primary dark:text-ui-text-primary-dark;
 }
 
 .ProseMirror h2 {
-  @apply text-2xl font-semibold mb-4 mt-6 text-gray-900 dark:text-gray-100;
+  @apply text-2xl font-semibold mb-4 mt-6 text-ui-text-primary dark:text-ui-text-primary-dark;
 }
 
 .ProseMirror h3 {
-  @apply text-xl font-medium mb-3 mt-5 text-gray-900 dark:text-gray-100;
+  @apply text-xl font-medium mb-3 mt-5 text-ui-text-primary dark:text-ui-text-primary-dark;
 }
 
 .ProseMirror ul, .ProseMirror ol {
@@ -240,15 +248,15 @@ body {
 }
 
 .ProseMirror blockquote {
-  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-700 dark:text-gray-300 mb-4;
+  @apply border-l-4 border-ui-border-secondary dark:border-ui-border-secondary-dark pl-4 italic text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4;
 }
 
 .ProseMirror code {
-  @apply bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-900 dark:text-gray-100;
+  @apply bg-ui-bg-tertiary dark:bg-ui-bg-secondary-dark px-2 py-1 rounded text-sm font-mono text-ui-text-primary dark:text-ui-text-primary-dark;
 }
 
 .ProseMirror pre {
-  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded mb-4 overflow-x-auto;
+  @apply bg-ui-bg-tertiary dark:bg-ui-bg-secondary-dark p-4 rounded mb-4 overflow-x-auto;
 }
 
 .ProseMirror pre code {

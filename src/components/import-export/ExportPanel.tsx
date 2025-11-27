@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ExportPanelProps {
@@ -100,7 +101,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   }, [jsonData, isExporting, exportFormat]);
 
   return (
-    <div className="space-y-4">
+    <Flex direction="column" gap="lg">
       <div>
         <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
           Select Export Format
@@ -114,7 +115,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                 : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
               <div>
                 <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -124,7 +125,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                   Spreadsheet format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
 
           <Card
@@ -135,7 +136,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                 : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
               <div>
                 <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -145,13 +146,13 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
                   Data interchange format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
         </div>
       </div>
 
       <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg p-4">
-        <div className="flex items-start gap-3">
+        <Flex gap="md" align="start">
           <div className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</div>
           <div className="text-sm text-brand-800 dark:text-brand-200">
             <p className="font-semibold mb-1">Export Information</p>
@@ -165,19 +166,19 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
               </li>
             </ul>
           </div>
-        </div>
+        </Flex>
       </div>
 
       <Button onClick={handleExport} disabled={isExporting} className="w-full">
         {isExporting ? (
-          <div className="flex items-center justify-center gap-2">
+          <Flex align="center" justify="center" gap="sm">
             <LoadingSpinner size="sm" color="white" />
             Exporting...
-          </div>
+          </Flex>
         ) : (
           `Export as ${exportFormat.toUpperCase()}`
         )}
       </Button>
-    </div>
+    </Flex>
   );
 }

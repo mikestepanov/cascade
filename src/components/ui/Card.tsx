@@ -1,64 +1,165 @@
-import type { ReactNode } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { handleKeyboardClick } from "@/lib/accessibility";
+import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
+const cardVariants = cva(
+  "bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark",
+  {
+    variants: {
+      hoverable: {
+        true: "hover:shadow-md transition-shadow cursor-pointer",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      hoverable: false,
+    },
+  },
+);
+
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {
   hoverable?: boolean;
-  onClick?: () => void;
 }
 
-export function Card({ children, className = "", hoverable = false, onClick }: CardProps) {
-  const interactiveProps = onClick
-    ? {
-        role: "button" as const,
-        tabIndex: 0,
-        onClick,
-        onKeyDown: handleKeyboardClick(onClick),
-      }
-    : {};
+/**
+ * Card container component for grouping related content.
+ *
+ * @example
+ * // Basic card
+ * <Card>Content here</Card>
+ *
+ * // Hoverable clickable card
+ * <Card hoverable onClick={() => {}}>Clickable</Card>
+ */
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, hoverable = false, onClick, children, ...props }, ref) => {
+    const interactiveProps = onClick
+      ? {
+          role: "button" as const,
+          tabIndex: 0,
+          onClick,
+          onKeyDown: handleKeyboardClick(onClick),
+        }
+      : {};
 
-  return (
-    <div
-      className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark ${
-        hoverable ? "hover:shadow-md transition-shadow cursor-pointer" : ""
-      } ${className}`}
-      {...interactiveProps}
-    >
-      {children}
-    </div>
-  );
-}
-
-interface CardHeaderProps {
-  title: string;
-  description?: string;
-  action?: ReactNode;
-}
-
-export function CardHeader({ title, description, action }: CardHeaderProps) {
-  return (
-    <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-          {title}
-        </h3>
-        {description && (
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-            {description}
-          </p>
-        )}
+    return (
+      <div
+        ref={ref}
+        className={cn(cardVariants({ hoverable }), className)}
+        {...interactiveProps}
+        {...props}
+      >
+        {children}
       </div>
-      {action && <div>{action}</div>}
-    </div>
-  );
+    );
+  },
+);
+Card.displayName = "Card";
+
+export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string;
+  description?: string;
+  action?: React.ReactNode;
 }
 
-interface CardBodyProps {
-  children: ReactNode;
-  className?: string;
-}
+const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
+  ({ className, title, description, action, children, ...props }, ref) => {
+    // Support both structured props and children
+    if (children) {
+      return (
+        <Flex ref={ref} direction="column" gap="xs" className={cn("p-6", className)} {...props}>
+          {children}
+        </Flex>
+      );
+    }
 
-export function CardBody({ children, className = "" }: CardBodyProps) {
-  return <div className={`p-4 ${className}`}>{children}</div>;
-}
+    return (
+      <Flex
+        ref={ref}
+        align="center"
+        justify="between"
+        className={cn(
+          "p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark",
+          className,
+        )}
+        {...props}
+      >
+        <div>
+          {title && (
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              {title}
+            </h3>
+          )}
+          {description && (
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              {description}
+            </p>
+          )}
+        </div>
+        {action && <div>{action}</div>}
+      </Flex>
+    );
+  },
+);
+CardHeader.displayName = "CardHeader";
+
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3
+      ref={ref}
+      className={cn(
+        "text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark leading-none tracking-tight",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+CardTitle.displayName = "CardTitle";
+
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark", className)}
+    {...props}
+  />
+));
+CardDescription.displayName = "CardDescription";
+
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  ),
+);
+CardContent.displayName = "CardContent";
+
+// Alias for backward compatibility
+const CardBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-4", className)} {...props} />,
+);
+CardBody.displayName = "CardBody";
+
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <Flex ref={ref} align="center" className={cn("p-6 pt-0", className)} {...props} />
+  ),
+);
+CardFooter.displayName = "CardFooter";
+
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardBody,
+  CardFooter,
+  cardVariants,
+};

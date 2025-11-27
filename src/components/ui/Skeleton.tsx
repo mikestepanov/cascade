@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 interface SkeletonProps {
   className?: string;
@@ -29,11 +30,11 @@ export function SkeletonCard({ className }: SkeletonProps) {
         className,
       )}
     >
-      <div className="space-y-3">
+      <Flex direction="column" gap="md">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
         <Skeleton className="h-4 w-5/6" />
-      </div>
+      </Flex>
     </div>
   );
 }
@@ -48,7 +49,7 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
   }));
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <Flex direction="column" gap="sm" className={className}>
       {lineItems.map((item) => (
         <Skeleton
           key={item.id}
@@ -58,7 +59,7 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
           )}
         />
       ))}
-    </div>
+    </Flex>
   );
 }
 
@@ -82,19 +83,21 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   const rowItems = Array.from({ length: rows }, (_, i) => `skeleton-row-${i}`);
 
   return (
-    <div className="space-y-2">
+    <Flex direction="column" gap="sm">
       {rowItems.map((rowId) => (
-        <div
+        <Flex
           key={rowId}
-          className="flex items-center gap-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
+          align="center"
+          gap="lg"
+          className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
         >
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-16" />
-        </div>
+        </Flex>
       ))}
-    </div>
+    </Flex>
   );
 }
 
@@ -105,22 +108,22 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
   const listItems = Array.from({ length: items }, (_, i) => `skeleton-item-${i}`);
 
   return (
-    <div className="space-y-2">
+    <Flex direction="column" gap="sm">
       {listItems.map((itemId) => (
         <div
           key={itemId}
           className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
         >
-          <div className="flex items-start gap-3">
+          <Flex align="start" gap="md">
             <SkeletonAvatar size="sm" />
-            <div className="flex-1 space-y-2">
+            <Flex direction="column" gap="sm" className="flex-1">
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         </div>
       ))}
-    </div>
+    </Flex>
   );
 }
 
@@ -130,11 +133,11 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
 export function SkeletonStatCard() {
   return (
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-      <div className="text-center space-y-3">
+      <Flex direction="column" gap="md" className="text-center">
         <Skeleton className="h-3 w-24 mx-auto" />
         <Skeleton className="h-10 w-16 mx-auto" />
         <Skeleton className="h-3 w-20 mx-auto" />
-      </div>
+      </Flex>
     </div>
   );
 }
@@ -144,18 +147,22 @@ export function SkeletonStatCard() {
  */
 export function SkeletonKanbanCard() {
   return (
-    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3 space-y-2">
-      <div className="flex items-center gap-2">
+    <Flex
+      direction="column"
+      gap="sm"
+      className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+    >
+      <Flex align="center" gap="sm">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-3 w-12" />
-      </div>
+      </Flex>
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-3 w-3/4" />
-      <div className="flex items-center gap-2 pt-2">
+      <Flex align="center" gap="sm" className="pt-2">
         <SkeletonAvatar size="sm" />
         <Skeleton className="h-3 w-20" />
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 }
 
@@ -164,12 +171,16 @@ export function SkeletonKanbanCard() {
  */
 export function SkeletonProjectCard() {
   return (
-    <div className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg space-y-2">
-      <div className="flex items-center justify-between">
+    <Flex
+      direction="column"
+      gap="sm"
+      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+    >
+      <Flex align="center" justify="between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-5 w-16" />
-      </div>
+      </Flex>
       <Skeleton className="h-3 w-3/4" />
-    </div>
+    </Flex>
   );
 }

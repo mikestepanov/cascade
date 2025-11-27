@@ -1,3 +1,5 @@
+import { Flex } from "./Flex";
+
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -12,7 +14,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
+    <Flex direction="column" align="center" justify="center" gap="md">
       {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading spinner */}
       <div
         className={`animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent ${sizeClasses[size]} ${className}`}
@@ -24,13 +26,13 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
       {message && (
         <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
       )}
-    </div>
+    </Flex>
   );
 }
 
 export function LoadingOverlay({ message }: { message?: string }) {
   return (
-    <div className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
+    <div className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 z-10 rounded-lg flex items-center justify-center">
       <LoadingSpinner size="lg" message={message} />
     </div>
   );

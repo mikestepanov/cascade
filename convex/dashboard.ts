@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 
 // Get all issues assigned to the current user across all projects
@@ -14,22 +15,38 @@ export const getMyIssues = query({
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
       .collect();
 
-    // Enrich with project and reporter info
-    const enrichedIssues = await Promise.all(
-      issues.map(async (issue) => {
-        const project = await ctx.db.get(issue.projectId);
-        const reporter = issue.reporterId ? await ctx.db.get(issue.reporterId) : null;
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+    // Batch fetch all related data to avoid N+1 queries
+    const projectIds = [...new Set(issues.map((i) => i.projectId))];
+    const userIds = [
+      ...new Set(issues.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
+    ] as Id<"users">[];
 
-        return {
-          ...issue,
-          projectName: project?.name || "Unknown",
-          projectKey: project?.key || "???",
-          reporterName: reporter?.name || "Unknown",
-          assigneeName: assignee?.name || "Unassigned",
-        };
-      }),
+    const [projects, users] = await Promise.all([
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(userIds.map((id) => ctx.db.get(id))),
+    ]);
+
+    const projectMap = new Map(
+      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
     );
+    const userMap = new Map(
+      users.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
+    );
+
+    // Enrich with pre-fetched data
+    const enrichedIssues = issues.map((issue) => {
+      const project = projectMap.get(issue.projectId);
+      const reporter = issue.reporterId ? userMap.get(issue.reporterId) : null;
+      const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
+
+      return {
+        ...issue,
+        projectName: project?.name || "Unknown",
+        projectKey: project?.key || "???",
+        reporterName: reporter?.name || reporter?.email || "Unknown",
+        assigneeName: assignee?.name || assignee?.email || "Unassigned",
+      };
+    });
 
     return enrichedIssues.sort((a, b) => b.updatedAt - a.updatedAt);
   },
@@ -47,20 +64,36 @@ export const getMyCreatedIssues = query({
       .filter((q) => q.eq(q.field("reporterId"), userId))
       .collect();
 
-    // Enrich with project info
-    const enrichedIssues = await Promise.all(
-      issues.map(async (issue) => {
-        const project = await ctx.db.get(issue.projectId);
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+    // Batch fetch all related data to avoid N+1 queries
+    const projectIds = [...new Set(issues.map((i) => i.projectId))];
+    const assigneeIds = [
+      ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
+    ] as Id<"users">[];
 
-        return {
-          ...issue,
-          projectName: project?.name || "Unknown",
-          projectKey: project?.key || "???",
-          assigneeName: assignee?.name || "Unassigned",
-        };
-      }),
+    const [projects, assignees] = await Promise.all([
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
+    ]);
+
+    const projectMap = new Map(
+      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
     );
+    const assigneeMap = new Map(
+      assignees.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
+    );
+
+    // Enrich with pre-fetched data
+    const enrichedIssues = issues.map((issue) => {
+      const project = projectMap.get(issue.projectId);
+      const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
+
+      return {
+        ...issue,
+        projectName: project?.name || "Unknown",
+        projectKey: project?.key || "???",
+        assigneeName: assignee?.name || assignee?.email || "Unassigned",
+      };
+    });
 
     return enrichedIssues.sort((a, b) => b.createdAt - a.createdAt);
   },

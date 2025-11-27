@@ -8,6 +8,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
@@ -27,26 +28,25 @@ export function ApiKeysManager() {
     <Card>
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <Flex justify="between" align="center" className="mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              API Keys
+            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Flex gap="sm" align="center">
+                <Key className="h-5 w-5" />
+                API Keys
+              </Flex>
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
             </p>
           </div>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setShowGenerateModal(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Generate Key
+          <Button variant="primary" size="sm" onClick={() => setShowGenerateModal(true)}>
+            <Flex gap="sm" align="center">
+              <Plus className="h-4 w-4" />
+              Generate Key
+            </Flex>
           </Button>
-        </div>
+        </Flex>
 
         {/* API Keys List */}
         {!apiKeys || apiKeys.length === 0 ? (
@@ -62,18 +62,20 @@ export function ApiKeysManager() {
               variant="primary"
               size="sm"
               onClick={() => setShowGenerateModal(true)}
-              className="flex items-center gap-2 mx-auto"
+              className="mx-auto"
             >
-              <Plus className="h-4 w-4" />
-              Generate Your First Key
+              <Flex gap="sm" align="center">
+                <Plus className="h-4 w-4" />
+                Generate Your First Key
+              </Flex>
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <Flex direction="column" gap="lg">
             {apiKeys.map((key) => (
               <ApiKeyCard key={key.id} apiKey={key} onViewStats={() => setSelectedKeyId(key.id)} />
             ))}
-          </div>
+          </Flex>
         )}
 
         {/* Documentation Link */}
@@ -152,10 +154,10 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
   return (
     <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark">
-      <div className="flex items-start justify-between">
+      <Flex justify="between" align="start">
         <div className="flex-1">
           {/* Name & Status */}
-          <div className="flex items-center gap-2 mb-2">
+          <Flex gap="sm" align="center" className="mb-2">
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {apiKey.name}
             </h4>
@@ -164,10 +166,10 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             ) : (
               <Badge variant="error">Revoked</Badge>
             )}
-          </div>
+          </Flex>
 
           {/* Key Prefix */}
-          <div className="flex items-center gap-2 mb-3">
+          <Flex gap="sm" align="center" className="mb-3">
             <code className="text-sm font-mono bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
               {apiKey.keyPrefix}...
             </code>
@@ -180,10 +182,10 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             >
               <Copy className="h-4 w-4" />
             </Button>
-          </div>
+          </Flex>
 
           {/* Scopes */}
-          <div className="flex flex-wrap gap-1 mb-3">
+          <Flex className="flex-wrap gap-1 mb-3">
             {apiKey.scopes.map((scope: string) => (
               <span
                 key={scope}
@@ -192,10 +194,14 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
                 {scope}
               </span>
             ))}
-          </div>
+          </Flex>
 
           {/* Stats */}
-          <div className="flex items-center gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Flex
+            gap="lg"
+            align="center"
+            className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+          >
             <span>
               <strong>{apiKey.usageCount}</strong> API calls
             </span>
@@ -217,11 +223,11 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
                 </span>
               </>
             )}
-          </div>
+          </Flex>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 ml-4">
+        <Flex gap="sm" align="center" className="ml-4">
           <Button
             onClick={onViewStats}
             variant="ghost"
@@ -237,7 +243,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
               variant="ghost"
               size="sm"
               isLoading={isRevoking}
-              className="text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              className="text-status-warning hover:bg-status-warning-bg dark:hover:bg-status-warning-bg-dark"
               aria-label="Revoke key"
             >
               {isRevoking ? "Revoking..." : "Revoke"}
@@ -253,8 +259,8 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
           >
             <Trash2 className="h-4 w-4" />
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </div>
   );
 }
@@ -406,9 +412,13 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
           <>
             {/* Success - Show Generated Key */}
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
-                <Key className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
+              <Flex
+                justify="center"
+                align="center"
+                className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4"
+              >
+                <Key className="h-6 w-6 text-status-success dark:text-status-success" />
+              </Flex>
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 API Key Generated!
               </h3>
@@ -417,15 +427,15 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </p>
 
               {/* Generated Key Display */}
-              <div className="mb-6 p-4 bg-slate-900 dark:bg-slate-950 rounded-lg">
-                <code className="text-sm font-mono text-green-400 break-all select-all">
+              <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
+                <code className="text-sm font-mono text-status-success break-all select-all">
                   {generatedKey}
                 </code>
               </div>
 
               {/* Copy Instructions */}
-              <div className="text-left mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
-                <p className="font-medium text-brand-900 dark:text-brand-100 mb-2">
+              <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
+                <p className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
                   Usage Example:
                 </p>
                 <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
@@ -435,19 +445,17 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3">
-                <Button
-                  variant="primary"
-                  onClick={copyAndClose}
-                  className="flex-1 flex items-center justify-center gap-2"
-                >
-                  <Copy className="h-4 w-4" />
-                  Copy & Close
+              <Flex gap="md">
+                <Button variant="primary" onClick={copyAndClose} className="flex-1">
+                  <Flex justify="center" gap="sm" align="center">
+                    <Copy className="h-4 w-4" />
+                    Copy & Close
+                  </Flex>
                 </Button>
                 <Button variant="secondary" onClick={onClose}>
                   I've Saved It
                 </Button>
-              </div>
+              </Flex>
             </div>
           </>
         )}
@@ -496,7 +504,7 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                 <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Success Rate
                 </p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                <p className="text-2xl font-bold text-status-success dark:text-status-success">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
                     : 100}
@@ -523,21 +531,21 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                   No recent requests
                 </p>
               ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <Flex direction="column" gap="sm" className="max-h-64 overflow-y-auto">
                   {stats.recentLogs.map((log: Doc<"apiUsageLogs">) => (
                     <div
                       key={log._id}
                       className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
+                      <Flex justify="between" align="center" className="mb-1">
+                        <Flex gap="sm" align="center">
                           <span className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {log.method}
                           </span>
                           <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                             {log.endpoint}
                           </span>
-                        </div>
+                        </Flex>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
                             log.statusCode < 400
@@ -547,8 +555,12 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                         >
                           {log.statusCode}
                         </span>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      </Flex>
+                      <Flex
+                        gap="lg"
+                        align="center"
+                        className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+                      >
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>
@@ -560,10 +572,10 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
                             </span>
                           </>
                         )}
-                      </div>
+                      </Flex>
                     </div>
                   ))}
-                </div>
+                </Flex>
               )}
             </div>
 

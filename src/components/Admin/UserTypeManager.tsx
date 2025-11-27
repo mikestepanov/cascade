@@ -6,6 +6,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
+import { Flex } from "../ui/Flex";
 import { Input, Select } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
@@ -310,7 +311,7 @@ export function UserTypeManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Employment Type Configurations */}
       <Card>
         <CardHeader
@@ -344,8 +345,8 @@ export function UserTypeManager() {
                   key={config.type}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                  <Flex justify="between" align="start" className="mb-3">
+                    <Flex align="center" gap="sm">
                       <span className="text-2xl">{getTypeIcon(config.type)}</span>
                       <div>
                         <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -357,8 +358,8 @@ export function UserTypeManager() {
                           {config.type}
                         </span>
                       </div>
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
 
                   {config.description && (
                     <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
@@ -366,40 +367,40 @@ export function UserTypeManager() {
                     </p>
                   )}
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
+                  <Flex direction="column" gap="sm" className="text-sm">
+                    <Flex justify="between">
                       <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         Max hours/week:
                       </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerWeek}h
                       </span>
-                    </div>
-                    <div className="flex justify-between">
+                    </Flex>
+                    <Flex justify="between">
                       <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         Max hours/day:
                       </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultMaxHoursPerDay}h
                       </span>
-                    </div>
-                    <div className="flex justify-between">
+                    </Flex>
+                    <Flex justify="between">
                       <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         Requires approval:
                       </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
                       </span>
-                    </div>
-                    <div className="flex justify-between">
+                    </Flex>
+                    <Flex justify="between">
                       <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         Can work overtime:
                       </span>
                       <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
                       </span>
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
 
                   <Button
                     variant="secondary"
@@ -429,11 +430,13 @@ export function UserTypeManager() {
               <h4 className="font-semibold text-status-warning-text dark:text-status-warning-text-dark mb-2">
                 Unassigned Users ({usersWithoutProfiles.length})
               </h4>
-              <div className="space-y-2">
+              <Flex direction="column" gap="sm">
                 {usersWithoutProfiles.slice(0, 5).map((user) => (
-                  <div
+                  <Flex
                     key={user._id}
-                    className="flex items-center justify-between bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded"
+                    justify="between"
+                    align="center"
+                    className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded"
                   >
                     <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                       {user.name || user.email || "Unknown User"}
@@ -441,14 +444,14 @@ export function UserTypeManager() {
                     <Button size="sm" onClick={() => handleAssignUser(user._id)}>
                       Assign Type
                     </Button>
-                  </div>
+                  </Flex>
                 ))}
                 {usersWithoutProfiles.length > 5 && (
                   <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     +{usersWithoutProfiles.length - 5} more...
                   </p>
                 )}
-              </div>
+              </Flex>
             </div>
           )}
 
@@ -470,15 +473,15 @@ export function UserTypeManager() {
                   key={profile._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
                 >
-                  <div className="flex items-start justify-between">
+                  <Flex justify="between" align="start">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                      <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getTypeIcon(profile.employmentType)}</span>
                         <div>
                           <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {profile.user?.name || profile.user?.email || "Unknown User"}
                           </h4>
-                          <div className="flex gap-2 mt-1">
+                          <Flex gap="sm" className="mt-1">
                             <span
                               className={`text-xs px-2 py-0.5 rounded capitalize ${getTypeColor(profile.employmentType)}`}
                             >
@@ -489,9 +492,9 @@ export function UserTypeManager() {
                                 Inactive
                               </span>
                             )}
-                          </div>
+                          </Flex>
                         </div>
-                      </div>
+                      </Flex>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         {profile.jobTitle && (
@@ -533,7 +536,7 @@ export function UserTypeManager() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 ml-4">
+                    <Flex gap="sm" className="ml-4">
                       <Button variant="ghost" size="sm" onClick={() => handleEditProfile(profile)}>
                         Edit
                       </Button>
@@ -544,8 +547,8 @@ export function UserTypeManager() {
                       >
                         Remove
                       </Button>
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
                 </div>
               ))}
             </div>
@@ -560,97 +563,107 @@ export function UserTypeManager() {
         title={`Edit ${selectedType} Configuration`}
         maxWidth="2xl"
       >
-        <form onSubmit={handleSaveConfig} className="p-6 space-y-4">
-          <Input
-            label="Display Name"
-            value={configName}
-            onChange={(e) => setConfigName(e.target.value)}
-            required
-          />
-
-          <Input
-            label="Description"
-            value={configDescription}
-            onChange={(e) => setConfigDescription(e.target.value)}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSaveConfig} className="p-6">
+          <Flex direction="column" gap="lg">
             <Input
-              label="Max Hours per Week"
-              type="number"
-              value={configMaxWeekly}
-              onChange={(e) => setConfigMaxWeekly(Number(e.target.value))}
-              min={1}
-              max={168}
+              label="Display Name"
+              value={configName}
+              onChange={(e) => setConfigName(e.target.value)}
               required
             />
 
             <Input
-              label="Max Hours per Day"
-              type="number"
-              value={configMaxDaily}
-              onChange={(e) => setConfigMaxDaily(Number(e.target.value))}
-              min={1}
-              max={24}
-              required
+              label="Description"
+              value={configDescription}
+              onChange={(e) => setConfigDescription(e.target.value)}
             />
-          </div>
 
-          <div className="space-y-3">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={configRequiresApproval}
-                onChange={(e) => setConfigRequiresApproval(e.target.checked)}
-                className="w-4 h-4"
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Max Hours per Week"
+                type="number"
+                value={configMaxWeekly}
+                onChange={(e) => setConfigMaxWeekly(Number(e.target.value))}
+                min={1}
+                max={168}
+                required
               />
-              <span className="text-sm">Requires manager approval for time entries</span>
-            </label>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={configCanOvertime}
-                onChange={(e) => setConfigCanOvertime(e.target.checked)}
-                className="w-4 h-4"
+              <Input
+                label="Max Hours per Day"
+                type="number"
+                value={configMaxDaily}
+                onChange={(e) => setConfigMaxDaily(Number(e.target.value))}
+                min={1}
+                max={24}
+                required
               />
-              <span className="text-sm">Can work overtime hours</span>
-            </label>
+            </div>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={configCanBilling}
-                onChange={(e) => setConfigCanBilling(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Can access billing information</span>
-            </label>
+            <Flex direction="column" gap="md">
+              <label>
+                <Flex align="center" gap="sm">
+                  <input
+                    type="checkbox"
+                    checked={configRequiresApproval}
+                    onChange={(e) => setConfigRequiresApproval(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Requires manager approval for time entries</span>
+                </Flex>
+              </label>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={configCanManageProjects}
-                onChange={(e) => setConfigCanManageProjects(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm">Can manage projects</span>
-            </label>
-          </div>
+              <label>
+                <Flex align="center" gap="sm">
+                  <input
+                    type="checkbox"
+                    checked={configCanOvertime}
+                    onChange={(e) => setConfigCanOvertime(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Can work overtime hours</span>
+                </Flex>
+              </label>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" isLoading={isSubmitting}>
-              Save Configuration
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setShowConfigModal(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-          </div>
+              <label>
+                <Flex align="center" gap="sm">
+                  <input
+                    type="checkbox"
+                    checked={configCanBilling}
+                    onChange={(e) => setConfigCanBilling(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Can access billing information</span>
+                </Flex>
+              </label>
+
+              <label>
+                <Flex align="center" gap="sm">
+                  <input
+                    type="checkbox"
+                    checked={configCanManageProjects}
+                    onChange={(e) => setConfigCanManageProjects(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm">Can manage projects</span>
+                </Flex>
+              </label>
+            </Flex>
+
+            <Flex gap="sm" className="pt-4">
+              <Button type="submit" isLoading={isSubmitting}>
+                Save Configuration
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowConfigModal(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </Flex>
         </form>
       </Modal>
 
@@ -664,208 +677,214 @@ export function UserTypeManager() {
         title={selectedUserId ? "Edit User Employment" : "Assign Employment Type"}
         maxWidth="2xl"
       >
-        <form onSubmit={handleSaveProfile} className="p-6 space-y-4">
-          <Select
-            label="Employment Type"
-            value={profileType}
-            onChange={(e) => setProfileType(e.target.value as EmploymentType)}
-            required
-          >
-            <option value="employee">Employee</option>
-            <option value="contractor">Contractor</option>
-            <option value="intern">Intern</option>
-          </Select>
+        <form onSubmit={handleSaveProfile} className="p-6">
+          <Flex direction="column" gap="lg">
+            <Select
+              label="Employment Type"
+              value={profileType}
+              onChange={(e) => setProfileType(e.target.value as EmploymentType)}
+              required
+            >
+              <option value="employee">Employee</option>
+              <option value="contractor">Contractor</option>
+              <option value="intern">Intern</option>
+            </Select>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Job Title"
-              value={profileJobTitle}
-              onChange={(e) => setProfileJobTitle(e.target.value)}
-              placeholder="e.g., Senior Developer"
-            />
-
-            <Input
-              label="Department"
-              value={profileDepartment}
-              onChange={(e) => setProfileDepartment(e.target.value)}
-              placeholder="e.g., Engineering"
-            />
-          </div>
-
-          <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-            <h4 className="font-medium text-sm mb-3 text-ui-text-primary dark:text-ui-text-primary-dark">
-              Hour Overrides (leave empty to use type defaults)
-            </h4>
             <div className="grid grid-cols-2 gap-4">
               <Input
-                label="Max Hours per Week"
-                type="number"
-                value={profileMaxWeekly}
-                onChange={(e) => setProfileMaxWeekly(e.target.value)}
-                placeholder="Default"
-                min={1}
-                max={168}
+                label="Job Title"
+                value={profileJobTitle}
+                onChange={(e) => setProfileJobTitle(e.target.value)}
+                placeholder="e.g., Senior Developer"
               />
 
               <Input
-                label="Max Hours per Day"
-                type="number"
-                value={profileMaxDaily}
-                onChange={(e) => setProfileMaxDaily(e.target.value)}
-                placeholder="Default"
-                min={1}
-                max={24}
+                label="Department"
+                value={profileDepartment}
+                onChange={(e) => setProfileDepartment(e.target.value)}
+                placeholder="e.g., Engineering"
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Start Date"
-              type="date"
-              value={profileStartDate}
-              onChange={(e) => setProfileStartDate(e.target.value)}
-            />
+            <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+              <h4 className="font-medium text-sm mb-3 text-ui-text-primary dark:text-ui-text-primary-dark">
+                Hour Overrides (leave empty to use type defaults)
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Max Hours per Week"
+                  type="number"
+                  value={profileMaxWeekly}
+                  onChange={(e) => setProfileMaxWeekly(e.target.value)}
+                  placeholder="Default"
+                  min={1}
+                  max={168}
+                />
 
-            <Input
-              label="End Date (Optional)"
-              type="date"
-              value={profileEndDate}
-              onChange={(e) => setProfileEndDate(e.target.value)}
-            />
-          </div>
+                <Input
+                  label="Max Hours per Day"
+                  type="number"
+                  value={profileMaxDaily}
+                  onChange={(e) => setProfileMaxDaily(e.target.value)}
+                  placeholder="Default"
+                  min={1}
+                  max={24}
+                />
+              </div>
+            </div>
 
-          {/* Equity Compensation Section (Employees Only) */}
-          {profileType === "employee" && (
-            <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-sm text-brand-900 dark:text-brand-100">
-                  💎 Equity Compensation
-                </h4>
-                <label className="flex items-center gap-2">
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Start Date"
+                type="date"
+                value={profileStartDate}
+                onChange={(e) => setProfileStartDate(e.target.value)}
+              />
+
+              <Input
+                label="End Date (Optional)"
+                type="date"
+                value={profileEndDate}
+                onChange={(e) => setProfileEndDate(e.target.value)}
+              />
+            </div>
+
+            {/* Equity Compensation Section (Employees Only) */}
+            {profileType === "employee" && (
+              <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                <Flex justify="between" align="center" className="mb-3">
+                  <h4 className="font-medium text-sm text-brand-900 dark:text-brand-100">
+                    💎 Equity Compensation
+                  </h4>
+                  <label>
+                    <Flex align="center" gap="sm">
+                      <input
+                        type="checkbox"
+                        checked={profileHasEquity}
+                        onChange={(e) => setProfileHasEquity(e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-xs font-medium text-brand-900 dark:text-brand-100">
+                        Has Equity
+                      </span>
+                    </Flex>
+                  </label>
+                </Flex>
+
+                {profileHasEquity && (
+                  <Flex direction="column" gap="lg">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        label="Equity Percentage (%)"
+                        type="number"
+                        value={profileEquityPercentage}
+                        onChange={(e) => setProfileEquityPercentage(e.target.value)}
+                        placeholder="e.g., 0.5 for 0.5%"
+                        step="0.001"
+                        min={0}
+                      />
+
+                      <Input
+                        label="Equity Hour Value ($)"
+                        type="number"
+                        value={profileEquityHourlyValue}
+                        onChange={(e) => setProfileEquityHourlyValue(e.target.value)}
+                        placeholder="Est. value per hour"
+                        step="0.01"
+                        min={0}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <Input
+                        label="Required Hours/Week"
+                        type="number"
+                        value={profileRequiredEquityWeekly}
+                        onChange={(e) => setProfileRequiredEquityWeekly(e.target.value)}
+                        placeholder="e.g., 10"
+                        min={0}
+                        max={168}
+                      />
+
+                      <Input
+                        label="Required Hours/Month"
+                        type="number"
+                        value={profileRequiredEquityMonthly}
+                        onChange={(e) => setProfileRequiredEquityMonthly(e.target.value)}
+                        placeholder="e.g., 40"
+                        min={0}
+                      />
+
+                      <Input
+                        label="Max Equity Hours/Week"
+                        type="number"
+                        value={profileMaxEquityWeekly}
+                        onChange={(e) => setProfileMaxEquityWeekly(e.target.value)}
+                        placeholder="e.g., 20"
+                        min={0}
+                        max={168}
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="equity-notes"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                      >
+                        Equity Notes
+                      </label>
+                      <textarea
+                        id="equity-notes"
+                        value={profileEquityNotes}
+                        onChange={(e) => setProfileEquityNotes(e.target.value)}
+                        placeholder="Additional notes about equity arrangement..."
+                        rows={2}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
+                      />
+                    </div>
+
+                    <div className="text-xs text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/40 p-2 rounded">
+                      💡 Tip: Equity hours are non-paid hours compensated with equity. Set required
+                      hours/week OR hours/month (not both). Max hours/week prevents overwork.
+                    </div>
+                  </Flex>
+                )}
+              </div>
+            )}
+
+            <Flex direction="column" gap="md">
+              <label>
+                <Flex align="center" gap="sm">
                   <input
                     type="checkbox"
-                    checked={profileHasEquity}
-                    onChange={(e) => setProfileHasEquity(e.target.checked)}
+                    checked={profileIsActive}
+                    onChange={(e) => setProfileIsActive(e.target.checked)}
                     className="w-4 h-4"
                   />
-                  <span className="text-xs font-medium text-brand-900 dark:text-brand-100">
-                    Has Equity
-                  </span>
-                </label>
-              </div>
+                  <span className="text-sm font-medium">Active Employment</span>
+                </Flex>
+              </label>
+            </Flex>
 
-              {profileHasEquity && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      label="Equity Percentage (%)"
-                      type="number"
-                      value={profileEquityPercentage}
-                      onChange={(e) => setProfileEquityPercentage(e.target.value)}
-                      placeholder="e.g., 0.5 for 0.5%"
-                      step="0.001"
-                      min={0}
-                    />
-
-                    <Input
-                      label="Equity Hour Value ($)"
-                      type="number"
-                      value={profileEquityHourlyValue}
-                      onChange={(e) => setProfileEquityHourlyValue(e.target.value)}
-                      placeholder="Est. value per hour"
-                      step="0.01"
-                      min={0}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <Input
-                      label="Required Hours/Week"
-                      type="number"
-                      value={profileRequiredEquityWeekly}
-                      onChange={(e) => setProfileRequiredEquityWeekly(e.target.value)}
-                      placeholder="e.g., 10"
-                      min={0}
-                      max={168}
-                    />
-
-                    <Input
-                      label="Required Hours/Month"
-                      type="number"
-                      value={profileRequiredEquityMonthly}
-                      onChange={(e) => setProfileRequiredEquityMonthly(e.target.value)}
-                      placeholder="e.g., 40"
-                      min={0}
-                    />
-
-                    <Input
-                      label="Max Equity Hours/Week"
-                      type="number"
-                      value={profileMaxEquityWeekly}
-                      onChange={(e) => setProfileMaxEquityWeekly(e.target.value)}
-                      placeholder="e.g., 20"
-                      min={0}
-                      max={168}
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="equity-notes"
-                      className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-                    >
-                      Equity Notes
-                    </label>
-                    <textarea
-                      id="equity-notes"
-                      value={profileEquityNotes}
-                      onChange={(e) => setProfileEquityNotes(e.target.value)}
-                      placeholder="Additional notes about equity arrangement..."
-                      rows={2}
-                      className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
-                    />
-                  </div>
-
-                  <div className="text-xs text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/40 p-2 rounded">
-                    💡 Tip: Equity hours are non-paid hours compensated with equity. Set required
-                    hours/week OR hours/month (not both). Max hours/week prevents overwork.
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="space-y-3">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={profileIsActive}
-                onChange={(e) => setProfileIsActive(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span className="text-sm font-medium">Active Employment</span>
-            </label>
-          </div>
-
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" isLoading={isSubmitting}>
-              Save Profile
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                setShowAssignModal(false);
-                setSelectedUserId(null);
-              }}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-          </div>
+            <Flex gap="sm" className="pt-4">
+              <Button type="submit" isLoading={isSubmitting}>
+                Save Profile
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setShowAssignModal(false);
+                  setSelectedUserId(null);
+                }}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          </Flex>
         </form>
       </Modal>
-    </div>
+    </Flex>
   );
 }

@@ -1,801 +1,117 @@
-# Cascade - Product Roadmap & TODO
+# Cascade - Product Roadmap
 
-> **Last Updated:** 2025-11-20
-> **Version:** 2.4 - Auth & Invitations Complete, UI Polished
-> **Status:** Active Development - Ready for Public Launch
-
-This document serves as the comprehensive roadmap for Cascade development, reorganized after competitive analysis against Canvas LMS, Cal.com, AppFlowy, and Kimai.
-
-> **📌 Looking for setup instructions?** See [HUMAN_TODO.md](./HUMAN_TODO.md) for all manual setup tasks.
-> **📊 Want to see how we compare?** See [COMPARISON_Analysis.md](./COMPARISON_Analysis.md) for competitive analysis.
+> **Last Updated:** 2025-11-25
+> **Status:** Ready for Public Launch
 
 ---
 
-## 🎯 Strategic Summary
+## 🔥 NEXT: Public Launch
 
-**Cascade's Position:** Open-source Jira + Confluence alternative with real-time collaboration
+**Everything else depends on this.**
 
-**Competitive Advantages:**
-
-- ⭐ Best-in-class real-time collaboration (Convex)
-- ⭐ Modern tech stack (React 19, TypeScript, serverless)
-- ⭐ Unique: Documents + Issues + Boards in one open-source app
-- ⭐ Easiest deployment (Convex + Vercel)
-- ⭐ Complete email notification system
-
-**Critical Gaps vs. Competitors:**
-
-- ❌ No mobile apps (Canvas, AppFlowy have this)
-- ❌ No community (0 stars vs 3.5k-58k)
-- ❌ No calendar integration (Cal.com dominates)
-- ❌ No SSO/SAML (all mature competitors have this)
-- ❌ No offline mode (AppFlowy has this)
-
-**Overall Score: 70%** (Tech: A+, Product: B, Go-to-Market: F)
-
-**Strategy: Launch → Validate → Grow → Monetize**
-
----
-
-## 📊 Current State
-
-### ✅ What Works (88% Feature Complete)
-
-- ✅ Real-time collaborative document editing (BlockNote)
-- ✅ Kanban/Scrum boards with drag-and-drop + undo/redo
-- ✅ Full issue lifecycle (task/bug/story/epic)
-- ✅ Sprint management & analytics dashboard
-- ✅ Time tracking (backend + basic UI)
-- ✅ Custom fields, labels, templates
-- ✅ Automation rules & webhooks with logs
-- ✅ Role-based access control (RBAC)
-- ✅ Activity feeds & in-app notifications
-- ✅ **Email notifications (100% complete)** - digests, unsubscribe, provider-agnostic
-- ✅ Search, filters, command palette
-- ✅ Import/Export (JSON + CSV)
-- ✅ **Dark/light theme with full dark mode support** - all components, editor, drag-and-drop
-- ✅ Loading skeletons & optimistic UI
-- ✅ File attachments with drag-and-drop
-- ✅ Keyboard navigation
-- ✅ Frontend testing (Vitest + React Testing Library, 644 passing tests)
-- ✅ Backend testing (221 tests across 9 modules, 32% coverage)
-- ✅ **REST API for CLI/AI integration** - API keys, scopes, rate limiting
-- ✅ **REST API for CLI/AI integration** - API keys, scopes, rate limiting
-- 🟡 **Google Calendar OAuth integration** - OAuth flow implemented, sync logic pending
-- ✅ **Pumble webhook integration** - team chat notifications
-- ✅ **Pumble webhook integration** - team chat notifications
-- ✅ **API Keys management UI** - generate, view stats, revoke
-- ✅ **Onboarding flow** - welcome modal, onboarding tour
-- ✅ **Mobile-responsive PWA** - fully responsive mobile/tablet/desktop, installable, offline-ready
-- ✅ **Calendar events with attendance tracking** - required meetings, admin-only marking
-- ✅ **Enhanced biome configuration** - comprehensive linting rules (a11y, security, performance)
-- ✅ **Phase 5 refactoring** - automation & import/export components modularized
-- 🟡 **User invitation system** - database logic ready, email sending pending
-- ✅ **User management dashboard** - view all users, invitations, revoke access
-- 🟡 **Google OAuth authentication UI** - UI ready, backend provider pending
-- ✅ **Frontend UI polish (Nov 2025) - 100% COMPLETE** - theme consistency, component reusability, responsive design, modals, buttons, empty states
-
-### 🔴 What's Missing (Critical for Launch)
-
-- ❌ **Public launch** - No users, no community, 0 GitHub stars
-- ❌ **Landing page** - No marketing site
-- ❌ **Production deployment** - Still in development
-
-### 🟡 What's Missing (Important but not blocking)
-
-- 🟡 Document version history
-- 🟡 Slack integration
-- 🟡 GitHub integration (Pumble alternative for developers)
-- 🟡 SSO/SAML
-- 🟡 Native mobile apps
-- 🟡 AI assistant
-
----
-
-## 🚀 Roadmap Overview
-
-### **Phase 1: Launch & Validate** (Next 3 Months)
-
-**Goal:** 100 GitHub stars, 10 active users, public launch
-
-**North Star Metric:** Weekly Active Projects (projects with activity in last 7 days)
-
-| Status | Priority | Item                            | Impact   | Effort  | ETA     |
-| ------ | -------- | ------------------------------- | -------- | ------- | ------- |
-| ✅     | P0       | Loading Skeletons               | High     | 1 week  | DONE    |
-| ✅     | P0       | Email Notifications             | Critical | 3 weeks | DONE    |
-| ✅     | P0       | **Onboarding Flow**             | Critical | 2 weeks | DONE    |
-| ✅     | P0       | **Mobile-Responsive PWA**       | Critical | 4 weeks | DONE    |
-| ✅     | P0       | **REST API Integration**        | Critical | 2 weeks | DONE    |
-| - 🟡   | P0       | **Google Calendar Integration** | Critical | 2 weeks | PARTIAL |
-| ✅     | P0       | **Pumble Integration**          | High     | 1 week  | DONE    |
-| 🔥     | P0       | **Public Launch**               | Critical | 1 week  | NEXT    |
-| ✅     | P1       | Backend Testing                 | High     | 4 weeks | DONE    |
-| ✅     | P1       | Quick Wins (6 items)            | High     | 1 week  | DONE    |
-
-### **Phase 2: Grow & Differentiate** (Months 4-6)
-
-**Goal:** 1,000 stars, 100 users, 10 contributors
-
-| Priority | Item                                   | Impact    | Effort    |
-| -------- | -------------------------------------- | --------- | --------- |
-| P0       | Calendar Integration (Google, Outlook) | High      | 2 weeks   |
-| P0       | Slack Integration                      | High      | 2 weeks   |
-| P0       | GitHub Integration                     | High      | 2 weeks   |
-| P1       | Enhanced Search (filters, fuzzy)       | High      | 3 weeks   |
-| P1       | Performance Optimization               | High      | 3 weeks   |
-| P1       | Document Version History               | High      | 4 weeks   |
-| P2       | AI Project Assistant                   | Very High | 6-8 weeks |
-
-### **Phase 3: Enterprise & Monetize** (Months 7-12)
-
-**Goal:** 5,000 stars, 1,000 users, $10k MRR
-
-| Priority | Item                             | Impact   | Effort   |
-| -------- | -------------------------------- | -------- | -------- |
-| P0       | Hosted SaaS (Cascade Cloud)      | Critical | 2 weeks  |
-| P0       | SSO/SAML                         | High     | 4 weeks  |
-| P1       | Advanced RBAC & Audit Logs       | High     | 3 weeks  |
-| P1       | Native Mobile Apps (iOS/Android) | Medium   | 12 weeks |
-| P2       | Offline Mode                     | Medium   | 8 weeks  |
-| P2       | Collaborative Whiteboards        | Medium   | 8 weeks  |
-| P2       | Plugin System                    | Medium   | 6 weeks  |
-
----
-
-## 🔥 Phase 1: Launch & Validate (95% COMPLETE)
-
-### Public Launch (P0) - 🔥 NEXT UP
-
-**Impact:** ⭐⭐⭐⭐⭐ Everything depends on this
-**Effort:** 🟢 Low (1 week)
-**Status:** ❌ Not Started
-**ETA:** Next Week
-
-#### Why This Matters
-
-- Currently: 0 users, 0 stars, 0 community
-- Need feedback to validate product-market fit
-- Competitors launched early and iterated (Cal.com, AppFlowy)
-- "Launch now, iterate fast" is the winning strategy
-
-#### Implementation Plan
-
-**Day 1-2: Landing Page**
-
-- [ ] **Create landing page** (`landing/index.html` or Vercel site)
-
-  - [ ] Hero: "Open-source Jira + Confluence alternative with real-time collaboration"
-  - [ ] Features showcase (documents, boards, real-time)
+### Day 1-2: Landing Page
+- [ ] Create landing page
+  - [ ] Hero: "Open-source Jira + Confluence alternative"
+  - [ ] Features showcase
   - [ ] Screenshots/demo video
-  - [ ] "Try Demo" (sample project) + "Self-host" buttons
-  - [ ] Comparison table vs Jira/Confluence/Linear
+  - [ ] "Try Demo" + "Self-host" buttons
   - [ ] GitHub star button
-  - [ ] Discord/community link
+- [ ] Create demo video (2-3 min walkthrough)
 
-- [ ] **Create demo video** (2-3 minutes)
-  - [ ] Record walkthrough: create project, add issues, collaborate
-  - [ ] Upload to YouTube
-  - [ ] Embed on landing page
+### Day 3: GitHub Polish
+- [x] Polish README.md (hero image, quick start, features)
+- [x] Add CONTRIBUTING.md
+- [x] Add CODE_OF_CONDUCT.md
+- [ ] Add issue/PR templates
+- [ ] Add "good first issue" labels
 
-**Day 3: GitHub Polish**
+### Day 4-5: Launch
+- [ ] Hacker News (Show HN)
+- [ ] Reddit: r/selfhosted, r/opensource, r/programming
+- [ ] Product Hunt
+- [ ] awesome-selfhosted list
+- [ ] Write launch blog post
 
-- [ ] **Polish README.md**
+### Day 6-7: Community
+- [ ] Set up Discord server
+- [ ] Enable GitHub Discussions
+- [ ] Monitor and respond to feedback
 
-  - [ ] Hero image/logo
-  - [ ] Clear description
-  - [ ] Quick start guide
-  - [ ] Features list with screenshots
-  - [ ] Comparison to competitors
-  - [ ] Contributing guide
-  - [ ] License (choose: AGPLv3 like competitors)
-
-- [ ] **Add community files:**
-  - [ ] CONTRIBUTING.md
-  - [ ] CODE_OF_CONDUCT.md
-  - [ ] SECURITY.md
-  - [ ] Issue templates
-  - [ ] PR template
-  - [ ] "good first issue" labels
-
-**Day 4-5: Launch Announcements**
-
-- [ ] **Submit to launch platforms:**
-
-  - [ ] Hacker News (Show HN: Cascade - Open-source real-time project management)
-  - [ ] Reddit: r/selfhosted, r/opensource, r/programming, r/projectmanagement
-  - [ ] Product Hunt
-  - [ ] awesome-selfhosted list
-  - [ ] awesome-opensource list
-
-- [ ] **Write launch blog post:**
-
-  - [ ] Why I built Cascade
-  - [ ] What makes it different
-  - [ ] Comparison to Jira/Confluence
-  - [ ] Roadmap
-  - [ ] Call to action (star, contribute, try)
-
-- [ ] **Social media:**
-  - [ ] Twitter/X thread
-  - [ ] LinkedIn post
-  - [ ] Dev.to article
-
-**Day 6-7: Community Setup**
-
-- [ ] **Set up Discord server**
-
-  - [ ] Channels: #general, #support, #feature-requests, #development
-  - [ ] Welcome message
-  - [ ] Link from GitHub
-
-- [ ] **Enable GitHub Discussions**
-
-  - [ ] Categories: Announcements, Q&A, Ideas, Show & Tell
-
-- [ ] **Monitor and respond:**
-  - [ ] Check HN comments
-  - [ ] Respond to Reddit
-  - [ ] Thank GitHub stargazers
-  - [ ] Fix bugs found by early users
-
-#### Success Metrics
-
-- 100 GitHub stars in first month
-- 10 active users (weekly active projects)
-- 5 community members in Discord
-- First external contribution
+**Success:** 100 stars, 10 users, 5 Discord members
 
 ---
 
-## 🚀 Phase 2: Grow & Differentiate (Months 4-6)
+## Phase 2: Growth (Post-Launch)
 
-**Goal:** 1,000 GitHub stars, 100 active users, 10 contributors
-
-### 1. Calendar Integration (P0) - 🟡 PARTIALLY COMPLETE
-
-**Impact:** ⭐⭐⭐⭐⭐ Cal.com proves demand
-**Effort:** 🟢 Medium (2 weeks total, 1 week remaining)
-**Status:** 🟡 Partially Complete (OAuth flow done, Sync logic pending)
-
-**Completed:**
-
-- ✅ Google Calendar API integration (OAuth flow only)
-- [ ] Two-way sync (calendar → Cascade, Cascade → calendar)
-- ✅ Auto-refresh expired tokens
-
-**Remaining:**
-
-- [ ] Outlook Calendar API integration
+### Calendar Sync (Google Calendar OAuth works, sync pending)
+- [ ] Two-way sync (calendar ↔ Cascade)
 - [ ] Sync issue due dates to calendar
-- [ ] Sync sprint dates to calendar
-- [ ] Create calendar events from issues
-- [ ] Calendar view in Cascade UI
-- [ ] Recurring event support
+- [ ] Outlook Calendar integration
 
-**Why:** Cal.com's success (36k stars) shows calendar integration is critical
-
----
-
-### 2. Slack Integration (P0)
-
-**Impact:** ⭐⭐⭐⭐⭐ Teams live in Slack
-**Effort:** 🟢 Low (2 weeks)
-**Status:** Not Started
-
-- [ ] Slack app OAuth setup
+### Slack Integration
 - [ ] Post issue updates to channels
-- [ ] Create issues from Slack (`/cascade create issue`)
-- [ ] Unfurl issue links (show preview)
-- [ ] Subscribe channels to projects
-- [ ] Slash commands: `/cascade assign`, `/cascade complete`
+- [ ] Create issues from Slack (`/cascade create`)
+- [ ] Unfurl issue links
 
----
-
-### 3. GitHub Integration (P0)
-
-**Impact:** ⭐⭐⭐⭐⭐ Developers need this
-**Effort:** 🟢 Low (2 weeks)
-**Status:** Not Started
-
-- [ ] GitHub app OAuth setup
+### GitHub Integration
 - [ ] Link commits to issues (`Fixes PROJ-123`)
 - [ ] Link PRs to issues
-- [ ] Auto-update status (merged → done)
-- [ ] Show commit history in issue
-- [ ] Create issues from GitHub issues (import)
+- [ ] Auto-update status on merge
 
----
+### Enhanced Search
+- [ ] Fuzzy matching
+- [ ] Search shortcuts (`type:bug`, `@me`)
+- [ ] Advanced search modal
 
-### 4. Enhanced Search (P1)
-
-**Impact:** ⭐⭐⭐⭐ Find things 5x faster
-**Effort:** 🟡 Medium (3 weeks)
-**Status:** Not Started
-
-- [ ] Add search filters (type, status, assignee, project)
-- [ ] Fuzzy matching (typo tolerance)
-- [ ] Search within documents and comments
-- [ ] Recent searches
-- [ ] Search shortcuts (`type:bug`, `status:open`, `@me`)
-- [ ] Keyboard navigation (↑↓ to select)
-- [ ] Result highlighting
-- [ ] "Advanced search" modal
-
----
-
-### 5. Performance Optimization (P1)
-
-**Impact:** ⭐⭐⭐⭐ Stays fast as data grows
-**Effort:** 🟡 Medium (3 weeks)
-**Status:** Not Started
-
-- [ ] Query result caching
-- [ ] Pagination (limit 50, load more)
-- [ ] Optimize N+1 queries (batch fetches)
-- [ ] Add missing indexes
-- [ ] Virtual scrolling (react-window)
-- [ ] Compress images/assets
-- [ ] Code splitting (lazy load routes)
-- [ ] Monitor slow queries
-
-**Success Metrics:**
-
-- Dashboard load < 1s with 1000 issues
-- Issue list scrolling at 60fps
-- Search results < 500ms
-
----
-
-### 6. Document Version History (P1)
-
-**Impact:** ⭐⭐⭐⭐ Confluence's killer feature
-**Effort:** 🟡 Medium (4 weeks)
-**Status:** Not Started
-
-- [ ] Store snapshots on every save (debounced)
+### Document Version History
 - [ ] Version history sidebar
-- [ ] Diff view (show changes between versions)
+- [ ] Diff view
 - [ ] Restore previous version
-- [ ] Name versions ("Final draft", "v1.2")
-- [ ] Prune old versions (keep last 50 or 30 days)
 
 ---
 
-### 7. AI Project Assistant (P2)
+## Phase 3: Enterprise
 
-**Impact:** ⭐⭐⭐⭐⭐ Major differentiator (but expensive)
-**Effort:** 🔴 High (6-8 weeks)
-**Status:** Not Started
-
-**Why:** Canvas has Gemini, Confluence has Rovo AI - this is table stakes
-
-**Features:**
-
-- [ ] Natural language queries ("show overdue issues")
-- [ ] Project insights (bottlenecks, at-risk sprints)
-- [ ] Auto-summarize (sprint summaries, long comments)
-- [ ] Smart suggestions (assignees, labels, priority)
-- [ ] Document assistance (draft PRDs, meeting notes)
-- [ ] Chat interface (⌘K → "Ask AI")
-
-**Tech:**
-
-- Provider: Anthropic Claude 3.5 Sonnet (best reasoning)
-- Cost: ~$0.01 per query, ~$3k/month at scale
-- Mitigation: Rate limiting, caching, user quotas
-
----
-
-## 💼 Phase 3: Enterprise & Monetize (Months 7-12)
-
-**Goal:** 5,000 stars, 1,000 users, $10k MRR
-
-### Business Model: Open Core (like Cal.com)
-
-**Free Tier:**
-
-- 100% self-hosted
-- All core features
-- Unlimited users
-- Community support
-
-**Team ($10/user/month):**
-
-- Hosted on Cascade Cloud
-- Automatic backups
-- Email support
-- 99.9% uptime SLA
-
-**Enterprise ($30/user/month):**
-
-- Everything in Team
-- SSO/SAML
-- Advanced RBAC
-- Audit logs
-- Phone support
-- Custom SLA
-
----
-
-### 1. Hosted SaaS - Cascade Cloud (P0)
-
-**Impact:** ⭐⭐⭐⭐⭐ Primary revenue stream
-**Effort:** 🟢 Low (2 weeks - Convex handles hosting!)
-**Status:** Not Started
-
-- [ ] Payment integration (Stripe)
+### Cascade Cloud (Hosted SaaS)
+- [ ] Stripe payment integration
 - [ ] Subscription management
-- [ ] Multi-tenancy setup (already supported)
-- [ ] Billing dashboard
-- [ ] Usage tracking
 - [ ] Pricing page
-- [ ] 14-day free trial
-- [ ] Onboarding for paid users
 
-**Pricing:**
-
-- Free: Self-hosted
-- Team: $10/user/month (min 3 users)
-- Enterprise: $30/user/month + custom
-
----
-
-### 2. SSO/SAML (P0)
-
-**Impact:** ⭐⭐⭐⭐⭐ Enterprise requirement
-**Effort:** 🟡 High (4 weeks)
-**Status:** Not Started
-
-- [ ] SAML authentication flow
+### SSO/SAML
 - [ ] Google Workspace SSO
-- [ ] Microsoft Entra ID (Azure AD)
-- [ ] Okta integration
-- [ ] Admin UI for SSO config
-- [ ] Test with enterprise customers
+- [ ] Microsoft Entra ID
+- [ ] Okta
+
+### AI Assistant
+- [ ] Natural language queries
+- [ ] Project insights
+- [ ] Auto-summarize
 
 ---
 
-### 3. Advanced RBAC & Audit Logs (P1)
+## Technical Debt
 
-**Impact:** ⭐⭐⭐⭐ Enterprise requirement
-**Effort:** 🟡 Medium (3 weeks)
-**Status:** Not Started
+### Backend Cleanup
+- [x] `@ts-nocheck` pragmas reviewed - kept for legitimate Convex framework limitations (circular types, aggregate API)
+- [ ] Implement AI response time calculation (`convex/internal/ai.ts:204`)
+- [ ] SendPulse email provider (optional, Resend works)
 
-- [ ] Custom roles (beyond admin/editor/viewer)
-- [ ] Granular permissions (per-project)
-- [ ] Permission templates
-- [ ] Audit log (all actions)
-- [ ] Audit log export
-- [ ] Compliance reports
+### Critical (Before Launch)
+- [x] Webhook secrets in plain text (fixed - secrets no longer returned in queries)
+- [x] N+1 query patterns (fixed in bulk operations and dashboard queries)
 
----
+### High Priority
+- [x] Refactored components (deleted duplicate `.refactored.tsx` files - were artifacts)
+- [ ] Unbounded queries (no pagination)
 
-### 4. Native Mobile Apps (P1)
-
-**Impact:** ⭐⭐⭐⭐ Long-term investment
-**Effort:** 🔴 Very High (12 weeks)
-**Status:** Not Started
-
-**Strategy:** React Native (reuse React components)
-
-- [ ] Set up React Native project
-- [ ] Share components with web
-- [ ] Native navigation
-- [ ] Push notifications (native)
-- [ ] Offline support
-- [ ] App Store submission (iOS)
-- [ ] Play Store submission (Android)
-
-**Alternative:** PWA first, native only if users demand it
+### Medium Priority
+- [ ] No caching strategy
+- [ ] No monitoring/alerting
+- [ ] Large activity logs (no archiving)
 
 ---
 
-### 5. Offline Mode (P2)
+## Related Docs
 
-**Impact:** ⭐⭐⭐ Complex, niche demand
-**Effort:** 🔴 High (8 weeks)
-**Status:** Not Started
-
-- [ ] Offline-first architecture
-- [ ] Local database (IndexedDB)
-- [ ] Sync engine with conflict resolution
-- [ ] Optimistic UI updates
-- [ ] Background sync
-- [ ] "Offline" indicator
-
-**Inspiration:** AppFlowy's offline-first approach
-
----
-
-### 6. Collaborative Whiteboards (P2)
-
-**Impact:** ⭐⭐⭐ Nice to have
-**Effort:** 🟡 Medium (8 weeks with Excalidraw)
-**Status:** Not Started
-
-**Strategy:** Integrate Excalidraw (don't build from scratch)
-
-- [ ] Embed Excalidraw in documents
-- [ ] Real-time collaboration (multiple cursors)
-- [ ] Save whiteboards to Convex
-- [ ] Export as PNG/SVG
-- [ ] Link whiteboards to issues
-
----
-
-### 7. Plugin System (P2)
-
-**Impact:** ⭐⭐⭐ Revenue stream (like Kimai)
-**Effort:** 🟡 High (6 weeks)
-**Status:** Not Started
-
-**Inspiration:** Kimai's plugin marketplace generates revenue
-
-- [ ] Plugin API design
-- [ ] Plugin manifest format
-- [ ] Plugin marketplace
-- [ ] Paid plugins (revenue share)
-- [ ] Community plugins
-- [ ] Plugin sandboxing
-
----
-
-## 📊 Success Metrics & KPIs
-
-### North Star Metric
-
-**Weekly Active Projects** - Projects with at least one action in last 7 days
-
-**Goal:** 1,000 weekly active projects by end of 2025
-
-### Phase 1 Metrics (Launch)
-
-- ✅ GitHub Stars: 100
-- ✅ Active Users: 10
-- ✅ Day 7 Retention: 40%
-- ✅ Onboarding Completion: 60%
-
-### Phase 2 Metrics (Growth)
-
-- ✅ GitHub Stars: 1,000
-- ✅ Active Users: 100
-- ✅ Contributors: 10
-- ✅ Day 30 Retention: 20%
-
-### Phase 3 Metrics (Revenue)
-
-- ✅ GitHub Stars: 5,000
-- ✅ Active Users: 1,000
-- ✅ Paying Customers: 50
-- ✅ MRR: $10,000
-
-### Performance Metrics (Always)
-
-- Dashboard load time < 1s
-- 95% of queries < 500ms
-- Lighthouse score > 90
-- Backend test coverage > 80%
-
----
-
-## 🚧 Technical Debt & Known Issues
-
-### Critical (Fix Before Launch)
-
-- [ ] **Webhook secrets in plain text** - Security risk
-- [ ] **No rate limiting on API** - Can be abused
-- [ ] **N+1 query patterns** - Performance issues at scale
-
-### High Priority (Fix in Phase 2)
-
-- [ ] **Refactored components not integrated** - `.refactored.tsx` files exist but unused
-- [ ] **No data migration strategy** - Schema changes risk breaking changes
-- [ ] **Unbounded queries** - Some queries don't paginate
-- ✅ **Frontend UI polish (100% COMPLETE!)** - Button replacements ✅, hardcoded colors ✅, empty states ✅, modal standardization ✅
-
-### Medium Priority (Fix in Phase 3)
-
-- [ ] **No caching strategy** - All queries hit DB
-- [ ] **Large activity logs** - No archiving
-- [ ] **No monitoring/alerting** - Don't know when things break
-- [ ] **Missing API documentation** - No public API docs
-
----
-
-## 🎨 Frontend UI Polish (November 2025)
-
-### Overview
-
-Comprehensive frontend audit completed to ensure:
-- ✅ Mobile/tablet/desktop responsive design readiness
-- ✅ Theme consistency (no hardcoded colors, full dark mode support)
-- ✅ Component reusability (proper use of shared components)
-
-### Completed Work (Priority 1 - High Impact)
-
-**✅ Theme Token Migration**
-- Migrated `src/lib/issue-utils.ts` getPriorityColor() and getStatusColor() to semantic tokens
-- Updated `src/components/AnalyticsDashboard.tsx` - all 5 charts now use theme tokens
-- Fixed `src/components/AI/AIChat.tsx` template literal issue + theme tokens
-- **Impact:** Full dark mode support, consistent theming across priority/status indicators
-
-**✅ LoadingSpinner Standardization**
-- Replaced custom spinners in 7 files with centralized LoadingSpinner component
-- Files: NotificationBell, CreateProjectFromTemplate, Timesheet, BillingReport, BurnRateDashboard, UnsubscribePage, AIChat
-- **Impact:** Consistent loading UX, built-in accessibility
-
-**✅ Button Component Adoption (18 files completed - 100% COMPLETE)**
-- SprintManager (5 buttons) - Create, Start, Complete, form actions
-- Sidebar (4 buttons) - New document, template selector
-- ProjectSidebar (2 buttons) - Create project
-- IssueDetailModal (4 buttons) - Save, Cancel, Delete
-- PumbleIntegration (10 buttons) - Add/Edit/Delete webhooks, Test, Enable/Disable
-- CalendarView (2 buttons) - Today, New Event
-- CreateEventModal (2 buttons) - Create, Cancel
-- EventDetailsModal (2 buttons) - Delete, Close
-- ApiKeysManager (4 buttons) - Copy, View Stats, Revoke, Delete
-- Admin/UserManagement (2 buttons) - Resend, Revoke invitations
-- TimerWidget (3 buttons) - Stop, Start Timer, modal actions
-- ManualTimeEntryModal (4 buttons) - Add tag, Remove tag, Cancel, Create Entry
-- TimeEntriesList (2 buttons) - Add Time Entry, Delete entry
-- **Impact:** ~400 lines of code reduced, 100% button consistency, built-in loading states & accessibility
-
-**✅ Responsive Design**
-- Verified mobile/tablet/desktop responsiveness (85% excellent)
-- CalendarView already properly responsive with overflow-auto
-
-**✅ Hardcoded Color Fixes (COMPLETED - November 2025)**
-- Fixed Admin/UserTypeManager.tsx (7 instances): employment type badges, unassigned banner, inactive badge, equity section
-- Fixed Admin/HourComplianceDashboard.tsx (1 instance): review notes section
-- **Impact:** 100% semantic token usage, consistent dark mode, easier theme customization
-
-**✅ Empty State Standardization (COMPLETED - November 2025)**
-- Replaced custom empty state in TimeEntriesList.tsx with EmptyState component (~20 lines reduced)
-- Replaced custom empty state in GlobalSearch.tsx with EmptyState component
-- **Impact:** Consistent empty state UX with built-in animations, centralized maintenance
-
-**✅ Modal Standardization (COMPLETED - November 2025)**
-- TimeTracking: TimerWidget (StartTimerModal), ManualTimeEntryModal
-- Calendar: CreateEventModal, EventDetailsModal
-- Settings: PumbleIntegration (AddWebhookModal, EditWebhookModal)
-- Onboarding: SampleProjectModal, ProjectWizard
-- TimeTracking: UserRatesManagement
-- **Total:** 9 modals across 7 files migrated to Modal component
-- **Impact:** ~190 lines of code reduced, consistent modal behavior (ESC key, backdrop clicks, ARIA attributes), replaced toast with showError/showSuccess utilities
-
-### Remaining Work (Priority 2 - Medium Impact)
-
-**✅ Button Replacements (COMPLETED!)** - 100% COMPLETE
-- All 18 files migrated, ~400 lines reduced
-- 100% button consistency across entire application
-
-**✅ Hardcoded Colors (COMPLETED!)** - 100% COMPLETE
-- Fixed 2 Admin components (UserTypeManager, HourComplianceDashboard)
-- All colors now use semantic theme tokens
-
-**✅ Empty State Standardization (COMPLETED!)** - 100% COMPLETE
-- Standardized TimeEntriesList and GlobalSearch
-- Consistent empty state UX with EmptyState component
-
-**✅ Modal Standardization (COMPLETED!)** - 100% COMPLETE
-- All 9 modals migrated to Modal component
-- Consistent modal UX with built-in accessibility
-
-### Commits (November 2025 Frontend Polish)
-
-**Button Replacements:**
-1. `85b680a` - refactor: replace custom buttons in EventDetailsModal and ApiKeysManager
-2. `caa2cbb` - refactor: replace action buttons in Admin/UserManagement
-3. `beb87e6` - refactor: replace custom buttons in TimeTracking components
-4. `084cf43` - docs: update TODO.md - button replacements 100% complete
-5. Previous commits for SprintManager, Sidebar, ProjectSidebar, IssueDetailModal, PumbleIntegration, Calendar components
-
-**Hardcoded Colors:**
-6. `b193dc2` - refactor: replace hardcoded colors with semantic theme tokens in Admin components
-
-**Empty States:**
-7. `2cdd4b4` - refactor: standardize empty states with EmptyState component
-8. `2b1c81b` - fix: add missing EmptyState import to GlobalSearch
-
-**Modal Standardization:**
-9. `f3ba744` - refactor: replace custom modals in TimeTracking (TimerWidget + ManualTimeEntryModal)
-10. `89b8432` - refactor: replace custom modals in Calendar (CreateEventModal + EventDetailsModal)
-11. `5f10028` - refactor: replace custom modals in PumbleIntegration (AddWebhookModal + EditWebhookModal)
-12. `758900d` - refactor: replace custom modals in Onboarding (SampleProjectModal + ProjectWizard)
-13. `9a3588a` - refactor: replace custom modal in UserRatesManagement
-
-### Frontend Polish Complete! 🎉
-
-**Frontend UI Polish: 100% COMPLETE** (4/4 major tasks)
-1. ~~Button replacements (18 files)~~ ✅ COMPLETE
-2. ~~Hardcoded color fixes (2 files)~~ ✅ COMPLETE
-3. ~~Empty state standardization (2 files)~~ ✅ COMPLETE
-4. ~~Modal standardization (7 files, 9 modals)~~ ✅ COMPLETE
-
-**Total Impact:**
-- ~590 lines of code reduced (~400 buttons + ~190 modals)
-- 100% component consistency across entire application
-- Full dark mode support with semantic theme tokens
-- Enhanced accessibility (ARIA attributes, keyboard navigation)
-- Improved error handling (showError/showSuccess utilities)
-
----
-
-## 📚 Resources & Competitive Analysis
-
-### Competitors Analyzed
-
-- **Canvas LMS** - 5k stars, Rails/React, Education LMS
-- **Cal.com** - 36k stars, Next.js/tRPC, Scheduling (open core success story)
-- **AppFlowy** - 58k stars, Flutter/Rust, Notion alternative (fast growth)
-- **Kimai** - 3.5k stars, Symfony/PHP, Time tracking (plugin revenue)
-
-### Key Learnings
-
-1. **Launch early, iterate fast** (Cal.com, AppFlowy)
-2. **Open core = sustainable** (all successful projects use this)
-3. **Developer-first marketing works** (Cal.com's success)
-4. **Real-time is a moat** (only Cascade and AppFlowy have this)
-5. **Mobile matters** (Canvas and AppFlowy have native apps)
-
-### Documentation
-
-- [Convex Docs](https://docs.convex.dev/)
-- [React 19 Docs](https://react.dev/)
-- [COMPARISON_Analysis.md](./COMPARISON_Analysis.md) - Full competitive analysis
-- [HUMAN_TODO.md](./HUMAN_TODO.md) - Setup instructions
-
----
-
-## 🎯 Next Actions
-
-### This Week (Week 1-2)
-
-1. **Start Onboarding Flow** - Most critical for activation
-2. **Polish README** - Prepare for launch
-3. **Create demo video** - Show don't tell
-
-### Next Week (Week 3-4)
-
-1. **Mobile responsive redesign** - Critical for modern apps
-2. **PWA setup** - Low effort, high impact
-
-### Week 7
-
-1. **LAUNCH** - Hacker News, Reddit, Product Hunt
-2. **Get first 100 stars**
-3. **Get first 10 users**
-
----
-
-## ✅ How to Use This Roadmap
-
-### Daily Standup
-
-1. Check current phase tasks
-2. Pick highest priority incomplete task
-3. Update status in TODO
-4. Ship something every day
-
-### Weekly Review
-
-1. Review progress on phase goals
-2. Adjust priorities based on user feedback
-3. Celebrate wins 🎉
-
-### Monthly Planning
-
-1. Review metrics (stars, users, retention)
-2. Adjust roadmap based on learnings
-3. Plan next month's focus
-
----
-
-**Strategy:** Launch → Learn → Iterate → Grow → Monetize
-
-**Competitive Advantage:** Real-time Jira + Confluence that nobody else has in open-source
-
-**Next Milestone:** 100 GitHub stars by end of Month 1
-
-**Let's ship! 🚀**
+- [SETUP.md](./SETUP.md) - Setup instructions
+- [CLAUDE.md](./CLAUDE.md) - Development guide

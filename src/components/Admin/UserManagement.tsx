@@ -6,6 +6,7 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
@@ -20,7 +21,7 @@ function UserRow({
   return (
     <tr>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center">
+        <Flex align="center">
           {user.image ? (
             <img
               src={user.image}
@@ -28,14 +29,18 @@ function UserRow({
               className="h-8 w-8 rounded-full mr-3"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-brand-600 flex items-center justify-center text-white font-semibold mr-3">
+            <Flex
+              align="center"
+              justify="center"
+              className="h-8 w-8 rounded-full bg-brand-600 text-white font-semibold mr-3"
+            >
               {(user.name || user.email || "?")[0].toUpperCase()}
-            </div>
+            </Flex>
           )}
           <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
             {user.name || "Anonymous"}
           </div>
-        </div>
+        </Flex>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
         {user.email || "No email"}
@@ -144,9 +149,9 @@ export function UserManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex justify="between" align="center">
         <div>
           <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             User Management
@@ -158,7 +163,7 @@ export function UserManagement() {
         {activeTab === "invites" && (
           <Button onClick={() => setShowInviteForm(true)}>Invite User</Button>
         )}
-      </div>
+      </Flex>
 
       {/* Tabs */}
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark">
@@ -196,63 +201,65 @@ export function UserManagement() {
             description="Invite a new user to join the platform"
           />
           <CardBody>
-            <form onSubmit={handleSendInvite} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-                >
-                  Email Address
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="user@example.com"
-                  required
-                  autoFocus
-                />
-              </div>
+            <form onSubmit={handleSendInvite}>
+              <Flex direction="column" gap="lg">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                  >
+                    Email Address
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="user@example.com"
+                    required
+                    autoFocus
+                  />
+                </div>
 
-              <div>
-                <label
-                  htmlFor="role"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-                >
-                  Role
-                </label>
-                <select
-                  id="role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500"
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Admins can manage users and send invitations
-                </p>
-              </div>
+                <div>
+                  <label
+                    htmlFor="role"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                  >
+                    Role
+                  </label>
+                  <select
+                    id="role"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value as "user" | "admin")}
+                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    Admins can manage users and send invitations
+                  </p>
+                </div>
 
-              <div className="flex gap-3">
-                <Button type="submit" isLoading={isSubmitting}>
-                  Send Invitation
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setShowInviteForm(false);
-                    setEmail("");
-                    setRole("user");
-                  }}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </div>
+                <Flex gap="md">
+                  <Button type="submit" isLoading={isSubmitting}>
+                    Send Invitation
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      setShowInviteForm(false);
+                      setEmail("");
+                      setRole("user");
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                </Flex>
+              </Flex>
             </form>
           </CardBody>
         </Card>
@@ -263,9 +270,9 @@ export function UserManagement() {
         <Card>
           <CardBody>
             {!invites ? (
-              <div className="flex justify-center py-8">
+              <Flex justify="center" className="py-8">
                 <LoadingSpinner />
-              </div>
+              </Flex>
             ) : invites.length === 0 ? (
               <EmptyState
                 icon="✉️"
@@ -356,7 +363,7 @@ export function UserManagement() {
                           {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end gap-2">
+                          <Flex justify="end" gap="sm">
                             {invite.status === "pending" && (
                               <>
                                 <Button
@@ -384,7 +391,7 @@ export function UserManagement() {
                                 Accepted by {invite.acceptedByName}
                               </span>
                             )}
-                          </div>
+                          </Flex>
                         </td>
                       </tr>
                     ))}
@@ -400,9 +407,9 @@ export function UserManagement() {
         <Card>
           <CardBody>
             {!users ? (
-              <div className="flex justify-center py-8">
+              <Flex justify="center" className="py-8">
                 <LoadingSpinner />
-              </div>
+              </Flex>
             ) : users.length === 0 ? (
               <EmptyState icon="👥" title="No users" description="No users have joined yet" />
             ) : (
@@ -456,6 +463,6 @@ export function UserManagement() {
           </CardBody>
         </Card>
       )}
-    </div>
+    </Flex>
   );
 }

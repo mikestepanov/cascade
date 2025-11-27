@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 interface ManualTimeEntryModalProps {
@@ -292,7 +293,7 @@ export function ManualTimeEntryModal({
           >
             Tags
           </label>
-          <div className="flex gap-2">
+          <Flex gap="sm">
             <input
               id="time-entry-tags"
               type="text"
@@ -310,56 +311,60 @@ export function ManualTimeEntryModal({
             <Button onClick={handleAddTag} variant="secondary" size="sm">
               Add
             </Button>
-          </div>
+          </Flex>
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                >
-                  {tag}
-                  <Button
-                    onClick={() => handleRemoveTag(tag)}
-                    variant="ghost"
-                    size="sm"
-                    className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
-                    aria-label={`Remove tag ${tag}`}
+            <div className="mt-2">
+              <Flex gap="sm" className="flex-wrap">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
                   >
-                    ×
-                  </Button>
-                </span>
-              ))}
+                    {tag}
+                    <Button
+                      onClick={() => handleRemoveTag(tag)}
+                      variant="ghost"
+                      size="sm"
+                      className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      ×
+                    </Button>
+                  </span>
+                ))}
+              </Flex>
             </div>
           )}
         </div>
 
         {/* Billable */}
         <div>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={billable}
-              onChange={(e) => setBillable(e.target.checked)}
-              className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-            />
-            <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              Billable time
-            </span>
+          <label className="cursor-pointer">
+            <Flex align="center" gap="sm">
+              <input
+                type="checkbox"
+                checked={billable}
+                onChange={(e) => setBillable(e.target.checked)}
+                className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+              />
+              <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                Billable time
+              </span>
+            </Flex>
           </label>
           <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
             Mark this time as billable to clients
           </p>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4">
+        <Flex justify="end" gap="sm" className="pt-4">
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
           <Button type="submit" variant="primary" disabled={duration <= 0}>
             Create Entry
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );

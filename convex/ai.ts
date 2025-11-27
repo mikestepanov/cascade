@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck - Circular type inference through internal wrappers
 /**
  * AI Integration with OpenAI
  *

@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Avatar } from "./ui/Avatar";
 
 interface MentionInputProps {
   projectId: Id<"projects">;
@@ -187,9 +188,7 @@ export function MentionInput({
               }`}
             >
               {/* Avatar */}
-              <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
-                {member.userName.charAt(0).toUpperCase()}
-              </div>
+              <Avatar name={member.userName} size="md" />
 
               {/* User Info */}
               <div className="flex-1 min-w-0">

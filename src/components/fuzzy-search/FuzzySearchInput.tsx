@@ -183,13 +183,13 @@ export function FuzzySearchInput<T>({
           aria-autocomplete="list"
           aria-controls="fuzzy-search-results"
           aria-expanded={showDropdown}
-          className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white ${className}`}
+          className={`w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark ${className}`}
         />
 
         {/* Loading indicator */}
         {isLoading && (
           <div className="absolute right-10 top-1/2 -translate-y-1/2">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+            <div className="animate-spin h-4 w-4 border-2 border-brand-500 border-t-transparent rounded-full" />
           </div>
         )}
 
@@ -198,7 +198,7 @@ export function FuzzySearchInput<T>({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
             aria-label="Clear search"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -220,10 +220,10 @@ export function FuzzySearchInput<T>({
           ref={dropdownRef}
           id="fuzzy-search-results"
           role="listbox"
-          className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded-lg shadow-lg max-h-60 overflow-y-auto"
         >
           {results.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+            <div className="px-4 py-3 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               No results found for "{query}"
             </div>
           ) : (
@@ -239,13 +239,13 @@ export function FuzzySearchInput<T>({
                   onSearch("");
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between ${
-                  index === selectedIndex ? "bg-gray-100 dark:bg-gray-700" : ""
+                className={`w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center justify-between ${
+                  index === selectedIndex ? "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark" : ""
                 }`}
               >
                 <div className="flex-1">{renderItem(result)}</div>
                 {showScore && result.score !== undefined && result.score > 0 && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark ml-2">
                     {((1 - result.score) * 100).toFixed(0)}%
                   </span>
                 )}

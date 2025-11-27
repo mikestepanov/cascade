@@ -35,79 +35,101 @@ describe("issue-utils", () => {
   describe("getPriorityColor", () => {
     describe("text variant", () => {
       it("should return correct color for highest priority", () => {
-        expect(getPriorityColor("highest", "text")).toBe("text-red-600");
+        expect(getPriorityColor("highest", "text")).toBe("text-priority-highest");
       });
 
       it("should return correct color for high priority", () => {
-        expect(getPriorityColor("high", "text")).toBe("text-orange-600");
+        expect(getPriorityColor("high", "text")).toBe("text-priority-high");
       });
 
       it("should return correct color for medium priority", () => {
-        expect(getPriorityColor("medium", "text")).toBe("text-yellow-600");
+        expect(getPriorityColor("medium", "text")).toBe("text-priority-medium");
       });
 
       it("should return correct color for low priority", () => {
-        expect(getPriorityColor("low", "text")).toBe("text-blue-600");
+        expect(getPriorityColor("low", "text")).toBe("text-priority-low");
       });
 
       it("should return correct color for lowest priority", () => {
-        expect(getPriorityColor("lowest", "text")).toBe("text-gray-600");
+        expect(getPriorityColor("lowest", "text")).toBe("text-priority-lowest");
       });
 
       it("should default to lowest for unknown priority", () => {
-        expect(getPriorityColor("unknown", "text")).toBe("text-gray-600");
+        expect(getPriorityColor("unknown", "text")).toBe("text-priority-lowest");
       });
 
       it("should use text variant as default", () => {
-        expect(getPriorityColor("high")).toBe("text-orange-600");
+        expect(getPriorityColor("high")).toBe("text-priority-high");
       });
     });
 
     describe("bg variant", () => {
       it("should return correct color for highest priority", () => {
-        expect(getPriorityColor("highest", "bg")).toBe("bg-red-100 text-red-800");
+        expect(getPriorityColor("highest", "bg")).toBe(
+          "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
+        );
       });
 
       it("should return correct color for high priority", () => {
-        expect(getPriorityColor("high", "bg")).toBe("bg-orange-100 text-orange-800");
+        expect(getPriorityColor("high", "bg")).toBe(
+          "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+        );
       });
 
       it("should return correct color for medium priority", () => {
-        expect(getPriorityColor("medium", "bg")).toBe("bg-yellow-100 text-yellow-800");
+        expect(getPriorityColor("medium", "bg")).toBe(
+          "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+        );
       });
 
       it("should return correct color for low priority", () => {
-        expect(getPriorityColor("low", "bg")).toBe("bg-blue-100 text-blue-800");
+        expect(getPriorityColor("low", "bg")).toBe(
+          "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
+        );
       });
 
       it("should return correct color for lowest priority", () => {
-        expect(getPriorityColor("lowest", "bg")).toBe("bg-gray-100 text-gray-800");
+        expect(getPriorityColor("lowest", "bg")).toBe(
+          "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+        );
       });
 
       it("should default to lowest for unknown priority", () => {
-        expect(getPriorityColor("unknown", "bg")).toBe("bg-gray-100 text-gray-800");
+        expect(getPriorityColor("unknown", "bg")).toBe(
+          "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+        );
       });
     });
 
     describe("badge variant", () => {
       it("should return correct color for highest priority", () => {
-        expect(getPriorityColor("highest", "badge")).toBe("text-red-600 bg-red-50");
+        expect(getPriorityColor("highest", "badge")).toBe(
+          "text-priority-highest bg-status-error-bg dark:bg-status-error-bg-dark",
+        );
       });
 
       it("should return correct color for high priority", () => {
-        expect(getPriorityColor("high", "badge")).toBe("text-orange-600 bg-orange-50");
+        expect(getPriorityColor("high", "badge")).toBe(
+          "text-priority-high bg-status-warning-bg dark:bg-status-warning-bg-dark",
+        );
       });
 
       it("should return correct color for medium priority", () => {
-        expect(getPriorityColor("medium", "badge")).toBe("text-yellow-600 bg-yellow-50");
+        expect(getPriorityColor("medium", "badge")).toBe(
+          "text-priority-medium bg-status-warning-bg dark:bg-status-warning-bg-dark",
+        );
       });
 
       it("should return correct color for low priority", () => {
-        expect(getPriorityColor("low", "badge")).toBe("text-blue-600 bg-blue-50");
+        expect(getPriorityColor("low", "badge")).toBe(
+          "text-priority-low bg-status-info-bg dark:bg-status-info-bg-dark",
+        );
       });
 
       it("should return correct color for lowest priority", () => {
-        expect(getPriorityColor("lowest", "badge")).toBe("text-gray-600 bg-gray-50");
+        expect(getPriorityColor("lowest", "badge")).toBe(
+          "text-priority-lowest bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+        );
       });
     });
   });
@@ -190,52 +212,68 @@ describe("issue-utils", () => {
   });
 
   describe("getStatusColor", () => {
-    it("should return green for active status", () => {
-      expect(getStatusColor("active")).toBe("bg-green-100 text-green-800");
-      expect(getStatusColor("Active")).toBe("bg-green-100 text-green-800");
-      expect(getStatusColor("ACTIVE")).toBe("bg-green-100 text-green-800");
+    it("should return success colors for active status", () => {
+      const expected =
+        "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark";
+      expect(getStatusColor("active")).toBe(expected);
+      expect(getStatusColor("Active")).toBe(expected);
+      expect(getStatusColor("ACTIVE")).toBe(expected);
     });
 
-    it("should return green for in progress status", () => {
-      expect(getStatusColor("in progress")).toBe("bg-green-100 text-green-800");
-      expect(getStatusColor("In Progress")).toBe("bg-green-100 text-green-800");
-      expect(getStatusColor("IN PROGRESS")).toBe("bg-green-100 text-green-800");
+    it("should return success colors for in progress status", () => {
+      const expected =
+        "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark";
+      expect(getStatusColor("in progress")).toBe(expected);
+      expect(getStatusColor("In Progress")).toBe(expected);
+      expect(getStatusColor("IN PROGRESS")).toBe(expected);
     });
 
-    it("should return gray for completed status", () => {
-      expect(getStatusColor("completed")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("Completed")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("COMPLETED")).toBe("bg-gray-100 text-gray-800");
+    it("should return tertiary colors for completed status", () => {
+      const expected =
+        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      expect(getStatusColor("completed")).toBe(expected);
+      expect(getStatusColor("Completed")).toBe(expected);
+      expect(getStatusColor("COMPLETED")).toBe(expected);
     });
 
-    it("should return gray for done status", () => {
-      expect(getStatusColor("done")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("Done")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("DONE")).toBe("bg-gray-100 text-gray-800");
+    it("should return tertiary colors for done status", () => {
+      const expected =
+        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      expect(getStatusColor("done")).toBe(expected);
+      expect(getStatusColor("Done")).toBe(expected);
+      expect(getStatusColor("DONE")).toBe(expected);
     });
 
-    it("should return blue for future status", () => {
-      expect(getStatusColor("future")).toBe("bg-blue-100 text-blue-800");
-      expect(getStatusColor("Future")).toBe("bg-blue-100 text-blue-800");
-      expect(getStatusColor("FUTURE")).toBe("bg-blue-100 text-blue-800");
+    it("should return info colors for future status", () => {
+      const expected =
+        "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
+      expect(getStatusColor("future")).toBe(expected);
+      expect(getStatusColor("Future")).toBe(expected);
+      expect(getStatusColor("FUTURE")).toBe(expected);
     });
 
-    it("should return blue for todo status", () => {
-      expect(getStatusColor("todo")).toBe("bg-blue-100 text-blue-800");
-      expect(getStatusColor("Todo")).toBe("bg-blue-100 text-blue-800");
-      expect(getStatusColor("TODO")).toBe("bg-blue-100 text-blue-800");
+    it("should return info colors for todo status", () => {
+      const expected =
+        "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
+      expect(getStatusColor("todo")).toBe(expected);
+      expect(getStatusColor("Todo")).toBe(expected);
+      expect(getStatusColor("TODO")).toBe(expected);
     });
 
-    it("should return red for blocked status", () => {
-      expect(getStatusColor("blocked")).toBe("bg-red-100 text-red-800");
-      expect(getStatusColor("Blocked")).toBe("bg-red-100 text-red-800");
-      expect(getStatusColor("BLOCKED")).toBe("bg-red-100 text-red-800");
+    it("should return error colors for blocked status", () => {
+      const expected =
+        "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark";
+      expect(getStatusColor("blocked")).toBe(expected);
+      expect(getStatusColor("Blocked")).toBe(expected);
+      expect(getStatusColor("BLOCKED")).toBe(expected);
     });
 
-    it("should return default gray for unknown status", () => {
-      expect(getStatusColor("unknown")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("")).toBe("bg-gray-100 text-gray-800");
-      expect(getStatusColor("custom-status")).toBe("bg-gray-100 text-gray-800");
+    it("should return default tertiary for unknown status", () => {
+      const expected =
+        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      expect(getStatusColor("unknown")).toBe(expected);
+      expect(getStatusColor("")).toBe(expected);
+      expect(getStatusColor("custom-status")).toBe(expected);
     });
   });
 });

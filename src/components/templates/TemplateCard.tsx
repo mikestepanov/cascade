@@ -1,5 +1,6 @@
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 
 type IssueType = "task" | "bug" | "story" | "epic";
 type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
@@ -38,9 +39,9 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
 
   return (
     <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
-      <div className="flex items-start justify-between">
+      <Flex justify="between" align="start">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+          <Flex gap="sm" align="center" className="mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {template.name}
@@ -51,7 +52,7 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
             <span className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded capitalize">
               {template.defaultPriority}
             </span>
-          </div>
+          </Flex>
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
             <span className="font-medium">Title:</span> {template.titleTemplate}
           </p>
@@ -61,7 +62,7 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
             </p>
           )}
           {template.defaultLabels && template.defaultLabels.length > 0 && (
-            <div className="flex gap-1 mt-2">
+            <Flex gap="xs" className="mt-2">
               {template.defaultLabels.map((label) => (
                 <span
                   key={label}
@@ -70,11 +71,11 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
                   {label}
                 </span>
               ))}
-            </div>
+            </Flex>
           )}
         </div>
 
-        <div className="flex gap-2 ml-4">
+        <Flex gap="sm" className="ml-4">
           <Button
             variant="ghost"
             size="sm"
@@ -121,8 +122,8 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
           >
             Delete
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </div>
   );
 }

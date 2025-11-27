@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
+import { Flex } from "./Flex";
 import { Modal } from "./Modal";
 
 interface FormDialogProps {
@@ -33,18 +34,22 @@ export function FormDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth={size}>
-      <div className="space-y-4">
+      <Flex direction="column" gap="lg">
         {children}
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <Flex
+          justify="end"
+          gap="sm"
+          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={isLoading}>
             {isLoading ? "Saving..." : saveLabel}
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </Modal>
   );
 }

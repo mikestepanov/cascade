@@ -1,7 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
 import type { GenericMutationCtx, GenericQueryCtx } from "convex/server";
-// @ts-expect-error - components export requires running `npx convex dev` to generate types
 import { components } from "./_generated/api";
 import type { DataModel, Id } from "./_generated/dataModel";
 

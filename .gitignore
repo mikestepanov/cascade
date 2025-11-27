@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dev-dist
 *.local
 .env
 .env.production
@@ -30,3 +31,5 @@ package-lock.json
 
 # Test coverage
 coverage/
+
+.vercel

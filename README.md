@@ -1,218 +1,195 @@
-# Cascade - Collaborative Project Management Platform
-
-> **Last Updated:** 2025-11-20
-
-A modern Jira + Confluence clone built with React, TypeScript, and Convex for real-time collaboration.
-
-## 🚀 Features
-
-### 📝 Document Management (Confluence-like)
-- **Real-time collaborative editing** - Multiple users can edit documents simultaneously
-- **Live presence indicators** - See who's currently viewing/editing each document
-- **Document organization** - Private and public documents with easy navigation
-- **Full-text search** - Quickly find documents by title
-- **Rich text editor** - Full-featured document editor with formatting options
-
-### 📊 Project Management (Jira-like)
-- **Kanban boards** - Drag-and-drop issue management
-- **Issue tracking** - Create and manage tasks, bugs, stories, and epics
-- **Sprint planning** - Organize work into sprints with start/end dates
-- **Custom workflows** - Define your own workflow states
-- **Activity tracking** - Complete history of all changes
-- **Comments** - Collaborate on issues with threaded discussions
-- **Analytics dashboard** - Sprint burndown, velocity tracking, team metrics
-
-### 🔗 Integrations & API
-- **REST API** - API keys with scope-based permissions for CLI/AI integration
-- **Google Calendar** - Bi-directional calendar sync (OAuth)
-- **Pumble** - Team chat notifications via webhooks
-- **GitHub** - Link repos, track PRs and commits (OAuth)
-- **Email notifications** - @mentions, assignments, digests
-
-### 🔐 Authentication & User Management
-- **Email & Password** - Standard authentication with secure password hashing
-- **Google OAuth** - Sign in with Google account (UI ready, requires OAuth setup)
-- **Anonymous Authentication** - Quick access for demos and testing
-- **User Invitations** - Admin-controlled invitation system with email-based invites
-- **Role-Based Access** - Platform-wide admin and user roles
-- **Invitation Management** - Send, resend, revoke, and track invitation status
-
-### 📱 Mobile & Offline
-- **Responsive design** - Works on all devices (mobile, tablet, desktop)
-- **Progressive Web App** - Installable as native app
-- **Offline mode** - Full functionality offline with auto-sync
-- **Onboarding flow** - Interactive tour for new users
-
-### 🎨 Design
-- Clean, minimal interface with lots of white space
-- Neutral color palette for reduced eye strain
-- **Full dark mode support** - Comprehensive dark theme across all components
-- Fast, real-time updates without page refreshes
-- **Fully responsive** - Optimized for mobile, tablet, and desktop devices
-
-## 🛠 Tech Stack
-
-- **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: [Convex](https://convex.dev) (real-time database)
-- **Styling**: Tailwind CSS
-- **Editor**: BlockNote (ProseMirror-based)
-- **Auth**: Convex Auth (Email/Password, Google OAuth, Anonymous)
-- **Real-time**: Convex Presence + ProseMirror Sync
-- **Analytics**: [PostHog](https://posthog.com) (product analytics & session replay)
-- **Testing**: Vitest + React Testing Library
-
-This project is connected to the Convex deployment named [`peaceful-salmon-964`](https://dashboard.convex.dev/d/peaceful-salmon-964).
-
-## 📦 Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- pnpm (recommended) or npm
-
-### Installation
-
-1. Clone the repository:
-\`\`\`bash
-git clone https://github.com/yourusername/cascade.git
-cd cascade
-\`\`\`
-
-2. Install dependencies:
-\`\`\`bash
-pnpm install
-\`\`\`
-
-3. Set up environment variables (optional - for analytics):
-\`\`\`bash
-# Add to .env.local if you want analytics
-VITE_PUBLIC_POSTHOG_KEY=your_posthog_key
-VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-\`\`\`
-
-4. Start the development server:
-\`\`\`bash
-pnpm run dev
-\`\`\`
-
-The app will open automatically at http://localhost:5173
-
-### First Time Setup
-
-1. Sign up for an account using email/password or Google OAuth
-2. Create your first project with a unique project key (e.g., "PROJ")
-3. Start creating documents and issues
-4. **Invite team members** - Use Settings → Admin → User Management to send invitations
-
-## 📁 Project Structure
-
-\`\`\`
-cascade/
-├── src/                    # React application
-│   ├── components/        # UI components
-│   │   ├── Sidebar.tsx    # Document navigation
-│   │   ├── DocumentEditor.tsx
-│   │   ├── KanbanBoard.tsx
-│   │   ├── IssueCard.tsx
-│   │   └── ...
-│   ├── App.tsx           # Main application
-│   └── main.tsx          # Entry point
-├── convex/               # Backend functions
-│   ├── schema.ts        # Database schema
-│   ├── documents.ts     # Document operations
-│   ├── projects.ts      # Project management
-│   ├── issues.ts        # Issue tracking
-│   ├── sprints.ts       # Sprint planning
-│   ├── auth.ts          # Authentication
-│   └── router.ts        # HTTP API routes
-└── package.json
-\`\`\`
-
-## 🔥 Key Features Explained
-
-### Real-time Collaboration
-All changes are synchronized in real-time using Convex's reactive database. When multiple users edit the same document or move issues on a Kanban board, everyone sees the changes instantly.
-
-### Presence System
-The presence system shows:
-- Who's currently viewing each document (facepile)
-- Live cursor positions in documents
-- Active users in projects
-
-### Document Linking
-Documents can be linked to projects and issues, creating a knowledge base that's directly connected to your work items.
-
-### Workflow Customization
-Each project can have custom workflow states beyond the default (To Do → In Progress → Review → Done).
-
-## 📜 Commands
-
-\`\`\`bash
-# Development
-pnpm run dev              # Start dev server with hot reload
-
-# Build
-pnpm run build           # Build for production
-
-# Lint/Type Check
-pnpm run lint            # Run linter and type checker
-
-# Convex
-pnpm convex dev          # Start Convex in dev mode
-pnpm convex deploy       # Deploy to production
-\`\`\`
-
-## 🚢 Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Import the project in Vercel
-3. Configure build settings:
-   - Build Command: `npx convex deploy --cmd 'pnpm run build'`
-   - Output Directory: `dist`
-4. Set up environment variables:
-   - `CONVEX_DEPLOY_KEY` - Get from Convex dashboard (Production only)
-   - `VITE_PUBLIC_POSTHOG_KEY` - Your PostHog project key (optional)
-   - `VITE_PUBLIC_POSTHOG_HOST` - PostHog host URL (optional)
-5. Deploy
-
-### Deploy Convex Backend
-
-\`\`\`bash
-pnpm convex deploy
-\`\`\`
-
-Check out the [Convex docs](https://docs.convex.dev/) for more information:
-* [Overview](https://docs.convex.dev/understanding/) - Good starting point
-* [Hosting and Deployment](https://docs.convex.dev/production/) - How to deploy your app
-* [Best Practices](https://docs.convex.dev/understanding/best-practices/) - Tips for improvement
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📊 Analytics
-
-This project includes PostHog analytics integration for:
-- User behavior tracking
-- Session recordings
-- Feature usage metrics
-- Performance monitoring
-
-Analytics are privacy-focused and can be disabled by removing PostHog environment variables.
-
-## 🙏 Acknowledgments
-
-- Built with [Chef](https://chef.convex.dev) and [Convex](https://convex.dev) for real-time sync
-- UI components inspired by Notion and Jira
-- BlockNote editor for rich text editing
-- Tailwind CSS for styling
-- [PostHog](https://posthog.com) for product analytics
+<p align="center">
+  <h1 align="center">Cascade</h1>
+  <p align="center">
+    <strong>Open-source Jira + Confluence alternative with real-time collaboration</strong>
+  </p>
+  <p align="center">
+    <a href="#features">Features</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#deployment">Deployment</a> •
+    <a href="#contributing">Contributing</a>
+  </p>
+</p>
 
 ---
 
-Built with ❤️ using modern web technologies
+## Why Cascade?
+
+Tired of paying $10+/user/month for Jira and Confluence? Cascade gives you:
+
+- **Real-time collaboration** - See changes instantly, no refresh needed
+- **Documents + Issues + Boards** - All in one place, linked together
+- **Self-hosted** - Your data, your servers, no vendor lock-in
+- **Modern stack** - React 19, TypeScript, Convex - easy to customize
+
+## Features
+
+### 📝 Documents (Confluence-like)
+- Real-time collaborative editing with live cursors
+- Rich text editor with formatting, tables, code blocks
+- Document templates and organization
+- Full-text search
+
+### 📊 Project Management (Jira-like)
+- Kanban and Scrum boards with drag-and-drop
+- Issues: tasks, bugs, stories, epics
+- Sprint planning with burndown charts
+- Custom workflows and labels
+- Time tracking
+
+### 🔗 Integrations
+- **REST API** with API key management
+- **Google Calendar** sync (OAuth)
+- **Pumble/Slack** notifications
+- **GitHub** PR and commit linking
+- **Email** notifications and digests
+
+### 🔐 Enterprise Ready
+- Role-based access control (RBAC)
+- User invitation system
+- Google OAuth + Email/Password auth
+- Audit logging
+
+### 📱 Works Everywhere
+- Responsive design (mobile, tablet, desktop)
+- Progressive Web App (installable)
+- Offline support with auto-sync
+- Dark mode
+
+## Quick Start
+
+```bash
+# Clone
+git clone https://github.com/yourusername/cascade.git
+cd cascade
+
+# Install
+pnpm install
+
+# Run
+pnpm run dev
+```
+
+Open http://localhost:5173 - that's it!
+
+### First Steps
+1. Sign up with email or Google
+2. Create a project (e.g., key: "PROJ")
+3. Start creating documents and issues
+4. Invite your team via Settings → User Management
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS |
+| Backend | [Convex](https://convex.dev) (real-time serverless) |
+| Editor | BlockNote (ProseMirror) |
+| Auth | Convex Auth (Email, Google, Anonymous) |
+| Testing | Vitest, React Testing Library |
+
+## Project Structure
+
+```
+cascade/
+├── src/                  # React frontend
+│   ├── components/       # UI components
+│   ├── hooks/           # Custom hooks
+│   └── lib/             # Utilities
+├── convex/              # Backend (Convex)
+│   ├── schema.ts        # Database schema
+│   ├── documents.ts     # Document operations
+│   ├── issues.ts        # Issue tracking
+│   └── ...
+└── docs/                # Documentation
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push to GitHub
+2. Import in Vercel
+3. Set environment variables:
+   - `CONVEX_DEPLOY_KEY` (from Convex dashboard)
+4. Build command: `npx convex deploy --cmd 'pnpm run build'`
+5. Output directory: `dist`
+
+### Self-hosted
+
+```bash
+# Build
+pnpm run build
+
+# Deploy Convex backend
+npx convex deploy
+
+# Serve dist/ with any static host
+```
+
+See [SETUP.md](./SETUP.md) for detailed configuration (email, OAuth, etc.)
+
+## Configuration
+
+| Feature | Required | Setup |
+|---------|----------|-------|
+| Email notifications | Optional | Resend API key |
+| Google OAuth | Optional | Google Cloud credentials |
+| GitHub integration | Optional | GitHub OAuth app |
+| Analytics | Optional | PostHog key |
+
+## Commands
+
+```bash
+pnpm run dev          # Start development
+pnpm run build        # Build for production
+pnpm run typecheck    # Type checking
+pnpm run lint         # Linting
+pnpm test             # Run tests
+```
+
+## Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### Development
+
+```bash
+pnpm run dev:frontend  # Frontend only
+pnpm run dev:backend   # Backend only (Convex)
+```
+
+### Testing
+
+```bash
+pnpm test              # Frontend tests
+pnpm test:backend      # Backend tests
+```
+
+## Comparison
+
+| Feature | Cascade | Jira | Confluence | Linear |
+|---------|---------|------|------------|--------|
+| Real-time collab | ✅ | ❌ | ❌ | ✅ |
+| Self-hosted | ✅ | 💰 | 💰 | ❌ |
+| Open source | ✅ | ❌ | ❌ | ❌ |
+| Docs + Issues | ✅ | ❌ | ❌ | ❌ |
+| Price | Free | $8+/user | $6+/user | $8+/user |
+
+## License
+
+MIT License - see [LICENSE](./LICENSE)
+
+## Links
+
+- [Documentation](./docs/)
+- [Setup Guide](./SETUP.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Convex Dashboard](https://dashboard.convex.dev)
+
+---
+
+<p align="center">
+  Built with ❤️ using <a href="https://convex.dev">Convex</a>, <a href="https://react.dev">React</a>, and <a href="https://tailwindcss.com">Tailwind CSS</a>
+</p>

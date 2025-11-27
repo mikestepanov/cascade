@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ImportPanelProps {
@@ -77,7 +78,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <Flex direction="column" gap="lg">
       <div>
         <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
           Select Import Format
@@ -91,7 +92,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                 : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
               <div>
                 <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -101,7 +102,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                   Spreadsheet format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
 
           <Card
@@ -112,7 +113,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                 : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
               <div>
                 <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -122,7 +123,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
                   Data interchange format
                 </div>
               </div>
-            </div>
+            </Flex>
           </Card>
         </div>
       </div>
@@ -145,7 +146,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       </div>
 
       <div className="bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg p-4">
-        <div className="flex items-start gap-3">
+        <Flex gap="md" align="start">
           <div className="text-status-warning dark:text-status-warning text-xl">⚠️</div>
           <div className="text-sm text-status-warning dark:text-status-warning">
             <p className="font-semibold mb-1">Import Requirements</p>
@@ -161,19 +162,19 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
               <li>All imported issues will be created in the first workflow state</li>
             </ul>
           </div>
-        </div>
+        </Flex>
       </div>
 
       <Button onClick={handleImport} disabled={!importData || isImporting} className="w-full">
         {isImporting ? (
-          <div className="flex items-center justify-center gap-2">
+          <Flex align="center" justify="center" gap="sm">
             <LoadingSpinner size="sm" color="white" />
             Importing...
-          </div>
+          </Flex>
         ) : (
           `Import from ${importFormat.toUpperCase()}`
         )}
       </Button>
-    </div>
+    </Flex>
   );
 }

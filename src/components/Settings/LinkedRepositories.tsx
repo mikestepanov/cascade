@@ -5,6 +5,7 @@ import { Github, Trash2 } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 
 /**
  * GitHub linked repositories management
@@ -63,18 +64,20 @@ export function LinkedRepositories() {
 
       {/* Repository list */}
       {selectedProject && (
-        <div className="space-y-2">
+        <Flex direction="column" gap="sm">
           {repositories && repositories.length === 0 && (
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
               No repositories linked to this project yet.
             </p>
           )}
           {repositories?.map((repo) => (
-            <div
+            <Flex
               key={repo._id}
-              className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+              justify="between"
+              align="center"
+              className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
             >
-              <div className="flex items-center space-x-3">
+              <Flex gap="md" align="center">
                 <Github className="h-5 w-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
                 <div>
                   <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -85,13 +88,13 @@ export function LinkedRepositories() {
                     {repo.autoLinkCommits && "Auto-link commits"}
                   </p>
                 </div>
-              </div>
+              </Flex>
               <Button variant="ghost" size="sm" onClick={() => handleUnlink(repo._id)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
+            </Flex>
           ))}
-        </div>
+        </Flex>
       )}
 
       {selectedProject && (

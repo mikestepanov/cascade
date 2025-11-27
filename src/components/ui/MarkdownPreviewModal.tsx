@@ -1,6 +1,7 @@
 import DOMPurify from "isomorphic-dompurify";
 import { useState } from "react";
 import { Button } from "./Button";
+import { Flex } from "./Flex";
 import { Modal } from "./Modal";
 
 interface MarkdownPreviewModalProps {
@@ -35,19 +36,19 @@ export function MarkdownPreviewModal({
       <div className="p-6">
         {/* File Info */}
         <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <div className="flex items-center justify-between text-sm">
+          <Flex align="center" justify="between" className="text-sm">
             <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               📄 {filename}
             </span>
             <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
-          </div>
+          </Flex>
         </div>
 
         {/* Warning */}
         <div className="mb-4 p-3 bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg">
-          <div className="flex items-start gap-2">
+          <Flex align="start" gap="sm">
             <span className="text-status-warning dark:text-status-warning text-lg">⚠️</span>
             <div className="flex-1">
               <p className="text-sm font-medium text-status-warning dark:text-status-warning">
@@ -57,7 +58,7 @@ export function MarkdownPreviewModal({
                 Make sure you have a backup or export the current version first.
               </p>
             </div>
-          </div>
+          </Flex>
         </div>
 
         {/* Tab Selector */}
@@ -104,14 +105,14 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-6">
+        <Flex gap="md" className="mt-6">
           <Button onClick={onConfirm} variant="primary">
             Import & Replace Content
           </Button>
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-        </div>
+        </Flex>
       </div>
     </Modal>
   );

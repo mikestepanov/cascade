@@ -26,7 +26,7 @@ import { rateLimit } from "../rateLimits";
  */
 export const generateDescription = internalAction({
   args: { prompt: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const response = await generateText({
       model: openai("gpt-4o-mini"),
       prompt: args.prompt,
@@ -44,7 +44,7 @@ const descriptionCache = new ActionCache(components.actionCache, {
  */
 export const generatePriority = internalAction({
   args: { prompt: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const response = await generateText({
       model: openai("gpt-4o-mini"),
       prompt: args.prompt,
@@ -62,7 +62,7 @@ const priorityCache = new ActionCache(components.actionCache, {
  */
 export const generateLabels = internalAction({
   args: { prompt: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const response = await generateText({
       model: openai("gpt-4o-mini"),
       prompt: args.prompt,

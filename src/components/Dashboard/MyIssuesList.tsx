@@ -4,6 +4,7 @@ import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
+import { Flex } from "../ui/Flex";
 import { SkeletonList } from "../ui/Skeleton";
 
 type IssueFilter = "assigned" | "created" | "all";
@@ -47,7 +48,7 @@ export function MyIssuesList({
     <Card>
       <CardHeader title="My Issues" description="Track your assigned and created issues" />
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4">
-        <div className="flex gap-4">
+        <Flex gap="lg">
           <button
             type="button"
             onClick={() => onFilterChange("assigned")}
@@ -72,7 +73,7 @@ export function MyIssuesList({
           >
             Created ({myCreatedIssues?.length || 0})
           </button>
-        </div>
+        </Flex>
       </div>
       <CardBody>
         {!displayIssues ? (
@@ -97,7 +98,12 @@ export function MyIssuesList({
             }
           />
         ) : (
-          <div ref={issueNavigation.listRef} className="space-y-2 max-h-[600px] overflow-y-auto">
+          <Flex
+            direction="column"
+            gap="sm"
+            className="max-h-[600px] overflow-y-auto"
+            ref={issueNavigation.listRef}
+          >
             {displayIssues.map((issue, index) => (
               <button
                 key={issue._id}
@@ -107,9 +113,9 @@ export function MyIssuesList({
                 className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="flex items-start justify-between">
+                <Flex justify="between" align="start">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <Flex gap="sm" align="center" className="mb-1">
                       <span className="text-sm font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {issue.key}
                       </span>
@@ -119,20 +125,24 @@ export function MyIssuesList({
                       <Badge shape="pill" className={getPriorityColor(issue.priority, "bg")}>
                         {issue.priority}
                       </Badge>
-                    </div>
+                    </Flex>
                     <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                       {issue.title}
                     </h4>
-                    <div className="flex items-center gap-2 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Flex
+                      gap="sm"
+                      align="center"
+                      className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                    >
                       <span>{issue.projectName}</span>
                       <span>•</span>
                       <span>{issue.status}</span>
-                    </div>
+                    </Flex>
                   </div>
-                </div>
+                </Flex>
               </button>
             ))}
-          </div>
+          </Flex>
         )}
       </CardBody>
     </Card>

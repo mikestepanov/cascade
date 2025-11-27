@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 
 interface AutomationRuleCardProps {
   rule: {
@@ -64,16 +65,16 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
 
   return (
     <Card className="p-4">
-      <div className="flex items-start justify-between gap-4">
+      <Flex justify="between" align="start" gap="lg">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-2">
+          <Flex gap="md" align="center" className="mb-2">
             <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               {rule.name}
             </h4>
             <Badge variant={rule.isActive ? "success" : "neutral"} size="md">
               {rule.isActive ? "Active" : "Inactive"}
             </Badge>
-          </div>
+          </Flex>
 
           {rule.description && (
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
@@ -81,29 +82,29 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
             </p>
           )}
 
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
+          <Flex gap="lg" align="center" className="text-sm">
+            <Flex gap="sm" align="center">
               <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">When:</span>
               <Badge variant="brand" size="md">
                 {getTriggerLabel(rule.trigger)}
                 {rule.triggerValue && ` → ${rule.triggerValue}`}
               </Badge>
-            </div>
+            </Flex>
 
-            <div className="flex items-center gap-2">
+            <Flex gap="sm" align="center">
               <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Then:</span>
               <Badge variant="accent" size="md">
                 {getActionLabel(rule.actionType)}
               </Badge>
-            </div>
+            </Flex>
 
             <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Executed: {rule.executionCount} times
             </div>
-          </div>
+          </Flex>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <Flex gap="sm" align="center" className="flex-shrink-0">
           <button
             type="button"
             onClick={handleToggle}
@@ -131,8 +132,8 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           >
             🗑️
           </button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </Card>
   );
 }

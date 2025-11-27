@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
-import { createTestProject, createTestUser } from "./testUtils";
 import { modules } from "./testSetup";
+import { createTestProject, createTestUser } from "./testUtils";
 
 describe("Sprints", () => {
   describe("create", () => {

@@ -8,6 +8,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -57,9 +58,9 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
 
   if (!entries) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <Flex justify="center" align="center" className="p-8">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
@@ -84,9 +85,9 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
   });
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Add Time Entry Button */}
-      <div className="flex justify-end">
+      <Flex justify="end">
         <Button
           onClick={() => setShowManualEntryModal(true)}
           variant="primary"
@@ -103,27 +104,35 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         >
           Add Time Entry
         </Button>
-      </div>
+      </Flex>
 
       {Object.entries(groupedEntries).map(([date, dateEntries]) => {
         const totalDuration = dateEntries.reduce((sum, e) => sum + e.duration, 0);
         const totalCost = dateEntries.reduce((sum, e) => sum + (e.totalCost || 0), 0);
 
         return (
-          <div key={date} className="space-y-2">
+          <Flex key={date} direction="column" gap="sm">
             {/* Date header */}
-            <div className="flex items-center justify-between py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+            <Flex
+              justify="between"
+              align="center"
+              className="py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+            >
               <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 {date}
               </h3>
-              <div className="flex items-center gap-4 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Flex
+                align="center"
+                gap="lg"
+                className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark"
+              >
                 <span>{formatDurationDisplay(totalDuration)}</span>
                 <span>{formatCurrency(totalCost, dateEntries[0]?.currency || "USD")}</span>
-              </div>
-            </div>
+              </Flex>
+            </Flex>
 
             {/* Entries for this date */}
-            <div className="space-y-2">
+            <Flex direction="column" gap="sm">
               {dateEntries.map((entry) => (
                 <div
                   key={entry._id}
@@ -148,11 +157,15 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                       </p>
                     )}
 
-                    <div className="flex items-center gap-3 mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Flex
+                      align="center"
+                      gap="md"
+                      className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                    >
                       {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
 
                       {entry.project && (
-                        <span className="flex items-center gap-1">
+                        <Flex align="center" gap="xs" className="inline-flex">
                           <svg
                             className="w-3 h-3"
                             fill="currentColor"
@@ -162,11 +175,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                           </svg>
                           {entry.project.name}
-                        </span>
+                        </Flex>
                       )}
 
                       {entry.issue && (
-                        <span className="flex items-center gap-1">
+                        <Flex align="center" gap="xs" className="inline-flex">
                           <svg
                             className="w-3 h-3"
                             fill="currentColor"
@@ -180,13 +193,17 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                             />
                           </svg>
                           {entry.issue.key}
-                        </span>
+                        </Flex>
                       )}
 
                       {entry.billable && <Badge variant="success">Billable</Badge>}
 
                       {entry.isLocked && (
-                        <span className="flex items-center gap-1 text-status-warning dark:text-status-warning">
+                        <Flex
+                          align="center"
+                          gap="xs"
+                          className="inline-flex text-status-warning dark:text-status-warning"
+                        >
                           <svg
                             className="w-3 h-3"
                             fill="currentColor"
@@ -200,9 +217,9 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                             />
                           </svg>
                           Locked
-                        </span>
+                        </Flex>
                       )}
-                    </div>
+                    </Flex>
                   </div>
 
                   {/* Duration and cost */}
@@ -244,8 +261,8 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
                   )}
                 </div>
               ))}
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         );
       })}
 
@@ -256,6 +273,6 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
           projectId={projectId}
         />
       )}
-    </div>
+    </Flex>
   );
 }

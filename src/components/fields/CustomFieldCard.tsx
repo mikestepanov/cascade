@@ -2,6 +2,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 
 type FieldType = "text" | "number" | "select" | "multiselect" | "date" | "checkbox" | "url";
 
@@ -47,40 +48,44 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
 
   return (
     <Card className="p-4">
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-3 flex-1">
+      <Flex justify="between" align="start">
+        <Flex gap="md" align="start" className="flex-1">
           <div className="text-2xl">{getFieldTypeIcon(field.fieldType)}</div>
           <div className="flex-1">
-            <div className="flex items-center gap-2">
+            <Flex gap="sm" align="center">
               <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 {field.name}
               </h3>
               {field.isRequired && <Badge variant="error">Required</Badge>}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            </Flex>
+            <Flex
+              gap="sm"
+              align="center"
+              className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1"
+            >
               <code className="px-2 py-0.5 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded font-mono text-xs">
                 {field.fieldKey}
               </code>
               <span>•</span>
               <span className="capitalize">{field.fieldType}</span>
-            </div>
+            </Flex>
             {field.description && (
               <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
                 {field.description}
               </p>
             )}
             {field.options && field.options.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
+              <Flex wrap gap="xs" className="mt-2">
                 {field.options.map((option) => (
                   <Badge key={option} variant="secondary" size="md">
                     {option}
                   </Badge>
                 ))}
-              </div>
+              </Flex>
             )}
           </div>
-        </div>
-        <div className="flex gap-2">
+        </Flex>
+        <Flex gap="sm">
           <Button onClick={onEdit} variant="secondary" size="sm">
             Edit
           </Button>
@@ -92,8 +97,8 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
           >
             Delete
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </Card>
   );
 }

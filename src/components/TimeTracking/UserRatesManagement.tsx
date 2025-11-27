@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 export function UserRatesManagement() {
@@ -68,9 +69,9 @@ export function UserRatesManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex justify="between" align="center">
         <div>
           <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Hourly Rates
@@ -82,19 +83,19 @@ export function UserRatesManagement() {
         <Button onClick={() => setShowAddRate(true)} variant="primary">
           Set My Rate
         </Button>
-      </div>
+      </Flex>
 
       {/* Current Rates List */}
       {userRates && userRates.length > 0 ? (
-        <div className="space-y-3">
+        <Flex direction="column" gap="md">
           {userRates.map((rate) => (
             <div
               key={rate._id}
               className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
             >
-              <div className="flex items-start justify-between">
+              <Flex justify="between" align="start">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
+                  <Flex align="center" gap="md">
                     <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                       {rate.user?.name || "Unknown User"}
                     </h3>
@@ -107,7 +108,7 @@ export function UserRatesManagement() {
                     >
                       {rate.rateType}
                     </span>
-                  </div>
+                  </Flex>
                   <div className="mt-2 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     {rate.projectId ? (
                       <span>Project-specific rate</span>
@@ -129,10 +130,10 @@ export function UserRatesManagement() {
                     per hour
                   </div>
                 </div>
-              </div>
+              </Flex>
             </div>
           ))}
-        </div>
+        </Flex>
       ) : (
         <div className="text-center p-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border-2 border-dashed border-ui-border-primary dark:border-ui-border-primary-dark">
           <svg
@@ -206,54 +207,58 @@ export function UserRatesManagement() {
               <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                 Rate Type
               </div>
-              <div className="flex gap-3">
+              <Flex gap="md">
                 <label
-                  className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                  className={`cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
                     rateType === "internal"
                       ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
                       : "border-ui-border-primary dark:border-ui-border-primary-dark"
                   }`}
                 >
-                  <input
-                    type="radio"
-                    name="rateType"
-                    checked={rateType === "internal"}
-                    onChange={() => setRateType("internal")}
-                    className="w-4 h-4 text-brand-600"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Internal Cost
+                  <Flex align="center" gap="sm">
+                    <input
+                      type="radio"
+                      name="rateType"
+                      checked={rateType === "internal"}
+                      onChange={() => setRateType("internal")}
+                      className="w-4 h-4 text-brand-600"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        Internal Cost
+                      </div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        What you pay
+                      </div>
                     </div>
-                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      What you pay
-                    </div>
-                  </div>
+                  </Flex>
                 </label>
                 <label
-                  className={`flex items-center gap-2 cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                  className={`cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
                     rateType === "billable"
                       ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
                       : "border-ui-border-primary dark:border-ui-border-primary-dark"
                   }`}
                 >
-                  <input
-                    type="radio"
-                    name="rateType"
-                    checked={rateType === "billable"}
-                    onChange={() => setRateType("billable")}
-                    className="w-4 h-4 text-brand-600"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Billable Rate
+                  <Flex align="center" gap="sm">
+                    <input
+                      type="radio"
+                      name="rateType"
+                      checked={rateType === "billable"}
+                      onChange={() => setRateType("billable")}
+                      className="w-4 h-4 text-brand-600"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        Billable Rate
+                      </div>
+                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        Charge clients
+                      </div>
                     </div>
-                    <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      Charge clients
-                    </div>
-                  </div>
+                  </Flex>
                 </label>
-              </div>
+              </Flex>
             </div>
 
             {/* Hourly Rate */}
@@ -264,7 +269,7 @@ export function UserRatesManagement() {
               >
                 Hourly Rate
               </label>
-              <div className="flex gap-2">
+              <Flex gap="sm">
                 <div className="relative flex-1">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     $
@@ -290,7 +295,7 @@ export function UserRatesManagement() {
                   <option value="GBP">GBP</option>
                   <option value="CAD">CAD</option>
                 </select>
-              </div>
+              </Flex>
             </div>
 
             {/* Notes */}
@@ -310,18 +315,18 @@ export function UserRatesManagement() {
                 className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
               />
             </div>
-          </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button onClick={handleCloseModal} variant="secondary">
-              Cancel
-            </Button>
-            <Button onClick={handleSaveRate} variant="primary">
-              Save Rate
-            </Button>
+            <Flex justify="end" gap="sm" className="pt-4">
+              <Button onClick={handleCloseModal} variant="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveRate} variant="primary">
+                Save Rate
+              </Button>
+            </Flex>
           </div>
         </Modal>
       )}
-    </div>
+    </Flex>
   );
 }

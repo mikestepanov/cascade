@@ -5,6 +5,7 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Flex } from "./ui/Flex";
 
 interface FileAttachmentsProps {
   issueId: Id<"issues">;
@@ -164,11 +165,13 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
             Attachments ({attachments.length})
           </h4>
           {attachments.map((attachment) => (
-            <div
+            <Flex
               key={attachment.storageId}
-              className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+              align="center"
+              justify="between"
+              className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
             >
-              <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Flex align="center" gap="md" className="flex-1 min-w-0">
                 <span className="text-2xl flex-shrink-0">{getFileIcon(attachment.filename)}</span>
                 <div className="flex-1 min-w-0">
                   <a
@@ -182,8 +185,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                     {new Date(attachment.uploadedAt).toLocaleDateString()}
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              </Flex>
+              <Flex align="center" gap="sm" className="flex-shrink-0">
                 <a
                   href={attachment.url || "#"}
                   download={attachment.filename}
@@ -227,8 +230,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                     />
                   </svg>
                 </button>
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           ))}
         </div>
       )}

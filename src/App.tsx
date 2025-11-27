@@ -37,6 +37,7 @@ import { createKeyboardShortcuts, createKeySequences } from "./config/keyboardSh
 import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
 import { SignInForm } from "./SignInForm";
+import { NixeloLanding } from "./components/NixeloLanding";
 import { SignOutButton } from "./SignOutButton";
 import { type AppView, shouldShowSidebar } from "./utils/viewHelpers";
 
@@ -44,7 +45,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <OnboardingProvider>
-        <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen flex bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
           <Toaster />
           <Content />
         </div>
@@ -74,8 +75,8 @@ function ViewSwitcherButton({
       onClick={onClick}
       className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
         isActive
-          ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+          ? "bg-ui-bg-primary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
       }`}
       aria-label={label}
       aria-current={isActive ? "page" : undefined}
@@ -136,9 +137,9 @@ function MainContentView({
       );
     }
     return (
-      <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+      <div className="flex items-center justify-center h-full text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4">
         <div className="text-center">
-          <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
             Welcome to your workspace
           </h2>
           <p>Select a document from the sidebar or create a new one to get started.</p>
@@ -165,9 +166,9 @@ function MainContentView({
   }
 
   return (
-    <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400 p-4">
+    <div className="flex items-center justify-center h-full text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4">
       <div className="text-center">
-        <h2 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
           Welcome to project management
         </h2>
         <p>Select a project from the sidebar or create a new one to get started.</p>
@@ -259,7 +260,7 @@ function Content() {
   if (loggedInUser === undefined) {
     return (
       <div className="flex justify-center items-center w-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ui-text-primary dark:border-ui-text-primary-dark" />
       </div>
     );
   }
@@ -334,7 +335,7 @@ function Content() {
           {shouldShowSidebar(activeView) && (
             <ErrorBoundary
               fallback={
-                <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+                <div className="w-64 bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark">
                   <SectionErrorFallback
                     title="Sidebar Error"
                     message="Failed to load sidebar. Please refresh the page."
@@ -373,14 +374,14 @@ function Content() {
 
           <div className="flex-1 flex flex-col min-w-0">
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
+            <header className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
               <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
                 {/* Mobile Hamburger Menu */}
                 {shouldShowSidebar(activeView) && (
                   <button
                     type="button"
                     onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                    className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    className="lg:hidden p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
                     aria-label="Toggle sidebar menu"
                   >
                     <svg
@@ -401,7 +402,7 @@ function Content() {
                 )}
                 {/* View Switcher */}
                 <nav
-                  className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 overflow-x-auto"
+                  className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1 overflow-x-auto"
                   aria-label="Main navigation"
                 >
                   <ViewSwitcherButton
@@ -466,7 +467,7 @@ function Content() {
                   />
                 </nav>
 
-                <h1 className="hidden md:block text-base lg:text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
+                <h1 className="hidden md:block text-base lg:text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
                   {getHeaderTitle(activeView, selectedDocumentId, selectedProjectId)}
                 </h1>
               </div>
@@ -474,7 +475,7 @@ function Content() {
                 <button
                   type="button"
                   onClick={() => setShowCommandPalette(true)}
-                  className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-tertiary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg hover:bg-ui-border-primary dark:hover:bg-ui-border-secondary-dark transition-colors"
                   aria-label="Open command palette"
                   data-tour="command-palette"
                 >
@@ -493,14 +494,14 @@ function Content() {
                     />
                   </svg>
                   <span className="hidden sm:inline">Commands</span>
-                  <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">
+                  <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded">
                     ⌘K
                   </kbd>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowShortcutsHelp(true)}
-                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
                   aria-label="Keyboard shortcuts"
                 >
                   <svg
@@ -528,7 +529,7 @@ function Content() {
 
             {/* Main Content */}
             <main
-              className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900"
+              className="flex-1 overflow-auto bg-ui-bg-secondary dark:bg-ui-bg-primary-dark"
               data-tour={activeView === "dashboard" ? "dashboard" : ""}
             >
               <ErrorBoundary
@@ -572,22 +573,12 @@ function Content() {
             unreadCount={unreadAISuggestions}
           />
         )}
+      {console.log("[AUTH] Rendering Authenticated - user IS logged in")}
       </Authenticated>
 
       <Unauthenticated>
-        <div className="flex items-center justify-center w-full p-4">
-          <div className="w-full max-w-md mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                Collaborative Workspace
-              </h1>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-                Create documents and manage projects together in real-time
-              </p>
-            </div>
-            <SignInForm />
-          </div>
-        </div>
+        {console.log("[AUTH] Rendering Unauthenticated - user not logged in")}
+        <NixeloLanding />
       </Unauthenticated>
 
       {/* Onboarding Modals */}

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Input, Select, Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
@@ -164,14 +165,14 @@ export function TemplateForm({ projectId, template, isOpen, onClose }: TemplateF
           />
         </div>
 
-        <div className="flex gap-2 pt-4">
+        <Flex gap="sm" className="pt-4">
           <Button type="submit" isLoading={isSubmitting}>
             {template ? "Update" : "Create"} Template
           </Button>
           <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );

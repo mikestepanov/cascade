@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
+import { Switch } from "./ui/Switch";
 
 export function NotificationPreferences() {
   const preferences = useQuery(api.notificationPreferences.get);
@@ -77,16 +78,12 @@ export function NotificationPreferences() {
               Master switch for all email notifications. Turn this off to stop receiving all emails.
             </p>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer ml-4">
-            <input
-              type="checkbox"
-              checked={preferences.emailEnabled}
-              onChange={(e) => handleToggle("emailEnabled", e.target.checked)}
-              disabled={isSaving}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600" />
-          </label>
+          <Switch
+            checked={preferences.emailEnabled}
+            onCheckedChange={(value) => handleToggle("emailEnabled", value)}
+            disabled={isSaving}
+            className="ml-4"
+          />
         </div>
       </div>
 
@@ -110,16 +107,12 @@ export function NotificationPreferences() {
                 When someone @mentions you in a comment or description
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer ml-4">
-              <input
-                type="checkbox"
-                checked={preferences.emailMentions}
-                onChange={(e) => handleToggle("emailMentions", e.target.checked)}
-                disabled={isSaving || !preferences.emailEnabled}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
-            </label>
+            <Switch
+              checked={preferences.emailMentions}
+              onCheckedChange={(value) => handleToggle("emailMentions", value)}
+              disabled={isSaving || !preferences.emailEnabled}
+              className="ml-4"
+            />
           </div>
 
           {/* Assignments */}
@@ -135,16 +128,12 @@ export function NotificationPreferences() {
                 When you are assigned to an issue
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer ml-4">
-              <input
-                type="checkbox"
-                checked={preferences.emailAssignments}
-                onChange={(e) => handleToggle("emailAssignments", e.target.checked)}
-                disabled={isSaving || !preferences.emailEnabled}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
-            </label>
+            <Switch
+              checked={preferences.emailAssignments}
+              onCheckedChange={(value) => handleToggle("emailAssignments", value)}
+              disabled={isSaving || !preferences.emailEnabled}
+              className="ml-4"
+            />
           </div>
 
           {/* Comments */}
@@ -160,16 +149,12 @@ export function NotificationPreferences() {
                 When someone comments on your issues
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer ml-4">
-              <input
-                type="checkbox"
-                checked={preferences.emailComments}
-                onChange={(e) => handleToggle("emailComments", e.target.checked)}
-                disabled={isSaving || !preferences.emailEnabled}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
-            </label>
+            <Switch
+              checked={preferences.emailComments}
+              onCheckedChange={(value) => handleToggle("emailComments", value)}
+              disabled={isSaving || !preferences.emailEnabled}
+              className="ml-4"
+            />
           </div>
 
           {/* Status Changes */}
@@ -185,16 +170,12 @@ export function NotificationPreferences() {
                 When issue status changes on issues you're watching
               </p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer ml-4">
-              <input
-                type="checkbox"
-                checked={preferences.emailStatusChanges}
-                onChange={(e) => handleToggle("emailStatusChanges", e.target.checked)}
-                disabled={isSaving || !preferences.emailEnabled}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20 dark:peer-focus:ring-brand-500/40 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-ui-border-primary after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-ui-border-primary-dark peer-checked:bg-brand-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed" />
-            </label>
+            <Switch
+              checked={preferences.emailStatusChanges}
+              onCheckedChange={(value) => handleToggle("emailStatusChanges", value)}
+              disabled={isSaving || !preferences.emailEnabled}
+              className="ml-4"
+            />
           </div>
         </div>
       </div>

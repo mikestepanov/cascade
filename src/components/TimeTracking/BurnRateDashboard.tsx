@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface BurnRateDashboardProps {
@@ -60,21 +61,21 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
   if (!(burnRate && teamCosts)) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <Flex justify="center" align="center" className="p-8">
         <LoadingSpinner />
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Header with date range selector */}
-      <div className="flex items-center justify-between">
+      <Flex justify="between" align="center">
         <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
           Burn Rate & Team Costs
         </h2>
 
-        <div className="flex gap-2">
+        <Flex gap="sm">
           {(["week", "month", "quarter"] as const).map((range) => (
             <button
               key={range}
@@ -89,8 +90,8 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               {ranges[range].label}
             </button>
           ))}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Burn Rate Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -160,7 +161,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <Flex direction="column" gap="sm">
             {teamCosts.map((member) => {
               const percentOfTotal =
                 burnRate.totalCost > 0 ? (member.cost / burnRate.totalCost) * 100 : 0;
@@ -170,38 +171,40 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                   key={member.user?._id || "unknown"}
                   className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      {member.user?.image ? (
-                        <img
-                          src={member.user.image}
-                          alt={member.user.name}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {member.user?.name?.[0] || "?"}
+                  <div className="mb-2">
+                    <Flex justify="between" align="center">
+                      <Flex align="center" gap="md">
+                        {member.user?.image ? (
+                          <img
+                            src={member.user.image}
+                            alt={member.user.name}
+                            className="w-8 h-8 rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {member.user?.name?.[0] || "?"}
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {member.user?.name || "Unknown"}
+                          </div>
+                          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                            {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
+                            billable)
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                          {member.user?.name || "Unknown"}
+                      </Flex>
+
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {formatCurrency(member.cost)}
                         </div>
                         <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                          {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
-                          billable)
+                          {percentOfTotal.toFixed(0)}% of total
                         </div>
                       </div>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {formatCurrency(member.cost)}
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {percentOfTotal.toFixed(0)}% of total
-                      </div>
-                    </div>
+                    </Flex>
                   </div>
 
                   {/* Progress bar */}
@@ -214,10 +217,10 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                 </div>
               );
             })}
-          </div>
+          </Flex>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }
 
@@ -240,12 +243,12 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
 
   return (
     <div className={`p-4 border rounded-lg ${colorClasses[color]}`}>
-      <div className="flex items-center gap-2 mb-2">
+      <Flex align="center" gap="sm" className="mb-2">
         <span className="text-2xl">{icon}</span>
         <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
           {label}
         </span>
-      </div>
+      </Flex>
       <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
         {value}
       </div>

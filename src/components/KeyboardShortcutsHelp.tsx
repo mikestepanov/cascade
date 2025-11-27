@@ -1,3 +1,4 @@
+import { KeyboardShortcut } from "./ui/KeyboardShortcut";
 import { Modal } from "./ui/Modal";
 
 interface KeyboardShortcutsHelpProps {
@@ -10,7 +11,7 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
     {
       category: "General",
       items: [
-        { keys: ["⌘K", "Ctrl+K"], description: "Open command palette" },
+        { keys: ["⌘+K", "Ctrl+K"], description: "Open command palette" },
         { keys: ["?"], description: "Show keyboard shortcuts" },
         { keys: ["/"], description: "Focus search" },
         { keys: ["Esc"], description: "Close modal or cancel" },
@@ -48,11 +49,11 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
     {
       category: "Editor",
       items: [
-        { keys: ["⌘B", "Ctrl+B"], description: "Bold" },
-        { keys: ["⌘I", "Ctrl+I"], description: "Italic" },
-        { keys: ["⌘U", "Ctrl+U"], description: "Underline" },
-        { keys: ["⌘Z", "Ctrl+Z"], description: "Undo" },
-        { keys: ["⌘Shift+Z", "Ctrl+Shift+Z"], description: "Redo" },
+        { keys: ["⌘+B", "Ctrl+B"], description: "Bold" },
+        { keys: ["⌘+I", "Ctrl+I"], description: "Italic" },
+        { keys: ["⌘+U", "Ctrl+U"], description: "Underline" },
+        { keys: ["⌘+Z", "Ctrl+Z"], description: "Undo" },
+        { keys: ["⌘+Shift+Z", "Ctrl+Shift+Z"], description: "Redo" },
       ],
     },
   ];
@@ -71,14 +72,9 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
                   <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                     {shortcut.description}
                   </span>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {shortcut.keys.map((key) => (
-                      <kbd
-                        key={key}
-                        className="px-2 py-1 text-xs font-semibold text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded"
-                      >
-                        {key}
-                      </kbd>
+                      <KeyboardShortcut key={key} shortcut={key} />
                     ))}
                   </div>
                 </div>
@@ -89,11 +85,8 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
 
         <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
           <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            <strong>Tip:</strong> Press{" "}
-            <kbd className="px-2 py-1 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded">
-              ⌘ K
-            </kbd>{" "}
-            to quickly access all commands and features.
+            <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
+            commands and features.
           </p>
         </div>
       </div>

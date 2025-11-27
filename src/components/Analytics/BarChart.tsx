@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Flex } from "../ui/Flex";
 
 /**
  * Horizontal bar chart visualization
@@ -14,9 +15,9 @@ export const BarChart = memo(function BarChart({
   const maxValue = Math.max(...data.map((d) => d.value), 1);
 
   return (
-    <div className="h-full flex flex-col justify-end space-y-2">
+    <Flex direction="column" justify="end" gap="sm" className="h-full">
       {data.map((item) => (
-        <div key={item.label} className="flex items-center gap-2">
+        <Flex key={item.label} gap="sm" align="center">
           <div
             className="w-24 text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate"
             title={item.label}
@@ -34,8 +35,8 @@ export const BarChart = memo(function BarChart({
               <span className="text-xs font-semibold text-white">{item.value}</span>
             </div>
           </div>
-        </div>
+        </Flex>
       ))}
-    </div>
+    </Flex>
   );
 });

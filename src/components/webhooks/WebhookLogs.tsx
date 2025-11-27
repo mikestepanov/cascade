@@ -4,6 +4,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
 
 interface WebhookLogsProps {
@@ -89,8 +90,8 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                   className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark transition-colors"
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
+                  <Flex justify="between" align="center" className="mb-3">
+                    <Flex gap="md" align="center">
                       {getStatusBadge(execution.status)}
                       <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {execution.event}
@@ -100,8 +101,8 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                           HTTP {execution.responseStatus}
                         </span>
                       )}
-                    </div>
-                    <div className="flex items-center gap-3">
+                    </Flex>
+                    <Flex gap="md" align="center">
                       <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         {formatDate(execution.createdAt)}
                       </span>
@@ -125,8 +126,8 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
                       >
                         {selectedExecution === execution._id ? "Hide Details" : "Show Details"}
                       </Button>
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
 
                   {/* Metadata */}
                   <div className="grid grid-cols-3 gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">

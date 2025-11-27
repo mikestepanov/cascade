@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Flex } from "../ui/Flex";
 
 /**
  * Metric display card for analytics dashboard
@@ -21,7 +22,7 @@ export const MetricCard = memo(function MetricCard({
     <div
       className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6 ${highlight ? "ring-2 ring-status-warning" : ""}`}
     >
-      <div className="flex items-center justify-between">
+      <Flex justify="between" align="center">
         <div>
           <p className="text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
             {title}
@@ -36,7 +37,7 @@ export const MetricCard = memo(function MetricCard({
           )}
         </div>
         <div className="text-4xl">{icon}</div>
-      </div>
+      </Flex>
     </div>
   );
 });

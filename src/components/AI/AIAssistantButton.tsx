@@ -2,6 +2,7 @@
  * AIAssistantButton - Reusable floating button for AI assistant
  */
 
+import { Flex } from "../ui/Flex";
 import { AI_CONFIG } from "./config";
 
 export interface AIAssistantButtonProps {
@@ -64,9 +65,13 @@ export function AIAssistantButton({
     >
       <span>🤖</span>
       {unreadCount > 0 && (
-        <span className="absolute -top-1 -right-1 w-6 h-6 bg-status-error text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md animate-pulse">
+        <Flex
+          align="center"
+          justify="center"
+          className="absolute -top-1 -right-1 w-6 h-6 bg-status-error text-white text-xs font-bold rounded-full shadow-md animate-pulse"
+        >
           {displayCount}
-        </span>
+        </Flex>
       )}
     </button>
   );

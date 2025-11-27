@@ -8,6 +8,7 @@ import { AutomationRuleForm } from "./automation/AutomationRuleForm";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface AutomationRulesManagerProps {
@@ -73,9 +74,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
   };
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <Flex align="center" justify="between">
         <div>
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Automation Rules
@@ -85,7 +86,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
           </p>
         </div>
         <Button onClick={handleCreate}>+ Create Rule</Button>
-      </div>
+      </Flex>
 
       {/* Rules List */}
       {rules === undefined ? (
@@ -129,6 +130,6 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
         message="Are you sure you want to delete this rule? This action cannot be undone."
         confirmLabel="Delete"
       />
-    </div>
+    </Flex>
   );
 }

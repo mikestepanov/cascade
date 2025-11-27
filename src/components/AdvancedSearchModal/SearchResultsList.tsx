@@ -1,5 +1,6 @@
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
 
 interface SearchResult {
   _id: Id<"issues">;
@@ -66,10 +67,10 @@ export function SearchResultsList({
             onClick={() => onSelectIssue(issue._id)}
             className="w-full p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors text-left"
           >
-            <div className="flex items-start gap-3">
+            <Flex gap="md" align="start">
               <span className="text-xl flex-shrink-0">{getTypeIcon(issue.type)}</span>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <Flex gap="sm" align="center" className="mb-1">
                   <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     {issue.key}
                   </span>
@@ -78,12 +79,12 @@ export function SearchResultsList({
                   >
                     {issue.priority}
                   </span>
-                </div>
+                </Flex>
                 <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   {issue.title}
                 </h4>
               </div>
-            </div>
+            </Flex>
           </button>
         ))}
       </div>

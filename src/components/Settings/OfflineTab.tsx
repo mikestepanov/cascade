@@ -3,6 +3,7 @@ import { RefreshCw, Wifi, WifiOff } from "@/lib/icons";
 import { useOfflineSyncStatus, useOnlineStatus } from "../../hooks/useOffline";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Flex } from "../ui/Flex";
 
 /**
  * Offline mode settings tab
@@ -13,11 +14,11 @@ export function OfflineTab() {
   const { pending, count, isLoading } = useOfflineSyncStatus();
 
   return (
-    <div className="space-y-6">
+    <Flex direction="column" gap="xl">
       {/* Connection Status */}
       <Card>
         <div className="p-6">
-          <div className="flex items-center space-x-4">
+          <Flex gap="lg" align="center">
             <div className={`p-3 rounded-lg ${isOnline ? "bg-status-success" : "bg-status-error"}`}>
               {isOnline ? (
                 <Wifi className="h-6 w-6 text-white" />
@@ -35,7 +36,7 @@ export function OfflineTab() {
                 {isOnline ? "✓ You are online" : "✗ You are offline"}
               </p>
             </div>
-          </div>
+          </Flex>
 
           <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -74,8 +75,8 @@ export function OfflineTab() {
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
             Offline Features
           </h3>
-          <div className="space-y-4">
-            <div className="flex items-start space-x-3">
+          <Flex direction="column" gap="lg">
+            <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
                 <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -85,8 +86,8 @@ export function OfflineTab() {
                   Access recently viewed projects and issues while offline
                 </p>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
+            </Flex>
+            <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
                 <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -96,8 +97,8 @@ export function OfflineTab() {
                   Make changes offline - they'll sync automatically when you're back online
                 </p>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
+            </Flex>
+            <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
                 <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -107,8 +108,8 @@ export function OfflineTab() {
                   Changes sync automatically in the background when connection is restored
                 </p>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
+            </Flex>
+            <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
                 <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -118,8 +119,8 @@ export function OfflineTab() {
                   Install Cascade as a standalone app on your device
                 </p>
               </div>
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         </div>
       </Card>
 
@@ -127,7 +128,7 @@ export function OfflineTab() {
       {count > 0 && (
         <Card>
           <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
+            <Flex justify="between" align="center" className="mb-4">
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Pending Sync Queue
               </h3>
@@ -139,12 +140,14 @@ export function OfflineTab() {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Sync Now
               </Button>
-            </div>
-            <div className="space-y-2">
+            </Flex>
+            <Flex direction="column" gap="sm">
               {pending.slice(0, 5).map((item) => (
-                <div
+                <Flex
                   key={item.id}
-                  className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg flex items-center justify-between"
+                  justify="between"
+                  align="center"
+                  className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
                 >
                   <div>
                     <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -157,17 +160,17 @@ export function OfflineTab() {
                   <span className="text-xs px-2 py-1 bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark rounded">
                     Pending
                   </span>
-                </div>
+                </Flex>
               ))}
               {pending.length > 5 && (
                 <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center pt-2">
                   +{pending.length - 5} more items
                 </p>
               )}
-            </div>
+            </Flex>
           </div>
         </Card>
       )}
-    </div>
+    </Flex>
   );
 }

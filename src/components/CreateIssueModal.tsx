@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Flex } from "./ui/Flex";
 import { Input, Select, Textarea } from "./ui/form";
 import { Modal } from "./ui/Modal";
 
@@ -167,7 +168,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
         />
 
         {/* AI Suggestions Button */}
-        <div className="flex items-center gap-2 pb-2">
+        <Flex align="center" gap="sm" className="pb-2">
           <button
             type="button"
             onClick={handleGenerateAISuggestions}
@@ -187,12 +188,16 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
             )}
           </button>
           {showAISuggestions && (
-            <span className="text-sm text-status-success dark:text-status-success flex items-center gap-1">
+            <Flex
+              align="center"
+              gap="xs"
+              className="text-sm text-status-success dark:text-status-success"
+            >
               <span>✓</span>
               <span>AI suggestions applied</span>
-            </span>
+            </Flex>
           )}
-        </div>
+        </Flex>
 
         <Textarea
           label="Description"
@@ -280,14 +285,14 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
           </div>
         )}
 
-        <div className="flex gap-3 pt-4">
+        <Flex gap="md" className="pt-4">
           <Button type="submit" isLoading={isSubmitting}>
             Create Issue
           </Button>
           <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-        </div>
+        </Flex>
       </form>
     </Modal>
   );
