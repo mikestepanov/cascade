@@ -7,7 +7,7 @@ This document describes the authentication and user management features in Casca
 
 ## Authentication Methods
 
-Cascade supports three authentication methods:
+Cascade supports two authentication methods:
 
 ### 1. Email & Password
 Users can sign up and sign in using their email and password.
@@ -22,6 +22,17 @@ Users can sign up and sign in using their email and password.
 1. User enters email and password
 2. Clicks "Sign in" button
 3. User is logged in
+
+**Password Reset Flow:**
+1. User clicks "Forgot password?" on sign-in page
+2. User enters their email address
+3. System sends an 8-digit OTP code via email
+4. User enters the code and their new password
+5. Password is updated and user can sign in
+
+**Configuration Required for Password Reset:**
+- `RESEND_API_KEY` - Resend API key for sending emails
+- `RESEND_FROM_EMAIL` - Verified sender email (e.g., "Nixelo <notifications@nixelo.com>")
 
 ### 2. Google OAuth
 Users can sign in using their Google account.
@@ -41,11 +52,6 @@ To enable Google OAuth, you need to:
 2. Redirected to Google for authentication
 3. User grants permissions
 4. Redirected back to Cascade and logged in
-
-### 3. Anonymous Authentication
-Users can sign in anonymously without providing any credentials.
-
-**Note:** Anonymous users have limited functionality and should upgrade to a full account.
 
 ## User Invitation System
 
@@ -112,13 +118,12 @@ Admins can view all platform users in **Settings → Admin → User Management �
 
 - Name and email
 - Profile picture
-- Account type (Anonymous, Verified, Unverified)
+- Account type (Verified, Unverified)
 - Projects created
 - Project memberships
 
 ### User Types
 
-- **Anonymous**: Signed in anonymously, no email
 - **Unverified**: Email not verified
 - **Verified**: Email verified (via Google OAuth or email verification)
 

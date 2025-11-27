@@ -104,7 +104,7 @@ export const sendInvite = mutation({
     // Send email with invite link
     const inviteLink = `${process.env.SITE_URL}/invite/${token}`;
 
-    await sendEmail({
+    await sendEmail(ctx, {
       to: args.email,
       subject: "You've been invited to Nixelo",
       html: `
@@ -199,7 +199,7 @@ export const resendInvite = mutation({
     // Send email with invite link again
     const inviteLink = `${process.env.SITE_URL}/invite/${invite.token}`;
 
-    await sendEmail({
+    await sendEmail(ctx, {
       to: invite.email,
       subject: "Invitation to Nixelo",
       html: `

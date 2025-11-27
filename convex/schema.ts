@@ -1198,6 +1198,266 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_team_user", ["teamId", "userId"])
     .index("by_role", ["role"]),
+
+  // ============================================
+  // Meeting Bot / AI Notetaker (Read.ai-like)
+  // ============================================
+
+  // Meeting recordings - stores the actual audio/video files
+  meetingRecordings: defineTable({
+    calendarEventId: v.optional(v.id("calendarEvents")), // Link to calendar event (if scheduled)
+    // Meeting info (for ad-hoc recordings without calendar event)
+    meetingUrl: v.optional(v.string()), // Google Meet URL, Zoom URL, etc.
+    meetingPlatform: v.union(
+      v.literal("google_meet"),
+      v.literal("zoom"),
+      v.literal("teams"),
+      v.literal("other"),
+    ),
+    title: v.string(), // Meeting title
+    // Recording details
+    recordingFileId: v.optional(v.id("_storage")), // Convex storage for audio file
+    recordingUrl: v.optional(v.string()), // External URL if stored elsewhere
+    duration: v.optional(v.number()), // Duration in seconds
+    fileSize: v.optional(v.number()), // File size in bytes
+    // Status
+    status: v.union(
+      v.literal("scheduled"), // Bot will join at scheduled time
+      v.literal("joining"), // Bot is joining the meeting
+      v.literal("recording"), // Bot is in meeting, recording
+      v.literal("processing"), // Recording finished, processing audio
+      v.literal("transcribing"), // Sending to Whisper
+      v.literal("summarizing"), // Sending to Claude
+      v.literal("completed"), // All done
+      v.literal("cancelled"), // Cancelled by user
+      v.literal("failed"), // Something went wrong
+    ),
+    errorMessage: v.optional(v.string()), // Error details if failed
+    // Timestamps
+    scheduledStartTime: v.optional(v.number()), // When bot should join
+    actualStartTime: v.optional(v.number()), // When recording actually started
+    actualEndTime: v.optional(v.number()), // When recording ended
+    // Bot details
+    botName: v.string(), // Display name: "Cascade Notetaker"
+    botJoinedAt: v.optional(v.number()),
+    botLeftAt: v.optional(v.number()),
+    // Permissions
+    createdBy: v.id("users"),
+    projectId: v.optional(v.id("projects")), // Link to project for context
+    isPublic: v.boolean(), // Can all project members see this?
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_calendar_event", ["calendarEventId"])
+    .index("by_creator", ["createdBy"])
+    .index("by_project", ["projectId"])
+    .index("by_status", ["status"])
+    .index("by_scheduled_time", ["scheduledStartTime"])
+    .index("by_platform", ["meetingPlatform"]),
+
+  // Meeting transcripts - the raw transcription from Whisper
+  meetingTranscripts: defineTable({
+    recordingId: v.id("meetingRecordings"),
+    // Full transcript
+    fullText: v.string(), // Complete transcript text
+    // Segmented transcript with timestamps and speakers
+    segments: v.array(
+      v.object({
+        startTime: v.number(), // Seconds from start
+        endTime: v.number(),
+        speaker: v.optional(v.string()), // Speaker name/label if diarization available
+        speakerUserId: v.optional(v.id("users")), // Matched Cascade user (if identified)
+        text: v.string(),
+        confidence: v.optional(v.number()), // Whisper confidence score
+      }),
+    ),
+    // Processing info
+    language: v.string(), // Detected language: "en", "es", etc.
+    modelUsed: v.string(), // Whisper model: "whisper-1", etc.
+    processingTime: v.optional(v.number()), // How long transcription took (ms)
+    // Word count and stats
+    wordCount: v.number(),
+    speakerCount: v.optional(v.number()), // Number of distinct speakers
+    // Metadata
+    createdAt: v.number(),
+  })
+    .index("by_recording", ["recordingId"])
+    .searchIndex("search_transcript", {
+      searchField: "fullText",
+    }),
+
+  // Meeting summaries - AI-generated summaries from Claude
+  meetingSummaries: defineTable({
+    recordingId: v.id("meetingRecordings"),
+    transcriptId: v.id("meetingTranscripts"),
+    // Summary content
+    executiveSummary: v.string(), // 2-3 sentence overview
+    keyPoints: v.array(v.string()), // Bullet points of main topics
+    // Action items extracted
+    actionItems: v.array(
+      v.object({
+        description: v.string(),
+        assignee: v.optional(v.string()), // Name mentioned in meeting
+        assigneeUserId: v.optional(v.id("users")), // Matched Cascade user
+        dueDate: v.optional(v.string()), // Due date if mentioned
+        priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
+        issueCreated: v.optional(v.id("issues")), // If converted to Cascade issue
+      }),
+    ),
+    // Decisions made
+    decisions: v.array(v.string()),
+    // Questions raised (unanswered or for follow-up)
+    openQuestions: v.array(v.string()),
+    // Topics discussed with time ranges
+    topics: v.array(
+      v.object({
+        title: v.string(),
+        startTime: v.optional(v.number()), // When topic started
+        endTime: v.optional(v.number()), // When topic ended
+        summary: v.string(),
+      }),
+    ),
+    // Sentiment/tone analysis (optional)
+    overallSentiment: v.optional(
+      v.union(v.literal("positive"), v.literal("neutral"), v.literal("negative"), v.literal("mixed")),
+    ),
+    // Processing info
+    modelUsed: v.string(), // Claude model: "claude-3-5-sonnet", etc.
+    promptTokens: v.optional(v.number()),
+    completionTokens: v.optional(v.number()),
+    processingTime: v.optional(v.number()), // How long summarization took (ms)
+    // Metadata
+    createdAt: v.number(),
+    regeneratedAt: v.optional(v.number()), // If user requested regeneration
+  })
+    .index("by_recording", ["recordingId"])
+    .index("by_transcript", ["transcriptId"]),
+
+  // Meeting participants - who was in the meeting
+  meetingParticipants: defineTable({
+    recordingId: v.id("meetingRecordings"),
+    // Participant info
+    displayName: v.string(), // Name as shown in meeting
+    email: v.optional(v.string()), // Email if available
+    userId: v.optional(v.id("users")), // Matched Cascade user
+    // Participation stats
+    joinedAt: v.optional(v.number()),
+    leftAt: v.optional(v.number()),
+    speakingTime: v.optional(v.number()), // Total seconds speaking
+    speakingPercentage: v.optional(v.number()), // % of meeting they spoke
+    // Role
+    isHost: v.boolean(),
+    isExternal: v.boolean(), // Not a Cascade user
+  })
+    .index("by_recording", ["recordingId"])
+    .index("by_user", ["userId"])
+    .index("by_email", ["email"]),
+
+  // ============================================
+  // Service Usage Tracking (Free Tier Rotation)
+  // ============================================
+
+  // Track usage per service provider per month
+  serviceUsage: defineTable({
+    serviceType: v.union(
+      v.literal("transcription"),
+      v.literal("email"),
+      v.literal("sms"),
+      v.literal("ai"), // For future AI provider rotation
+    ),
+    provider: v.string(), // "whisper", "speechmatics", "gladia", "resend", "sendpulse", etc.
+    month: v.string(), // "2025-11" format
+    // Usage metrics
+    unitsUsed: v.number(), // Minutes for transcription, emails sent, etc.
+    freeUnitsLimit: v.number(), // Free tier limit for this provider
+    // Cost tracking (when free tier exceeded)
+    paidUnitsUsed: v.number(), // Units beyond free tier
+    estimatedCost: v.number(), // Estimated cost in cents
+    // Metadata
+    lastUpdatedAt: v.number(),
+  })
+    .index("by_service_type", ["serviceType"])
+    .index("by_provider", ["provider"])
+    .index("by_month", ["month"])
+    .index("by_service_month", ["serviceType", "month"])
+    .index("by_provider_month", ["provider", "month"]),
+
+  // Provider configuration (free tier limits, priority order)
+  serviceProviders: defineTable({
+    serviceType: v.union(
+      v.literal("transcription"),
+      v.literal("email"),
+      v.literal("sms"),
+      v.literal("ai"),
+    ),
+    provider: v.string(), // "speechmatics", "gladia", "resend", etc.
+    // Free tier info
+    freeUnitsPerMonth: v.number(), // 0 = no free tier
+    freeUnitsType: v.union(
+      v.literal("monthly"), // Resets each month
+      v.literal("one_time"), // One-time credit
+      v.literal("yearly"), // Resets yearly
+    ),
+    oneTimeUnitsRemaining: v.optional(v.number()), // For one-time credits
+    // Pricing after free tier
+    costPerUnit: v.number(), // Cost per unit in cents (e.g., $0.006/min = 0.6 cents)
+    unitType: v.string(), // "minute", "email", "message", "token"
+    // Provider status
+    isEnabled: v.boolean(),
+    isConfigured: v.boolean(), // Has API key set
+    priority: v.number(), // Lower = preferred (1 = first choice)
+    // Metadata
+    displayName: v.string(),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_service_type", ["serviceType"])
+    .index("by_provider", ["provider"])
+    .index("by_service_enabled", ["serviceType", "isEnabled"])
+    .index("by_service_priority", ["serviceType", "priority"]),
+
+  // Bot job queue - for scheduling bots to join meetings
+  meetingBotJobs: defineTable({
+    recordingId: v.id("meetingRecordings"),
+    // Job details
+    meetingUrl: v.string(),
+    scheduledTime: v.number(), // When to join
+    // Status
+    status: v.union(
+      v.literal("pending"), // Waiting for scheduled time
+      v.literal("queued"), // Sent to bot service
+      v.literal("running"), // Bot is active
+      v.literal("completed"),
+      v.literal("failed"),
+      v.literal("cancelled"),
+    ),
+    // Retries
+    attempts: v.number(),
+    maxAttempts: v.number(),
+    lastAttemptAt: v.optional(v.number()),
+    nextAttemptAt: v.optional(v.number()),
+    errorMessage: v.optional(v.string()),
+    // Bot service reference
+    botServiceJobId: v.optional(v.string()), // ID from Railway bot service
+    // Metadata
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_recording", ["recordingId"])
+    .index("by_status", ["status"])
+    .index("by_scheduled_time", ["scheduledTime"])
+    .index("by_next_attempt", ["nextAttemptAt"]),
+
+  // System settings for configuration
+  systemSettings: defineTable({
+    key: v.string(), // Setting key: "botServiceApiKeyHash", etc.
+    value: v.string(), // Setting value
+    description: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_key", ["key"]),
 };
 
 export default defineSchema({

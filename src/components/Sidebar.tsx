@@ -1,11 +1,13 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { DocumentTemplatesManager } from "./DocumentTemplatesManager";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Checkbox, Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
@@ -32,6 +34,16 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
   const createFromTemplate = useMutation(api.documentTemplates.createDocumentFromTemplate);
   const deleteDocument = useMutation(api.documents.deleteDocument);
 
+  const { deleteId, isDeleting, confirmDelete, cancelDelete, executeDelete } =
+    useDeleteConfirmation<"documents">({
+      successMessage: "Document deleted successfully",
+      onSuccess: () => {
+        if (deleteId && selectedDocumentId === deleteId) {
+          onSelectDocument(null);
+        }
+      },
+    });
+
   const displayedDocuments = searchQuery.trim() ? searchResults : documents;
 
   const handleCreateDocument = async (e: React.FormEvent) => {
@@ -53,18 +65,8 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
     }
   };
 
-  const handleDeleteDocument = async (docId: Id<"documents">) => {
-    if (!confirm("Are you sure you want to delete this document?")) return;
-
-    try {
-      await deleteDocument({ id: docId });
-      if (selectedDocumentId === docId) {
-        onSelectDocument(null);
-      }
-      showSuccess("Document deleted successfully");
-    } catch (error) {
-      showError(error, "Failed to delete document");
-    }
+  const handleDeleteDocument = (docId: Id<"documents">) => {
+    confirmDelete(docId);
   };
 
   const handleSelectTemplate = (templateId: Id<"documentTemplates">) => {
@@ -285,6 +287,17 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        onClose={cancelDelete}
+        onConfirm={() => executeDelete((id) => deleteDocument({ id }))}
+        title="Delete Document"
+        message="Are you sure you want to delete this document?"
+        confirmLabel="Delete"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
