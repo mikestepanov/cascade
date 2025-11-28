@@ -6,23 +6,17 @@
  */
 
 import { Resend } from "resend";
+import { getResendApiKey, getResendFromEmail } from "../lib/env";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 export class ResendProvider implements EmailProvider {
-  private client: Resend | null = null;
-  private defaultFrom: string;
+  private apiKey = getResendApiKey();
+  private client = this.apiKey ? new Resend(this.apiKey) : undefined;
+  private defaultFrom = getResendFromEmail();
 
-  constructor() {
-    const apiKey = process.env.RESEND_API_KEY;
-    this.defaultFrom = process.env.RESEND_FROM_EMAIL || "Nixelo <notifications@nixelo.app>";
-
-    if (apiKey) {
-      this.client = new Resend(apiKey);
-    }
-  }
 
   isConfigured(): boolean {
-    return this.client !== null && !!process.env.RESEND_API_KEY;
+    return !!this.client;
   }
 
   async send(params: EmailSendParams): Promise<EmailSendResult> {

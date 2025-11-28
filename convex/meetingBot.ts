@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
+import { getBotServiceApiKey, getBotServiceUrl, getSiteUrl } from "./lib/env";
 
 // ===========================================
 // Bot Service Authentication
@@ -840,11 +841,10 @@ export const notifyBotService = internalAction({
     ),
   },
   handler: async (ctx, args) => {
-    // Get bot service URL from environment
-    const botServiceUrl = process.env.BOT_SERVICE_URL;
+    const botServiceUrl = getBotServiceUrl();
+    const botServiceApiKey = getBotServiceApiKey();
 
-    if (!botServiceUrl) {
-      // Update job as failed
+    if (!botServiceUrl || !botServiceApiKey) {
       await ctx.runMutation(internal.meetingBot.markJobFailed, {
         jobId: args.jobId,
         recordingId: args.recordingId,
@@ -858,7 +858,7 @@ export const notifyBotService = internalAction({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.BOT_SERVICE_API_KEY}`,
+          Authorization: `Bearer ${botServiceApiKey}`,
         },
         body: JSON.stringify({
           jobId: args.jobId,
@@ -867,7 +867,7 @@ export const notifyBotService = internalAction({
           platform: args.platform,
           botName: "Nixelo Notetaker",
           // Callback URLs for the bot to report status
-          callbackUrl: process.env.SITE_URL,
+          callbackUrl: getSiteUrl(),
         }),
       });
 

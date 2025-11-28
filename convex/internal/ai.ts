@@ -12,6 +12,7 @@
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
+import { getVoyageApiKey } from "../lib/env";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)
@@ -29,7 +30,7 @@ export const generateEmbedding = internalAction({
     text: v.string(),
   },
   handler: async (_ctx, args) => {
-    const apiKey = process.env.VOYAGE_API_KEY;
+    const apiKey = getVoyageApiKey();
     if (!apiKey) {
       throw new Error("VOYAGE_API_KEY not configured");
     }

@@ -1,9 +1,9 @@
-/// <reference types="node" />
-
 /**
  * AI Provider Configuration
  * Uses Anthropic Claude exclusively
  */
+
+import { getAnthropicApiKey, getAnthropicModel, isAnthropicConfigured } from "../lib/env";
 
 export type AIProvider = "anthropic";
 
@@ -36,7 +36,7 @@ export const DEFAULT_MODELS = {
  * Get AI configuration from environment variables
  */
 export function getAIConfig(): AIConfig {
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const anthropicKey = getAnthropicApiKey();
   if (!anthropicKey) {
     throw new Error(
       "ANTHROPIC_API_KEY not configured. Set ANTHROPIC_API_KEY in environment variables.",
@@ -46,7 +46,7 @@ export function getAIConfig(): AIConfig {
   return {
     provider: "anthropic",
     apiKey: anthropicKey,
-    model: process.env.ANTHROPIC_MODEL || DEFAULT_MODELS.chat,
+    model: getAnthropicModel(),
     temperature: 0.7,
     maxTokens: 4096,
   };
@@ -56,5 +56,5 @@ export function getAIConfig(): AIConfig {
  * Check if AI is configured
  */
 export function isAIConfigured(): boolean {
-  return !!process.env.ANTHROPIC_API_KEY;
+  return isAnthropicConfigured();
 }

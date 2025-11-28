@@ -342,7 +342,7 @@ echo "VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com" >> .env.local
 # Start development server (runs frontend + backend in parallel)
 pnpm run dev
 # OR run separately:
-pnpm run dev:frontend  # Starts Vite on http://localhost:5173
+pnpm run dev:frontend  # Starts Vite on http://localhost:5555
 pnpm run dev:backend   # Starts Convex dev server
 ```
 

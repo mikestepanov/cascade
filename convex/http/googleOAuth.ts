@@ -1,5 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
+import { getSiteUrl, isGoogleOAuthConfigured, requireEnv } from "../lib/env";
 
 /**
  * Google OAuth Integration
@@ -35,16 +36,15 @@ interface GoogleCalendarEvent {
   attendees?: GoogleCalendarAttendee[];
 }
 
-// OAuth configuration (will be in environment variables)
+// OAuth configuration - throws if not configured
 const getGoogleOAuthConfig = () => {
-  // In production, these come from environment variables
-  // For now, return placeholder - user needs to set these up
+  if (!isGoogleOAuthConfigured()) {
+    throw new Error("Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+  }
   return {
-    clientId: process.env.GOOGLE_CLIENT_ID || "",
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    redirectUri: process.env.SITE_URL
-      ? `${process.env.SITE_URL}/google/callback`
-      : "http://localhost:5173/google/callback",
+    clientId: requireEnv("GOOGLE_CLIENT_ID"),
+    clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
+    redirectUri: `${getSiteUrl()}/google/callback`,
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",

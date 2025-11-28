@@ -59,7 +59,7 @@ The Google Calendar integration allows you to:
 5. **Authorized redirect URIs** - Add these:
    ```
    Development:
-   http://localhost:5173/google/callback
+   http://localhost:5555/google/callback
 
    Production:
    https://yourdomain.com/google/callback
@@ -79,13 +79,10 @@ The Google Calendar integration allows you to:
    cp .env.example .env.local
    ```
 
-2. Add Google OAuth credentials to `.env.local`:
-   ```bash
-   # Google Calendar Integration
-   GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=your_client_secret_here
-   SITE_URL=http://localhost:5173
-   ```
+2. Copy `.env.example` to `.env.local` and fill in the Google OAuth section:
+   - `GOOGLE_CLIENT_ID` - your client ID
+   - `GOOGLE_CLIENT_SECRET` - your client secret
+   - `SITE_URL` - already set to `http://localhost:5555`
 
 3. Restart your Convex dev server:
    ```bash
@@ -221,7 +218,7 @@ Trigger a manual sync:
 
 **Solution**:
 1. Check authorized redirect URIs in Google Cloud Console
-2. Must exactly match: `http://localhost:5173/google/callback` (dev) or `https://yourdomain.com/google/callback` (prod)
+2. Must exactly match: `http://localhost:5555/google/callback` (dev) or `https://yourdomain.com/google/callback` (prod)
 3. No trailing slashes
 4. Verify Client ID/Secret are correct
 

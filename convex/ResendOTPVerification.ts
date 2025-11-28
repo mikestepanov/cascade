@@ -2,10 +2,11 @@ import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
 import { Resend as ResendAPI } from "resend";
+import { getResendApiKey, getResendFromEmail } from "./lib/env";
 
 export const ResendOTPVerification = Resend({
   id: "resend-otp-verification",
-  apiKey: process.env.RESEND_API_KEY,
+  apiKey: getResendApiKey(),
   // biome-ignore lint/suspicious/useAwait: Required by @auth/core provider interface
   async generateVerificationToken() {
     const random: RandomReader = {
@@ -20,7 +21,7 @@ export const ResendOTPVerification = Resend({
   },
   async sendVerificationRequest({ identifier: email, provider, token }) {
     const resend = new ResendAPI(provider.apiKey);
-    const from = process.env.RESEND_FROM_EMAIL || "Nixelo <notifications@nixelo.com>";
+    const from = getResendFromEmail();
     const { error } = await resend.emails.send({
       from,
       to: [email],

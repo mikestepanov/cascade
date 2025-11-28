@@ -22,14 +22,9 @@ The recommended setup uses different providers for different environments:
 
 ### 3. Set Environment Variables
 
-In your Convex dashboard → Settings → Environment Variables:
-
-```bash
-RESEND_API_KEY=re_xxxxxxxxxxxxx
-RESEND_FROM_EMAIL=Nixelo <dev@resend.dev>  # Use resend.dev for testing
-SITE_URL=http://localhost:5173
-# Leave EMAIL_PROVIDER blank (defaults to Resend)
-```
+In `.env.local` (see `.env.example` for all options):
+- `RESEND_API_KEY` - your API key
+- `RESEND_FROM_EMAIL` - use `dev@resend.dev` for testing
 
 ### 4. Test It
 
@@ -52,15 +47,11 @@ pnpm convex dev
 
 ### 3. Set Production Environment Variables
 
-In your **production** Convex environment:
-
-```bash
-EMAIL_PROVIDER=sendpulse
-SENDPULSE_ID=your_id_here
-SENDPULSE_SECRET=your_secret_here
-SENDPULSE_FROM_EMAIL=Nixelo <notifications@yourdomain.com>
-SITE_URL=https://yourdomain.com
-```
+In Convex Dashboard → Settings → Environment Variables:
+- `EMAIL_PROVIDER=sendpulse`
+- `SENDPULSE_ID` / `SENDPULSE_SECRET` - your credentials
+- `SENDPULSE_FROM_EMAIL` - your verified sender
+- `SITE_URL` - your production domain
 
 ### 4. Deploy
 

@@ -6,7 +6,7 @@ Complete API reference for accessing Nixelo programmatically from CLI tools, AI 
 
 ```
 Production: https://your-domain.com
-Development: http://localhost:5173
+Development: http://localhost:5555
 ```
 
 ## Authentication

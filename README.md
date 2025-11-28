@@ -71,7 +71,7 @@ pnpm install
 pnpm run dev
 ```
 
-Open http://localhost:5173 - that's it!
+Open http://localhost:5555 - that's it!
 
 ### First Steps
 1. Sign up with email or Google
