@@ -1,0 +1,151 @@
+import type { Locator, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { BasePage } from "./base.page";
+
+/**
+ * Documents Page Object
+ * Handles the documents view with sidebar and editor
+ */
+export class DocumentsPage extends BasePage {
+  // ===================
+  // Locators - Sidebar
+  // ===================
+  readonly sidebar: Locator;
+  readonly searchInput: Locator;
+  readonly newDocumentButton: Locator;
+  readonly templateButton: Locator;
+  readonly documentList: Locator;
+  readonly documentItems: Locator;
+
+  // ===================
+  // Locators - Template Modal
+  // ===================
+  readonly templateModal: Locator;
+  readonly blankTemplateButton: Locator;
+  readonly meetingNotesTemplate: Locator;
+  readonly projectBriefTemplate: Locator;
+
+  // ===================
+  // Locators - Editor
+  // ===================
+  readonly editor: Locator;
+  readonly editorContent: Locator;
+  readonly documentTitle: Locator;
+
+  // ===================
+  // Locators - Delete Confirmation
+  // ===================
+  readonly deleteConfirmDialog: Locator;
+  readonly confirmDeleteButton: Locator;
+  readonly cancelDeleteButton: Locator;
+
+  constructor(page: Page) {
+    super(page);
+
+    // Sidebar
+    this.sidebar = page.locator("[data-tour='sidebar']").or(
+      page.locator("aside").first(),
+    );
+    this.searchInput = page.getByPlaceholder(/search.*document/i);
+    this.newDocumentButton = page.getByRole("button", { name: /new.*document|\+ new|add/i }).first();
+    this.templateButton = page.getByRole("button", { name: /template|📄/i });
+    this.documentList = page.locator("[data-document-list]").or(
+      this.sidebar.locator("ul, [role='list']").first(),
+    );
+    this.documentItems = page.locator("[data-document-item]").or(
+      this.sidebar.getByRole("button").filter({ hasNotText: /new|template|search/i }),
+    );
+
+    // Template modal
+    this.templateModal = page.getByRole("dialog").filter({ hasText: /template|choose/i });
+    this.blankTemplateButton = page.getByRole("button", { name: /blank|empty/i });
+    this.meetingNotesTemplate = page.getByRole("button", { name: /meeting.*notes/i });
+    this.projectBriefTemplate = page.getByRole("button", { name: /project.*brief/i });
+
+    // Editor
+    this.editor = page.locator("[data-editor]").or(
+      page.locator(".ProseMirror, [contenteditable='true']").first(),
+    );
+    this.editorContent = page.locator(".bn-editor, .ProseMirror");
+    this.documentTitle = page.getByRole("heading", { level: 1 }).first().or(
+      page.locator("[data-document-title]"),
+    );
+
+    // Delete confirmation
+    this.deleteConfirmDialog = page.getByRole("dialog").filter({ hasText: /delete|confirm/i });
+    this.confirmDeleteButton = page.getByRole("button", { name: /delete|confirm|yes/i });
+    this.cancelDeleteButton = page.getByRole("button", { name: /cancel|no/i });
+  }
+
+  // ===================
+  // Actions
+  // ===================
+
+  async createNewDocument() {
+    await this.newDocumentButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async openTemplateModal() {
+    await this.templateButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.templateModal).toBeVisible({ timeout: 5000 });
+  }
+
+  async createFromTemplate(template: "blank" | "meeting" | "project") {
+    await this.openTemplateModal();
+    const buttons = {
+      blank: this.blankTemplateButton,
+      meeting: this.meetingNotesTemplate,
+      project: this.projectBriefTemplate,
+    };
+    await buttons[template].evaluate((el: HTMLElement) => el.click());
+  }
+
+  async searchDocuments(query: string) {
+    await this.searchInput.fill(query);
+  }
+
+  async clearSearch() {
+    await this.searchInput.clear();
+  }
+
+  async selectDocument(index: number) {
+    const items = this.documentItems;
+    const item = items.nth(index);
+    await item.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async deleteDocument(index: number) {
+    // Hover to show delete button
+    const item = this.documentItems.nth(index);
+    await item.hover();
+    const deleteButton = item.getByRole("button", { name: /delete|remove|trash/i });
+    await deleteButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async confirmDelete() {
+    await expect(this.deleteConfirmDialog).toBeVisible();
+    await this.confirmDeleteButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async cancelDelete() {
+    await this.cancelDeleteButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.deleteConfirmDialog).not.toBeVisible();
+  }
+
+  // ===================
+  // Assertions
+  // ===================
+
+  async expectDocumentsView() {
+    await expect(this.sidebar).toBeVisible();
+    await expect(this.newDocumentButton).toBeVisible();
+  }
+
+  async expectEditorVisible() {
+    await expect(this.editor).toBeVisible();
+  }
+
+  async expectDocumentCount(count: number) {
+    await expect(this.documentItems).toHaveCount(count);
+  }
+}

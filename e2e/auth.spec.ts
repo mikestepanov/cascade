@@ -100,6 +100,21 @@ test.describe("Password Reset", () => {
 });
 
 /**
+ * Post-Login Navigation Tests
+ * Verifies users see dashboard after successful authentication
+ */
+test.describe("Post-Login Navigation", () => {
+  test("authenticated user should see dashboard by default", async ({
+    dashboardPage,
+    page,
+  }) => {
+    // This test requires auth state - skip if not set up
+    // Use authenticatedTest fixture for actual authenticated tests
+    test.skip();
+  });
+});
+
+/**
  * Integration tests - require running backend
  * These test the full flow including API calls
  */

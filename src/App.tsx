@@ -586,9 +586,6 @@ function Content() {
           </div>
         </div>
 
-        {/* Global Timer Widget - always visible for authenticated users */}
-        <NavTimerWidget />
-
         {/* AI Assistant Panel */}
         <AIAssistantPanel
           projectId={selectedProjectId || undefined}

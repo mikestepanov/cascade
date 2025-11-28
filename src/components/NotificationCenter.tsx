@@ -2,9 +2,11 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { showError } from "@/lib/utils";
 
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const notifications = useQuery(api.notifications.list, { limit: 20 });
   const unreadCount = useQuery(api.notifications.getUnreadCount, {});
   const markAsRead = useMutation(api.notifications.markAsRead);
@@ -12,15 +14,30 @@ export function NotificationCenter() {
   const removeNotification = useMutation(api.notifications.remove);
 
   const handleMarkAsRead = async (id: Id<"notifications">) => {
-    await markAsRead({ id });
+    try {
+      await markAsRead({ id });
+    } catch (error) {
+      showError(error, "Failed to mark notification as read");
+    }
   };
 
   const handleMarkAllAsRead = async () => {
-    await markAllAsRead({});
+    setIsLoading(true);
+    try {
+      await markAllAsRead({});
+    } catch (error) {
+      showError(error, "Failed to mark all notifications as read");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDelete = async (id: Id<"notifications">) => {
-    await removeNotification({ id });
+    try {
+      await removeNotification({ id });
+    } catch (error) {
+      showError(error, "Failed to delete notification");
+    }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -108,9 +125,10 @@ export function NotificationCenter() {
                 <button
                   type="button"
                   onClick={handleMarkAllAsRead}
-                  className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+                  disabled={isLoading}
+                  className="text-sm text-brand-600 hover:text-brand-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Mark all read
+                  {isLoading ? "Marking..." : "Mark all read"}
                 </button>
               )}
             </div>

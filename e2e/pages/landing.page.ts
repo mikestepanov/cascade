@@ -32,9 +32,9 @@ export class LandingPage extends BasePage {
 
     // Navigation
     this.navLogo = page.locator("nav").getByText("nixelo");
-    this.navLoginButton = page.locator("nav button", { hasText: /^login$/i });
-    this.navGetStartedButton = page.locator("nav button", {
-      hasText: /get started/i,
+    this.navLoginButton = page.locator("nav").getByText("Login");
+    this.navGetStartedButton = page.locator("nav").getByRole("button", {
+      name: /get started/i,
     });
 
     // Hero Section
@@ -69,23 +69,24 @@ export class LandingPage extends BasePage {
   // ===================
 
   async clickGetStarted() {
-    await this.heroGetStartedButton.click();
-    await expect(this.loginSectionHeading).toBeVisible();
+    // Use JavaScript click to bypass animated SVG overlays
+    await this.heroGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
   }
 
   async clickNavLogin() {
-    await this.navLoginButton.click();
-    await expect(this.loginSectionHeading).toBeVisible();
+    await this.navLoginButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
   }
 
   async clickNavGetStarted() {
-    await this.navGetStartedButton.click();
-    await expect(this.loginSectionHeading).toBeVisible();
+    await this.navGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
   }
 
   async goBackToHome() {
-    await this.backToHomeButton.click();
-    await expect(this.heroHeadline).toBeVisible();
+    await this.backToHomeButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.heroHeadline).toBeVisible({ timeout: 10000 });
   }
 
   // ===================

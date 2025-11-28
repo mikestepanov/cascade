@@ -154,6 +154,37 @@ export const create = mutation({
   },
 });
 
+/**
+ * List all issues assigned to or reported by the current user
+ * Used by onboarding checklist to track user progress
+ */
+export const listByUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    // Get all issues where user is assignee or reporter
+    const allIssues = await ctx.db.query("issues").collect();
+
+    const userIssues = allIssues.filter(
+      (issue) => issue.assigneeId === userId || issue.reporterId === userId,
+    );
+
+    return userIssues.map((issue) => ({
+      _id: issue._id,
+      key: issue.key,
+      title: issue.title,
+      status: issue.status,
+      type: issue.type,
+      priority: issue.priority,
+      projectId: issue.projectId,
+    }));
+  },
+});
+
 export const listByProject = query({
   args: {
     projectId: v.id("projects"),

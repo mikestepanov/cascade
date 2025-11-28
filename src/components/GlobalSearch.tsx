@@ -341,6 +341,11 @@ export function GlobalSearch() {
                 <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   <p className="text-sm">Type at least 2 characters to search</p>
                 </div>
+              ) : issueSearchResult === undefined || documentSearchResult === undefined ? (
+                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+                  <p className="text-sm">Searching...</p>
+                </div>
               ) : filteredResults.length === 0 ? (
                 <EmptyState icon="🔍" title="No results found" />
               ) : (
