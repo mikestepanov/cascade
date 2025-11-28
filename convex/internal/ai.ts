@@ -21,9 +21,6 @@ import { getVoyageApiKey } from "../lib/env";
  * - 50M tokens/month free tier
  * - voyage-3-lite: 512 dimensions, fast & cheap
  * - voyage-3: 1024 dimensions, better quality
- *
- * Note: Schema expects 1536 dimensions. Using voyage-3-large (1024 dim)
- * and padding to 1536 for compatibility, or update schema.
  */
 export const generateEmbedding = internalAction({
   args: {
@@ -53,15 +50,7 @@ export const generateEmbedding = internalAction({
     }
 
     const data = await response.json();
-    const embedding = data.data[0].embedding;
-
-    // Pad to 1536 dimensions for schema compatibility
-    // TODO: Consider updating schema to 512 dimensions
-    while (embedding.length < 1536) {
-      embedding.push(0);
-    }
-
-    return embedding;
+    return data.data[0].embedding;
   },
 });
 

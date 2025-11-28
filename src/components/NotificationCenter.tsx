@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { showError } from "@/lib/utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { showError } from "@/lib/utils";
 
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);

@@ -19,7 +19,6 @@ export class SendGridProvider implements EmailProvider {
   private defaultFrom = getSendGridFromEmail();
   private baseUrl = "https://api.sendgrid.com/v3";
 
-
   isConfigured(): boolean {
     return !!this.apiKey;
   }

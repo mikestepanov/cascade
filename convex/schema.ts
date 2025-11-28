@@ -162,7 +162,7 @@ const applicationTables = {
     })
     .vectorIndex("by_embedding", {
       vectorField: "embedding",
-      dimensions: 1536, // Voyage AI embedding dimension (padded from 512)
+      dimensions: 512, // Voyage AI voyage-3-lite embedding dimension
       filterFields: ["projectId"],
     }),
 

@@ -109,7 +109,16 @@ function TabContent({
     );
   }
   if (activeTab === "analytics") {
-    return <AnalyticsDashboard projectId={projectId} />;
+    return (
+      <ErrorBoundary
+        fallback={<SectionErrorFallback title="Analytics Error" />}
+        onError={(_error) => {
+          // Error is shown in fallback UI
+        }}
+      >
+        <AnalyticsDashboard projectId={projectId} />
+      </ErrorBoundary>
+    );
   }
   if (activeTab === "billing") {
     return <BillingReport projectId={projectId} />;

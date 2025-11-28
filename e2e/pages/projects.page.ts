@@ -60,79 +60,71 @@ export class ProjectsPage extends BasePage {
     super(page);
 
     // Sidebar
-    this.sidebar = page.locator("[data-tour='sidebar']").or(
-      page.locator("aside").first(),
-    );
+    this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
     this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
-    this.projectList = page.locator("[data-project-list]").or(
-      this.sidebar.locator("ul, [role='list']").first(),
-    );
-    this.projectItems = page.locator("[data-project-item]").or(
-      this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }),
-    );
+    this.projectList = page
+      .locator("[data-project-list]")
+      .or(this.sidebar.locator("ul, [role='list']").first());
+    this.projectItems = page
+      .locator("[data-project-item]")
+      .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
     // Create project form
-    this.createProjectForm = page.locator("[data-create-project-form]").or(
-      page.locator("form").filter({ hasText: /project name|create project/i }),
-    );
-    this.projectNameInput = page.getByPlaceholder(/project name/i).or(
-      page.getByLabel(/project name/i),
-    );
-    this.projectKeyInput = page.getByPlaceholder(/key|prefix/i).or(
-      page.getByLabel(/key/i),
-    );
-    this.projectDescriptionInput = page.getByPlaceholder(/description/i).or(
-      page.getByLabel(/description/i),
-    );
+    this.createProjectForm = page
+      .locator("[data-create-project-form]")
+      .or(page.locator("form").filter({ hasText: /project name|create project/i }));
+    this.projectNameInput = page
+      .getByPlaceholder(/project name/i)
+      .or(page.getByLabel(/project name/i));
+    this.projectKeyInput = page.getByPlaceholder(/key|prefix/i).or(page.getByLabel(/key/i));
+    this.projectDescriptionInput = page
+      .getByPlaceholder(/description/i)
+      .or(page.getByLabel(/description/i));
     this.makePublicCheckbox = page.getByRole("checkbox", { name: /public/i });
-    this.boardTypeKanban = page.getByRole("radio", { name: /kanban/i }).or(
-      page.getByLabel(/kanban/i),
-    );
-    this.boardTypeScrum = page.getByRole("radio", { name: /scrum/i }).or(
-      page.getByLabel(/scrum/i),
-    );
+    this.boardTypeKanban = page
+      .getByRole("radio", { name: /kanban/i })
+      .or(page.getByLabel(/kanban/i));
+    this.boardTypeScrum = page.getByRole("radio", { name: /scrum/i }).or(page.getByLabel(/scrum/i));
     this.createButton = page.getByRole("button", { name: /^create$/i });
     this.cancelButton = page.getByRole("button", { name: /cancel/i });
 
     // Project board
-    this.projectBoard = page.locator("[data-project-board]").or(
-      page.locator(".kanban-board, [role='grid']"),
-    );
-    this.boardColumns = page.locator("[data-board-column]").or(
-      page.locator(".kanban-column"),
-    );
-    this.issueCards = page.locator("[data-issue-card]").or(
-      page.locator(".issue-card"),
-    );
+    this.projectBoard = page
+      .locator("[data-project-board]")
+      .or(page.locator(".kanban-board, [role='grid']"));
+    this.boardColumns = page.locator("[data-board-column]").or(page.locator(".kanban-column"));
+    this.issueCards = page.locator("[data-issue-card]").or(page.locator(".issue-card"));
     this.createIssueButton = page.getByRole("button", { name: /create.*issue|new.*issue|\+ add/i });
 
     // Create issue modal
-    this.createIssueModal = page.getByRole("dialog").filter({ hasText: /create.*issue|new.*issue/i });
+    this.createIssueModal = page
+      .getByRole("dialog")
+      .filter({ hasText: /create.*issue|new.*issue/i });
     this.issueTitleInput = page.getByPlaceholder(/title|issue.*title/i);
-    this.issueDescriptionInput = page.getByPlaceholder(/description/i).or(
-      page.locator("[data-issue-description]"),
-    );
+    this.issueDescriptionInput = page
+      .getByPlaceholder(/description/i)
+      .or(page.locator("[data-issue-description]"));
     this.issueTypeSelect = page.getByRole("combobox", { name: /type/i });
     this.issuePrioritySelect = page.getByRole("combobox", { name: /priority/i });
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
     // Project tabs
-    this.boardTab = page.getByRole("tab", { name: /board/i }).or(
-      page.getByRole("button", { name: /board/i }),
-    );
-    this.backlogTab = page.getByRole("tab", { name: /backlog/i }).or(
-      page.getByRole("button", { name: /backlog/i }),
-    );
-    this.sprintsTab = page.getByRole("tab", { name: /sprint/i }).or(
-      page.getByRole("button", { name: /sprint/i }),
-    );
-    this.analyticsTab = page.getByRole("tab", { name: /analytics/i }).or(
-      page.getByRole("button", { name: /analytics/i }),
-    );
-    this.settingsTab = page.getByRole("tab", { name: /settings/i }).or(
-      page.getByRole("button", { name: /settings/i }),
-    );
+    this.boardTab = page
+      .getByRole("tab", { name: /board/i })
+      .or(page.getByRole("button", { name: /board/i }));
+    this.backlogTab = page
+      .getByRole("tab", { name: /backlog/i })
+      .or(page.getByRole("button", { name: /backlog/i }));
+    this.sprintsTab = page
+      .getByRole("tab", { name: /sprint/i })
+      .or(page.getByRole("button", { name: /sprint/i }));
+    this.analyticsTab = page
+      .getByRole("tab", { name: /analytics/i })
+      .or(page.getByRole("button", { name: /analytics/i }));
+    this.settingsTab = page
+      .getByRole("tab", { name: /settings/i })
+      .or(page.getByRole("button", { name: /settings/i }));
   }
 
   // ===================

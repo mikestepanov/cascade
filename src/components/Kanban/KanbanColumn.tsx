@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ANIMATION } from "@/lib/constants";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
@@ -38,8 +39,9 @@ interface KanbanColumnProps {
 /**
  * Individual Kanban column for a workflow state
  * Extracted from KanbanBoard for better organization
+ * Memoized to prevent unnecessary re-renders when other columns change
  */
-export function KanbanColumn({
+export const KanbanColumn = memo(function KanbanColumn({
   state,
   issues,
   columnIndex,
@@ -122,4 +124,4 @@ export function KanbanColumn({
       </div>
     </div>
   );
-}
+});

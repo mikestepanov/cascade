@@ -72,66 +72,68 @@ export class SettingsPage extends BasePage {
     super(page);
 
     // Settings tabs
-    this.integrationsTab = page.getByRole("tab", { name: /integration/i }).or(
-      page.getByRole("button", { name: /integration/i }),
-    );
-    this.apiKeysTab = page.getByRole("tab", { name: /api.*key/i }).or(
-      page.getByRole("button", { name: /api.*key/i }),
-    );
-    this.offlineTab = page.getByRole("tab", { name: /offline/i }).or(
-      page.getByRole("button", { name: /offline/i }),
-    );
-    this.preferencesTab = page.getByRole("tab", { name: /preference/i }).or(
-      page.getByRole("button", { name: /preference/i }),
-    );
-    this.adminTab = page.getByRole("tab", { name: /admin/i }).or(
-      page.getByRole("button", { name: /admin/i }),
-    );
+    this.integrationsTab = page
+      .getByRole("tab", { name: /integration/i })
+      .or(page.getByRole("button", { name: /integration/i }));
+    this.apiKeysTab = page
+      .getByRole("tab", { name: /api.*key/i })
+      .or(page.getByRole("button", { name: /api.*key/i }));
+    this.offlineTab = page
+      .getByRole("tab", { name: /offline/i })
+      .or(page.getByRole("button", { name: /offline/i }));
+    this.preferencesTab = page
+      .getByRole("tab", { name: /preference/i })
+      .or(page.getByRole("button", { name: /preference/i }));
+    this.adminTab = page
+      .getByRole("tab", { name: /admin/i })
+      .or(page.getByRole("button", { name: /admin/i }));
 
     // Integrations
-    this.githubIntegration = page.locator("[data-integration='github']").or(
-      page.getByText(/github/i).first(),
-    );
-    this.googleCalendarIntegration = page.locator("[data-integration='google-calendar']").or(
-      page.getByText(/google.*calendar/i).first(),
-    );
-    this.pumbleIntegration = page.locator("[data-integration='pumble']").or(
-      page.getByText(/pumble/i).first(),
-    );
+    this.githubIntegration = page
+      .locator("[data-integration='github']")
+      .or(page.getByText(/github/i).first());
+    this.googleCalendarIntegration = page
+      .locator("[data-integration='google-calendar']")
+      .or(page.getByText(/google.*calendar/i).first());
+    this.pumbleIntegration = page
+      .locator("[data-integration='pumble']")
+      .or(page.getByText(/pumble/i).first());
     this.connectGithubButton = page.getByRole("button", { name: /connect.*github/i });
     this.connectGoogleButton = page.getByRole("button", { name: /connect.*google/i });
     this.connectPumbleButton = page.getByRole("button", { name: /connect.*pumble/i });
 
     // API Keys
     this.apiKeysList = page.locator("[data-api-keys-list]");
-    this.generateApiKeyButton = page.getByRole("button", { name: /generate|create.*key|new.*key/i });
+    this.generateApiKeyButton = page.getByRole("button", {
+      name: /generate|create.*key|new.*key/i,
+    });
     this.apiKeyNameInput = page.getByPlaceholder(/key.*name|name/i);
     this.createApiKeyButton = page.getByRole("button", { name: /^create$/i });
     this.copyApiKeyButton = page.getByRole("button", { name: /copy/i });
     this.revokeApiKeyButton = page.getByRole("button", { name: /revoke|delete/i });
 
     // Offline mode
-    this.offlineToggle = page.getByRole("switch", { name: /offline/i }).or(
-      page.getByRole("checkbox", { name: /offline/i }),
-    );
+    this.offlineToggle = page
+      .getByRole("switch", { name: /offline/i })
+      .or(page.getByRole("checkbox", { name: /offline/i }));
     this.syncStatusIndicator = page.locator("[data-sync-status]");
     this.forceSyncButton = page.getByRole("button", { name: /sync|force.*sync/i });
 
     // Preferences
     this.notificationPreferences = page.locator("[data-notification-preferences]");
-    this.emailNotificationsToggle = page.getByRole("switch", { name: /email/i }).or(
-      page.getByRole("checkbox", { name: /email.*notification/i }),
-    );
-    this.pushNotificationsToggle = page.getByRole("switch", { name: /push/i }).or(
-      page.getByRole("checkbox", { name: /push.*notification/i }),
-    );
+    this.emailNotificationsToggle = page
+      .getByRole("switch", { name: /email/i })
+      .or(page.getByRole("checkbox", { name: /email.*notification/i }));
+    this.pushNotificationsToggle = page
+      .getByRole("switch", { name: /push/i })
+      .or(page.getByRole("checkbox", { name: /push.*notification/i }));
     this.languageSelect = page.getByRole("combobox", { name: /language/i });
     this.timezoneSelect = page.getByRole("combobox", { name: /timezone/i });
 
     // Admin
-    this.userManagementSection = page.locator("[data-user-management]").or(
-      page.getByText(/user.*management/i),
-    );
+    this.userManagementSection = page
+      .locator("[data-user-management]")
+      .or(page.getByText(/user.*management/i));
     this.inviteUserButton = page.getByRole("button", { name: /invite.*user/i });
     this.userTypeManager = page.locator("[data-user-type-manager]");
     this.hourComplianceDashboard = page.locator("[data-hour-compliance]");

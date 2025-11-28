@@ -5,7 +5,12 @@
  * Docs: https://documentation.mailgun.com/en/latest/
  */
 
-import { getMailgunApiKey, getMailgunDomain, getMailgunFromEmail, getMailgunRegion } from "../lib/env";
+import {
+  getMailgunApiKey,
+  getMailgunDomain,
+  getMailgunFromEmail,
+  getMailgunRegion,
+} from "../lib/env";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 interface MailgunResponse {
@@ -18,7 +23,6 @@ export class MailgunProvider implements EmailProvider {
   private domain = getMailgunDomain();
   private defaultFrom = getMailgunFromEmail();
   private region = getMailgunRegion();
-
 
   isConfigured(): boolean {
     return !!this.apiKey && !!this.domain;

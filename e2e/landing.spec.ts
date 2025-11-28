@@ -74,10 +74,14 @@ test.describe("Landing Page - Features Section", () => {
 
   test("displays features section", async ({ page }) => {
     // Section heading
-    await expect(page.getByRole("heading", { name: /everything you need to succeed/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /everything you need to succeed/i }),
+    ).toBeVisible();
 
     // Feature cards (3)
-    await expect(page.getByRole("heading", { name: /seamless workflow automation/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /seamless workflow automation/i }),
+    ).toBeVisible();
     await expect(page.getByRole("heading", { name: /intelligent time tracking/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /integrated project clarity/i })).toBeVisible();
 

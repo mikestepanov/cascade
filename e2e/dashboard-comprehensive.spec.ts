@@ -121,10 +121,13 @@ authenticatedTest.describe("Dashboard View - Command Palette", () => {
     await expect(dashboardPage.commandPalette).not.toBeVisible();
   });
 
-  authenticatedTest("can open command palette with keyboard shortcut", async ({ dashboardPage }) => {
-    await dashboardPage.pressCommandPaletteShortcut();
-    await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 5000 });
-  });
+  authenticatedTest(
+    "can open command palette with keyboard shortcut",
+    async ({ dashboardPage }) => {
+      await dashboardPage.pressCommandPaletteShortcut();
+      await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 5000 });
+    },
+  );
 });
 
 authenticatedTest.describe("Dashboard View - Keyboard Shortcuts Help", () => {

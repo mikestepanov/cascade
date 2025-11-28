@@ -85,33 +85,33 @@ export class DashboardPage extends BasePage {
     super(page);
 
     // Navigation tabs - using data-tour attributes when available
-    this.dashboardTab = page.locator("[data-tour='nav-dashboard']").or(
-      page.getByRole("button", { name: /my work|dashboard/i }),
-    );
-    this.documentsTab = page.locator("[data-tour='nav-documents']").or(
-      page.getByRole("button", { name: /documents/i }),
-    );
-    this.projectsTab = page.locator("[data-tour='nav-projects']").or(
-      page.getByRole("button", { name: /projects/i }),
-    );
-    this.timesheetTab = page.locator("[data-tour='nav-timesheet']").or(
-      page.getByRole("button", { name: /timesheet/i }),
-    );
-    this.calendarTab = page.locator("[data-tour='nav-calendar']").or(
-      page.getByRole("button", { name: /calendar/i }),
-    );
-    this.settingsTab = page.locator("[data-tour='nav-settings']").or(
-      page.getByRole("button", { name: /settings/i }),
-    );
+    this.dashboardTab = page
+      .locator("[data-tour='nav-dashboard']")
+      .or(page.getByRole("button", { name: /my work|dashboard/i }));
+    this.documentsTab = page
+      .locator("[data-tour='nav-documents']")
+      .or(page.getByRole("button", { name: /documents/i }));
+    this.projectsTab = page
+      .locator("[data-tour='nav-projects']")
+      .or(page.getByRole("button", { name: /projects/i }));
+    this.timesheetTab = page
+      .locator("[data-tour='nav-timesheet']")
+      .or(page.getByRole("button", { name: /timesheet/i }));
+    this.calendarTab = page
+      .locator("[data-tour='nav-calendar']")
+      .or(page.getByRole("button", { name: /calendar/i }));
+    this.settingsTab = page
+      .locator("[data-tour='nav-settings']")
+      .or(page.getByRole("button", { name: /settings/i }));
 
     // Header actions
     this.mobileMenuButton = page.getByRole("button", { name: /menu|toggle.*sidebar/i });
     this.commandPaletteButton = page.getByRole("button", { name: /command|⌘k/i });
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard|shortcuts|\?/i });
     this.globalSearchButton = page.getByRole("button", { name: /search/i });
-    this.notificationButton = page.locator("[data-tour='notifications']").or(
-      page.getByRole("button", { name: /notification/i }),
-    );
+    this.notificationButton = page
+      .locator("[data-tour='notifications']")
+      .or(page.getByRole("button", { name: /notification/i }));
     this.signOutButton = page.getByRole("button", { name: /sign out|logout/i });
 
     // Theme toggle buttons
@@ -144,9 +144,10 @@ export class DashboardPage extends BasePage {
     this.globalSearchInput = page.getByPlaceholder(/search.*issues|search.*documents/i);
 
     // Notifications
-    this.notificationPanel = page.locator("[role='menu']").filter({ hasText: /notification/i }).or(
-      page.getByRole("region", { name: /notification/i }),
-    );
+    this.notificationPanel = page
+      .locator("[role='menu']")
+      .filter({ hasText: /notification/i })
+      .or(page.getByRole("region", { name: /notification/i }));
     this.markAllReadButton = page.getByRole("button", { name: /mark.*read/i });
     this.notificationItems = page.locator("[data-notification-item]");
 

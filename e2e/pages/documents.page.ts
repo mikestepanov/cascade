@@ -43,18 +43,18 @@ export class DocumentsPage extends BasePage {
     super(page);
 
     // Sidebar
-    this.sidebar = page.locator("[data-tour='sidebar']").or(
-      page.locator("aside").first(),
-    );
+    this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
     this.searchInput = page.getByPlaceholder(/search.*document/i);
-    this.newDocumentButton = page.getByRole("button", { name: /new.*document|\+ new|add/i }).first();
+    this.newDocumentButton = page
+      .getByRole("button", { name: /new.*document|\+ new|add/i })
+      .first();
     this.templateButton = page.getByRole("button", { name: /template|📄/i });
-    this.documentList = page.locator("[data-document-list]").or(
-      this.sidebar.locator("ul, [role='list']").first(),
-    );
-    this.documentItems = page.locator("[data-document-item]").or(
-      this.sidebar.getByRole("button").filter({ hasNotText: /new|template|search/i }),
-    );
+    this.documentList = page
+      .locator("[data-document-list]")
+      .or(this.sidebar.locator("ul, [role='list']").first());
+    this.documentItems = page
+      .locator("[data-document-item]")
+      .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|template|search/i }));
 
     // Template modal
     this.templateModal = page.getByRole("dialog").filter({ hasText: /template|choose/i });
@@ -63,13 +63,14 @@ export class DocumentsPage extends BasePage {
     this.projectBriefTemplate = page.getByRole("button", { name: /project.*brief/i });
 
     // Editor
-    this.editor = page.locator("[data-editor]").or(
-      page.locator(".ProseMirror, [contenteditable='true']").first(),
-    );
+    this.editor = page
+      .locator("[data-editor]")
+      .or(page.locator(".ProseMirror, [contenteditable='true']").first());
     this.editorContent = page.locator(".bn-editor, .ProseMirror");
-    this.documentTitle = page.getByRole("heading", { level: 1 }).first().or(
-      page.locator("[data-document-title]"),
-    );
+    this.documentTitle = page
+      .getByRole("heading", { level: 1 })
+      .first()
+      .or(page.locator("[data-document-title]"));
 
     // Delete confirmation
     this.deleteConfirmDialog = page.getByRole("dialog").filter({ hasText: /delete|confirm/i });

@@ -4,7 +4,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
-import { getBotServiceApiKey, getBotServiceUrl, getSiteUrl } from "./lib/env";
+import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
 
 // ===========================================
 // Bot Service Authentication
@@ -844,7 +844,7 @@ export const notifyBotService = internalAction({
     const botServiceUrl = getBotServiceUrl();
     const botServiceApiKey = getBotServiceApiKey();
 
-    if (!botServiceUrl || !botServiceApiKey) {
+    if (!(botServiceUrl && botServiceApiKey)) {
       await ctx.runMutation(internal.meetingBot.markJobFailed, {
         jobId: args.jobId,
         recordingId: args.recordingId,

@@ -58,18 +58,18 @@ export class CalendarPage extends BasePage {
     super(page);
 
     // Calendar view
-    this.calendar = page.locator("[data-calendar]").or(
-      page.locator(".calendar, [role='grid']").first(),
-    );
-    this.calendarGrid = page.locator("[data-calendar-grid]").or(
-      page.locator(".calendar-grid, .fc-view"),
-    );
+    this.calendar = page
+      .locator("[data-calendar]")
+      .or(page.locator(".calendar, [role='grid']").first());
+    this.calendarGrid = page
+      .locator("[data-calendar-grid]")
+      .or(page.locator(".calendar-grid, .fc-view"));
     this.todayButton = page.getByRole("button", { name: /today/i });
     this.prevButton = page.getByRole("button", { name: /prev|previous|back|←|</i });
     this.nextButton = page.getByRole("button", { name: /next|forward|→|>/i });
-    this.monthYearLabel = page.locator("[data-month-year]").or(
-      page.locator(".calendar-header h2, .fc-toolbar-title"),
-    );
+    this.monthYearLabel = page
+      .locator("[data-month-year]")
+      .or(page.locator(".calendar-header h2, .fc-toolbar-title"));
 
     // View toggles
     this.monthViewButton = page.getByRole("button", { name: /month/i });
@@ -77,34 +77,32 @@ export class CalendarPage extends BasePage {
     this.dayViewButton = page.getByRole("button", { name: /day/i });
 
     // Events
-    this.eventItems = page.locator("[data-event-item]").or(
-      page.locator(".calendar-event, .fc-event"),
-    );
-    this.createEventButton = page.getByRole("button", { name: /create.*event|new.*event|add.*event|\+/i });
+    this.eventItems = page
+      .locator("[data-event-item]")
+      .or(page.locator(".calendar-event, .fc-event"));
+    this.createEventButton = page.getByRole("button", {
+      name: /create.*event|new.*event|add.*event|\+/i,
+    });
 
     // Create event modal
-    this.createEventModal = page.getByRole("dialog").filter({ hasText: /create.*event|new.*event/i });
-    this.eventTitleInput = page.getByPlaceholder(/title|event.*title/i).or(
-      page.getByLabel(/title/i),
-    );
-    this.eventDescriptionInput = page.getByPlaceholder(/description/i).or(
-      page.getByLabel(/description/i),
-    );
-    this.eventStartDate = page.getByLabel(/start.*date/i).or(
-      page.locator("[data-start-date]"),
-    );
-    this.eventStartTime = page.getByLabel(/start.*time/i).or(
-      page.locator("[data-start-time]"),
-    );
-    this.eventEndDate = page.getByLabel(/end.*date/i).or(
-      page.locator("[data-end-date]"),
-    );
-    this.eventEndTime = page.getByLabel(/end.*time/i).or(
-      page.locator("[data-end-time]"),
-    );
+    this.createEventModal = page
+      .getByRole("dialog")
+      .filter({ hasText: /create.*event|new.*event/i });
+    this.eventTitleInput = page
+      .getByPlaceholder(/title|event.*title/i)
+      .or(page.getByLabel(/title/i));
+    this.eventDescriptionInput = page
+      .getByPlaceholder(/description/i)
+      .or(page.getByLabel(/description/i));
+    this.eventStartDate = page.getByLabel(/start.*date/i).or(page.locator("[data-start-date]"));
+    this.eventStartTime = page.getByLabel(/start.*time/i).or(page.locator("[data-start-time]"));
+    this.eventEndDate = page.getByLabel(/end.*date/i).or(page.locator("[data-end-date]"));
+    this.eventEndTime = page.getByLabel(/end.*time/i).or(page.locator("[data-end-time]"));
     this.eventTypeSelect = page.getByRole("combobox", { name: /type/i });
     this.isRequiredCheckbox = page.getByRole("checkbox", { name: /required/i });
-    this.saveEventButton = this.createEventModal.getByRole("button", { name: /save|create|submit/i });
+    this.saveEventButton = this.createEventModal.getByRole("button", {
+      name: /save|create|submit/i,
+    });
     this.cancelEventButton = this.createEventModal.getByRole("button", { name: /cancel/i });
 
     // Event detail modal
@@ -152,11 +150,14 @@ export class CalendarPage extends BasePage {
     await expect(this.createEventModal).toBeVisible({ timeout: 5000 });
   }
 
-  async createEvent(title: string, options?: {
-    description?: string;
-    type?: string;
-    isRequired?: boolean;
-  }) {
+  async createEvent(
+    title: string,
+    options?: {
+      description?: string;
+      type?: string;
+      isRequired?: boolean;
+    },
+  ) {
     await this.openCreateEventModal();
     await this.eventTitleInput.fill(title);
     if (options?.description) {

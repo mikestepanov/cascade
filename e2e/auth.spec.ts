@@ -104,10 +104,7 @@ test.describe("Password Reset", () => {
  * Verifies users see dashboard after successful authentication
  */
 test.describe("Post-Login Navigation", () => {
-  test("authenticated user should see dashboard by default", async ({
-    dashboardPage,
-    page,
-  }) => {
+  test("authenticated user should see dashboard by default", async ({ dashboardPage, page }) => {
     // This test requires auth state - skip if not set up
     // Use authenticatedTest fixture for actual authenticated tests
     test.skip();
