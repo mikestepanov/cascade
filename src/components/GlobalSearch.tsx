@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
@@ -101,6 +101,68 @@ function SearchTab({
   );
 }
 
+// Search results container with all states
+function SearchResultsContainer({
+  query,
+  isLoading,
+  results,
+  hasMore,
+  totalCount,
+  onLoadMore,
+  onClose,
+}: {
+  query: string;
+  isLoading: boolean;
+  results: SearchResult[];
+  hasMore: boolean;
+  totalCount: number;
+  onLoadMore: () => void;
+  onClose: () => void;
+}) {
+  if (query.length < 2) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <p className="text-sm">Type at least 2 characters to search</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+        <p className="text-sm">Searching...</p>
+      </div>
+    );
+  }
+
+  if (results.length === 0) {
+    return <EmptyState icon="🔍" title="No results found" />;
+  }
+
+  return (
+    <>
+      <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+        {results.map((result) => (
+          <SearchResultItem key={result._id} result={result} onClose={onClose} />
+        ))}
+      </div>
+      {hasMore && (
+        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onLoadMore}
+            className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+          >
+            Load More ({totalCount - results.length} remaining)
+          </Button>
+        </div>
+      )}
+    </>
+  );
+}
+
 // Search result item component
 function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
   const href =
@@ -171,53 +233,19 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
 }
 
 export function GlobalSearch() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"all" | "issues" | "documents">("all");
-  const [issueOffset, setIssueOffset] = useState(0);
-  const [documentOffset, setDocumentOffset] = useState(0);
-  const LIMIT = 20;
+  const { isOpen, setIsOpen } = useSearchKeyboard();
+  const { query, setQuery, activeTab, setActiveTab, issueOffset, documentOffset, limit, loadMore } =
+    useSearchPagination(isOpen);
 
   // Search when query changes
   const issueSearchResult = useQuery(
     api.issues.search,
-    query.length >= 2 ? { query, limit: LIMIT, offset: issueOffset } : "skip",
+    query.length >= 2 ? { query, limit, offset: issueOffset } : "skip",
   );
   const documentSearchResult = useQuery(
     api.documents.search,
-    query.length >= 2 ? { query, limit: LIMIT, offset: documentOffset } : "skip",
+    query.length >= 2 ? { query, limit, offset: documentOffset } : "skip",
   );
-
-  // Keyboard shortcut: Cmd+K or Ctrl+K
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setIsOpen(true);
-      }
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // Reset query and offsets when closing
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery("");
-      setIssueOffset(0);
-      setDocumentOffset(0);
-    }
-  }, [isOpen]);
-
-  // Reset offsets when query changes
-  useEffect(() => {
-    setIssueOffset(0);
-    setDocumentOffset(0);
-  }, []);
 
   const issueResults = issueSearchResult?.results ?? [];
   const documentResults = documentSearchResult?.results ?? [];
@@ -234,15 +262,7 @@ export function GlobalSearch() {
   const hasMore = getHasMore(activeTab, issueHasMore, documentHasMore);
 
   const handleLoadMore = () => {
-    const shouldLoadIssues = (activeTab === "all" || activeTab === "issues") && issueHasMore;
-    const shouldLoadDocs = (activeTab === "all" || activeTab === "documents") && documentHasMore;
-
-    if (shouldLoadIssues) {
-      setIssueOffset(issueOffset + LIMIT);
-    }
-    if (shouldLoadDocs) {
-      setDocumentOffset(documentOffset + LIMIT);
-    }
+    loadMore(issueHasMore, documentHasMore);
   };
 
   return (
@@ -337,39 +357,15 @@ export function GlobalSearch() {
 
             {/* Results */}
             <div className="max-h-80 sm:max-h-96 overflow-y-auto">
-              {query.length < 2 ? (
-                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  <p className="text-sm">Type at least 2 characters to search</p>
-                </div>
-              ) : filteredResults.length === 0 ? (
-                <EmptyState icon="🔍" title="No results found" />
-              ) : (
-                <>
-                  <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {filteredResults.map((result) => (
-                      <SearchResultItem
-                        key={result._id}
-                        result={result}
-                        onClose={() => setIsOpen(false)}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Load More Button */}
-                  {hasMore && (
-                    <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleLoadMore}
-                        className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
-                      >
-                        Load More ({totalCount - filteredResults.length} remaining)
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
+              <SearchResultsContainer
+                query={query}
+                isLoading={issueSearchResult === undefined || documentSearchResult === undefined}
+                results={filteredResults}
+                hasMore={hasMore}
+                totalCount={totalCount}
+                onLoadMore={handleLoadMore}
+                onClose={() => setIsOpen(false)}
+              />
             </div>
 
             {/* Footer */}

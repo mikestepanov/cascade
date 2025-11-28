@@ -1,7 +1,15 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test as base, expect } from "@playwright/test";
-import { AuthPage, DashboardPage } from "../pages";
+import {
+  AuthPage,
+  CalendarPage,
+  DashboardPage,
+  DocumentsPage,
+  ProjectsPage,
+  SettingsPage,
+} from "../pages";
 
 /**
  * Authentication fixtures for tests requiring logged-in state
@@ -18,18 +26,31 @@ const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
 const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
+// Check if auth state exists
+const authStateExists = fs.existsSync(AUTH_STATE_PATH);
+
 export type AuthFixtures = {
   authPage: AuthPage;
   dashboardPage: DashboardPage;
+  documentsPage: DocumentsPage;
+  projectsPage: ProjectsPage;
+  calendarPage: CalendarPage;
+  settingsPage: SettingsPage;
 };
 
 /**
  * Test fixture that uses saved authentication state
  * Tests will start already logged in
+ * Skips tests if auth state doesn't exist
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
-  // Use saved storage state (cookies, localStorage)
-  storageState: AUTH_STATE_PATH,
+  // Use saved storage state (cookies, localStorage) - only if file exists
+  storageState: async (_baseFixtures, use, testInfo) => {
+    if (!authStateExists) {
+      testInfo.skip(true, "Auth state not found. Run: pnpm e2e:setup-auth");
+    }
+    await use(AUTH_STATE_PATH);
+  },
 
   authPage: async ({ page }, use) => {
     await use(new AuthPage(page));
@@ -37,6 +58,22 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   dashboardPage: async ({ page }, use) => {
     await use(new DashboardPage(page));
+  },
+
+  documentsPage: async ({ page }, use) => {
+    await use(new DocumentsPage(page));
+  },
+
+  projectsPage: async ({ page }, use) => {
+    await use(new ProjectsPage(page));
+  },
+
+  calendarPage: async ({ page }, use) => {
+    await use(new CalendarPage(page));
+  },
+
+  settingsPage: async ({ page }, use) => {
+    await use(new SettingsPage(page));
   },
 });
 

@@ -3,9 +3,8 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
-import { modules } from "./testSetup";
+import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
 
 describe("Automation Rules", () => {

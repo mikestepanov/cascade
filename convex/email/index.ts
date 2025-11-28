@@ -60,6 +60,99 @@ export function isEmailConfigured(): boolean {
   return getFirstConfiguredProvider() !== null;
 }
 
+// Types for provider selection
+interface ServiceProviderConfig {
+  provider: string;
+  isConfigured: boolean;
+  freeUnitsType: string;
+  freeUnitsPerMonth: number;
+  oneTimeUnitsRemaining?: number;
+  costPerUnit: number;
+  priority: number;
+}
+
+interface ProviderSelection {
+  name: string;
+  provider: EmailProvider;
+}
+
+/**
+ * Calculate remaining free capacity for a provider
+ */
+function calculateFreeCapacity(config: ServiceProviderConfig, unitsUsed: number): number {
+  if (config.freeUnitsType === "one_time") {
+    return config.oneTimeUnitsRemaining ?? 0;
+  }
+  return Math.max(0, config.freeUnitsPerMonth - unitsUsed);
+}
+
+/**
+ * Find a provider with free capacity from sorted configs
+ */
+async function findProviderWithFreeCapacity(
+  ctx: QueryCtx,
+  configs: ServiceProviderConfig[],
+  month: string,
+): Promise<ProviderSelection | null> {
+  for (const config of configs) {
+    if (!config.isConfigured) continue;
+
+    const usage = await ctx.db
+      .query("serviceUsage")
+      .withIndex("by_provider_month", (q) => q.eq("provider", config.provider).eq("month", month))
+      .first();
+
+    const freeRemaining = calculateFreeCapacity(config, usage?.unitsUsed ?? 0);
+
+    if (freeRemaining > 0) {
+      const provider = getProvider(config.provider);
+      if (provider?.isConfigured()) {
+        return { name: config.provider, provider };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Find the cheapest configured provider
+ */
+function findCheapestProvider(configs: ServiceProviderConfig[]): ProviderSelection | null {
+  const sorted = configs
+    .filter((c) => c.isConfigured)
+    .sort((a, b) => a.costPerUnit - b.costPerUnit);
+
+  for (const config of sorted) {
+    const provider = getProvider(config.provider);
+    if (provider?.isConfigured()) {
+      return { name: config.provider, provider };
+    }
+  }
+  return null;
+}
+
+/**
+ * Select the best provider from database configuration
+ */
+async function selectProviderFromDatabase(ctx: QueryCtx): Promise<ProviderSelection | null> {
+  const configs = await ctx.db
+    .query("serviceProviders")
+    .withIndex("by_service_enabled", (q) => q.eq("serviceType", "email").eq("isEnabled", true))
+    .collect();
+
+  // Sort by priority
+  configs.sort((a, b) => a.priority - b.priority);
+
+  const month = getCurrentMonth();
+
+  // Try to find provider with free capacity
+  const freeProvider = await findProviderWithFreeCapacity(ctx, configs, month);
+  if (freeProvider) return freeProvider;
+
+  // Fall back to cheapest provider
+  return findCheapestProvider(configs);
+}
+
 /**
  * Send an email using the best available provider
  *
@@ -81,61 +174,12 @@ export async function sendEmail(
   ctx: MutationCtx | QueryCtx | null,
   params: EmailSendParams,
 ): Promise<EmailSendResult & { provider?: string }> {
-  let selectedProvider: { name: string; provider: EmailProvider } | null = null;
+  // Select provider: try database config first, then fallback
+  let selectedProvider: ProviderSelection | null = null;
 
-  // Try to get best provider from Convex rotation
   if (ctx) {
     try {
-      const selection = await (ctx as QueryCtx).db
-        .query("serviceProviders")
-        .withIndex("by_service_enabled", (q) => q.eq("serviceType", "email").eq("isEnabled", true))
-        .collect();
-
-      // Sort by priority and find one with free capacity
-      selection.sort((a, b) => a.priority - b.priority);
-
-      const month = getCurrentMonth();
-
-      for (const config of selection) {
-        if (!config.isConfigured) continue;
-
-        // Get current usage
-        const usage = await (ctx as QueryCtx).db
-          .query("serviceUsage")
-          .withIndex("by_provider_month", (q) =>
-            q.eq("provider", config.provider).eq("month", month),
-          )
-          .first();
-
-        const unitsUsed = usage?.unitsUsed ?? 0;
-        const freeRemaining =
-          config.freeUnitsType === "one_time"
-            ? (config.oneTimeUnitsRemaining ?? 0)
-            : Math.max(0, config.freeUnitsPerMonth - unitsUsed);
-
-        if (freeRemaining > 0) {
-          const provider = getProvider(config.provider);
-          if (provider?.isConfigured()) {
-            selectedProvider = { name: config.provider, provider };
-            break;
-          }
-        }
-      }
-
-      // If no free capacity, use lowest cost configured provider
-      if (!selectedProvider) {
-        const configured = selection
-          .filter((c) => c.isConfigured)
-          .sort((a, b) => a.costPerUnit - b.costPerUnit);
-
-        for (const config of configured) {
-          const provider = getProvider(config.provider);
-          if (provider?.isConfigured()) {
-            selectedProvider = { name: config.provider, provider };
-            break;
-          }
-        }
-      }
+      selectedProvider = await selectProviderFromDatabase(ctx as QueryCtx);
     } catch (_error) {
       // Database error, fall through to fallback
     }
@@ -157,8 +201,7 @@ export async function sendEmail(
   // Send email
   const result = await selectedProvider.provider.send(params);
 
-  // Record usage if we have a Convex mutation context and send was successful
-  // MutationCtx has `scheduler` property that QueryCtx doesn't have
+  // Record usage if mutation context and send was successful
   if (ctx && result.success && "scheduler" in ctx) {
     try {
       await recordEmailUsage(ctx as MutationCtx, selectedProvider.name, 1);

@@ -1,6 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
-import { getSiteUrl, isGoogleOAuthConfigured, requireEnv } from "../lib/env";
+import { getGoogleClientId, getGoogleClientSecret, isGoogleOAuthConfigured } from "../lib/env";
 
 /**
  * Google OAuth Integration
@@ -38,13 +38,17 @@ interface GoogleCalendarEvent {
 
 // OAuth configuration - throws if not configured
 const getGoogleOAuthConfig = () => {
-  if (!isGoogleOAuthConfigured()) {
-    throw new Error("Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+  const clientId = getGoogleClientId();
+  const clientSecret = getGoogleClientSecret();
+
+  if (!(isGoogleOAuthConfigured() && clientId && clientSecret)) {
+    throw new Error("Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
   }
   return {
-    clientId: requireEnv("GOOGLE_CLIENT_ID"),
-    clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
-    redirectUri: `${getSiteUrl()}/google/callback`,
+    clientId,
+    clientSecret,
+    // Must use CONVEX_SITE_URL - this is a Convex HTTP action, not a frontend route
+    redirectUri: `${process.env.CONVEX_SITE_URL}/google/callback`,
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",
@@ -65,7 +69,7 @@ export const initiateAuth = httpAction((_ctx, _request) => {
       new Response(
         JSON.stringify({
           error:
-            "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
+            "Google OAuth not configured. Please set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET environment variables.",
         }),
         {
           status: 500,
@@ -176,17 +180,16 @@ export const handleCallback = httpAction(async (_ctx, request) => {
     // Calculate expiration time
     const expiresAt = expires_in ? Date.now() + expires_in * 1000 : undefined;
 
-    // Store tokens in session storage to be saved by frontend
-    // Note: In production, you'd want to use a secure state parameter
-    // and authenticate the user properly before saving tokens
-    const _connectionData = {
+    // Connection data to pass to the frontend
+    const connectionData = {
       providerAccountId: email,
       accessToken: access_token,
       refreshToken: refresh_token,
       expiresAt,
     };
 
-    // Return success page
+    // Return success page that passes tokens to opener window
+    // The frontend will save these via the authenticated connectGoogle mutation
     return new Response(
       `
       <!DOCTYPE html>
@@ -207,6 +210,13 @@ export const handleCallback = httpAction(async (_ctx, request) => {
             <p><strong>${email}</strong></p>
             <button onclick="window.close()">Close Window</button>
             <script>
+              // Pass tokens to opener window for saving via authenticated mutation
+              if (window.opener) {
+                window.opener.postMessage({
+                  type: 'google-calendar-connected',
+                  data: ${JSON.stringify(connectionData)}
+                }, '*');
+              }
               // Auto-close after 3 seconds
               setTimeout(() => {
                 window.opener?.location.reload();

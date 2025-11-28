@@ -14,7 +14,6 @@ export class ResendProvider implements EmailProvider {
   private client = this.apiKey ? new Resend(this.apiKey) : undefined;
   private defaultFrom = getResendFromEmail();
 
-
   isConfigured(): boolean {
     return !!this.client;
   }

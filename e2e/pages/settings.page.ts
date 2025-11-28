@@ -1,0 +1,246 @@
+import type { Locator, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { BasePage } from "./base.page";
+
+/**
+ * Settings Page Object
+ * Handles the settings view with integrations, API keys, and preferences
+ */
+export class SettingsPage extends BasePage {
+  // ===================
+  // Locators - Settings Tabs
+  // ===================
+  readonly integrationsTab: Locator;
+  readonly apiKeysTab: Locator;
+  readonly offlineTab: Locator;
+  readonly preferencesTab: Locator;
+  readonly adminTab: Locator;
+
+  // ===================
+  // Locators - Integrations
+  // ===================
+  readonly githubIntegration: Locator;
+  readonly googleCalendarIntegration: Locator;
+  readonly pumbleIntegration: Locator;
+  readonly connectGithubButton: Locator;
+  readonly connectGoogleButton: Locator;
+  readonly connectPumbleButton: Locator;
+
+  // ===================
+  // Locators - API Keys
+  // ===================
+  readonly apiKeysList: Locator;
+  readonly generateApiKeyButton: Locator;
+  readonly apiKeyNameInput: Locator;
+  readonly createApiKeyButton: Locator;
+  readonly copyApiKeyButton: Locator;
+  readonly revokeApiKeyButton: Locator;
+
+  // ===================
+  // Locators - Offline Mode
+  // ===================
+  readonly offlineToggle: Locator;
+  readonly syncStatusIndicator: Locator;
+  readonly forceSyncButton: Locator;
+
+  // ===================
+  // Locators - Preferences
+  // ===================
+  readonly notificationPreferences: Locator;
+  readonly emailNotificationsToggle: Locator;
+  readonly pushNotificationsToggle: Locator;
+  readonly languageSelect: Locator;
+  readonly timezoneSelect: Locator;
+
+  // ===================
+  // Locators - Admin
+  // ===================
+  readonly userManagementSection: Locator;
+  readonly inviteUserButton: Locator;
+  readonly userTypeManager: Locator;
+  readonly hourComplianceDashboard: Locator;
+
+  // ===================
+  // Locators - Invite User Modal
+  // ===================
+  readonly inviteUserModal: Locator;
+  readonly inviteEmailInput: Locator;
+  readonly inviteRoleSelect: Locator;
+  readonly sendInviteButton: Locator;
+
+  constructor(page: Page) {
+    super(page);
+
+    // Settings tabs
+    this.integrationsTab = page
+      .getByRole("tab", { name: /integration/i })
+      .or(page.getByRole("button", { name: /integration/i }));
+    this.apiKeysTab = page
+      .getByRole("tab", { name: /api.*key/i })
+      .or(page.getByRole("button", { name: /api.*key/i }));
+    this.offlineTab = page
+      .getByRole("tab", { name: /offline/i })
+      .or(page.getByRole("button", { name: /offline/i }));
+    this.preferencesTab = page
+      .getByRole("tab", { name: /preference/i })
+      .or(page.getByRole("button", { name: /preference/i }));
+    this.adminTab = page
+      .getByRole("tab", { name: /admin/i })
+      .or(page.getByRole("button", { name: /admin/i }));
+
+    // Integrations
+    this.githubIntegration = page
+      .locator("[data-integration='github']")
+      .or(page.getByText(/github/i).first());
+    this.googleCalendarIntegration = page
+      .locator("[data-integration='google-calendar']")
+      .or(page.getByText(/google.*calendar/i).first());
+    this.pumbleIntegration = page
+      .locator("[data-integration='pumble']")
+      .or(page.getByText(/pumble/i).first());
+    this.connectGithubButton = page.getByRole("button", { name: /connect.*github/i });
+    this.connectGoogleButton = page.getByRole("button", { name: /connect.*google/i });
+    this.connectPumbleButton = page.getByRole("button", { name: /connect.*pumble/i });
+
+    // API Keys
+    this.apiKeysList = page.locator("[data-api-keys-list]");
+    this.generateApiKeyButton = page.getByRole("button", {
+      name: /generate|create.*key|new.*key/i,
+    });
+    this.apiKeyNameInput = page.getByPlaceholder(/key.*name|name/i);
+    this.createApiKeyButton = page.getByRole("button", { name: /^create$/i });
+    this.copyApiKeyButton = page.getByRole("button", { name: /copy/i });
+    this.revokeApiKeyButton = page.getByRole("button", { name: /revoke|delete/i });
+
+    // Offline mode
+    this.offlineToggle = page
+      .getByRole("switch", { name: /offline/i })
+      .or(page.getByRole("checkbox", { name: /offline/i }));
+    this.syncStatusIndicator = page.locator("[data-sync-status]");
+    this.forceSyncButton = page.getByRole("button", { name: /sync|force.*sync/i });
+
+    // Preferences
+    this.notificationPreferences = page.locator("[data-notification-preferences]");
+    this.emailNotificationsToggle = page
+      .getByRole("switch", { name: /email/i })
+      .or(page.getByRole("checkbox", { name: /email.*notification/i }));
+    this.pushNotificationsToggle = page
+      .getByRole("switch", { name: /push/i })
+      .or(page.getByRole("checkbox", { name: /push.*notification/i }));
+    this.languageSelect = page.getByRole("combobox", { name: /language/i });
+    this.timezoneSelect = page.getByRole("combobox", { name: /timezone/i });
+
+    // Admin
+    this.userManagementSection = page
+      .locator("[data-user-management]")
+      .or(page.getByText(/user.*management/i));
+    this.inviteUserButton = page.getByRole("button", { name: /invite.*user/i });
+    this.userTypeManager = page.locator("[data-user-type-manager]");
+    this.hourComplianceDashboard = page.locator("[data-hour-compliance]");
+
+    // Invite user modal
+    this.inviteUserModal = page.getByRole("dialog").filter({ hasText: /invite.*user/i });
+    this.inviteEmailInput = page.getByPlaceholder(/email/i);
+    this.inviteRoleSelect = page.getByRole("combobox", { name: /role/i });
+    this.sendInviteButton = page.getByRole("button", { name: /send.*invite|invite/i });
+  }
+
+  // ===================
+  // Actions - Navigation
+  // ===================
+
+  async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
+    const tabs = {
+      integrations: this.integrationsTab,
+      apiKeys: this.apiKeysTab,
+      offline: this.offlineTab,
+      preferences: this.preferencesTab,
+      admin: this.adminTab,
+    };
+    await tabs[tab].evaluate((el: HTMLElement) => el.click());
+  }
+
+  // ===================
+  // Actions - Integrations
+  // ===================
+
+  async connectGithub() {
+    await this.connectGithubButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async connectGoogleCalendar() {
+    await this.connectGoogleButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async connectPumble() {
+    await this.connectPumbleButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  // ===================
+  // Actions - API Keys
+  // ===================
+
+  async generateApiKey(name: string) {
+    await this.generateApiKeyButton.evaluate((el: HTMLElement) => el.click());
+    await this.apiKeyNameInput.fill(name);
+    await this.createApiKeyButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async copyApiKey() {
+    await this.copyApiKeyButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async revokeApiKey() {
+    await this.revokeApiKeyButton.first().evaluate((el: HTMLElement) => el.click());
+  }
+
+  // ===================
+  // Actions - Offline Mode
+  // ===================
+
+  async toggleOfflineMode() {
+    await this.offlineToggle.evaluate((el: HTMLElement) => el.click());
+  }
+
+  async forceSync() {
+    await this.forceSyncButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  // ===================
+  // Actions - Admin
+  // ===================
+
+  async openInviteUserModal() {
+    await this.inviteUserButton.evaluate((el: HTMLElement) => el.click());
+    await expect(this.inviteUserModal).toBeVisible({ timeout: 5000 });
+  }
+
+  async inviteUser(email: string, role?: string) {
+    await this.openInviteUserModal();
+    await this.inviteEmailInput.fill(email);
+    if (role) {
+      await this.inviteRoleSelect.selectOption(role);
+    }
+    await this.sendInviteButton.evaluate((el: HTMLElement) => el.click());
+  }
+
+  // ===================
+  // Assertions
+  // ===================
+
+  async expectSettingsView() {
+    await expect(this.integrationsTab).toBeVisible();
+  }
+
+  async expectIntegrationsTab() {
+    await expect(this.githubIntegration).toBeVisible();
+  }
+
+  async expectApiKeysTab() {
+    await expect(this.generateApiKeyButton).toBeVisible();
+  }
+
+  async expectPreferencesTab() {
+    await expect(this.notificationPreferences).toBeVisible();
+  }
+}

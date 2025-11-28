@@ -1,12 +1,12 @@
-import { act, renderHook } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getSequenceDisplay,
   getShortcutDisplay,
-  useKeyboardShortcuts,
-  useKeyboardShortcutsWithSequences,
   type KeyboardShortcut,
   type KeySequence,
+  useKeyboardShortcuts,
+  useKeyboardShortcutsWithSequences,
 } from "./useKeyboardShortcuts";
 
 describe("useKeyboardShortcuts", () => {
@@ -31,9 +31,7 @@ describe("useKeyboardShortcuts", () => {
   describe("Basic Shortcut Handling", () => {
     it("should call handler when shortcut key is pressed", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts));
 
@@ -44,9 +42,7 @@ describe("useKeyboardShortcuts", () => {
 
     it("should not call handler when different key is pressed", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts));
 
@@ -57,9 +53,7 @@ describe("useKeyboardShortcuts", () => {
 
     it("should be case insensitive for keys", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "K", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "K", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts));
 
@@ -70,9 +64,7 @@ describe("useKeyboardShortcuts", () => {
 
     it("should pass KeyboardEvent to handler", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts));
 
@@ -179,9 +171,7 @@ describe("useKeyboardShortcuts", () => {
   describe("Enabled State", () => {
     it("should not trigger shortcuts when disabled", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts, false));
 
@@ -192,9 +182,7 @@ describe("useKeyboardShortcuts", () => {
 
     it("should trigger shortcuts when enabled", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       renderHook(() => useKeyboardShortcuts(shortcuts, true));
 
@@ -227,9 +215,7 @@ describe("useKeyboardShortcuts", () => {
   describe("Cleanup", () => {
     it("should remove event listener on unmount", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "Test shortcut" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "Test shortcut" }];
 
       const { unmount } = renderHook(() => useKeyboardShortcuts(shortcuts));
 
@@ -264,9 +250,7 @@ describe("useKeyboardShortcutsWithSequences", () => {
   describe("Single Key Shortcuts", () => {
     it("should handle single key shortcuts like basic hook", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "K" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "K" }];
 
       renderHook(() => useKeyboardShortcutsWithSequences(shortcuts, []));
 
@@ -279,9 +263,7 @@ describe("useKeyboardShortcutsWithSequences", () => {
   describe("Key Sequences", () => {
     it("should handle g+h sequence", () => {
       const handler = vi.fn();
-      const sequences: KeySequence[] = [
-        { keys: ["g", "h"], handler, description: "Go home" },
-      ];
+      const sequences: KeySequence[] = [{ keys: ["g", "h"], handler, description: "Go home" }];
 
       renderHook(() => useKeyboardShortcutsWithSequences([], sequences));
 
@@ -295,9 +277,7 @@ describe("useKeyboardShortcutsWithSequences", () => {
 
     it("should not trigger sequence when timeout exceeds", () => {
       const handler = vi.fn();
-      const sequences: KeySequence[] = [
-        { keys: ["g", "h"], handler, description: "Go home" },
-      ];
+      const sequences: KeySequence[] = [{ keys: ["g", "h"], handler, description: "Go home" }];
 
       renderHook(() => useKeyboardShortcutsWithSequences([], sequences));
 
@@ -311,9 +291,7 @@ describe("useKeyboardShortcutsWithSequences", () => {
 
     it("should not trigger sequence with wrong second key", () => {
       const handler = vi.fn();
-      const sequences: KeySequence[] = [
-        { keys: ["g", "h"], handler, description: "Go home" },
-      ];
+      const sequences: KeySequence[] = [{ keys: ["g", "h"], handler, description: "Go home" }];
 
       renderHook(() => useKeyboardShortcutsWithSequences([], sequences));
 
@@ -329,9 +307,7 @@ describe("useKeyboardShortcutsWithSequences", () => {
   describe("Enabled State", () => {
     it("should not trigger when disabled", () => {
       const handler = vi.fn();
-      const shortcuts: KeyboardShortcut[] = [
-        { key: "k", handler, description: "K" },
-      ];
+      const shortcuts: KeyboardShortcut[] = [{ key: "k", handler, description: "K" }];
 
       renderHook(() => useKeyboardShortcutsWithSequences(shortcuts, [], false));
 

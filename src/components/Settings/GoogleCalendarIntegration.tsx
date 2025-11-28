@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useEffect, useState } from "react";
 import { Calendar } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
@@ -15,10 +14,42 @@ import { Switch } from "../ui/Switch";
  */
 export function GoogleCalendarIntegration() {
   const calendarConnection = useQuery(api.googleCalendar.getConnection);
+  const connectGoogle = useMutation(api.googleCalendar.connectGoogle);
   const disconnectGoogle = useMutation(api.googleCalendar.disconnectGoogle);
   const updateSyncSettings = useMutation(api.googleCalendar.updateSyncSettings);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Handle OAuth callback message from popup
+  const handleOAuthMessage = useCallback(
+    async (event: MessageEvent) => {
+      if (event.data?.type !== "google-calendar-connected") return;
+
+      const { providerAccountId, accessToken, refreshToken, expiresAt } = event.data.data;
+
+      setIsConnecting(true);
+      try {
+        await connectGoogle({
+          providerAccountId,
+          accessToken,
+          refreshToken,
+          expiresAt,
+        });
+        showSuccess("Google Calendar connected successfully");
+      } catch (error) {
+        showError(error, "Failed to save Google Calendar connection");
+      } finally {
+        setIsConnecting(false);
+      }
+    },
+    [connectGoogle],
+  );
+
+  useEffect(() => {
+    window.addEventListener("message", handleOAuthMessage);
+    return () => window.removeEventListener("message", handleOAuthMessage);
+  }, [handleOAuthMessage]);
 
   const handleDisconnect = async () => {
     if (!confirm("Are you sure you want to disconnect Google Calendar?")) {
@@ -50,18 +81,9 @@ export function GoogleCalendarIntegration() {
     );
 
     if (!popup) {
-      toast.error("Please allow popups to connect to Google Calendar");
+      showError("Please allow popups to connect to Google Calendar");
       return;
     }
-
-    // Listen for popup close (successful auth will reload the page)
-    const checkPopup = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(checkPopup);
-        // Popup closed, connection may have been established
-        // The popup auto-reloads the opener on success
-      }
-    }, 500);
   };
 
   const handleToggleSync = async () => {
@@ -134,8 +156,8 @@ export function GoogleCalendarIntegration() {
                 {isDisconnecting ? "Disconnecting..." : "Disconnect"}
               </Button>
             ) : (
-              <Button variant="primary" size="sm" onClick={handleConnect}>
-                Connect Google
+              <Button variant="primary" size="sm" onClick={handleConnect} disabled={isConnecting}>
+                {isConnecting ? "Connecting..." : "Connect Google"}
               </Button>
             )}
           </div>

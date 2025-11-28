@@ -33,8 +33,7 @@ export const sendChatMessage = action({
     });
 
     // Build context from project data if projectId provided
-    let systemContext =
-      "You are a helpful AI assistant for Nixelo, a project management platform.";
+    let systemContext = "You are a helpful AI assistant for Nixelo, a project management platform.";
 
     if (args.projectId) {
       const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {

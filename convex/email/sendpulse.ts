@@ -28,7 +28,6 @@ export class SendPulseProvider implements EmailProvider {
   private tokenExpiry = 0;
   private baseUrl = "https://api.sendpulse.com";
 
-
   isConfigured(): boolean {
     return !!this.clientId && !!this.clientSecret;
   }

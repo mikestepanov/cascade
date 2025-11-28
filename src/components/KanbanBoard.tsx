@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { DISPLAY_LIMITS } from "@/lib/constants";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -123,6 +124,82 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleRedo, handleUndo]);
 
+  // Memoized drag handlers - must be before early return to follow hooks rules
+  const handleDragStart = useCallback((e: React.DragEvent, issueId: Id<"issues">) => {
+    setDraggedIssue(issueId);
+    e.dataTransfer.effectAllowed = "move";
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  }, []);
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent, newStatus: string) => {
+      e.preventDefault();
+
+      if (!(draggedIssue && issues)) return;
+
+      // Find the dragged issue to get its current state
+      const issue = issues.find((i) => i._id === draggedIssue);
+      if (!issue) return;
+
+      // If dropping in same column, do nothing
+      if (issue.status === newStatus) {
+        setDraggedIssue(null);
+        return;
+      }
+
+      const issuesInNewStatus = issues.filter((issue) => issue.status === newStatus);
+      const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
+
+      // Save to history before making the change
+      const action: BoardAction = {
+        issueId: draggedIssue,
+        oldStatus: issue.status,
+        newStatus,
+        oldOrder: issue.order,
+        newOrder,
+        issueTitle: issue.title,
+      };
+
+      try {
+        await updateIssueStatus({
+          issueId: draggedIssue,
+          newStatus,
+          newOrder,
+        });
+
+        // Add to history and clear redo stack (new action invalidates redo)
+        setHistoryStack((prev) => [...prev, action].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
+        setRedoStack([]);
+      } catch (error) {
+        showError(error, "Failed to update issue status");
+      }
+
+      setDraggedIssue(null);
+    },
+    [draggedIssue, issues, updateIssueStatus],
+  );
+
+  const handleCreateIssue = useCallback((status: string) => {
+    setCreateIssueStatus(status);
+    setShowCreateIssue(true);
+  }, []);
+
+  const handleToggleSelect = useCallback((issueId: Id<"issues">) => {
+    setSelectedIssueIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(issueId)) {
+        newSet.delete(issueId);
+      } else {
+        newSet.add(issueId);
+      }
+      return newSet;
+    });
+  }, []);
+
   if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-x-auto">
@@ -157,78 +234,6 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   }
 
   const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
-
-  const handleDragStart = (e: React.DragEvent, issueId: Id<"issues">) => {
-    setDraggedIssue(issueId);
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  };
-
-  const handleDrop = async (e: React.DragEvent, newStatus: string) => {
-    e.preventDefault();
-
-    if (!draggedIssue) return;
-
-    // Find the dragged issue to get its current state
-    const issue = issues.find((i) => i._id === draggedIssue);
-    if (!issue) return;
-
-    // If dropping in same column, do nothing
-    if (issue.status === newStatus) {
-      setDraggedIssue(null);
-      return;
-    }
-
-    const issuesInNewStatus = issues.filter((issue) => issue.status === newStatus);
-    const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
-
-    // Save to history before making the change
-    const action: BoardAction = {
-      issueId: draggedIssue,
-      oldStatus: issue.status,
-      newStatus,
-      oldOrder: issue.order,
-      newOrder,
-      issueTitle: issue.title,
-    };
-
-    try {
-      await updateIssueStatus({
-        issueId: draggedIssue,
-        newStatus,
-        newOrder,
-      });
-
-      // Add to history and clear redo stack (new action invalidates redo)
-      setHistoryStack((prev) => [...prev, action].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
-      setRedoStack([]);
-    } catch (error) {
-      showError(error, "Failed to update issue status");
-    }
-
-    setDraggedIssue(null);
-  };
-
-  const handleCreateIssue = (status: string) => {
-    setCreateIssueStatus(status);
-    setShowCreateIssue(true);
-  };
-
-  const handleToggleSelect = (issueId: Id<"issues">) => {
-    setSelectedIssueIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(issueId)) {
-        newSet.delete(issueId);
-      } else {
-        newSet.add(issueId);
-      }
-      return newSet;
-    });
-  };
 
   const handleClearSelection = () => {
     setSelectedIssueIds(new Set());

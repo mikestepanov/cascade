@@ -6,7 +6,7 @@ import { query } from "./_generated/server";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 import { ResendOTPVerification } from "./ResendOTPVerification";
 
-// Google OAuth is configured below. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET
+// Google OAuth is configured below. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET
 // environment variables to enable. See docs/AUTHENTICATION.md for setup instructions.
 // Password reset and email verification require RESEND_API_KEY and RESEND_FROM_EMAIL environment variables.
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({

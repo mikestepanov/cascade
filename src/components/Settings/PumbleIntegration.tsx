@@ -137,8 +137,8 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
         No Pumble webhooks configured
       </h3>
       <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6 max-w-md mx-auto">
-        Connect Nixelo to Pumble channels to receive notifications when issues are created,
-        updated, or assigned.
+        Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
+        or assigned.
       </p>
       <Button
         onClick={onAddWebhook}

@@ -216,8 +216,8 @@ function FeaturesSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <FeatureCard key={index} {...feature} />
+          {features.map((feature) => (
+            <FeatureCard key={feature.title} {...feature} />
           ))}
         </div>
       </div>
@@ -307,7 +307,7 @@ function WhyChooseSection() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <StatItem key={index} {...stat} delay={index * 150} />
+              <StatItem key={stat.label} {...stat} delay={index * 150} />
             ))}
           </div>
         </div>
@@ -418,7 +418,20 @@ function Footer() {
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">© 2025 Nixelo. All rights reserved.</p>
-          <div className="flex gap-6">
+          <div className="flex items-center gap-6">
+            {/* Social Links */}
+            <a
+              href="https://www.tiktok.com/@nixeloapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-white transition-colors"
+            >
+              <span className="sr-only">Follow us on TikTok</span>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+              </svg>
+            </a>
+            <div className="h-4 w-px bg-gray-700" />
             <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
               Privacy
             </a>
