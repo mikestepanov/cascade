@@ -2,7 +2,7 @@
 
 ## Installed Components
 
-We've installed 3 powerful Convex components to enhance Cascade:
+We've installed 3 powerful Convex components to enhance Nixelo:
 
 ### 1. **Rate Limiter** (`@convex-dev/rate-limiter`)
 Protect endpoints from abuse and control costs.
@@ -215,3 +215,7 @@ With these components, for 100 active users:
 ---
 
 **Need help implementing?** The example files show exactly how to integrate each component!
+
+---
+
+*Last Updated: 2025-11-27*

@@ -267,7 +267,7 @@ export const deliverTestWebhook = internalAction({
 
     const requestPayload = JSON.stringify({
       event: "ping",
-      payload: { message: "Test webhook from Cascade" },
+      payload: { message: "Test webhook from Nixelo" },
       timestamp: Date.now(),
     });
 

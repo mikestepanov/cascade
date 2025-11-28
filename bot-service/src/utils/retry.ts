@@ -49,10 +49,7 @@ function sleep(ms: number): Promise<void> {
  *   }
  * );
  */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function retry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   let lastError: unknown;
   let delayMs = opts.initialDelayMs;
@@ -140,9 +137,6 @@ export function retryApi<T>(fn: () => Promise<T>): Promise<T> {
     maxAttempts: 3,
     initialDelayMs: 1000,
     retryIf: isRetryableError,
-    onRetry: (error, attempt, delay) => {
-      console.warn(`API call failed (attempt ${attempt}), retrying in ${delay}ms:`, error);
-    },
   });
 }
 
@@ -155,8 +149,5 @@ export function retryCritical<T>(fn: () => Promise<T>): Promise<T> {
     initialDelayMs: 2000,
     maxDelayMs: 60000,
     retryIf: isRetryableError,
-    onRetry: (error, attempt, delay) => {
-      console.warn(`Critical operation failed (attempt ${attempt}), retrying in ${delay}ms:`, error);
-    },
   });
 }

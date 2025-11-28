@@ -6,31 +6,62 @@
  * These internal functions are called by public actions in convex/ai.ts
  *
  * Note: Type checking disabled due to TypeScript limitation with deep type instantiation
- * when using Convex's internal function builders. This is a known limitation when combining
- * Convex with AI SDK packages. See convex/ai.ts for more details.
+ * when using Convex with AI SDK packages.
  */
 
-import { openai } from "@ai-sdk/openai";
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
+import { getVoyageApiKey } from "../lib/env";
 
 /**
- * Generate embedding for text using OpenAI
+ * Generate embedding for text using Voyage AI (Anthropic recommended)
+ *
+ * Voyage AI offers:
+ * - 50M tokens/month free tier
+ * - voyage-3-lite: 512 dimensions, fast & cheap
+ * - voyage-3: 1024 dimensions, better quality
+ *
+ * Note: Schema expects 1536 dimensions. Using voyage-3-large (1024 dim)
+ * and padding to 1536 for compatibility, or update schema.
  */
 export const generateEmbedding = internalAction({
   args: {
     text: v.string(),
   },
   handler: async (_ctx, args) => {
-    // Use OpenAI's text-embedding-3-small model (1536 dimensions)
-    const model = openai.embedding("text-embedding-3-small");
+    const apiKey = getVoyageApiKey();
+    if (!apiKey) {
+      throw new Error("VOYAGE_API_KEY not configured");
+    }
 
-    const { embeddings } = await model.doEmbed({
-      values: [args.text],
+    const response = await fetch("https://api.voyageai.com/v1/embeddings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        input: [args.text],
+        model: "voyage-3-lite", // 512 dimensions, fast & cheap
+      }),
     });
 
-    return embeddings[0]; // Return first (and only) embedding
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Voyage AI error: ${error}`);
+    }
+
+    const data = await response.json();
+    const embedding = data.data[0].embedding;
+
+    // Pad to 1536 dimensions for schema compatibility
+    // TODO: Consider updating schema to 512 dimensions
+    while (embedding.length < 1536) {
+      embedding.push(0);
+    }
+
+    return embedding;
   },
 });
 
@@ -168,7 +199,7 @@ export const trackUsage = internalMutation({
   args: {
     userId: v.string(),
     projectId: v.optional(v.id("projects")),
-    provider: v.union(v.literal("anthropic"), v.literal("openai"), v.literal("custom")),
+    provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
       v.literal("chat"),

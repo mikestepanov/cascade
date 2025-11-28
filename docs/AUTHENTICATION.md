@@ -1,13 +1,10 @@
 # Authentication & User Management
 
-> **Last Updated:** 2025-11-20
-> **Version:** 1.1 - User Invitations & Google OAuth Support Added
-
-This document describes the authentication and user management features in Cascade.
+This document describes the authentication and user management features in Nixelo.
 
 ## Authentication Methods
 
-Cascade supports two authentication methods:
+Nixelo supports two authentication methods:
 
 ### 1. Email & Password
 Users can sign up and sign in using their email and password.
@@ -51,7 +48,7 @@ To enable Google OAuth, you need to:
 1. User clicks "Sign in with Google" button
 2. Redirected to Google for authentication
 3. User grants permissions
-4. Redirected back to Cascade and logged in
+4. Redirected back to Nixelo and logged in
 
 ## User Invitation System
 
@@ -212,3 +209,7 @@ Currently, invitation emails are not sent automatically. To implement email send
 **Q: Can I change a user's role after they join?**
 - Currently not implemented in UI
 - Can be added as a future feature in UserManagement component
+
+---
+
+*Last Updated: 2025-11-27*

@@ -1,8 +1,13 @@
+/// <reference types="vite/client" />
+
 /**
  * Test setup file for Convex backend tests
  *
- * This file exports all backend modules so they can be used with convex-test.
- * When using convexTest(), pass this modules object to make your functions available in tests.
+ * Uses import.meta.glob for automatic module discovery with pnpm.
+ * This solves the "Could not find the _generated directory" error.
+ *
+ * @see https://docs.convex.dev/testing/convex-test
+ * @see https://discord-questions.convex.dev/m/1279661189684662292
  *
  * Usage:
  * ```typescript
@@ -14,29 +19,6 @@
  * ```
  */
 
-export const modules = {
-  analytics: () => import("./analytics"),
-  apiKeys: () => import("./apiKeys"),
-  attachments: () => import("./attachments"),
-  auth: () => import("./auth"),
-  automationRules: () => import("./automationRules"),
-  customFields: () => import("./customFields"),
-  dashboard: () => import("./dashboard"),
-  documents: () => import("./documents"),
-  files: () => import("./files"),
-  issueLinks: () => import("./issueLinks"),
-  issues: () => import("./issues"),
-  labels: () => import("./labels"),
-  notifications: () => import("./notifications"),
-  presence: () => import("./presence"),
-  projects: () => import("./projects"),
-  projectTemplates: () => import("./projectTemplates"),
-  prosemirror: () => import("./prosemirror"),
-  savedFilters: () => import("./savedFilters"),
-  sprints: () => import("./sprints"),
-  templates: () => import("./templates"),
-  timeTracking: () => import("./timeTracking"),
-  users: () => import("./users"),
-  watchers: () => import("./watchers"),
-  webhooks: () => import("./webhooks"),
-};
+// Use import.meta.glob to automatically discover all Convex modules
+// Pattern: ./**/*.ts excluding test files, config files, and _generated
+export const modules = import.meta.glob("./**/!(*.*.*|_generated|*.test|*.config)*.*s");

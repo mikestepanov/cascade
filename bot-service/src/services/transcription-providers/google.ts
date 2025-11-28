@@ -6,7 +6,7 @@
  * Docs: https://cloud.google.com/speech-to-text/docs
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { retryApi } from "../../utils/retry.js";
 import type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
 
@@ -68,7 +68,7 @@ export class GoogleCloudSTTProvider implements TranscriptionProvider {
   async transcribe(audioFilePath: string): Promise<TranscriptionResult> {
     if (!this.isConfigured()) {
       throw new Error(
-        "Google Cloud STT provider not configured. Set GOOGLE_CLOUD_API_KEY or GOOGLE_CLOUD_PROJECT_ID."
+        "Google Cloud STT provider not configured. Set GOOGLE_CLOUD_API_KEY or GOOGLE_CLOUD_PROJECT_ID.",
       );
     }
 
@@ -133,7 +133,7 @@ export class GoogleCloudSTTProvider implements TranscriptionProvider {
 
       while (Date.now() - startPoll < maxWaitMs) {
         const statusResponse = await fetch(
-          `https://speech.googleapis.com/v1/operations/${operationResponse.name}${authParam}`
+          `https://speech.googleapis.com/v1/operations/${operationResponse.name}${authParam}`,
         );
 
         const operation = (await statusResponse.json()) as GoogleOperation;
@@ -206,7 +206,7 @@ export class GoogleCloudSTTProvider implements TranscriptionProvider {
             };
           } else {
             currentSegment.endTime = wordEnd;
-            currentSegment.text += " " + word.word;
+            currentSegment.text += ` ${word.word}`;
           }
         }
 

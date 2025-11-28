@@ -31,7 +31,7 @@ export const loggedInUser = query({
       image: v.optional(v.string()),
       isAnonymous: v.optional(v.boolean()),
     }),
-    v.null()
+    v.null(),
   ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);

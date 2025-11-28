@@ -25,8 +25,7 @@ export function EmailVerificationRequired() {
         toast.success("Email verified successfully!");
         // Page will refresh with verified user
       })
-      .catch((error) => {
-        console.error("Verification error:", error);
+      .catch((_error) => {
         toast.error("Invalid code. Please try again.");
       })
       .finally(() => setSubmitting(false));
@@ -63,6 +62,8 @@ export function EmailVerificationRequired() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="Email icon"
             >
               <path
                 strokeLinecap="round"
@@ -91,7 +92,6 @@ export function EmailVerificationRequired() {
             required
             pattern="[0-9]{8}"
             maxLength={8}
-            autoFocus
           />
           <button className="auth-button" type="submit" disabled={submitting}>
             {submitting ? "Verifying..." : "Verify email"}

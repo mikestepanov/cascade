@@ -1,4 +1,4 @@
-# Contributing to Cascade
+# Contributing to Nixelo
 
 Thanks for your interest in contributing! This guide will help you get started.
 
@@ -6,8 +6,8 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR_USERNAME/cascade.git
-cd cascade
+git clone https://github.com/YOUR_USERNAME/nixelo.git
+cd nixelo
 
 # Install dependencies
 pnpm install
@@ -71,7 +71,7 @@ refactor: simplify auth flow
 ## Project Structure
 
 ```
-cascade/
+nixelo/
 ├── src/                  # React frontend
 │   ├── components/       # UI components
 │   ├── hooks/           # Custom React hooks

@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { GoogleMeetBot } from "./google-meet.js";
-import { TranscriptionService } from "../services/transcription.js";
-import { SummaryService } from "../services/summary.js";
 import { ConvexClient } from "../services/convex-client.js";
+import { SummaryService } from "../services/summary.js";
+import { TranscriptionService } from "../services/transcription.js";
+import { GoogleMeetBot } from "./google-meet.js";
 
 type ConvexRecordingStatus =
   | "scheduled"
@@ -65,7 +65,6 @@ export class MeetingBotManager {
 
     // Start the bot asynchronously
     this.runBot(job).catch((error) => {
-      console.error(`Bot job ${job.id} failed:`, error);
       job.status = "failed";
       job.error = error.message;
     });
@@ -157,10 +156,8 @@ export class MeetingBotManager {
   private async handleBotStatusChange(
     job: BotJob,
     status: string,
-    data?: Record<string, unknown>
+    data?: Record<string, unknown>,
   ): Promise<void> {
-    console.log(`Bot ${job.id} status changed to: ${status}`, data);
-
     // Update Convex with real-time status
     if (status === "joined") {
       await this.convexClient.updateRecordingStatus(job.recordingId, "recording", {
@@ -181,7 +178,7 @@ export class MeetingBotManager {
             displayName: string;
             email?: string;
             isHost: boolean;
-          }>
+          }>,
         );
       }
     }
@@ -190,7 +187,7 @@ export class MeetingBotManager {
   private async reportStatus(
     job: BotJob,
     status: string,
-    data?: Record<string, unknown>
+    data?: Record<string, unknown>,
   ): Promise<void> {
     // Map internal status to Convex status
     const convexStatus = this.mapStatus(status);
@@ -237,7 +234,9 @@ export class MeetingBotManager {
 
   async stopAllJobs(): Promise<void> {
     const stopPromises = Array.from(this.activeBots.keys()).map((jobId) =>
-      this.stopJob(jobId).catch((err) => console.error(`Failed to stop job ${jobId}:`, err))
+      this.stopJob(jobId).catch((_err) => {
+        // Swallow individual stop errors to continue stopping other bots
+      }),
     );
     await Promise.all(stopPromises);
   }
@@ -245,7 +244,7 @@ export class MeetingBotManager {
   async handleStatusUpdate(
     jobId: string,
     status: string,
-    data?: Record<string, unknown>
+    data?: Record<string, unknown>,
   ): Promise<void> {
     const job = this.jobs.get(jobId);
     if (!job) return;

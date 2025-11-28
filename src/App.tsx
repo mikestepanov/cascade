@@ -8,38 +8,59 @@ import { UnifiedCalendarView } from "./components/Calendar/UnifiedCalendarView";
 import { CommandPalette, useCommands } from "./components/CommandPalette";
 import { Dashboard } from "./components/Dashboard";
 
-// Lazy load heavy BlockNote editor (~400-500 KB)
+// Lazy load heavy components (not needed on initial render)
 const DocumentEditor = lazy(() =>
   import("./components/DocumentEditor").then((m) => ({ default: m.DocumentEditor })),
 );
 
+// Lazy load Settings (only when user clicks settings)
+const Settings = lazy(() => import("./components/Settings").then((m) => ({ default: m.Settings })));
+
+// Lazy load Time Tracking (separate feature)
+const TimeTrackingPage = lazy(() =>
+  import("./components/TimeTracking/TimeTrackingPage").then((m) => ({
+    default: m.TimeTrackingPage,
+  })),
+);
+
+// Lazy load Onboarding components (only for new users)
+const OnboardingTour = lazy(() =>
+  import("./components/Onboarding/OnboardingTour").then((m) => ({ default: m.OnboardingTour })),
+);
+const ProjectWizard = lazy(() =>
+  import("./components/Onboarding/ProjectWizard").then((m) => ({ default: m.ProjectWizard })),
+);
+const SampleProjectModal = lazy(() =>
+  import("./components/Onboarding/SampleProjectModal").then((m) => ({
+    default: m.SampleProjectModal,
+  })),
+);
+const WelcomeModal = lazy(() =>
+  import("./components/Onboarding/WelcomeModal").then((m) => ({ default: m.WelcomeModal })),
+);
+const WelcomeTour = lazy(() =>
+  import("./components/Onboarding/WelcomeTour").then((m) => ({ default: m.WelcomeTour })),
+);
+
+import { EmailVerificationRequired } from "./components/auth";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { KeyboardShortcutsHelp } from "./components/KeyboardShortcutsHelp";
+import { NixeloLanding } from "./components/NixeloLanding";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { OnboardingChecklist } from "./components/Onboarding/Checklist";
-import { OnboardingTour } from "./components/Onboarding/OnboardingTour";
-import { ProjectWizard } from "./components/Onboarding/ProjectWizard";
-import { SampleProjectModal } from "./components/Onboarding/SampleProjectModal";
-import { WelcomeModal } from "./components/Onboarding/WelcomeModal";
-import { WelcomeTour } from "./components/Onboarding/WelcomeTour";
 import { ProjectBoard } from "./components/ProjectBoard";
 import { ProjectSidebar } from "./components/ProjectSidebar";
 import { SectionErrorFallback } from "./components/SectionErrorFallback";
-import { Settings } from "./components/Settings";
 import { Sidebar } from "./components/Sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./components/TimeTracking/TimerWidget";
-import { TimeTrackingPage } from "./components/TimeTracking/TimeTrackingPage";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { ModalBackdrop } from "./components/ui/ModalBackdrop";
 import { createKeyboardShortcuts, createKeySequences } from "./config/keyboardShortcuts";
 import { OnboardingProvider } from "./contexts/OnboardingContext";
 import { useKeyboardShortcutsWithSequences } from "./hooks/useKeyboardShortcuts";
-import { SignInForm } from "./SignInForm";
-import { NixeloLanding } from "./components/NixeloLanding";
 import { SignOutButton } from "./SignOutButton";
-import { EmailVerificationRequired } from "./components/auth";
 import { type AppView, shouldShowSidebar } from "./utils/viewHelpers";
 
 export default function App() {
@@ -268,10 +289,7 @@ function Content() {
 
   // Check if user is authenticated but email not verified (password users only)
   // Google OAuth users are automatically verified
-  const needsEmailVerification =
-    loggedInUser &&
-    loggedInUser.email &&
-    !loggedInUser.emailVerificationTime;
+  const needsEmailVerification = loggedInUser?.email && !loggedInUser.emailVerificationTime;
 
   if (needsEmailVerification) {
     return <EmailVerificationRequired />;

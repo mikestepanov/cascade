@@ -1,13 +1,13 @@
-# Cascade Competitive Research
+# Nixelo Competitive Research
 
 > **Last Updated:** 2025-11-18
-> **Purpose:** Comprehensive competitive analysis to inform Cascade's product strategy
+> **Purpose:** Comprehensive competitive analysis to inform Nixelo's product strategy
 
 ---
 
 ## Overview
 
-This directory contains detailed competitive research on Cascade's direct and indirect competitors in the project management and collaboration space.
+This directory contains detailed competitive research on Nixelo's direct and indirect competitors in the project management and collaboration space.
 
 ---
 
@@ -75,32 +75,32 @@ research/
 
 ## Key Insights
 
-### Market Gaps Cascade Can Fill
+### Market Gaps Nixelo Can Fill
 
 1. **No Real-Time Jira Alternative**
    - Jira has no live collaboration
    - Linear has it but is closed-source
-   - **Cascade**: Open-source + real-time
+   - **Nixelo**: Open-source + real-time
 
 2. **Document + Issue Silos**
    - Jira requires Confluence ($6-12/user extra)
    - Linear requires Notion/Coda
-   - **Cascade**: Built-in documents + issues
+   - **Nixelo**: Built-in documents + issues
 
 3. **Open-Source Desert**
    - No mature open-source Jira/Linear alternative
    - Plane is early, Taiga is dated
-   - **Cascade**: Modern tech + open-source
+   - **Nixelo**: Modern tech + open-source
 
 4. **Speed & UX**
    - Jira is slow (2-5s page loads)
    - Asana/Monday are clunky
-   - **Cascade**: Sub-100ms real-time (Convex)
+   - **Nixelo**: Sub-100ms real-time (Convex)
 
 5. **Self-Hosting**
    - Most tools are SaaS-only
    - Data sovereignty is important
-   - **Cascade**: Self-hostable
+   - **Nixelo**: Self-hostable
 
 ---
 
@@ -108,7 +108,7 @@ research/
 
 ### Feature Comparison
 
-| Feature | Jira | Linear | Notion | Asana | Cascade |
+| Feature | Jira | Linear | Notion | Asana | Nixelo |
 |---------|------|--------|--------|-------|---------|
 | **Real-time** | ❌ | ✅ | ⚠️ | ❌ | ✅ |
 | **Keyboard shortcuts** | ⚠️ | ✅ | ⚠️ | ❌ | ⚠️ |
@@ -128,7 +128,7 @@ research/
 
 ---
 
-## Cascade's Unique Value Proposition
+## Nixelo's Unique Value Proposition
 
 **What NO competitor has:**
 
@@ -162,7 +162,7 @@ research/
 - No real-time collaboration
 - Vendor lock-in
 
-**Cascade's Pitch:**
+**Nixelo's Pitch:**
 > "Jira's power, Linear's speed, Notion's documents. Open-source. Self-hostable. Affordable."
 
 ### Secondary Target: **Linear Users Wanting Open-Source**
@@ -173,7 +173,7 @@ research/
 - Missing documents (need Notion/Coda)
 - Vendor lock-in
 
-**Cascade's Pitch:**
+**Nixelo's Pitch:**
 > "Linear's elegance, open-source freedom. Plus built-in docs. Own your data."
 
 ### Tertiary Target: **Notion Teams Needing PM Features**
@@ -184,7 +184,7 @@ research/
 - Performance issues with large workspaces
 - Expensive ($8-15/user)
 
-**Cascade's Pitch:**
+**Nixelo's Pitch:**
 > "Notion's documents + Jira's PM. Fast, open-source, integrated."
 
 ---
@@ -199,9 +199,9 @@ research/
 - **Notion:** ⚠️ Partial (CRDT, but laggy)
 - **Asana:** ❌ No real-time
 - **Monday:** ⚠️ Partial (polling)
-- **Cascade:** ✅ **Best-in-class** (Convex, sub-100ms)
+- **Nixelo:** ✅ **Best-in-class** (Convex, sub-100ms)
 
-**Advantage:** Only Cascade and Linear have true real-time. Cascade is open-source.
+**Advantage:** Only Nixelo and Linear have true real-time. Nixelo is open-source.
 
 ### 2. Documents + Issues Integrated 📄
 
@@ -211,9 +211,9 @@ research/
 - **Notion:** ⚠️ Has docs, but PM is weak
 - **Asana:** ❌ No docs
 - **Monday:** ⚠️ Docs are add-on
-- **Cascade:** ✅ **Built-in BlockNote documents**
+- **Nixelo:** ✅ **Built-in BlockNote documents**
 
-**Advantage:** Only Cascade + Notion have documents. Cascade's PM is stronger than Notion's.
+**Advantage:** Only Nixelo + Notion have documents. Nixelo's PM is stronger than Notion's.
 
 ### 3. Open-Source 🌍
 
@@ -222,7 +222,7 @@ research/
 - **AppFlowy:** ✅ Open-source (but no PM features)
 - **Plane:** ✅ Open-source (early, limited)
 - **Taiga:** ✅ Open-source (dated tech)
-- **Cascade:** ✅ **Open-source + modern tech**
+- **Nixelo:** ✅ **Open-source + modern tech**
 
 **Advantage:** Only mature, modern, open-source Jira/Linear alternative.
 
@@ -233,7 +233,7 @@ research/
 - **Linear:** ✅ React + GraphQL
 - **Notion:** ⚠️ React, but performance issues
 - **Asana:** ⚠️ React, but slower
-- **Cascade:** ✅ **React 19 + Convex (bleeding edge)**
+- **Nixelo:** ✅ **React 19 + Convex (bleeding edge)**
 
 **Advantage:** Newest tech stack in the market.
 
@@ -245,7 +245,7 @@ research/
 - **Notion:** $8-$15/user
 - **Asana:** $11-$25/user
 - **Monday:** $8-$16/user
-- **Cascade:** **$0 (free self-hosted) or $8-12/user (planned cloud)**
+- **Nixelo:** **$0 (free self-hosted) or $8-12/user (planned cloud)**
 
 **Advantage:** Most affordable, especially with free self-hosting.
 
@@ -257,7 +257,7 @@ research/
 
 1. **Mobile Apps** ❌
    - All competitors have iOS/Android apps
-   - Cascade: None yet
+   - Nixelo: None yet
    - **Action:** Build PWA first, native later
 
 2. **Enterprise Features** ❌
@@ -320,7 +320,7 @@ research/
 1. SSO/SAML
 2. Advanced RBAC
 3. Audit logs
-4. Hosted SaaS (Cascade Cloud)
+4. Hosted SaaS (Nixelo Cloud)
 5. Native mobile apps (React Native)
 
 **Pricing:**
@@ -378,7 +378,7 @@ research/
 ### Business Success (12 months)
 - ✅ 5,000 GitHub stars
 - ✅ 1,000 active users
-- ✅ $10k MRR (Cascade Cloud)
+- ✅ $10k MRR (Nixelo Cloud)
 - ✅ 50+ contributors
 
 ---
@@ -418,15 +418,15 @@ research/
 
 ## Conclusion
 
-**Cascade's Strategic Position:**
+**Nixelo's Strategic Position:**
 
-Cascade sits at the intersection of:
+Nixelo sits at the intersection of:
 - **Jira's power** (issue tracking, workflows, Agile)
 - **Linear's speed** (real-time, keyboard shortcuts, modern UX)
 - **Notion's documents** (collaborative editing, knowledge base)
 - **Open-source principles** (self-hosting, community, transparency)
 
-**No competitor has all four.** This is Cascade's moat.
+**No competitor has all four.** This is Nixelo's moat.
 
 **Next Steps:**
 1. Implement Linear-style keyboard shortcuts (CRITICAL)
@@ -437,5 +437,5 @@ Cascade sits at the intersection of:
 ---
 
 **Last Updated:** 2025-11-18
-**Maintained By:** Cascade Team
+**Maintained By:** Nixelo Team
 **Review Frequency:** Monthly or after major competitor moves

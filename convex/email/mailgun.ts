@@ -5,6 +5,7 @@
  * Docs: https://documentation.mailgun.com/en/latest/
  */
 
+import { getMailgunApiKey, getMailgunDomain, getMailgunFromEmail, getMailgunRegion } from "../lib/env";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 interface MailgunResponse {
@@ -13,20 +14,14 @@ interface MailgunResponse {
 }
 
 export class MailgunProvider implements EmailProvider {
-  private apiKey: string | null = null;
-  private domain: string | null = null;
-  private defaultFrom: string;
-  private region: "us" | "eu";
+  private apiKey = getMailgunApiKey();
+  private domain = getMailgunDomain();
+  private defaultFrom = getMailgunFromEmail();
+  private region = getMailgunRegion();
 
-  constructor() {
-    this.apiKey = process.env.MAILGUN_API_KEY || null;
-    this.domain = process.env.MAILGUN_DOMAIN || null;
-    this.defaultFrom = process.env.MAILGUN_FROM_EMAIL || "Cascade <notifications@cascade.app>";
-    this.region = (process.env.MAILGUN_REGION || "us") as "us" | "eu";
-  }
 
   isConfigured(): boolean {
-    return this.apiKey !== null && this.domain !== null;
+    return !!this.apiKey && !!this.domain;
   }
 
   private getBaseUrl(): string {
@@ -40,7 +35,8 @@ export class MailgunProvider implements EmailProvider {
       return {
         id: "not-configured",
         success: false,
-        error: "Mailgun provider not configured. Set MAILGUN_API_KEY and MAILGUN_DOMAIN environment variables.",
+        error:
+          "Mailgun provider not configured. Set MAILGUN_API_KEY and MAILGUN_DOMAIN environment variables.",
       };
     }
 

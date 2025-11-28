@@ -3,10 +3,15 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     globals: true,
-    environment: "node", // Key difference from frontend config - Convex needs Node.js environment
+    environment: "edge-runtime",
     include: ["convex/**/*.test.ts"],
     exclude: ["convex/_generated/**"],
     root: ".",
+    server: {
+      deps: {
+        inline: ["convex-test"],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
@@ -14,7 +19,7 @@ export default defineConfig({
         "convex/_generated/**",
         "convex/**/*.config.ts",
         "convex/testSetup.ts",
-        "convex/test-utils.ts",
+        "convex/testUtils.ts",
       ],
     },
   },

@@ -1,6 +1,6 @@
 {
-  "name": "Cascade - Project Management",
-  "short_name": "Cascade",
+  "name": "Nixelo - Project Management",
+  "short_name": "Nixelo",
   "description": "Collaborative project management platform with real-time issue tracking and document management",
   "start_url": "/",
   "display": "standalone",

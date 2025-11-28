@@ -6,7 +6,7 @@
  * Docs: https://docs.speechmatics.com/
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { retryApi } from "../../utils/retry.js";
 import type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
 
@@ -75,7 +75,7 @@ export class SpeechmaticsProvider implements TranscriptionProvider {
           operating_point: "enhanced",
           language: "en",
         },
-      })
+      }),
     );
 
     const createResponse = await retryApi(async () => {
@@ -113,11 +113,14 @@ export class SpeechmaticsProvider implements TranscriptionProvider {
 
       if (status.job.status === "done") {
         // Get transcript
-        const transcriptResponse = await fetch(`${this.baseUrl}/jobs/${jobId}/transcript?format=json-v2`, {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
+        const transcriptResponse = await fetch(
+          `${this.baseUrl}/jobs/${jobId}/transcript?format=json-v2`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+            },
           },
-        });
+        );
         result = (await transcriptResponse.json()) as SpeechmaticsResult;
         break;
       } else if (status.job.status === "rejected" || status.job.status === "deleted") {
@@ -136,7 +139,7 @@ export class SpeechmaticsProvider implements TranscriptionProvider {
     // Build full text and segments
     const words: SpeechmaticsWord[] = [];
     for (const r of result.results) {
-      if (r.alternatives && r.alternatives[0]?.words) {
+      if (r.alternatives?.[0]?.words) {
         words.push(...r.alternatives[0].words);
       }
     }
@@ -167,7 +170,7 @@ export class SpeechmaticsProvider implements TranscriptionProvider {
         };
       } else {
         currentSegment.endTime = word.end_time;
-        currentSegment.text += " " + word.content;
+        currentSegment.text += ` ${word.content}`;
         if (currentSegment.confidence && word.confidence) {
           currentSegment.confidence = (currentSegment.confidence + word.confidence) / 2;
         }

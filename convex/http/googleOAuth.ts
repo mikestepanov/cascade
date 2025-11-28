@@ -1,5 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
+import { getSiteUrl, isGoogleOAuthConfigured, requireEnv } from "../lib/env";
 
 /**
  * Google OAuth Integration
@@ -35,16 +36,15 @@ interface GoogleCalendarEvent {
   attendees?: GoogleCalendarAttendee[];
 }
 
-// OAuth configuration (will be in environment variables)
+// OAuth configuration - throws if not configured
 const getGoogleOAuthConfig = () => {
-  // In production, these come from environment variables
-  // For now, return placeholder - user needs to set these up
+  if (!isGoogleOAuthConfigured()) {
+    throw new Error("Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+  }
   return {
-    clientId: process.env.GOOGLE_CLIENT_ID || "",
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    redirectUri: process.env.SITE_URL
-      ? `${process.env.SITE_URL}/google/callback`
-      : "http://localhost:5173/google/callback",
+    clientId: requireEnv("GOOGLE_CLIENT_ID"),
+    clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
+    redirectUri: `${getSiteUrl()}/google/callback`,
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",
@@ -203,7 +203,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
         <body>
           <div class="success">
             <h1>✅ Connected Successfully</h1>
-            <p>Your Google Calendar has been connected to Cascade.</p>
+            <p>Your Google Calendar has been connected to Nixelo.</p>
             <p><strong>${email}</strong></p>
             <button onclick="window.close()">Close Window</button>
             <script>
@@ -295,9 +295,9 @@ export const triggerSync = httpAction(async (ctx, _request) => {
     const data = await eventsResponse.json();
     const events = data.items || [];
 
-    // Transform Google Calendar events to Cascade format
+    // Transform Google Calendar events to Nixelo format
     // Filter out events with missing or invalid dates
-    const cascadeEvents = events
+    const nixeloEvents = events
       .filter((event: GoogleCalendarEvent) => {
         const hasValidStart = event.start?.dateTime || event.start?.date;
         const hasValidEnd = event.end?.dateTime || event.end?.date;
@@ -314,10 +314,10 @@ export const triggerSync = httpAction(async (ctx, _request) => {
         attendees: event.attendees?.map((a: GoogleCalendarAttendee) => a.email) || [],
       }));
 
-    // Sync events to Cascade
+    // Sync events to Nixelo
     const result = await ctx.runMutation(api.googleCalendar.syncFromGoogle, {
       connectionId: connection._id,
-      events: cascadeEvents,
+      events: nixeloEvents,
     });
 
     return new Response(

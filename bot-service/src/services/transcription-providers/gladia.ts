@@ -6,7 +6,7 @@
  * Docs: https://docs.gladia.io/
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { retryApi } from "../../utils/retry.js";
 import type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
 

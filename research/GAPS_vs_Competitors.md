@@ -1,4 +1,4 @@
-# Cascade - Missing Features vs Competitors
+# Nixelo - Missing Features vs Competitors
 
 > **Analysis Date:** 2025-11-19
 > **Competitors:** Kimai (3.5k⭐), Jira (Market Leader), AppFlowy (58k⭐)
@@ -8,7 +8,7 @@
 ## 🔴 CRITICAL GAPS (Blocking Enterprise Adoption)
 
 ### 1. **No Native Mobile Apps**
-- ❌ Cascade: PWA only
+- ❌ Nixelo: PWA only
 - ✅ Jira: Native iOS + Android apps with offline support
 - ✅ AppFlowy: Native iOS + Android apps with widgets
 - ✅ Kimai: Community iOS + Android apps
@@ -18,7 +18,7 @@
 **Priority:** P0 for Phase 3
 
 ### 2. **No SSO/SAML Authentication**
-- ❌ Cascade: Only password + anonymous auth
+- ❌ Nixelo: Only password + anonymous auth
 - ✅ Jira: Full SSO/SAML/2FA (Premium+)
 - ✅ Kimai: LDAP/Active Directory/SAML/2FA
 - ✅ AppFlowy: OAuth (Google, GitHub) planned
@@ -28,7 +28,7 @@
 **Priority:** P0 for Phase 3
 
 ### 3. **No Offline Mode**
-- ❌ Cascade: Requires internet connection
+- ❌ Nixelo: Requires internet connection
 - ✅ AppFlowy: Offline-first with CRDT, works fully offline
 - ⚠️ Jira: Limited offline support
 - ✅ Kimai: Mobile apps have offline
@@ -38,7 +38,7 @@
 **Priority:** P2 for Phase 3
 
 ### 4. **No Version History**
-- ❌ Cascade: No document version tracking
+- ❌ Nixelo: No document version tracking
 - ✅ AppFlowy: Full version history
 - ✅ Jira: Issue history (field changes only)
 - ⚠️ Kimai: Audit trail plugin
@@ -52,7 +52,7 @@
 ## 🟡 HIGH-PRIORITY GAPS (Missing Table Stakes)
 
 ### 5. **No Invoice Generation**
-- ❌ Cascade: No invoicing
+- ❌ Nixelo: No invoicing
 - ✅ Kimai: Full invoicing (PDF, templates, tax, multi-currency)
 - ✅ Jira: Via marketplace apps
 - ❌ AppFlowy: No invoicing
@@ -63,7 +63,7 @@
 **Decision:** Only if we compete with Kimai
 
 ### 6. **Limited Advanced Workflows**
-- ⚠️ Cascade: Basic workflow states (custom per project)
+- ⚠️ Nixelo: Basic workflow states (custom per project)
 - ✅ Jira: Drag-and-drop workflow builder, transitions, conditions, validators
 - ⚠️ Kimai: Basic workflows
 - ❌ AppFlowy: No workflows (Notion-style)
@@ -73,7 +73,7 @@
 **Priority:** P1 for Phase 3
 
 ### 7. **No JQL-like Query Language**
-- ❌ Cascade: Basic filters only
+- ❌ Nixelo: Basic filters only
 - ✅ Jira: JQL (Jira Query Language) - extremely powerful
 - ❌ Kimai: Basic filters
 - ❌ AppFlowy: Basic filters
@@ -83,7 +83,7 @@
 **Priority:** P2 for Phase 2
 
 ### 8. **No Sub-tasks / Issue Hierarchy**
-- ❌ Cascade: Flat issue structure (epics only)
+- ❌ Nixelo: Flat issue structure (epics only)
 - ✅ Jira: Sub-tasks, epics, initiatives, themes (full hierarchy)
 - ⚠️ Kimai: Activities under projects
 - ✅ AppFlowy: Nested pages, sub-items in databases
@@ -93,7 +93,7 @@
 **Priority:** P1 for Phase 2
 
 ### 9. **No Marketplace / Plugin Ecosystem**
-- ❌ Cascade: No plugins
+- ❌ Nixelo: No plugins
 - ✅ Jira: 3,000+ marketplace apps (HUGE ecosystem)
 - ✅ Kimai: 20+ plugins (free + paid)
 - 🔜 AppFlowy: Planned plugin system
@@ -107,7 +107,7 @@
 ## 🟡 MEDIUM-PRIORITY GAPS (Nice to Have)
 
 ### 10. **No Audit Logs**
-- ❌ Cascade: Activity log (issues only)
+- ❌ Nixelo: Activity log (issues only)
 - ✅ Jira: Full audit logs (Enterprise)
 - ✅ Kimai: Audit trail plugin
 - ❌ AppFlowy: No audit logs
@@ -117,7 +117,7 @@
 **Priority:** P1 for Phase 3
 
 ### 11. **No Budget Tracking**
-- ❌ Cascade: No budget features
+- ❌ Nixelo: No budget features
 - ✅ Kimai: Time budgets, money budgets, warnings, recurrence
 - ⚠️ Jira: Via marketplace apps
 - ❌ AppFlowy: No budgets
@@ -127,7 +127,7 @@
 **Priority:** P2 for Phase 2
 
 ### 12. **No Expense Tracking**
-- ❌ Cascade: No expenses
+- ❌ Nixelo: No expenses
 - ✅ Kimai: Full expense tracking
 - ⚠️ Jira: Via marketplace apps
 - ❌ AppFlowy: No expenses
@@ -137,7 +137,7 @@
 **Priority:** P2 for Phase 2
 
 ### 13. **No Approval Workflows**
-- ❌ Cascade: No approvals
+- ❌ Nixelo: No approvals
 - ✅ Kimai: Timesheet approval workflow
 - ✅ Jira: Complex approval workflows
 - ❌ AppFlowy: No approvals
@@ -147,7 +147,7 @@
 **Priority:** P2 for Phase 3
 
 ### 14. **No AI Features**
-- ❌ Cascade: No AI
+- ❌ Nixelo: No AI
 - ✅ AppFlowy: AI writing, summarization, translations, chat
 - ⚠️ Jira: AI features in premium plans
 - ❌ Kimai: No AI (planned)
@@ -157,7 +157,7 @@
 **Priority:** P2 for Phase 2 (AI Project Assistant in roadmap)
 
 ### 15. **No Advanced Database Views**
-- ⚠️ Cascade: Kanban board + basic list
+- ⚠️ Nixelo: Kanban board + basic list
 - ✅ AppFlowy: Grid, Board, Calendar, Gallery, List views
 - ✅ Jira: List, Board, Calendar, Timeline
 - ⚠️ Kimai: List + reports
@@ -167,7 +167,7 @@
 **Priority:** P1 for Phase 2
 
 ### 16. **No Formulas in Custom Fields**
-- ❌ Cascade: Static custom fields
+- ❌ Nixelo: Static custom fields
 - ✅ AppFlowy: Formulas, relations, rollups
 - ⚠️ Jira: Limited (via apps)
 - ❌ Kimai: No formulas
@@ -177,7 +177,7 @@
 **Priority:** P2 for Phase 3
 
 ### 17. **No Backlinks**
-- ❌ Cascade: No backlinks
+- ❌ Nixelo: No backlinks
 - ✅ AppFlowy: Automatic backlinks
 - ❌ Jira: No backlinks
 - ❌ Kimai: No backlinks
@@ -187,7 +187,7 @@
 **Priority:** P2 for Phase 2
 
 ### 18. **No Page Templates**
-- ❌ Cascade: No templates (except project templates)
+- ❌ Nixelo: No templates (except project templates)
 - ✅ AppFlowy: Page templates, database templates
 - ⚠️ Jira: Issue templates
 - ❌ Kimai: No templates
@@ -197,7 +197,7 @@
 **Priority:** P1 for Phase 2
 
 ### 19. **No End-to-End Encryption**
-- ❌ Cascade: Server-side encryption only
+- ❌ Nixelo: Server-side encryption only
 - ✅ AppFlowy: Optional E2E encryption
 - ⚠️ Jira: Enterprise encryption
 - ❌ Kimai: No E2E
@@ -207,7 +207,7 @@
 **Priority:** P2 for Phase 3
 
 ### 20. **No Import from Competitors**
-- ❌ Cascade: Only CSV/JSON import
+- ❌ Nixelo: Only CSV/JSON import
 - ✅ AppFlowy: Import from Notion
 - ⚠️ Jira: Import from other tools (limited)
 - ❌ Kimai: No import
@@ -218,9 +218,9 @@
 
 ---
 
-## ✅ WHAT CASCADE HAS THAT COMPETITORS DON'T
+## ✅ WHAT NIXELO HAS THAT COMPETITORS DON'T
 
-### Cascade's Unique Advantages:
+### Nixelo's Unique Advantages:
 1. ✅ **Real-time collaboration** - None of them have true real-time (Convex magic)
 2. ✅ **Documents + Issues in one** - Jira needs Confluence, AppFlowy needs separate tools
 3. ✅ **Modern tech stack** - React 19 + Convex vs old Java/PHP
@@ -265,7 +265,7 @@
 - Kimai = Time tracking specialist
 - Jira = Enterprise workflow monster
 - AppFlowy = Notion clone
-- **Cascade = Real-time Jira + Confluence alternative**
+- **Nixelo = Real-time Jira + Confluence alternative**
 
 ### 2. **Focus on Core Strengths**
 - Real-time collaboration (nobody else has this)
@@ -289,7 +289,7 @@
 
 ## 📈 COMPETITIVE POSITIONING
 
-**Cascade's Ideal Customer:**
+**Nixelo's Ideal Customer:**
 - 🎯 Teams of 5-50 people
 - 🎯 Developer teams frustrated with Jira's slowness
 - 🎯 Teams wanting documents + issues in one tool
@@ -299,13 +299,13 @@
 **NOT Targeting (Yet):**
 - ❌ Enterprise (1000+ users) - Need SSO, mobile, offline first
 - ❌ Freelancers - Need invoicing, Kimai is better
-- ❌ Non-technical teams - Need simpler UI than Jira, but also simpler than Cascade
+- ❌ Non-technical teams - Need simpler UI than Jira, but also simpler than Nixelo
 
 ---
 
 **Bottom Line:**
-- Cascade has **10-15 critical gaps** vs competitors
-- But Cascade's **real-time collaboration** is unique and valuable
+- Nixelo has **10-15 critical gaps** vs competitors
+- But Nixelo's **real-time collaboration** is unique and valuable
 - Focus on **Phase 2 quick wins** (version history, sub-tasks, calendar view)
 - Defer **enterprise features** until Phase 3 (SSO, mobile, offline)
 - **Launch now**, iterate based on user feedback

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SignInForm } from "../SignInForm";
 
 // Nixelo Landing Page - Unified dark theme
@@ -54,10 +54,18 @@ function LoginSection({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen w-screen bg-[#0a0e17] text-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <button
+          type="button"
           onClick={onBack}
           className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Back to home
@@ -69,7 +77,6 @@ function LoginSection({ onBack }: { onBack: () => void }) {
             <p className="text-gray-400 text-sm">Sign in to your account to continue</p>
           </div>
           <SignInForm />
-          
         </div>
       </div>
     </div>
@@ -85,7 +92,7 @@ function NavHeader({ onGetStarted }: { onGetStarted: () => void }) {
       <nav className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
           <NixeloLogo />
-          <span className="text-xl font-semibold text-white">cascade</span>
+          <span className="text-xl font-semibold text-white">nixelo</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8">
@@ -99,6 +106,7 @@ function NavHeader({ onGetStarted }: { onGetStarted: () => void }) {
             </a>
           ))}
           <button
+            type="button"
             onClick={onGetStarted}
             className="text-sm text-gray-400 hover:text-white transition-colors"
           >
@@ -107,6 +115,7 @@ function NavHeader({ onGetStarted }: { onGetStarted: () => void }) {
         </div>
 
         <button
+          type="button"
           onClick={onGetStarted}
           className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
         >
@@ -142,18 +151,23 @@ function HeroSection({ onGetStarted }: { onGetStarted: () => void }) {
 
         {/* Subheadline */}
         <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
-          Experience the future of project management with integrated tracking, automation, and collaboration.
+          Experience the future of project management with integrated tracking, automation, and
+          collaboration.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
+            type="button"
             onClick={onGetStarted}
             className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
           >
             Get Started Free
           </button>
-          <button className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2">
+          <button
+            type="button"
+            className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"
+          >
             Watch Demo
             <PlayIcon className="w-4 h-4" />
           </button>
@@ -171,19 +185,22 @@ function FeaturesSection() {
     {
       icon: <WorkflowIcon />,
       title: "Seamless Workflow Automation",
-      description: "Automate repetitive tasks and streamline approvals to keep your projects moving without manual bottlenecks.",
+      description:
+        "Automate repetitive tasks and streamline approvals to keep your projects moving without manual bottlenecks.",
       gradient: "cyan" as const,
     },
     {
       icon: <TimeIcon />,
       title: "Intelligent Time Tracking",
-      description: "Effortlessly capture every billable minute with smart detection that runs quietly in the background.",
+      description:
+        "Effortlessly capture every billable minute with smart detection that runs quietly in the background.",
       gradient: "teal" as const,
     },
     {
       icon: <ClarityIcon />,
       title: "Integrated Project Clarity",
-      description: "Gain real-time visibility across all initiatives with unified dashboards that surface what matters most.",
+      description:
+        "Gain real-time visibility across all initiatives with unified dashboards that surface what matters most.",
       gradient: "purple" as const,
     },
   ];
@@ -255,7 +272,10 @@ function FeatureCard({
       <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
 
       {/* Link */}
-      <a href="#" className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+      <a
+        href="#"
+        className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+      >
         Learn more
         <ArrowIcon className="w-4 h-4" />
       </a>
@@ -279,7 +299,7 @@ function WhyChooseSection() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Cascade?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Nixelo?</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
               Join thousands of teams who have transformed their workflow
             </p>
@@ -323,9 +343,7 @@ function StatItem({
 
   return (
     <div className="text-center">
-      <div className={`text-4xl md:text-5xl font-bold mb-2 ${colors[color].text}`}>
-        {value}%
-      </div>
+      <div className={`text-4xl md:text-5xl font-bold mb-2 ${colors[color].text}`}>{value}%</div>
       <p className="text-gray-400 text-sm mb-4">{label}</p>
       <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
         <div
@@ -349,10 +367,11 @@ function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <NixeloLogo />
-              <span className="text-xl font-semibold">cascade</span>
+              <span className="text-xl font-semibold">nixelo</span>
             </div>
             <p className="text-gray-400 text-sm max-w-xs">
-              Revolutionizing project management with intelligent automation and seamless collaboration.
+              Revolutionizing project management with intelligent automation and seamless
+              collaboration.
             </p>
           </div>
 
@@ -398,13 +417,17 @@ function Footer() {
         </div>
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            © 2025 Cascade. All rights reserved.
-          </p>
+          <p className="text-gray-500 text-sm">© 2025 Nixelo. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Privacy</a>
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Terms</a>
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Cookies</a>
+            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+              Privacy
+            </a>
+            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+              Terms
+            </a>
+            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+              Cookies
+            </a>
           </div>
         </div>
       </div>
@@ -469,20 +492,50 @@ function CircuitFlowLines() {
         />
 
         {/* Vertical connectors */}
-        <path d="M400,170 L400,280" stroke="#06b6d4" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
-        <path d="M800,140 L800,290" stroke="#8b5cf6" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
-        <path d="M1000,290 L1000,430" stroke="#a855f7" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+        <path
+          d="M400,170 L400,280"
+          stroke="#06b6d4"
+          strokeWidth="1"
+          strokeDasharray="4 4"
+          opacity="0.3"
+        />
+        <path
+          d="M800,140 L800,290"
+          stroke="#8b5cf6"
+          strokeWidth="1"
+          strokeDasharray="4 4"
+          opacity="0.3"
+        />
+        <path
+          d="M1000,290 L1000,430"
+          stroke="#a855f7"
+          strokeWidth="1"
+          strokeDasharray="4 4"
+          opacity="0.3"
+        />
       </g>
 
       {/* Animated dots */}
       <circle r="3" fill="#06b6d4" filter="url(#flowGlow)">
-        <animateMotion dur="8s" repeatCount="indefinite" path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170" />
+        <animateMotion
+          dur="8s"
+          repeatCount="indefinite"
+          path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170"
+        />
       </circle>
       <circle r="2.5" fill="#a855f7" filter="url(#flowGlow)">
-        <animateMotion dur="10s" repeatCount="indefinite" path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300" />
+        <animateMotion
+          dur="10s"
+          repeatCount="indefinite"
+          path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
+        />
       </circle>
       <circle r="2.5" fill="#10b981" filter="url(#flowGlow)">
-        <animateMotion dur="9s" repeatCount="indefinite" path="M0,450 Q300,420 600,460 T1200,430 T1800,470 T2400,440" />
+        <animateMotion
+          dur="9s"
+          repeatCount="indefinite"
+          path="M0,450 Q300,420 600,460 T1200,430 T1800,470 T2400,440"
+        />
       </circle>
 
       {/* Node points */}
@@ -503,11 +556,11 @@ function CircuitFlowLines() {
 function NixeloLogo({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="url(#cascadeGrad)" />
+      <rect width="32" height="32" rx="8" fill="url(#nixeloGrad)" />
       <path d="M10 12L16 8L22 12V20L16 24L10 20V12Z" stroke="white" strokeWidth="1.5" fill="none" />
       <circle cx="16" cy="16" r="2.5" fill="white" />
       <defs>
-        <linearGradient id="cascadeGrad" x1="0" y1="0" x2="32" y2="32">
+        <linearGradient id="nixeloGrad" x1="0" y1="0" x2="32" y2="32">
           <stop stopColor="#06b6d4" />
           <stop offset="1" stopColor="#8b5cf6" />
         </linearGradient>
@@ -551,7 +604,13 @@ function ClarityIcon() {
 
 function ArrowIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <path d="M3 8h10M9 4l4 4-4 4" />
     </svg>
   );

@@ -1,10 +1,10 @@
-# CLAUDE.md - AI Assistant Guide for Cascade
+# CLAUDE.md - AI Assistant Guide for Nixelo
 
-This document provides comprehensive guidance for AI assistants working on the Cascade codebase. It covers the project structure, development conventions, and key patterns to follow.
+This document provides comprehensive guidance for AI assistants working on the Nixelo codebase. It covers the project structure, development conventions, and key patterns to follow.
 
 ## Project Overview
 
-**Cascade** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
+**Nixelo** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
 
 **Key Features:**
 - Real-time collaborative document editing with BlockNote
@@ -25,6 +25,9 @@ This document provides comprehensive guidance for AI assistants working on the C
 - **Multi-provider authentication** (Email/Password, Google OAuth, Anonymous)
 - **User invitation system** (Admin-controlled, email-based invites with expiration)
 - **User management dashboard** (Admin view of all users and invitations)
+- **Email notifications** (Multi-provider, user preferences, React Email templates)
+- **Text AI** (AI chat, semantic search, suggestions, duplicate detection)
+- **Voice AI** (Meeting bot, transcription, AI summarization)
 
 ## Tech Stack
 
@@ -59,7 +62,7 @@ This document provides comprehensive guidance for AI assistants working on the C
 ## Codebase Structure
 
 ```
-cascade/
+nixelo/
 ├── src/                          # Frontend React application
 │   ├── components/               # React components
 │   │   ├── Sidebar.tsx          # Document navigation sidebar
@@ -70,7 +73,8 @@ cascade/
 │   │   ├── IssueCard.tsx        # Individual issue card
 │   │   ├── CreateIssueModal.tsx # Issue creation modal
 │   │   ├── SprintManager.tsx    # Sprint management UI
-│   │   └── PresenceIndicator.tsx # User presence display
+│   │   ├── PresenceIndicator.tsx # User presence display
+│   │   └── AI/                  # AI components (chat, suggestions)
 │   ├── lib/                     # Utility functions
 │   │   └── utils.ts             # cn() for className merging
 │   ├── App.tsx                  # Main app component with routing logic
@@ -92,7 +96,32 @@ cascade/
 │   ├── http.ts                  # HTTP API endpoints
 │   ├── router.ts                # HTTP route configuration
 │   ├── auth.config.ts           # Auth provider configuration
-│   └── convex.config.ts         # Convex app configuration
+│   ├── convex.config.ts         # Convex app configuration
+│   ├── ai/                      # Text AI backend (chat, search, suggestions)
+│   └── email/                   # Email notification system
+│
+├── emails/                       # React Email templates
+│   ├── _components/             # Shared email components
+│   ├── MentionEmail.tsx         # @mention notification
+│   ├── AssignmentEmail.tsx      # Assignment notification
+│   └── CommentEmail.tsx         # Comment notification
+│
+├── bot-service/                  # Voice AI - Meeting bot service
+│   └── src/                     # Bot implementation
+│
+├── docs/                         # Feature documentation
+│   ├── email/                   # Email system docs
+│   │   ├── README.md            # Overview & architecture
+│   │   └── SETUP.md             # Provider setup guide
+│   └── ai/                      # AI features docs
+│       ├── README.md            # AI overview
+│       ├── text/                # Text AI (chat, search)
+│       │   ├── README.md
+│       │   └── SETUP.md
+│       └── voice/               # Voice AI (meeting bot)
+│           ├── README.md
+│           ├── SETUP.md
+│           └── ARCHITECTURE.md
 │
 ├── package.json                  # Dependencies and scripts
 ├── tsconfig.json                 # TypeScript configuration (base)
@@ -300,7 +329,7 @@ export function ComponentName({ prop }: { prop: Type }) {
 ```bash
 # Clone repository
 git clone <repository-url>
-cd cascade
+cd nixelo
 
 # Install dependencies (use pnpm)
 pnpm install
@@ -313,7 +342,7 @@ echo "VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com" >> .env.local
 # Start development server (runs frontend + backend in parallel)
 pnpm run dev
 # OR run separately:
-pnpm run dev:frontend  # Starts Vite on http://localhost:5173
+pnpm run dev:frontend  # Starts Vite on http://localhost:5555
 pnpm run dev:backend   # Starts Convex dev server
 ```
 
@@ -541,6 +570,83 @@ const activity = useQuery(api.analytics.getRecentActivity, { projectId, limit: 1
 - **Velocity:** Average points completed per sprint
 - **Burndown:** Ideal vs. actual progress over sprint duration
 
+### Email Notifications
+
+Multi-provider email notification system with user preferences.
+
+**Features:**
+- Provider rotation (Resend, SendPulse, Mailgun, SendGrid)
+- React Email templates for consistent branding
+- User notification preferences
+- Automatic triggers on mentions, assignments, comments
+
+**Documentation:** See [docs/email/](./docs/email/) for full documentation.
+
+**Quick Usage:**
+```typescript
+import { sendEmail } from "./email";
+
+await sendEmail({
+  to: "user@example.com",
+  subject: "Notification",
+  html: "<p>Hello!</p>",
+});
+```
+
+### AI Features
+
+Nixelo includes two AI systems:
+
+#### Text AI (Project Assistant)
+
+Intelligent text-based assistance for project management.
+
+**Features:**
+- AI Chat - Ask questions about projects in natural language
+- Semantic Search - Find issues by meaning using vector embeddings
+- Duplicate Detection - Prevent duplicate issues before creation
+- AI Suggestions - Generate descriptions, priority, labels
+
+**Documentation:** See [docs/ai/text/](./docs/ai/text/) for full documentation.
+
+**Quick Usage:**
+```typescript
+// Semantic search
+const results = await searchSimilarIssues({
+  query: "login button not working",
+  projectId,
+});
+
+// AI suggestions
+const description = await suggestIssueDescription({
+  title: "Add dark mode",
+  type: "task",
+  projectId,
+});
+```
+
+#### Voice AI (Meeting Bot)
+
+Automated meeting recording, transcription, and summarization.
+
+**Features:**
+- Automatic meeting joining (Google Meet, Zoom planned)
+- Multi-provider transcription (Whisper, Google, Azure, etc.)
+- AI summarization with Claude
+- Action item extraction
+
+**Documentation:** See [docs/ai/voice/](./docs/ai/voice/) for full documentation.
+
+**Quick Usage:**
+```typescript
+// Schedule a recording
+await scheduleRecording({
+  eventId: "calendar-event-id",
+  meetingUrl: "https://meet.google.com/xxx-yyyy-zzz",
+  platform: "google_meet",
+});
+```
+
 ### Common Tasks
 
 **Adding a new Convex function:**
@@ -610,76 +716,65 @@ const applicationTables = {
 
 ## Testing
 
-The project uses **Vitest** with **React Testing Library** for frontend testing.
+Nixelo uses a comprehensive testing strategy with three layers.
 
-### Setup
+**Full documentation:** [docs/testing/](./docs/testing/)
 
-Testing infrastructure is already configured:
-- **Vitest 4** - Fast unit test runner
-- **@testing-library/react** - React component testing utilities
-- **@testing-library/jest-dom** - Custom matchers for DOM assertions
-- **@testing-library/user-event** - User interaction simulation
-- **jsdom** - DOM environment for tests
+### Testing Stack
 
-### Running Tests
+| Layer | Framework | Location | Purpose |
+|-------|-----------|----------|---------|
+| **Unit Tests** | Vitest + React Testing Library | `src/**/*.test.ts(x)` | Component & utility testing |
+| **Backend Tests** | Vitest + convex-test | `convex/**/*.test.ts` | Convex function testing |
+| **E2E Tests** | Playwright | `e2e/**/*.spec.ts` | Full user flow testing |
+
+### Quick Commands
 
 ```bash
-# Run tests in watch mode
-pnpm test
+# Unit tests
+pnpm test              # Watch mode
+pnpm test:ui           # Interactive UI
+pnpm test:coverage     # Coverage report
 
-# Run tests with UI
-pnpm test:ui
+# Backend tests (requires: npx convex dev)
+pnpm test:convex       # Run backend tests
+pnpm test:convex:ui    # Interactive UI
 
-# Run tests with coverage report
-pnpm test:coverage
+# E2E tests
+pnpm e2e               # Headless
+pnpm e2e:ui            # Interactive UI (recommended)
+pnpm e2e:headed        # Visible browser
+pnpm e2e:debug         # Debug mode
 
-# Run tests once (used in CI)
-pnpm test run
+# All checks (CI)
+pnpm run check         # Typecheck + lint + all tests
 ```
 
-### Test File Location
+### Selector Strategy
 
-- Place test files next to the code they test
-- Use `.test.ts` or `.test.tsx` extension
-- Example: `src/lib/utils.test.ts` tests `src/lib/utils.ts`
-
-### Example Component Test
+We use accessible selectors following Playwright best practices:
 
 ```typescript
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+// Preferred (accessible selectors)
+page.getByRole("button", { name: /submit/i })
+page.getByLabel("Email")
+page.getByPlaceholder("Enter email")
+page.getByText("Sign in")
 
-// Mock Convex hooks
-vi.mock("convex/react", () => ({
-  useQuery: vi.fn(),
-  useMutation: vi.fn(),
-}));
-
-describe("YourComponent", () => {
-  it("should render correctly", () => {
-    render(<YourComponent />);
-    expect(screen.getByText("Hello")).toBeInTheDocument();
-  });
-});
+// Last resort (test IDs)
+page.getByTestId("complex-widget")
 ```
 
-### Testing Convex Functions
+### AI-Assisted Testing (MCP)
 
-Convex functions require a different testing approach. See `convex/README.testing.md` for:
-- Setting up `convex-test` package
-- Testing queries and mutations
-- Mocking authentication
-- Testing permissions and access control
+Playwright MCP Server is configured at `.claude/mcp.json` for AI-assisted testing with Claude Code.
 
-### Best Practices
+### Detailed Documentation
 
-1. **Mock Convex hooks** - Use `vi.mock("convex/react")` to mock useQuery/useMutation
-2. **Test user interactions** - Use `@testing-library/user-event` for realistic interactions
-3. **Test accessibility** - Query by role, label, text (not test IDs)
-4. **Keep tests focused** - One concept per test
-5. **Use descriptive test names** - Describe what should happen
-6. **Clean up** - Automatic cleanup is configured in `src/test/setup.ts`
+- [Testing Overview](./docs/testing/README.md) - Quick start, commands, architecture
+- [E2E Testing](./docs/testing/e2e.md) - Playwright, page objects, authentication
+- [Unit Testing](./docs/testing/unit.md) - Vitest, React Testing Library, mocking
+- [Backend Testing](./docs/testing/backend.md) - convex-test, integration tests
 
 ## Analytics
 
@@ -700,6 +795,14 @@ The project includes Chef (Convex's development platform) integration:
 
 ## Resources
 
+### Internal Documentation
+- [Testing Overview](./docs/testing/README.md) - Testing strategy, commands, architecture
+- [Email System](./docs/email/README.md) - Email notifications setup & usage
+- [AI Overview](./docs/ai/README.md) - AI features overview
+- [Text AI](./docs/ai/text/README.md) - Chat, search, suggestions
+- [Voice AI](./docs/ai/voice/README.md) - Meeting bot, transcription
+
+### External Documentation
 - [Convex Documentation](https://docs.convex.dev/)
 - [React 19 Documentation](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
@@ -728,7 +831,7 @@ The project includes Chef (Convex's development platform) integration:
 
 ---
 
-**Last Updated:** 2025-11-20
+**Last Updated:** 2025-11-27
 **Convex Deployment:** peaceful-salmon-964
 **Node Version:** 18+
 **Package Manager:** pnpm (preferred)

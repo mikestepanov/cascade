@@ -287,7 +287,7 @@ export const testWebhook = action({
   handler: async (ctx, args): Promise<unknown> => {
     return await ctx.runAction(api.pumble.sendMessage, {
       webhookId: args.webhookId,
-      text: "🎉 Cascade integration is working!",
+      text: "🎉 Nixelo integration is working!",
       title: "Test Message",
       color: "#3b82f6",
       fields: [

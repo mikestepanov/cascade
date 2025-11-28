@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains backend tests for Cascade's Convex functions. The testing infrastructure uses `convex-test` for integration tests and vitest for test running.
+This directory contains backend tests for Nixelo's Convex functions. The testing infrastructure uses `convex-test` for integration tests and vitest for test running.
 
 ## Quick Start (Local Development)
 

@@ -1,7 +1,7 @@
-import { chromium, type Browser, type Page, type BrowserContext } from "playwright";
-import * as path from "path";
-import * as os from "os";
-import * as fs from "fs";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
 
 export interface GoogleMeetBotOptions {
   meetingUrl: string;
@@ -83,7 +83,9 @@ export class GoogleMeetBot {
 
     try {
       // Enter name if there's a name input
-      const nameInput = await this.page.$('input[aria-label*="name" i], input[placeholder*="name" i]');
+      const nameInput = await this.page.$(
+        'input[aria-label*="name" i], input[placeholder*="name" i]',
+      );
       if (nameInput) {
         await nameInput.fill(this.options.botName);
         await this.page.waitForTimeout(500);
@@ -129,11 +131,10 @@ export class GoogleMeetBot {
       }
 
       // Verify we're in the meeting
-      await this.page.waitForSelector('[data-participant-id], [data-self-name]', {
+      await this.page.waitForSelector("[data-participant-id], [data-self-name]", {
         timeout: 30000,
       });
     } catch (error) {
-      console.error("Error during join flow:", error);
       throw new Error(`Failed to join meeting: ${(error as Error).message}`);
     }
   }
@@ -144,7 +145,7 @@ export class GoogleMeetBot {
     try {
       // Turn off camera
       const cameraButton = await this.page.$(
-        'button[aria-label*="camera" i], button[data-is-muted="false"][aria-label*="video" i]'
+        'button[aria-label*="camera" i], button[data-is-muted="false"][aria-label*="video" i]',
       );
       if (cameraButton) {
         const isEnabled = await cameraButton.getAttribute("data-is-muted");
@@ -155,7 +156,7 @@ export class GoogleMeetBot {
 
       // Turn off microphone
       const micButton = await this.page.$(
-        'button[aria-label*="microphone" i], button[data-is-muted="false"][aria-label*="mic" i]'
+        'button[aria-label*="microphone" i], button[data-is-muted="false"][aria-label*="mic" i]',
       );
       if (micButton) {
         const isEnabled = await micButton.getAttribute("data-is-muted");
@@ -163,9 +164,7 @@ export class GoogleMeetBot {
           await micButton.click();
         }
       }
-    } catch (error) {
-      console.warn("Could not turn off camera/mic:", error);
-    }
+    } catch (_error) {}
   }
 
   private async startAudioCapture(): Promise<void> {
@@ -176,14 +175,14 @@ export class GoogleMeetBot {
     this.audioFileStream = fs.createWriteStream(this.audioFilePath);
 
     // Expose function to receive audio chunks from browser
-    await this.page.exposeFunction("__cascadeSendAudioChunk", (chunk: number[]) => {
+    await this.page.exposeFunction("__nixeloSendAudioChunk", (chunk: number[]) => {
       if (this.audioFileStream && chunk.length > 0) {
         this.audioFileStream.write(Buffer.from(chunk));
       }
     });
 
     // Expose function to signal recording stopped
-    await this.page.exposeFunction("__cascadeRecordingStopped", () => {
+    await this.page.exposeFunction("__nixeloRecordingStopped", () => {
       if (this.audioFileStream) {
         this.audioFileStream.end();
         this.audioFileStream = null;
@@ -192,20 +191,20 @@ export class GoogleMeetBot {
 
     // Inject audio capture script with MediaRecorder
     await this.page.evaluate(() => {
-      // Extend window interface for Cascade audio capture
-      interface CascadeWindow extends Window {
-        __cascadeAudioStream?: MediaStream;
-        __cascadeAudioContext?: AudioContext;
-        __cascadeMediaRecorder?: MediaRecorder;
-        __cascadeConnectedElements?: WeakSet<HTMLMediaElement>;
-        __cascadeSendAudioChunk?: (chunk: number[]) => void;
-        __cascadeRecordingStopped?: () => void;
-        __cascadeStopRecording?: () => void;
+      // Extend window interface for Nixelo audio capture
+      interface NixeloWindow extends Window {
+        __nixeloAudioStream?: MediaStream;
+        __nixeloAudioContext?: AudioContext;
+        __nixeloMediaRecorder?: MediaRecorder;
+        __nixeloConnectedElements?: WeakSet<HTMLMediaElement>;
+        __nixeloSendAudioChunk?: (chunk: number[]) => void;
+        __nixeloRecordingStopped?: () => void;
+        __nixeloStopRecording?: () => void;
       }
-      const cascadeWindow = window as CascadeWindow;
+      const nixeloWindow = window as NixeloWindow;
 
       // Track which elements we've already connected
-      cascadeWindow.__cascadeConnectedElements = new WeakSet();
+      nixeloWindow.__nixeloConnectedElements = new WeakSet();
 
       // Create audio context and destination for mixing
       const audioContext = new AudioContext();
@@ -217,14 +216,14 @@ export class GoogleMeetBot {
         audioElements.forEach((element) => {
           const mediaElement = element as HTMLMediaElement;
           // Skip if already connected
-          if (cascadeWindow.__cascadeConnectedElements?.has(mediaElement)) {
+          if (nixeloWindow.__nixeloConnectedElements?.has(mediaElement)) {
             return;
           }
           try {
             const source = audioContext.createMediaElementSource(mediaElement);
             source.connect(destination);
             source.connect(audioContext.destination); // Also play locally
-            cascadeWindow.__cascadeConnectedElements?.add(mediaElement);
+            nixeloWindow.__nixeloConnectedElements?.add(mediaElement);
           } catch {
             // Element might already be connected or not ready
           }
@@ -239,8 +238,8 @@ export class GoogleMeetBot {
       observer.observe(document.body, { childList: true, subtree: true });
 
       // Store references
-      cascadeWindow.__cascadeAudioStream = destination.stream;
-      cascadeWindow.__cascadeAudioContext = audioContext;
+      nixeloWindow.__nixeloAudioStream = destination.stream;
+      nixeloWindow.__nixeloAudioContext = audioContext;
 
       // Create MediaRecorder to capture the mixed audio
       const mediaRecorder = new MediaRecorder(destination.stream, {
@@ -249,25 +248,25 @@ export class GoogleMeetBot {
 
       // Send chunks to Node.js as they become available
       mediaRecorder.ondataavailable = async (event) => {
-        if (event.data.size > 0 && cascadeWindow.__cascadeSendAudioChunk) {
+        if (event.data.size > 0 && nixeloWindow.__nixeloSendAudioChunk) {
           const arrayBuffer = await event.data.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);
-          cascadeWindow.__cascadeSendAudioChunk(Array.from(uint8Array));
+          nixeloWindow.__nixeloSendAudioChunk(Array.from(uint8Array));
         }
       };
 
       mediaRecorder.onstop = () => {
-        if (cascadeWindow.__cascadeRecordingStopped) {
-          cascadeWindow.__cascadeRecordingStopped();
+        if (nixeloWindow.__nixeloRecordingStopped) {
+          nixeloWindow.__nixeloRecordingStopped();
         }
       };
 
       // Start recording with 1-second chunks
       mediaRecorder.start(1000);
-      cascadeWindow.__cascadeMediaRecorder = mediaRecorder;
+      nixeloWindow.__nixeloMediaRecorder = mediaRecorder;
 
       // Expose stop function
-      cascadeWindow.__cascadeStopRecording = () => {
+      nixeloWindow.__nixeloStopRecording = () => {
         if (mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
         }
@@ -287,12 +286,12 @@ export class GoogleMeetBot {
 
     try {
       await this.page.evaluate(() => {
-        interface CascadeWindow extends Window {
-          __cascadeStopRecording?: () => void;
+        interface NixeloWindow extends Window {
+          __nixeloStopRecording?: () => void;
         }
-        const cascadeWindow = window as CascadeWindow;
-        if (cascadeWindow.__cascadeStopRecording) {
-          cascadeWindow.__cascadeStopRecording();
+        const nixeloWindow = window as NixeloWindow;
+        if (nixeloWindow.__nixeloStopRecording) {
+          nixeloWindow.__nixeloStopRecording();
         }
       });
     } catch {
@@ -312,15 +311,13 @@ export class GoogleMeetBot {
     try {
       // Try to enable captions for transcript
       const captionsButton = await this.page.$(
-        'button[aria-label*="caption" i], button[aria-label*="subtitle" i]'
+        'button[aria-label*="caption" i], button[aria-label*="subtitle" i]',
       );
       if (captionsButton) {
         await captionsButton.click();
         this.emitStatus("captions_enabled");
       }
-    } catch (error) {
-      console.warn("Could not enable captions:", error);
-    }
+    } catch (_error) {}
   }
 
   private monitorMeetingEnd(): void {
@@ -331,7 +328,7 @@ export class GoogleMeetBot {
 
     // Check periodically if meeting has ended
     const checkInterval = setInterval(async () => {
-      if (!this.page || !this.isRecording) {
+      if (!(this.page && this.isRecording)) {
         clearInterval(checkInterval);
         return;
       }
@@ -375,7 +372,9 @@ export class GoogleMeetBot {
 
     try {
       // Try to get participant count from the UI
-      const countElement = await this.page.$('[data-participant-count], [aria-label*="participant" i]');
+      const countElement = await this.page.$(
+        '[data-participant-count], [aria-label*="participant" i]',
+      );
       if (countElement) {
         const text = await countElement.textContent();
         const match = text?.match(/\d+/);
@@ -391,7 +390,7 @@ export class GoogleMeetBot {
     if (!this.page) return;
 
     const captureInterval = setInterval(async () => {
-      if (!this.page || !this.isRecording) {
+      if (!(this.page && this.isRecording)) {
         clearInterval(captureInterval);
         return;
       }
@@ -419,7 +418,7 @@ export class GoogleMeetBot {
 
         // Try different selectors for participant names
         const participantElements = document.querySelectorAll(
-          '[data-participant-id] [data-self-name], [data-participant-id] [data-participant-name]'
+          "[data-participant-id] [data-self-name], [data-participant-id] [data-participant-name]",
         );
 
         participantElements.forEach((el) => {

@@ -1,6 +1,6 @@
-# Cascade Integrations & Offline Mode
+# Nixelo Integrations & Offline Mode
 
-This document describes the new integration features added to Cascade, including GitHub integration, Google Calendar sync, and offline mode with PWA support.
+This document describes the integration features in Nixelo, including GitHub integration, Google Calendar sync, and offline mode with PWA support.
 
 ## 🚀 Features Added
 
@@ -10,7 +10,7 @@ Connect your GitHub account and link repositories to projects for seamless devel
 
 **Features:**
 - OAuth authentication with GitHub
-- Link GitHub repositories to Cascade projects
+- Link GitHub repositories to Nixelo projects
 - Automatic PR (Pull Request) tracking
 - Commit tracking with auto-linking to issues
 - PR status display on issues (open, merged, closed)
@@ -40,7 +40,7 @@ Connect your GitHub account and link repositories to projects for seamless devel
 
 **How it works:**
 1. User connects GitHub account via OAuth
-2. Admin links a GitHub repository to a Cascade project
+2. Admin links a GitHub repository to a Nixelo project
 3. PRs and commits are synced via webhook
 4. Issue keys in commit messages (e.g., "fixes PROJ-123") auto-link to issues
 5. PR status shows on issue detail page
@@ -49,13 +49,13 @@ Connect your GitHub account and link repositories to projects for seamless devel
 
 ### 2. Google Calendar Integration
 
-Sync your Cascade calendar events with Google Calendar for unified scheduling.
+Sync your Nixelo calendar events with Google Calendar for unified scheduling.
 
 **Features:**
 - OAuth authentication with Google
 - Bi-directional calendar sync (import/export/both)
-- Auto-sync Cascade events to Google Calendar
-- Import Google Calendar events to Cascade
+- Auto-sync Nixelo events to Google Calendar
+- Import Google Calendar events to Nixelo
 - Configurable sync direction and schedule
 
 **Database Schema:**
@@ -73,8 +73,8 @@ Sync your Cascade calendar events with Google Calendar for unified scheduling.
 - `getEventsToSync` - Get events to export to Google
 
 **Sync Directions:**
-- **Import** - Only import from Google → Cascade
-- **Export** - Only export from Cascade → Google
+- **Import** - Only import from Google → Nixelo
+- **Export** - Only export from Nixelo → Google
 - **Bidirectional** - Two-way sync (default)
 
 **How it works:**
@@ -169,7 +169,7 @@ const { queue, refresh, retryMutation, deleteMutation, clearSynced } = useOfflin
    - Copy webhook secret
 
 4. **Link Repository:**
-   - User connects GitHub account in Cascade settings
+   - User connects GitHub account in Nixelo settings
    - Project admin links GitHub repository to project
    - Webhook events will now sync automatically
 
@@ -199,7 +199,7 @@ const { queue, refresh, retryMutation, deleteMutation, clearSynced } = useOfflin
 4. **Connect Calendar:**
    - User goes to Settings → Integrations
    - Click "Connect Google Calendar"
-   - Authorize Cascade to access calendar
+   - Authorize Nixelo to access calendar
    - Choose sync direction
    - Sync starts automatically
 
@@ -229,8 +229,8 @@ const { queue, refresh, retryMutation, deleteMutation, clearSynced } = useOfflin
 ## 📱 PWA Manifest
 
 The app is configured as a Progressive Web App with:
-- **Name:** Cascade - Project Management
-- **Short Name:** Cascade
+- **Name:** Nixelo - Project Management
+- **Short Name:** Nixelo
 - **Theme Color:** #3b82f6 (blue)
 - **Display:** Standalone (full-screen app)
 - **Icons:** 192x192 and 512x512 PNG icons
@@ -278,10 +278,10 @@ The app is configured as a Progressive Web App with:
 ### Test Google Calendar:
 ```bash
 # 1. Connect Google Calendar
-# 2. Create event in Cascade
+# 2. Create event in Nixelo
 # 3. Check if event appears in Google Calendar
 # 4. Create event in Google Calendar
-# 5. Check if event appears in Cascade
+# 5. Check if event appears in Nixelo
 ```
 
 ### Test Offline Mode:
@@ -351,14 +351,14 @@ The app is configured as a Progressive Web App with:
 - [ ] Display CI/CD status on issues
 - [ ] Show deployment status
 - [ ] Link multiple repos to one project
-- [ ] GitHub comments ↔ Cascade comments sync
+- [ ] GitHub comments ↔ Nixelo comments sync
 - [ ] Branch protection status
 - [ ] Code review integration
 
 ### Google Calendar:
 - [ ] Conflict resolution (edit same event both places)
 - [ ] Calendar color mapping
-- [ ] Attendee sync (Google → Cascade users)
+- [ ] Attendee sync (Google → Nixelo users)
 - [ ] Recurring event support
 - [ ] Reminder sync
 - [ ] Multiple calendar support
@@ -396,6 +396,4 @@ See individual function files for detailed API:
 
 ---
 
-**Last Updated:** 2025-11-20
-**Version:** 1.0.0
-**Status:** Initial Implementation - Ready for Testing
+*Last Updated: 2025-11-27*

@@ -5,6 +5,7 @@
  * Docs: https://docs.sendgrid.com/
  */
 
+import { getSendGridApiKey, getSendGridFromEmail } from "../lib/env";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 interface SendGridResponse {
@@ -14,17 +15,13 @@ interface SendGridResponse {
 }
 
 export class SendGridProvider implements EmailProvider {
-  private apiKey: string | null = null;
-  private defaultFrom: string;
+  private apiKey = getSendGridApiKey();
+  private defaultFrom = getSendGridFromEmail();
   private baseUrl = "https://api.sendgrid.com/v3";
 
-  constructor() {
-    this.apiKey = process.env.SENDGRID_API_KEY || null;
-    this.defaultFrom = process.env.SENDGRID_FROM_EMAIL || "Cascade <notifications@cascade.app>";
-  }
 
   isConfigured(): boolean {
-    return this.apiKey !== null;
+    return !!this.apiKey;
   }
 
   private parseFromAddress(from: string): { email: string; name?: string } {

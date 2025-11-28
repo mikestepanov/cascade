@@ -123,7 +123,7 @@ function generateReadme(projectName: string, documentCount: number): string {
 
 ## Contents
 
-This archive contains ${documentCount} markdown documents exported from Cascade.
+This archive contains ${documentCount} markdown documents exported from Nixelo.
 
 Each document includes:
 - YAML frontmatter with metadata (title, dates, author, visibility)
@@ -132,7 +132,7 @@ Each document includes:
 ## Editing Workflow
 
 1. **Edit locally** with your favorite editor or AI tool
-2. **Import back** to Cascade using the Import MD button
+2. **Import back** to Nixelo using the Import MD button
 3. **Collaborate** - changes sync in real-time
 
 ## Using with CLI AI Tools
@@ -171,15 +171,15 @@ documentId: abc123
 
 ## Re-importing
 
-To import edited documents back to Cascade:
-1. Open the document in Cascade
+To import edited documents back to Nixelo:
+1. Open the document in Nixelo
 2. Click "Import MD" button
 3. Select the edited markdown file
 4. Confirm import (this replaces the current content)
 
 ---
 
-*Exported from Cascade - Collaborative Project Management*
+*Exported from Nixelo - Collaborative Project Management*
 `;
 }
 

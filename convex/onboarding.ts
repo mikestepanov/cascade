@@ -88,7 +88,7 @@ export const createSampleProject = mutation({
       name: "Sample Project",
       key: "SAMPLE",
       description:
-        "Welcome to Cascade! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
+        "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
       createdBy: userId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -131,7 +131,7 @@ export const createSampleProject = mutation({
     const sprintId = await ctx.db.insert("sprints", {
       projectId,
       name: "Sprint 1",
-      goal: "Learn Cascade basics and explore features",
+      goal: "Learn Nixelo basics and explore features",
       startDate: Date.now(),
       endDate: Date.now() + 14 * 24 * 60 * 60 * 1000, // 2 weeks from now
       status: "active",
@@ -249,7 +249,7 @@ export const createSampleProject = mutation({
       {
         title: "Mobile App Development",
         description:
-          "Build native mobile apps for iOS and Android to make Cascade accessible on the go.\n\n**Scope:**\n- React Native setup\n- Core features: view projects, issues, documents\n- Push notifications for mentions and assignments\n- Offline mode with sync\n- App store submission\n\n**Timeline:** 12 weeks",
+          "Build native mobile apps for iOS and Android to make Nixelo accessible on the go.\n\n**Scope:**\n- React Native setup\n- Core features: view projects, issues, documents\n- Push notifications for mentions and assignments\n- Offline mode with sync\n- App store submission\n\n**Timeline:** 12 weeks",
         type: "epic",
         status: "todo",
         priority: "medium",

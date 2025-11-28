@@ -195,7 +195,7 @@ function showInstallPrompt(onInstall: () => void) {
   `;
 
   banner.innerHTML = `
-    <span>📱 Install Cascade for quick access!</span>
+    <span>📱 Install Nixelo for quick access!</span>
     <button id="pwa-install-button" style="
       background: #3b82f6;
       color: white;

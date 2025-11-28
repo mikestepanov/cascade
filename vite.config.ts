@@ -13,8 +13,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
-        name: "Cascade - Project Management",
-        short_name: "Cascade",
+        name: "Nixelo - Project Management",
+        short_name: "Nixelo",
         description: "Collaborative project management platform with real-time editing",
         theme_color: "#3b82f6",
         background_color: "#ffffff",
@@ -154,16 +154,76 @@ window.addEventListener('message', async (message) => {
           }
 
           // Chunk mapping for vendor dependencies
-          // NOTE: Order matters! More specific patterns must come first to avoid false matches
+          // NOTE: These patterns work with both npm and pnpm path structures
+          // pnpm uses .pnpm/package@version/node_modules/package structure
           const chunkMap = [
-            { patterns: ["react-markdown/", "remark-"], chunk: "markdown" },
-            { patterns: ["react/", "react-dom/"], chunk: "react-vendor" },
-            { patterns: ["convex/", "@convex-dev/"], chunk: "convex" },
-            { patterns: ["@blocknote/"], chunk: "editor" },
-            { patterns: ["@mantine/"], chunk: "mantine" },
-            { patterns: ["lucide-react/"], chunk: "icons" },
-            { patterns: ["posthog-js/"], chunk: "analytics" },
-            { patterns: ["driver.js/"], chunk: "tour" },
+            // Core React (needed immediately)
+            { patterns: ["/react/", "/react-dom/", "/scheduler/"], chunk: "react-vendor" },
+
+            // Convex (needed for data)
+            { patterns: ["/convex/", "/@convex-dev/"], chunk: "convex" },
+
+            // UI components (Radix primitives - used throughout app)
+            { patterns: ["/@radix-ui/"], chunk: "radix-ui" },
+
+            // Editor (lazy load - only on document pages)
+            {
+              patterns: ["/@blocknote/", "/prosemirror", "/yjs/", "/y-prosemirror/", "/lib0/"],
+              chunk: "editor",
+            },
+            { patterns: ["/@mantine/"], chunk: "mantine" },
+
+            // Markdown rendering (lazy load)
+            {
+              patterns: [
+                "/react-markdown/",
+                "/remark-",
+                "/rehype-",
+                "/unified/",
+                "/micromark",
+                "/mdast-",
+                "/hast-",
+                "/unist-",
+                "/vfile",
+              ],
+              chunk: "markdown",
+            },
+
+            // Icons (frequently used but can defer)
+            { patterns: ["/lucide-react/"], chunk: "icons" },
+
+            // Search (lazy load - only when searching)
+            { patterns: ["/fuse.js/"], chunk: "search" },
+
+            // File handling (lazy load - only for exports)
+            { patterns: ["/jszip/", "/pako/"], chunk: "file-utils" },
+
+            // Email templates (lazy load - server-side mostly)
+            { patterns: ["/@react-email/", "/resend/"], chunk: "email" },
+
+            // AI SDK (lazy load - only for AI features)
+            { patterns: ["/@ai-sdk/", "/ai@"], chunk: "ai-sdk" },
+
+            // Auth (needed for login)
+            { patterns: ["/@auth/", "/@oslojs/", "/oauth4webapi/"], chunk: "auth" },
+
+            // HTML sanitization (security - needed for content)
+            { patterns: ["/dompurify/", "/isomorphic-dompurify/"], chunk: "sanitize" },
+
+            // Analytics (defer - not critical path)
+            { patterns: ["/posthog-js/"], chunk: "analytics" },
+
+            // Tour/onboarding (lazy load)
+            { patterns: ["/driver.js/"], chunk: "tour" },
+
+            // Toasts and notifications
+            { patterns: ["/sonner/"], chunk: "toast" },
+
+            // Class utilities
+            {
+              patterns: ["/clsx/", "/tailwind-merge/", "/class-variance-authority/"],
+              chunk: "class-utils",
+            },
           ];
 
           // Find matching chunk

@@ -1,5 +1,5 @@
 /**
- * RBAC (Role-Based Access Control) utilities for Cascade
+ * RBAC (Role-Based Access Control) utilities for Nixelo
  *
  * @deprecated Most functions in this file are replaced by projectAccess.ts
  * Use projectAccess.ts for comprehensive access control with teams and companies.

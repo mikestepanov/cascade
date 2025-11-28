@@ -1,4 +1,4 @@
-# Cascade - Agency Niche Roadmap
+# Nixelo - Agency Niche Roadmap
 
 > **Strategic Pivot:** Target agencies & consultants who currently juggle 4+ tools
 > **Value Prop:** Replace Jira + Toggl + Calendly + Notion with one platform

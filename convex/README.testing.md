@@ -1,6 +1,6 @@
 # Testing Convex Functions
 
-This document explains how to test Convex backend functions in the Cascade project.
+This document explains how to test Convex backend functions in the Nixelo project.
 
 ## Testing Approach
 

@@ -154,15 +154,15 @@ export const API_LIMITS = {
  */
 export const STORAGE_KEYS = {
   /** User theme preference */
-  THEME: "cascade-theme",
+  THEME: "nixelo-theme",
   /** Command palette history */
-  COMMAND_HISTORY: "cascade-command-history",
+  COMMAND_HISTORY: "nixelo-command-history",
   /** Sidebar collapsed state */
-  SIDEBAR_COLLAPSED: "cascade-sidebar-collapsed",
+  SIDEBAR_COLLAPSED: "nixelo-sidebar-collapsed",
   /** Recent projects */
-  RECENT_PROJECTS: "cascade-recent-projects",
+  RECENT_PROJECTS: "nixelo-recent-projects",
   /** Draft issue data */
-  DRAFT_ISSUE: "cascade-draft-issue",
+  DRAFT_ISSUE: "nixelo-draft-issue",
 } as const;
 
 /**

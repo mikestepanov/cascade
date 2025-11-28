@@ -6,7 +6,7 @@
  * Docs: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { retryApi } from "../../utils/retry.js";
 import type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
 import { getAudioContentType } from "./provider.js";
@@ -78,7 +78,7 @@ export class AzureProvider implements TranscriptionProvider {
 
     // Read audio file
     const audioBuffer = fs.readFileSync(audioFilePath);
-    const fileSizeKB = audioBuffer.length / 1024;
+    const _fileSizeKB = audioBuffer.length / 1024;
 
     // Azure REST API supports files up to 60 seconds for simple recognition
     // For longer files, we'll process in chunks using the real-time API
@@ -97,7 +97,7 @@ export class AzureProvider implements TranscriptionProvider {
             Accept: "application/json",
           },
           body: audioBuffer,
-        }
+        },
       );
 
       if (!res.ok) {

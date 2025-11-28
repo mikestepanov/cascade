@@ -55,9 +55,9 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
         {
           element: "#root",
           popover: {
-            title: "Welcome to Cascade! 🎉",
+            title: "Welcome to Nixelo! 🎉",
             description:
-              "Cascade is your all-in-one platform for project management and team collaboration. Let's take a quick tour to get you started!",
+              "Nixelo is your all-in-one platform for project management and team collaboration. Let's take a quick tour to get you started!",
             side: "top",
             align: "center",
           },
@@ -97,7 +97,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
           popover: {
             title: "Document Sidebar",
             description:
-              "Create and organize documents here. Cascade combines project management (like Jira) with document collaboration (like Confluence) in one place.",
+              "Create and organize documents here. Nixelo combines project management (like Jira) with document collaboration (like Confluence) in one place.",
             side: "right",
             align: "start",
           },

@@ -228,7 +228,7 @@ describe("Hybrid Search Integration", () => {
     it("should support project switcher pattern", () => {
       // User's projects from Convex
       const projects = [
-        { name: "Cascade", email: "Project management" },
+        { name: "Nixelo", email: "Project management" },
         { name: "Atlas", email: "Map viewer" },
       ];
 
@@ -239,11 +239,11 @@ describe("Hybrid Search Integration", () => {
 
       // Can search by project name
       act(() => {
-        result.current.search("cascade");
+        result.current.search("nixelo");
       });
 
       expect(result.current.results.length).toBeGreaterThan(0);
-      expect(result.current.results[0].item.name).toContain("Cascade");
+      expect(result.current.results[0].item.name).toContain("Nixelo");
     });
   });
 

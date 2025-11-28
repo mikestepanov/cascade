@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { sendEmail } from "./email/index";
+import { getSiteUrl } from "./lib/env";
 
 // Helper: Check if user is a platform admin
 async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -102,7 +103,7 @@ export const sendInvite = mutation({
     });
 
     // Send email with invite link
-    const inviteLink = `${process.env.SITE_URL}/invite/${token}`;
+    const inviteLink = `${getSiteUrl()}/invite/${token}`;
 
     await sendEmail(ctx, {
       to: args.email,
@@ -197,7 +198,7 @@ export const resendInvite = mutation({
     });
 
     // Send email with invite link again
-    const inviteLink = `${process.env.SITE_URL}/invite/${invite.token}`;
+    const inviteLink = `${getSiteUrl()}/invite/${invite.token}`;
 
     await sendEmail(ctx, {
       to: invite.email,

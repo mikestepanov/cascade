@@ -337,9 +337,9 @@
 
 ---
 
-## Cascade vs. Linear Comparison
+## Nixelo vs. Linear Comparison
 
-| Feature | Cascade | Linear |
+| Feature | Nixelo | Linear |
 |---------|---------|--------|
 | **Real-time updates** | ✅ Sub-100ms (Convex) | ✅ Sub-100ms (GraphQL subscriptions) |
 | **Keyboard shortcuts** | ⚠️ Basic | ✅ 100+ shortcuts, command palette |
@@ -357,7 +357,7 @@
 | **Customization** | ⚠️ Moderate | ⚠️ Limited (opinionated) |
 | **Enterprise features** | ❌ No SSO/SAML yet | ✅ Enterprise tier |
 
-**Cascade's Advantages over Linear:**
+**Nixelo's Advantages over Linear:**
 1. ✅ **Open-source** - No vendor lock-in, self-hostable
 2. ✅ **Documents built-in** - No need for separate Notion
 3. ✅ **More affordable** - Free tier + lower pricing planned
@@ -365,7 +365,7 @@
 5. ✅ **Self-hosting** - Data sovereignty
 6. ✅ **Community-driven** - Open development, contributions
 
-**Linear's Advantages over Cascade:**
+**Linear's Advantages over Nixelo:**
 1. ✅ **Keyboard shortcuts** - 100+ shortcuts, fully keyboard-driven
 2. ✅ **Mobile apps** - Native iOS/Android
 3. ✅ **Brand & polish** - Industry-leading UI/UX design
@@ -377,14 +377,14 @@
 
 ---
 
-## Key Takeaways for Cascade
+## Key Takeaways for Nixelo
 
 **What to Learn from Linear:**
 
 1. **Keyboard Shortcuts**
    - ⚡ Every action needs a shortcut
    - `C` to create, `K` for command palette, etc.
-   - Cascade MUST implement this
+   - Nixelo MUST implement this
 
 2. **Performance Target**
    - 50ms interaction latency
@@ -400,7 +400,7 @@
    - Instant sync (<100ms)
    - Live presence indicators
    - Optimistic UI
-   - Cascade already has this via Convex!
+   - Nixelo already has this via Convex!
 
 5. **Product Focus**
    - Don't try to be everything
@@ -420,11 +420,11 @@
 
 2. **Closed Source**
    - Linear's proprietary nature is a weakness
-   - Cascade's open-source is an advantage
+   - Nixelo's open-source is an advantage
 
 3. **Missing Documents**
    - Linear requires separate tool for docs
-   - Cascade's built-in documents are a differentiator
+   - Nixelo's built-in documents are a differentiator
 
 4. **Limited Customization**
    - Too opinionated can alienate users
@@ -441,12 +441,12 @@
 - Limited customization
 - Vendor lock-in
 
-**Cascade's pitch to Linear users:**
-> "Love Linear's speed and design? Get that PLUS open-source, self-hosting, built-in documents, and lower pricing. Linear's elegance meets Cascade's freedom."
+**Nixelo's pitch to Linear users:**
+> "Love Linear's speed and design? Get that PLUS open-source, self-hosting, built-in documents, and lower pricing. Linear's elegance meets Nixelo's freedom."
 
 ---
 
-## Opportunities for Cascade
+## Opportunities for Nixelo
 
 1. **"Open-Source Linear"**
    - Target Linear's lack of self-hosting
@@ -455,22 +455,22 @@
 
 2. **Budget-Conscious Teams**
    - Linear's $8-14/user is too expensive for some
-   - Cascade's lower pricing wins here
+   - Nixelo's lower pricing wins here
 
 3. **Documents + Issues**
    - Linear requires Notion/Coda for docs
-   - Cascade has both built-in
+   - Nixelo has both built-in
    - Cost savings + better integration
 
 4. **Customization**
    - Linear is very opinionated
-   - Cascade can offer more flexibility
+   - Nixelo can offer more flexibility
    - Custom workflows, fields, themes
 
 5. **Open-Source Advocates**
    - Developers prefer open-source
    - Linear's closed-source is a weakness
-   - Cascade can win this segment
+   - Nixelo can win this segment
 
 ---
 
@@ -479,16 +479,16 @@
 1. **Brand & Design**
    - Linear is THE design reference
    - Hard to compete on polish
-   - Cascade needs to match quality
+   - Nixelo needs to match quality
 
 2. **Keyboard Shortcuts**
    - Linear's shortcuts are legendary
    - Developers expect this now
-   - Cascade MUST implement this
+   - Nixelo MUST implement this
 
 3. **Mobile Apps**
    - Linear has native iOS/Android
-   - Cascade doesn't yet
+   - Nixelo doesn't yet
    - Mobile-first users will choose Linear
 
 4. **Market Momentum**
@@ -499,7 +499,7 @@
 5. **Funding & Team**
    - Linear has $52M+ funding
    - 50+ person team
-   - Cascade is solo developer (for now)
+   - Nixelo is solo developer (for now)
 
 ---
 
@@ -507,9 +507,9 @@
 
 **Linear's Position:** The gold standard for modern issue tracking. Best UI/UX, fastest performance, loved by developers. But expensive, closed-source, and missing documents.
 
-**Cascade's Opportunity:** Compete on **open-source, self-hosting, and documents** while matching Linear's speed and adding keyboard shortcuts. Can't match polish immediately, but can win on principles and value.
+**Nixelo's Opportunity:** Compete on **open-source, self-hosting, and documents** while matching Linear's speed and adding keyboard shortcuts. Can't match polish immediately, but can win on principles and value.
 
-**Bottom Line:** Linear is Cascade's closest competitor in terms of target audience (developers) and approach (speed + UX). Cascade should learn from Linear's execution while differentiating on open-source, documents, and affordability.
+**Bottom Line:** Linear is Nixelo's closest competitor in terms of target audience (developers) and approach (speed + UX). Nixelo should learn from Linear's execution while differentiating on open-source, documents, and affordability.
 
 ---
 
@@ -525,4 +525,4 @@
 ---
 
 **Last Updated:** 2025-11-18
-**Next Review:** After Cascade implements keyboard shortcuts
+**Next Review:** After Nixelo implements keyboard shortcuts

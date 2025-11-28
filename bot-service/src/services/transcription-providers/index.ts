@@ -19,18 +19,17 @@
  * See docs/service-providers-research.md for full analysis.
  */
 
-export type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
-
-export { SpeechmaticsProvider } from "./speechmatics.js";
-export { GladiaProvider } from "./gladia.js";
 export { AzureProvider } from "./azure.js";
+export { GladiaProvider } from "./gladia.js";
 export { GoogleCloudSTTProvider } from "./google.js";
+export type { TranscriptionProvider, TranscriptionResult, TranscriptSegment } from "./provider.js";
+export { SpeechmaticsProvider } from "./speechmatics.js";
 
+import { AzureProvider } from "./azure.js";
+import { GladiaProvider } from "./gladia.js";
+import { GoogleCloudSTTProvider } from "./google.js";
 import type { TranscriptionProvider } from "./provider.js";
 import { SpeechmaticsProvider } from "./speechmatics.js";
-import { GladiaProvider } from "./gladia.js";
-import { AzureProvider } from "./azure.js";
-import { GoogleCloudSTTProvider } from "./google.js";
 
 /**
  * Get a provider instance by name

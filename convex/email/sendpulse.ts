@@ -5,6 +5,7 @@
  * Docs: https://sendpulse.com/integrations/api/smtp
  */
 
+import { getSendPulseFromEmail, getSendPulseId, getSendPulseSecret } from "../lib/env";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 interface SendPulseTokenResponse {
@@ -20,21 +21,16 @@ interface SendPulseSmtpResponse {
 }
 
 export class SendPulseProvider implements EmailProvider {
-  private clientId: string | null = null;
-  private clientSecret: string | null = null;
-  private defaultFrom: string;
-  private accessToken: string | null = null;
-  private tokenExpiry: number = 0;
+  private clientId = getSendPulseId();
+  private clientSecret = getSendPulseSecret();
+  private defaultFrom = getSendPulseFromEmail();
+  private accessToken: string | undefined;
+  private tokenExpiry = 0;
   private baseUrl = "https://api.sendpulse.com";
 
-  constructor() {
-    this.clientId = process.env.SENDPULSE_ID || null;
-    this.clientSecret = process.env.SENDPULSE_SECRET || null;
-    this.defaultFrom = process.env.SENDPULSE_FROM_EMAIL || "Cascade <notifications@cascade.app>";
-  }
 
   isConfigured(): boolean {
-    return this.clientId !== null && this.clientSecret !== null;
+    return !!this.clientId && !!this.clientSecret;
   }
 
   private async getAccessToken(): Promise<string> {
@@ -81,7 +77,8 @@ export class SendPulseProvider implements EmailProvider {
       return {
         id: "not-configured",
         success: false,
-        error: "SendPulse provider not configured. Set SENDPULSE_ID and SENDPULSE_SECRET environment variables.",
+        error:
+          "SendPulse provider not configured. Set SENDPULSE_ID and SENDPULSE_SECRET environment variables.",
       };
     }
 
@@ -102,7 +99,7 @@ export class SendPulseProvider implements EmailProvider {
             text: params.text || "",
             subject: params.subject,
             from: {
-              name: fromParsed.name || "Cascade",
+              name: fromParsed.name || "Nixelo",
               email: fromParsed.email,
             },
             to: toList.map((email) => ({ email })),

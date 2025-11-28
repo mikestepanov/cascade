@@ -1,4 +1,4 @@
-# Cascade Niche Strategy: The All-in-One Platform for [Target]
+# Nixelo Niche Strategy: The All-in-One Platform for [Target]
 
 > **Strategic Pivot:** Instead of competing broadly as "open-source Jira alternative", target specific niches that currently need 3-4 separate tools and suffer from context-switching hell.
 
@@ -25,12 +25,12 @@
 - Legal practices (case management + time tracking)
 - Accounting firms (client projects + billable hours)
 
-**Cascade Value Prop:**
+**Nixelo Value Prop:**
 > "Run your entire consulting practice in one place: manage client projects, track billable hours, schedule meetings, and create deliverables - all connected in real-time."
 
 **Annual Value:**
 - Replaces: Jira ($7.75/user) + Toggl ($9/user) + Calendly ($12/user) + Notion ($8/user) = **$36.75/user/month**
-- Cascade: **$15/user/month** = **$21.75 savings per user**
+- Nixelo: **$15/user/month** = **$21.75 savings per user**
 - For a 10-person agency: **$2,610 annual savings**
 
 ---
@@ -53,7 +53,7 @@
 - Tutoring services
 - Professional development programs
 
-**Cascade Value Prop:**
+**Nixelo Value Prop:**
 > "Teach better with less hassle: manage courses, schedule classes, create lesson plans, and track student progress - all in one collaborative platform."
 
 **Key Features for Education:**
@@ -78,7 +78,7 @@
 | **Impact Documentation** | Google Docs | Hard to tie to specific programs |
 | **Hour Tracking** | Manual logs | Required for grant reporting |
 
-**Cascade Value Prop:**
+**Nixelo Value Prop:**
 > "Manage grants, coordinate volunteers, track impact, and generate funder reports - all connected to your mission work."
 
 ---
@@ -108,12 +108,12 @@
 └─────────────┴──────────┴──────────┴──────────┴──────────┘
 ```
 
-### What Cascade Offers (Solution)
+### What Nixelo Offers (Solution)
 
 ```
 ┌────────────────────────────────────────────────────┐
 │                                                    │
-│            🌊 Cascade - All in One                 │
+│            🌊 Nixelo - All in One                 │
 │                                                    │
 │  ✅ Client/Course Projects (from Jira/Canvas)      │
 │  ✅ Time Tracking (from Kimai/Toggl)               │
@@ -219,7 +219,7 @@
 > "Stop juggling 4 tools. Run your agency in one place."
 
 **Subheadline:**
-> "Cascade combines project management, time tracking, scheduling, and documentation in a single real-time platform. Built for consulting teams who bill by the hour."
+> "Nixelo combines project management, time tracking, scheduling, and documentation in a single real-time platform. Built for consulting teams who bill by the hour."
 
 **Key Benefits:**
 1. **Save $20/user/month** - Replace Jira + Toggl + Calendly + Notion
@@ -229,7 +229,7 @@
 
 **Comparison Table:**
 
-| Feature | Cascade | Jira+4 Tools | Cost |
+| Feature | Nixelo | Jira+4 Tools | Cost |
 |---------|---------|--------------|------|
 | Project Management | ✅ Built-in | ✅ Jira $8/mo | 💰 |
 | Time Tracking | ✅ Built-in | ❌ Need Toggl $9/mo | 💰 |
@@ -262,7 +262,7 @@
 3. **Content Marketing**
    - Blog: "How we cut our tool stack from 7 to 1 and saved $10k/year"
    - Case study: "Agency reduces context switching by 80%"
-   - Comparison: "Cascade vs. Jira+Toggl+Calendly: Total Cost Breakdown"
+   - Comparison: "Nixelo vs. Jira+Toggl+Calendly: Total Cost Breakdown"
 
 4. **Direct Outreach**
    - LinkedIn: Target "Founder" + "Agency" + "Consulting"
@@ -275,9 +275,9 @@
 
 **Tactics:**
 1. **Agency-Specific Landing Pages**
-   - cascade.io/for-agencies
-   - cascade.io/for-consultants
-   - cascade.io/for-design-agencies
+   - nixelo.io/for-agencies
+   - nixelo.io/for-consultants
+   - nixelo.io/for-design-agencies
 
 2. **Integration Marketplace**
    - QuickBooks (invoicing)
@@ -392,7 +392,7 @@
 
 ## 💡 Unique Advantages
 
-**Why Cascade Wins:**
+**Why Nixelo Wins:**
 
 1. **Only open-source option** - Agencies can self-host (data control, compliance)
 2. **Only real-time platform** - All competitors have 5-30s lag
@@ -412,7 +412,7 @@
 
 **"The Shopify of Professional Services"**
 
-Just like Shopify became the platform for e-commerce businesses, Cascade becomes the platform for service businesses.
+Just like Shopify became the platform for e-commerce businesses, Nixelo becomes the platform for service businesses.
 
 **Features:**
 - Project management (Jira replacement)

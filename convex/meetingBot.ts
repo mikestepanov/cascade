@@ -1,9 +1,10 @@
-import { v } from "convex/values";
-import { mutation, query, internalMutation, internalAction } from "./_generated/server";
-import { internal } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import type { Id, Doc } from "./_generated/dataModel";
-import type { QueryCtx, MutationCtx } from "./_generated/server";
+import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import type { Doc, Id } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { internalAction, internalMutation, mutation, query } from "./_generated/server";
+import { getBotServiceApiKey, getBotServiceUrl, getSiteUrl } from "./lib/env";
 
 // ===========================================
 // Bot Service Authentication
@@ -14,10 +15,7 @@ import type { QueryCtx, MutationCtx } from "./_generated/server";
  * The bot service uses a dedicated API key stored in environment variables
  * This is simpler than the user API key system since there's only one bot service
  */
-async function validateBotApiKey(
-  ctx: QueryCtx | MutationCtx,
-  apiKey: string
-): Promise<boolean> {
+async function validateBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string): Promise<boolean> {
   // Get the expected API key from system settings or environment
   // For now, we store the hashed key in a systemSettings table
   const settings = await ctx.db
@@ -26,9 +24,6 @@ async function validateBotApiKey(
     .first();
 
   if (!settings) {
-    // Fallback: check if it matches a hardcoded test key in development
-    // In production, this should always use the database
-    console.warn("Bot service API key not configured in database");
     return false;
   }
 
@@ -47,7 +42,7 @@ async function validateBotApiKey(
  */
 async function requireBotApiKey(
   ctx: QueryCtx | MutationCtx,
-  apiKey: string | undefined
+  apiKey: string | undefined,
 ): Promise<void> {
   if (!apiKey) {
     throw new Error("Bot service API key required");
@@ -78,7 +73,7 @@ export const listRecordings = query({
         v.literal("google_meet"),
         v.literal("zoom"),
         v.literal("teams"),
-        v.literal("other")
+        v.literal("other"),
       ),
       title: v.string(),
       recordingFileId: v.optional(v.id("_storage")),
@@ -94,7 +89,7 @@ export const listRecordings = query({
         v.literal("summarizing"),
         v.literal("completed"),
         v.literal("cancelled"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       errorMessage: v.optional(v.string()),
       scheduledStartTime: v.optional(v.number()),
@@ -111,7 +106,7 @@ export const listRecordings = query({
       calendarEvent: v.union(v.any(), v.null()),
       hasTranscript: v.boolean(),
       hasSummary: v.boolean(),
-    })
+    }),
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -119,7 +114,7 @@ export const listRecordings = query({
 
     const limit = args.limit ?? 20;
 
-    let recordings;
+    let recordings: Doc<"meetingRecordings">[];
     if (args.projectId) {
       recordings = await ctx.db
         .query("meetingRecordings")
@@ -155,7 +150,7 @@ export const listRecordings = query({
           hasTranscript: !!transcript,
           hasSummary: !!summary,
         };
-      })
+      }),
     );
   },
 });
@@ -309,16 +304,14 @@ export const getPendingJobs = query({
       .collect();
 
     // Filter to jobs that should start soon
-    const readyJobs = jobs.filter(
-      (job) => job.scheduledTime <= now + 5 * 60 * 1000
-    );
+    const readyJobs = jobs.filter((job) => job.scheduledTime <= now + 5 * 60 * 1000);
 
     // Enrich with recording data
     return Promise.all(
       readyJobs.map(async (job) => {
         const recording = await ctx.db.get(job.recordingId);
         return { ...job, recording };
-      })
+      }),
     );
   },
 });
@@ -337,7 +330,7 @@ export const scheduleRecording = mutation({
       v.literal("google_meet"),
       v.literal("zoom"),
       v.literal("teams"),
-      v.literal("other")
+      v.literal("other"),
     ),
     scheduledStartTime: v.number(),
     projectId: v.optional(v.id("projects")),
@@ -358,7 +351,7 @@ export const scheduleRecording = mutation({
       title: args.title,
       status: "scheduled",
       scheduledStartTime: args.scheduledStartTime,
-      botName: "Cascade Notetaker",
+      botName: "Nixelo Notetaker",
       createdBy: userId,
       projectId: args.projectId,
       isPublic: args.isPublic ?? false,
@@ -382,7 +375,7 @@ export const scheduleRecording = mutation({
     await ctx.scheduler.runAt(
       new Date(args.scheduledStartTime),
       internal.meetingBot.triggerBotJob,
-      { recordingId }
+      { recordingId },
     );
 
     return recordingId;
@@ -398,7 +391,7 @@ export const startRecordingNow = mutation({
       v.literal("google_meet"),
       v.literal("zoom"),
       v.literal("teams"),
-      v.literal("other")
+      v.literal("other"),
     ),
     projectId: v.optional(v.id("projects")),
   },
@@ -415,7 +408,7 @@ export const startRecordingNow = mutation({
       title: args.title,
       status: "scheduled",
       scheduledStartTime: now,
-      botName: "Cascade Notetaker",
+      botName: "Nixelo Notetaker",
       createdBy: userId,
       projectId: args.projectId,
       isPublic: false,
@@ -459,7 +452,9 @@ export const cancelRecording = mutation({
     }
 
     if (recording.status !== "scheduled") {
-      throw new Error(`Cannot cancel recording with status '${recording.status}'. Only scheduled recordings can be cancelled.`);
+      throw new Error(
+        `Cannot cancel recording with status '${recording.status}'. Only scheduled recordings can be cancelled.`,
+      );
     }
 
     // Update recording status
@@ -498,7 +493,7 @@ export const updateRecordingStatus = mutation({
       v.literal("summarizing"),
       v.literal("completed"),
       v.literal("cancelled"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     errorMessage: v.optional(v.string()),
     botJoinedAt: v.optional(v.number()),
@@ -543,7 +538,7 @@ export const saveTranscript = mutation({
         speakerUserId: v.optional(v.id("users")),
         text: v.string(),
         confidence: v.optional(v.number()),
-      })
+      }),
     ),
     language: v.string(),
     modelUsed: v.string(),
@@ -598,7 +593,7 @@ export const saveSummary = mutation({
         dueDate: v.optional(v.string()),
         priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
         issueCreated: v.optional(v.id("issues")),
-      })
+      }),
     ),
     decisions: v.array(v.string()),
     openQuestions: v.array(v.string()),
@@ -608,10 +603,15 @@ export const saveSummary = mutation({
         startTime: v.optional(v.number()),
         endTime: v.optional(v.number()),
         summary: v.string(),
-      })
+      }),
     ),
     overallSentiment: v.optional(
-      v.union(v.literal("positive"), v.literal("neutral"), v.literal("negative"), v.literal("mixed"))
+      v.union(
+        v.literal("positive"),
+        v.literal("neutral"),
+        v.literal("negative"),
+        v.literal("mixed"),
+      ),
     ),
     modelUsed: v.string(),
     promptTokens: v.optional(v.number()),
@@ -682,7 +682,7 @@ export const saveParticipants = mutation({
         speakingPercentage: v.optional(v.number()),
         isHost: v.boolean(),
         isExternal: v.boolean(),
-      })
+      }),
     ),
   },
   returns: v.null(),
@@ -693,7 +693,7 @@ export const saveParticipants = mutation({
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
-    // Try to match participants to Cascade users by email
+    // Try to match participants to Nixelo users by email
     for (const participant of args.participants) {
       let userId: Id<"users"> | undefined;
 
@@ -837,16 +837,14 @@ export const notifyBotService = internalAction({
       v.literal("google_meet"),
       v.literal("zoom"),
       v.literal("teams"),
-      v.literal("other")
+      v.literal("other"),
     ),
   },
   handler: async (ctx, args) => {
-    // Get bot service URL from environment
-    const botServiceUrl = process.env.BOT_SERVICE_URL;
+    const botServiceUrl = getBotServiceUrl();
+    const botServiceApiKey = getBotServiceApiKey();
 
-    if (!botServiceUrl) {
-      console.error("BOT_SERVICE_URL not configured");
-      // Update job as failed
+    if (!botServiceUrl || !botServiceApiKey) {
       await ctx.runMutation(internal.meetingBot.markJobFailed, {
         jobId: args.jobId,
         recordingId: args.recordingId,
@@ -860,16 +858,16 @@ export const notifyBotService = internalAction({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.BOT_SERVICE_API_KEY}`,
+          Authorization: `Bearer ${botServiceApiKey}`,
         },
         body: JSON.stringify({
           jobId: args.jobId,
           recordingId: args.recordingId,
           meetingUrl: args.meetingUrl,
           platform: args.platform,
-          botName: "Cascade Notetaker",
+          botName: "Nixelo Notetaker",
           // Callback URLs for the bot to report status
-          callbackUrl: process.env.CONVEX_SITE_URL,
+          callbackUrl: getSiteUrl(),
         }),
       });
 
@@ -885,7 +883,6 @@ export const notifyBotService = internalAction({
         botServiceJobId: data.jobId,
       });
     } catch (error) {
-      console.error("Failed to notify bot service:", error);
       await ctx.runMutation(internal.meetingBot.markJobFailed, {
         jobId: args.jobId,
         recordingId: args.recordingId,
@@ -934,11 +931,9 @@ export const markJobFailed = internalMutation({
       });
 
       // Schedule retry
-      await ctx.scheduler.runAt(
-        new Date(nextAttempt),
-        internal.meetingBot.triggerBotJob,
-        { recordingId: args.recordingId }
-      );
+      await ctx.scheduler.runAt(new Date(nextAttempt), internal.meetingBot.triggerBotJob, {
+        recordingId: args.recordingId,
+      });
     } else {
       // Max attempts reached, mark as failed
       await ctx.db.patch(args.jobId, {

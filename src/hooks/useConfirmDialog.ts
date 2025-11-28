@@ -81,18 +81,15 @@ export function useConfirmDialog(): UseConfirmDialogReturn {
     setDialogState(initialState);
   }, []);
 
-  const handleConfirm = useCallback(
-    async (action: () => Promise<void> | void) => {
-      setIsConfirming(true);
-      try {
-        await action();
-        setDialogState(initialState);
-      } finally {
-        setIsConfirming(false);
-      }
-    },
-    [],
-  );
+  const handleConfirm = useCallback(async (action: () => Promise<void> | void) => {
+    setIsConfirming(true);
+    try {
+      await action();
+      setDialogState(initialState);
+    } finally {
+      setIsConfirming(false);
+    }
+  }, []);
 
   return {
     dialogState,

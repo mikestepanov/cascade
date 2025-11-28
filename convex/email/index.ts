@@ -13,12 +13,12 @@
  * Total free capacity: 22,000 emails/month
  */
 
+import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { MailgunProvider } from "./mailgun";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 import { ResendProvider } from "./resend";
-import { SendPulseProvider } from "./sendpulse";
-import { MailgunProvider } from "./mailgun";
 import { SendGridProvider } from "./sendgrid";
-import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { SendPulseProvider } from "./sendpulse";
 
 // Provider registry
 const providers: Record<string, () => EmailProvider> = {
@@ -79,7 +79,7 @@ export function isEmailConfigured(): boolean {
  */
 export async function sendEmail(
   ctx: MutationCtx | QueryCtx | null,
-  params: EmailSendParams
+  params: EmailSendParams,
 ): Promise<EmailSendResult & { provider?: string }> {
   let selectedProvider: { name: string; provider: EmailProvider } | null = null;
 
@@ -88,9 +88,7 @@ export async function sendEmail(
     try {
       const selection = await (ctx as QueryCtx).db
         .query("serviceProviders")
-        .withIndex("by_service_enabled", (q) =>
-          q.eq("serviceType", "email").eq("isEnabled", true)
-        )
+        .withIndex("by_service_enabled", (q) => q.eq("serviceType", "email").eq("isEnabled", true))
         .collect();
 
       // Sort by priority and find one with free capacity
@@ -105,23 +103,20 @@ export async function sendEmail(
         const usage = await (ctx as QueryCtx).db
           .query("serviceUsage")
           .withIndex("by_provider_month", (q) =>
-            q.eq("provider", config.provider).eq("month", month)
+            q.eq("provider", config.provider).eq("month", month),
           )
           .first();
 
         const unitsUsed = usage?.unitsUsed ?? 0;
         const freeRemaining =
           config.freeUnitsType === "one_time"
-            ? config.oneTimeUnitsRemaining ?? 0
+            ? (config.oneTimeUnitsRemaining ?? 0)
             : Math.max(0, config.freeUnitsPerMonth - unitsUsed);
 
         if (freeRemaining > 0) {
           const provider = getProvider(config.provider);
           if (provider?.isConfigured()) {
             selectedProvider = { name: config.provider, provider };
-            console.log(
-              `Selected email provider: ${config.displayName} (${freeRemaining} free emails remaining)`
-            );
             break;
           }
         }
@@ -137,22 +132,18 @@ export async function sendEmail(
           const provider = getProvider(config.provider);
           if (provider?.isConfigured()) {
             selectedProvider = { name: config.provider, provider };
-            console.log(`No free tier available, using: ${config.displayName}`);
             break;
           }
         }
       }
-    } catch (error) {
-      console.warn("Failed to query Convex for email provider selection:", error);
+    } catch (_error) {
+      // Database error, fall through to fallback
     }
   }
 
   // Fallback to first configured provider
   if (!selectedProvider) {
     selectedProvider = getFirstConfiguredProvider();
-    if (selectedProvider) {
-      console.log(`Using fallback email provider: ${selectedProvider.name}`);
-    }
   }
 
   if (!selectedProvider) {
@@ -171,8 +162,7 @@ export async function sendEmail(
   if (ctx && result.success && "scheduler" in ctx) {
     try {
       await recordEmailUsage(ctx as MutationCtx, selectedProvider.name, 1);
-    } catch (error) {
-      console.error("Failed to record email usage:", error);
+    } catch (_error) {
       // Don't fail the send just because usage tracking failed
     }
   }
@@ -189,7 +179,7 @@ export async function sendEmail(
 export async function sendEmailWithProvider(
   ctx: MutationCtx | null,
   providerName: string,
-  params: EmailSendParams
+  params: EmailSendParams,
 ): Promise<EmailSendResult & { provider: string }> {
   const provider = getProvider(providerName);
 
@@ -217,8 +207,8 @@ export async function sendEmailWithProvider(
   if (ctx && result.success) {
     try {
       await recordEmailUsage(ctx, providerName, 1);
-    } catch (error) {
-      console.error("Failed to record email usage:", error);
+    } catch (_error) {
+      // Don't fail the send just because usage tracking failed
     }
   }
 
@@ -234,7 +224,7 @@ export async function sendEmailWithProvider(
 async function recordEmailUsage(
   ctx: MutationCtx,
   providerName: string,
-  emailCount: number
+  emailCount: number,
 ): Promise<void> {
   const month = getCurrentMonth();
 
@@ -245,16 +235,13 @@ async function recordEmailUsage(
     .first();
 
   if (!providerConfig) {
-    console.warn(`Unknown provider for usage tracking: ${providerName}`);
     return;
   }
 
   // Get or create usage record
   const existingUsage = await ctx.db
     .query("serviceUsage")
-    .withIndex("by_provider_month", (q) =>
-      q.eq("provider", providerName).eq("month", month)
-    )
+    .withIndex("by_provider_month", (q) => q.eq("provider", providerName).eq("month", month))
     .first();
 
   const currentUnitsUsed = existingUsage?.unitsUsed ?? 0;
@@ -263,7 +250,7 @@ async function recordEmailUsage(
   // Calculate free vs paid
   const freeLimit =
     providerConfig.freeUnitsType === "one_time"
-      ? providerConfig.oneTimeUnitsRemaining ?? 0
+      ? (providerConfig.oneTimeUnitsRemaining ?? 0)
       : providerConfig.freeUnitsPerMonth;
 
   const paidUnits = Math.max(0, newTotalUnits - freeLimit);

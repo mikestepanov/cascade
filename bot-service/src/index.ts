@@ -1,5 +1,5 @@
-import express from "express";
 import { config } from "dotenv";
+import express from "express";
 import { MeetingBotManager } from "./bot/manager.js";
 import { authMiddleware } from "./middleware/auth.js";
 
@@ -11,7 +11,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 // Health check
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
@@ -23,7 +23,7 @@ app.post("/api/jobs", authMiddleware, async (req, res) => {
   try {
     const { jobId, recordingId, meetingUrl, platform, botName, callbackUrl } = req.body;
 
-    if (!meetingUrl || !recordingId) {
+    if (!(meetingUrl && recordingId)) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -32,13 +32,12 @@ app.post("/api/jobs", authMiddleware, async (req, res) => {
       recordingId,
       meetingUrl,
       platform: platform || "google_meet",
-      botName: botName || "Cascade Notetaker",
+      botName: botName || "Nixelo Notetaker",
       callbackUrl,
     });
 
     res.json({ success: true, jobId: job.id });
-  } catch (error) {
-    console.error("Failed to create job:", error);
+  } catch (_error) {
     res.status(500).json({ error: "Failed to create job" });
   }
 });
@@ -51,8 +50,7 @@ app.get("/api/jobs/:jobId", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Job not found" });
     }
     res.json(job);
-  } catch (error) {
-    console.error("Failed to get job:", error);
+  } catch (_error) {
     res.status(500).json({ error: "Failed to get job" });
   }
 });
@@ -62,19 +60,17 @@ app.post("/api/jobs/:jobId/stop", authMiddleware, async (req, res) => {
   try {
     await botManager.stopJob(req.params.jobId);
     res.json({ success: true });
-  } catch (error) {
-    console.error("Failed to stop job:", error);
+  } catch (_error) {
     res.status(500).json({ error: "Failed to stop job" });
   }
 });
 
 // List all active jobs
-app.get("/api/jobs", authMiddleware, async (req, res) => {
+app.get("/api/jobs", authMiddleware, async (_req, res) => {
   try {
     const jobs = botManager.listJobs();
     res.json({ jobs });
-  } catch (error) {
-    console.error("Failed to list jobs:", error);
+  } catch (_error) {
     res.status(500).json({ error: "Failed to list jobs" });
   }
 });
@@ -91,31 +87,23 @@ app.post("/api/internal/status", async (req, res) => {
     const { jobId, status, data } = req.body;
     await botManager.handleStatusUpdate(jobId, status, data);
     res.json({ success: true });
-  } catch (error) {
-    console.error("Failed to handle status update:", error);
+  } catch (_error) {
     res.status(500).json({ error: "Failed to handle status update" });
   }
 });
 
-const server = app.listen(port, () => {
-  console.log(`🤖 Meeting Bot Service running on port ${port}`);
-});
+const server = app.listen(port);
 
 // Graceful shutdown
-const shutdown = async (signal: string) => {
-  console.log(`\n${signal} received, shutting down gracefully...`);
-
+const shutdown = async (_signal: string) => {
   // Stop accepting new connections
-  server.close(() => {
-    console.log("HTTP server closed");
-  });
+  server.close();
 
   // Stop all active bots
   try {
     await botManager.stopAllJobs();
-    console.log("All bot jobs stopped");
-  } catch (error) {
-    console.error("Error stopping jobs:", error);
+  } catch (_error) {
+    // Swallow errors during shutdown - we're exiting anyway
   }
 
   process.exit(0);

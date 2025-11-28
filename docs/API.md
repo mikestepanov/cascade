@@ -1,14 +1,12 @@
-# Cascade REST API Documentation
+# Nixelo REST API Documentation
 
-> **Last Updated:** 2025-11-20
-
-Complete API reference for accessing Cascade programmatically from CLI tools, AI agents, and external integrations.
+Complete API reference for accessing Nixelo programmatically from CLI tools, AI agents, and external integrations.
 
 ## Base URL
 
 ```
 Production: https://your-domain.com
-Development: http://localhost:5173
+Development: http://localhost:5555
 ```
 
 ## Authentication
@@ -21,7 +19,7 @@ Authorization: Bearer sk_casc_your_api_key_here
 
 ### Generating API Keys
 
-1. Log in to Cascade
+1. Log in to Nixelo
 2. Go to Settings → API Keys
 3. Click "Generate New API Key"
 4. Name your key (e.g., "CLI Tool", "GitHub Actions")
@@ -481,15 +479,15 @@ All errors follow this format:
 
 ```bash
 # Set your API key
-export CASCADE_API_KEY="sk_casc_your_key"
+export NIXELO_API_KEY="sk_casc_your_key"
 
 # List issues
 curl "https://your-domain.com/api/issues?projectId=abc123" \
-  -H "Authorization: Bearer $CASCADE_API_KEY"
+  -H "Authorization: Bearer $NIXELO_API_KEY"
 
 # Create issue
 curl -X POST https://your-domain.com/api/issues \
-  -H "Authorization: Bearer $CASCADE_API_KEY" \
+  -H "Authorization: Bearer $NIXELO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "projectId": "abc123",
@@ -499,7 +497,7 @@ curl -X POST https://your-domain.com/api/issues \
 
 # Update issue
 curl -X PATCH https://your-domain.com/api/issues/PROJ-42 \
-  -H "Authorization: Bearer $CASCADE_API_KEY" \
+  -H "Authorization: Bearer $NIXELO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"status": "done"}'
 ```
@@ -587,10 +585,10 @@ claude "Create a new bug issue in PROJ titled 'Fix auth timeout'"
 # Your Claude Code integration script:
 #!/bin/bash
 TITLE="$1"
-CASCADE_API_KEY="your_key"
+NIXELO_API_KEY="your_key"
 
 curl -X POST https://your-domain.com/api/issues \
-  -H "Authorization: Bearer $CASCADE_API_KEY" \
+  -H "Authorization: Bearer $NIXELO_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
     \"projectId\": \"your_project_id\",
@@ -606,7 +604,7 @@ curl -X POST https://your-domain.com/api/issues \
 
 1. **Keep API Keys Secure**
    - Never commit keys to version control
-   - Use environment variables: `export CASCADE_API_KEY=...`
+   - Use environment variables: `export NIXELO_API_KEY=...`
    - Rotate keys periodically
 
 2. **Handle Rate Limits**
@@ -631,8 +629,12 @@ curl -X POST https://your-domain.com/api/issues \
 
 ## Support
 
-- **Documentation**: https://docs.cascade.app/api
-- **Status**: https://status.cascade.app
-- **Issues**: support@cascade.app
+- **Documentation**: https://docs.nixelo.app/api
+- **Status**: https://status.nixelo.app
+- **Issues**: support@nixelo.app
 
-For questions or feature requests, contact your Cascade administrator.
+For questions or feature requests, contact your Nixelo administrator.
+
+---
+
+*Last Updated: 2025-11-27*

@@ -8,6 +8,7 @@ import { render } from "@react-email/render";
 import { v } from "convex/values";
 import { api, internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
+import { getSiteUrl } from "../lib/env";
 import { sendEmail } from "./index";
 
 /**
@@ -29,7 +30,7 @@ export const sendMentionEmail = internalAction({
       args;
 
     // Generate issue URL and unsubscribe URL
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = getSiteUrl();
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -94,7 +95,7 @@ export const sendAssignmentEmail = internalAction({
       dueDate,
     } = args;
 
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = getSiteUrl();
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -146,7 +147,7 @@ export const sendCommentEmail = internalAction({
     const { to, userId, commenterName, issueKey, issueTitle, issueId, commentText, projectName } =
       args;
 
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = getSiteUrl();
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -299,7 +300,7 @@ export const sendDigestEmail = internalAction({
 
     // Generate unsubscribe token
     const token = await ctx.runMutation(internal.unsubscribe.generateTokenInternal, { userId });
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = getSiteUrl();
     const unsubscribeUrl = `${appUrl}/unsubscribe?token=${token}`;
 
     // Format dates
@@ -329,6 +330,7 @@ export const sendDigestEmail = internalAction({
         items,
         startDate,
         endDate,
+        appUrl,
         unsubscribeUrl,
       }),
     );

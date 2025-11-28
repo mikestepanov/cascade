@@ -24,8 +24,7 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
         onCodeSent(email);
         toast.success("Check your email for the reset code");
       })
-      .catch((error) => {
-        console.error("Reset error:", error);
+      .catch((_error) => {
         toast.error("Could not send reset code. Please check your email.");
       })
       .finally(() => setSubmitting(false));

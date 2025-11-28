@@ -25,8 +25,7 @@ export function ResetPasswordForm({ email, onSuccess, onRetry }: ResetPasswordFo
         toast.success("Password reset successfully!");
         onSuccess();
       })
-      .catch((error) => {
-        console.error("Verification error:", error);
+      .catch((_error) => {
         toast.error("Invalid code or password. Please try again.");
       })
       .finally(() => setSubmitting(false));

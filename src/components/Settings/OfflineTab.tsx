@@ -116,7 +116,7 @@ export function OfflineTab() {
                   Install as App
                 </p>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Install Cascade as a standalone app on your device
+                  Install Nixelo as a standalone app on your device
                 </p>
               </div>
             </Flex>

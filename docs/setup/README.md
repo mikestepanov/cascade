@@ -1,7 +1,5 @@
 # Setup & Configuration Guide
 
-> **Last Updated:** 2025-11-25
-
 Manual setup tasks that can't be automated through code.
 
 ---
@@ -23,29 +21,21 @@ pnpm run dev:frontend  # Start Vite
 
 ## Environment Variables
 
-Copy to `.env.local`:
-
 ```bash
-# EMAIL (Required for notifications)
-EMAIL_PROVIDER=resend
-RESEND_API_KEY=re_xxxxxxxxxxxxx
-RESEND_FROM_EMAIL="Cascade <notifications@yourdomain.com>"
-APP_URL=http://localhost:5173
-
-# GOOGLE OAUTH (Optional)
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# GITHUB OAUTH (Optional)
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-
-# ANALYTICS (Optional)
-VITE_PUBLIC_POSTHOG_KEY=phc_xxxxxxxxxxxxx
-VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+cp .env.example .env.local
 ```
 
-**Production:** Set `APP_URL` to your production domain.
+Fill in the values in `.env.local`. See `.env.example` for all available options.
+
+**Required:**
+- `SITE_URL` - your app URL (default: `http://localhost:5555`)
+
+**Optional:**
+- Email: `RESEND_API_KEY` for notifications
+- OAuth: `GOOGLE_CLIENT_ID/SECRET` for Google sign-in
+- Analytics: `VITE_PUBLIC_POSTHOG_KEY` for PostHog
+
+**Production:** Update `SITE_URL` to your domain.
 
 **CI/CD:** Get `CONVEX_DEPLOY_KEY` from Convex Dashboard → Settings → Deploy Keys.
 
@@ -68,7 +58,7 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 2. Create project, enable Google Calendar API
 3. Create OAuth 2.0 credentials (Web application)
 4. Add redirect URIs:
-   - `http://localhost:5173/auth/callback` (dev)
+   - `http://localhost:5555/auth/callback` (dev)
    - `https://yourdomain.com/auth/callback` (prod)
 5. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to environment
 
@@ -78,7 +68,7 @@ VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 1. In Pumble: Channel → Integrations → Incoming Webhooks
 2. Copy webhook URL
-3. In Cascade: Settings → Integrations → Pumble → Add Webhook
+3. In Nixelo: Settings → Integrations → Pumble → Add Webhook
 4. Test with "Test Webhook" button
 
 ---
@@ -135,3 +125,7 @@ pnpm run build
 | GitHub Integration | ✅ | GitHub OAuth app |
 | Offline/PWA | ✅ | None |
 | User Invitations | ✅ | Email provider |
+
+---
+
+*Last Updated: 2025-11-27*

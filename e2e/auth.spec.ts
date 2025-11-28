@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 /**
  * Authentication E2E Tests
@@ -8,9 +8,7 @@ import { test, expect } from "./fixtures";
  */
 
 test.describe("Landing Page", () => {
-  test("shows landing page for unauthenticated users", async ({
-    landingPage,
-  }) => {
+  test("shows landing page for unauthenticated users", async ({ landingPage }) => {
     await landingPage.goto();
     await landingPage.expectLandingPage();
   });

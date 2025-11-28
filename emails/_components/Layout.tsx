@@ -32,7 +32,7 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <Heading style={h1}>Cascade</Heading>
+            <Heading style={h1}>Nixelo</Heading>
             <Text style={tagline}>Collaborative Project Management</Text>
           </Section>
 
@@ -43,13 +43,13 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
           <Hr style={hr} />
           <Section style={footer}>
             <Text style={footerText}>
-              You're receiving this because you're part of a Cascade workspace.
+              You're receiving this because you're part of a Nixelo workspace.
               <br />
               <Link href="{{unsubscribeUrl}}" style={link}>
                 Manage notification preferences
               </Link>
             </Text>
-            <Text style={footerText}>© 2025 Cascade. All rights reserved.</Text>
+            <Text style={footerText}>© 2025 Nixelo. All rights reserved.</Text>
           </Section>
         </Container>
       </Body>

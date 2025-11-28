@@ -7,7 +7,10 @@ interface CredentialsFormProps {
   onSignUpNeedsVerification: (email: string) => void;
 }
 
-export function CredentialsForm({ onForgotPassword, onSignUpNeedsVerification }: CredentialsFormProps) {
+export function CredentialsForm({
+  onForgotPassword,
+  onSignUpNeedsVerification,
+}: CredentialsFormProps) {
   const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [submitting, setSubmitting] = useState(false);
@@ -49,13 +52,7 @@ export function CredentialsForm({ onForgotPassword, onSignUpNeedsVerification }:
 
   return (
     <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-      <input
-        className="auth-input-field"
-        type="email"
-        name="email"
-        placeholder="Email"
-        required
-      />
+      <input className="auth-input-field" type="email" name="email" placeholder="Email" required />
       <input
         className="auth-input-field"
         type="password"

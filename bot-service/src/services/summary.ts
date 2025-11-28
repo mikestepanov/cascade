@@ -81,7 +81,7 @@ Important:
     try {
       const response = await retryApi(() =>
         this.anthropic.messages.create({
-          model: "claude-opus-4-5-20251101",
+          model: "claude-opus-4-5",
           max_tokens: 4096,
           messages: [
             {
@@ -90,7 +90,7 @@ Important:
             },
           ],
           system: systemPrompt,
-        })
+        }),
       );
 
       const processingTime = Date.now() - startTime;
@@ -127,13 +127,12 @@ Important:
           endTime: topic.endTime,
         })),
         overallSentiment: parsed.overallSentiment || "neutral",
-        modelUsed: "claude-opus-4-5-20251101",
+        modelUsed: "claude-opus-4-5",
         promptTokens: response.usage?.input_tokens,
         completionTokens: response.usage?.output_tokens,
         processingTime,
       };
     } catch (error) {
-      console.error("Summary generation failed:", error);
       throw new Error(`Summary generation failed: ${(error as Error).message}`);
     }
   }
@@ -142,7 +141,7 @@ Important:
   async quickSummary(transcript: string): Promise<string> {
     const response = await retryApi(() =>
       this.anthropic.messages.create({
-        model: "claude-opus-4-5-20251101",
+        model: "claude-opus-4-5",
         max_tokens: 500,
         messages: [
           {
@@ -150,7 +149,7 @@ Important:
             content: `Summarize this meeting in 2-3 sentences:\n\n${transcript.substring(0, 4000)}`,
           },
         ],
-      })
+      }),
     );
 
     const textContent = response.content.find((c) => c.type === "text");
