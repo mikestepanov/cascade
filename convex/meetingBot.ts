@@ -867,7 +867,7 @@ export const notifyBotService = internalAction({
           platform: args.platform,
           botName: "Nixelo Notetaker",
           // Callback URLs for the bot to report status
-          callbackUrl: process.env.CONVEX_SITE_URL,
+          callbackUrl: process.env.SITE_URL,
         }),
       });
 

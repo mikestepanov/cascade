@@ -27,7 +27,7 @@ In your Convex dashboard → Settings → Environment Variables:
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxx
 RESEND_FROM_EMAIL=Nixelo <dev@resend.dev>  # Use resend.dev for testing
-APP_URL=http://localhost:5173
+SITE_URL=http://localhost:5173
 # Leave EMAIL_PROVIDER blank (defaults to Resend)
 ```
 
@@ -59,7 +59,7 @@ EMAIL_PROVIDER=sendpulse
 SENDPULSE_ID=your_id_here
 SENDPULSE_SECRET=your_secret_here
 SENDPULSE_FROM_EMAIL=Nixelo <notifications@yourdomain.com>
-APP_URL=https://yourdomain.com
+SITE_URL=https://yourdomain.com
 ```
 
 ### 4. Deploy
@@ -193,7 +193,7 @@ For production emails to be delivered reliably:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `EMAIL_PROVIDER` | No | Provider selection (resend/sendpulse/mailgun/sendgrid) |
-| `APP_URL` | Yes | Application URL for email links |
+| `SITE_URL` | Yes | Application URL for email links |
 | `RESEND_API_KEY` | For Resend | Resend API key |
 | `RESEND_FROM_EMAIL` | For Resend | From address |
 | `SENDPULSE_ID` | For SendPulse | SendPulse client ID |

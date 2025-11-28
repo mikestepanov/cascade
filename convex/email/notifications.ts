@@ -29,7 +29,7 @@ export const sendMentionEmail = internalAction({
       args;
 
     // Generate issue URL and unsubscribe URL
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = process.env.SITE_URL || "http://localhost:5173";
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -94,7 +94,7 @@ export const sendAssignmentEmail = internalAction({
       dueDate,
     } = args;
 
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = process.env.SITE_URL || "http://localhost:5173";
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -146,7 +146,7 @@ export const sendCommentEmail = internalAction({
     const { to, userId, commenterName, issueKey, issueTitle, issueId, commentText, projectName } =
       args;
 
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = process.env.SITE_URL || "http://localhost:5173";
     const issueUrl = `${appUrl}/issues/${issueId}`;
 
     // Generate unsubscribe token
@@ -299,7 +299,7 @@ export const sendDigestEmail = internalAction({
 
     // Generate unsubscribe token
     const token = await ctx.runMutation(internal.unsubscribe.generateTokenInternal, { userId });
-    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const appUrl = process.env.SITE_URL || "http://localhost:5173";
     const unsubscribeUrl = `${appUrl}/unsubscribe?token=${token}`;
 
     // Format dates
@@ -329,6 +329,7 @@ export const sendDigestEmail = internalAction({
         items,
         startDate,
         endDate,
+        appUrl,
         unsubscribeUrl,
       }),
     );

@@ -89,7 +89,7 @@ BOT_SERVICE_URL=https://your-bot-service.railway.app
 BOT_SERVICE_API_KEY=your-secret-key-here  # Same as bot service
 
 # App URL (for callbacks)
-APP_URL=https://your-app.com
+SITE_URL=https://your-app.com
 ```
 
 ## Transcription Provider Setup

@@ -23,6 +23,7 @@ interface DigestEmailProps {
   items: DigestItem[];
   startDate: string;
   endDate: string;
+  appUrl: string;
   unsubscribeUrl: string;
 }
 
@@ -32,6 +33,7 @@ export function DigestEmail({
   items,
   startDate,
   endDate,
+  appUrl,
   unsubscribeUrl,
 }: DigestEmailProps) {
   const preview = `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`;
@@ -102,7 +104,7 @@ export function DigestEmail({
           {/* CTA */}
           <Section style={ctaSection}>
             <Text style={text}>Ready to respond?</Text>
-            <Button href={`${process.env.APP_URL || "https://nixelo.app"}`} style={button}>
+            <Button href={appUrl} style={button}>
               Open Nixelo
             </Button>
           </Section>

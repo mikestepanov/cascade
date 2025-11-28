@@ -28,7 +28,7 @@ Copy to `.env.local`:
 EMAIL_PROVIDER=resend
 RESEND_API_KEY=re_xxxxxxxxxxxxx
 RESEND_FROM_EMAIL="Nixelo <notifications@yourdomain.com>"
-APP_URL=http://localhost:5173
+SITE_URL=http://localhost:5173
 
 # GOOGLE OAUTH (Optional)
 GOOGLE_CLIENT_ID=your_google_client_id
@@ -43,7 +43,7 @@ VITE_PUBLIC_POSTHOG_KEY=phc_xxxxxxxxxxxxx
 VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-**Production:** Set `APP_URL` to your production domain.
+**Production:** Set `SITE_URL` to your production domain.
 
 **CI/CD:** Get `CONVEX_DEPLOY_KEY` from Convex Dashboard → Settings → Deploy Keys.
 
