@@ -1,6 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
-import { isGoogleOAuthConfigured, requireEnv } from "../lib/env";
+import { getGoogleClientId, getGoogleClientSecret, isGoogleOAuthConfigured } from "../lib/env";
 
 /**
  * Google OAuth Integration
@@ -38,12 +38,15 @@ interface GoogleCalendarEvent {
 
 // OAuth configuration - throws if not configured
 const getGoogleOAuthConfig = () => {
-  if (!isGoogleOAuthConfigured()) {
-    throw new Error("Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+  const clientId = getGoogleClientId();
+  const clientSecret = getGoogleClientSecret();
+
+  if (!isGoogleOAuthConfigured() || !clientId || !clientSecret) {
+    throw new Error("Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
   }
   return {
-    clientId: requireEnv("GOOGLE_CLIENT_ID"),
-    clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
+    clientId,
+    clientSecret,
     // Must use CONVEX_SITE_URL - this is a Convex HTTP action, not a frontend route
     redirectUri: `${process.env.CONVEX_SITE_URL}/google/callback`,
     scopes: [
@@ -66,7 +69,7 @@ export const initiateAuth = httpAction((_ctx, _request) => {
       new Response(
         JSON.stringify({
           error:
-            "Google OAuth not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.",
+            "Google OAuth not configured. Please set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET environment variables.",
         }),
         {
           status: 500,

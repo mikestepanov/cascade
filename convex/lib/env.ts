@@ -37,15 +37,16 @@ export function getSiteUrl(): string {
 }
 
 // ===========================================
-// Google OAuth (for Calendar integration)
+// Google OAuth (for Auth & Calendar integration)
+// Uses AUTH_GOOGLE_* from Convex Auth for both sign-in and calendar
 // ===========================================
 
 export function getGoogleClientId(): string | undefined {
-  return optionalEnv("GOOGLE_CLIENT_ID");
+  return optionalEnv("AUTH_GOOGLE_ID");
 }
 
 export function getGoogleClientSecret(): string | undefined {
-  return optionalEnv("GOOGLE_CLIENT_SECRET");
+  return optionalEnv("AUTH_GOOGLE_SECRET");
 }
 
 export function isGoogleOAuthConfigured(): boolean {
