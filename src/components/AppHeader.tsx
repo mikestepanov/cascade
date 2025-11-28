@@ -1,10 +1,10 @@
 import type { Id } from "../../convex/_generated/dataModel";
+import { SignOutButton } from "../SignOutButton";
+import { type AppView, shouldShowSidebar } from "../utils/viewHelpers";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
 import { ThemeToggle } from "./ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./TimeTracking/TimerWidget";
-import { SignOutButton } from "../SignOutButton";
-import { type AppView, shouldShowSidebar } from "../utils/viewHelpers";
 
 // Helper component for navigation buttons
 function ViewSwitcherButton({

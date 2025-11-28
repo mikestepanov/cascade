@@ -41,7 +41,7 @@ interface SearchPaginationState {
  * Hook to manage search pagination and query state
  */
 export function useSearchPagination(isOpen: boolean): SearchPaginationState {
-  const [query, setQuery] = useState("");
+  const [query, setQueryInternal] = useState("");
   const [activeTab, setActiveTab] = useState<TabType>("all");
   const [issueOffset, setIssueOffset] = useState(0);
   const [documentOffset, setDocumentOffset] = useState(0);
@@ -50,17 +50,18 @@ export function useSearchPagination(isOpen: boolean): SearchPaginationState {
   // Reset query and offsets when closing
   useEffect(() => {
     if (!isOpen) {
-      setQuery("");
+      setQueryInternal("");
       setIssueOffset(0);
       setDocumentOffset(0);
     }
   }, [isOpen]);
 
-  // Reset offsets when query changes
-  useEffect(() => {
+  // Wrapped setQuery that also resets offsets
+  const setQuery = (newQuery: string) => {
+    setQueryInternal(newQuery);
     setIssueOffset(0);
     setDocumentOffset(0);
-  }, [query]);
+  };
 
   const loadMore = (issueHasMore: boolean, documentHasMore: boolean) => {
     const shouldLoadIssues = (activeTab === "all" || activeTab === "issues") && issueHasMore;

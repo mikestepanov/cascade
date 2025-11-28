@@ -101,6 +101,68 @@ function SearchTab({
   );
 }
 
+// Search results container with all states
+function SearchResultsContainer({
+  query,
+  isLoading,
+  results,
+  hasMore,
+  totalCount,
+  onLoadMore,
+  onClose,
+}: {
+  query: string;
+  isLoading: boolean;
+  results: SearchResult[];
+  hasMore: boolean;
+  totalCount: number;
+  onLoadMore: () => void;
+  onClose: () => void;
+}) {
+  if (query.length < 2) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <p className="text-sm">Type at least 2 characters to search</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+        <p className="text-sm">Searching...</p>
+      </div>
+    );
+  }
+
+  if (results.length === 0) {
+    return <EmptyState icon="🔍" title="No results found" />;
+  }
+
+  return (
+    <>
+      <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+        {results.map((result) => (
+          <SearchResultItem key={result._id} result={result} onClose={onClose} />
+        ))}
+      </div>
+      {hasMore && (
+        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onLoadMore}
+            className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+          >
+            Load More ({totalCount - results.length} remaining)
+          </Button>
+        </div>
+      )}
+    </>
+  );
+}
+
 // Search result item component
 function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
   const href =
@@ -172,16 +234,8 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
 
 export function GlobalSearch() {
   const { isOpen, setIsOpen } = useSearchKeyboard();
-  const {
-    query,
-    setQuery,
-    activeTab,
-    setActiveTab,
-    issueOffset,
-    documentOffset,
-    limit,
-    loadMore,
-  } = useSearchPagination(isOpen);
+  const { query, setQuery, activeTab, setActiveTab, issueOffset, documentOffset, limit, loadMore } =
+    useSearchPagination(isOpen);
 
   // Search when query changes
   const issueSearchResult = useQuery(
@@ -303,44 +357,15 @@ export function GlobalSearch() {
 
             {/* Results */}
             <div className="max-h-80 sm:max-h-96 overflow-y-auto">
-              {query.length < 2 ? (
-                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  <p className="text-sm">Type at least 2 characters to search</p>
-                </div>
-              ) : issueSearchResult === undefined || documentSearchResult === undefined ? (
-                <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
-                  <p className="text-sm">Searching...</p>
-                </div>
-              ) : filteredResults.length === 0 ? (
-                <EmptyState icon="🔍" title="No results found" />
-              ) : (
-                <>
-                  <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {filteredResults.map((result) => (
-                      <SearchResultItem
-                        key={result._id}
-                        result={result}
-                        onClose={() => setIsOpen(false)}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Load More Button */}
-                  {hasMore && (
-                    <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleLoadMore}
-                        className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
-                      >
-                        Load More ({totalCount - filteredResults.length} remaining)
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
+              <SearchResultsContainer
+                query={query}
+                isLoading={issueSearchResult === undefined || documentSearchResult === undefined}
+                results={filteredResults}
+                hasMore={hasMore}
+                totalCount={totalCount}
+                onLoadMore={handleLoadMore}
+                onClose={() => setIsOpen(false)}
+              />
             </div>
 
             {/* Footer */}

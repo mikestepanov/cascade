@@ -177,7 +177,7 @@ authenticatedTest.describe("Dashboard View - Notifications", () => {
   authenticatedTest("can open notifications panel", async ({ dashboardPage }) => {
     await dashboardPage.openNotifications();
     // Notification dropdown/panel should appear
-    await expect(dashboardPage.notificationButton).toBeVisible();
+    await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
   });
 });
 

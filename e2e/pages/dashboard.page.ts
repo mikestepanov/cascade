@@ -278,7 +278,8 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async pressCommandPaletteShortcut() {
-    await this.page.keyboard.press("Meta+k");
+    // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
+    await this.page.keyboard.press("ControlOrMeta+k");
   }
 
   async pressShortcutsHelpShortcut() {

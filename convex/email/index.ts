@@ -79,10 +79,7 @@ interface ProviderSelection {
 /**
  * Calculate remaining free capacity for a provider
  */
-function calculateFreeCapacity(
-  config: ServiceProviderConfig,
-  unitsUsed: number,
-): number {
+function calculateFreeCapacity(config: ServiceProviderConfig, unitsUsed: number): number {
   if (config.freeUnitsType === "one_time") {
     return config.oneTimeUnitsRemaining ?? 0;
   }
@@ -102,9 +99,7 @@ async function findProviderWithFreeCapacity(
 
     const usage = await ctx.db
       .query("serviceUsage")
-      .withIndex("by_provider_month", (q) =>
-        q.eq("provider", config.provider).eq("month", month),
-      )
+      .withIndex("by_provider_month", (q) => q.eq("provider", config.provider).eq("month", month))
       .first();
 
     const freeRemaining = calculateFreeCapacity(config, usage?.unitsUsed ?? 0);
@@ -122,9 +117,7 @@ async function findProviderWithFreeCapacity(
 /**
  * Find the cheapest configured provider
  */
-function findCheapestProvider(
-  configs: ServiceProviderConfig[],
-): ProviderSelection | null {
+function findCheapestProvider(configs: ServiceProviderConfig[]): ProviderSelection | null {
   const sorted = configs
     .filter((c) => c.isConfigured)
     .sort((a, b) => a.costPerUnit - b.costPerUnit);
@@ -141,14 +134,10 @@ function findCheapestProvider(
 /**
  * Select the best provider from database configuration
  */
-async function selectProviderFromDatabase(
-  ctx: QueryCtx,
-): Promise<ProviderSelection | null> {
+async function selectProviderFromDatabase(ctx: QueryCtx): Promise<ProviderSelection | null> {
   const configs = await ctx.db
     .query("serviceProviders")
-    .withIndex("by_service_enabled", (q) =>
-      q.eq("serviceType", "email").eq("isEnabled", true),
-    )
+    .withIndex("by_service_enabled", (q) => q.eq("serviceType", "email").eq("isEnabled", true))
     .collect();
 
   // Sort by priority

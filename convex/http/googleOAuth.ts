@@ -41,7 +41,7 @@ const getGoogleOAuthConfig = () => {
   const clientId = getGoogleClientId();
   const clientSecret = getGoogleClientSecret();
 
-  if (!isGoogleOAuthConfigured() || !clientId || !clientSecret) {
+  if (!(isGoogleOAuthConfigured() && clientId && clientSecret)) {
     throw new Error("Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
   }
   return {
@@ -180,17 +180,16 @@ export const handleCallback = httpAction(async (_ctx, request) => {
     // Calculate expiration time
     const expiresAt = expires_in ? Date.now() + expires_in * 1000 : undefined;
 
-    // Store tokens in session storage to be saved by frontend
-    // Note: In production, you'd want to use a secure state parameter
-    // and authenticate the user properly before saving tokens
-    const _connectionData = {
+    // Connection data to pass to the frontend
+    const connectionData = {
       providerAccountId: email,
       accessToken: access_token,
       refreshToken: refresh_token,
       expiresAt,
     };
 
-    // Return success page
+    // Return success page that passes tokens to opener window
+    // The frontend will save these via the authenticated connectGoogle mutation
     return new Response(
       `
       <!DOCTYPE html>
@@ -211,6 +210,13 @@ export const handleCallback = httpAction(async (_ctx, request) => {
             <p><strong>${email}</strong></p>
             <button onclick="window.close()">Close Window</button>
             <script>
+              // Pass tokens to opener window for saving via authenticated mutation
+              if (window.opener) {
+                window.opener.postMessage({
+                  type: 'google-calendar-connected',
+                  data: ${JSON.stringify(connectionData)}
+                }, '*');
+              }
               // Auto-close after 3 seconds
               setTimeout(() => {
                 window.opener?.location.reload();

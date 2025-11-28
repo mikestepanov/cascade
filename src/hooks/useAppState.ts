@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Id } from "../../convex/_generated/dataModel";
-import { type AppView } from "../utils/viewHelpers";
+import type { AppView } from "../utils/viewHelpers";
 
 interface AppNavigationState {
   selectedDocumentId: Id<"documents"> | null;

@@ -73,6 +73,44 @@ export default function App() {
   );
 }
 
+// Helper component for onboarding modals
+function OnboardingModals({
+  showWelcomeTour,
+  showProjectWizard,
+  showSampleProjectModal,
+  onWelcomeTourComplete,
+  onProjectWizardComplete,
+  onProjectWizardCancel,
+  onSampleProjectCreate,
+  onStartFromScratch,
+}: {
+  showWelcomeTour: boolean;
+  showProjectWizard: boolean;
+  showSampleProjectModal: boolean;
+  onWelcomeTourComplete: () => void;
+  onProjectWizardComplete: (projectId: Id<"projects">) => void;
+  onProjectWizardCancel: () => void;
+  onSampleProjectCreate: (projectId: Id<"projects">) => void;
+  onStartFromScratch: () => void;
+}) {
+  return (
+    <>
+      {showWelcomeTour && (
+        <WelcomeTour onComplete={onWelcomeTourComplete} onSkip={onWelcomeTourComplete} />
+      )}
+      {showProjectWizard && (
+        <ProjectWizard onComplete={onProjectWizardComplete} onCancel={onProjectWizardCancel} />
+      )}
+      {showSampleProjectModal && (
+        <SampleProjectModal
+          onCreateSampleProject={onSampleProjectCreate}
+          onStartFromScratch={onStartFromScratch}
+        />
+      )}
+    </>
+  );
+}
+
 // Helper component for main content area
 function MainContentView({
   activeView,
@@ -248,40 +286,29 @@ function Content() {
         />
 
         {/* Onboarding Components */}
-        {showWelcomeTour && (
-          <WelcomeTour
-            onComplete={() => setShowWelcomeTour(false)}
-            onSkip={() => setShowWelcomeTour(false)}
-          />
-        )}
-
-        {showProjectWizard && (
-          <ProjectWizard
-            onComplete={(projectId) => {
-              setShowProjectWizard(false);
-              setActiveView("projects");
-              setSelectedProjectId(projectId as Id<"projects">);
-              toast.success("Project created successfully!");
-            }}
-            onCancel={() => setShowProjectWizard(false)}
-          />
-        )}
-
-        {/* Sample Project Offer Modal */}
-        {showSampleProjectModal && (
-          <SampleProjectModal
-            onCreateSampleProject={(projectId) => {
-              setShowSampleProjectModal(false);
-              setShowWelcomeTour(true);
-              setActiveView("projects");
-              setSelectedProjectId(projectId);
-            }}
-            onStartFromScratch={() => {
-              setShowSampleProjectModal(false);
-              setShowProjectWizard(true);
-            }}
-          />
-        )}
+        <OnboardingModals
+          showWelcomeTour={showWelcomeTour}
+          showProjectWizard={showProjectWizard}
+          showSampleProjectModal={showSampleProjectModal}
+          onWelcomeTourComplete={() => setShowWelcomeTour(false)}
+          onProjectWizardComplete={(projectId) => {
+            setShowProjectWizard(false);
+            setActiveView("projects");
+            setSelectedProjectId(projectId);
+            toast.success("Project created successfully!");
+          }}
+          onProjectWizardCancel={() => setShowProjectWizard(false)}
+          onSampleProjectCreate={(projectId) => {
+            setShowSampleProjectModal(false);
+            setShowWelcomeTour(true);
+            setActiveView("projects");
+            setSelectedProjectId(projectId);
+          }}
+          onStartFromScratch={() => {
+            setShowSampleProjectModal(false);
+            setShowProjectWizard(true);
+          }}
+        />
 
         {/* Onboarding Checklist (sticky widget) */}
         <OnboardingChecklist />
