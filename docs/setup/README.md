@@ -23,21 +23,22 @@ pnpm run dev:frontend  # Start Vite
 
 ```bash
 cp .env.example .env.local
+cp bot-service/.env.example bot-service/.env  # if using meeting bot
 ```
 
-Fill in the values in `.env.local`. See `.env.example` for all available options.
+Fill in the values. See **[ENV.md](./ENV.md)** for complete documentation.
 
-**Required:**
-- `SITE_URL` - your app URL (default: `http://localhost:5555`)
+**Quick reference:**
+- `SITE_URL` - your frontend URL (required)
+- `RESEND_API_KEY` - email notifications (optional)
+- `AUTH_GOOGLE_ID/SECRET` - Google sign-in (optional)
 
-**Optional:**
-- Email: `RESEND_API_KEY` for notifications
-- OAuth: `GOOGLE_CLIENT_ID/SECRET` for Google sign-in
-- Analytics: `VITE_PUBLIC_POSTHOG_KEY` for PostHog
+**Important:** Convex vars must be pushed to cloud:
+```bash
+npx convex env set SITE_URL "http://localhost:5555"
+```
 
-**Production:** Update `SITE_URL` to your domain.
-
-**CI/CD:** Get `CONVEX_DEPLOY_KEY` from Convex Dashboard → Settings → Deploy Keys.
+**Full guide:** [ENV.md](./ENV.md) - explains all 3 env sets, SITE_URL vs CONVEX_SITE_URL, and troubleshooting.
 
 ---
 

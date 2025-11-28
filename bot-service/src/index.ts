@@ -76,10 +76,9 @@ app.get("/api/jobs", authMiddleware, async (_req, res) => {
 });
 
 // Webhook for bot to report status updates (called internally)
-// Defense in depth: validate internal key even though this runs on private network
 app.post("/api/internal/status", async (req, res) => {
-  const internalKey = req.headers["x-internal-key"];
-  if (internalKey !== process.env.INTERNAL_API_KEY) {
+  const apiKey = req.headers["x-api-key"];
+  if (apiKey !== process.env.BOT_SERVICE_API_KEY) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
