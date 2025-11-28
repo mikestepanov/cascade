@@ -94,8 +94,8 @@ export const IssueCard = memo(function IssueCard({
       {/* Labels */}
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
-          {issue.labels.slice(0, 3).map((label, index) => (
-            <Badge key={`${label}-${index}`} variant="neutral">
+          {issue.labels.slice(0, 3).map((label) => (
+            <Badge key={label} variant="neutral">
               {label}
             </Badge>
           ))}

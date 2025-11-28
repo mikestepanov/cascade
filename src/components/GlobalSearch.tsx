@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
@@ -171,53 +171,27 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
 }
 
 export function GlobalSearch() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"all" | "issues" | "documents">("all");
-  const [issueOffset, setIssueOffset] = useState(0);
-  const [documentOffset, setDocumentOffset] = useState(0);
-  const LIMIT = 20;
+  const { isOpen, setIsOpen } = useSearchKeyboard();
+  const {
+    query,
+    setQuery,
+    activeTab,
+    setActiveTab,
+    issueOffset,
+    documentOffset,
+    limit,
+    loadMore,
+  } = useSearchPagination(isOpen);
 
   // Search when query changes
   const issueSearchResult = useQuery(
     api.issues.search,
-    query.length >= 2 ? { query, limit: LIMIT, offset: issueOffset } : "skip",
+    query.length >= 2 ? { query, limit, offset: issueOffset } : "skip",
   );
   const documentSearchResult = useQuery(
     api.documents.search,
-    query.length >= 2 ? { query, limit: LIMIT, offset: documentOffset } : "skip",
+    query.length >= 2 ? { query, limit, offset: documentOffset } : "skip",
   );
-
-  // Keyboard shortcut: Cmd+K or Ctrl+K
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setIsOpen(true);
-      }
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // Reset query and offsets when closing
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery("");
-      setIssueOffset(0);
-      setDocumentOffset(0);
-    }
-  }, [isOpen]);
-
-  // Reset offsets when query changes
-  useEffect(() => {
-    setIssueOffset(0);
-    setDocumentOffset(0);
-  }, []);
 
   const issueResults = issueSearchResult?.results ?? [];
   const documentResults = documentSearchResult?.results ?? [];
@@ -234,15 +208,7 @@ export function GlobalSearch() {
   const hasMore = getHasMore(activeTab, issueHasMore, documentHasMore);
 
   const handleLoadMore = () => {
-    const shouldLoadIssues = (activeTab === "all" || activeTab === "issues") && issueHasMore;
-    const shouldLoadDocs = (activeTab === "all" || activeTab === "documents") && documentHasMore;
-
-    if (shouldLoadIssues) {
-      setIssueOffset(issueOffset + LIMIT);
-    }
-    if (shouldLoadDocs) {
-      setDocumentOffset(documentOffset + LIMIT);
-    }
+    loadMore(issueHasMore, documentHasMore);
   };
 
   return (

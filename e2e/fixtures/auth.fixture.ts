@@ -45,7 +45,7 @@ export type AuthFixtures = {
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
   // Use saved storage state (cookies, localStorage) - only if file exists
-  storageState: async ({}, use, testInfo) => {
+  storageState: async (_baseFixtures, use, testInfo) => {
     if (!authStateExists) {
       testInfo.skip(true, "Auth state not found. Run: pnpm e2e:setup-auth");
     }

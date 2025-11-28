@@ -138,7 +138,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     async (e: React.DragEvent, newStatus: string) => {
       e.preventDefault();
 
-      if (!draggedIssue || !issues) return;
+      if (!(draggedIssue && issues)) return;
 
       // Find the dragged issue to get its current state
       const issue = issues.find((i) => i._id === draggedIssue);

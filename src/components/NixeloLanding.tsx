@@ -216,8 +216,8 @@ function FeaturesSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <FeatureCard key={index} {...feature} />
+          {features.map((feature) => (
+            <FeatureCard key={feature.title} {...feature} />
           ))}
         </div>
       </div>
@@ -307,7 +307,7 @@ function WhyChooseSection() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <StatItem key={index} {...stat} delay={index * 150} />
+              <StatItem key={stat.label} {...stat} delay={index * 150} />
             ))}
           </div>
         </div>

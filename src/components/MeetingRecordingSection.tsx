@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
@@ -20,6 +21,76 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+
+// Status badge configuration - extracted to reduce component complexity
+interface StatusBadgeConfig {
+  icon: ReactNode;
+  label: string;
+  className: string;
+}
+
+const STATUS_BADGE_CONFIG: Record<string, StatusBadgeConfig> = {
+  scheduled: {
+    icon: <Clock className="w-3 h-3 mr-1" />,
+    label: "Scheduled",
+    className: "bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200",
+  },
+  joining: {
+    icon: <Play className="w-3 h-3 mr-1 animate-pulse" />,
+    label: "Joining...",
+    className: "bg-status-warning-bg text-status-warning",
+  },
+  recording: {
+    icon: <Mic className="w-3 h-3 mr-1 animate-pulse" />,
+    label: "Recording",
+    className: "bg-status-error-bg text-status-error",
+  },
+  processing: {
+    icon: <LoadingSpinner size="xs" className="mr-1" />,
+    label: "Processing...",
+    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+  },
+  transcribing: {
+    icon: <LoadingSpinner size="xs" className="mr-1" />,
+    label: "Processing...",
+    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+  },
+  summarizing: {
+    icon: <LoadingSpinner size="xs" className="mr-1" />,
+    label: "Processing...",
+    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+  },
+  completed: {
+    icon: <CheckCircle className="w-3 h-3 mr-1" />,
+    label: "Completed",
+    className: "bg-status-success-bg text-status-success",
+  },
+  failed: {
+    icon: <XCircle className="w-3 h-3 mr-1" />,
+    label: "Failed",
+    className: "bg-status-error-bg text-status-error",
+  },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const config = STATUS_BADGE_CONFIG[status];
+  if (!config) return null;
+
+  return (
+    <Badge size="sm" className={config.className}>
+      {config.icon}
+      {config.label}
+    </Badge>
+  );
+}
+
+// Platform detection helper
+function detectPlatform(url: string): "google_meet" | "zoom" | "teams" | "other" {
+  if (url.includes("meet.google.com")) return "google_meet";
+  if (url.includes("zoom.us")) return "zoom";
+  if (url.includes("teams.microsoft.com")) return "teams";
+  return "other";
+}
 
 interface MeetingRecordingSectionProps {
   calendarEventId: Id<"calendarEvents">;
@@ -43,13 +114,6 @@ export function MeetingRecordingSection({
   const recording = useQuery(api.meetingBot.getRecordingByCalendarEvent, { calendarEventId });
   const scheduleRecording = useMutation(api.meetingBot.scheduleRecording);
   const cancelRecording = useMutation(api.meetingBot.cancelRecording);
-
-  const detectPlatform = (url: string): "google_meet" | "zoom" | "teams" | "other" => {
-    if (url.includes("meet.google.com")) return "google_meet";
-    if (url.includes("zoom.us")) return "zoom";
-    if (url.includes("teams.microsoft.com")) return "teams";
-    return "other";
-  };
 
   const handleScheduleRecording = async () => {
     setIsScheduling(true);
@@ -90,63 +154,6 @@ export function MeetingRecordingSection({
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return (
-          <Badge
-            size="sm"
-            className="bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200"
-          >
-            <Clock className="w-3 h-3 mr-1" />
-            Scheduled
-          </Badge>
-        );
-      case "joining":
-        return (
-          <Badge size="sm" className="bg-status-warning-bg text-status-warning">
-            <Play className="w-3 h-3 mr-1 animate-pulse" />
-            Joining...
-          </Badge>
-        );
-      case "recording":
-        return (
-          <Badge size="sm" className="bg-status-error-bg text-status-error">
-            <Mic className="w-3 h-3 mr-1 animate-pulse" />
-            Recording
-          </Badge>
-        );
-      case "processing":
-      case "transcribing":
-      case "summarizing":
-        return (
-          <Badge
-            size="sm"
-            className="bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200"
-          >
-            <LoadingSpinner size="xs" className="mr-1" />
-            Processing...
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge size="sm" className="bg-status-success-bg text-status-success">
-            <CheckCircle className="w-3 h-3 mr-1" />
-            Completed
-          </Badge>
-        );
-      case "failed":
-        return (
-          <Badge size="sm" className="bg-status-error-bg text-status-error">
-            <XCircle className="w-3 h-3 mr-1" />
-            Failed
-          </Badge>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
       <button
@@ -159,7 +166,7 @@ export function MeetingRecordingSection({
           <span className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             AI Meeting Notes
           </span>
-          {recording && getStatusBadge(recording.status)}
+          {recording && <StatusBadge status={recording.status} />}
         </Flex>
         {isExpanded ? (
           <ChevronDown className="w-4 h-4 text-ui-text-tertiary" />
@@ -294,9 +301,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Key Points
           </h4>
           <ul className="space-y-1">
-            {summary.keyPoints.map((point, i) => (
+            {summary.keyPoints.map((point) => (
               <li
-                key={i}
+                key={point}
                 className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"
               >
                 <span className="text-brand-600">•</span>
@@ -314,9 +321,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Action Items
           </h4>
           <ul className="space-y-2">
-            {summary.actionItems.map((item, i) => (
+            {summary.actionItems.map((item) => (
               <li
-                key={i}
+                key={item.description}
                 className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"
               >
                 <Flex justify="between" align="start">
@@ -347,9 +354,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Decisions Made
           </h4>
           <ul className="space-y-1">
-            {summary.decisions.map((decision, i) => (
+            {summary.decisions.map((decision) => (
               <li
-                key={i}
+                key={decision}
                 className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"
               >
                 <CheckCircle className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
