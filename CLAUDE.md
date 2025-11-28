@@ -1,10 +1,10 @@
-# CLAUDE.md - AI Assistant Guide for Cascade
+# CLAUDE.md - AI Assistant Guide for Nixelo
 
-This document provides comprehensive guidance for AI assistants working on the Cascade codebase. It covers the project structure, development conventions, and key patterns to follow.
+This document provides comprehensive guidance for AI assistants working on the Nixelo codebase. It covers the project structure, development conventions, and key patterns to follow.
 
 ## Project Overview
 
-**Cascade** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
+**Nixelo** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
 
 **Key Features:**
 - Real-time collaborative document editing with BlockNote
@@ -62,7 +62,7 @@ This document provides comprehensive guidance for AI assistants working on the C
 ## Codebase Structure
 
 ```
-cascade/
+nixelo/
 ├── src/                          # Frontend React application
 │   ├── components/               # React components
 │   │   ├── Sidebar.tsx          # Document navigation sidebar
@@ -329,7 +329,7 @@ export function ComponentName({ prop }: { prop: Type }) {
 ```bash
 # Clone repository
 git clone <repository-url>
-cd cascade
+cd nixelo
 
 # Install dependencies (use pnpm)
 pnpm install
@@ -595,7 +595,7 @@ await sendEmail({
 
 ### AI Features
 
-Cascade includes two AI systems:
+Nixelo includes two AI systems:
 
 #### Text AI (Project Assistant)
 
@@ -716,7 +716,7 @@ const applicationTables = {
 
 ## Testing
 
-Cascade uses a comprehensive testing strategy with three layers.
+Nixelo uses a comprehensive testing strategy with three layers.
 
 **Full documentation:** [docs/testing/](./docs/testing/)
 

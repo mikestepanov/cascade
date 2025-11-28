@@ -63,7 +63,7 @@ export function NotificationPreferences() {
           Notification Preferences
         </h1>
         <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Control how and when you receive notifications from Cascade
+          Control how and when you receive notifications from Nixelo
         </p>
       </div>
 

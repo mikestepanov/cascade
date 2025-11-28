@@ -33,7 +33,7 @@ describe("WelcomeModal", () => {
   it("should render welcome modal when showWelcome is true", () => {
     render(<WelcomeModal />);
 
-    expect(screen.getByText("Welcome to Cascade!")).toBeInTheDocument();
+    expect(screen.getByText("Welcome to Nixelo!")).toBeInTheDocument();
     expect(
       screen.getByText("Your all-in-one workspace for projects, tasks, and collaboration"),
     ).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe("WelcomeModal", () => {
     render(<WelcomeModal />);
 
     expect(
-      screen.getByText(/We'll create a sample project to help you explore Cascade's features/),
+      screen.getByText(/We'll create a sample project to help you explore Nixelo's features/),
     ).toBeInTheDocument();
     expect(screen.getByText(/You can delete it anytime/)).toBeInTheDocument();
   });
@@ -289,7 +289,7 @@ describe("WelcomeModal", () => {
   it("should render header with correct text size", () => {
     render(<WelcomeModal />);
 
-    const heading = screen.getByText("Welcome to Cascade!");
+    const heading = screen.getByText("Welcome to Nixelo!");
     expect(heading.tagName).toBe("H1");
     expect(heading).toHaveClass("text-3xl");
   });

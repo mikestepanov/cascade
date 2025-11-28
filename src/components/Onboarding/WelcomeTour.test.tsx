@@ -76,7 +76,7 @@ describe("WelcomeTour", () => {
     const steps = lastDriverConfig.steps;
 
     // Check step titles
-    expect(steps[0].popover.title).toBe("Welcome to Cascade! 🎉");
+    expect(steps[0].popover.title).toBe("Welcome to Nixelo! 🎉");
     expect(steps[1].popover.title).toBe("⌘K Command Palette");
     expect(steps[2].popover.title).toBe("Create Your First Project");
     expect(steps[3].popover.title).toBe("Your Dashboard");

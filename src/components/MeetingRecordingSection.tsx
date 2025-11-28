@@ -195,7 +195,7 @@ export function MeetingRecordingSection({
                     Bot scheduled to join
                   </p>
                   <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    "Cascade Notetaker" will join when the meeting starts
+                    "Nixelo Notetaker" will join when the meeting starts
                   </p>
                 </div>
                 <Button onClick={handleCancelRecording} variant="ghost" size="sm">

@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">Cascade</h1>
+  <h1 align="center">Nixelo</h1>
   <p align="center">
     <strong>Open-source Jira + Confluence alternative with real-time collaboration</strong>
   </p>
@@ -14,9 +14,9 @@
 
 ---
 
-## Why Cascade?
+## Why Nixelo?
 
-Tired of paying $10+/user/month for Jira and Confluence? Cascade gives you:
+Tired of paying $10+/user/month for Jira and Confluence? Nixelo gives you:
 
 - **Real-time collaboration** - See changes instantly, no refresh needed
 - **Documents + Issues + Boards** - All in one place, linked together
@@ -61,8 +61,8 @@ Tired of paying $10+/user/month for Jira and Confluence? Cascade gives you:
 
 ```bash
 # Clone
-git clone https://github.com/yourusername/cascade.git
-cd cascade
+git clone https://github.com/yourusername/nixelo.git
+cd nixelo
 
 # Install
 pnpm install
@@ -92,7 +92,7 @@ Open http://localhost:5173 - that's it!
 ## Project Structure
 
 ```
-cascade/
+nixelo/
 ├── src/                  # React frontend
 │   ├── components/       # UI components
 │   ├── hooks/           # Custom hooks
@@ -169,7 +169,7 @@ pnpm test:backend      # Backend tests
 
 ## Comparison
 
-| Feature | Cascade | Jira | Confluence | Linear |
+| Feature | Nixelo | Jira | Confluence | Linear |
 |---------|---------|------|------------|--------|
 | Real-time collab | ✅ | ❌ | ❌ | ✅ |
 | Self-hosted | ✅ | 💰 | 💰 | ❌ |

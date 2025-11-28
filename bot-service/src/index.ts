@@ -32,7 +32,7 @@ app.post("/api/jobs", authMiddleware, async (req, res) => {
       recordingId,
       meetingUrl,
       platform: platform || "google_meet",
-      botName: botName || "Cascade Notetaker",
+      botName: botName || "Nixelo Notetaker",
       callbackUrl,
     });
 

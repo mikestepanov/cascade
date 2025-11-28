@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = localStorage.getItem("cascade-theme");
+    const stored = localStorage.getItem("nixelo-theme");
     return (stored as Theme) || "system";
   });
 
@@ -51,7 +51,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
-    localStorage.setItem("cascade-theme", newTheme);
+    localStorage.setItem("nixelo-theme", newTheme);
     setThemeState(newTheme);
   };
 

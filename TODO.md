@@ -1,4 +1,4 @@
-# Cascade - Product Roadmap
+# Nixelo - Product Roadmap
 
 > **Last Updated:** 2025-11-25
 > **Status:** Ready for Public Launch
@@ -44,13 +44,13 @@
 ## Phase 2: Growth (Post-Launch)
 
 ### Calendar Sync (Google Calendar OAuth works, sync pending)
-- [ ] Two-way sync (calendar ↔ Cascade)
+- [ ] Two-way sync (calendar ↔ Nixelo)
 - [ ] Sync issue due dates to calendar
 - [ ] Outlook Calendar integration
 
 ### Slack Integration
 - [ ] Post issue updates to channels
-- [ ] Create issues from Slack (`/cascade create`)
+- [ ] Create issues from Slack (`/nixelo create`)
 - [ ] Unfurl issue links
 
 ### GitHub Integration
@@ -72,7 +72,7 @@
 
 ## Phase 3: Enterprise
 
-### Cascade Cloud (Hosted SaaS)
+### Nixelo Cloud (Hosted SaaS)
 - [ ] Stripe payment integration
 - [ ] Subscription management
 - [ ] Pricing page

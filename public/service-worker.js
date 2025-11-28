@@ -1,5 +1,5 @@
-// Cascade Service Worker
-const CACHE_NAME = "cascade-v1";
+// Nixelo Service Worker
+const CACHE_NAME = "nixelo-v1";
 const OFFLINE_URL = "/offline.html";
 
 // Assets to cache on install

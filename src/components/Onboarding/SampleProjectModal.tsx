@@ -28,10 +28,10 @@ export function SampleProjectModal({
   };
 
   return (
-    <Modal isOpen={true} onClose={onStartFromScratch} title="Welcome to Cascade! 🎉" maxWidth="md">
+    <Modal isOpen={true} onClose={onStartFromScratch} title="Welcome to Nixelo! 🎉" maxWidth="md">
       <div className="space-y-4">
         <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Would you like us to create a sample project with demo issues to help you explore Cascade?
+          Would you like us to create a sample project with demo issues to help you explore Nixelo?
         </p>
         <Flex gap="md" className="pt-2">
           <Button onClick={handleCreateSample} variant="primary" className="flex-1">

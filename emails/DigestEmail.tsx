@@ -102,8 +102,8 @@ export function DigestEmail({
           {/* CTA */}
           <Section style={ctaSection}>
             <Text style={text}>Ready to respond?</Text>
-            <Button href={`${process.env.APP_URL || "https://cascade.app"}`} style={button}>
-              Open Cascade
+            <Button href={`${process.env.APP_URL || "https://nixelo.app"}`} style={button}>
+              Open Nixelo
             </Button>
           </Section>
         </>

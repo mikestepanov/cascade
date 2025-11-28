@@ -1,6 +1,6 @@
 # Convex Helpers Integration Guide
 
-This guide explains how to use `convex-helpers` in the Cascade project for cleaner, more maintainable backend code.
+This guide explains how to use `convex-helpers` in the Nixelo project for cleaner, more maintainable backend code.
 
 ---
 

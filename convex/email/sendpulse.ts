@@ -30,7 +30,7 @@ export class SendPulseProvider implements EmailProvider {
   constructor() {
     this.clientId = process.env.SENDPULSE_ID || null;
     this.clientSecret = process.env.SENDPULSE_SECRET || null;
-    this.defaultFrom = process.env.SENDPULSE_FROM_EMAIL || "Cascade <notifications@cascade.app>";
+    this.defaultFrom = process.env.SENDPULSE_FROM_EMAIL || "Nixelo <notifications@nixelo.app>";
   }
 
   isConfigured(): boolean {
@@ -103,7 +103,7 @@ export class SendPulseProvider implements EmailProvider {
             text: params.text || "",
             subject: params.subject,
             from: {
-              name: fromParsed.name || "Cascade",
+              name: fromParsed.name || "Nixelo",
               email: fromParsed.email,
             },
             to: toList.map((email) => ({ email })),

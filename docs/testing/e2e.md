@@ -1,6 +1,6 @@
 # E2E Testing with Playwright
 
-End-to-end testing for Cascade using [Playwright](https://playwright.dev/).
+End-to-end testing for Nixelo using [Playwright](https://playwright.dev/).
 
 ## Quick Start
 

@@ -1,6 +1,6 @@
 # Backend Testing with Convex
 
-Backend integration testing for Cascade using [convex-test](https://www.npmjs.com/package/convex-test) and [Vitest](https://vitest.dev/).
+Backend integration testing for Nixelo using [convex-test](https://www.npmjs.com/package/convex-test) and [Vitest](https://vitest.dev/).
 
 ## Quick Start
 

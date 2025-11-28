@@ -107,7 +107,7 @@ export function GoogleCalendarIntegration() {
                 Google Calendar
               </h3>
               <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-                Sync calendar events between Cascade and Google Calendar
+                Sync calendar events between Nixelo and Google Calendar
               </p>
               {calendarConnection && (
                 <Flex direction="column" gap="xs" className="mt-2">
@@ -154,7 +154,7 @@ export function GoogleCalendarIntegration() {
                   Enable Sync
                 </h4>
                 <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-                  Automatically sync events between Cascade and Google Calendar
+                  Automatically sync events between Nixelo and Google Calendar
                 </p>
               </div>
               <Switch
@@ -215,7 +215,7 @@ export function GoogleCalendarIntegration() {
                           Import Only
                         </p>
                         <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                          Only import from Google → Cascade
+                          Only import from Google → Nixelo
                         </p>
                       </div>
                     </Flex>
@@ -240,7 +240,7 @@ export function GoogleCalendarIntegration() {
                           Export Only
                         </p>
                         <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                          Only export from Cascade → Google
+                          Only export from Nixelo → Google
                         </p>
                       </div>
                     </Flex>

@@ -1,6 +1,6 @@
 # Unit Testing with Vitest
 
-Frontend unit testing for Cascade using [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/react).
+Frontend unit testing for Nixelo using [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/react).
 
 ## Quick Start
 

@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
-        name: "Cascade - Project Management",
-        short_name: "Cascade",
+        name: "Nixelo - Project Management",
+        short_name: "Nixelo",
         description: "Collaborative project management platform with real-time editing",
         theme_color: "#3b82f6",
         background_color: "#ffffff",

@@ -20,7 +20,7 @@ export class SendGridProvider implements EmailProvider {
 
   constructor() {
     this.apiKey = process.env.SENDGRID_API_KEY || null;
-    this.defaultFrom = process.env.SENDGRID_FROM_EMAIL || "Cascade <notifications@cascade.app>";
+    this.defaultFrom = process.env.SENDGRID_FROM_EMAIL || "Nixelo <notifications@nixelo.app>";
   }
 
   isConfigured(): boolean {

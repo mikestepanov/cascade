@@ -1,8 +1,8 @@
 {
-  "name": "cascade-meeting-bot",
+  "name": "nixelo-meeting-bot",
   "version": "1.0.0",
   "type": "module",
-  "description": "Meeting bot service for Cascade - joins Google Meet and records audio",
+  "description": "Meeting bot service for Nixelo - joins Google Meet and records audio",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

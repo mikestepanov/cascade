@@ -45,7 +45,7 @@ export function WelcomeModal({ onNavigateToProject }: WelcomeModalProps = {}) {
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">👋</div>
           <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-            Welcome to Cascade!
+            Welcome to Nixelo!
           </h1>
           <p className="text-lg text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Your all-in-one workspace for projects, tasks, and collaboration
@@ -102,7 +102,7 @@ export function WelcomeModal({ onNavigateToProject }: WelcomeModalProps = {}) {
 
         {/* Footer Note */}
         <p className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-6">
-          We'll create a sample project to help you explore Cascade's features.
+          We'll create a sample project to help you explore Nixelo's features.
           <br />
           You can delete it anytime.
         </p>

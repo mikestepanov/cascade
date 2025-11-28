@@ -350,7 +350,7 @@ export const scheduleRecording = mutation({
       title: args.title,
       status: "scheduled",
       scheduledStartTime: args.scheduledStartTime,
-      botName: "Cascade Notetaker",
+      botName: "Nixelo Notetaker",
       createdBy: userId,
       projectId: args.projectId,
       isPublic: args.isPublic ?? false,
@@ -407,7 +407,7 @@ export const startRecordingNow = mutation({
       title: args.title,
       status: "scheduled",
       scheduledStartTime: now,
-      botName: "Cascade Notetaker",
+      botName: "Nixelo Notetaker",
       createdBy: userId,
       projectId: args.projectId,
       isPublic: false,
@@ -692,7 +692,7 @@ export const saveParticipants = mutation({
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw new Error("Recording not found");
 
-    // Try to match participants to Cascade users by email
+    // Try to match participants to Nixelo users by email
     for (const participant of args.participants) {
       let userId: Id<"users"> | undefined;
 
@@ -865,7 +865,7 @@ export const notifyBotService = internalAction({
           recordingId: args.recordingId,
           meetingUrl: args.meetingUrl,
           platform: args.platform,
-          botName: "Cascade Notetaker",
+          botName: "Nixelo Notetaker",
           // Callback URLs for the bot to report status
           callbackUrl: process.env.CONVEX_SITE_URL,
         }),

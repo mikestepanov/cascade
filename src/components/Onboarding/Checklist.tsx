@@ -37,7 +37,7 @@ export function OnboardingChecklist() {
     {
       id: "tour",
       title: "Take the welcome tour",
-      description: "Learn the basics of Cascade",
+      description: "Learn the basics of Nixelo",
       completed: onboarding.tourShown,
     },
     {
@@ -161,7 +161,7 @@ export function OnboardingChecklist() {
                 🎉 Congratulations! You've completed the basics.
               </p>
               <p className="text-xs text-status-success/90 dark:text-status-success/80 mt-1">
-                You're ready to use Cascade! Feel free to dismiss this checklist.
+                You're ready to use Nixelo! Feel free to dismiss this checklist.
               </p>
             </div>
           )}

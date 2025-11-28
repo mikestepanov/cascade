@@ -157,7 +157,7 @@ export const chat = action({
     }
 
     // Generate AI response using Claude Opus 4.5
-    const systemPrompt = `You are a helpful project management assistant for Cascade, a collaborative project management platform.
+    const systemPrompt = `You are a helpful project management assistant for Nixelo, a collaborative project management platform.
 
 ${context ? `Project Context:\n${context}\n\n` : ""}
 

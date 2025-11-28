@@ -126,7 +126,7 @@ async function syncOfflineQueue() {
 // IndexedDB helpers
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("CascadeOfflineDB", 1);
+    const request = indexedDB.open("NixeloOfflineDB", 1);
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);

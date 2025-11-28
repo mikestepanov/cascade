@@ -87,21 +87,21 @@ export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
     {
       key: "c",
       handler: () => {
-        window.dispatchEvent(new CustomEvent("cascade:create-issue"));
+        window.dispatchEvent(new CustomEvent("nixelo:create-issue"));
       },
       description: "Create new issue",
     },
     {
       key: "d",
       handler: () => {
-        window.dispatchEvent(new CustomEvent("cascade:create-document"));
+        window.dispatchEvent(new CustomEvent("nixelo:create-document"));
       },
       description: "Create new document",
     },
     {
       key: "p",
       handler: () => {
-        window.dispatchEvent(new CustomEvent("cascade:create-project"));
+        window.dispatchEvent(new CustomEvent("nixelo:create-project"));
       },
       description: "Create new project",
     },

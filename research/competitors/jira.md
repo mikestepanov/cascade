@@ -286,9 +286,9 @@
 
 ---
 
-## Cascade vs. Jira Comparison
+## Nixelo vs. Jira Comparison
 
-| Feature | Cascade | Jira |
+| Feature | Nixelo | Jira |
 |---------|---------|------|
 | **Real-time updates** | ✅ Sub-100ms | ❌ Must refresh |
 | **Live presence** | ✅ Yes | ❌ No |
@@ -305,7 +305,7 @@
 | **Document integration** | ✅ Built-in | ⚠️ Requires Confluence |
 | **Developer Experience** | ✅ Great (Convex) | ⚠️ OK (complex API) |
 
-**Cascade's Advantages over Jira:**
+**Nixelo's Advantages over Jira:**
 1. ✅ **Real-time collaboration** - Live updates, presence, collaborative editing
 2. ✅ **Speed** - Instant UI vs 2-5 second page loads
 3. ✅ **Simplicity** - Clean, intuitive UI vs cluttered
@@ -314,7 +314,7 @@
 6. ✅ **Open-source** - Self-hostable, no vendor lock-in
 7. ✅ **Better UX** - Keyboard shortcuts, smooth interactions
 
-**Jira's Advantages over Cascade:**
+**Jira's Advantages over Nixelo:**
 1. ✅ **Maturity** - 20+ years vs brand new
 2. ✅ **Features** - Every PM feature imaginable
 3. ✅ **Ecosystem** - 3,000+ apps vs none
@@ -326,7 +326,7 @@
 
 ---
 
-## Key Takeaways for Cascade
+## Key Takeaways for Nixelo
 
 **What to Learn:**
 1. **Workflow customization** - Jira's workflow builder is powerful
@@ -337,7 +337,7 @@
 
 **What to Avoid:**
 1. **Complexity** - Don't make configuration overwhelming
-2. **Slow UI** - Keep Cascade fast and responsive
+2. **Slow UI** - Keep Nixelo fast and responsive
 3. **Bloat** - Focus on core features, not everything
 4. **Poor real-time** - Leverage Convex for instant updates
 5. **Bad UX** - Keep interface clean and intuitive
@@ -350,12 +350,12 @@
   - Poor real-time collaboration
   - Dated UI
 
-- **Cascade's pitch to Jira users:**
+- **Nixelo's pitch to Jira users:**
   > "Get the power of Jira with the speed of Notion. Open-source, real-time collaboration, and a modern UI. No more waiting for pages to load."
 
 ---
 
-## Opportunities for Cascade
+## Opportunities for Nixelo
 
 1. **"Jira for Modern Teams"**
    - Target developer teams tired of Jira's slowness
@@ -364,21 +364,21 @@
 
 2. **Small-to-Medium Teams**
    - Jira is overkill for teams < 50 people
-   - Cascade can win this segment with simplicity
+   - Nixelo can win this segment with simplicity
 
 3. **Startups Leaving Jira**
    - Many startups outgrow Free tier quickly
    - $8.60-$17/user is expensive
-   - Cascade's open-source = compelling alternative
+   - Nixelo's open-source = compelling alternative
 
 4. **Document + Issue Combo**
    - Jira requires separate Confluence ($6-12/user)
-   - Cascade combines both = cost savings
+   - Nixelo combines both = cost savings
    - Better integration than Jira + Confluence
 
 5. **Real-time Collaboration**
    - Jira has NO real-time features
-   - Cascade's live updates are a killer differentiator
+   - Nixelo's live updates are a killer differentiator
    - Remote teams need this
 
 ---
@@ -397,7 +397,7 @@
 
 3. **Feature Completeness**
    - Jira has 20 years of features
-   - Cascade needs to catch up
+   - Nixelo needs to catch up
    - Missing enterprise features
 
 4. **Enterprise Sales**
@@ -411,9 +411,9 @@
 
 **Jira's Position:** Unassailable market leader with massive ecosystem, but suffering from complexity, poor performance, and high costs.
 
-**Cascade's Opportunity:** Target Jira's weaknesses - speed, real-time, simplicity, cost - while building toward enterprise parity over time.
+**Nixelo's Opportunity:** Target Jira's weaknesses - speed, real-time, simplicity, cost - while building toward enterprise parity over time.
 
-**Bottom Line:** Jira is the 800-pound gorilla. Cascade can't compete head-to-head on features or enterprise sales, but can win on **developer experience, speed, and modern collaboration** for small-to-medium teams and open-source advocates.
+**Bottom Line:** Jira is the 800-pound gorilla. Nixelo can't compete head-to-head on features or enterprise sales, but can win on **developer experience, speed, and modern collaboration** for small-to-medium teams and open-source advocates.
 
 ---
 
@@ -427,4 +427,4 @@
 ---
 
 **Last Updated:** 2025-11-18
-**Next Review:** After Cascade hits 1,000 stars
+**Next Review:** After Nixelo hits 1,000 stars

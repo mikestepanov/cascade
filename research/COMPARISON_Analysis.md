@@ -1,14 +1,14 @@
-# Cascade vs. Major Open Source Projects - Competitive Analysis
+# Nixelo vs. Major Open Source Projects - Competitive Analysis
 
 > **Date:** 2025-01-17
-> **Cascade Version:** 1.1 (Active Development)
+> **Nixelo Version:** 1.1 (Active Development)
 > **Comparison Against:** Canvas LMS, Cal.com, AppFlowy, Kimai
 
 ---
 
 ## 📊 Quick Comparison Matrix
 
-| Metric | Cascade | Canvas LMS | Cal.com | AppFlowy | Kimai |
+| Metric | Nixelo | Canvas LMS | Cal.com | AppFlowy | Kimai |
 |--------|---------|------------|---------|----------|-------|
 | **GitHub Stars** | ~New | 5,000+ | 36,000+ | 58,000+ | 3,500+ |
 | **Contributors** | ~New | 415+ | 772+ | 400+ | 100+ |
@@ -25,7 +25,7 @@
 
 ## 🎯 Project Category Analysis
 
-### Cascade's Position
+### Nixelo's Position
 **Category:** Collaborative Project Management (Confluence + Jira hybrid)
 **Closest Competitor in Study:** AppFlowy (workspace/collaboration)
 **Market Niche:** Real-time team collaboration with documents + issues
@@ -34,13 +34,13 @@
 
 | Project | Primary Purpose | Secondary Purpose | Tertiary Purpose |
 |---------|----------------|-------------------|------------------|
-| **Cascade** | Project Management | Document Collaboration | Team Communication |
+| **Nixelo** | Project Management | Document Collaboration | Team Communication |
 | **Canvas LMS** | Education/Learning | Course Management | Student Assessment |
 | **Cal.com** | Meeting Scheduling | Calendar Management | Team Coordination |
 | **AppFlowy** | Knowledge Management | Personal Organization | Team Collaboration |
 | **Kimai** | Time Tracking | Invoicing | Project Budgeting |
 
-**Insight:** Cascade has **no direct competitor** in this comparison set. Each project serves a different primary use case, though there's overlap with AppFlowy in collaboration.
+**Insight:** Nixelo has **no direct competitor** in this comparison set. Each project serves a different primary use case, though there's overlap with AppFlowy in collaboration.
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Project | Architecture | Frontend | Backend | Database | Unique Tech |
 |---------|-------------|----------|---------|----------|-------------|
-| **Cascade** | Serverless | React 19 | Convex | Convex DB | Convex (all-in-one) |
+| **Nixelo** | Serverless | React 19 | Convex | Convex DB | Convex (all-in-one) |
 | **Canvas** | Monolithic | React | Ruby on Rails | PostgreSQL | GraphQL + REST |
 | **Cal.com** | Monorepo | Next.js 14 | Next.js (tRPC) | PostgreSQL | tRPC (type-safe) |
 | **AppFlowy** | Cross-platform | Flutter | Rust | SQLite/Postgres | CRDT sync |
@@ -60,25 +60,25 @@
 
 | Project | Score | Reasoning |
 |---------|-------|-----------|
-| **Cascade** | 10/10 | Cutting-edge: React 19, Convex serverless, real-time by default |
+| **Nixelo** | 10/10 | Cutting-edge: React 19, Convex serverless, real-time by default |
 | **Cal.com** | 9/10 | Modern: Next.js 14, tRPC, Prisma, full TypeScript |
 | **AppFlowy** | 9/10 | Modern: Flutter + Rust, CRDT, cross-platform |
 | **Canvas** | 6/10 | Mature but older: Rails (battle-tested but not cutting-edge) |
 | **Kimai** | 5/10 | Traditional: Symfony 6 (solid but PHP/MVC is dated) |
 
-**Winner: Cascade** - Most modern tech stack, leveraging latest React and serverless architecture
+**Winner: Nixelo** - Most modern tech stack, leveraging latest React and serverless architecture
 
 ### Developer Experience Score (1-10)
 
 | Project | Score | Reasoning |
 |---------|-------|-----------|
-| **Cascade** | 9/10 | Convex = zero backend boilerplate, React 19, TypeScript, instant DB |
+| **Nixelo** | 9/10 | Convex = zero backend boilerplate, React 19, TypeScript, instant DB |
 | **Cal.com** | 9/10 | tRPC type safety, monorepo, great DX with Prisma |
 | **AppFlowy** | 7/10 | Flutter + Rust has learning curve, but powerful |
 | **Canvas** | 6/10 | Rails conventions help, but large codebase, slower iteration |
 | **Kimai** | 6/10 | Symfony is solid, but PHP ecosystem less modern |
 
-**Winner: Tie between Cascade and Cal.com** - Both prioritize DX
+**Winner: Tie between Nixelo and Cal.com** - Both prioritize DX
 
 ---
 
@@ -86,7 +86,7 @@
 
 ### Core Features Matrix
 
-| Feature Category | Cascade | Canvas | Cal.com | AppFlowy | Kimai |
+| Feature Category | Nixelo | Canvas | Cal.com | AppFlowy | Kimai |
 |-----------------|---------|--------|---------|----------|-------|
 | **Documents** | ✅ Rich text + BlockNote | ✅ Pages/content | ❌ No | ✅ Rich text + blocks | ❌ No |
 | **Tasks/Issues** | ✅ Full issue tracking | ✅ Assignments | ❌ No | ✅ Databases (Kanban) | ❌ No |
@@ -104,7 +104,7 @@
 
 ### Feature Depth Analysis
 
-**Cascade's Strengths:**
+**Nixelo's Strengths:**
 - ✅ Real-time collaboration (best-in-class with Convex)
 - ✅ Combined documents + issues (unique in comparison set)
 - ✅ Kanban boards with drag-and-drop
@@ -116,7 +116,7 @@
 - ✅ Analytics dashboard
 - ✅ Email notifications (just completed!)
 
-**Cascade's Gaps (compared to competitors):**
+**Nixelo's Gaps (compared to competitors):**
 - ❌ Mobile apps (Canvas, AppFlowy have native apps)
 - ❌ Calendar integration (Cal.com dominates this)
 - ❌ Offline mode (AppFlowy has this)
@@ -131,7 +131,7 @@
 
 ### GitHub Metrics
 
-| Metric | Cascade | Canvas | Cal.com | AppFlowy | Kimai |
+| Metric | Nixelo | Canvas | Cal.com | AppFlowy | Kimai |
 |--------|---------|--------|---------|----------|-------|
 | **Stars** | ~New project | 5,000+ | 36,000+ | 58,000+ | 3,500+ |
 | **Forks** | ~New | 2,000+ | 8,000+ | 3,800+ | 800+ |
@@ -141,10 +141,10 @@
 | **Weekly Commits** | Active dev | 50-100 | 100-200 | 50-100 | 20-50 |
 
 **Analysis:**
-- **Cascade is brand new** - Just getting started
+- **Nixelo is brand new** - Just getting started
 - **Canvas & Kimai are mature** (10+ years, stable)
 - **Cal.com & AppFlowy are fast-growing** (viral growth, 3-4 years old)
-- **Cascade needs community building** to match
+- **Nixelo needs community building** to match
 
 ### Growth Trajectory Comparison
 
@@ -161,7 +161,7 @@
 - **Canvas:** Established player, institutional adoption
 - **Kimai:** Niche market (time tracking), steady growth
 
-**Cascade's Growth Strategy Should:**
+**Nixelo's Growth Strategy Should:**
 1. **Position clearly:** "Open-source Confluence + Jira alternative"
 2. **Emphasize real-time:** "True real-time collaboration"
 3. **Developer-first:** Great DX with Convex
@@ -175,37 +175,37 @@
 
 | Project | Scalability | Max Users Seen | Bottlenecks |
 |---------|-------------|----------------|-------------|
-| **Cascade** | ⭐⭐⭐⭐⭐ Excellent | Unknown (new) | None (serverless Convex scales) |
+| **Nixelo** | ⭐⭐⭐⭐⭐ Excellent | Unknown (new) | None (serverless Convex scales) |
 | **Canvas** | ⭐⭐⭐⭐ Very Good | Millions | Monolithic Rails can be slow |
 | **Cal.com** | ⭐⭐⭐⭐ Very Good | Thousands | Database queries (Prisma N+1) |
 | **AppFlowy** | ⭐⭐⭐⭐ Very Good | Thousands | CRDT sync with many users |
 | **Kimai** | ⭐⭐⭐ Good | Hundreds | PHP/MySQL traditional limits |
 
-**Winner: Cascade** - Serverless Convex architecture scales automatically
+**Winner: Nixelo** - Serverless Convex architecture scales automatically
 
 ### Real-time Capabilities
 
 | Project | Real-time Sync | Technology | Latency |
 |---------|----------------|------------|---------|
-| **Cascade** | ✅✅✅ Excellent | Convex (built-in) | <100ms |
+| **Nixelo** | ✅✅✅ Excellent | Convex (built-in) | <100ms |
 | **AppFlowy** | ✅✅✅ Excellent | CRDT (Yjs) | <100ms |
 | **Canvas** | ⭐ Limited | Polling/ActionCable | 1-5s |
 | **Cal.com** | ❌ None | No real-time | N/A |
 | **Kimai** | ❌ None | Traditional request/response | N/A |
 
-**Winner: Tie between Cascade and AppFlowy** - Both have true real-time
+**Winner: Tie between Nixelo and AppFlowy** - Both have true real-time
 
 ### Deployment Complexity
 
 | Project | Complexity (1=easy, 10=hard) | Reasoning |
 |---------|------------------------------|-----------|
-| **Cascade** | 2/10 | Deploy to Convex + Vercel (minutes) |
+| **Nixelo** | 2/10 | Deploy to Convex + Vercel (minutes) |
 | **Cal.com** | 3/10 | Docker or Vercel (straightforward) |
 | **AppFlowy** | 5/10 | Mobile builds required, cloud optional |
 | **Kimai** | 6/10 | PHP + MySQL + web server config |
 | **Canvas** | 8/10 | Complex Rails stack, many dependencies |
 
-**Winner: Cascade** - Easiest deployment (Convex handles everything)
+**Winner: Nixelo** - Easiest deployment (Convex handles everything)
 
 ---
 
@@ -215,7 +215,7 @@
 
 | Project | Open Core? | Free Tier | Paid Offering | Price Point |
 |---------|-----------|-----------|---------------|-------------|
-| **Cascade** | TBD | TBD | TBD | TBD |
+| **Nixelo** | TBD | TBD | TBD | TBD |
 | **Canvas** | ❌ Pure open-source | 100% free (self-host) | Instructure Cloud | Enterprise ($$$) |
 | **Cal.com** | ✅ Yes | 99% free | Cal.com Cloud + Enterprise | $12-29/user/mo |
 | **AppFlowy** | ✅ Yes (cloud) | 100% free (app) | AppFlowy Cloud | TBD |
@@ -243,7 +243,7 @@
 - Paid plugins (€10-50 each)
 - Professional support
 
-**Recommended for Cascade:**
+**Recommended for Nixelo:**
 1. **Open Core Model** (like Cal.com/Kimai)
    - Free: Core features, unlimited self-hosting
    - Paid: Hosted cloud, enterprise features (SSO, SCIM, SLA)
@@ -272,7 +272,7 @@
 - ClickUp (freemium, $7-12/user/month)
 - Asana (freemium, $10.99-24.99/user/month)
 
-**Cascade's Unique Value Proposition:**
+**Nixelo's Unique Value Proposition:**
 1. **Only open-source Jira + Confluence hybrid**
 2. **Real-time collaboration** (better than Jira/Confluence)
 3. **Modern tech stack** (Convex/React 19)
@@ -280,9 +280,9 @@
 5. **No vendor lock-in**
 6. **Developer-friendly** (API-first, great DX)
 
-### Market Gaps Cascade Fills
+### Market Gaps Nixelo Fills
 
-| Gap | Current Solutions | Cascade Advantage |
+| Gap | Current Solutions | Nixelo Advantage |
 |-----|-------------------|-------------------|
 | Open-source project management | Taiga, Plane | Better real-time, modern stack |
 | Real-time Jira alternative | None | Instant updates, live presence |
@@ -291,7 +291,7 @@
 
 ---
 
-## 🚦 Where Cascade Stands: SWOT Analysis
+## 🚦 Where Nixelo Stands: SWOT Analysis
 
 ### Strengths ✅
 
@@ -391,7 +391,7 @@
 
 ### Overall Completeness (vs. mature competitors)
 
-| Category | Cascade % | Notes |
+| Category | Nixelo % | Notes |
 |----------|-----------|-------|
 | **Core PM Features** | 85% | Missing: Resource management, timelines, dependencies |
 | **Collaboration** | 90% | Missing: Video calls, screen sharing |
@@ -409,7 +409,7 @@
 
 ---
 
-## 🎯 Recommended Strategy for Cascade
+## 🎯 Recommended Strategy for Nixelo
 
 ### Phase 1: Launch & Validate (Next 3 months)
 
@@ -475,7 +475,7 @@
    - SLA support
 
 2. **Hosted SaaS**
-   - Launch Cascade Cloud
+   - Launch Nixelo Cloud
    - Pricing: $10/user/month (team), $30/user/month (enterprise)
    - 14-day free trial
 
@@ -490,74 +490,74 @@
 
 ## 📈 Learning from Competitors
 
-### What Cal.com Did Right (apply to Cascade)
+### What Cal.com Did Right (apply to Nixelo)
 
 1. **Developer-first marketing**
    - "API-driven", "Self-hostable", "Open-source"
    - Resonated with devs
-   - Cascade should do this too
+   - Nixelo should do this too
 
 2. **Clear positioning**
    - "Open-source Calendly alternative"
    - Simple, memorable
-   - Cascade = "Open-source Linear + Notion for teams"
+   - Nixelo = "Open-source Linear + Notion for teams"
 
 3. **Active community engagement**
    - 772 contributors!
    - Responsive to issues/PRs
-   - Cascade needs to welcome contributors
+   - Nixelo needs to welcome contributors
 
 4. **Open core model**
    - 99% free, 1% enterprise = perfect balance
    - Users feel good, enterprises pay
-   - Cascade should copy this exactly
+   - Nixelo should copy this exactly
 
 ### What AppFlowy Did Right
 
 1. **Privacy narrative**
    - "100% control of your data"
    - "No vendor lock-in"
-   - Cascade should emphasize self-hosting
+   - Nixelo should emphasize self-hosting
 
 2. **Notion alternative positioning**
    - Clear target (Notion users)
    - Feature parity focus
-   - Cascade = "Jira + Confluence alternative"
+   - Nixelo = "Jira + Confluence alternative"
 
 3. **Cross-platform from day 1**
    - Flutter made this possible
    - Mobile = huge advantage
-   - Cascade should prioritize mobile (PWA first, native later)
+   - Nixelo should prioritize mobile (PWA first, native later)
 
 4. **Fast iteration**
    - Weekly releases
    - Community feature requests
-   - Cascade should ship fast
+   - Nixelo should ship fast
 
 ### What Kimai Did Right
 
 1. **Niche focus**
    - Best time tracking for agencies
    - Not trying to be everything
-   - Cascade should own "real-time team collaboration"
+   - Nixelo should own "real-time team collaboration"
 
 2. **Plugin ecosystem**
    - Paid plugins = revenue
    - Community extensions
-   - Cascade could add plugin system (Phase 3)
+   - Nixelo could add plugin system (Phase 3)
 
 3. **Affordable SaaS**
    - €5/user/month is accessible
    - Competes with paid tools
-   - Cascade should price similarly ($8-12/user)
+   - Nixelo should price similarly ($8-12/user)
 
 ---
 
-## 🏆 Final Verdict: Where Cascade Stands
+## 🏆 Final Verdict: Where Nixelo Stands
 
 ### Overall Ranking (1-5, 5=best)
 
-| Dimension | Cascade Score | vs. Avg Competitor |
+| Dimension | Nixelo Score | vs. Avg Competitor |
 |-----------|---------------|-------------------|
 | **Tech Stack Modernity** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
 | **Real-time Capabilities** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
@@ -574,7 +574,7 @@
 
 ### Interpretation
 
-**Cascade is a strong MVP with best-in-class technology, but needs:**
+**Nixelo is a strong MVP with best-in-class technology, but needs:**
 1. ✅ **Technical Foundation** - EXCELLENT (5/5)
 2. ⚠️ **Features** - GOOD but incomplete (3/5)
 3. ❌ **Community** - NON-EXISTENT (1/5)
@@ -595,9 +595,9 @@
 
 ---
 
-## 💎 Cascade's Unique Advantages
+## 💎 Nixelo's Unique Advantages
 
-**What Cascade has that NO competitor has:**
+**What Nixelo has that NO competitor has:**
 
 1. **Real-time Jira + Confluence**
    - Live updates on issues
@@ -621,7 +621,7 @@
 
 ---
 
-**Conclusion:** Cascade has exceptional technology and a clear market gap, but needs users and iteration. Launch soon, build community, and leverage the real-time collaboration advantage that no competitor can match.
+**Conclusion:** Nixelo has exceptional technology and a clear market gap, but needs users and iteration. Launch soon, build community, and leverage the real-time collaboration advantage that no competitor can match.
 
 ---
 

@@ -203,7 +203,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
         <body>
           <div class="success">
             <h1>✅ Connected Successfully</h1>
-            <p>Your Google Calendar has been connected to Cascade.</p>
+            <p>Your Google Calendar has been connected to Nixelo.</p>
             <p><strong>${email}</strong></p>
             <button onclick="window.close()">Close Window</button>
             <script>
@@ -295,9 +295,9 @@ export const triggerSync = httpAction(async (ctx, _request) => {
     const data = await eventsResponse.json();
     const events = data.items || [];
 
-    // Transform Google Calendar events to Cascade format
+    // Transform Google Calendar events to Nixelo format
     // Filter out events with missing or invalid dates
-    const cascadeEvents = events
+    const nixeloEvents = events
       .filter((event: GoogleCalendarEvent) => {
         const hasValidStart = event.start?.dateTime || event.start?.date;
         const hasValidEnd = event.end?.dateTime || event.end?.date;
@@ -314,10 +314,10 @@ export const triggerSync = httpAction(async (ctx, _request) => {
         attendees: event.attendees?.map((a: GoogleCalendarAttendee) => a.email) || [],
       }));
 
-    // Sync events to Cascade
+    // Sync events to Nixelo
     const result = await ctx.runMutation(api.googleCalendar.syncFromGoogle, {
       connectionId: connection._id,
-      events: cascadeEvents,
+      events: nixeloEvents,
     });
 
     return new Response(

@@ -113,7 +113,7 @@ The infrastructure is complete. You can now add tests for other modules:
 ## Files Created 📁
 
 ```
-cascade/
+nixelo/
 ├── vitest.convex.config.ts          # Convex test configuration
 ├── convex/
 │   ├── testSetup.ts                 # Module exports for testing

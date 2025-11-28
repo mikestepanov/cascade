@@ -14,7 +14,7 @@ export class ResendProvider implements EmailProvider {
 
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
-    this.defaultFrom = process.env.RESEND_FROM_EMAIL || "Cascade <notifications@cascade.app>";
+    this.defaultFrom = process.env.RESEND_FROM_EMAIL || "Nixelo <notifications@nixelo.app>";
 
     if (apiKey) {
       this.client = new Resend(apiKey);

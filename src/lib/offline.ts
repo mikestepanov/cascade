@@ -1,6 +1,6 @@
 // Offline state management and IndexedDB wrapper
 
-const DB_NAME = "CascadeOfflineDB";
+const DB_NAME = "NixeloOfflineDB";
 const DB_VERSION = 1;
 
 export interface OfflineMutation {

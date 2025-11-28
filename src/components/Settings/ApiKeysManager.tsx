@@ -56,7 +56,7 @@ export function ApiKeysManager() {
               No API keys yet
             </h4>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-              Generate your first API key to access Cascade programmatically
+              Generate your first API key to access Nixelo programmatically
             </p>
             <Button
               variant="primary"
@@ -440,7 +440,7 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
                 </p>
                 <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
                   curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
-                  https://cascade.app/api/issues
+                  https://nixelo.app/api/issues
                 </code>
               </div>
 

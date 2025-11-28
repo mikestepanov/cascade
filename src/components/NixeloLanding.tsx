@@ -92,7 +92,7 @@ function NavHeader({ onGetStarted }: { onGetStarted: () => void }) {
       <nav className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
           <NixeloLogo />
-          <span className="text-xl font-semibold text-white">cascade</span>
+          <span className="text-xl font-semibold text-white">nixelo</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8">
@@ -299,7 +299,7 @@ function WhyChooseSection() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Cascade?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Nixelo?</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
               Join thousands of teams who have transformed their workflow
             </p>
@@ -367,7 +367,7 @@ function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <NixeloLogo />
-              <span className="text-xl font-semibold">cascade</span>
+              <span className="text-xl font-semibold">nixelo</span>
             </div>
             <p className="text-gray-400 text-sm max-w-xs">
               Revolutionizing project management with intelligent automation and seamless
@@ -417,7 +417,7 @@ function Footer() {
         </div>
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">© 2025 Cascade. All rights reserved.</p>
+          <p className="text-gray-500 text-sm">© 2025 Nixelo. All rights reserved.</p>
           <div className="flex gap-6">
             <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
               Privacy
@@ -556,11 +556,11 @@ function CircuitFlowLines() {
 function NixeloLogo({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="url(#cascadeGrad)" />
+      <rect width="32" height="32" rx="8" fill="url(#nixeloGrad)" />
       <path d="M10 12L16 8L22 12V20L16 24L10 20V12Z" stroke="white" strokeWidth="1.5" fill="none" />
       <circle cx="16" cy="16" r="2.5" fill="white" />
       <defs>
-        <linearGradient id="cascadeGrad" x1="0" y1="0" x2="32" y2="32">
+        <linearGradient id="nixeloGrad" x1="0" y1="0" x2="32" y2="32">
           <stop stopColor="#06b6d4" />
           <stop offset="1" stopColor="#8b5cf6" />
         </linearGradient>

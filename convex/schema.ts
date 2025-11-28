@@ -678,7 +678,7 @@ const applicationTables = {
     .index("by_repo_full_name", ["repoFullName"]),
 
   githubPullRequests: defineTable({
-    issueId: v.optional(v.id("issues")), // Linked Cascade issue
+    issueId: v.optional(v.id("issues")), // Linked Nixelo issue
     projectId: v.id("projects"),
     repositoryId: v.id("githubRepositories"),
     // GitHub PR data
@@ -1238,7 +1238,7 @@ const applicationTables = {
     actualStartTime: v.optional(v.number()), // When recording actually started
     actualEndTime: v.optional(v.number()), // When recording ended
     // Bot details
-    botName: v.string(), // Display name: "Cascade Notetaker"
+    botName: v.string(), // Display name: "Nixelo Notetaker"
     botJoinedAt: v.optional(v.number()),
     botLeftAt: v.optional(v.number()),
     // Permissions
@@ -1267,7 +1267,7 @@ const applicationTables = {
         startTime: v.number(), // Seconds from start
         endTime: v.number(),
         speaker: v.optional(v.string()), // Speaker name/label if diarization available
-        speakerUserId: v.optional(v.id("users")), // Matched Cascade user (if identified)
+        speakerUserId: v.optional(v.id("users")), // Matched Nixelo user (if identified)
         text: v.string(),
         confidence: v.optional(v.number()), // Whisper confidence score
       }),
@@ -1299,10 +1299,10 @@ const applicationTables = {
       v.object({
         description: v.string(),
         assignee: v.optional(v.string()), // Name mentioned in meeting
-        assigneeUserId: v.optional(v.id("users")), // Matched Cascade user
+        assigneeUserId: v.optional(v.id("users")), // Matched Nixelo user
         dueDate: v.optional(v.string()), // Due date if mentioned
         priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
-        issueCreated: v.optional(v.id("issues")), // If converted to Cascade issue
+        issueCreated: v.optional(v.id("issues")), // If converted to Nixelo issue
       }),
     ),
     // Decisions made
@@ -1345,7 +1345,7 @@ const applicationTables = {
     // Participant info
     displayName: v.string(), // Name as shown in meeting
     email: v.optional(v.string()), // Email if available
-    userId: v.optional(v.id("users")), // Matched Cascade user
+    userId: v.optional(v.id("users")), // Matched Nixelo user
     // Participation stats
     joinedAt: v.optional(v.number()),
     leftAt: v.optional(v.number()),
@@ -1353,7 +1353,7 @@ const applicationTables = {
     speakingPercentage: v.optional(v.number()), // % of meeting they spoke
     // Role
     isHost: v.boolean(),
-    isExternal: v.boolean(), // Not a Cascade user
+    isExternal: v.boolean(), // Not a Nixelo user
   })
     .index("by_recording", ["recordingId"])
     .index("by_user", ["userId"])
@@ -1477,7 +1477,7 @@ export default defineSchema({
     phoneVerificationTime: v.optional(v.number()),
     image: v.optional(v.string()),
     isAnonymous: v.optional(v.boolean()),
-    // Custom fields for Cascade
+    // Custom fields for Nixelo
     defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
     timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
     bio: v.optional(v.string()), // User bio/description

@@ -175,14 +175,14 @@ export class GoogleMeetBot {
     this.audioFileStream = fs.createWriteStream(this.audioFilePath);
 
     // Expose function to receive audio chunks from browser
-    await this.page.exposeFunction("__cascadeSendAudioChunk", (chunk: number[]) => {
+    await this.page.exposeFunction("__nixeloSendAudioChunk", (chunk: number[]) => {
       if (this.audioFileStream && chunk.length > 0) {
         this.audioFileStream.write(Buffer.from(chunk));
       }
     });
 
     // Expose function to signal recording stopped
-    await this.page.exposeFunction("__cascadeRecordingStopped", () => {
+    await this.page.exposeFunction("__nixeloRecordingStopped", () => {
       if (this.audioFileStream) {
         this.audioFileStream.end();
         this.audioFileStream = null;
@@ -191,20 +191,20 @@ export class GoogleMeetBot {
 
     // Inject audio capture script with MediaRecorder
     await this.page.evaluate(() => {
-      // Extend window interface for Cascade audio capture
-      interface CascadeWindow extends Window {
-        __cascadeAudioStream?: MediaStream;
-        __cascadeAudioContext?: AudioContext;
-        __cascadeMediaRecorder?: MediaRecorder;
-        __cascadeConnectedElements?: WeakSet<HTMLMediaElement>;
-        __cascadeSendAudioChunk?: (chunk: number[]) => void;
-        __cascadeRecordingStopped?: () => void;
-        __cascadeStopRecording?: () => void;
+      // Extend window interface for Nixelo audio capture
+      interface NixeloWindow extends Window {
+        __nixeloAudioStream?: MediaStream;
+        __nixeloAudioContext?: AudioContext;
+        __nixeloMediaRecorder?: MediaRecorder;
+        __nixeloConnectedElements?: WeakSet<HTMLMediaElement>;
+        __nixeloSendAudioChunk?: (chunk: number[]) => void;
+        __nixeloRecordingStopped?: () => void;
+        __nixeloStopRecording?: () => void;
       }
-      const cascadeWindow = window as CascadeWindow;
+      const nixeloWindow = window as NixeloWindow;
 
       // Track which elements we've already connected
-      cascadeWindow.__cascadeConnectedElements = new WeakSet();
+      nixeloWindow.__nixeloConnectedElements = new WeakSet();
 
       // Create audio context and destination for mixing
       const audioContext = new AudioContext();
@@ -216,14 +216,14 @@ export class GoogleMeetBot {
         audioElements.forEach((element) => {
           const mediaElement = element as HTMLMediaElement;
           // Skip if already connected
-          if (cascadeWindow.__cascadeConnectedElements?.has(mediaElement)) {
+          if (nixeloWindow.__nixeloConnectedElements?.has(mediaElement)) {
             return;
           }
           try {
             const source = audioContext.createMediaElementSource(mediaElement);
             source.connect(destination);
             source.connect(audioContext.destination); // Also play locally
-            cascadeWindow.__cascadeConnectedElements?.add(mediaElement);
+            nixeloWindow.__nixeloConnectedElements?.add(mediaElement);
           } catch {
             // Element might already be connected or not ready
           }
@@ -238,8 +238,8 @@ export class GoogleMeetBot {
       observer.observe(document.body, { childList: true, subtree: true });
 
       // Store references
-      cascadeWindow.__cascadeAudioStream = destination.stream;
-      cascadeWindow.__cascadeAudioContext = audioContext;
+      nixeloWindow.__nixeloAudioStream = destination.stream;
+      nixeloWindow.__nixeloAudioContext = audioContext;
 
       // Create MediaRecorder to capture the mixed audio
       const mediaRecorder = new MediaRecorder(destination.stream, {
@@ -248,25 +248,25 @@ export class GoogleMeetBot {
 
       // Send chunks to Node.js as they become available
       mediaRecorder.ondataavailable = async (event) => {
-        if (event.data.size > 0 && cascadeWindow.__cascadeSendAudioChunk) {
+        if (event.data.size > 0 && nixeloWindow.__nixeloSendAudioChunk) {
           const arrayBuffer = await event.data.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);
-          cascadeWindow.__cascadeSendAudioChunk(Array.from(uint8Array));
+          nixeloWindow.__nixeloSendAudioChunk(Array.from(uint8Array));
         }
       };
 
       mediaRecorder.onstop = () => {
-        if (cascadeWindow.__cascadeRecordingStopped) {
-          cascadeWindow.__cascadeRecordingStopped();
+        if (nixeloWindow.__nixeloRecordingStopped) {
+          nixeloWindow.__nixeloRecordingStopped();
         }
       };
 
       // Start recording with 1-second chunks
       mediaRecorder.start(1000);
-      cascadeWindow.__cascadeMediaRecorder = mediaRecorder;
+      nixeloWindow.__nixeloMediaRecorder = mediaRecorder;
 
       // Expose stop function
-      cascadeWindow.__cascadeStopRecording = () => {
+      nixeloWindow.__nixeloStopRecording = () => {
         if (mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
         }
@@ -286,12 +286,12 @@ export class GoogleMeetBot {
 
     try {
       await this.page.evaluate(() => {
-        interface CascadeWindow extends Window {
-          __cascadeStopRecording?: () => void;
+        interface NixeloWindow extends Window {
+          __nixeloStopRecording?: () => void;
         }
-        const cascadeWindow = window as CascadeWindow;
-        if (cascadeWindow.__cascadeStopRecording) {
-          cascadeWindow.__cascadeStopRecording();
+        const nixeloWindow = window as NixeloWindow;
+        if (nixeloWindow.__nixeloStopRecording) {
+          nixeloWindow.__nixeloStopRecording();
         }
       });
     } catch {

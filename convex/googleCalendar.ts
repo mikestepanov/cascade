@@ -213,7 +213,7 @@ export const listConnections = query({
   },
 });
 
-// Sync Google Calendar events to Cascade (called by scheduled action)
+// Sync Google Calendar events to Nixelo (called by scheduled action)
 // This would be implemented with Google Calendar API calls in production
 export const syncFromGoogle = mutation({
   args: {

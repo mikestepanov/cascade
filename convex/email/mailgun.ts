@@ -21,7 +21,7 @@ export class MailgunProvider implements EmailProvider {
   constructor() {
     this.apiKey = process.env.MAILGUN_API_KEY || null;
     this.domain = process.env.MAILGUN_DOMAIN || null;
-    this.defaultFrom = process.env.MAILGUN_FROM_EMAIL || "Cascade <notifications@cascade.app>";
+    this.defaultFrom = process.env.MAILGUN_FROM_EMAIL || "Nixelo <notifications@nixelo.app>";
     this.region = (process.env.MAILGUN_REGION || "us") as "us" | "eu";
   }
 

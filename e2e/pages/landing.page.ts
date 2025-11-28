@@ -31,7 +31,7 @@ export class LandingPage extends BasePage {
     super(page);
 
     // Navigation
-    this.navLogo = page.locator("nav").getByText("cascade");
+    this.navLogo = page.locator("nav").getByText("nixelo");
     this.navLoginButton = page.locator("nav button", { hasText: /^login$/i });
     this.navGetStartedButton = page.locator("nav button", {
       hasText: /get started/i,

@@ -1,6 +1,6 @@
 # Testing Overview
 
-Cascade uses a comprehensive testing strategy with three testing layers: unit tests, backend integration tests, and end-to-end (E2E) tests.
+Nixelo uses a comprehensive testing strategy with three testing layers: unit tests, backend integration tests, and end-to-end (E2E) tests.
 
 ## Testing Stack
 
@@ -57,7 +57,7 @@ pnpm e2e:debug         # Debug with inspector
 ## Directory Structure
 
 ```
-cascade/
+nixelo/
 ├── src/
 │   ├── components/
 │   │   ├── MyComponent.tsx
@@ -129,7 +129,7 @@ page.getByTestId("submit-button")
 
 ## AI-Assisted Testing (MCP)
 
-Cascade includes the [Playwright MCP Server](https://github.com/microsoft/playwright-mcp) for AI-assisted testing with Claude Code.
+Nixelo includes the [Playwright MCP Server](https://github.com/microsoft/playwright-mcp) for AI-assisted testing with Claude Code.
 
 **Configuration:** `.claude/mcp.json`
 

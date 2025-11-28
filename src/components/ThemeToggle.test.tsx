@@ -73,7 +73,7 @@ describe("ThemeToggle", () => {
       const lightButton = screen.getByRole("button", { name: /light theme/i });
       await user.click(lightButton);
 
-      expect(localStorage.getItem("cascade-theme")).toBe("light");
+      expect(localStorage.getItem("nixelo-theme")).toBe("light");
     });
 
     it("should switch to dark theme when dark button is clicked", async () => {
@@ -83,18 +83,18 @@ describe("ThemeToggle", () => {
       const darkButton = screen.getByRole("button", { name: /dark theme/i });
       await user.click(darkButton);
 
-      expect(localStorage.getItem("cascade-theme")).toBe("dark");
+      expect(localStorage.getItem("nixelo-theme")).toBe("dark");
     });
 
     it("should switch to system theme when system button is clicked", async () => {
       const user = userEvent.setup();
-      localStorage.setItem("cascade-theme", "dark");
+      localStorage.setItem("nixelo-theme", "dark");
       renderWithTheme();
 
       const systemButton = screen.getByRole("button", { name: /system theme/i });
       await user.click(systemButton);
 
-      expect(localStorage.getItem("cascade-theme")).toBe("system");
+      expect(localStorage.getItem("nixelo-theme")).toBe("system");
     });
 
     it("should highlight the currently selected theme button", async () => {
@@ -116,7 +116,7 @@ describe("ThemeToggle", () => {
       );
 
       // Verify localStorage was updated
-      expect(localStorage.getItem("cascade-theme")).toBe("dark");
+      expect(localStorage.getItem("nixelo-theme")).toBe("dark");
     });
   });
 
@@ -125,14 +125,14 @@ describe("ThemeToggle", () => {
       renderWithTheme();
 
       // System should be the default
-      expect(localStorage.getItem("cascade-theme")).toBeNull();
+      expect(localStorage.getItem("nixelo-theme")).toBeNull();
     });
 
     it("should use stored theme from localStorage", () => {
-      localStorage.setItem("cascade-theme", "dark");
+      localStorage.setItem("nixelo-theme", "dark");
       renderWithTheme();
 
-      expect(localStorage.getItem("cascade-theme")).toBe("dark");
+      expect(localStorage.getItem("nixelo-theme")).toBe("dark");
     });
   });
 
@@ -181,7 +181,7 @@ describe("ThemeToggle", () => {
   describe("Visual Feedback", () => {
     it("should apply shadow to selected button", async () => {
       const user = userEvent.setup();
-      localStorage.setItem("cascade-theme", "light");
+      localStorage.setItem("nixelo-theme", "light");
 
       const { rerender } = renderWithTheme();
 
@@ -225,7 +225,7 @@ describe("ThemeProvider Integration", () => {
   it("should remove dark class when light theme is selected", async () => {
     const user = userEvent.setup();
     document.documentElement.classList.add("dark");
-    localStorage.setItem("cascade-theme", "dark");
+    localStorage.setItem("nixelo-theme", "dark");
 
     renderWithTheme();
 
