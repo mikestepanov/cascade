@@ -7,6 +7,12 @@
   },
   "overrides": [
     {
+      "includes": ["convex/_generated/**"],
+      "linter": { "enabled": false },
+      "formatter": { "enabled": false },
+      "assist": { "enabled": false }
+    },
+    {
       "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "e2e/**"],
       "linter": {
         "rules": {
