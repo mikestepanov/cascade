@@ -12,7 +12,7 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import schema from "./schema";
-import { modules } from "./testSetup";
+import { modules } from "./testSetup.test-helper";
 import { createTestUser } from "./testUtils";
 
 describe("Authentication", () => {

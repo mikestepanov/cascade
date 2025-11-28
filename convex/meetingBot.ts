@@ -866,8 +866,8 @@ export const notifyBotService = internalAction({
           meetingUrl: args.meetingUrl,
           platform: args.platform,
           botName: "Nixelo Notetaker",
-          // Callback URLs for the bot to report status
-          callbackUrl: getSiteUrl(),
+          // Callback URLs for the bot to report status (must be Convex backend URL)
+          callbackUrl: process.env.CONVEX_SITE_URL,
         }),
       });
 

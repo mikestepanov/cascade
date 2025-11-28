@@ -6,7 +6,7 @@ import type { Id } from "./_generated/dataModel";
 import type { ProjectRole } from "./rbac";
 import { hasMinimumRole } from "./rbac";
 import schema from "./schema";
-import { modules } from "./testSetup";
+import { modules } from "./testSetup.test-helper";
 import { addProjectMember, createTestProject, createTestUser } from "./testUtils";
 
 describe("RBAC Utilities", () => {

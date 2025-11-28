@@ -1,6 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
-import { getSiteUrl, isGoogleOAuthConfigured, requireEnv } from "../lib/env";
+import { isGoogleOAuthConfigured, requireEnv } from "../lib/env";
 
 /**
  * Google OAuth Integration
@@ -44,7 +44,8 @@ const getGoogleOAuthConfig = () => {
   return {
     clientId: requireEnv("GOOGLE_CLIENT_ID"),
     clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
-    redirectUri: `${getSiteUrl()}/google/callback`,
+    // Must use CONVEX_SITE_URL - this is a Convex HTTP action, not a frontend route
+    redirectUri: `${process.env.CONVEX_SITE_URL}/google/callback`,
     scopes: [
       "https://www.googleapis.com/auth/calendar",
       "https://www.googleapis.com/auth/calendar.events",
