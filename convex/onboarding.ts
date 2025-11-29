@@ -48,18 +48,32 @@ export const updateOnboardingStatus = mutation({
         updatedAt: Date.now(),
       });
     } else {
-      // Create initial onboarding record
-      await ctx.db.insert("userOnboarding", {
-        userId,
-        onboardingCompleted: args.onboardingCompleted ?? false,
-        onboardingStep: args.onboardingStep ?? 0,
-        sampleProjectCreated: args.sampleProjectCreated ?? false,
-        tourShown: args.tourShown ?? false,
-        wizardCompleted: args.wizardCompleted ?? false,
-        checklistDismissed: args.checklistDismissed ?? false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          ...args,
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Create initial onboarding record
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: args.onboardingCompleted ?? false,
+          onboardingStep: args.onboardingStep ?? 0,
+          sampleProjectCreated: args.sampleProjectCreated ?? false,
+          tourShown: args.tourShown ?? false,
+          wizardCompleted: args.wizardCompleted ?? false,
+          checklistDismissed: args.checklistDismissed ?? false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
     }
   },
 });
@@ -612,20 +626,36 @@ export const setOnboardingPersona = mutation({
         updatedAt: Date.now(),
       });
     } else {
-      await ctx.db.insert("userOnboarding", {
-        userId,
-        onboardingCompleted: false,
-        onboardingStep: 1,
-        sampleProjectCreated: false,
-        tourShown: false,
-        wizardCompleted: false,
-        checklistDismissed: false,
-        onboardingPersona: args.persona,
-        wasInvited,
-        invitedByName,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          onboardingPersona: args.persona,
+          wasInvited,
+          invitedByName,
+          updatedAt: Date.now(),
+        });
+      } else {
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: false,
+          onboardingStep: 1,
+          sampleProjectCreated: false,
+          tourShown: false,
+          wizardCompleted: false,
+          checklistDismissed: false,
+          onboardingPersona: args.persona,
+          wasInvited,
+          invitedByName,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
     }
 
     return { success: true };
@@ -653,18 +683,33 @@ export const completeOnboardingFlow = mutation({
         updatedAt: Date.now(),
       });
     } else {
-      // Create record if it doesn't exist
-      await ctx.db.insert("userOnboarding", {
-        userId,
-        onboardingCompleted: true,
-        onboardingStep: 99,
-        sampleProjectCreated: false,
-        tourShown: true,
-        wizardCompleted: false,
-        checklistDismissed: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          onboardingCompleted: true,
+          tourShown: true,
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Create record if it doesn't exist
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: true,
+          onboardingStep: 99,
+          sampleProjectCreated: false,
+          tourShown: true,
+          wizardCompleted: false,
+          checklistDismissed: false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
     }
 
     return { success: true };

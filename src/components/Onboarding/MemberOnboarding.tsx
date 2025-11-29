@@ -1,5 +1,5 @@
 import { ArrowLeft, Bell, CheckCircle, Clock, FileText, Kanban } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface MemberOnboardingProps {
   onComplete: () => void;

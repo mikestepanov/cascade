@@ -79,8 +79,8 @@ export function InviteAcceptPage({ token, onAccepted }: InviteAcceptPageProps) {
     );
   }
 
-  // Expired invite
-  if (invite.isExpired || invite.status === "expired") {
+  // Expired invite (isExpired is computed from status === "pending" && expiresAt < now)
+  if (invite.isExpired) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
         <div className="max-w-md w-full text-center">

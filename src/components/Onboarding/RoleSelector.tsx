@@ -1,4 +1,4 @@
-import { User, Users } from "lucide-react";
+import { Check, User, Users } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -51,20 +51,7 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
         </div>
         {selected && (
           <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
-            <svg
-              className="w-4 h-4 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+            <Check className="w-4 h-4 text-white" aria-hidden="true" />
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { FeatureHighlights } from "../components/Onboarding/FeatureHighlights";
@@ -29,13 +29,15 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
 
   // Determine initial step based on data
-  if (inviteStatus !== undefined && onboardingStatus !== undefined && step === "loading") {
-    if (inviteStatus?.wasInvited) {
-      setStep("invited");
-    } else {
-      setStep("role-select");
+  useEffect(() => {
+    if (inviteStatus !== undefined && onboardingStatus !== undefined && step === "loading") {
+      if (inviteStatus?.wasInvited) {
+        setStep("invited");
+      } else {
+        setStep("role-select");
+      }
     }
-  }
+  }, [inviteStatus, onboardingStatus, step]);
 
   const handleRoleSelect = async (persona: "team_lead" | "team_member") => {
     setSelectedPersona(persona);

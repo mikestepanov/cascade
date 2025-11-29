@@ -337,22 +337,28 @@ export const resendInvite = mutation({
       updatedAt: Date.now(),
     });
 
-    // Send email with invite link again
+    // Get project name if project invite
+    let projectName: string | undefined;
+    if (invite.projectId) {
+      const project = await ctx.db.get(invite.projectId);
+      projectName = project?.name;
+    }
+
+    // Send email with invite link again using the shared helper
     const inviteLink = `${getSiteUrl()}/invite/${invite.token}`;
+    const emailContent = buildInviteEmail(
+      inviteLink,
+      !!invite.projectId,
+      projectName,
+      invite.projectRole,
+      invite.role,
+    );
 
     await sendEmail(ctx, {
       to: invite.email,
-      subject: "Invitation to Nixelo",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Invitation Reminder</h2>
-          <p>This is a reminder that you have been invited to join Nixelo.</p>
-          <p>Click the button below to accept your invitation:</p>
-          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
-          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
-        </div>
-      `,
-      text: `You have been invited to join Nixelo. Accept your invitation here: ${inviteLink}`,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
     });
 
     return { success: true };
