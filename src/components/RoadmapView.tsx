@@ -101,7 +101,6 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
   };
 
   const _getTypeIcon = (type: string) => {
-    // Removed - using getTypeIcon from utilities
     switch (type) {
       case "bug":
         return "🐛";
