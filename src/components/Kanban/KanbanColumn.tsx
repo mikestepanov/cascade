@@ -82,6 +82,7 @@ export const KanbanColumn = memo(function KanbanColumn({
             onClick={() => onCreateIssue(state.id)}
             className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
             aria-label={`Add issue to ${state.name}`}
+            {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
           >
             <svg
               aria-hidden="true"

@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { type MutationCtx, mutation, query } from "./_generated/server";
 
 /**
  * Get onboarding status for current user
@@ -346,6 +346,102 @@ export const createSampleProject = mutation({
     });
 
     return projectId;
+  },
+});
+
+/**
+ * Helper: Delete all issues and their related data for a project
+ */
+async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
+  const issues = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+
+  for (const issue of issues) {
+    const comments = await ctx.db
+      .query("issueComments")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id);
+    }
+
+    const activities = await ctx.db
+      .query("issueActivity")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const activity of activities) {
+      await ctx.db.delete(activity._id);
+    }
+
+    await ctx.db.delete(issue._id);
+  }
+}
+
+/**
+ * Helper: Delete sprints, labels, and members for a project
+ */
+async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
+  const sprints = await ctx.db
+    .query("sprints")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const sprint of sprints) {
+    await ctx.db.delete(sprint._id);
+  }
+
+  const labels = await ctx.db
+    .query("labels")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const label of labels) {
+    await ctx.db.delete(label._id);
+  }
+
+  const members = await ctx.db
+    .query("projectMembers")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const member of members) {
+    await ctx.db.delete(member._id);
+  }
+}
+
+/**
+ * Reset onboarding for testing purposes
+ * Deletes the userOnboarding record so user can start fresh
+ */
+export const resetOnboarding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Delete onboarding record
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (onboarding) {
+      await ctx.db.delete(onboarding._id);
+    }
+
+    // Also delete sample project if it exists
+    const project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
+      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .first();
+
+    if (project) {
+      await deleteProjectIssues(ctx, project._id);
+      await deleteProjectMetadata(ctx, project._id);
+      await ctx.db.delete(project._id);
+    }
+
+    return { success: true };
   },
 });
 

@@ -248,7 +248,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   };
 
   return (
-    <div className="flex-1 overflow-x-auto">
+    <div className="flex-1 overflow-x-auto" data-tour="kanban-board">
       {/* Header with bulk operations toggle and undo/redo buttons */}
       <BoardToolbar
         sprintId={sprintId}

@@ -26,9 +26,6 @@ const TimeTrackingPage = lazy(() =>
 );
 
 // Lazy load Onboarding components (only for new users)
-const OnboardingTour = lazy(() =>
-  import("./components/Onboarding/OnboardingTour").then((m) => ({ default: m.OnboardingTour })),
-);
 const ProjectWizard = lazy(() =>
   import("./components/Onboarding/ProjectWizard").then((m) => ({ default: m.ProjectWizard })),
 );
@@ -36,9 +33,6 @@ const SampleProjectModal = lazy(() =>
   import("./components/Onboarding/SampleProjectModal").then((m) => ({
     default: m.SampleProjectModal,
   })),
-);
-const WelcomeModal = lazy(() =>
-  import("./components/Onboarding/WelcomeModal").then((m) => ({ default: m.WelcomeModal })),
 );
 const WelcomeTour = lazy(() =>
   import("./components/Onboarding/WelcomeTour").then((m) => ({ default: m.WelcomeTour })),
@@ -426,15 +420,6 @@ function Content() {
       <Unauthenticated>
         <NixeloLanding />
       </Unauthenticated>
-
-      {/* Onboarding Modals */}
-      <WelcomeModal
-        onNavigateToProject={(projectId) => {
-          setActiveView("projects");
-          setSelectedProjectId(projectId);
-        }}
-      />
-      <OnboardingTour />
     </>
   );
 }

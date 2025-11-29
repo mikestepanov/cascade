@@ -93,6 +93,26 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
           },
         },
         {
+          element: "[data-tour='kanban-board']",
+          popover: {
+            title: "Kanban Board",
+            description:
+              "Drag and drop issues between columns to update their status. Changes sync in real-time with your whole team!",
+            side: "top",
+            align: "center",
+          },
+        },
+        {
+          element: "[data-tour='create-issue']",
+          popover: {
+            title: "Create Issues",
+            description:
+              "Click the + button to create tasks, bugs, stories, and epics. Each column represents a workflow state in your project.",
+            side: "left",
+            align: "start",
+          },
+        },
+        {
           element: "[data-tour='sidebar']",
           popover: {
             title: "Document Sidebar",
