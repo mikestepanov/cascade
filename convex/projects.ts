@@ -176,6 +176,69 @@ export const get = query({
   },
 });
 
+// Get project by key (e.g., "PROJ")
+export const getByKey = query({
+  args: { key: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    // Find project by key
+    const project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", args.key))
+      .first();
+
+    if (!project) {
+      return null;
+    }
+
+    // Check access permissions
+    if (userId) {
+      const hasAccess = await canAccessProject(ctx, project._id, userId);
+      if (!hasAccess) {
+        return null; // Return null instead of throwing for cleaner UI handling
+      }
+    } else {
+      // Unauthenticated users can only access public projects
+      if (!project.isPublic) {
+        return null;
+      }
+    }
+
+    const creator = await ctx.db.get(project.createdBy);
+
+    // Get members with their roles from projectMembers table
+    const projectMembers = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+
+    const members = await Promise.all(
+      projectMembers.map(async (membership) => {
+        const member = await ctx.db.get(membership.userId);
+        return {
+          _id: membership.userId,
+          name: member?.name || member?.email || "Unknown",
+          email: member?.email,
+          image: member?.image,
+          role: membership.role,
+          addedAt: membership.addedAt,
+        };
+      }),
+    );
+
+    const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
+
+    return {
+      ...project,
+      creatorName: creator?.name || creator?.email || "Unknown",
+      members,
+      isOwner: project.ownerId === userId || project.createdBy === userId,
+      userRole,
+    };
+  },
+});
+
 export const updateWorkflow = mutation({
   args: {
     projectId: v.id("projects"),

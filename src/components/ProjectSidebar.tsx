@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -9,10 +10,10 @@ import { Checkbox, Input, Select, Textarea } from "./ui/form";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
-  onSelectProject: (id: Id<"projects"> | null) => void;
 }
 
-export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSidebarProps) {
+export function ProjectSidebar({ selectedProjectId }: ProjectSidebarProps) {
+  const navigate = useNavigate();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectKey, setNewProjectKey] = useState("");
@@ -27,10 +28,12 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
     e.preventDefault();
     if (!(newProjectName.trim() && newProjectKey.trim())) return;
 
+    const projectKey = newProjectKey.trim().toUpperCase();
+
     try {
-      const projectId = await createProject({
+      await createProject({
         name: newProjectName.trim(),
-        key: newProjectKey.trim().toUpperCase(),
+        key: projectKey,
         description: newProjectDescription.trim() || undefined,
         isPublic: newProjectIsPublic,
         boardType: newProjectBoardType,
@@ -42,7 +45,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
       setNewProjectIsPublic(false);
       setNewProjectBoardType("kanban");
       setShowCreateForm(false);
-      onSelectProject(projectId);
+      navigate({ to: "/projects/$key/board", params: { key: projectKey } });
       showSuccess("Project created successfully");
     } catch (error) {
       showError(error, "Failed to create project");
@@ -141,15 +144,15 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
         ) : (
           <div className="p-2">
             {projects.map((project) => (
-              <button
+              <Link
                 key={project._id}
-                type="button"
-                className={`w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
+                to="/projects/$key/board"
+                params={{ key: project.key }}
+                className={`block w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedProjectId === project._id
                     ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
                     : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
-                onClick={() => onSelectProject(project._id)}
                 aria-label={`Select project ${project.name}`}
               >
                 <div className="flex items-start justify-between">
@@ -173,7 +176,7 @@ export function ProjectSidebar({ selectedProjectId, onSelectProject }: ProjectSi
                     </p>
                   </div>
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         )}

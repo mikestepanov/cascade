@@ -1,4 +1,6 @@
 import path from "node:path";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
@@ -8,6 +10,14 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
+    // TanStack Start plugin (must be before React)
+    tanstackStart(),
+    // TanStack Router plugin (auto-generates route tree)
+    TanStackRouterVite({
+      routesDirectory: "./src/routes",
+      generatedRouteTree: "./src/routeTree.gen.ts",
+    }),
+    // React plugin (must be after TanStack Start)
     react(),
     VitePWA({
       registerType: "autoUpdate",
@@ -159,6 +169,9 @@ window.addEventListener('message', async (message) => {
           const chunkMap = [
             // Core React (needed immediately)
             { patterns: ["/react/", "/react-dom/", "/scheduler/"], chunk: "react-vendor" },
+
+            // TanStack Router (needed for navigation)
+            { patterns: ["/@tanstack/react-router/", "/@tanstack/react-start/"], chunk: "router" },
 
             // Convex (needed for data)
             { patterns: ["/convex/", "/@convex-dev/"], chunk: "convex" },
