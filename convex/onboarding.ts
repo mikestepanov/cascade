@@ -538,3 +538,135 @@ export const deleteSampleProject = mutation({
     }
   },
 });
+
+/**
+ * Check if current user was invited (for persona-based onboarding)
+ * Returns invite info if user was invited, null otherwise
+ */
+export const checkInviteStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    // Check if user has an inviteId (was invited)
+    const user = await ctx.db.get(userId);
+    if (!user?.inviteId) {
+      return { wasInvited: false, inviterName: null };
+    }
+
+    // Get invite details
+    const invite = await ctx.db.get(user.inviteId);
+    if (!invite) {
+      return { wasInvited: false, inviterName: null };
+    }
+
+    // Get inviter name
+    const inviter = await ctx.db.get(invite.invitedBy);
+    const inviterName = inviter?.name || inviter?.email || "Someone";
+
+    return {
+      wasInvited: true,
+      inviterName,
+      inviteRole: invite.role,
+      companyId: invite.companyId,
+    };
+  },
+});
+
+/**
+ * Set onboarding persona (team_lead or team_member)
+ */
+export const setOnboardingPersona = mutation({
+  args: {
+    persona: v.union(v.literal("team_lead"), v.literal("team_member")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Check invite status to populate wasInvited field
+    const user = await ctx.db.get(userId);
+    let wasInvited = false;
+    let invitedByName: string | undefined;
+
+    if (user?.inviteId) {
+      const invite = await ctx.db.get(user.inviteId);
+      if (invite) {
+        wasInvited = true;
+        const inviter = await ctx.db.get(invite.invitedBy);
+        invitedByName = inviter?.name || inviter?.email || "Someone";
+      }
+    }
+
+    const existing = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        onboardingPersona: args.persona,
+        wasInvited,
+        invitedByName,
+        updatedAt: Date.now(),
+      });
+    } else {
+      await ctx.db.insert("userOnboarding", {
+        userId,
+        onboardingCompleted: false,
+        onboardingStep: 1,
+        sampleProjectCreated: false,
+        tourShown: false,
+        wizardCompleted: false,
+        checklistDismissed: false,
+        onboardingPersona: args.persona,
+        wasInvited,
+        invitedByName,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+
+    return { success: true };
+  },
+});
+
+/**
+ * Complete onboarding flow
+ */
+export const completeOnboardingFlow = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const existing = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        onboardingCompleted: true,
+        tourShown: true,
+        updatedAt: Date.now(),
+      });
+    } else {
+      // Create record if it doesn't exist
+      await ctx.db.insert("userOnboarding", {
+        userId,
+        onboardingCompleted: true,
+        onboardingStep: 99,
+        sampleProjectCreated: false,
+        tourShown: true,
+        wizardCompleted: false,
+        checklistDismissed: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+
+    return { success: true };
+  },
+});
