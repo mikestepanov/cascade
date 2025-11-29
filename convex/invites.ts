@@ -42,29 +42,165 @@ function generateInviteToken(): string {
   return `invite_${timestamp}_${randomPart}`;
 }
 
+// Helper: Check if user is a project admin
+async function isProjectAdmin(
+  ctx: MutationCtx,
+  projectId: Id<"projects">,
+  userId: Id<"users">,
+): Promise<boolean> {
+  const project = await ctx.db.get(projectId);
+  if (!project) return false;
+
+  // Creator is always admin
+  if (project.createdBy === userId) return true;
+
+  // Check project membership
+  const membership = await ctx.db
+    .query("projectMembers")
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .first();
+
+  return membership?.role === "admin";
+}
+
+// Helper: Validate email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Helper: Add existing user to project directly
+async function addExistingUserToProject(
+  ctx: MutationCtx,
+  projectId: Id<"projects">,
+  existingUserId: Id<"users">,
+  role: "admin" | "editor" | "viewer",
+  addedBy: Id<"users">,
+): Promise<{ success: boolean; addedDirectly: true; userId: Id<"users"> }> {
+  // Check if already a member
+  const existingMember = await ctx.db
+    .query("projectMembers")
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", existingUserId))
+    .first();
+
+  if (existingMember) {
+    throw new Error("User is already a member of this project");
+  }
+
+  // Add them directly to the project
+  await ctx.db.insert("projectMembers", {
+    projectId,
+    userId: existingUserId,
+    role,
+    addedBy,
+    addedAt: Date.now(),
+  });
+
+  return { success: true, addedDirectly: true, userId: existingUserId };
+}
+
+// Helper: Check for duplicate pending invites
+async function checkDuplicatePendingInvite(
+  ctx: MutationCtx,
+  email: string,
+  projectId: Id<"projects"> | undefined,
+): Promise<void> {
+  const existingInvite = await ctx.db
+    .query("invites")
+    .withIndex("by_email_status", (q) => q.eq("email", email).eq("status", "pending"))
+    .first();
+
+  if (!existingInvite) return;
+
+  const sameProject = projectId && existingInvite.projectId?.toString() === projectId.toString();
+  const bothPlatform = !(projectId || existingInvite.projectId);
+
+  if (sameProject) {
+    throw new Error("An invitation has already been sent to this email for this project");
+  }
+  if (bothPlatform) {
+    throw new Error("An invitation has already been sent to this email");
+  }
+}
+
+// Helper: Build invite email content
+function buildInviteEmail(
+  inviteLink: string,
+  isProjectInvite: boolean,
+  projectName: string | undefined,
+  projectRole: string | undefined,
+  platformRole: string,
+): { subject: string; html: string; text: string } {
+  if (isProjectInvite && projectName) {
+    return {
+      subject: `You've been invited to join ${projectName} on Nixelo`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>You're invited to join ${projectName}</h2>
+          <p>You have been invited to collaborate on the project <strong>${projectName}</strong> as a <strong>${projectRole}</strong>.</p>
+          <p>Click the button below to accept your invitation:</p>
+          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
+          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
+        </div>
+      `,
+      text: `You have been invited to collaborate on ${projectName} as a ${projectRole}. Accept your invitation here: ${inviteLink}`,
+    };
+  }
+
+  return {
+    subject: "You've been invited to Nixelo",
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Welcome to Nixelo</h2>
+        <p>You have been invited to join Nixelo as a <strong>${platformRole}</strong>.</p>
+        <p>Click the button below to accept your invitation:</p>
+        <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
+        <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
+      </div>
+    `,
+    text: `You have been invited to join Nixelo as a ${platformRole}. Accept your invitation here: ${inviteLink}`,
+  };
+}
+
 /**
  * Send an invitation to a user
  * Only admins can send invites
+ * Supports both platform-level and project-level invites
  */
 export const sendInvite = mutation({
   args: {
     email: v.string(),
     role: v.union(v.literal("user"), v.literal("admin")),
+    // Optional project-level invite fields
+    projectId: v.optional(v.id("projects")),
+    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user is admin
-    const isAdmin = await isPlatformAdmin(ctx, userId);
-    if (!isAdmin) {
-      throw new Error("Only admins can send invites");
+    // Validate email format early
+    if (!isValidEmail(args.email)) {
+      throw new Error("Invalid email address");
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(args.email)) {
-      throw new Error("Invalid email address");
+    // Check permissions and get project info
+    const isPlatAdmin = await isPlatformAdmin(ctx, userId);
+    let projectName: string | undefined;
+    const effectiveProjectRole = args.projectRole || "editor";
+
+    if (args.projectId) {
+      const project = await ctx.db.get(args.projectId);
+      if (!project) throw new Error("Project not found");
+      projectName = project.name;
+
+      // Allow if platform admin OR project admin
+      const hasProjectAdmin = await isProjectAdmin(ctx, args.projectId, userId);
+      if (!(isPlatAdmin || hasProjectAdmin)) {
+        throw new Error("Only project admins can invite to projects");
+      }
+    } else if (!isPlatAdmin) {
+      throw new Error("Only admins can send platform invites");
     }
 
     // Check if user already exists with this email
@@ -73,51 +209,55 @@ export const sendInvite = mutation({
       .filter((q) => q.eq(q.field("email"), args.email))
       .first();
 
+    // For project invites, add existing users directly
+    if (existingUser && args.projectId) {
+      return addExistingUserToProject(
+        ctx,
+        args.projectId,
+        existingUser._id,
+        effectiveProjectRole,
+        userId,
+      );
+    }
     if (existingUser) {
       throw new Error("A user with this email already exists");
     }
 
-    // Check if there's already a pending invite for this email
-    const existingInvite = await ctx.db
-      .query("invites")
-      .withIndex("by_email_status", (q) => q.eq("email", args.email).eq("status", "pending"))
-      .first();
+    // Check for duplicate pending invites
+    await checkDuplicatePendingInvite(ctx, args.email, args.projectId);
 
-    if (existingInvite) {
-      throw new Error("An invitation has already been sent to this email");
-    }
-
+    // Create the invite
     const now = Date.now();
-    const expiresAt = now + 7 * 24 * 60 * 60 * 1000; // 7 days from now
     const token = generateInviteToken();
 
     const inviteId = await ctx.db.insert("invites", {
       email: args.email,
       role: args.role,
+      projectId: args.projectId,
+      projectRole: args.projectId ? effectiveProjectRole : undefined,
       invitedBy: userId,
       token,
-      expiresAt,
+      expiresAt: now + 7 * 24 * 60 * 60 * 1000, // 7 days
       status: "pending",
       createdAt: now,
       updatedAt: now,
     });
 
-    // Send email with invite link
+    // Send email
     const inviteLink = `${getSiteUrl()}/invite/${token}`;
+    const emailContent = buildInviteEmail(
+      inviteLink,
+      !!args.projectId,
+      projectName,
+      effectiveProjectRole,
+      args.role,
+    );
 
     await sendEmail(ctx, {
       to: args.email,
-      subject: "You've been invited to Nixelo",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Welcome to Nixelo</h2>
-          <p>You have been invited to join Nixelo as a <strong>${args.role}</strong>.</p>
-          <p>Click the button below to accept your invitation:</p>
-          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
-          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
-        </div>
-      `,
-      text: `You have been invited to join Nixelo as a ${args.role}. Accept your invitation here: ${inviteLink}`,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
     });
 
     return { inviteId, token };
@@ -197,22 +337,28 @@ export const resendInvite = mutation({
       updatedAt: Date.now(),
     });
 
-    // Send email with invite link again
+    // Get project name if project invite
+    let projectName: string | undefined;
+    if (invite.projectId) {
+      const project = await ctx.db.get(invite.projectId);
+      projectName = project?.name;
+    }
+
+    // Send email with invite link again using the shared helper
     const inviteLink = `${getSiteUrl()}/invite/${invite.token}`;
+    const emailContent = buildInviteEmail(
+      inviteLink,
+      !!invite.projectId,
+      projectName,
+      invite.projectRole,
+      invite.role,
+    );
 
     await sendEmail(ctx, {
       to: invite.email,
-      subject: "Invitation to Nixelo",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Invitation Reminder</h2>
-          <p>This is a reminder that you have been invited to join Nixelo.</p>
-          <p>Click the button below to accept your invitation:</p>
-          <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
-          <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
-        </div>
-      `,
-      text: `You have been invited to join Nixelo. Accept your invitation here: ${inviteLink}`,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
     });
 
     return { success: true };
@@ -242,10 +388,18 @@ export const getInviteByToken = query({
     // Get inviter name
     const inviter = await ctx.db.get(invite.invitedBy);
 
+    // Get project name if project invite
+    let projectName: string | undefined;
+    if (invite.projectId) {
+      const project = await ctx.db.get(invite.projectId);
+      projectName = project?.name;
+    }
+
     return {
       ...invite,
       isExpired,
       inviterName: inviter?.name || inviter?.email || "Unknown",
+      projectName,
     };
   },
 });
@@ -298,7 +452,36 @@ export const acceptInvite = mutation({
       updatedAt: Date.now(),
     });
 
-    return { success: true, role: invite.role };
+    // Link the invite to the user (for tracking "was invited" vs "self-signup")
+    await ctx.db.patch(userId, {
+      inviteId: invite._id,
+    });
+
+    // If this is a project invite, add user to the project
+    let projectId: Id<"projects"> | undefined;
+    if (invite.projectId) {
+      const inviteProjectId = invite.projectId; // Store in local for type narrowing
+      // Check if user is not already a member (edge case: manually added after invite sent)
+      const existingMember = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_project_user", (q) =>
+          q.eq("projectId", inviteProjectId).eq("userId", userId),
+        )
+        .first();
+
+      if (!existingMember) {
+        await ctx.db.insert("projectMembers", {
+          projectId: inviteProjectId,
+          userId,
+          role: invite.projectRole || "editor",
+          addedBy: invite.invitedBy,
+          addedAt: Date.now(),
+        });
+      }
+      projectId = inviteProjectId;
+    }
+
+    return { success: true, role: invite.role, projectId, projectRole: invite.projectRole };
   },
 });
 
@@ -338,7 +521,7 @@ export const listInvites = query({
       invites = await ctx.db.query("invites").collect();
     }
 
-    // Get inviter names
+    // Get inviter names and project names
     const invitesWithNames = await Promise.all(
       invites.map(async (invite) => {
         const inviter = (await ctx.db.get(invite.invitedBy)) as Doc<"users"> | null;
@@ -347,10 +530,17 @@ export const listInvites = query({
           const acceptedUser = (await ctx.db.get(invite.acceptedBy)) as Doc<"users"> | null;
           acceptedByName = acceptedUser?.name || acceptedUser?.email || "Unknown";
         }
+        // Get project name if project invite
+        let projectName: string | undefined;
+        if (invite.projectId) {
+          const project = await ctx.db.get(invite.projectId);
+          projectName = project?.name;
+        }
         return {
           ...invite,
           inviterName: inviter?.name || inviter?.email || "Unknown",
           acceptedByName,
+          projectName,
         };
       }),
     );

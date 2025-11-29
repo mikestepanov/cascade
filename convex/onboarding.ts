@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { type MutationCtx, mutation, query } from "./_generated/server";
 
 /**
  * Get onboarding status for current user
@@ -48,18 +48,32 @@ export const updateOnboardingStatus = mutation({
         updatedAt: Date.now(),
       });
     } else {
-      // Create initial onboarding record
-      await ctx.db.insert("userOnboarding", {
-        userId,
-        onboardingCompleted: args.onboardingCompleted ?? false,
-        onboardingStep: args.onboardingStep ?? 0,
-        sampleProjectCreated: args.sampleProjectCreated ?? false,
-        tourShown: args.tourShown ?? false,
-        wizardCompleted: args.wizardCompleted ?? false,
-        checklistDismissed: args.checklistDismissed ?? false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          ...args,
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Create initial onboarding record
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: args.onboardingCompleted ?? false,
+          onboardingStep: args.onboardingStep ?? 0,
+          sampleProjectCreated: args.sampleProjectCreated ?? false,
+          tourShown: args.tourShown ?? false,
+          wizardCompleted: args.wizardCompleted ?? false,
+          checklistDismissed: args.checklistDismissed ?? false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
     }
   },
 });
@@ -350,6 +364,102 @@ export const createSampleProject = mutation({
 });
 
 /**
+ * Helper: Delete all issues and their related data for a project
+ */
+async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
+  const issues = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+
+  for (const issue of issues) {
+    const comments = await ctx.db
+      .query("issueComments")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id);
+    }
+
+    const activities = await ctx.db
+      .query("issueActivity")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const activity of activities) {
+      await ctx.db.delete(activity._id);
+    }
+
+    await ctx.db.delete(issue._id);
+  }
+}
+
+/**
+ * Helper: Delete sprints, labels, and members for a project
+ */
+async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
+  const sprints = await ctx.db
+    .query("sprints")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const sprint of sprints) {
+    await ctx.db.delete(sprint._id);
+  }
+
+  const labels = await ctx.db
+    .query("labels")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const label of labels) {
+    await ctx.db.delete(label._id);
+  }
+
+  const members = await ctx.db
+    .query("projectMembers")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .collect();
+  for (const member of members) {
+    await ctx.db.delete(member._id);
+  }
+}
+
+/**
+ * Reset onboarding for testing purposes
+ * Deletes the userOnboarding record so user can start fresh
+ */
+export const resetOnboarding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Delete onboarding record
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (onboarding) {
+      await ctx.db.delete(onboarding._id);
+    }
+
+    // Also delete sample project if it exists
+    const project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
+      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .first();
+
+    if (project) {
+      await deleteProjectIssues(ctx, project._id);
+      await deleteProjectMetadata(ctx, project._id);
+      await ctx.db.delete(project._id);
+    }
+
+    return { success: true };
+  },
+});
+
+/**
  * Delete sample project (for users who want to start fresh)
  */
 export const deleteSampleProject = mutation({
@@ -440,5 +550,168 @@ export const deleteSampleProject = mutation({
         updatedAt: Date.now(),
       });
     }
+  },
+});
+
+/**
+ * Check if current user was invited (for persona-based onboarding)
+ * Returns invite info if user was invited, null otherwise
+ */
+export const checkInviteStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    // Check if user has an inviteId (was invited)
+    const user = await ctx.db.get(userId);
+    if (!user?.inviteId) {
+      return { wasInvited: false, inviterName: null };
+    }
+
+    // Get invite details
+    const invite = await ctx.db.get(user.inviteId);
+    if (!invite) {
+      return { wasInvited: false, inviterName: null };
+    }
+
+    // Get inviter name
+    const inviter = await ctx.db.get(invite.invitedBy);
+    const inviterName = inviter?.name || inviter?.email || "Someone";
+
+    return {
+      wasInvited: true,
+      inviterName,
+      inviteRole: invite.role,
+      companyId: invite.companyId,
+    };
+  },
+});
+
+/**
+ * Set onboarding persona (team_lead or team_member)
+ */
+export const setOnboardingPersona = mutation({
+  args: {
+    persona: v.union(v.literal("team_lead"), v.literal("team_member")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Check invite status to populate wasInvited field
+    const user = await ctx.db.get(userId);
+    let wasInvited = false;
+    let invitedByName: string | undefined;
+
+    if (user?.inviteId) {
+      const invite = await ctx.db.get(user.inviteId);
+      if (invite) {
+        wasInvited = true;
+        const inviter = await ctx.db.get(invite.invitedBy);
+        invitedByName = inviter?.name || inviter?.email || "Someone";
+      }
+    }
+
+    const existing = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        onboardingPersona: args.persona,
+        wasInvited,
+        invitedByName,
+        updatedAt: Date.now(),
+      });
+    } else {
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          onboardingPersona: args.persona,
+          wasInvited,
+          invitedByName,
+          updatedAt: Date.now(),
+        });
+      } else {
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: false,
+          onboardingStep: 1,
+          sampleProjectCreated: false,
+          tourShown: false,
+          wizardCompleted: false,
+          checklistDismissed: false,
+          onboardingPersona: args.persona,
+          wasInvited,
+          invitedByName,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
+    }
+
+    return { success: true };
+  },
+});
+
+/**
+ * Complete onboarding flow
+ */
+export const completeOnboardingFlow = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const existing = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        onboardingCompleted: true,
+        tourShown: true,
+        updatedAt: Date.now(),
+      });
+    } else {
+      // Double-check for race condition - another request might have inserted while we were processing
+      const doubleCheck = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (doubleCheck) {
+        // Record was created by concurrent request, just patch it
+        await ctx.db.patch(doubleCheck._id, {
+          onboardingCompleted: true,
+          tourShown: true,
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Create record if it doesn't exist
+        await ctx.db.insert("userOnboarding", {
+          userId,
+          onboardingCompleted: true,
+          onboardingStep: 99,
+          sampleProjectCreated: false,
+          tourShown: true,
+          wizardCompleted: false,
+          checklistDismissed: false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
+    }
+
+    return { success: true };
   },
 });

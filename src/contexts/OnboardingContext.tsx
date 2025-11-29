@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -38,12 +38,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const isOnboardingComplete = onboardingStatus?.onboardingCompleted ?? false;
   const currentStep = onboardingStatus?.onboardingStep ?? 0;
 
-  // Show welcome modal for new users
-  useEffect(() => {
-    if (onboardingStatus && !onboardingStatus.onboardingCompleted && !onboardingStatus.tourShown) {
-      setShowWelcome(true);
-    }
-  }, [onboardingStatus]);
+  // Note: Welcome modal auto-show logic removed to prevent duplicate modals.
+  // The state-based system in useOnboardingState handles onboarding flow.
 
   const startOnboarding = () => {
     setShowWelcome(false);

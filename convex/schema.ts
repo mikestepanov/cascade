@@ -445,6 +445,10 @@ const applicationTables = {
     tourShown: v.boolean(), // Whether welcome tour was shown
     wizardCompleted: v.boolean(), // Whether project wizard was completed
     checklistDismissed: v.boolean(), // Whether checklist was dismissed
+    // Persona-based onboarding fields
+    onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))), // User's self-selected persona
+    wasInvited: v.optional(v.boolean()), // Whether user was invited (denormalized)
+    invitedByName: v.optional(v.string()), // Name of person who invited them
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
@@ -1096,6 +1100,8 @@ const applicationTables = {
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
     companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
+    projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
+    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))), // Role in project if projectId is set
     invitedBy: v.id("users"), // Admin who sent the invite
     token: v.string(), // Unique invitation token
     expiresAt: v.number(), // Expiration timestamp
@@ -1117,7 +1123,8 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_invited_by", ["invitedBy"])
     .index("by_email_status", ["email", "status"])
-    .index("by_company", ["companyId"]),
+    .index("by_company", ["companyId"])
+    .index("by_project", ["projectId"]),
 
   // Companies/Organizations (Multi-tenant support)
   companies: defineTable({
@@ -1483,6 +1490,8 @@ export default defineSchema({
     bio: v.optional(v.string()), // User bio/description
     emailNotifications: v.optional(v.boolean()), // Email notification preference
     desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
+    // Invite tracking
+    inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
   })
     .index("email", ["email"])
     .index("emailVerificationTime", ["emailVerificationTime"])
