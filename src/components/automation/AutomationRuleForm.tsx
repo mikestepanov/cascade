@@ -41,22 +41,24 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
 
   // Reset form when rule changes or dialog opens
   useEffect(() => {
-    if (rule) {
-      setName(rule.name);
-      setDescription(rule.description || "");
-      setTrigger(rule.trigger);
-      setTriggerValue(rule.triggerValue || "");
-      setActionType(rule.actionType);
-      setActionValue(rule.actionValue);
-    } else {
-      setName("");
-      setDescription("");
-      setTrigger("status_changed");
-      setTriggerValue("");
-      setActionType("add_label");
-      setActionValue("");
+    if (isOpen) {
+      if (rule) {
+        setName(rule.name);
+        setDescription(rule.description || "");
+        setTrigger(rule.trigger);
+        setTriggerValue(rule.triggerValue || "");
+        setActionType(rule.actionType);
+        setActionValue(rule.actionValue);
+      } else {
+        setName("");
+        setDescription("");
+        setTrigger("status_changed");
+        setTriggerValue("");
+        setActionType("add_label");
+        setActionValue("");
+      }
     }
-  }, [rule]);
+  }, [rule, isOpen]);
 
   const handleSave = async () => {
     if (!(name.trim() && actionValue.trim())) {

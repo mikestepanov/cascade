@@ -23,6 +23,7 @@ describe("MyIssuesList", () => {
       priority: "high",
       status: "In Progress",
       projectId: "proj1" as Id<"projects">,
+      projectKey: "PROJ",
       projectName: "Project Alpha",
     },
     {
@@ -33,6 +34,7 @@ describe("MyIssuesList", () => {
       priority: "medium",
       status: "To Do",
       projectId: "proj1" as Id<"projects">,
+      projectKey: "PROJ",
       projectName: "Project Alpha",
     },
   ];
@@ -46,6 +48,7 @@ describe("MyIssuesList", () => {
       priority: "low",
       status: "Done",
       projectId: "proj2" as Id<"projects">,
+      projectKey: "BETA",
       projectName: "Project Beta",
     },
   ];
@@ -191,7 +194,7 @@ describe("MyIssuesList", () => {
     const firstIssue = screen.getByText("Fix login bug");
     await user.click(firstIssue);
 
-    expect(onNavigateToProject).toHaveBeenCalledWith("proj1");
+    expect(onNavigateToProject).toHaveBeenCalledWith("PROJ");
   });
 
   it("should render View My Projects button in empty state", () => {

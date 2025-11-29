@@ -17,6 +17,7 @@ describe("ProjectsList", () => {
   const mockProjects = [
     {
       _id: "proj1" as Id<"projects">,
+      key: "ALPHA",
       name: "Project Alpha",
       role: "admin",
       myIssues: 5,
@@ -24,6 +25,7 @@ describe("ProjectsList", () => {
     },
     {
       _id: "proj2" as Id<"projects">,
+      key: "BETA",
       name: "Project Beta",
       role: "editor",
       myIssues: 2,
@@ -31,6 +33,7 @@ describe("ProjectsList", () => {
     },
     {
       _id: "proj3" as Id<"projects">,
+      key: "GAMMA",
       name: "Project Gamma",
       role: "viewer",
       myIssues: 0,
@@ -131,7 +134,7 @@ describe("ProjectsList", () => {
     const firstProject = screen.getByText("Project Alpha");
     await user.click(firstProject);
 
-    expect(onNavigateToProject).toHaveBeenCalledWith("proj1");
+    expect(onNavigateToProject).toHaveBeenCalledWith("ALPHA");
   });
 
   it("should render projects with staggered animation", () => {
@@ -180,6 +183,7 @@ describe("ProjectsList", () => {
     const longNameProject = [
       {
         _id: "proj4" as Id<"projects">,
+        key: "LONG",
         name: "This is a very long project name that should be truncated in the UI",
         role: "admin",
         myIssues: 1,
@@ -199,6 +203,7 @@ describe("ProjectsList", () => {
     const zeroIssuesProject = [
       {
         _id: "proj5" as Id<"projects">,
+        key: "EMPTY",
         name: "Empty Project",
         role: "editor",
         myIssues: 0,
