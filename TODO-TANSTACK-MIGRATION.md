@@ -418,7 +418,12 @@ function IssuePage() {
 
 ---
 
-## Phase 4: State Management Refactor
+## Phase 4: State Management Refactor ✅ COMPLETED
+
+State is now managed appropriately:
+- Navigation state is in URL (routes/params)
+- UI modals (CommandPalette, ShortcutsHelp) are in `_app/route.tsx`
+- Local state stays local to components
 
 ### 4.1 Move State to Components
 Most state should live in the component that uses it:
@@ -488,7 +493,21 @@ const { id } = Route.useParams()
 
 ---
 
-## Phase 5: Migrate Components
+## Phase 5: Migrate Components ✅ COMPLETED
+
+All components updated to use TanStack Router:
+- `AppHeader.tsx` - Uses `<Link>` and `useLocation()` for active state
+- `CommandPalette.tsx` - Uses `useNavigate()` internally
+- `Dashboard.tsx` - Uses `useNavigate()` for project navigation
+- `MyIssuesList.tsx` / `ProjectsList.tsx` - Accept callbacks from parent
+- `Sidebar.tsx` / `ProjectSidebar.tsx` - Use `<Link>` and `useNavigate()`
+- `keyboardShortcuts.ts` - Uses `navigate()` callback
+
+Deleted legacy files:
+- `src/App.tsx` - Replaced by routes
+- `src/main.tsx` - Replaced by `__root.tsx`
+- `src/hooks/useAppState.ts` - No longer needed
+- `src/utils/viewHelpers.ts` - No longer needed
 
 ### 5.1 Components to Update
 
@@ -590,22 +609,22 @@ curl https://nixelo.com/ | grep "<title>"
 
 ---
 
-## Phase 8: Cleanup
+## Phase 8: Cleanup ✅ COMPLETED
 
-### 8.1 Delete Old Files
-- [ ] `src/App.tsx` (replaced by routes)
-- [ ] Manual route parsing hooks
-- [ ] Prop-drilling components
+### 8.1 Delete Old Files ✅ DONE
+- [x] `src/App.tsx` - Deleted
+- [x] `src/main.tsx` - Deleted
+- [x] `src/hooks/useAppState.ts` - Deleted
+- [x] `src/utils/viewHelpers.ts` - Deleted
 
-### 8.2 Update Imports
-- [ ] Update all `import { Link }` to use TanStack Router
-- [ ] Update all `window.location` usage
-- [ ] Update all `history.pushState` usage
+### 8.2 Update Imports ✅ DONE
+- [x] All navigation uses TanStack Router `<Link>` and `useNavigate()`
+- [x] `window.location` usage reviewed - only `reload()` for error recovery (appropriate)
+- [x] No `history.pushState` usage found
 
 ### 8.3 Documentation
-- [ ] Update README with new dev commands
-- [ ] Update CLAUDE.md with new architecture
-- [ ] Document route structure
+- [x] TODO-TANSTACK-MIGRATION.md updated with completion status
+- [ ] Update CLAUDE.md with new routing architecture (if needed)
 
 ---
 

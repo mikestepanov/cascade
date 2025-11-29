@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { InviteAcceptPage } from "@/pages/InviteAcceptPage";
 
 export const Route = createFileRoute("/invite/$token")({
@@ -8,12 +8,5 @@ export const Route = createFileRoute("/invite/$token")({
 
 function InviteRoute() {
   const { token } = Route.useParams();
-  const navigate = useNavigate();
-
-  const handleAccepted = () => {
-    // After accepting invite, go to onboarding
-    navigate({ to: "/onboarding" });
-  };
-
-  return <InviteAcceptPage token={token} onAccepted={handleAccepted} />;
+  return <InviteAcceptPage token={token} />;
 }

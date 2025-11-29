@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -8,10 +9,10 @@ import { SignInForm } from "../SignInForm";
 
 interface InviteAcceptPageProps {
   token: string;
-  onAccepted: () => void;
 }
 
-export function InviteAcceptPage({ token, onAccepted }: InviteAcceptPageProps) {
+export function InviteAcceptPage({ token }: InviteAcceptPageProps) {
+  const navigate = useNavigate();
   const [isAccepting, setIsAccepting] = useState(false);
   const [acceptError, setAcceptError] = useState<string | null>(null);
 
@@ -20,7 +21,7 @@ export function InviteAcceptPage({ token, onAccepted }: InviteAcceptPageProps) {
   const acceptInvite = useMutation(api.invites.acceptInvite);
 
   const goToHome = () => {
-    window.location.href = "/";
+    navigate({ to: "/" });
   };
 
   const handleAcceptInvite = async () => {
@@ -32,7 +33,7 @@ export function InviteAcceptPage({ token, onAccepted }: InviteAcceptPageProps) {
         ? "Welcome! You've joined the project."
         : "Welcome! You've joined the team.";
       showSuccess(successMessage);
-      onAccepted();
+      navigate({ to: "/dashboard" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to accept invite";
       setAcceptError(message);

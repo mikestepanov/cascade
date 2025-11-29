@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
@@ -196,16 +197,15 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
 // Hook to build commands dynamically
 export function useCommands({
-  onNavigate,
   onCreateIssue,
   onCreateDocument,
   onCreateProject,
 }: {
-  onNavigate: (view: "dashboard" | "documents" | "projects") => void;
   onCreateIssue?: () => void;
   onCreateDocument?: () => void;
   onCreateProject?: () => void;
-}) {
+} = {}) {
+  const navigate = useNavigate();
   const _projects = useQuery(api.dashboard.getMyProjects);
   const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -218,7 +218,7 @@ export function useCommands({
       icon: "🏠",
       description: "View your personal dashboard",
       keywords: ["home", "my work"],
-      action: () => onNavigate("dashboard"),
+      action: () => navigate({ to: "/dashboard" }),
       group: "Navigation",
     },
     {
@@ -227,7 +227,7 @@ export function useCommands({
       icon: "📄",
       description: "View all documents",
       keywords: ["docs", "files"],
-      action: () => onNavigate("documents"),
+      action: () => navigate({ to: "/documents" }),
       group: "Navigation",
     },
     {
@@ -236,7 +236,7 @@ export function useCommands({
       icon: "📋",
       description: "View all projects",
       keywords: ["boards", "kanban"],
-      action: () => onNavigate("projects"),
+      action: () => navigate({ to: "/projects" }),
       group: "Navigation",
     },
 
