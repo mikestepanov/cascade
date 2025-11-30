@@ -16,22 +16,46 @@ type DriverConfig = {
   onDestroyStarted?: () => void;
 };
 
+// Use vi.hoisted to create mock state that persists across parallel test execution
+// This must be called before vi.mock and the state object must be returned
+const mockState = vi.hoisted(() => {
+  return {
+    lastDriverConfig: undefined as DriverConfig | undefined,
+    mockOnDestroyStarted: undefined as (() => void) | undefined,
+    mockDriveCalled: false,
+    mockDestroyCalled: false,
+    mockUpdateOnboardingArgs: undefined as Record<string, unknown> | undefined,
+    mockHasNextStep: false,
+    mockHasPreviousStep: false,
+    reset() {
+      this.lastDriverConfig = undefined;
+      this.mockOnDestroyStarted = undefined;
+      this.mockDriveCalled = false;
+      this.mockDestroyCalled = false;
+      this.mockUpdateOnboardingArgs = undefined;
+      this.mockHasNextStep = false;
+      this.mockHasPreviousStep = false;
+    },
+  };
+});
+
 // Mock driver.js - vi.mock is hoisted so this runs before any imports
-vi.mock("driver.js", () => {
+// The factory function receives the hoisted mockState
+vi.mock("driver.js", async () => {
   // Create the driver factory function inside the mock
   const driverFactory = (config: DriverConfig) => {
-    // Store config in a way that's accessible from tests
-    (globalThis as Record<string, unknown>).__lastDriverConfig = config;
-    (globalThis as Record<string, unknown>).__mockOnDestroyStarted = config.onDestroyStarted;
+    // Store config in hoisted mock state
+    mockState.lastDriverConfig = config;
+    mockState.mockOnDestroyStarted = config.onDestroyStarted;
     return {
       drive: () => {
-        (globalThis as Record<string, unknown>).__mockDriveCalled = true;
+        mockState.mockDriveCalled = true;
       },
       destroy: () => {
-        (globalThis as Record<string, unknown>).__mockDestroyCalled = true;
+        mockState.mockDestroyCalled = true;
       },
-      hasNextStep: () => (globalThis as Record<string, unknown>).__mockHasNextStep ?? false,
-      hasPreviousStep: () => (globalThis as Record<string, unknown>).__mockHasPreviousStep ?? false,
+      hasNextStep: () => mockState.mockHasNextStep,
+      hasPreviousStep: () => mockState.mockHasPreviousStep,
     };
   };
 
@@ -47,7 +71,7 @@ vi.mock("driver.js/dist/driver.css", () => ({}));
 // Mock Convex
 vi.mock("convex/react", () => ({
   useMutation: () => (args: unknown) => {
-    (globalThis as Record<string, unknown>).__mockUpdateOnboardingArgs = args;
+    mockState.mockUpdateOnboardingArgs = args as Record<string, unknown>;
     return Promise.resolve();
   },
 }));
@@ -55,46 +79,28 @@ vi.mock("convex/react", () => ({
 // Import after mocking
 import { WelcomeTour } from "./WelcomeTour";
 
-// Helper to get values from globalThis
-const getLastDriverConfig = () =>
-  (globalThis as Record<string, unknown>).__lastDriverConfig as DriverConfig | undefined;
-const getMockOnDestroyStarted = () =>
-  (globalThis as Record<string, unknown>).__mockOnDestroyStarted as (() => void) | undefined;
-const wasDriveCalled = () =>
-  (globalThis as Record<string, unknown>).__mockDriveCalled as boolean | undefined;
-const wasDestroyCalled = () =>
-  (globalThis as Record<string, unknown>).__mockDestroyCalled as boolean | undefined;
-const getUpdateOnboardingArgs = () =>
-  (globalThis as Record<string, unknown>).__mockUpdateOnboardingArgs as
-    | Record<string, unknown>
-    | undefined;
+// Helper functions to access mock state
+const getLastDriverConfig = () => mockState.lastDriverConfig;
+const getMockOnDestroyStarted = () => mockState.mockOnDestroyStarted;
+const wasDriveCalled = () => mockState.mockDriveCalled;
+const wasDestroyCalled = () => mockState.mockDestroyCalled;
+const getUpdateOnboardingArgs = () => mockState.mockUpdateOnboardingArgs;
 const setMockHasNextStep = (value: boolean) => {
-  (globalThis as Record<string, unknown>).__mockHasNextStep = value;
+  mockState.mockHasNextStep = value;
 };
 const setMockHasPreviousStep = (value: boolean) => {
-  (globalThis as Record<string, unknown>).__mockHasPreviousStep = value;
+  mockState.mockHasPreviousStep = value;
 };
-
-// Helper to reset globalThis mock values
-function resetGlobalMocks() {
-  delete (globalThis as Record<string, unknown>).__lastDriverConfig;
-  delete (globalThis as Record<string, unknown>).__mockOnDestroyStarted;
-  delete (globalThis as Record<string, unknown>).__mockDriveCalled;
-  delete (globalThis as Record<string, unknown>).__mockDestroyCalled;
-  delete (globalThis as Record<string, unknown>).__mockUpdateOnboardingArgs;
-  delete (globalThis as Record<string, unknown>).__mockHasNextStep;
-  delete (globalThis as Record<string, unknown>).__mockHasPreviousStep;
-}
 
 describe("WelcomeTour", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resetGlobalMocks();
+    mockState.reset();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    resetGlobalMocks();
+    mockState.reset();
   });
 
   // Helper to wait for driver to be initialized (after dynamic import completes)

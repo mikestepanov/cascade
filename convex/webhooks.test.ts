@@ -1,7 +1,7 @@
 // @ts-nocheck - Test file with complex union type assertions
 
 import { convexTest } from "convex-test";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api, internal } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
@@ -616,6 +616,14 @@ describe("Webhooks", () => {
   });
 
   describe("test", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("should schedule test webhook delivery", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -633,6 +641,9 @@ describe("Webhooks", () => {
       const result = await asUser.mutation(api.webhooks.test, { id: webhookId });
 
       expect(result.success).toBe(true);
+
+      // Don't run the scheduled actions - they make HTTP calls to external URLs
+      // The test only verifies the mutation returns success (scheduling works)
     });
 
     it("should deny non-admin users", async () => {
@@ -709,6 +720,14 @@ describe("Webhooks", () => {
   });
 
   describe("retryExecution", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("should schedule retry for failed execution", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -742,6 +761,9 @@ describe("Webhooks", () => {
       });
 
       expect(result.success).toBe(true);
+
+      // Don't run the scheduled actions - they make HTTP calls to external URLs
+      // The test only verifies the mutation returns success (scheduling works)
     });
 
     it("should deny non-admin users", async () => {

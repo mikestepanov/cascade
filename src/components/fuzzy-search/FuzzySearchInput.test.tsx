@@ -128,19 +128,20 @@ describe("FuzzySearchInput", () => {
     await user.click(input); // Focus input
 
     // First result should be selected by default
-    const results = screen.getAllByRole("option");
-    expect(results[0]).toHaveClass("bg-ui-bg-tertiary");
+    expect(screen.getAllByRole("option")[0]).toHaveClass("bg-ui-bg-tertiary");
 
     // Arrow down should select second result
     await user.keyboard("{ArrowDown}");
     await waitFor(() => {
-      expect(results[1]).toHaveClass("bg-ui-bg-tertiary");
+      // Re-query elements after state update
+      expect(screen.getAllByRole("option")[1]).toHaveClass("bg-ui-bg-tertiary");
     });
 
     // Arrow up should select first result again
     await user.keyboard("{ArrowUp}");
     await waitFor(() => {
-      expect(results[0]).toHaveClass("bg-ui-bg-tertiary");
+      // Re-query elements after state update
+      expect(screen.getAllByRole("option")[0]).toHaveClass("bg-ui-bg-tertiary");
     });
   });
 

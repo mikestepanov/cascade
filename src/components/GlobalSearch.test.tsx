@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useQuery } from "convex/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -47,7 +47,9 @@ describe("GlobalSearch", () => {
       metaKey: true,
       bubbles: true,
     });
-    document.dispatchEvent(event);
+    act(() => {
+      document.dispatchEvent(event);
+    });
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Search issues and documents/i)).toBeInTheDocument();
@@ -62,7 +64,9 @@ describe("GlobalSearch", () => {
       ctrlKey: true,
       bubbles: true,
     });
-    document.dispatchEvent(event);
+    act(() => {
+      document.dispatchEvent(event);
+    });
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/Search issues and documents/i)).toBeInTheDocument();
@@ -77,7 +81,9 @@ describe("GlobalSearch", () => {
       metaKey: true,
       bubbles: true,
     });
-    document.dispatchEvent(event);
+    act(() => {
+      document.dispatchEvent(event);
+    });
 
     expect(screen.queryByPlaceholderText(/Search issues and documents/i)).not.toBeInTheDocument();
   });

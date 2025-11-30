@@ -102,13 +102,20 @@ describe("AutomationRulesManager - Component Behavior", () => {
       // Close dialog
       await user.click(screen.getByRole("button", { name: /Cancel/i }));
 
+      // Wait for dialog to close completely
+      await waitFor(() => {
+        expect(screen.queryByText("Create Automation Rule")).not.toBeInTheDocument();
+      });
+
       // Reopen dialog
       await user.click(screen.getByRole("button", { name: /Create Rule/i }));
 
-      // Form should be empty
-      expect(screen.getByPlaceholderText(/e.g., Auto-assign high priority issues/i)).toHaveValue(
-        "",
-      );
+      // Wait for dialog to open and form should be empty
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText(/e.g., Auto-assign high priority issues/i)).toHaveValue(
+          "",
+        );
+      });
     });
   });
 
