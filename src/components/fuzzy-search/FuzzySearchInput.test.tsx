@@ -127,8 +127,10 @@ describe("FuzzySearchInput", () => {
     const input = screen.getByRole("combobox");
     await user.click(input); // Focus input
 
-    // First result should be selected by default
-    expect(screen.getAllByRole("option")[0]).toHaveClass("bg-ui-bg-tertiary");
+    // Wait for dropdown to open and first result to be selected
+    await waitFor(() => {
+      expect(screen.getAllByRole("option")[0]).toHaveClass("bg-ui-bg-tertiary");
+    });
 
     // Arrow down should select second result
     await user.keyboard("{ArrowDown}");
