@@ -1,2 +1,2 @@
-export { authenticatedTest, setupAuthState } from "./auth.fixture";
+export { authenticatedTest } from "./auth.fixture";
 export { expect, test } from "./test.fixture";

@@ -3,18 +3,17 @@ import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth, getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { MailtrapOTPVerification } from "./MailtrapOTPVerification";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
-import { ResendOTPVerification } from "./ResendOTPVerification";
 
-// Google OAuth is configured below. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET
-// environment variables to enable. See docs/AUTHENTICATION.md for setup instructions.
-// Password reset and email verification require RESEND_API_KEY and RESEND_FROM_EMAIL environment variables.
+// Verification emails go through Mailtrap (E2E tests can read inbox)
+// Password reset goes through Resend
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
     Google,
     Password({
       reset: ResendOTPPasswordReset,
-      verify: ResendOTPVerification,
+      verify: MailtrapOTPVerification,
     }),
   ],
 });

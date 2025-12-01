@@ -19,10 +19,38 @@ export abstract class BasePage {
   abstract goto(): Promise<void>;
 
   /**
-   * Wait for page to be fully loaded
+   * Wait for page to be fully loaded and React to be hydrated
+   * Using 'domcontentloaded' instead of 'networkidle' because Convex
+   * keeps WebSocket connections active, preventing networkidle from resolving
    */
   async waitForLoad() {
-    await this.page.waitForLoadState("networkidle");
+    // Wait for DOM content to load
+    await this.page.waitForLoadState("domcontentloaded");
+
+    // Wait for scripts to load and execute
+    await this.page.waitForLoadState("load");
+
+    // Wait for React hydration by checking for __reactFiber on buttons
+    // This is more reliable than checking body since buttons are interactive
+    await this.page.waitForFunction(
+      () => {
+        const buttons = document.querySelectorAll("button");
+        if (buttons.length === 0) return true; // No buttons, assume ready
+
+        // Check if at least one button has React fiber attached
+        for (const button of buttons) {
+          const keys = Object.keys(button);
+          if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
+            return true;
+          }
+        }
+        return false;
+      },
+      { timeout: 30000 },
+    );
+
+    // Wait a bit more for event handlers to be fully attached
+    await this.page.waitForTimeout(500);
   }
 
   /**

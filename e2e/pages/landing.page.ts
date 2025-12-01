@@ -69,24 +69,38 @@ export class LandingPage extends BasePage {
   // ===================
 
   async clickGetStarted() {
-    // Use JavaScript click to bypass animated SVG overlays
+    // Wait for button to be ready
+    await this.heroGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
+
+    // Wait for any pending navigation to complete
+    await this.page.waitForLoadState("networkidle");
+
+    // Use evaluate to call native click which React intercepts
     await this.heroGetStartedButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
+
+    // Wait for login section to appear and stabilize
+    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(300); // Let React finish rendering
   }
 
   async clickNavLogin() {
+    await this.navLoginButton.waitFor({ state: "visible", timeout: 10000 });
     await this.navLoginButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
+    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(300);
   }
 
   async clickNavGetStarted() {
+    await this.navGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
     await this.navGetStartedButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
+    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(300);
   }
 
   async goBackToHome() {
+    await this.backToHomeButton.waitFor({ state: "visible", timeout: 10000 });
     await this.backToHomeButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.heroHeadline).toBeVisible({ timeout: 10000 });
+    await this.heroHeadline.waitFor({ state: "visible", timeout: 10000 });
   }
 
   // ===================
@@ -94,13 +108,13 @@ export class LandingPage extends BasePage {
   // ===================
 
   async expectLandingPage() {
-    await expect(this.heroHeadline).toBeVisible();
-    await expect(this.heroGetStartedButton).toBeVisible();
-    await expect(this.navGetStartedButton).toBeVisible();
+    await expect(this.heroHeadline).toBeVisible({ timeout: 10000 });
+    await expect(this.heroGetStartedButton).toBeVisible({ timeout: 5000 });
+    await expect(this.navGetStartedButton).toBeVisible({ timeout: 5000 });
   }
 
   async expectLoginSection() {
-    await expect(this.loginSectionHeading).toBeVisible();
-    await expect(this.backToHomeButton).toBeVisible();
+    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.backToHomeButton).toBeVisible({ timeout: 10000 });
   }
 }

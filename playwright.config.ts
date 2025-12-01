@@ -12,17 +12,17 @@ export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",
 
-  // Run tests in parallel within files
-  fullyParallel: true,
+  // Run tests sequentially (no parallel execution)
+  fullyParallel: false,
 
   // Fail build on CI if test.only is left in code
   forbidOnly: !!process.env.CI,
 
-  // Retries: 2 on CI, 0 locally
+  // No retries locally, 2 on CI
   retries: process.env.CI ? 2 : 0,
 
-  // Workers: 1 on CI for stability, auto locally
-  workers: process.env.CI ? 1 : undefined,
+  // Single worker - sequential test execution
+  workers: 1,
 
   // Reporter configuration
   reporter: process.env.CI
