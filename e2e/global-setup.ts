@@ -44,26 +44,15 @@ async function globalSetup(config: FullConfig): Promise<void> {
     // Wait for page to load
     await page.waitForLoadState("load");
 
-    // Wait for React hydration - check links and buttons for React markers
-    await page.waitForFunction(
-      () => {
-        const elements = document.querySelectorAll("a, button");
-        for (const element of elements) {
-          const keys = Object.keys(element);
-          if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
-            return true;
-          }
-        }
-        return false;
-      },
-      { timeout: 30000 },
-    );
+    // Wait for the landing page to be interactive by checking for the Get Started link
+    // This is more reliable than checking React internals
+    const getStartedLink = page.getByRole("link", { name: /get started free/i });
+    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
 
+    // Short wait for React hydration to complete
     await page.waitForTimeout(500);
 
     // Click "Get Started Free" link to navigate to sign in page
-    const getStartedLink = page.getByRole("link", { name: /get started free/i });
-    await getStartedLink.waitFor({ state: "visible", timeout: 10000 });
     await getStartedLink.click();
 
     // Wait for login form to appear

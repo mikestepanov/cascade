@@ -87,10 +87,6 @@ export function getResendFromEmail(): string {
   return requireEnv("RESEND_FROM_EMAIL");
 }
 
-export function isResendConfigured(): boolean {
-  return !!process.env.RESEND_API_KEY && !!process.env.RESEND_FROM_EMAIL;
-}
-
 // ===========================================
 // Email - SendPulse
 // ===========================================
@@ -105,14 +101,6 @@ export function getSendPulseSecret(): string {
 
 export function getSendPulseFromEmail(): string {
   return requireEnv("SENDPULSE_FROM_EMAIL");
-}
-
-export function isSendPulseConfigured(): boolean {
-  return (
-    !!process.env.SENDPULSE_ID &&
-    !!process.env.SENDPULSE_SECRET &&
-    !!process.env.SENDPULSE_FROM_EMAIL
-  );
 }
 
 // ===========================================
@@ -137,15 +125,6 @@ export function getMailtrapMode(): "sandbox" | "production" {
     throw new Error(`Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`);
   }
   return mode;
-}
-
-export function isMailtrapProviderConfigured(): boolean {
-  return (
-    !!process.env.MAILTRAP_API_TOKEN &&
-    !!process.env.MAILTRAP_INBOX_ID &&
-    !!process.env.MAILTRAP_FROM_EMAIL &&
-    !!process.env.MAILTRAP_MODE
-  );
 }
 
 // For E2E tests to read inbox
