@@ -1,10 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { PlayIcon } from "./icons";
 
-interface HeroSectionProps {
-  onGetStarted: () => void;
-}
-
-export function HeroSection({ onGetStarted }: HeroSectionProps) {
+export function HeroSection() {
   return (
     <section className="px-6 pt-16 pb-24">
       <div className="max-w-4xl mx-auto text-center">
@@ -32,13 +29,12 @@ export function HeroSection({ onGetStarted }: HeroSectionProps) {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            type="button"
-            onClick={onGetStarted}
+          <Link
+            to="/signin"
             className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
           >
             Get Started Free
-          </button>
+          </Link>
           <button
             type="button"
             className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"

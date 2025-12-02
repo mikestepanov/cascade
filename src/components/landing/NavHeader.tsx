@@ -1,10 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { NixeloLogo } from "./icons";
 
-interface NavHeaderProps {
-  onGetStarted: () => void;
-}
-
-export function NavHeader({ onGetStarted }: NavHeaderProps) {
+export function NavHeader() {
   return (
     <header className="px-6 py-5">
       <nav className="max-w-6xl mx-auto flex items-center justify-between">
@@ -23,22 +20,17 @@ export function NavHeader({ onGetStarted }: NavHeaderProps) {
               {item}
             </a>
           ))}
-          <button
-            type="button"
-            onClick={onGetStarted}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            Login
-          </button>
+          <Link to="/signin" className="text-sm text-gray-400 hover:text-white transition-colors">
+            Sign in
+          </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={onGetStarted}
+        <Link
+          to="/signin"
           className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
         >
           Get Started
-        </button>
+        </Link>
       </nav>
     </header>
   );

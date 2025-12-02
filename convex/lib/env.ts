@@ -104,7 +104,7 @@ export function getSendPulseFromEmail(): string {
 }
 
 // ===========================================
-// Email - SendGrid (REMOVED - free tier ended July 2025)
+// Email - SendGrid removed (free tier ended July 2025)
 // ===========================================
 
 // ===========================================

@@ -24,30 +24,10 @@ interface MailtrapSendResponse {
 }
 
 export class MailtrapProvider implements EmailProvider {
-  private apiToken: string | undefined;
-  private inboxId: string | undefined;
-  private defaultFrom: string | undefined;
-  private mode: "sandbox" | "production" = "sandbox";
-
-  constructor() {
-    try {
-      this.apiToken = getMailtrapApiToken();
-      this.inboxId = getMailtrapInboxId();
-      this.defaultFrom = getMailtrapFromEmail();
-      this.mode = getMailtrapMode();
-    } catch {
-      // Not configured - isConfigured() will return false
-    }
-  }
-
-  isConfigured(): boolean {
-    // Production mode doesn't need inboxId
-    if (this.mode === "production") {
-      return !!this.apiToken;
-    }
-    // Sandbox mode needs both token and inboxId
-    return !!this.apiToken && !!this.inboxId;
-  }
+  private apiToken = getMailtrapApiToken();
+  private inboxId = getMailtrapInboxId();
+  private defaultFrom = getMailtrapFromEmail();
+  private mode = getMailtrapMode();
 
   private parseFromAddress(from: string): { email: string; name?: string } {
     // Parse "Name <email@example.com>" format
@@ -68,18 +48,6 @@ export class MailtrapProvider implements EmailProvider {
   }
 
   async send(params: EmailSendParams): Promise<EmailSendResult> {
-    if (!this.isConfigured()) {
-      const requiredVars =
-        this.mode === "production"
-          ? "MAILTRAP_API_TOKEN and MAILTRAP_MODE"
-          : "MAILTRAP_API_TOKEN, MAILTRAP_INBOX_ID, and MAILTRAP_MODE";
-      return {
-        id: "not-configured",
-        success: false,
-        error: `Mailtrap provider not configured. Set ${requiredVars} environment variables.`,
-      };
-    }
-
     try {
       const fromParsed = this.parseFromAddress(
         params.from || this.defaultFrom || "Nixelo <noreply@nixelo.com>",

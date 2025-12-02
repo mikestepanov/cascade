@@ -10,7 +10,7 @@
  * 3. Resend - 3,000/month, 100/day
  * 4. Mailgun - 1,000/month, 100/day (requires credit card)
  *
- * Total free capacity: ~20,000 emails/month
+ * Total free capacity: 20,000 emails/month
  *
  * Note: SendGrid removed - free tier ended July 2025
  */

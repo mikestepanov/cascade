@@ -25,9 +25,4 @@ export interface EmailProvider {
    * Send an email
    */
   send(params: EmailSendParams): Promise<EmailSendResult>;
-
-  /**
-   * Validate configuration (API key, from address, etc.)
-   */
-  isConfigured(): boolean;
 }

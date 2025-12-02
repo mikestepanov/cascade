@@ -24,10 +24,6 @@ export class MailgunProvider implements EmailProvider {
   private defaultFrom = getMailgunFromEmail();
   private region = getMailgunRegion();
 
-  isConfigured(): boolean {
-    return !!this.apiKey && !!this.domain;
-  }
-
   private getBaseUrl(): string {
     return this.region === "eu"
       ? `https://api.eu.mailgun.net/v3/${this.domain}`
@@ -35,15 +31,6 @@ export class MailgunProvider implements EmailProvider {
   }
 
   async send(params: EmailSendParams): Promise<EmailSendResult> {
-    if (!this.isConfigured()) {
-      return {
-        id: "not-configured",
-        success: false,
-        error:
-          "Mailgun provider not configured. Set MAILGUN_API_KEY and MAILGUN_DOMAIN environment variables.",
-      };
-    }
-
     try {
       const toList = Array.isArray(params.to) ? params.to : [params.to];
 

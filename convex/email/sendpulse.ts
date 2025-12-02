@@ -28,10 +28,6 @@ export class SendPulseProvider implements EmailProvider {
   private tokenExpiry = 0;
   private baseUrl = "https://api.sendpulse.com";
 
-  isConfigured(): boolean {
-    return !!this.clientId && !!this.clientSecret;
-  }
-
   private async getAccessToken(): Promise<string> {
     // Return cached token if still valid
     if (this.accessToken && Date.now() < this.tokenExpiry) {
@@ -72,15 +68,6 @@ export class SendPulseProvider implements EmailProvider {
   }
 
   async send(params: EmailSendParams): Promise<EmailSendResult> {
-    if (!this.isConfigured()) {
-      return {
-        id: "not-configured",
-        success: false,
-        error:
-          "SendPulse provider not configured. Set SENDPULSE_ID and SENDPULSE_SECRET environment variables.",
-      };
-    }
-
     try {
       const token = await this.getAccessToken();
       const fromParsed = this.parseFromAddress(params.from || this.defaultFrom);
