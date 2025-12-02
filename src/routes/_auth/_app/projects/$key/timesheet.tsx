@@ -9,7 +9,7 @@ const TimeTrackingPage = lazy(() =>
   })),
 );
 
-export const Route = createFileRoute("/_app/projects/$key/timesheet")({
+export const Route = createFileRoute("/_auth/_app/projects/$key/timesheet")({
   component: TimesheetPage,
 });
 

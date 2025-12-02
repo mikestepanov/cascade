@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { UnifiedCalendarView } from "@/components/Calendar/UnifiedCalendarView";
+import { ProjectBoard } from "@/components/ProjectBoard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { api } from "../../../../../convex/_generated/api";
 
-export const Route = createFileRoute("/_app/projects/$key/calendar")({
-  component: CalendarPage,
+export const Route = createFileRoute("/_auth/_app/projects/$key/board")({
+  component: BoardPage,
 });
 
-function CalendarPage() {
+function BoardPage() {
   const { key } = Route.useParams();
   const project = useQuery(api.projects.getByKey, { key });
 
@@ -24,5 +24,5 @@ function CalendarPage() {
     return null; // Parent layout handles this
   }
 
-  return <UnifiedCalendarView projectId={project._id} />;
+  return <ProjectBoard projectId={project._id} />;
 }

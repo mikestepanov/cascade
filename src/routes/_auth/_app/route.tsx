@@ -1,5 +1,5 @@
-import { createFileRoute, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { CommandPalette, useCommands } from "@/components/CommandPalette";
@@ -7,27 +7,13 @@ import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 
-export const Route = createFileRoute("/_app")({
+export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
-  ssr: false, // Disable SSR for entire app section
 });
 
 function AppLayout() {
-  return (
-    <>
-      <Authenticated>
-        <AuthenticatedApp />
-      </Authenticated>
-      <Unauthenticated>
-        <Navigate to="/" />
-      </Unauthenticated>
-    </>
-  );
-}
-
-function AuthenticatedApp() {
   const navigate = useNavigate();
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
 
@@ -76,7 +62,6 @@ function AuthenticatedApp() {
 
   // Redirect to onboarding if not completed
   if (onboardingStatus === null || !onboardingStatus.onboardingCompleted) {
-    // Use effect to navigate to avoid render-time navigation
     navigate({ to: "/onboarding" });
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">

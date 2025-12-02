@@ -11,7 +11,7 @@ const DocumentEditor = lazy(() =>
   })),
 );
 
-export const Route = createFileRoute("/_app/documents/$id")({
+export const Route = createFileRoute("/_auth/_app/documents/$id")({
   component: DocumentPage,
 });
 

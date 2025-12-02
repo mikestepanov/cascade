@@ -3,7 +3,7 @@ import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { api } from "../../../../convex/_generated/api";
 
-export const Route = createFileRoute("/_app/issues/$key")({
+export const Route = createFileRoute("/_auth/_app/issues/$key")({
   component: IssuePage,
 });
 

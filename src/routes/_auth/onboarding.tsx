@@ -1,5 +1,5 @@
-import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
-import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { FeatureHighlights } from "@/components/Onboarding/FeatureHighlights";
 import { InvitedWelcome } from "@/components/Onboarding/InvitedWelcome";
@@ -8,30 +8,16 @@ import { MemberOnboarding } from "@/components/Onboarding/MemberOnboarding";
 import { RoleSelector } from "@/components/Onboarding/RoleSelector";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
-export const Route = createFileRoute("/onboarding")({
-  component: OnboardingRoute,
-  ssr: false, // No SSR needed for onboarding
+export const Route = createFileRoute("/_auth/onboarding")({
+  component: OnboardingPage,
 });
-
-function OnboardingRoute() {
-  return (
-    <>
-      <Authenticated>
-        <OnboardingFlow />
-      </Authenticated>
-      <Unauthenticated>
-        <Navigate to="/" />
-      </Unauthenticated>
-    </>
-  );
-}
 
 type OnboardingStep = "loading" | "invited" | "role-select" | "lead-flow" | "member-flow";
 
-function OnboardingFlow() {
+function OnboardingPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<OnboardingStep>("loading");
   const [, setSelectedPersona] = useState<"team_lead" | "team_member" | null>(null);
