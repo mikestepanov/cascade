@@ -34,6 +34,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 ### Frontend
 - **Framework:** React 19 with TypeScript
 - **Build Tool:** Vite 6
+- **Routing:** TanStack Router (file-based routing with type-safe navigation)
 - **Styling:** Tailwind CSS 3
 - **Editor:** BlockNote (ProseMirror-based)
 - **State Management:** Convex React hooks (reactive queries)
@@ -64,6 +65,31 @@ This document provides comprehensive guidance for AI assistants working on the N
 ```
 nixelo/
 ├── src/                          # Frontend React application
+│   ├── routes/                   # TanStack Router file-based routes
+│   │   ├── __root.tsx           # Root layout (providers, Convex, Toaster)
+│   │   ├── index.tsx            # Landing page (/)
+│   │   ├── onboarding.tsx       # Onboarding flow (/onboarding)
+│   │   ├── invite.$token.tsx    # Invite acceptance (/invite/:token)
+│   │   └── _app/                # Auth-protected layout group
+│   │       ├── route.tsx        # App shell (sidebar, header, auth check)
+│   │       ├── dashboard.tsx    # Dashboard (/dashboard)
+│   │       ├── documents/       # Document routes
+│   │       │   ├── index.tsx    # Documents list (/documents)
+│   │       │   └── $id.tsx      # Document editor (/documents/:id)
+│   │       ├── projects/        # Project routes
+│   │       │   ├── index.tsx    # Projects list (/projects)
+│   │       │   └── $key/        # Project detail (/projects/:key)
+│   │       │       ├── route.tsx    # Project layout with tabs
+│   │       │       ├── index.tsx    # Redirects to board
+│   │       │       ├── board.tsx    # Kanban board
+│   │       │       ├── calendar.tsx # Project calendar
+│   │       │       ├── timesheet.tsx # Time tracking
+│   │       │       └── settings.tsx # Project settings
+│   │       ├── issues/
+│   │       │   └── $key.tsx     # Issue detail (/issues/PROJ-123)
+│   │       └── settings/        # User settings
+│   │           ├── index.tsx    # Redirects to profile
+│   │           └── profile.tsx  # Profile settings
 │   ├── components/               # React components
 │   │   ├── Sidebar.tsx          # Document navigation sidebar
 │   │   ├── DocumentEditor.tsx   # Collaborative document editor
@@ -77,10 +103,10 @@ nixelo/
 │   │   └── AI/                  # AI components (chat, suggestions)
 │   ├── lib/                     # Utility functions
 │   │   └── utils.ts             # cn() for className merging
-│   ├── App.tsx                  # Main app component with routing logic
+│   ├── router.tsx               # TanStack Router configuration
+│   ├── routeTree.gen.ts         # Auto-generated route tree (do not edit)
 │   ├── SignInForm.tsx           # Authentication form
 │   ├── SignOutButton.tsx        # Sign out component
-│   ├── main.tsx                 # Application entry point
 │   └── index.css                # Global styles and Tailwind imports
 │
 ├── convex/                       # Backend Convex functions
@@ -219,6 +245,14 @@ nixelo/
    - Database IDs: Use Convex's `Id<"tableName">` type
    - CSS classes: Tailwind utilities, kebab-case for custom classes
 
+5. **TanStack Router File Naming:**
+   - `__root.tsx` - Root layout (wraps entire app)
+   - `_folder/` - Pathless layout group (underscore prefix = no URL segment)
+   - `$param.tsx` - Dynamic route parameter (e.g., `$key.tsx` → `:key`)
+   - `route.tsx` - Layout file for a directory (renders `<Outlet />`)
+   - `index.tsx` - Index route for a directory
+   - `routeTree.gen.ts` - Auto-generated, do not edit manually
+
 ### Convex Backend Patterns
 
 1. **Query Pattern:**
@@ -285,13 +319,50 @@ export function ComponentName({ prop }: { prop: Type }) {
 }
 ```
 
-2. **State Management:**
-   - Use `useState` for local UI state
-   - Use Convex `useQuery` for server state (automatic reactivity)
-   - Pass state handlers down as props
-   - Avoid prop drilling with composition
+2. **Navigation with TanStack Router:**
+```typescript
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
 
-3. **Error Handling:**
+// Declarative navigation with <Link>
+<Link to="/projects/$key/board" params={{ key: "PROJ" }}>
+  Board
+</Link>
+
+// Programmatic navigation
+const navigate = useNavigate();
+navigate({ to: "/projects/$key/board", params: { key: "PROJ" } });
+
+// Access route params (type-safe)
+const { key } = useParams({ from: "/_app/projects/$key" });
+
+// Access current location
+import { useLocation } from "@tanstack/react-router";
+const location = useLocation();
+```
+
+3. **Route File Structure:**
+```typescript
+// routes/_app/projects/$key/board.tsx
+import { createFileRoute } from "@tanstack/react-router";
+import { ProjectBoard } from "@/components/ProjectBoard";
+
+export const Route = createFileRoute("/_app/projects/$key/board")({
+  component: BoardPage,
+});
+
+function BoardPage() {
+  const { key } = Route.useParams(); // Type-safe params
+  return <ProjectBoard projectKey={key} />;
+}
+```
+
+4. **State Management:**
+   - Navigation state lives in URL (routes/params) - not React state
+   - Use `useState` for local UI state only
+   - Use Convex `useQuery` for server state (automatic reactivity)
+   - Global UI state (modals, command palette) in route layouts or context
+
+5. **Error Handling:**
    - **Error Boundaries:** App uses React Error Boundaries to prevent crashes
    - Use try/catch with Convex mutations
    - Display errors with Sonner toast notifications
@@ -313,9 +384,9 @@ export function ComponentName({ prop }: { prop: Type }) {
    ```
 
    **Error Boundary Locations:**
-   - App-level: Wraps entire application (App.tsx:17)
-   - Sidebar: Prevents sidebar errors from crashing app (App.tsx:45)
-   - Main content: Isolates editor/board errors (App.tsx:117)
+   - Root layout: Wraps entire application (`routes/__root.tsx`)
+   - App layout: Wraps authenticated sections (`routes/_app/route.tsx`)
+   - Component level: Individual components can have their own boundaries
 
    **Custom Error Fallbacks:**
    - Use `SectionErrorFallback` for consistent error UI
@@ -805,6 +876,7 @@ The project includes Chef (Convex's development platform) integration:
 ### External Documentation
 - [Convex Documentation](https://docs.convex.dev/)
 - [React 19 Documentation](https://react.dev/)
+- [TanStack Router](https://tanstack.com/router/latest) - File-based routing
 - [Tailwind CSS](https://tailwindcss.com/)
 - [BlockNote Editor](https://www.blocknotejs.org/)
 - [PostHog Docs](https://posthog.com/docs)
@@ -831,7 +903,7 @@ The project includes Chef (Convex's development platform) integration:
 
 ---
 
-**Last Updated:** 2025-11-27
+**Last Updated:** 2025-12-01
 **Convex Deployment:** peaceful-salmon-964
 **Node Version:** 18+
 **Package Manager:** pnpm (preferred)
