@@ -41,7 +41,6 @@ import type * as documents from "../documents.js";
 import type * as email_digests from "../email/digests.js";
 import type * as email_helpers from "../email/helpers.js";
 import type * as email_index from "../email/index.js";
-import type * as email_mailgun from "../email/mailgun.js";
 import type * as email_mailtrap from "../email/mailtrap.js";
 import type * as email_notifications from "../email/notifications.js";
 import type * as email_provider from "../email/provider.js";
@@ -134,7 +133,6 @@ declare const fullApi: ApiFromModules<{
   "email/digests": typeof email_digests;
   "email/helpers": typeof email_helpers;
   "email/index": typeof email_index;
-  "email/mailgun": typeof email_mailgun;
   "email/mailtrap": typeof email_mailtrap;
   "email/notifications": typeof email_notifications;
   "email/provider": typeof email_provider;

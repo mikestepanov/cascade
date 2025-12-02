@@ -1,27 +1,54 @@
 export function NixeloLogo({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="url(#nixeloGrad)" />
-      <path d="M10 12L16 8L22 12V20L16 24L10 20V12Z" stroke="white" strokeWidth="1.5" fill="none" />
-      <circle cx="16" cy="16" r="2.5" fill="white" />
+    <svg width={size} height={size} viewBox="0 0 50 50" fill="none" style={{ overflow: "visible" }}>
       <defs>
-        <linearGradient id="nixeloGrad" x1="0" y1="0" x2="32" y2="32">
-          <stop stopColor="#06b6d4" />
-          <stop offset="1" stopColor="#8b5cf6" />
+        <linearGradient id="nixeloGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#22d3ee" />
+          <stop offset="100%" stopColor="#a855f7" />
         </linearGradient>
       </defs>
+      <path
+        d="M 12 40 C 12 15, 12 10, 22 10 C 30 10, 32 40, 40 40 C 48 40, 48 20, 48 10"
+        fill="none"
+        stroke="url(#nixeloGrad)"
+        strokeWidth={8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          filter: "drop-shadow(0 0 8px rgba(34, 211, 238, 0.5))",
+          transition: "transform 0.3s ease, filter 0.3s ease",
+        }}
+      />
     </svg>
   );
 }
 
 export function WorkflowIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="1.5">
-      <circle cx="5" cy="12" r="2" />
-      <circle cx="12" cy="6" r="2" />
-      <circle cx="12" cy="18" r="2" />
-      <circle cx="19" cy="12" r="2" />
-      <path d="M7 12h3M14 6h2.5a1.5 1.5 0 011.5 1.5v3M14 18h2.5a1.5 1.5 0 001.5-1.5v-3" />
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#06b6d4"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Gear */}
+      <circle cx="8" cy="8" r="3" />
+      <path d="M8 2v2" />
+      <path d="M8 12v2" />
+      <path d="M2 8h2" />
+      <path d="M12 8h2" />
+      {/* Diagonal connector */}
+      <path d="M11 11l4 4" strokeOpacity="0.5" />
+      {/* Globe/network */}
+      <circle cx="16" cy="16" r="4" />
+      <path d="M16 12a9 9 0 0 0 0 8" />
+      <path d="M12 16h8" />
+      {/* Accent dot */}
+      <circle cx="19" cy="5" r="1.5" stroke="none" fill="#00E5FF" />
     </svg>
   );
 }
@@ -32,6 +59,20 @@ export function TimeIcon() {
       <rect x="3" y="4" width="18" height="16" rx="2" />
       <path d="M3 8h18M8 2v4M16 2v4" />
       <circle cx="12" cy="14" r="2" />
+    </svg>
+  );
+}
+
+export function CollabIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Two cursors */}
+      <path d="M3 3l4 12 2-4 4-2L3 3z" />
+      <path d="M14 14l4 7 1-3 3-1-8-3z" strokeOpacity="0.6" />
+      {/* Connection line */}
+      <path d="M10 10l4 4" strokeDasharray="2 2" strokeOpacity="0.4" />
+      {/* Accent dot */}
+      <circle cx="19" cy="5" r="1.5" stroke="none" fill="#14b8a6" />
     </svg>
   );
 }
@@ -65,6 +106,104 @@ export function PlayIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 16 16" fill="currentColor">
       <path d="M4 3l10 5-10 5V3z" />
+    </svg>
+  );
+}
+
+// Grid icons from AI template
+export function SecurityIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function CloudIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+      <circle cx="18" cy="15" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function SettingsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="21" x2="4" y2="14" />
+      <line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" />
+      <line x1="20" y1="12" x2="20" y2="3" />
+      <circle cx="4" cy="12" r="2" fill="currentColor" />
+      <circle cx="12" cy="10" r="2" fill="currentColor" />
+      <circle cx="20" cy="14" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function PeopleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <circle cx="20" cy="8" r="2" fill="currentColor" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    </svg>
+  );
+}
+
+export function CodeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function StackIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+      <circle cx="12" cy="2" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function BellIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      <circle cx="18" cy="5" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function FileIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <circle cx="10" cy="13" r="1.5" fill="currentColor" />
+      <circle cx="14" cy="13" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function LinkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
     </svg>
   );
 }
