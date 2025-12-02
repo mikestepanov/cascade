@@ -8,15 +8,11 @@
  * 1. SendPulse - 12,000/month, 400/day (highest capacity)
  * 2. Mailtrap - 4,000/month, 150/day
  * 3. Resend - 3,000/month, 100/day
- * 4. Mailgun - 1,000/month, 100/day (requires credit card)
  *
- * Total free capacity: 20,000 emails/month
- *
- * Note: SendGrid removed - free tier ended July 2025
+ * Total free capacity: 19,000 emails/month
  */
 
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import { MailgunProvider } from "./mailgun";
 import { MailtrapProvider } from "./mailtrap";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 import { ResendProvider } from "./resend";
@@ -43,12 +39,6 @@ const PROVIDER_CONFIG: Record<
     factory: () => new MailtrapProvider(),
   },
   resend: { freePerMonth: 3000, freePerDay: 100, priority: 3, factory: () => new ResendProvider() },
-  mailgun: {
-    freePerMonth: 1000,
-    freePerDay: 100,
-    priority: 4,
-    factory: () => new MailgunProvider(),
-  },
 };
 
 // Providers sorted by priority

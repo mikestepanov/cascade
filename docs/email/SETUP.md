@@ -2,16 +2,15 @@
 
 ## Quick Start
 
-All 4 email providers are required. The system rotates between them to maximize free tier usage:
+All 3 email providers are required. The system rotates between them to maximize free tier usage:
 
 | Provider  | Free Tier              | Priority    |
 |-----------|------------------------|-------------|
 | SendPulse | 12,000/month (400/day) | 1 (highest) |
 | Mailtrap  | 4,000/month (150/day)  | 2           |
 | Resend    | 3,000/month (100/day)  | 3           |
-| Mailgun   | 1,000/month (100/day)  | 4           |
 
-**Total free capacity: 20,000 emails/month**
+**Total free capacity: 19,000 emails/month**
 
 For E2E testing, use Mailtrap in sandbox mode (emails go to inbox, readable via API).
 
@@ -76,9 +75,8 @@ The system automatically rotates between providers based on free tier usage:
 | SendPulse | 12,000/month (400/day) | 1 (highest) |
 | Mailtrap  | 4,000/month (150/day)  | 2           |
 | Resend    | 3,000/month (100/day)  | 3           |
-| Mailgun   | 1,000/month (100/day)  | 4           |
 
-**Total free capacity: 20,000 emails/month**
+**Total free capacity: 19,000 emails/month**
 
 The system:
 1. Selects provider with free capacity remaining (both daily AND monthly)
@@ -135,18 +133,6 @@ When Mailtrap is configured and selected by the rotation system:
 4. OTP code extracted and entered in test
 
 See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for Playwright usage.
-
-## Alternative Providers
-
-### Mailgun Setup
-
-```bash
-EMAIL_PROVIDER=mailgun
-MAILGUN_API_KEY=key-xxxxxxxxxxxxx
-MAILGUN_DOMAIN=mg.yourdomain.com
-MAILGUN_FROM_EMAIL=Nixelo <notifications@yourdomain.com>
-MAILGUN_REGION=us  # or 'eu' for EU region
-```
 
 ## Provider Rotation
 
@@ -252,10 +238,6 @@ For production emails to be delivered reliably:
 | `MAILTRAP_ACCOUNT_ID` | E2E only | For reading inbox via API |
 | `RESEND_API_KEY` | Yes | Resend API key |
 | `RESEND_FROM_EMAIL` | Yes | From address |
-| `MAILGUN_API_KEY` | Yes | Mailgun API key |
-| `MAILGUN_DOMAIN` | Yes | Mailgun sending domain |
-| `MAILGUN_FROM_EMAIL` | Yes | From address |
-| `MAILGUN_REGION` | Yes | 'us' or 'eu' |
 
 ## Troubleshooting
 
@@ -280,8 +262,8 @@ For production emails to be delivered reliably:
 
 ## FAQ
 
-**Q: Do I need all 4 providers configured?**
-A: Yes, all 4 providers are required. The system will fail at runtime if any provider credentials are missing.
+**Q: Do I need all 3 providers configured?**
+A: Yes, all 3 providers are required. The system will fail at runtime if any provider credentials are missing.
 
 **Q: How does provider rotation work?**
 A: The system tracks daily and monthly usage per provider. It selects the highest-priority provider with free capacity remaining.

@@ -104,30 +104,6 @@ export function getSendPulseFromEmail(): string {
 }
 
 // ===========================================
-// Email - SendGrid removed (free tier ended July 2025)
-// ===========================================
-
-// ===========================================
-// Email - Mailgun
-// ===========================================
-
-export function getMailgunApiKey(): string {
-  return requireEnv("MAILGUN_API_KEY");
-}
-
-export function getMailgunDomain(): string {
-  return requireEnv("MAILGUN_DOMAIN");
-}
-
-export function getMailgunFromEmail(): string {
-  return requireEnv("MAILGUN_FROM_EMAIL");
-}
-
-export function getMailgunRegion(): "us" | "eu" {
-  return requireEnv("MAILGUN_REGION") as "us" | "eu";
-}
-
-// ===========================================
 // Email - Mailtrap
 // ===========================================
 

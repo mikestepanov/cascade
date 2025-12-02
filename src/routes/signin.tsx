@@ -3,7 +3,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { NixeloLogo } from "@/components/landing";
 import { SignInForm } from "@/SignInForm";
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/signin")({
   component: SignInRoute,
   ssr: false,
 });
