@@ -143,6 +143,14 @@ export function getMailtrapFromEmail(): string {
   return requireEnv("MAILTRAP_FROM_EMAIL");
 }
 
+export function getMailtrapMode(): "sandbox" | "production" {
+  const mode = requireEnv("MAILTRAP_MODE");
+  if (mode !== "sandbox" && mode !== "production") {
+    throw new Error(`Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`);
+  }
+  return mode;
+}
+
 // For E2E tests to read inbox
 export function getMailtrapAccountId(): string {
   return requireEnv("MAILTRAP_ACCOUNT_ID");

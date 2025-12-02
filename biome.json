@@ -59,7 +59,7 @@
       }
     },
     {
-      "includes": ["src/components/NixeloLanding.tsx"],
+      "includes": ["src/components/landing/**"],
       "linter": {
         "rules": {
           "a11y": {

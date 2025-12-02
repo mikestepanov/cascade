@@ -1,10 +1,9 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { CommandPalette, useCommands } from "@/components/CommandPalette";
 import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
-import { NixeloLanding } from "@/components/NixeloLanding";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
@@ -22,7 +21,7 @@ function AppLayout() {
         <AuthenticatedApp />
       </Authenticated>
       <Unauthenticated>
-        <NixeloLanding />
+        <Navigate to="/" />
       </Unauthenticated>
     </>
   );

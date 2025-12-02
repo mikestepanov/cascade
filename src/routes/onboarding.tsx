@@ -1,6 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { NixeloLanding } from "@/components/NixeloLanding";
 import { OnboardingPage } from "@/pages/OnboardingPage";
 
 export const Route = createFileRoute("/onboarding")({
@@ -21,7 +20,7 @@ function OnboardingRoute() {
         <OnboardingPage onComplete={handleComplete} />
       </Authenticated>
       <Unauthenticated>
-        <NixeloLanding />
+        <Navigate to="/" />
       </Unauthenticated>
     </>
   );

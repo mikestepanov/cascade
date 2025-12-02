@@ -4,6 +4,7 @@ import { ConvexReactClient } from "convex/react";
 import { type ReactNode, useEffect } from "react";
 import { Toaster } from "sonner";
 import { LazyPostHog } from "../components/LazyPostHog";
+import { NotFoundPage } from "../components/NotFoundPage";
 import { ThemeProvider } from "../contexts/ThemeContext";
 // Import global styles as URL for SSR (prevents FOUC)
 import appCss from "../index.css?url";
@@ -37,6 +38,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
+  notFoundComponent: NotFoundPage,
 });
 
 function RootComponent() {
