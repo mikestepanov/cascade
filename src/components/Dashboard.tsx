@@ -1,7 +1,7 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { ProjectsList } from "./Dashboard/ProjectsList";
@@ -10,12 +10,8 @@ import { RecentActivity } from "./Dashboard/RecentActivity";
 
 type IssueFilter = "assigned" | "created" | "all";
 
-interface DashboardProps {
-  onNavigateToProject?: (projectId: Id<"projects">) => void;
-  onNavigateToProjects?: () => void;
-}
-
-export function Dashboard({ onNavigateToProject, onNavigateToProjects }: DashboardProps) {
+export function Dashboard() {
+  const navigate = useNavigate();
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -31,17 +27,26 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
         ? myCreatedIssues
         : [...(myIssues || []), ...(myCreatedIssues || [])];
 
+  // Navigation helpers
+  const navigateToProject = (projectKey: string) => {
+    navigate({ to: "/projects/$key/board", params: { key: projectKey } });
+  };
+
+  const navigateToProjects = () => {
+    navigate({ to: "/projects" });
+  };
+
   // Keyboard navigation for issue list
   const issueNavigation = useListNavigation({
     items: displayIssues || [],
-    onSelect: (issue) => onNavigateToProject?.(issue.projectId),
+    onSelect: (issue) => navigateToProject(issue.projectKey),
     enabled: !!displayIssues && displayIssues.length > 0,
   });
 
   // Keyboard navigation for projects list
   const projectNavigation = useListNavigation({
     items: myProjects || [],
-    onSelect: (project) => onNavigateToProject?.(project._id),
+    onSelect: (project) => navigateToProject(project.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
 
@@ -71,8 +76,8 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
               issueFilter={issueFilter}
               onFilterChange={setIssueFilter}
               issueNavigation={issueNavigation}
-              onNavigateToProject={onNavigateToProject}
-              onNavigateToProjects={onNavigateToProjects}
+              onNavigateToProject={navigateToProject}
+              onNavigateToProjects={navigateToProjects}
             />
           </div>
 
@@ -82,8 +87,8 @@ export function Dashboard({ onNavigateToProject, onNavigateToProjects }: Dashboa
             <ProjectsList
               projects={myProjects}
               projectNavigation={projectNavigation}
-              onNavigateToProject={onNavigateToProject}
-              onNavigateToProjects={onNavigateToProjects}
+              onNavigateToProject={navigateToProject}
+              onNavigateToProjects={navigateToProjects}
             />
 
             {/* Recent Activity */}

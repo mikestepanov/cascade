@@ -67,6 +67,7 @@ e2e/
 │
 ├── utils/                      # Test utilities
 │   ├── index.ts
+│   ├── mailtrap.ts            # Mailtrap API for OTP verification
 │   └── test-helpers.ts        # Helper functions
 │
 ├── auth.spec.ts               # Authentication tests
@@ -218,6 +219,127 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   },
 });
 ```
+
+## Mailtrap OTP Verification
+
+For tests requiring email verification (signup, password reset), we use Mailtrap to capture and read OTP codes.
+
+### Setup
+
+1. **Create Mailtrap Account:** [https://mailtrap.io](https://mailtrap.io) (free tier)
+2. **Get Credentials:**
+   - API Token: Settings → API Tokens
+   - Account ID & Inbox ID: From inbox URL
+
+3. **Set Environment Variables:**
+```bash
+MAILTRAP_API_TOKEN=your_token
+MAILTRAP_ACCOUNT_ID=your_account_id
+MAILTRAP_INBOX_ID=your_inbox_id
+```
+
+### Mailtrap Utilities
+
+**File:** `e2e/utils/mailtrap.ts`
+
+```typescript
+import {
+  waitForVerificationEmail,
+  clearInbox,
+  isMailtrapConfigured
+} from "./utils/mailtrap";
+
+// Check if Mailtrap is configured
+if (!isMailtrapConfigured()) {
+  test.skip("Mailtrap not configured");
+}
+
+// Clear inbox before test
+await clearInbox();
+
+// Wait for OTP email (polls every 2s, timeout 30s)
+const otp = await waitForVerificationEmail("user@example.com", {
+  timeout: 30000,
+  pollInterval: 2000,
+});
+```
+
+### Available Functions
+
+| Function | Description |
+|----------|-------------|
+| `isMailtrapConfigured()` | Returns `true` if all env vars set |
+| `waitForVerificationEmail(email, options)` | Polls inbox, returns OTP code |
+| `clearInbox()` | Deletes all messages (cleanup) |
+| `getTestEmailAddress(prefix)` | Generates unique test email |
+
+### Example: Signup Test with OTP
+
+```typescript
+import { test, expect } from "./fixtures";
+import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
+
+test("complete signup flow with email verification", async ({ authPage }) => {
+  // Setup
+  await clearInbox();
+  const testEmail = `e2e-${Date.now()}@inbox.mailtrap.io`;
+
+  // Start signup
+  await authPage.goto();
+  await authPage.startSignUp(testEmail, "SecurePass123!");
+
+  // Wait for verification email
+  const otp = await waitForVerificationEmail(testEmail);
+
+  // Enter OTP
+  await authPage.enterOTP(otp);
+
+  // Verify success
+  await expect(authPage.page).toHaveURL(/dashboard|onboarding/);
+});
+```
+
+### How It Works
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   E2E Test  │     │   Convex    │     │  Mailtrap   │
+│             │     │   Backend   │     │   Sandbox   │
+└──────┬──────┘     └──────┬──────┘     └──────┬──────┘
+       │                   │                   │
+       │ 1. Submit signup  │                   │
+       │──────────────────>│                   │
+       │                   │ 2. Send OTP email │
+       │                   │──────────────────>│
+       │                   │                   │
+       │ 3. Poll for email │                   │
+       │───────────────────────────────────────>
+       │                   │                   │
+       │ 4. Return email   │                   │
+       │<──────────────────────────────────────│
+       │                   │                   │
+       │ 5. Extract OTP    │                   │
+       │ 6. Submit OTP     │                   │
+       │──────────────────>│                   │
+       │                   │                   │
+       │ 7. Verified!      │                   │
+       │<──────────────────│                   │
+```
+
+### Troubleshooting
+
+**OTP email not arriving:**
+- Check Mailtrap inbox manually
+- Verify `MAILTRAP_API_TOKEN` has correct permissions
+- Check Convex logs for email sending errors
+
+**Timeout waiting for email:**
+- Increase `timeout` option (default 30s)
+- Check if email provider is configured in Convex
+
+**Cannot extract OTP:**
+- OTP pattern expects 8-digit code
+- Check email template format
 
 ## Selector Strategy
 
@@ -460,4 +582,4 @@ npx @playwright/mcp@latest
 
 ---
 
-*Last Updated: 2025-11-27*
+*Last Updated: 2025-12-01*

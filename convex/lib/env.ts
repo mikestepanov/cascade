@@ -1,13 +1,8 @@
 /**
  * Environment variable utilities
  *
- * Centralizes all env var access. No more scattered process.env usage.
- * Required vars throw early if missing. Optional vars return null.
+ * All env vars are required. Set them in Convex dashboard.
  */
-
-// ===========================================
-// Core utilities
-// ===========================================
 
 /**
  * Get a required environment variable. Throws if not defined.
@@ -20,155 +15,150 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-/**
- * Get an optional environment variable. Returns undefined if not defined.
- */
-export function optionalEnv(name: string): string | undefined {
-  return process.env[name] || undefined;
-}
-
 // ===========================================
 // App URLs
 // ===========================================
 
-/** Site URL - required for OAuth, emails, invites */
 export function getSiteUrl(): string {
   return requireEnv("SITE_URL");
 }
 
 // ===========================================
-// Google OAuth (for Auth & Calendar integration)
-// Uses AUTH_GOOGLE_* from Convex Auth for both sign-in and calendar
+// Google OAuth
 // ===========================================
 
-export function getGoogleClientId(): string | undefined {
-  return optionalEnv("AUTH_GOOGLE_ID");
+export function getGoogleClientId(): string {
+  return requireEnv("AUTH_GOOGLE_ID");
 }
 
-export function getGoogleClientSecret(): string | undefined {
-  return optionalEnv("AUTH_GOOGLE_SECRET");
-}
-
-export function isGoogleOAuthConfigured(): boolean {
-  return !!getGoogleClientId() && !!getGoogleClientSecret();
+export function getGoogleClientSecret(): string {
+  return requireEnv("AUTH_GOOGLE_SECRET");
 }
 
 // ===========================================
-// Bot Service (meeting recording)
+// Bot Service
 // ===========================================
 
-export function getBotServiceUrl(): string | undefined {
-  return optionalEnv("BOT_SERVICE_URL");
+export function getBotServiceUrl(): string {
+  return requireEnv("BOT_SERVICE_URL");
 }
 
-export function getBotServiceApiKey(): string | undefined {
-  return optionalEnv("BOT_SERVICE_API_KEY");
-}
-
-export function isBotServiceConfigured(): boolean {
-  return !!getBotServiceUrl() && !!getBotServiceApiKey();
+export function getBotServiceApiKey(): string {
+  return requireEnv("BOT_SERVICE_API_KEY");
 }
 
 // ===========================================
-// AI - Anthropic (chat)
+// AI - Anthropic
 // ===========================================
 
-export function getAnthropicApiKey(): string | undefined {
-  return optionalEnv("ANTHROPIC_API_KEY");
+export function getAnthropicApiKey(): string {
+  return requireEnv("ANTHROPIC_API_KEY");
 }
 
 export function getAnthropicModel(): string {
-  return optionalEnv("ANTHROPIC_MODEL") || "claude-sonnet-4-20250514";
-}
-
-export function isAnthropicConfigured(): boolean {
-  return !!getAnthropicApiKey();
+  return requireEnv("ANTHROPIC_MODEL");
 }
 
 // ===========================================
-// AI - Voyage (embeddings)
+// AI - Voyage
 // ===========================================
 
-export function getVoyageApiKey(): string | undefined {
-  return optionalEnv("VOYAGE_API_KEY");
-}
-
-export function isVoyageConfigured(): boolean {
-  return !!getVoyageApiKey();
+export function getVoyageApiKey(): string {
+  return requireEnv("VOYAGE_API_KEY");
 }
 
 // ===========================================
 // Email - Resend
 // ===========================================
 
-export function getResendApiKey(): string | undefined {
-  return optionalEnv("RESEND_API_KEY");
+export function getResendApiKey(): string {
+  return requireEnv("RESEND_API_KEY");
 }
 
 export function getResendFromEmail(): string {
-  return optionalEnv("RESEND_FROM_EMAIL") || "Nixelo <notifications@nixelo.app>";
-}
-
-export function isResendConfigured(): boolean {
-  return !!getResendApiKey();
+  return requireEnv("RESEND_FROM_EMAIL");
 }
 
 // ===========================================
 // Email - SendPulse
 // ===========================================
 
-export function getSendPulseId(): string | undefined {
-  return optionalEnv("SENDPULSE_ID");
+export function getSendPulseId(): string {
+  return requireEnv("SENDPULSE_ID");
 }
 
-export function getSendPulseSecret(): string | undefined {
-  return optionalEnv("SENDPULSE_SECRET");
+export function getSendPulseSecret(): string {
+  return requireEnv("SENDPULSE_SECRET");
 }
 
 export function getSendPulseFromEmail(): string {
-  return optionalEnv("SENDPULSE_FROM_EMAIL") || "Nixelo <notifications@nixelo.app>";
-}
-
-export function isSendPulseConfigured(): boolean {
-  return !!getSendPulseId() && !!getSendPulseSecret();
+  return requireEnv("SENDPULSE_FROM_EMAIL");
 }
 
 // ===========================================
 // Email - SendGrid
 // ===========================================
 
-export function getSendGridApiKey(): string | undefined {
-  return optionalEnv("SENDGRID_API_KEY");
+export function getSendGridApiKey(): string {
+  return requireEnv("SENDGRID_API_KEY");
 }
 
 export function getSendGridFromEmail(): string {
-  return optionalEnv("SENDGRID_FROM_EMAIL") || "Nixelo <notifications@nixelo.app>";
-}
-
-export function isSendGridConfigured(): boolean {
-  return !!getSendGridApiKey();
+  return requireEnv("SENDGRID_FROM_EMAIL");
 }
 
 // ===========================================
 // Email - Mailgun
 // ===========================================
 
-export function getMailgunApiKey(): string | undefined {
-  return optionalEnv("MAILGUN_API_KEY");
+export function getMailgunApiKey(): string {
+  return requireEnv("MAILGUN_API_KEY");
 }
 
-export function getMailgunDomain(): string | undefined {
-  return optionalEnv("MAILGUN_DOMAIN");
+export function getMailgunDomain(): string {
+  return requireEnv("MAILGUN_DOMAIN");
 }
 
 export function getMailgunFromEmail(): string {
-  return optionalEnv("MAILGUN_FROM_EMAIL") || "Nixelo <notifications@nixelo.app>";
+  return requireEnv("MAILGUN_FROM_EMAIL");
 }
 
 export function getMailgunRegion(): "us" | "eu" {
-  return (optionalEnv("MAILGUN_REGION") || "us") as "us" | "eu";
+  return requireEnv("MAILGUN_REGION") as "us" | "eu";
 }
 
-export function isMailgunConfigured(): boolean {
-  return !!getMailgunApiKey() && !!getMailgunDomain();
+// ===========================================
+// Email - Mailtrap
+// ===========================================
+
+export function getMailtrapSmtpHost(): string {
+  return requireEnv("MAILTRAP_SMTP_HOST");
+}
+
+export function getMailtrapSmtpPort(): number {
+  return Number.parseInt(requireEnv("MAILTRAP_SMTP_PORT"), 10);
+}
+
+export function getMailtrapSmtpUser(): string {
+  return requireEnv("MAILTRAP_SMTP_USER");
+}
+
+export function getMailtrapSmtpPass(): string {
+  return requireEnv("MAILTRAP_SMTP_PASS");
+}
+
+export function getMailtrapFromEmail(): string {
+  return requireEnv("MAILTRAP_FROM_EMAIL");
+}
+
+export function getMailtrapApiToken(): string {
+  return requireEnv("MAILTRAP_API_TOKEN");
+}
+
+export function getMailtrapAccountId(): string {
+  return requireEnv("MAILTRAP_ACCOUNT_ID");
+}
+
+export function getMailtrapInboxId(): string {
+  return requireEnv("MAILTRAP_INBOX_ID");
 }

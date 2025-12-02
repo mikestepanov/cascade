@@ -79,8 +79,8 @@ export class AuthPage extends BasePage {
   async goto() {
     await this.page.goto("/");
 
-    // Wait for page to fully load
-    await this.page.waitForLoadState("load");
+    // Wait for page to fully load and React to hydrate
+    await this.waitForLoad();
 
     // Check if we're on the landing page (unauthenticated)
     // The landing page has a "Get Started Free" button in the hero section
@@ -88,19 +88,23 @@ export class AuthPage extends BasePage {
       name: /get started free/i,
     });
 
-    // Wait for button to appear (give page time to render)
+    // Wait for button to appear and be enabled
     await getStartedButton.waitFor({ state: "visible", timeout: 10000 });
 
-    // Use JavaScript click to bypass any overlays (animated SVG backgrounds)
+    // Use evaluate to call native click which React intercepts
     await getStartedButton.evaluate((el: HTMLElement) => el.click());
 
-    // Wait for the login section to render (heading "Welcome back")
-    await this.page
-      .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 15000 });
+    // Wait for login section to appear
+    const welcomeHeading = this.page.getByRole("heading", { name: /welcome back/i });
+    await welcomeHeading.waitFor({ state: "visible", timeout: 10000 });
 
-    // Wait for the form inputs to be ready
+    // Let React finish rendering the login form
+    await this.page.waitForTimeout(300);
+
+    // Wait for all form inputs to be ready
     await this.emailInput.waitFor({ state: "visible", timeout: 10000 });
+    await this.passwordInput.waitFor({ state: "visible", timeout: 5000 });
+    await this.googleSignInButton.waitFor({ state: "visible", timeout: 5000 });
   }
 
   /**
@@ -121,7 +125,7 @@ export class AuthPage extends BasePage {
     }
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.submitButton.evaluate((el: HTMLElement) => el.click());
+    await this.submitButton.click();
   }
 
   async signUp(email: string, password: string) {
@@ -130,23 +134,26 @@ export class AuthPage extends BasePage {
     }
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.submitButton.evaluate((el: HTMLElement) => el.click());
+    await this.submitButton.click();
   }
 
   async switchToSignIn() {
+    await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
     await this.toggleFlowButton.evaluate((el: HTMLElement) => el.click());
     this.currentFlow = "signIn";
     await expect(this.submitButton).toHaveText(/sign in/i, { timeout: 10000 });
   }
 
   async switchToSignUp() {
+    await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
     await this.toggleFlowButton.evaluate((el: HTMLElement) => el.click());
     this.currentFlow = "signUp";
     await expect(this.submitButton).toHaveText(/sign up/i, { timeout: 10000 });
   }
 
   async signInWithGoogle() {
-    await this.googleSignInButton.evaluate((el: HTMLElement) => el.click());
+    await this.googleSignInButton.waitFor({ state: "visible", timeout: 5000 });
+    await this.googleSignInButton.click();
     // Note: Will redirect to Google OAuth
   }
 
@@ -155,25 +162,32 @@ export class AuthPage extends BasePage {
   // ===================
 
   async goToForgotPassword() {
+    // Wait for button to be visible
+    await this.forgotPasswordButton.waitFor({ state: "visible", timeout: 10000 });
+
+    // Use evaluate to call native click which React intercepts
     await this.forgotPasswordButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.resetHeading).toBeVisible({ timeout: 10000 });
+
+    // Wait for reset heading to appear
+    await this.resetHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
   async requestPasswordReset(email: string) {
     await this.goToForgotPassword();
     await this.emailInput.fill(email);
-    await this.sendResetCodeButton.evaluate((el: HTMLElement) => el.click());
+    await this.sendResetCodeButton.click();
   }
 
   async completePasswordReset(code: string, newPassword: string) {
     await this.codeInput.fill(code);
     await this.newPasswordInput.fill(newPassword);
-    await this.resetPasswordButton.evaluate((el: HTMLElement) => el.click());
+    await this.resetPasswordButton.click();
   }
 
   async goBackToSignIn() {
+    await this.backToSignInButton.waitFor({ state: "visible", timeout: 10000 });
     await this.backToSignInButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.submitButton).toBeVisible({ timeout: 10000 });
+    await this.submitButton.waitFor({ state: "visible", timeout: 10000 });
   }
 
   // ===================
@@ -182,15 +196,15 @@ export class AuthPage extends BasePage {
 
   async verifyEmail(code: string) {
     await this.verifyCodeInput.fill(code);
-    await this.verifyEmailButton.evaluate((el: HTMLElement) => el.click());
+    await this.verifyEmailButton.click({ force: true });
   }
 
   async resendVerificationCode() {
-    await this.resendCodeButton.evaluate((el: HTMLElement) => el.click());
+    await this.resendCodeButton.click({ force: true });
   }
 
   async signOutFromVerification() {
-    await this.signOutLink.evaluate((el: HTMLElement) => el.click());
+    await this.signOutLink.click({ force: true });
   }
 
   // ===================
@@ -198,10 +212,10 @@ export class AuthPage extends BasePage {
   // ===================
 
   async expectSignInForm() {
-    await expect(this.emailInput).toBeVisible();
-    await expect(this.passwordInput).toBeVisible();
-    await expect(this.submitButton).toBeVisible();
-    await expect(this.googleSignInButton).toBeVisible();
+    await expect(this.emailInput).toBeVisible({ timeout: 10000 });
+    await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
+    await expect(this.submitButton).toBeVisible({ timeout: 5000 });
+    await expect(this.googleSignInButton).toBeVisible({ timeout: 5000 });
   }
 
   async expectForgotPasswordForm() {

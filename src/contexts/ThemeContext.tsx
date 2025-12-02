@@ -10,18 +10,32 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = localStorage.getItem("nixelo-theme");
-    return (stored as Theme) || "system";
-  });
+// Helper to safely get initial theme from localStorage (SSR-safe)
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") {
+    return "system"; // Default for SSR
+  }
+  const stored = localStorage.getItem("nixelo-theme");
+  return (stored as Theme) || "system";
+}
 
-  const [effectiveTheme, setEffectiveTheme] = useState<"light" | "dark">(() => {
-    if (theme === "system") {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-    return theme;
-  });
+// Helper to get initial effective theme (SSR-safe)
+function getInitialEffectiveTheme(theme: Theme): "light" | "dark" {
+  if (typeof window === "undefined") {
+    return "light"; // Default for SSR
+  }
+  if (theme === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return theme;
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+
+  const [effectiveTheme, setEffectiveTheme] = useState<"light" | "dark">(() =>
+    getInitialEffectiveTheme(theme),
+  );
 
   useEffect(() => {
     const root = document.documentElement;

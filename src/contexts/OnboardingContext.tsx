@@ -38,9 +38,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const isOnboardingComplete = onboardingStatus?.onboardingCompleted ?? false;
   const currentStep = onboardingStatus?.onboardingStep ?? 0;
 
-  // Note: Welcome modal auto-show logic removed to prevent duplicate modals.
-  // The state-based system in useOnboardingState handles onboarding flow.
-
   const startOnboarding = () => {
     setShowWelcome(false);
     setShowTour(true);

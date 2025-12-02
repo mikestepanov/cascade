@@ -67,6 +67,8 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
+    "@tanstack/react-router": "^1.139.10",
+    "@tanstack/react-start": "^1.139.12",
     "ai": "^5.0.100",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -84,13 +86,16 @@
     "resend": "^6.5.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "vinxi": "^0.5.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.7",
+    "@biomejs/biome": "^2.3.8",
     "@edge-runtime/vm": "^5.0.0",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.17",
+    "@tanstack/router-devtools": "^1.139.10",
+    "@tanstack/router-plugin": "^1.139.10",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

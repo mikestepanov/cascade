@@ -6,6 +6,7 @@ The recommended setup uses different providers for different environments:
 
 - **Development:** Resend (3k emails/month free, great developer experience)
 - **Production:** SendPulse (15k emails/month free, cost-effective at scale)
+- **E2E Testing:** Mailtrap (sandbox inbox, OTP verification for automated tests)
 
 ## Development Setup (Resend)
 
@@ -69,6 +70,77 @@ The system checks `EMAIL_PROVIDER` environment variable:
 | Production | `sendpulse` | SendPulse | Free (15k/month) |
 | Production | `mailgun` | Mailgun | Free (1k/month) |
 | Production | `sendgrid` | SendGrid | Free (100/day) |
+
+## E2E Testing Setup (Mailtrap)
+
+Mailtrap provides a sandbox inbox where emails can be captured and read programmatically - perfect for E2E tests that need to verify OTP codes.
+
+### 1. Sign Up for Mailtrap
+
+1. Go to [https://mailtrap.io](https://mailtrap.io)
+2. Sign up (free tier: 1000 emails/month)
+3. Go to **Email Testing** → **Inboxes**
+
+### 2. Get Your Credentials
+
+**For sending emails (SMTP or API):**
+1. Click on your inbox → **SMTP Settings**
+2. Copy the SMTP credentials OR
+3. Go to **API** tab for API-based sending
+
+**For reading emails in E2E tests:**
+1. Go to **Settings** → **API Tokens** → Create token
+2. Get Account ID and Inbox ID from the URL:
+   ```
+   https://mailtrap.io/inboxes/INBOX_ID/messages
+   https://mailtrap.io/accounts/ACCOUNT_ID/...
+   ```
+
+### 3. Set Environment Variables
+
+```bash
+# Mailtrap API (for sending via sandbox API)
+MAILTRAP_API_TOKEN=your_api_token
+MAILTRAP_INBOX_ID=your_inbox_id
+MAILTRAP_FROM_EMAIL="Nixelo <test@nixelo.com>"
+
+# For E2E tests to read the inbox
+MAILTRAP_ACCOUNT_ID=your_account_id
+```
+
+### 4. How It Works
+
+1. **Auth sends OTP** → Email goes to Mailtrap sandbox inbox
+2. **E2E test polls** → Uses Mailtrap API to fetch emails
+3. **Extract OTP** → Regex extracts the 8-digit code
+4. **Complete signup** → Test enters OTP to verify
+
+### 5. Usage in E2E Tests
+
+```typescript
+import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
+
+test("signup with email verification", async ({ page }) => {
+  // Clear inbox before test
+  await clearInbox();
+
+  // Fill signup form
+  await page.fill('[name="email"]', "test@example.com");
+  await page.click('button[type="submit"]');
+
+  // Wait for OTP email and extract code
+  const otp = await waitForVerificationEmail("test@example.com", {
+    timeout: 30000,
+    pollInterval: 2000,
+  });
+
+  // Enter OTP
+  await page.fill('[name="otp"]', otp);
+  await page.click('button[type="submit"]');
+});
+```
+
+See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for more details.
 
 ## Alternative Providers
 
@@ -196,6 +268,10 @@ For production emails to be delivered reliably:
 | `MAILGUN_REGION` | For Mailgun | 'us' or 'eu' |
 | `SENDGRID_API_KEY` | For SendGrid | SendGrid API key |
 | `SENDGRID_FROM_EMAIL` | For SendGrid | From address |
+| `MAILTRAP_API_TOKEN` | For Mailtrap | Mailtrap API token (for sending & reading) |
+| `MAILTRAP_ACCOUNT_ID` | For Mailtrap | Mailtrap account ID (for E2E inbox reading) |
+| `MAILTRAP_INBOX_ID` | For Mailtrap | Mailtrap inbox ID |
+| `MAILTRAP_FROM_EMAIL` | For Mailtrap | From address for test emails |
 
 ## Troubleshooting
 
@@ -240,4 +316,4 @@ A: Yes! Change the `EMAIL_PROVIDER` environment variable in Convex dashboard.
 
 ---
 
-*Last Updated: 2025-11-27*
+*Last Updated: 2025-12-01*

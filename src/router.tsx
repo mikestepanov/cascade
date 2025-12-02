@@ -1,0 +1,20 @@
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
+
+// TanStack Start expects a `getRouter` export
+export function getRouter() {
+  const router = createRouter({
+    routeTree,
+    scrollRestoration: true,
+    defaultPreload: "intent", // Preload on hover
+  });
+
+  return router;
+}
+
+// Type declaration for router
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: ReturnType<typeof getRouter>;
+  }
+}

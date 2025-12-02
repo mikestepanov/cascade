@@ -182,7 +182,10 @@ export class DashboardPage extends BasePage {
       calendar: this.calendarTab,
       settings: this.settingsTab,
     };
-    await tabs[tab].evaluate((el: HTMLElement) => el.click());
+    // Wait for tab to be visible and stable
+    await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
+    await this.page.waitForTimeout(100);
+    await tabs[tab].click({ force: true });
     await this.waitForLoad();
   }
 
@@ -191,7 +194,7 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async openCommandPalette() {
-    await this.commandPaletteButton.evaluate((el: HTMLElement) => el.click());
+    await this.commandPaletteButton.click({ force: true });
     await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
   }
 
@@ -201,7 +204,7 @@ export class DashboardPage extends BasePage {
   }
 
   async openShortcutsHelp() {
-    await this.shortcutsHelpButton.evaluate((el: HTMLElement) => el.click());
+    await this.shortcutsHelpButton.click({ force: true });
     await expect(this.shortcutsModal).toBeVisible({ timeout: 5000 });
   }
 
@@ -216,11 +219,11 @@ export class DashboardPage extends BasePage {
       dark: this.darkThemeButton,
       system: this.systemThemeButton,
     };
-    await buttons[theme].evaluate((el: HTMLElement) => el.click());
+    await buttons[theme].click({ force: true });
   }
 
   async openNotifications() {
-    await this.notificationButton.evaluate((el: HTMLElement) => el.click());
+    await this.notificationButton.click({ force: true });
   }
 
   async closeNotifications() {
@@ -228,11 +231,11 @@ export class DashboardPage extends BasePage {
   }
 
   async signOut() {
-    await this.signOutButton.evaluate((el: HTMLElement) => el.click());
+    await this.signOutButton.click({ force: true });
   }
 
   async openGlobalSearch() {
-    await this.globalSearchButton.evaluate((el: HTMLElement) => el.click());
+    await this.globalSearchButton.click({ force: true });
     await expect(this.globalSearchModal).toBeVisible({ timeout: 5000 });
   }
 
@@ -250,7 +253,7 @@ export class DashboardPage extends BasePage {
       assigned: this.assignedTab,
       created: this.createdTab,
     };
-    await tabs[filter].evaluate((el: HTMLElement) => el.click());
+    await tabs[filter].click({ force: true });
   }
 
   // ===================
@@ -258,7 +261,7 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async createNewDocument() {
-    await this.newDocumentButton.evaluate((el: HTMLElement) => el.click());
+    await this.newDocumentButton.click({ force: true });
   }
 
   async searchDocuments(query: string) {
@@ -270,7 +273,7 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async createNewProject() {
-    await this.newProjectButton.evaluate((el: HTMLElement) => el.click());
+    await this.newProjectButton.click({ force: true });
   }
 
   // ===================

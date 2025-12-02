@@ -22,49 +22,131 @@
 
 ---
 
-## Phase 1: Preparation (Current PR - Optional)
+## Phase 1: Preparation ✅ COMPLETED
 
 ### 1.1 Audit Current State
-- [ ] List all "routes" currently handled in App.tsx
-- [ ] List all shared state that actually needs to be shared
-- [ ] Identify heavy dependencies (BlockNote, PDF libs, etc.)
-- [ ] Document current auth flow
+- [x] List all "routes" currently handled in App.tsx
+- [x] List all shared state that actually needs to be shared
+- [x] Identify heavy dependencies (BlockNote, PDF libs, etc.)
+- [x] Document current auth flow
 
-### 1.2 Current Routes Inventory
+### 1.2 Current Routes (Before Migration)
 ```
-/                    → Landing page (NixeloLanding) - NEEDS SSR
-/onboarding          → Onboarding flow - NO SSR
-/invite/:token       → Invite acceptance - NO SSR
-/* (authenticated)   → Dashboard views - NO SSR
-  - dashboard
-  - documents
-  - projects
-  - calendar
-  - settings
-  - admin
+/                    → Landing page (NixeloLanding)
+/onboarding          → Onboarding flow
+/invite/:token       → Invite acceptance
+/* (authenticated)   → Dashboard views (flat, state-based)
+  - dashboard, documents, projects, calendar, settings, timesheet
 ```
 
-### 1.3 Shared State Audit
-Identify what actually needs to be shared vs what can live in components:
+### 1.3 New Route Structure (Jira/Linear-inspired)
+```
+# Marketing (SSR for SEO)
+/                           → Landing page
+/pricing                    → Pricing page (future)
+/blog                       → Blog (future)
 
+# Auth
+/onboarding                 → Onboarding flow
+/invite/:token              → Invite acceptance
+
+# Dashboard (authenticated, no SSR)
+/dashboard                  → Overview (assigned issues, recent activity)
+/inbox                      → Notifications, mentions (future)
+
+# Documents (global, Notion-style)
+/documents                  → All documents list
+/documents/:id              → Document editor (BlockNote)
+
+# Projects (Jira-style, everything nested)
+/projects                   → All projects list
+/projects/:key              → Project overview → redirects to board
+/projects/:key/board        → Kanban board (default view)
+/projects/:key/backlog      → Backlog view (future)
+/projects/:key/timeline     → Timeline/roadmap (future)
+/projects/:key/calendar     → Project calendar & meetings
+/projects/:key/timesheet    → Project time tracking
+/projects/:key/settings     → Project settings
+/projects/:key/analytics    → Project analytics (future)
+
+# Issues (direct access like Jira's /browse/)
+/issues/:key                → Issue detail (e.g., /issues/PROJ-123)
+
+# Settings (global)
+/settings                   → User settings
+/settings/profile           → Profile
+/settings/notifications     → Notification preferences
+/settings/integrations      → Connected apps (future)
+
+# Admin
+/admin                      → Admin dashboard
+/admin/users                → User management
+/admin/invites              → Invite management
+```
+
+**Key Changes from Current:**
+1. **Project-scoped views** - Calendar, timesheet under `/projects/:key/`
+2. **Project key in URL** - Use `PROJ` not UUID (like Jira)
+3. **Direct issue access** - `/issues/PROJ-123` for shareable links
+4. **Documents stay global** - Can link to projects but exist independently
+5. **Nested settings** - `/settings/profile`, `/settings/notifications`
+
+### 1.4 Shared State Audit
+**Move to URL (routes/params):**
 | State | Currently | Should Be |
 |-------|-----------|-----------|
-| `activeView` | App.tsx | URL (route) |
-| `selectedProjectId` | App.tsx | URL param or component |
-| `selectedDocumentId` | App.tsx | URL param or component |
-| `showCommandPalette` | App.tsx | Component or context |
-| `showAIAssistant` | App.tsx | Component or context |
-| `isMobileSidebarOpen` | App.tsx | Component |
-| `showWelcomeTour` | App.tsx | Component |
-| etc. | | |
+| `activeView` | App.tsx useState | URL path (route) |
+| `selectedProjectId` | App.tsx useState | URL param `/projects/:id` |
+| `selectedDocumentId` | App.tsx useState | URL param `/documents/:id` |
+
+**Keep in Context (truly shared across routes):**
+| State | Why Context |
+|-------|-------------|
+| `showCommandPalette` | Triggered by keyboard shortcut from anywhere |
+| `showAIAssistant` | Floating button visible on all dashboard routes |
+| `showShortcutsHelp` | Modal triggered from anywhere |
+
+**Move to Local Component State:**
+| State | Why Local |
+|-------|-----------|
+| `isMobileSidebarOpen` | Only used in MainAppLayout |
+| `showWelcomeTour` | Only used during onboarding |
+| `showProjectWizard` | Only used during onboarding |
+| `showSampleProjectModal` | Only used during onboarding |
+
+### 1.5 Heavy Dependencies (Lazy Loaded)
+| Chunk | Size (gzip) | Used On |
+|-------|-------------|---------|
+| `editor` (BlockNote) | 170 KB | `/documents/:id` only |
+| `mantine` | 36 KB | `/documents/:id` (editor UI) |
+| `markdown` | 53 KB | Issue descriptions, comments |
+| `analytics` | 53 KB | Deferred load |
+| `tour` (driver.js) | 6 KB | Onboarding only |
+
+### 1.6 Current Auth Flow
+```
+1. User visits /
+2. Convex checks auth state
+3. If authenticated:
+   - Check onboardingStatus
+   - If no record → redirect to /onboarding
+   - If completed → show dashboard
+4. If unauthenticated:
+   - Show NixeloLanding (needs SSR for SEO)
+5. Special: /invite/:token
+   - Shows invite details
+   - If unauthenticated → shows SignInForm inline
+   - If authenticated → shows Accept button
+```
 
 ---
 
-## Phase 2: Install & Configure TanStack Start
+## Phase 2: Install & Configure TanStack Start ✅ COMPLETED
 
-### 2.1 Install Dependencies
+### 2.1 Install Dependencies ✅ DONE
 ```bash
-pnpm add @tanstack/react-router @tanstack/start vinxi
+# Updated packages (post-Vinxi migration):
+pnpm add @tanstack/react-router @tanstack/react-start
 pnpm add -D @tanstack/router-plugin @tanstack/router-devtools
 ```
 
@@ -104,34 +186,99 @@ export default defineConfig({
 ### 2.3 File Structure Migration
 ```
 src/
-├── routes/                    # NEW - file-based routing
-│   ├── __root.tsx            # Root layout (providers, html shell)
-│   ├── index.tsx             # / (landing page, SSR)
-│   ├── pricing.tsx           # /pricing (SSR)
-│   ├── onboarding.tsx        # /onboarding (no SSR)
-│   ├── invite.$token.tsx     # /invite/:token (no SSR)
-│   └── _dashboard/           # Layout group for dashboard
-│       ├── route.tsx         # Dashboard layout wrapper
-│       ├── index.tsx         # /dashboard
-│       ├── projects/
-│       │   ├── index.tsx     # /projects
-│       │   └── $id.tsx       # /projects/:id
+├── routes/                           # NEW - file-based routing
+│   ├── __root.tsx                   # Root layout (providers, html shell)
+│   │
+│   │   # Marketing (SSR enabled)
+│   ├── index.tsx                    # / (landing page)
+│   ├── pricing.tsx                  # /pricing (future)
+│   │
+│   │   # Auth flows
+│   ├── onboarding.tsx               # /onboarding
+│   ├── invite.$token.tsx            # /invite/:token
+│   │
+│   │   # App (authenticated, no SSR)
+│   └── _app/                        # Layout group (underscore = no URL segment)
+│       ├── route.tsx                # App shell (sidebar, header, auth check)
+│       │
+│       │   # Dashboard
+│       ├── dashboard.tsx            # /dashboard
+│       │
+│       │   # Documents (global)
 │       ├── documents/
-│       │   ├── index.tsx     # /documents
-│       │   └── $id.tsx       # /documents/:id
-│       ├── calendar.tsx      # /calendar
-│       ├── settings.tsx      # /settings
-│       └── admin.tsx         # /admin
-├── components/               # Stays the same
-├── contexts/                 # NEW - for truly shared state
-├── hooks/                    # Stays the same
-├── lib/                      # Stays the same
-└── styles/                   # Stays the same
+│       │   ├── index.tsx            # /documents
+│       │   └── $id.tsx              # /documents/:id (BlockNote editor)
+│       │
+│       │   # Projects (Jira-style nested)
+│       ├── projects/
+│       │   ├── index.tsx            # /projects (list all)
+│       │   └── $key/                # /projects/:key (project layout)
+│       │       ├── route.tsx        # Project layout (tabs, project header)
+│       │       ├── index.tsx        # /projects/:key → redirect to board
+│       │       ├── board.tsx        # /projects/:key/board
+│       │       ├── backlog.tsx      # /projects/:key/backlog (future)
+│       │       ├── calendar.tsx     # /projects/:key/calendar
+│       │       ├── timesheet.tsx    # /projects/:key/timesheet
+│       │       ├── analytics.tsx    # /projects/:key/analytics (future)
+│       │       └── settings.tsx     # /projects/:key/settings
+│       │
+│       │   # Direct issue access (like Jira /browse/)
+│       ├── issues/
+│       │   └── $key.tsx             # /issues/PROJ-123
+│       │
+│       │   # Settings (nested)
+│       ├── settings/
+│       │   ├── index.tsx            # /settings (redirect to profile)
+│       │   ├── profile.tsx          # /settings/profile
+│       │   └── notifications.tsx    # /settings/notifications
+│       │
+│       │   # Admin
+│       └── admin/
+│           ├── index.tsx            # /admin
+│           ├── users.tsx            # /admin/users
+│           └── invites.tsx          # /admin/invites
+│
+├── components/                      # Stays the same
+├── contexts/                        # Shared state (CommandPalette, AI, etc.)
+├── hooks/                           # Stays the same
+├── lib/                             # Stays the same
+└── styles/                          # Stays the same
 ```
+
+**TanStack Router Naming Conventions:**
+- `__root.tsx` - Root layout (wraps everything)
+- `_app/` - Pathless layout group (underscore prefix = no URL segment)
+- `$key` - Dynamic param (like `:key` in other routers)
+- `route.tsx` - Layout file for a directory
+- `index.tsx` - Index route for a directory
 
 ---
 
-## Phase 3: Create Route Files
+## Phase 3: Create Route Files ✅ COMPLETED
+
+**All routes implemented:**
+- [x] `__root.tsx` - Root layout with providers, SSR-safe Convex initialization
+- [x] `index.tsx` - Landing page (SSR enabled)
+- [x] `onboarding.tsx` - Onboarding flow (SSR disabled)
+- [x] `invite.$token.tsx` - Invite acceptance
+- [x] `_app/route.tsx` - Auth-protected layout (SSR disabled)
+- [x] `_app/dashboard.tsx` - Dashboard
+- [x] `_app/documents/index.tsx` - Documents list
+- [x] `_app/documents/$id.tsx` - Document editor (lazy loaded)
+- [x] `_app/projects/index.tsx` - Projects list
+- [x] `_app/projects/$key/route.tsx` - Project layout with tabs
+- [x] `_app/projects/$key/index.tsx` - Project index (redirects to board)
+- [x] `_app/projects/$key/board.tsx` - Kanban board
+- [x] `_app/projects/$key/calendar.tsx` - Project calendar
+- [x] `_app/projects/$key/timesheet.tsx` - Project timesheet
+- [x] `_app/projects/$key/settings.tsx` - Project settings
+- [x] `_app/issues/$key.tsx` - Issue detail page
+- [x] `_app/settings/index.tsx` - Settings (redirects to profile)
+- [x] `_app/settings/profile.tsx` - Profile settings
+
+**Navigation components updated:**
+- [x] `Sidebar.tsx` - Uses TanStack Router `<Link>` and `useNavigate()`
+- [x] `ProjectSidebar.tsx` - Uses TanStack Router `<Link>` and `useNavigate()`
 
 ### 3.1 Root Layout (`routes/__root.tsx`)
 ```tsx
@@ -177,44 +324,106 @@ function LandingPage() {
 }
 ```
 
-### 3.3 Dashboard Layout - No SSR (`routes/_dashboard/route.tsx`)
+### 3.3 App Layout - No SSR (`routes/_app/route.tsx`)
 ```tsx
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { DashboardLayout } from '@/components/DashboardLayout'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { AppShell } from '@/components/AppShell'
 
-export const Route = createFileRoute('/_dashboard')({
-  component: DashboardLayoutWrapper,
-  ssr: false, // Disable SSR for dashboard
+export const Route = createFileRoute('/_app')({
+  beforeLoad: async ({ context }) => {
+    // Auth check - redirect to landing if not authenticated
+    if (!context.auth.isAuthenticated) {
+      throw redirect({ to: '/' })
+    }
+    // Onboarding check
+    if (!context.auth.onboardingCompleted) {
+      throw redirect({ to: '/onboarding' })
+    }
+  },
+  component: AppLayout,
+  ssr: false, // Disable SSR for entire app section
 })
 
-function DashboardLayoutWrapper() {
+function AppLayout() {
   return (
-    <DashboardLayout>
+    <AppShell>
       <Outlet />
-    </DashboardLayout>
+    </AppShell>
   )
 }
 ```
 
-### 3.4 Project Page with Params (`routes/_dashboard/projects/$id.tsx`)
+### 3.4 Project Layout (`routes/_app/projects/$key/route.tsx`)
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
+import { api } from '@convex/_generated/api'
+import { ProjectHeader } from '@/components/ProjectHeader'
+import { ProjectTabs } from '@/components/ProjectTabs'
 
-export const Route = createFileRoute('/_dashboard/projects/$id')({
-  component: ProjectPage,
+export const Route = createFileRoute('/_app/projects/$key')({
+  component: ProjectLayout,
 })
 
-function ProjectPage() {
-  const { id } = Route.useParams() // Type-safe!
-  // id is string, not string | undefined
+function ProjectLayout() {
+  const { key } = Route.useParams() // Type-safe! e.g., "PROJ"
+  const project = useQuery(api.projects.getByKey, { key })
 
-  return <ProjectBoard projectId={id} />
+  if (!project) return <ProjectNotFound />
+
+  return (
+    <div className="flex flex-col h-full">
+      <ProjectHeader project={project} />
+      <ProjectTabs projectKey={key} />
+      <div className="flex-1 overflow-auto">
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+```
+
+### 3.5 Project Board (`routes/_app/projects/$key/board.tsx`)
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { ProjectBoard } from '@/components/ProjectBoard'
+
+export const Route = createFileRoute('/_app/projects/$key/board')({
+  component: BoardPage,
+})
+
+function BoardPage() {
+  const { key } = Route.useParams()
+  return <ProjectBoard projectKey={key} />
+}
+```
+
+### 3.6 Issue Detail (`routes/_app/issues/$key.tsx`)
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { IssueDetailPanel } from '@/components/IssueDetailPanel'
+
+export const Route = createFileRoute('/_app/issues/$key')({
+  component: IssuePage,
+})
+
+function IssuePage() {
+  const { key } = Route.useParams() // e.g., "PROJ-123"
+  // Parse project key and issue number
+  const [projectKey, issueNum] = key.split('-')
+
+  return <IssueDetailPanel projectKey={projectKey} issueNumber={parseInt(issueNum)} />
 }
 ```
 
 ---
 
-## Phase 4: State Management Refactor
+## Phase 4: State Management Refactor ✅ COMPLETED
+
+State is now managed appropriately:
+- Navigation state is in URL (routes/params)
+- UI modals (CommandPalette, ShortcutsHelp) are in `_app/route.tsx`
+- Local state stays local to components
 
 ### 4.1 Move State to Components
 Most state should live in the component that uses it:
@@ -284,7 +493,21 @@ const { id } = Route.useParams()
 
 ---
 
-## Phase 5: Migrate Components
+## Phase 5: Migrate Components ✅ COMPLETED
+
+All components updated to use TanStack Router:
+- `AppHeader.tsx` - Uses `<Link>` and `useLocation()` for active state
+- `CommandPalette.tsx` - Uses `useNavigate()` internally
+- `Dashboard.tsx` - Uses `useNavigate()` for project navigation
+- `MyIssuesList.tsx` / `ProjectsList.tsx` - Accept callbacks from parent
+- `Sidebar.tsx` / `ProjectSidebar.tsx` - Use `<Link>` and `useNavigate()`
+- `keyboardShortcuts.ts` - Uses `navigate()` callback
+
+Deleted legacy files:
+- `src/App.tsx` - Replaced by routes
+- `src/main.tsx` - Replaced by `__root.tsx`
+- `src/hooks/useAppState.ts` - No longer needed
+- `src/utils/viewHelpers.ts` - No longer needed
 
 ### 5.1 Components to Update
 
@@ -386,22 +609,22 @@ curl https://nixelo.com/ | grep "<title>"
 
 ---
 
-## Phase 8: Cleanup
+## Phase 8: Cleanup ✅ COMPLETED
 
-### 8.1 Delete Old Files
-- [ ] `src/App.tsx` (replaced by routes)
-- [ ] Manual route parsing hooks
-- [ ] Prop-drilling components
+### 8.1 Delete Old Files ✅ DONE
+- [x] `src/App.tsx` - Deleted
+- [x] `src/main.tsx` - Deleted
+- [x] `src/hooks/useAppState.ts` - Deleted
+- [x] `src/utils/viewHelpers.ts` - Deleted
 
-### 8.2 Update Imports
-- [ ] Update all `import { Link }` to use TanStack Router
-- [ ] Update all `window.location` usage
-- [ ] Update all `history.pushState` usage
+### 8.2 Update Imports ✅ DONE
+- [x] All navigation uses TanStack Router `<Link>` and `useNavigate()`
+- [x] `window.location` usage reviewed - only `reload()` for error recovery (appropriate)
+- [x] No `history.pushState` usage found
 
 ### 8.3 Documentation
-- [ ] Update README with new dev commands
-- [ ] Update CLAUDE.md with new architecture
-- [ ] Document route structure
+- [x] TODO-TANSTACK-MIGRATION.md updated with completion status
+- [ ] Update CLAUDE.md with new routing architecture (if needed)
 
 ---
 

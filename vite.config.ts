@@ -1,13 +1,19 @@
 import path from "node:path";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import viteCompression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
+    tanstackStart(),
+    TanStackRouterVite({
+      routesDirectory: "./src/routes",
+      generatedRouteTree: "./src/routeTree.gen.ts",
+    }),
     react(),
     VitePWA({
       registerType: "autoUpdate",
@@ -41,8 +47,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        // TEMPORARY: Increase limit until bundle is optimized
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MB
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         runtimeCaching: [
           {
@@ -52,7 +57,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -66,7 +71,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "gstatic-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -80,17 +85,14 @@ export default defineConfig(({ mode }) => ({
         type: "module",
       },
     }),
-    // Gzip compression
     viteCompression({
       algorithm: "gzip",
       ext: ".gz",
     }),
-    // Brotli compression (better than gzip)
     viteCompression({
       algorithm: "brotliCompress",
       ext: ".br",
     }),
-    // Bundle analyzer
     mode === "analyze"
       ? visualizer({
           open: true,
@@ -99,7 +101,6 @@ export default defineConfig(({ mode }) => ({
           brotliSize: true,
         })
       : null,
-    // Chef dev mode
     mode === "development"
       ? {
           name: "inject-chef-dev",
@@ -134,122 +135,23 @@ window.addEventListener('message', async (message) => {
     },
   },
   build: {
-    // Target modern browsers for smaller bundle
     target: "esnext",
-    // Enable minification
     minify: "esbuild",
-    // Source maps for production debugging
     sourcemap: mode === "production" ? "hidden" : true,
-    // CSS code splitting
     cssCodeSplit: true,
-    // Chunk size warnings
-    chunkSizeWarningLimit: 500, // KB
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
-        // Manual chunks for better caching
-        manualChunks: (id) => {
-          // Check if it's in node_modules
-          if (!id.includes("node_modules/")) {
-            return undefined;
-          }
-
-          // Chunk mapping for vendor dependencies
-          // NOTE: These patterns work with both npm and pnpm path structures
-          // pnpm uses .pnpm/package@version/node_modules/package structure
-          const chunkMap = [
-            // Core React (needed immediately)
-            { patterns: ["/react/", "/react-dom/", "/scheduler/"], chunk: "react-vendor" },
-
-            // Convex (needed for data)
-            { patterns: ["/convex/", "/@convex-dev/"], chunk: "convex" },
-
-            // UI components (Radix primitives - used throughout app)
-            { patterns: ["/@radix-ui/"], chunk: "radix-ui" },
-
-            // Editor (lazy load - only on document pages)
-            {
-              patterns: ["/@blocknote/", "/prosemirror", "/yjs/", "/y-prosemirror/", "/lib0/"],
-              chunk: "editor",
-            },
-            { patterns: ["/@mantine/"], chunk: "mantine" },
-
-            // Markdown rendering (lazy load)
-            {
-              patterns: [
-                "/react-markdown/",
-                "/remark-",
-                "/rehype-",
-                "/unified/",
-                "/micromark",
-                "/mdast-",
-                "/hast-",
-                "/unist-",
-                "/vfile",
-              ],
-              chunk: "markdown",
-            },
-
-            // Icons (frequently used but can defer)
-            { patterns: ["/lucide-react/"], chunk: "icons" },
-
-            // Search (lazy load - only when searching)
-            { patterns: ["/fuse.js/"], chunk: "search" },
-
-            // File handling (lazy load - only for exports)
-            { patterns: ["/jszip/", "/pako/"], chunk: "file-utils" },
-
-            // Email templates (lazy load - server-side mostly)
-            { patterns: ["/@react-email/", "/resend/"], chunk: "email" },
-
-            // AI SDK (lazy load - only for AI features)
-            { patterns: ["/@ai-sdk/", "/ai@"], chunk: "ai-sdk" },
-
-            // Auth (needed for login)
-            { patterns: ["/@auth/", "/@oslojs/", "/oauth4webapi/"], chunk: "auth" },
-
-            // HTML sanitization (security - needed for content)
-            { patterns: ["/dompurify/", "/isomorphic-dompurify/"], chunk: "sanitize" },
-
-            // Analytics (defer - not critical path)
-            { patterns: ["/posthog-js/"], chunk: "analytics" },
-
-            // Tour/onboarding (lazy load)
-            { patterns: ["/driver.js/"], chunk: "tour" },
-
-            // Toasts and notifications
-            { patterns: ["/sonner/"], chunk: "toast" },
-
-            // Class utilities
-            {
-              patterns: ["/clsx/", "/tailwind-merge/", "/class-variance-authority/"],
-              chunk: "class-utils",
-            },
-          ];
-
-          // Find matching chunk
-          for (const { patterns, chunk } of chunkMap) {
-            if (patterns.some((pattern) => id.includes(pattern))) {
-              return chunk;
-            }
-          }
-
-          // Default vendor chunk for other node_modules
-          return "vendor";
-        },
-        // Optimize chunk names
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",
         assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
-    // Increase chunk size for better compression
     reportCompressedSize: true,
   },
-  // Optimize dependencies
   optimizeDeps: {
     include: ["react", "react-dom", "convex/react", "sonner", "clsx", "tailwind-merge"],
     exclude: [
-      // Lazy load these
       "@blocknote/core",
       "@blocknote/react",
       "@blocknote/mantine",

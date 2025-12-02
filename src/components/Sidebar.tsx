@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
@@ -15,10 +16,10 @@ import { SkeletonList } from "./ui/Skeleton";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
-  onSelectDocument: (id: Id<"documents"> | null) => void;
 }
 
-export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) {
+export function Sidebar({ selectedDocumentId }: SidebarProps) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
@@ -39,7 +40,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       successMessage: "Document deleted successfully",
       onSuccess: () => {
         if (deleteId && selectedDocumentId === deleteId) {
-          onSelectDocument(null);
+          navigate({ to: "/documents" });
         }
       },
     });
@@ -58,7 +59,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       setNewDocTitle("");
       setNewDocIsPublic(false);
       setShowCreateForm(false);
-      onSelectDocument(docId);
+      navigate({ to: "/documents/$id", params: { id: docId } });
       showSuccess("Document created successfully");
     } catch (error) {
       showError(error, "Failed to create document");
@@ -89,7 +90,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
       setNewDocIsPublic(false);
       setShowCreateForm(false);
       setSelectedTemplateId(null);
-      onSelectDocument(result.documentId);
+      navigate({ to: "/documents/$id", params: { id: result.documentId } });
       showSuccess("Document created from template");
     } catch (error) {
       showError(error, "Failed to create document from template");
@@ -231,15 +232,15 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
         ) : (
           <div className="p-2">
             {displayedDocuments.map((doc) => (
-              <button
+              <Link
                 key={doc._id}
-                type="button"
-                className={`w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
+                to="/documents/$id"
+                params={{ id: doc._id }}
+                className={`block w-full text-left group p-3 rounded-md cursor-pointer transition-colors ${
                   selectedDocumentId === doc._id
                     ? "bg-brand-50 dark:bg-brand-900/30 border border-brand-200 dark:border-brand-700"
                     : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
                 }`}
-                onClick={() => onSelectDocument(doc._id)}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -261,6 +262,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                     <button
                       type="button"
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         void handleDeleteDocument(doc._id);
                       }}
@@ -282,7 +284,7 @@ export function Sidebar({ selectedDocumentId, onSelectDocument }: SidebarProps) 
                     </button>
                   )}
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         )}

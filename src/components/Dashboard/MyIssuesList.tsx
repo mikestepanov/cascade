@@ -17,6 +17,7 @@ interface Issue {
   priority: string;
   status: string;
   projectId: Id<"projects">;
+  projectKey: string;
   projectName: string;
 }
 
@@ -27,7 +28,7 @@ interface MyIssuesListProps {
   issueFilter: IssueFilter;
   onFilterChange: (filter: IssueFilter) => void;
   issueNavigation: UseListNavigationResult<Issue>;
-  onNavigateToProject?: (projectId: Id<"projects">) => void;
+  onNavigateToProject?: (projectKey: string) => void;
   onNavigateToProjects?: () => void;
 }
 
@@ -108,7 +109,7 @@ export function MyIssuesList({
               <button
                 key={issue._id}
                 type="button"
-                onClick={() => onNavigateToProject?.(issue.projectId)}
+                onClick={() => onNavigateToProject?.(issue.projectKey)}
                 {...issueNavigation.getItemProps(index)}
                 className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                 style={{ animationDelay: `${index * 50}ms` }}

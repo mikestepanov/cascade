@@ -1,4 +1,4 @@
-import { authenticatedTest, expect } from "./fixtures";
+import { expect, authenticatedTest as test } from "./fixtures";
 
 /**
  * Dashboard E2E Tests
@@ -7,24 +7,21 @@ import { authenticatedTest, expect } from "./fixtures";
  * Requires auth state to be set up first: pnpm e2e:setup-auth
  */
 
-authenticatedTest.describe("Dashboard Navigation", () => {
-  authenticatedTest(
-    "authenticated user lands on dashboard after login",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
+test.describe("Dashboard Navigation", () => {
+  test("authenticated user lands on dashboard after login", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
 
-      // Verify dashboard is visible
-      await dashboardPage.expectDashboard();
+    // Verify dashboard is visible
+    await dashboardPage.expectDashboard();
 
-      // Dashboard tab should be active by default
-      await dashboardPage.expectActiveTab("dashboard");
+    // Dashboard tab should be active by default
+    await dashboardPage.expectActiveTab("dashboard");
 
-      // Main content should be loaded
-      await dashboardPage.expectLoaded();
-    },
-  );
+    // Main content should be loaded
+    await dashboardPage.expectLoaded();
+  });
 
-  authenticatedTest("can navigate between tabs", async ({ dashboardPage }) => {
+  test("can navigate between tabs", async ({ dashboardPage }) => {
     await dashboardPage.goto();
 
     // Navigate to projects
@@ -40,7 +37,7 @@ authenticatedTest.describe("Dashboard Navigation", () => {
     await dashboardPage.expectActiveTab("dashboard");
   });
 
-  authenticatedTest("sign out returns to landing page", async ({ dashboardPage, page }) => {
+  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
     await dashboardPage.goto();
     await dashboardPage.expectDashboard();
 
@@ -54,14 +51,14 @@ authenticatedTest.describe("Dashboard Navigation", () => {
   });
 });
 
-authenticatedTest.describe("Header Actions", () => {
-  authenticatedTest("can open command palette", async ({ dashboardPage }) => {
+test.describe("Header Actions", () => {
+  test("can open command palette", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openCommandPalette();
     await dashboardPage.closeCommandPalette();
   });
 
-  authenticatedTest("can switch to dark theme", async ({ dashboardPage, page }) => {
+  test("can switch to dark theme", async ({ dashboardPage, page }) => {
     await dashboardPage.goto();
 
     // Switch to dark theme
@@ -72,7 +69,7 @@ authenticatedTest.describe("Header Actions", () => {
     await expect(htmlElement).toHaveClass(/dark/);
   });
 
-  authenticatedTest("can switch to light theme", async ({ dashboardPage, page }) => {
+  test("can switch to light theme", async ({ dashboardPage, page }) => {
     await dashboardPage.goto();
 
     // Switch to light theme
@@ -83,13 +80,13 @@ authenticatedTest.describe("Header Actions", () => {
     await expect(htmlElement).not.toHaveClass(/dark/);
   });
 
-  authenticatedTest("can open global search", async ({ dashboardPage }) => {
+  test("can open global search", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openGlobalSearch();
     await dashboardPage.closeGlobalSearch();
   });
 
-  authenticatedTest("can open keyboard shortcuts help", async ({ dashboardPage }) => {
+  test("can open keyboard shortcuts help", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openShortcutsHelp();
     await dashboardPage.closeShortcutsHelp();

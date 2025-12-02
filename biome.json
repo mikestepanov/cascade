@@ -7,7 +7,7 @@
   },
   "overrides": [
     {
-      "includes": ["convex/_generated/**"],
+      "includes": ["convex/_generated/**", "**/routeTree.gen.ts"],
       "linter": { "enabled": false },
       "formatter": { "enabled": false },
       "assist": { "enabled": false }

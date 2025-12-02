@@ -1,13 +1,10 @@
 import type { KeySequence } from "../hooks/useKeyboardShortcuts";
 
 export interface ShortcutHandlers {
-  setActiveView: (
-    view: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
-  ) => void;
+  navigate: (to: string) => void;
   setShowCommandPalette: (show: boolean) => void;
   setShowShortcutsHelp: (show: boolean) => void;
   setShowAIAssistant: (toggle: boolean) => void;
-  clearSelections: () => void;
 }
 
 export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
@@ -56,32 +53,20 @@ export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
     {
       key: "1",
       meta: true,
-      handler: () => handlers.setActiveView("dashboard"),
+      handler: () => handlers.navigate("/dashboard"),
       description: "Go to dashboard",
     },
     {
       key: "2",
       meta: true,
-      handler: () => handlers.setActiveView("documents"),
+      handler: () => handlers.navigate("/documents"),
       description: "Go to documents",
     },
     {
       key: "3",
       meta: true,
-      handler: () => handlers.setActiveView("projects"),
+      handler: () => handlers.navigate("/projects"),
       description: "Go to projects",
-    },
-    {
-      key: "4",
-      meta: true,
-      handler: () => handlers.setActiveView("timesheet"),
-      description: "Go to timesheet",
-    },
-    {
-      key: "5",
-      meta: true,
-      handler: () => handlers.setActiveView("calendar"),
-      description: "Go to calendar",
     },
     // Single-key actions (only when not typing)
     {
@@ -114,40 +99,18 @@ export function createKeySequences(handlers: ShortcutHandlers): KeySequence[] {
   return [
     {
       keys: ["g", "h"],
-      handler: () => {
-        handlers.setActiveView("dashboard");
-        handlers.clearSelections();
-      },
+      handler: () => handlers.navigate("/dashboard"),
       description: "Go to home",
     },
     {
       keys: ["g", "b"],
-      handler: () => {
-        handlers.setActiveView("projects");
-      },
+      handler: () => handlers.navigate("/projects"),
       description: "Go to board",
     },
     {
       keys: ["g", "d"],
-      handler: () => {
-        handlers.setActiveView("documents");
-      },
+      handler: () => handlers.navigate("/documents"),
       description: "Go to documents",
-    },
-    {
-      keys: ["g", "t"],
-      handler: () => handlers.setActiveView("timesheet"),
-      description: "Go to timesheet",
-    },
-    {
-      keys: ["g", "c"],
-      handler: () => handlers.setActiveView("calendar"),
-      description: "Go to calendar",
-    },
-    {
-      keys: ["g", "s"],
-      handler: () => handlers.setActiveView("settings"),
-      description: "Go to settings",
     },
   ];
 }

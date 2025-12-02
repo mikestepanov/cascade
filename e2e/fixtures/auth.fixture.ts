@@ -14,9 +14,8 @@ import {
 /**
  * Authentication fixtures for tests requiring logged-in state
  *
- * Setup:
- * 1. Run `pnpm e2e:setup-auth` to create auth state
- * 2. Use `authenticatedTest` instead of `test`
+ * Auth state is automatically created in global-setup.ts
+ * Tests will skip if auth state is missing or invalid
  *
  * @see https://playwright.dev/docs/auth
  */
@@ -26,8 +25,44 @@ const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
 const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
-// Check if auth state exists
-const authStateExists = fs.existsSync(AUTH_STATE_PATH);
+/**
+ * Check if auth state file exists and has valid authentication content
+ * We specifically look for Convex auth tokens, not just any cookies
+ */
+function isAuthStateValid(): boolean {
+  if (!fs.existsSync(AUTH_STATE_PATH)) {
+    return false;
+  }
+
+  try {
+    const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
+    const state = JSON.parse(content);
+
+    // Look for Convex auth-related localStorage entries
+    // Convex stores auth tokens in localStorage
+    if (state.origins && Array.isArray(state.origins)) {
+      for (const origin of state.origins) {
+        if (origin.localStorage && Array.isArray(origin.localStorage)) {
+          // Look for any key that looks like auth token storage
+          const hasAuthToken = origin.localStorage.some(
+            (item: { name: string; value: string }) =>
+              item.name.includes("auth") ||
+              item.name.includes("token") ||
+              item.name.includes("convex") ||
+              item.name.includes("session"),
+          );
+          if (hasAuthToken) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 export type AuthFixtures = {
   authPage: AuthPage;
@@ -41,13 +76,14 @@ export type AuthFixtures = {
 /**
  * Test fixture that uses saved authentication state
  * Tests will start already logged in
- * Skips tests if auth state doesn't exist
+ * Skips tests if auth state doesn't exist or is invalid
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
-  // Use saved storage state (cookies, localStorage) - only if file exists
-  storageState: async (_baseFixtures, use, testInfo) => {
-    if (!authStateExists) {
-      testInfo.skip(true, "Auth state not found. Run: pnpm e2e:setup-auth");
+  // Use saved storage state (cookies, localStorage) - only if valid
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
+  storageState: async ({}, use, testInfo) => {
+    if (!isAuthStateValid()) {
+      testInfo.skip(true, "Auth state not found or invalid. Global setup may have failed.");
     }
     await use(AUTH_STATE_PATH);
   },
@@ -76,46 +112,5 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(new SettingsPage(page));
   },
 });
-
-/**
- * Interactive setup to create auth state
- * Opens browser for manual login, then saves state
- *
- * Run with: `pnpm e2e:setup-auth`
- */
-export async function setupAuthState(): Promise<void> {
-  const { chromium } = await import("@playwright/test");
-  const fs = await import("node:fs");
-  const readline = await import("node:readline");
-
-  // Ensure .auth directory exists
-  if (!fs.existsSync(AUTH_DIR)) {
-    fs.mkdirSync(AUTH_DIR, { recursive: true });
-  }
-
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext();
-  const page = await context.newPage();
-
-  await page.goto(process.env.BASE_URL || "http://localhost:5555");
-
-  // Wait for user to complete login
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  await new Promise<void>((resolve) => {
-    rl.question("Press Enter after logging in... ", () => {
-      rl.close();
-      resolve();
-    });
-  });
-
-  // Save auth state
-  await context.storageState({ path: AUTH_STATE_PATH });
-
-  await browser.close();
-}
 
 export { expect };
