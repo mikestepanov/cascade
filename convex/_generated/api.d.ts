@@ -8,8 +8,8 @@
  * @module
  */
 
-import type * as ResendOTPPasswordReset from "../ResendOTPPasswordReset.js";
-import type * as ResendOTPVerification from "../ResendOTPVerification.js";
+import type * as OTPPasswordReset from "../OTPPasswordReset.js";
+import type * as OTPVerification from "../OTPVerification.js";
 import type * as aggregates from "../aggregates.js";
 import type * as ai from "../ai.js";
 import type * as ai_actions from "../ai/actions.js";
@@ -42,10 +42,10 @@ import type * as email_digests from "../email/digests.js";
 import type * as email_helpers from "../email/helpers.js";
 import type * as email_index from "../email/index.js";
 import type * as email_mailgun from "../email/mailgun.js";
+import type * as email_mailtrap from "../email/mailtrap.js";
 import type * as email_notifications from "../email/notifications.js";
 import type * as email_provider from "../email/provider.js";
 import type * as email_resend from "../email/resend.js";
-import type * as email_sendgrid from "../email/sendgrid.js";
 import type * as email_sendpulse from "../email/sendpulse.js";
 import type * as examples_actionCacheExample from "../examples/actionCacheExample.js";
 import type * as examples_aggregateExample from "../examples/aggregateExample.js";
@@ -101,8 +101,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  ResendOTPPasswordReset: typeof ResendOTPPasswordReset;
-  ResendOTPVerification: typeof ResendOTPVerification;
+  OTPPasswordReset: typeof OTPPasswordReset;
+  OTPVerification: typeof OTPVerification;
   aggregates: typeof aggregates;
   ai: typeof ai;
   "ai/actions": typeof ai_actions;
@@ -135,10 +135,10 @@ declare const fullApi: ApiFromModules<{
   "email/helpers": typeof email_helpers;
   "email/index": typeof email_index;
   "email/mailgun": typeof email_mailgun;
+  "email/mailtrap": typeof email_mailtrap;
   "email/notifications": typeof email_notifications;
   "email/provider": typeof email_provider;
   "email/resend": typeof email_resend;
-  "email/sendgrid": typeof email_sendgrid;
   "email/sendpulse": typeof email_sendpulse;
   "examples/actionCacheExample": typeof examples_actionCacheExample;
   "examples/aggregateExample": typeof examples_aggregateExample;

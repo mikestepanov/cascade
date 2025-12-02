@@ -1,12 +1,18 @@
 # Email Setup Guide
 
-## Quick Start: Recommended Setup
+## Quick Start
 
-The recommended setup uses different providers for different environments:
+All 3 email providers are required. The system rotates between them to maximize free tier usage:
 
-- **Development:** Resend (3k emails/month free, great developer experience)
-- **Production:** SendPulse (15k emails/month free, cost-effective at scale)
-- **E2E Testing:** Mailtrap (sandbox inbox, OTP verification for automated tests)
+| Provider  | Free Tier              | Priority    |
+|-----------|------------------------|-------------|
+| SendPulse | 12,000/month (400/day) | 1 (highest) |
+| Mailtrap  | 4,000/month (150/day)  | 2           |
+| Resend    | 3,000/month (100/day)  | 3           |
+
+**Total free capacity: 19,000 emails/month**
+
+For E2E testing, use Mailtrap in sandbox mode (emails go to inbox, readable via API).
 
 ## Development Setup (Resend)
 
@@ -62,107 +68,73 @@ pnpm convex deploy
 
 ## Provider Selection Logic
 
-The system checks `EMAIL_PROVIDER` environment variable:
+The system automatically rotates between providers based on free tier usage:
 
-| Environment | EMAIL_PROVIDER | Provider Used | Cost |
-|-------------|----------------|---------------|------|
-| Development | (not set) | Resend | Free (3k/month) |
-| Production | `sendpulse` | SendPulse | Free (15k/month) |
-| Production | `mailgun` | Mailgun | Free (1k/month) |
-| Production | `sendgrid` | SendGrid | Free (100/day) |
+| Provider  | Free Tier              | Priority    |
+|-----------|------------------------|-------------|
+| SendPulse | 12,000/month (400/day) | 1 (highest) |
+| Mailtrap  | 4,000/month (150/day)  | 2           |
+| Resend    | 3,000/month (100/day)  | 3           |
+
+**Total free capacity: 19,000 emails/month**
+
+The system:
+1. Selects provider with free capacity remaining (both daily AND monthly)
+2. Tracks usage per provider per day and per month
+3. Falls back to next provider when limits reached
+4. Uses first provider (paid) when all free tiers exhausted
 
 ## E2E Testing Setup (Mailtrap)
 
-Mailtrap provides a sandbox inbox where emails can be captured and read programmatically - perfect for E2E tests that need to verify OTP codes.
+Mailtrap supports two modes:
+- **sandbox**: Emails go to Mailtrap inbox (for dev/E2E testing) - readable via API
+- **production**: Emails delivered to real recipients
 
-### 1. Sign Up for Mailtrap
+For E2E tests, use sandbox mode. Playwright can read emails via API to extract OTP codes.
 
-1. Go to [https://mailtrap.io](https://mailtrap.io)
-2. Sign up (free tier: 1000 emails/month)
-3. Go to **Email Testing** → **Inboxes**
+### Why Mailtrap for E2E?
 
-### 2. Get Your Credentials
+| Provider | Send Email | Read Email (API) | Real Delivery |
+|----------|------------|------------------|---------------|
+| Resend | ✅ | ❌ | ✅ |
+| SendPulse | ✅ | ❌ | ✅ |
+| Mailtrap | ✅ | ✅ (sandbox) | ✅ (production) |
 
-**For sending emails (SMTP or API):**
-1. Click on your inbox → **SMTP Settings**
-2. Copy the SMTP credentials OR
-3. Go to **API** tab for API-based sending
+For E2E tests, Playwright needs to:
+1. Trigger signup → OTP email sent
+2. **Read the email** → Extract OTP code
+3. Enter OTP → Complete verification
 
-**For reading emails in E2E tests:**
-1. Go to **Settings** → **API Tokens** → Create token
-2. Get Account ID and Inbox ID from the URL:
-   ```
-   https://mailtrap.io/inboxes/INBOX_ID/messages
-   https://mailtrap.io/accounts/ACCOUNT_ID/...
-   ```
+Only Mailtrap provides the API to read emails.
 
-### 3. Set Environment Variables
+### Setup
 
+1. **Sign up:** [https://mailtrap.io](https://mailtrap.io) (free tier: 4,000/month, 150/day)
+2. **Get credentials:**
+   - API Token: Settings → API Tokens
+   - Inbox ID: From inbox URL
+   - Account ID: From account URL
+
+3. **Set environment variables:**
 ```bash
-# Mailtrap API (for sending via sandbox API)
+MAILTRAP_MODE=sandbox
 MAILTRAP_API_TOKEN=your_api_token
 MAILTRAP_INBOX_ID=your_inbox_id
+MAILTRAP_ACCOUNT_ID=your_account_id  # For E2E inbox reading
 MAILTRAP_FROM_EMAIL="Nixelo <test@nixelo.com>"
-
-# For E2E tests to read the inbox
-MAILTRAP_ACCOUNT_ID=your_account_id
 ```
 
-### 4. How It Works
+### How It Works
 
-1. **Auth sends OTP** → Email goes to Mailtrap sandbox inbox
-2. **E2E test polls** → Uses Mailtrap API to fetch emails
-3. **Extract OTP** → Regex extracts the 8-digit code
-4. **Complete signup** → Test enters OTP to verify
+When Mailtrap is configured and selected by the rotation system:
+1. **`sendEmail()`** routes to Mailtrap provider
+2. Email lands in Mailtrap sandbox inbox
+3. E2E tests use `e2e/utils/mailtrap.ts` to read inbox via API
+4. OTP code extracted and entered in test
 
-### 5. Usage in E2E Tests
+See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for Playwright usage.
 
-```typescript
-import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
-
-test("signup with email verification", async ({ page }) => {
-  // Clear inbox before test
-  await clearInbox();
-
-  // Fill signup form
-  await page.fill('[name="email"]', "test@example.com");
-  await page.click('button[type="submit"]');
-
-  // Wait for OTP email and extract code
-  const otp = await waitForVerificationEmail("test@example.com", {
-    timeout: 30000,
-    pollInterval: 2000,
-  });
-
-  // Enter OTP
-  await page.fill('[name="otp"]', otp);
-  await page.click('button[type="submit"]');
-});
-```
-
-See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for more details.
-
-## Alternative Providers
-
-### Mailgun Setup
-
-```bash
-EMAIL_PROVIDER=mailgun
-MAILGUN_API_KEY=key-xxxxxxxxxxxxx
-MAILGUN_DOMAIN=mg.yourdomain.com
-MAILGUN_FROM_EMAIL=Nixelo <notifications@yourdomain.com>
-MAILGUN_REGION=us  # or 'eu' for EU region
-```
-
-### SendGrid Setup
-
-```bash
-EMAIL_PROVIDER=sendgrid
-SENDGRID_API_KEY=SG.xxxxxxxxxxxxx
-SENDGRID_FROM_EMAIL=Nixelo <notifications@yourdomain.com>
-```
-
-## Provider Rotation (Advanced)
+## Provider Rotation
 
 The email system integrates with `serviceProviders` and `serviceUsage` tables to automatically rotate between providers based on free tier usage.
 
@@ -255,23 +227,17 @@ For production emails to be delivered reliably:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `EMAIL_PROVIDER` | No | Provider selection (resend/sendpulse/mailgun/sendgrid) |
 | `SITE_URL` | Yes | Application URL for email links |
-| `RESEND_API_KEY` | For Resend | Resend API key |
-| `RESEND_FROM_EMAIL` | For Resend | From address |
-| `SENDPULSE_ID` | For SendPulse | SendPulse client ID |
-| `SENDPULSE_SECRET` | For SendPulse | SendPulse client secret |
-| `SENDPULSE_FROM_EMAIL` | For SendPulse | From address |
-| `MAILGUN_API_KEY` | For Mailgun | Mailgun API key |
-| `MAILGUN_DOMAIN` | For Mailgun | Mailgun sending domain |
-| `MAILGUN_FROM_EMAIL` | For Mailgun | From address |
-| `MAILGUN_REGION` | For Mailgun | 'us' or 'eu' |
-| `SENDGRID_API_KEY` | For SendGrid | SendGrid API key |
-| `SENDGRID_FROM_EMAIL` | For SendGrid | From address |
-| `MAILTRAP_API_TOKEN` | For Mailtrap | Mailtrap API token (for sending & reading) |
-| `MAILTRAP_ACCOUNT_ID` | For Mailtrap | Mailtrap account ID (for E2E inbox reading) |
-| `MAILTRAP_INBOX_ID` | For Mailtrap | Mailtrap inbox ID |
-| `MAILTRAP_FROM_EMAIL` | For Mailtrap | From address for test emails |
+| `SENDPULSE_ID` | Yes | SendPulse client ID |
+| `SENDPULSE_SECRET` | Yes | SendPulse client secret |
+| `SENDPULSE_FROM_EMAIL` | Yes | From address |
+| `MAILTRAP_MODE` | Yes | 'sandbox' or 'production' |
+| `MAILTRAP_API_TOKEN` | Yes | Mailtrap API token |
+| `MAILTRAP_INBOX_ID` | Sandbox only | Mailtrap inbox ID |
+| `MAILTRAP_FROM_EMAIL` | Yes | From address |
+| `MAILTRAP_ACCOUNT_ID` | E2E only | For reading inbox via API |
+| `RESEND_API_KEY` | Yes | Resend API key |
+| `RESEND_FROM_EMAIL` | Yes | From address |
 
 ## Troubleshooting
 
@@ -296,17 +262,14 @@ For production emails to be delivered reliably:
 
 ## FAQ
 
-**Q: Can I use Resend in production too?**
-A: Yes! Just don't set `EMAIL_PROVIDER` and it will default to Resend.
+**Q: Do I need all 3 providers configured?**
+A: Yes, all 3 providers are required. The system will fail at runtime if any provider credentials are missing.
 
-**Q: Can I test SendPulse locally?**
-A: Yes! Set `EMAIL_PROVIDER=sendpulse` in your local Convex environment.
+**Q: How does provider rotation work?**
+A: The system tracks daily and monthly usage per provider. It selects the highest-priority provider with free capacity remaining.
 
-**Q: Do I need all provider keys set at once?**
-A: No, only set keys for providers you're using. The system handles missing keys gracefully.
-
-**Q: Can I switch providers without redeploying?**
-A: Yes! Change the `EMAIL_PROVIDER` environment variable in Convex dashboard.
+**Q: What happens when all free tiers are exhausted?**
+A: The system falls back to the first provider (SendPulse) which will result in paid usage.
 
 ---
 
