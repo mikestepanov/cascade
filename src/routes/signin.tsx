@@ -43,7 +43,7 @@ function SignInPage() {
           Back to home
         </Link>
         <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm">
-          <div className="text-center mb-6">
+          <div className="flex flex-col items-center mb-6">
             <NixeloLogo size={48} />
             <h1 className="text-2xl font-bold mt-4 mb-2">Welcome back</h1>
             <p className="text-gray-400 text-sm">Sign in to your account to continue</p>

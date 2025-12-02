@@ -19,7 +19,7 @@ test.describe("Landing Page - Navigation", () => {
     await expect(page.locator("nav").getByText("Features")).toBeVisible();
     await expect(page.locator("nav").getByText("Pricing")).toBeVisible();
     await expect(page.locator("nav").getByText("Resources")).toBeVisible();
-    await expect(page.locator("nav").getByText("Login")).toBeVisible();
+    await expect(page.locator("nav").getByText("Sign in")).toBeVisible();
 
     // Get Started button in nav
     await expect(landingPage.navGetStartedButton).toBeVisible();
@@ -75,15 +75,15 @@ test.describe("Landing Page - Features Section", () => {
   test("displays features section", async ({ page }) => {
     // Section heading
     await expect(
-      page.getByRole("heading", { name: /everything you need to succeed/i }),
+      page.getByRole("heading", { name: /stop juggling tools.*start shipping/i }),
     ).toBeVisible();
 
     // Feature cards (3)
     await expect(
-      page.getByRole("heading", { name: /seamless workflow automation/i }),
+      page.getByRole("heading", { name: /docs and issues.*finally together/i }),
     ).toBeVisible();
-    await expect(page.getByRole("heading", { name: /intelligent time tracking/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /integrated project clarity/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /edit together.*real-time/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /see everything.*miss nothing/i })).toBeVisible();
 
     // Learn more links
     const learnMoreLinks = page.getByRole("link", { name: /learn more/i });
@@ -98,13 +98,13 @@ test.describe("Landing Page - Stats Section", () => {
 
   test("displays stats section", async ({ page }) => {
     // Section heading
-    await expect(page.getByRole("heading", { name: /why choose nixelo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /teams actually like using it/i })).toBeVisible();
 
     // Stats
-    await expect(page.getByText(/faster project delivery/i)).toBeVisible();
-    await expect(page.getByText(/reduction in overhead/i)).toBeVisible();
-    await expect(page.getByText(/team adoption rate/i)).toBeVisible();
-    await expect(page.getByText(/customer satisfaction/i)).toBeVisible();
+    await expect(page.getByText(/less time in meetings/i)).toBeVisible();
+    await expect(page.getByText(/fewer tools to manage/i)).toBeVisible();
+    await expect(page.getByText(/actually use it daily/i)).toBeVisible();
+    await expect(page.getByText(/would recommend/i)).toBeVisible();
   });
 });
 

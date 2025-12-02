@@ -24,7 +24,7 @@ export class LandingPage extends BasePage {
   // ===================
   // Locators - Login Section (when visible)
   // ===================
-  readonly backToHomeButton: Locator;
+  readonly backToHomeLink: Locator;
   readonly loginSectionHeading: Locator;
 
   constructor(page: Page) {
@@ -32,8 +32,8 @@ export class LandingPage extends BasePage {
 
     // Navigation
     this.navLogo = page.locator("nav").getByText("nixelo");
-    this.navLoginButton = page.locator("nav").getByText("Login");
-    this.navGetStartedButton = page.locator("nav").getByRole("button", {
+    this.navLoginButton = page.locator("nav").getByText("Sign in");
+    this.navGetStartedButton = page.locator("nav").getByRole("link", {
       name: /get started/i,
     });
 
@@ -41,13 +41,13 @@ export class LandingPage extends BasePage {
     this.heroHeadline = page.getByRole("heading", {
       name: /revolutionize your workflow/i,
     });
-    this.heroGetStartedButton = page.getByRole("button", {
+    this.heroGetStartedButton = page.getByRole("link", {
       name: /get started free/i,
     });
-    this.watchDemoButton = page.getByRole("button", { name: /watch demo/i });
+    this.watchDemoButton = page.getByRole("link", { name: /watch demo/i });
 
     // Login Section (shown after clicking Get Started/Login)
-    this.backToHomeButton = page.getByRole("button", {
+    this.backToHomeLink = page.getByRole("link", {
       name: /back to home/i,
     });
     this.loginSectionHeading = page.getByRole("heading", {
@@ -98,8 +98,8 @@ export class LandingPage extends BasePage {
   }
 
   async goBackToHome() {
-    await this.backToHomeButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.backToHomeButton.evaluate((el: HTMLElement) => el.click());
+    await this.backToHomeLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.backToHomeLink.click();
     await this.heroHeadline.waitFor({ state: "visible", timeout: 10000 });
   }
 
@@ -115,6 +115,6 @@ export class LandingPage extends BasePage {
 
   async expectLoginSection() {
     await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
-    await expect(this.backToHomeButton).toBeVisible({ timeout: 10000 });
+    await expect(this.backToHomeLink).toBeVisible({ timeout: 10000 });
   }
 }

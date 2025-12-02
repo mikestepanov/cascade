@@ -13,6 +13,11 @@
  */
 
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import {
+  isMailtrapProviderConfigured,
+  isResendConfigured,
+  isSendPulseConfigured,
+} from "../lib/env";
 import { MailtrapProvider } from "./mailtrap";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 import { ResendProvider } from "./resend";
@@ -24,24 +29,46 @@ import { SendPulseProvider } from "./sendpulse";
 
 const PROVIDER_CONFIG: Record<
   string,
-  { freePerMonth: number; freePerDay: number; priority: number; factory: () => EmailProvider }
+  {
+    freePerMonth: number;
+    freePerDay: number;
+    priority: number;
+    factory: () => EmailProvider;
+    isConfigured: () => boolean;
+  }
 > = {
   sendpulse: {
     freePerMonth: 12000,
     freePerDay: 400,
     priority: 1,
     factory: () => new SendPulseProvider(),
+    isConfigured: isSendPulseConfigured,
   },
   mailtrap: {
     freePerMonth: 4000,
     freePerDay: 150,
     priority: 2,
     factory: () => new MailtrapProvider(),
+    isConfigured: isMailtrapProviderConfigured,
   },
-  resend: { freePerMonth: 3000, freePerDay: 100, priority: 3, factory: () => new ResendProvider() },
+  resend: {
+    freePerMonth: 3000,
+    freePerDay: 100,
+    priority: 3,
+    factory: () => new ResendProvider(),
+    isConfigured: isResendConfigured,
+  },
 };
 
-// Providers sorted by priority
+// Providers sorted by priority (only configured ones)
+function getConfiguredProviders(): string[] {
+  return Object.entries(PROVIDER_CONFIG)
+    .filter(([, config]) => config.isConfigured())
+    .sort(([, a], [, b]) => a.priority - b.priority)
+    .map(([name]) => name);
+}
+
+// Fallback for backwards compat - use all providers in priority order
 const PROVIDERS_BY_PRIORITY = Object.entries(PROVIDER_CONFIG)
   .sort(([, a], [, b]) => a.priority - b.priority)
   .map(([name]) => name);
@@ -68,13 +95,19 @@ function getCurrentDate(): string {
 
 /**
  * Select the best provider based on free tier usage (both daily and monthly limits)
+ * Only considers configured providers
  */
 async function selectProvider(ctx: QueryCtx): Promise<{ name: string; provider: EmailProvider }> {
   const month = getCurrentMonth();
   const date = getCurrentDate();
+  const configuredProviders = getConfiguredProviders();
 
-  // Check each provider in priority order
-  for (const name of PROVIDERS_BY_PRIORITY) {
+  if (configuredProviders.length === 0) {
+    throw new Error("No email providers configured. Set environment variables for at least one provider.");
+  }
+
+  // Check each configured provider in priority order
+  for (const name of configuredProviders) {
     const config = PROVIDER_CONFIG[name];
 
     // Get monthly usage
@@ -101,16 +134,20 @@ async function selectProvider(ctx: QueryCtx): Promise<{ name: string; provider: 
     }
   }
 
-  // All free tiers exhausted - use first provider (will be paid)
-  const firstName = PROVIDERS_BY_PRIORITY[0];
+  // All free tiers exhausted - use first configured provider (will be paid)
+  const firstName = configuredProviders[0];
   return { name: firstName, provider: PROVIDER_CONFIG[firstName].factory() };
 }
 
 /**
- * Get first provider (fallback when no ctx available)
+ * Get first configured provider (fallback when no ctx available)
  */
 function getFirstProvider(): { name: string; provider: EmailProvider } {
-  const name = PROVIDERS_BY_PRIORITY[0];
+  const configuredProviders = getConfiguredProviders();
+  if (configuredProviders.length === 0) {
+    throw new Error("No email providers configured. Set environment variables for at least one provider.");
+  }
+  const name = configuredProviders[0];
   return { name, provider: PROVIDER_CONFIG[name].factory() };
 }
 

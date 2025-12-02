@@ -30,16 +30,16 @@ export abstract class BasePage {
     // Wait for scripts to load and execute
     await this.page.waitForLoadState("load");
 
-    // Wait for React hydration by checking for __reactFiber on buttons
-    // This is more reliable than checking body since buttons are interactive
+    // Wait for React hydration by checking for __reactFiber on interactive elements
+    // This is more reliable than checking body since these elements are interactive
     await this.page.waitForFunction(
       () => {
-        const buttons = document.querySelectorAll("button");
-        if (buttons.length === 0) return true; // No buttons, assume ready
+        const elements = document.querySelectorAll("a, button");
+        if (elements.length === 0) return true; // No interactive elements, assume ready
 
-        // Check if at least one button has React fiber attached
-        for (const button of buttons) {
-          const keys = Object.keys(button);
+        // Check if at least one element has React fiber attached
+        for (const element of elements) {
+          const keys = Object.keys(element);
           if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
             return true;
           }

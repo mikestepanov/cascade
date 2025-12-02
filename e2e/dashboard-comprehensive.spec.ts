@@ -186,7 +186,7 @@ test.describe("Dashboard View - Sign Out", () => {
     await dashboardPage.signOut();
 
     // Should see landing page
-    await expect(page.getByRole("button", { name: /get started free/i })).toBeVisible({
+    await expect(page.getByRole("link", { name: /get started free/i })).toBeVisible({
       timeout: 10000,
     });
   });
