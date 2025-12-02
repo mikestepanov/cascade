@@ -62,85 +62,68 @@ pnpm convex deploy
 
 ## Provider Selection Logic
 
-The system checks `EMAIL_PROVIDER` environment variable:
+The system automatically rotates between configured providers based on free tier usage:
 
-| Environment | EMAIL_PROVIDER | Provider Used | Cost |
-|-------------|----------------|---------------|------|
-| Development | (not set) | Resend | Free (3k/month) |
-| Production | `sendpulse` | SendPulse | Free (15k/month) |
-| Production | `mailgun` | Mailgun | Free (1k/month) |
-| Production | `sendgrid` | SendGrid | Free (100/day) |
+| Provider | Free Tier | Priority |
+|----------|-----------|----------|
+| Resend | 3,000/month | 1 (highest) |
+| SendPulse | 15,000/month | 2 |
+| Mailgun | 1,000/month | 3 |
+| SendGrid | 100/day (~3k/month) | 4 |
+| Mailtrap | 1,000/month | 5 (E2E testing) |
+
+**Total free capacity: ~23,000 emails/month**
+
+The system:
+1. Checks which providers are configured (have env vars set)
+2. Selects provider with most free capacity remaining
+3. Tracks usage per provider per month
+4. Falls back to next provider when free tier exhausted
 
 ## E2E Testing Setup (Mailtrap)
 
-Mailtrap provides a sandbox inbox where emails can be captured and read programmatically - perfect for E2E tests that need to verify OTP codes.
+Mailtrap is unique because it's a **sandbox** - emails don't go to real inboxes but can be **read via API**. This is essential for E2E tests that need to verify OTP codes.
 
-### 1. Sign Up for Mailtrap
+### Why Mailtrap for E2E?
 
-1. Go to [https://mailtrap.io](https://mailtrap.io)
-2. Sign up (free tier: 1000 emails/month)
-3. Go to **Email Testing** → **Inboxes**
+| Provider | Send Email | Read Email (API) | Real Delivery |
+|----------|------------|------------------|---------------|
+| Resend | ✅ | ❌ | ✅ |
+| SendPulse | ✅ | ❌ | ✅ |
+| Mailtrap | ✅ | ✅ | ❌ (sandbox) |
 
-### 2. Get Your Credentials
+For E2E tests, Playwright needs to:
+1. Trigger signup → OTP email sent
+2. **Read the email** → Extract OTP code
+3. Enter OTP → Complete verification
 
-**For sending emails (SMTP or API):**
-1. Click on your inbox → **SMTP Settings**
-2. Copy the SMTP credentials OR
-3. Go to **API** tab for API-based sending
+Only Mailtrap provides the API to read emails.
 
-**For reading emails in E2E tests:**
-1. Go to **Settings** → **API Tokens** → Create token
-2. Get Account ID and Inbox ID from the URL:
-   ```
-   https://mailtrap.io/inboxes/INBOX_ID/messages
-   https://mailtrap.io/accounts/ACCOUNT_ID/...
-   ```
+### Setup
 
-### 3. Set Environment Variables
+1. **Sign up:** [https://mailtrap.io](https://mailtrap.io) (free tier: 1000/month)
+2. **Get credentials:**
+   - API Token: Settings → API Tokens
+   - Inbox ID: From inbox URL
+   - Account ID: From account URL
 
+3. **Set environment variables:**
 ```bash
-# Mailtrap API (for sending via sandbox API)
 MAILTRAP_API_TOKEN=your_api_token
 MAILTRAP_INBOX_ID=your_inbox_id
-MAILTRAP_FROM_EMAIL="Nixelo <test@nixelo.com>"
-
-# For E2E tests to read the inbox
 MAILTRAP_ACCOUNT_ID=your_account_id
+MAILTRAP_FROM_EMAIL="Nixelo <test@nixelo.com>"
 ```
 
-### 4. How It Works
+### How It Works
 
-1. **Auth sends OTP** → Email goes to Mailtrap sandbox inbox
-2. **E2E test polls** → Uses Mailtrap API to fetch emails
-3. **Extract OTP** → Regex extracts the 8-digit code
-4. **Complete signup** → Test enters OTP to verify
+When Mailtrap is configured and selected by the rotation system:
+1. **`sendEmail()`** routes to Mailtrap provider
+2. Email lands in Mailtrap sandbox inbox
+3. E2E tests use `e2e/utils/mailtrap.ts` to read inbox via API
+4. OTP code extracted and entered in test
 
-### 5. Usage in E2E Tests
-
-```typescript
-import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
-
-test("signup with email verification", async ({ page }) => {
-  // Clear inbox before test
-  await clearInbox();
-
-  // Fill signup form
-  await page.fill('[name="email"]', "test@example.com");
-  await page.click('button[type="submit"]');
-
-  // Wait for OTP email and extract code
-  const otp = await waitForVerificationEmail("test@example.com", {
-    timeout: 30000,
-    pollInterval: 2000,
-  });
-
-  // Enter OTP
-  await page.fill('[name="otp"]', otp);
-  await page.click('button[type="submit"]');
-});
-```
-
-See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for more details.
+See [E2E Testing Docs](../testing/e2e.md#mailtrap-otp-verification) for Playwright usage.
 
 ## Alternative Providers
 

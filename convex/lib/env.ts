@@ -35,6 +35,10 @@ export function getGoogleClientSecret(): string {
   return requireEnv("AUTH_GOOGLE_SECRET");
 }
 
+export function isGoogleOAuthConfigured(): boolean {
+  return !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
+}
+
 // ===========================================
 // Bot Service
 // ===========================================
@@ -57,6 +61,10 @@ export function getAnthropicApiKey(): string {
 
 export function getAnthropicModel(): string {
   return requireEnv("ANTHROPIC_MODEL");
+}
+
+export function isAnthropicConfigured(): boolean {
+  return !!process.env.ANTHROPIC_API_KEY && !!process.env.ANTHROPIC_MODEL;
 }
 
 // ===========================================
@@ -96,16 +104,8 @@ export function getSendPulseFromEmail(): string {
 }
 
 // ===========================================
-// Email - SendGrid
+// Email - SendGrid (REMOVED - free tier ended July 2025)
 // ===========================================
-
-export function getSendGridApiKey(): string {
-  return requireEnv("SENDGRID_API_KEY");
-}
-
-export function getSendGridFromEmail(): string {
-  return requireEnv("SENDGRID_FROM_EMAIL");
-}
 
 // ===========================================
 // Email - Mailgun
@@ -131,34 +131,19 @@ export function getMailgunRegion(): "us" | "eu" {
 // Email - Mailtrap
 // ===========================================
 
-export function getMailtrapSmtpHost(): string {
-  return requireEnv("MAILTRAP_SMTP_HOST");
+export function getMailtrapApiToken(): string {
+  return requireEnv("MAILTRAP_API_TOKEN");
 }
 
-export function getMailtrapSmtpPort(): number {
-  return Number.parseInt(requireEnv("MAILTRAP_SMTP_PORT"), 10);
-}
-
-export function getMailtrapSmtpUser(): string {
-  return requireEnv("MAILTRAP_SMTP_USER");
-}
-
-export function getMailtrapSmtpPass(): string {
-  return requireEnv("MAILTRAP_SMTP_PASS");
+export function getMailtrapInboxId(): string {
+  return requireEnv("MAILTRAP_INBOX_ID");
 }
 
 export function getMailtrapFromEmail(): string {
   return requireEnv("MAILTRAP_FROM_EMAIL");
 }
 
-export function getMailtrapApiToken(): string {
-  return requireEnv("MAILTRAP_API_TOKEN");
-}
-
+// For E2E tests to read inbox
 export function getMailtrapAccountId(): string {
   return requireEnv("MAILTRAP_ACCOUNT_ID");
-}
-
-export function getMailtrapInboxId(): string {
-  return requireEnv("MAILTRAP_INBOX_ID");
 }

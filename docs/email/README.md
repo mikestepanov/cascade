@@ -1,48 +1,61 @@
-# Email Notification System
+# Email System
 
-This document provides an overview of the email notification system for Nixelo.
+Universal email system for Nixelo. **All emails** (notifications, OTP verification, password reset) go through this system.
 
 ## Features
 
-- **Provider-agnostic architecture** - Easy to switch between email services
+- **Universal email wrapper** - All emails use `sendEmail()`, including OTP
+- **Provider rotation** - Automatic free tier optimization across 5 providers
 - **React Email templates** - Type-safe, component-based email templates
-- **User preferences** - Granular control over email notifications
-- **Automatic triggers** - Emails sent on mentions, assignments, comments
-- **Provider rotation** - Automatic free tier optimization across providers
+- **User preferences** - Granular control over notifications
+- **Usage tracking** - Monitor email usage per provider
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Nixelo App                               │
+│                                                                 │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐  │
-│  │  Mutations  │───►│   Helpers   │───►│  Email Service      │  │
-│  │  (issues,   │    │  (helpers.ts)    │  (index.ts)         │  │
-│  │  comments)  │    └─────────────┘    └──────────┬──────────┘  │
-│  └─────────────┘                                  │             │
+│  │  Mutations  │───►│   Helpers   │───►│                     │  │
+│  │  (issues,   │    │  (helpers.ts)    │                     │  │
+│  │  comments)  │    └─────────────┘    │                     │  │
+│  └─────────────┘                       │   sendEmail()       │  │
+│                                        │   (index.ts)        │  │
+│  ┌─────────────┐                       │                     │  │
+│  │  Auth OTP   │──────────────────────►│  - Provider rotation│  │
+│  │  (verify,   │                       │  - Usage tracking   │  │
+│  │  reset)     │                       │  - Free tier mgmt   │  │
+│  └─────────────┘                       └──────────┬──────────┘  │
+│                                                   │             │
 └───────────────────────────────────────────────────┼─────────────┘
                                                     │
-                    ┌───────────────────────────────┼───────────────┐
-                    │         Provider Selection    │               │
-                    │  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
-                    │  │ Resend  │  │SendPulse│  │ Mailgun │  ...  │
-                    │  └─────────┘  └─────────┘  └─────────┘       │
-                    └───────────────────────────────────────────────┘
+         ┌──────────────────────────────────────────┼──────────────┐
+         │              Provider Selection          │              │
+         │  ┌────────┐ ┌─────────┐ ┌───────┐ ┌────────┐ ┌────────┐│
+         │  │ Resend │ │SendPulse│ │Mailgun│ │SendGrid│ │Mailtrap││
+         │  │ 3k/mo  │ │ 15k/mo  │ │ 1k/mo │ │ 3k/mo  │ │ 1k/mo  ││
+         │  └────────┘ └─────────┘ └───────┘ └────────┘ └────────┘│
+         └─────────────────────────────────────────────────────────┘
 ```
 
 ## Directory Structure
 
 ```
-convex/email/
-├── index.ts             # Main entry point, provider selection
-├── provider.ts          # EmailProvider interface
-├── helpers.ts           # Helper functions for mutations
-├── notifications.ts     # Notification email functions
-├── digests.ts           # Daily/weekly digest emails
-├── resend.ts            # Resend provider implementation
-├── sendpulse.ts         # SendPulse provider implementation
-├── mailgun.ts           # Mailgun provider implementation
-└── sendgrid.ts          # SendGrid provider stub
+convex/
+├── email/
+│   ├── index.ts         # sendEmail() - main entry point with rotation
+│   ├── provider.ts      # EmailProvider interface
+│   ├── helpers.ts       # Helper functions for mutations
+│   ├── notifications.ts # Notification email functions
+│   ├── digests.ts       # Daily/weekly digest emails
+│   ├── resend.ts        # Resend provider
+│   ├── sendpulse.ts     # SendPulse provider
+│   ├── mailgun.ts       # Mailgun provider
+│   ├── sendgrid.ts      # SendGrid provider
+│   └── mailtrap.ts      # Mailtrap provider (E2E testing)
+├── MailtrapOTPVerification.ts   # OTP for email verification (uses sendEmail)
+└── ResendOTPPasswordReset.ts    # OTP for password reset (uses sendEmail)
 
 emails/
 ├── _components/
@@ -55,14 +68,24 @@ emails/
 
 ## Supported Providers
 
-| Provider | Free Tier | Paid Tier | Best For |
-|----------|-----------|-----------|----------|
-| **Resend** | 3,000/month | $20/month for 50k | Development, startups |
-| **SendPulse** | 15,000/month | $10/month for 50k | Production, scale |
-| **Mailgun** | 1,000/month | Pay as you go | Transactional email |
-| **SendGrid** | 100/day (~3k/month) | $15/month for 40k | Enterprise |
+| Provider | Free Tier | Best For |
+|----------|-----------|----------|
+| **Resend** | 3,000/month | Development, startups |
+| **SendPulse** | 15,000/month | Production, high volume |
+| **Mailgun** | 1,000/month | Transactional email |
+| **SendGrid** | 100/day (~3k/month) | Enterprise |
+| **Mailtrap** | 1,000/month | E2E testing (sandbox) |
+
+**Total free capacity: ~23,000 emails/month**
 
 ## Email Types
+
+### Authentication OTP
+
+| Event | Email Type | Source |
+|-------|------------|--------|
+| User signs up | Email verification OTP | `OTPVerification` |
+| User resets password | Password reset OTP | `OTPPasswordReset` |
 
 ### Automatic Notifications
 
@@ -155,4 +178,4 @@ export function MyCustomEmail({ userName }: { userName: string }) {
 
 ---
 
-*Last Updated: 2025-11-27*
+*Last Updated: 2025-12-01*

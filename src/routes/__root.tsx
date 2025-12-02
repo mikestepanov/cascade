@@ -5,10 +5,9 @@ import { type ReactNode, useEffect } from "react";
 import { Toaster } from "sonner";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { ThemeProvider } from "../contexts/ThemeContext";
+// Import global styles as URL for SSR (prevents FOUC)
+import appCss from "../index.css?url";
 import { promptInstall, register as registerServiceWorker } from "../lib/serviceWorker";
-
-// Import global styles (Tailwind)
-import "../index.css";
 
 // Initialize Convex client (only on client-side)
 let convex: ConvexReactClient | null = null;
@@ -32,6 +31,7 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
@@ -55,12 +55,12 @@ function RootComponent() {
           {convex ? (
             <ConvexAuthProvider client={convex}>
               <Outlet />
-              <Toaster />
             </ConvexAuthProvider>
           ) : (
             // SSR fallback - will hydrate with Convex on client
             <Outlet />
           )}
+          <Toaster />
         </LazyPostHog>
       </ThemeProvider>
     </RootDocument>
