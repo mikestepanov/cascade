@@ -5,13 +5,8 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/ShadcnSelect";
+import { Progress } from "../ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 interface BillingReportProps {
   projectId: Id<"projects">;
@@ -226,12 +221,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                   </Flex>
 
                   {/* Progress bar */}
-                  <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-                    <div
-                      className="bg-brand-600 h-2 rounded-full transition-all"
-                      style={{ width: `${userUtilization}%` }}
-                    />
-                  </div>
+                  <Progress value={userUtilization} />
                 </div>
               );
             })}

@@ -148,9 +148,9 @@ test.describe("Integration", () => {
 
     // Should either go to onboarding or dashboard
     await expect(
-      page.getByRole("heading", { name: /welcome to nixelo/i }).or(
-        page.getByRole("link", { name: /^dashboard$/i })
-      )
+      page
+        .getByRole("heading", { name: /welcome to nixelo/i })
+        .or(page.getByRole("link", { name: /^dashboard$/i })),
     ).toBeVisible({ timeout: 15000 });
   });
 });

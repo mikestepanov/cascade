@@ -9,13 +9,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 type EntryMode = "duration" | "timeRange";
 
@@ -461,7 +455,10 @@ export function ManualTimeEntryModal({
           >
             Activity
           </label>
-          <Select value={activity || "none"} onValueChange={(value) => setActivity(value === "none" ? "" : value)}>
+          <Select
+            value={activity || "none"}
+            onValueChange={(value) => setActivity(value === "none" ? "" : value)}
+          >
             <SelectTrigger id="time-entry-activity" className="w-full">
               <SelectValue placeholder="Select activity..." />
             </SelectTrigger>

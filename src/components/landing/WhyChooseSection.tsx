@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Progress } from "../ui/progress";
 
 export function WhyChooseSection() {
   const stats = [
@@ -59,12 +60,11 @@ function StatItem({
     <div className="text-center">
       <div className={`text-4xl md:text-5xl font-bold mb-2 ${colors[color].text}`}>{value}%</div>
       <p className="text-gray-400 text-sm mb-4">{label}</p>
-      <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${colors[color].bar} rounded-full transition-all duration-1000 ease-out`}
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+      <Progress
+        value={progress}
+        className="h-1.5 bg-gray-800"
+        indicatorClassName={`${colors[color].bar} transition-all duration-1000 ease-out`}
+      />
     </div>
   );
 }

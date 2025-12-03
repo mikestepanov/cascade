@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type FullConfig } from "@playwright/test";
-import { TEST_USERS, AUTH_PATHS } from "./config";
-import { waitForVerificationEmail, isMailtrapConfigured } from "./utils/mailtrap";
+import { AUTH_PATHS, TEST_USERS } from "./config";
+import { isMailtrapConfigured, waitForVerificationEmail } from "./utils/mailtrap";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,10 +31,7 @@ async function isOnDashboard(page: import("@playwright/test").Page): Promise<boo
  * Try to sign in with existing credentials
  * Returns true if sign-in was successful
  */
-async function trySignIn(
-  page: import("@playwright/test").Page,
-  baseURL: string,
-): Promise<boolean> {
+async function trySignIn(page: import("@playwright/test").Page, baseURL: string): Promise<boolean> {
   try {
     await page.goto(baseURL);
     await page.waitForLoadState("load");

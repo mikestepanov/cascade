@@ -11,9 +11,9 @@
  * Real email verification is tested separately using Mailtrap API.
  */
 
-import { httpAction, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { httpAction, internalMutation } from "./_generated/server";
 
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
@@ -38,7 +38,7 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
     const body = await request.json();
     const { email, password, skipOnboarding = false } = body;
 
-    if (!email || !password) {
+    if (!(email && password)) {
       return new Response(JSON.stringify({ error: "Missing email or password" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -46,10 +46,13 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
     }
 
     if (!isTestEmail(email)) {
-      return new Response(JSON.stringify({ error: "Only test emails allowed (@inbox.mailtrap.io)" }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Only test emails allowed (@inbox.mailtrap.io)" }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const result = await ctx.runMutation(internal.e2e.createTestUserInternal, {
@@ -336,10 +339,7 @@ export const cleanupTestUsersInternal = internalMutation({
     const oldTestUsers = await ctx.db
       .query("users")
       .filter((q) =>
-        q.and(
-          q.eq(q.field("isTestUser"), true),
-          q.lt(q.field("testUserCreatedAt"), cutoffTime)
-        )
+        q.and(q.eq(q.field("isTestUser"), true), q.lt(q.field("testUserCreatedAt"), cutoffTime)),
       )
       .collect();
 

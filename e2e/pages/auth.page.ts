@@ -148,8 +148,9 @@ export class AuthPage extends BasePage {
       await this.page.waitForTimeout(2000);
 
       // Check if we left the sign-up form (verification page, error, or dashboard)
-      const stillOnSignUp = await this.submitButton.textContent()
-        .then(text => text?.toLowerCase().includes("sign up"))
+      const stillOnSignUp = await this.submitButton
+        .textContent()
+        .then((text) => text?.toLowerCase().includes("sign up"))
         .catch(() => false);
 
       if (!stillOnSignUp) {

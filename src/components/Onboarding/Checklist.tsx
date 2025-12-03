@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import { Flex } from "../ui/Flex";
+import { Progress } from "../ui/progress";
 
 interface ChecklistItem {
   id: string;
@@ -115,12 +116,7 @@ export function OnboardingChecklist() {
 
       {/* Progress Bar */}
       <div className="px-4 pt-3">
-        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-          <div
-            className="bg-status-success h-2 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+        <Progress value={progress} indicatorClassName="bg-status-success duration-500" />
       </div>
 
       {/* Checklist Items */}

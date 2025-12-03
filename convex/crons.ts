@@ -34,10 +34,6 @@ crons.weekly(
  * Runs every hour to delete test users older than 1 hour
  * Only affects users with isTestUser=true flag
  */
-crons.hourly(
-  "cleanup test users",
-  { minuteUTC: 30 },
-  internal.e2e.cleanupTestUsersInternal,
-);
+crons.hourly("cleanup test users", { minuteUTC: 30 }, internal.e2e.cleanupTestUsersInternal);
 
 export default crons;

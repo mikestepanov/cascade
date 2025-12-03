@@ -1,10 +1,10 @@
 import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
 import {
+  cleanupTestUsersEndpoint,
   createTestUserEndpoint,
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
-  cleanupTestUsersEndpoint,
 } from "./e2e";
 import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 

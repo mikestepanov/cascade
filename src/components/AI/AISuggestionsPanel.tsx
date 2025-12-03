@@ -5,6 +5,7 @@
 import React from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
+import { Progress } from "../ui/progress";
 import { Skeleton } from "../ui/Skeleton";
 import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
@@ -210,12 +211,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
                 className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               >
                 <span>Confidence:</span>
-                <div className="flex-1 max-w-[100px] bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-                  <div
-                    className="bg-brand-600 h-2 rounded-full"
-                    style={{ width: `${suggestion.confidence * 100}%` }}
-                  />
-                </div>
+                <Progress value={suggestion.confidence * 100} className="flex-1 max-w-[100px]" />
                 <span>{Math.round(suggestion.confidence * 100)}%</span>
               </Flex>
             </div>

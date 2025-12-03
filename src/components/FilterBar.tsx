@@ -7,13 +7,7 @@ import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 
 type FilterValues = Record<string, unknown>;
 

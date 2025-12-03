@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Progress } from "../ui/progress";
 
 // Type for time entry with computed hours field
 type TimeEntryWithHours = Doc<"timeEntries"> & {
@@ -112,12 +113,7 @@ export function Timesheet() {
         </Flex>
 
         {/* Progress bar */}
-        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-          <div
-            className="bg-brand-600 h-2 rounded-full transition-all"
-            style={{ width: `${Math.min((timesheet.totalHours / 40) * 100, 100)}%` }}
-          />
-        </div>
+        <Progress value={Math.min((timesheet.totalHours / 40) * 100, 100)} />
         <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
           {formatHours(timesheet.totalHours)} / 40 hours (full-time week)
         </div>

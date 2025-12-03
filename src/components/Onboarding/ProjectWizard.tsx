@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+import { Progress } from "../ui/progress";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -99,12 +100,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               {Math.round((step / 4) * 100)}% complete
             </span>
           </Flex>
-          <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-            <div
-              className="bg-brand-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%` }}
-            />
-          </div>
+          <Progress value={(step / 4) * 100} />
         </div>
 
         {/* Step 1: Project Name & Key */}

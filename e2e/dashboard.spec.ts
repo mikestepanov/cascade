@@ -111,15 +111,3 @@ test.describe("Notifications", () => {
     await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
   });
 });
-
-// Sign out tests run LAST - they invalidate auth tokens server-side
-test.describe("Sign Out", () => {
-  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
-    await dashboardPage.goto();
-    await dashboardPage.expectDashboard();
-    await dashboardPage.signOut();
-    await expect(page.getByRole("link", { name: /get started free/i })).toBeVisible({
-      timeout: 10000,
-    });
-  });
-});

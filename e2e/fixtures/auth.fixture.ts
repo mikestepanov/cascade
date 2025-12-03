@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test as base, expect } from "@playwright/test";
+import { AUTH_PATHS } from "../config";
 import {
   AuthPage,
   CalendarPage,
@@ -11,7 +12,6 @@ import {
   ProjectsPage,
   SettingsPage,
 } from "../pages";
-import { AUTH_PATHS } from "../config";
 
 /**
  * Authentication fixtures for tests requiring logged-in state

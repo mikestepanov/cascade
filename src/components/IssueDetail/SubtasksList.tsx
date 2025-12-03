@@ -6,6 +6,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
+import { Progress } from "../ui/progress";
 
 interface Subtask {
   _id: Id<"issues">;
@@ -78,12 +79,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
       {/* Progress bar */}
       {totalSubtasks > 0 && (
-        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2 mb-3">
-          <div
-            className="bg-brand-600 h-2 rounded-full transition-all"
-            style={{ width: `${(completedSubtasks / totalSubtasks) * 100}%` }}
-          />
-        </div>
+        <Progress value={(completedSubtasks / totalSubtasks) * 100} className="mb-3" />
       )}
 
       {/* Create sub-task form */}
