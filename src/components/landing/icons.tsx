@@ -65,7 +65,16 @@ export function TimeIcon() {
 
 export function CollabIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#14b8a6"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       {/* Two cursors */}
       <path d="M3 3l4 12 2-4 4-2L3 3z" />
       <path d="M14 14l4 7 1-3 3-1-8-3z" strokeOpacity="0.6" />
@@ -113,7 +122,14 @@ export function PlayIcon({ className }: { className?: string }) {
 // Grid icons from AI template
 export function SecurityIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       <circle cx="12" cy="12" r="2" fill="currentColor" />
     </svg>
@@ -122,7 +138,14 @@ export function SecurityIcon() {
 
 export function CloudIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
       <circle cx="18" cy="15" r="2" fill="currentColor" />
     </svg>
@@ -131,7 +154,14 @@ export function CloudIcon() {
 
 export function SettingsIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="4" y1="21" x2="4" y2="14" />
       <line x1="4" y1="10" x2="4" y2="3" />
       <line x1="12" y1="21" x2="12" y2="12" />
@@ -147,7 +177,14 @@ export function SettingsIcon() {
 
 export function PeopleIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <circle cx="20" cy="8" r="2" fill="currentColor" />
@@ -158,7 +195,14 @@ export function PeopleIcon() {
 
 export function CodeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polyline points="16 18 22 12 16 6" />
       <polyline points="8 6 2 12 8 18" />
       <circle cx="12" cy="12" r="2" fill="currentColor" />
@@ -168,7 +212,14 @@ export function CodeIcon() {
 
 export function StackIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polygon points="12 2 2 7 12 12 22 7 12 2" />
       <polyline points="2 17 12 22 22 17" />
       <polyline points="2 12 12 17 22 12" />
@@ -179,7 +230,14 @@ export function StackIcon() {
 
 export function BellIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
       <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       <circle cx="18" cy="5" r="2" fill="currentColor" />
@@ -189,7 +247,14 @@ export function BellIcon() {
 
 export function FileIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <polyline points="14 2 14 8 20 8" />
       <circle cx="10" cy="13" r="1.5" fill="currentColor" />
@@ -200,7 +265,14 @@ export function FileIcon() {
 
 export function LinkIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
       <circle cx="12" cy="12" r="2" fill="currentColor" />

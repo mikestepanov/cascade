@@ -8,7 +8,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { Flex } from "../ui/Flex";
-import { ModalBackdrop } from "../ui/ModalBackdrop";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
 import { AIChat } from "./AIChat";
 import { AIErrorFallback } from "./AIErrorFallback";
 import { AISuggestionsPanel } from "./AISuggestionsPanel";
@@ -43,48 +43,25 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      {isOpen && <ModalBackdrop onClick={onClose} animated={false} />}
-
-      {/* Panel */}
-      <div
-        className={`fixed right-0 top-0 h-full ${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-2xl z-50 transform transition-all duration-${AI_CONFIG.animations.slideInOut} ${
-          isOpen ? "translate-x-0 ease-out" : "translate-x-full ease-in"
-        }`}
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        side="right"
+        className={`${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} p-0 flex flex-col bg-ui-bg-primary dark:bg-ui-bg-primary-dark`}
       >
         {/* Header */}
-        <Flex
-          justify="between"
-          align="center"
-          className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600"
-        >
-          <Flex align="center" gap="md">
-            <div className="text-2xl">🤖</div>
-            <div>
-              <h2 className="text-lg font-semibold text-white">AI Assistant</h2>
-              <p className="text-xs text-brand-100">
-                {projectId ? "Project-specific context" : "General chat"}
-              </p>
-            </div>
-          </Flex>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 text-white hover:bg-ui-bg-primary/20 rounded-lg transition-colors"
-            aria-label="Close AI assistant"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <title>Close</title>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </Flex>
+        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600">
+          <SheetHeader className="text-left">
+            <Flex align="center" gap="md">
+              <div className="text-2xl">🤖</div>
+              <div>
+                <SheetTitle className="text-lg font-semibold text-white">AI Assistant</SheetTitle>
+                <SheetDescription className="text-xs text-brand-100">
+                  {projectId ? "Project-specific context" : "General chat"}
+                </SheetDescription>
+              </div>
+            </Flex>
+          </SheetHeader>
+        </div>
 
         {/* Tabs */}
         <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
@@ -123,9 +100,9 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Content */}
-        <div className={`h-[calc(100vh-${AI_CONFIG.panel.headerHeight}px)] overflow-hidden`}>
+        <div className="flex-1 overflow-hidden">
           <div
-            className={`transition-opacity duration-${AI_CONFIG.animations.tabTransition} ${
+            className={`h-full transition-opacity duration-${AI_CONFIG.animations.tabTransition} ${
               isAnimating ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -150,7 +127,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             </ErrorBoundary>
           </div>
         </div>
-      </div>
-    </>
+      </SheetContent>
+    </Sheet>
   );
 }

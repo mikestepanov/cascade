@@ -33,7 +33,11 @@ export class SendPulseProvider implements EmailProvider {
     if (!this.clientId) this.clientId = getSendPulseId();
     if (!this.clientSecret) this.clientSecret = getSendPulseSecret();
     if (!this.defaultFrom) this.defaultFrom = getSendPulseFromEmail();
-    return { clientId: this.clientId, clientSecret: this.clientSecret, defaultFrom: this.defaultFrom };
+    return {
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
+      defaultFrom: this.defaultFrom,
+    };
   }
 
   private async getAccessToken(): Promise<string> {

@@ -7,19 +7,26 @@ import { ModalBackdrop } from "./ModalBackdrop";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Simple string title - renders standard header with close button */
   title?: string;
+  /** Custom header content - renders instead of title, you handle close button */
+  header?: ReactNode;
   children: ReactNode;
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl";
   fullScreenOnMobile?: boolean;
+  /** Additional className for the modal container */
+  className?: string;
 }
 
 export function Modal({
   isOpen,
   onClose,
   title,
+  header,
   children,
   maxWidth = "md",
   fullScreenOnMobile = false,
+  className,
 }: ModalProps) {
   if (!isOpen) return null;
 
@@ -31,6 +38,8 @@ export function Modal({
     "2xl": "max-w-2xl",
     "4xl": "max-w-4xl",
   };
+
+  const hasHeader = title || header;
 
   return (
     <>
@@ -52,11 +61,16 @@ export function Modal({
             fullScreenOnMobile
               ? "rounded-none sm:rounded-lg min-h-screen sm:min-h-0"
               : "rounded-lg m-4 sm:m-0"
-          } shadow-xl w-full ${maxWidthClasses[maxWidth]} animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-200`}
+          } shadow-xl w-full ${maxWidthClasses[maxWidth]} animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-200 ${className || ""}`}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         >
-          {title && (
+          {/* Custom header takes precedence over title */}
+          {header ? (
+            <div className="sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4 sm:p-6 rounded-t-lg z-10">
+              {header}
+            </div>
+          ) : title ? (
             <Flex
               align="center"
               justify="between"
@@ -78,8 +92,8 @@ export function Modal({
                 <XIcon />
               </Button>
             </Flex>
-          )}
-          <div className={title ? "" : "p-4 sm:p-6"}>{children}</div>
+          ) : null}
+          <div className={hasHeader ? "" : "p-4 sm:p-6"}>{children}</div>
         </div>
       </Flex>
     </>

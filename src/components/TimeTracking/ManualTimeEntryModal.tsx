@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
+import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
@@ -177,15 +178,8 @@ export function ManualTimeEntryModal({
     }
   };
 
-  // Format duration for display (hours and minutes)
-  const formatDurationDisplay = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
+  // Check if duration input is valid (for showing error state)
+  const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
 
   return (
     <Modal isOpen={true} onClose={onClose} title="Log Time Manually" maxWidth="2xl">
@@ -201,23 +195,25 @@ export function ManualTimeEntryModal({
           <button
             type="button"
             onClick={() => setEntryMode("duration")}
-            className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
               entryMode === "duration"
                 ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
                 : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
+            <Hourglass className="w-4 h-4" />
             Duration
           </button>
           <button
             type="button"
             onClick={() => setEntryMode("timeRange")}
-            className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
               entryMode === "timeRange"
                 ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
                 : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
             }`}
           >
+            <Clock className="w-4 h-4" />
             Start/End Time
           </button>
         </div>
@@ -256,11 +252,21 @@ export function ManualTimeEntryModal({
               value={durationInput}
               onChange={(e) => setDurationInput(e.target.value)}
               placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+                isDurationInputValid
+                  ? "border-ui-border-primary dark:border-ui-border-primary-dark"
+                  : "border-red-500 dark:border-red-500"
+              }`}
             />
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-              Accepts: 1:30, 1.5, 1h 30m, 90m
-            </p>
+            {!isDurationInputValid ? (
+              <p className="text-xs text-red-500 mt-1">
+                Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
+              </p>
+            ) : (
+              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                Accepts: 1:30, 1.5, 1h 30m, 90m
+              </p>
+            )}
 
             {/* Quick Increment Buttons */}
             <Flex gap="sm" className="mt-2">
@@ -356,7 +362,7 @@ export function ManualTimeEntryModal({
             {duration > 0 && (
               <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
                 <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                  Duration: {formatDurationDisplay(duration)}
+                  Duration: {formatDurationHuman(duration)}
                 </span>
               </div>
             )}
@@ -533,7 +539,7 @@ export function ManualTimeEntryModal({
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button type="submit" variant="primary" disabled={duration <= 0}>
+          <Button type="submit" variant="primary" disabled={effectiveDuration <= 0}>
             Create Entry
           </Button>
         </Flex>

@@ -83,7 +83,9 @@ test.describe("Landing Page - Features Section", () => {
       page.getByRole("heading", { name: /docs and issues.*finally together/i }),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: /edit together.*real-time/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /see everything.*miss nothing/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /see everything.*miss nothing/i }),
+    ).toBeVisible();
 
     // Learn more links
     const learnMoreLinks = page.getByRole("link", { name: /learn more/i });
@@ -98,7 +100,9 @@ test.describe("Landing Page - Stats Section", () => {
 
   test("displays stats section", async ({ page }) => {
     // Section heading
-    await expect(page.getByRole("heading", { name: /teams actually like using it/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /teams actually like using it/i }),
+    ).toBeVisible();
 
     // Stats
     await expect(page.getByText(/less time in meetings/i)).toBeVisible();

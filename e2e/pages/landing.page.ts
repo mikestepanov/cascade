@@ -72,11 +72,14 @@ export class LandingPage extends BasePage {
     // Wait for button to be ready
     await this.heroGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
 
-    // Wait for any pending navigation to complete
-    await this.page.waitForLoadState("networkidle");
+    // Short wait for React hydration (don't use networkidle - Convex WebSockets keep it active)
+    await this.page.waitForTimeout(500);
 
-    // Use evaluate to call native click which React intercepts
-    await this.heroGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    // Click the button to navigate to signin page
+    await this.heroGetStartedButton.click();
+
+    // Wait for signin page to load (URL changes to /signin)
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
 
     // Wait for login section to appear and stabilize
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
@@ -85,14 +88,18 @@ export class LandingPage extends BasePage {
 
   async clickNavLogin() {
     await this.navLoginButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.navLoginButton.evaluate((el: HTMLElement) => el.click());
+    await this.navLoginButton.click();
+    // Wait for signin page to load
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
   }
 
   async clickNavGetStarted() {
     await this.navGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.navGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    await this.navGetStartedButton.click();
+    // Wait for signin page to load
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
   }
