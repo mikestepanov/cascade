@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
@@ -302,22 +303,13 @@ export function UserRatesManagement() {
             </div>
 
             {/* Notes */}
-            <div>
-              <label
-                htmlFor="rate-notes"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Notes (optional)
-              </label>
-              <textarea
-                id="rate-notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g., Senior developer rate, Contract rate for Q1 2024..."
-                rows={2}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
-              />
-            </div>
+            <Textarea
+              label="Notes (optional)"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g., Senior developer rate, Contract rate for Q1 2024..."
+              rows={2}
+            />
 
             <Flex justify="end" gap="sm" className="pt-4">
               <Button onClick={handleCloseModal} variant="secondary">

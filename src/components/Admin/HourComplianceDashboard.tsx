@@ -7,7 +7,7 @@ import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
-import { Input, Select } from "../ui/form";
+import { Input, Select, Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
 type ComplianceStatus = "compliant" | "under_hours" | "over_hours" | "equity_under";
@@ -399,22 +399,13 @@ export function HourComplianceDashboard() {
       >
         <form onSubmit={handleReview} className="p-6">
           <Flex direction="column" gap="lg">
-            <div>
-              <label
-                htmlFor="review-notes"
-                className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2"
-              >
-                Review Notes (Optional)
-              </label>
-              <textarea
-                id="review-notes"
-                value={reviewNotes}
-                onChange={(e) => setReviewNotes(e.target.value)}
-                placeholder="Add notes about this compliance record..."
-                rows={4}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              />
-            </div>
+            <Textarea
+              label="Review Notes (Optional)"
+              value={reviewNotes}
+              onChange={(e) => setReviewNotes(e.target.value)}
+              placeholder="Add notes about this compliance record..."
+              rows={4}
+            />
 
             <Flex gap="sm" className="pt-4">
               <Button type="submit" isLoading={isSubmitting}>

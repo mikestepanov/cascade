@@ -1,6 +1,5 @@
-import { expect } from "@playwright/test";
 import { E2E_ENDPOINTS, TEST_USERS } from "./config";
-import { authenticatedTest as test } from "./fixtures";
+import { authenticatedTest as test, expect } from "./fixtures";
 
 /**
  * Onboarding Wizard E2E Tests
@@ -43,7 +42,7 @@ test.describe("Onboarding Wizard", () => {
     await resetOnboarding();
   });
 
-  test("displays welcome page with role selection", async ({ page }) => {
+  test("displays welcome page with role selection", async ({ page, saveAuthState }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -57,7 +56,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(page.getByRole("heading", { name: /team member/i })).toBeVisible();
   });
 
-  test("can select team lead role", async ({ page }) => {
+  test("can select team lead role", async ({ page, saveAuthState }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -74,7 +73,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(continueButton).toBeVisible({ timeout: 5000 });
   });
 
-  test("can select team member role", async ({ page }) => {
+  test("can select team member role", async ({ page, saveAuthState }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -91,7 +90,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(continueButton).toBeVisible({ timeout: 5000 });
   });
 
-  test("can skip onboarding", async ({ page }) => {
+  test("can skip onboarding", async ({ page, saveAuthState }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -111,7 +110,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(page.getByRole("heading", { name: /my work/i })).toBeVisible({ timeout: 10000 });
   });
 
-  test("shows feature highlights", async ({ page }) => {
+  test("shows feature highlights", async ({ page, saveAuthState }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 

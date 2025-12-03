@@ -8,6 +8,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
@@ -430,22 +431,13 @@ export function ManualTimeEntryModal({
         )}
 
         {/* Description */}
-        <div>
-          <label
-            htmlFor="time-entry-description"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Description
-          </label>
-          <textarea
-            id="time-entry-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What did you work on?"
-            rows={3}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
-          />
-        </div>
+        <Textarea
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What did you work on?"
+          rows={3}
+        />
 
         {/* Activity */}
         <div>

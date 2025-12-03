@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
@@ -221,22 +222,13 @@ export function CreateEventModal({
           )}
 
           {/* Description */}
-          <div>
-            <label
-              htmlFor="event-description"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Description
-            </label>
-            <textarea
-              id="event-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              placeholder="Add notes, agenda, or details..."
-            />
-          </div>
+          <Textarea
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            placeholder="Add notes, agenda, or details..."
+          />
 
           {/* Location */}
           <div>
