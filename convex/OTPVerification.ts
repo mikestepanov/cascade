@@ -4,26 +4,15 @@
  * Sends verification emails using the universal email provider system.
  * Provider rotation and usage tracking are handled automatically.
  *
- * E2E Test Mode:
- * For emails ending with @inbox.mailtrap.io, uses a fixed OTP code (12345678)
- * and skips actual email sending. This enables E2E tests without requiring
- * working email provider credentials.
+ * E2E Testing:
+ * Emails to @inbox.mailtrap.io are sent normally via the email provider system.
+ * When MAILTRAP_MODE=sandbox, emails land in the Mailtrap inbox where
+ * E2E tests can fetch them via Mailtrap API to extract the OTP.
  */
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
 import { sendEmail } from "./email";
-import { internal } from "./_generated/api";
-
-// Fixed OTP for E2E testing (used for @inbox.mailtrap.io emails)
-const E2E_TEST_OTP = "12345678";
-
-/**
- * Check if email is for E2E testing
- */
-function isE2ETestEmail(email: string): boolean {
-  return email.endsWith("@inbox.mailtrap.io");
-}
 
 /**
  * Generate an 8-digit OTP code
@@ -45,10 +34,10 @@ function generateOTP(): string {
  * - Free tier management (daily + monthly limits)
  * - Usage tracking
  *
- * E2E Test Mode:
- * For emails ending with @inbox.mailtrap.io, uses a fixed OTP code (12345678)
- * and skips actual email sending. This enables E2E tests without requiring
- * working email provider credentials.
+ * E2E Testing:
+ * All emails are sent normally through the email provider system.
+ * When MAILTRAP_MODE=sandbox, emails land in the Mailtrap inbox.
+ * E2E tests use Mailtrap API to fetch emails and extract OTP codes.
  */
 export const OTPVerification = Resend({
   id: "otp-verification",
@@ -60,24 +49,8 @@ export const OTPVerification = Resend({
   // @ts-expect-error - ctx IS passed at runtime by @convex-dev/auth (see signIn.ts:92-95)
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
   async sendVerificationRequest({ identifier: email, token }, ctx) {
-    // Check if this is an E2E test email - store OTP in DB and skip email sending
-    if (isE2ETestEmail(email)) {
-      console.log(`[E2E TEST] Email verification OTP for ${email}: ${token}`);
-
-      // Store OTP in database for E2E test retrieval via HTTP endpoint
-      try {
-        await ctx.scheduler.runAfter(0, internal.e2e.storeTestOTP, {
-          email,
-          otp: token,
-        });
-        console.log(`[E2E TEST] OTP stored in database, retrieve via /e2e/otp?email=${email}`);
-      } catch (e) {
-        console.error(`[E2E TEST] Failed to store OTP:`, e);
-      }
-
-      return; // Skip email sending for test emails
-    }
-
+    // Send verification email through the email provider system
+    // In dev/E2E (MAILTRAP_MODE=sandbox), emails go to Mailtrap inbox
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Verify your email",

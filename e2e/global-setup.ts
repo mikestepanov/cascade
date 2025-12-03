@@ -2,69 +2,224 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type FullConfig } from "@playwright/test";
+import { TEST_USERS, AUTH_PATHS } from "./config";
+import { waitForVerificationEmail, isMailtrapConfigured } from "./utils/mailtrap";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, ".auth");
-const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
-
-// Convex site URL for E2E OTP retrieval
-const CONVEX_SITE_URL = "https://majestic-goshawk-53.convex.site";
-
-// Generate unique test email for each run
-const timestamp = Date.now();
-// Test user credentials - use a real email that triggers E2E test mode
-const TEST_USER = {
-  email: `e2e-test-${timestamp}@inbox.mailtrap.io`,
-  password: "TestPassword123!",
-};
 
 /**
- * Wait for and retrieve OTP from Convex E2E endpoint
- * Polls the endpoint until OTP is available or timeout
+ * Check if we're on the dashboard
  */
-async function waitForOTPFromConvex(
-  email: string,
-  options: { timeout: number; pollInterval: number } = { timeout: 30000, pollInterval: 2000 },
-): Promise<string> {
-  const endpoint = `${CONVEX_SITE_URL}/e2e/otp?email=${encodeURIComponent(email)}`;
-  const startTime = Date.now();
+async function isOnDashboard(page: import("@playwright/test").Page): Promise<boolean> {
+  const dashboardIndicators = [
+    page.getByRole("heading", { name: /my work/i }),
+    page.getByText("Your personal dashboard"),
+    page.getByText("ASSIGNED TO ME"),
+  ];
 
-  while (Date.now() - startTime < options.timeout) {
-    try {
-      const response = await fetch(endpoint);
-      const data = await response.json();
+  for (const indicator of dashboardIndicators) {
+    if (await indicator.isVisible().catch(() => false)) {
+      return true;
+    }
+  }
+  return false;
+}
 
-      if (response.ok && data.otp) {
-        return data.otp;
-      }
+/**
+ * Try to sign in with existing credentials
+ * Returns true if sign-in was successful
+ */
+async function trySignIn(
+  page: import("@playwright/test").Page,
+  baseURL: string,
+): Promise<boolean> {
+  try {
+    await page.goto(baseURL);
+    await page.waitForLoadState("load");
+    await page.waitForTimeout(1000);
 
-      // If not found yet, wait and retry
-      if (response.status === 404) {
-        await new Promise((resolve) => setTimeout(resolve, options.pollInterval));
-        continue;
-      }
-
-      // Other errors
-      if (!response.ok) {
-        console.warn(`OTP endpoint returned ${response.status}: ${data.error}`);
-      }
-    } catch (e) {
-      console.warn(`Failed to fetch OTP: ${e}`);
+    // Check if already logged in (user might have valid session)
+    if (await isOnDashboard(page)) {
+      console.log("✓ Already logged in, on dashboard");
+      return true;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, options.pollInterval));
-  }
+    const getStartedLink = page.getByRole("link", { name: /get started free/i });
+    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
+    await page.waitForTimeout(500);
+    await getStartedLink.click();
 
-  throw new Error(`Timeout waiting for OTP for ${email}`);
+    await page
+      .getByRole("heading", { name: /welcome back/i })
+      .waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForTimeout(300);
+
+    // Fill sign in form
+    const emailInput = page.getByPlaceholder("Email");
+    const passwordInput = page.getByPlaceholder("Password");
+
+    await emailInput.waitFor({ state: "visible", timeout: 10000 });
+    await emailInput.fill(TEST_USERS.dashboard.email);
+
+    await passwordInput.waitFor({ state: "visible", timeout: 5000 });
+    await passwordInput.fill(TEST_USERS.dashboard.password);
+
+    console.log(`🔐 Trying to sign in as ${TEST_USERS.dashboard.email}...`);
+    const signInButton = page.getByRole("button", { name: /^sign in$/i });
+    await signInButton.click();
+
+    await page.waitForTimeout(3000);
+
+    // Check if we made it to dashboard
+    if (await isOnDashboard(page)) {
+      console.log("✓ Sign-in successful, on dashboard");
+      return true;
+    }
+
+    // Check if we hit onboarding
+    const onOnboarding = await page
+      .getByRole("heading", { name: /welcome to nixelo/i })
+      .isVisible()
+      .catch(() => false);
+
+    if (onOnboarding) {
+      console.log("📋 On onboarding - completing...");
+      const skipButton = page.getByRole("button", { name: /skip for now/i });
+      await skipButton.waitFor({ state: "visible", timeout: 5000 });
+      await skipButton.click();
+      await page.waitForTimeout(2000);
+
+      // Check dashboard again after onboarding
+      if (await isOnDashboard(page)) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.log(`ℹ️ Sign-in attempt failed: ${error}`);
+    return false;
+  }
+}
+
+/**
+ * Sign up a new user with email verification
+ * Uses Mailtrap API to get the OTP
+ */
+async function signUpNewUser(
+  page: import("@playwright/test").Page,
+  baseURL: string,
+): Promise<boolean> {
+  try {
+    await page.goto(baseURL);
+    await page.waitForLoadState("load");
+
+    const getStartedLink = page.getByRole("link", { name: /get started free/i });
+    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
+    await page.waitForTimeout(500);
+    await getStartedLink.click();
+
+    await page
+      .getByRole("heading", { name: /welcome back/i })
+      .waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForTimeout(300);
+
+    // Switch to sign up mode
+    const toggleButton = page.getByRole("button", { name: /sign up instead/i });
+    await toggleButton.waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForTimeout(500);
+    await toggleButton.evaluate((el: HTMLElement) => el.click());
+
+    const submitButton = page.getByRole("button", { name: /^sign up$/i });
+    await submitButton.waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForTimeout(300);
+
+    // Fill sign up form
+    const emailInput = page.getByPlaceholder("Email");
+    const passwordInput = page.getByPlaceholder("Password");
+
+    await emailInput.waitFor({ state: "visible", timeout: 10000 });
+    await emailInput.fill(TEST_USERS.dashboard.email);
+
+    await passwordInput.waitFor({ state: "visible", timeout: 5000 });
+    await passwordInput.fill(TEST_USERS.dashboard.password);
+
+    console.log(`📤 Signing up as ${TEST_USERS.dashboard.email}...`);
+    await submitButton.click();
+
+    await page.waitForTimeout(3000);
+
+    // Check for email verification
+    const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
+    const verificationVisible = await verificationHeading.isVisible().catch(() => false);
+
+    if (verificationVisible) {
+      console.log("📧 Email verification required...");
+
+      if (!isMailtrapConfigured()) {
+        console.warn("⚠️ Mailtrap not configured - cannot complete email verification");
+        console.warn("   Set MAILTRAP_API_TOKEN, MAILTRAP_ACCOUNT_ID, MAILTRAP_INBOX_ID");
+        return false;
+      }
+
+      console.log("📬 Waiting for verification email via Mailtrap...");
+      const otp = await waitForVerificationEmail(TEST_USERS.dashboard.email, {
+        timeout: 60000,
+        pollInterval: 3000,
+      });
+      console.log(`✓ Retrieved OTP: ${otp}`);
+
+      const codeInput = page.getByPlaceholder("8-digit code");
+      await codeInput.waitFor({ state: "visible", timeout: 5000 });
+      await codeInput.fill(otp);
+
+      const verifyButton = page.getByRole("button", { name: /verify email/i });
+      await verifyButton.click();
+      await page.waitForTimeout(3000);
+      console.log("✓ Email verified");
+    }
+
+    // Check if we're on onboarding
+    const onOnboarding = await page
+      .getByRole("heading", { name: /welcome to nixelo/i })
+      .waitFor({ state: "visible", timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (onOnboarding) {
+      console.log("📋 Completing onboarding...");
+      const skipButton = page.getByRole("button", { name: /skip for now/i });
+      await skipButton.waitFor({ state: "visible", timeout: 5000 });
+      await skipButton.click();
+      await page.waitForTimeout(2000);
+    }
+
+    // Verify we're on dashboard
+    await page.waitForTimeout(2000);
+
+    if (await isOnDashboard(page)) {
+      console.log("✓ Sign-up complete, on dashboard");
+      return true;
+    }
+
+    console.warn("⚠️ Not on dashboard after sign-up");
+    await page.screenshot({ path: "e2e/.auth/debug-after-signup.png" });
+    return false;
+  } catch (error) {
+    console.error("❌ Sign-up error:", error);
+    return false;
+  }
 }
 
 /**
  * Global setup - runs once before all tests
- * Automatically creates auth state by signing up a test user
  *
- * Uses Convex E2E OTP endpoint for test emails (@inbox.mailtrap.io)
- * which bypasses actual email sending.
+ * Strategy for dashboard user:
+ * 1. Try to sign in with existing credentials
+ * 2. If sign-in fails, sign up with email verification via Mailtrap
+ * 3. Complete onboarding and save auth state
  *
  * @see https://playwright.dev/docs/test-global-setup-teardown
  */
@@ -76,161 +231,40 @@ async function globalSetup(config: FullConfig): Promise<void> {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  // Create fresh auth state by signing up a new test user
+  const authStatePath = path.join(AUTH_DIR, path.basename(AUTH_PATHS.dashboard));
+
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
 
   try {
-    // Navigate to the app
-    console.log(`📍 Navigating to ${baseURL}`);
-    await page.goto(baseURL);
+    // Step 1: Try to sign in first (for subsequent runs)
+    console.log("🔧 Attempting sign-in with dashboard user...");
+    let success = await trySignIn(page, baseURL);
 
-    // Wait for page to load
-    await page.waitForLoadState("load");
-
-    // Wait for the landing page to be interactive by checking for the Get Started link
-    // This is more reliable than checking React internals
-    const getStartedLink = page.getByRole("link", { name: /get started free/i });
-    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
-
-    // Short wait for React hydration to complete
-    await page.waitForTimeout(500);
-
-    // Click "Get Started Free" link to navigate to sign in page
-    await getStartedLink.click();
-
-    // Wait for login form to appear
-    await page
-      .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 10000 });
-    await page.waitForTimeout(300);
-
-    // Switch to sign up mode
-    const toggleButton = page.getByRole("button", { name: /sign up instead/i });
-    await toggleButton.waitFor({ state: "visible", timeout: 10000 });
-    // Short wait for React to be ready (don't use networkidle - Convex WebSockets keep it active)
-    await page.waitForTimeout(500);
-    await toggleButton.evaluate((el: HTMLElement) => el.click());
-
-    // Wait for sign up form - button text changes to "Sign up"
-    const submitButton = page.getByRole("button", { name: /^sign up$/i });
-    await submitButton.waitFor({ state: "visible", timeout: 10000 });
-    await page.waitForTimeout(300);
-
-    // Fill in the sign up form - use locators that wait automatically
-    const emailInput = page.getByPlaceholder("Email");
-    const passwordInput = page.getByPlaceholder("Password");
-
-    await emailInput.waitFor({ state: "visible", timeout: 10000 });
-    await emailInput.fill(TEST_USER.email);
-
-    await passwordInput.waitFor({ state: "visible", timeout: 5000 });
-    await passwordInput.fill(TEST_USER.password);
-
-    // Submit sign up
-    console.log(`📤 Submitting sign up form for ${TEST_USER.email}...`);
-    await submitButton.click();
-
-    // Wait for either verification page or direct auth
-    await page.waitForTimeout(3000);
-
-    // Save screenshot to see what happened
-    await page.screenshot({ path: path.join(AUTH_DIR, "after-signup.png") });
-    console.log("📸 Screenshot saved to .auth/after-signup.png");
-
-    // Check if email verification is required
-    const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
-    const verificationVisible = await verificationHeading.isVisible().catch(() => false);
-
-    if (verificationVisible) {
-      console.log("📧 Email verification required...");
-      console.log(`📬 Fetching OTP from Convex E2E endpoint for ${TEST_USER.email}...`);
-
-      // Get OTP from Convex E2E endpoint (stored by OTPVerification for test emails)
-      const otp = await waitForOTPFromConvex(TEST_USER.email, {
-        timeout: 30000, // 30 seconds to wait for OTP
-        pollInterval: 2000, // Poll every 2 seconds
-      });
-      console.log(`✓ Retrieved OTP code: ${otp}`);
-
-      // Fill the 8-digit code input
-      const codeInput = page.getByPlaceholder("8-digit code");
-      await codeInput.waitFor({ state: "visible", timeout: 5000 });
-      await codeInput.fill(otp);
-
-      // Click verify button
-      const verifyButton = page.getByRole("button", { name: /verify email/i });
-      await verifyButton.click();
-
-      // Wait for verification to complete
-      await page.waitForTimeout(3000);
-      console.log("✓ Verification code submitted");
+    // Step 2: If sign-in failed, try sign-up with email verification
+    if (!success) {
+      console.log("ℹ️ Sign-in failed, attempting sign-up with email verification...");
+      success = await signUpNewUser(page, baseURL);
     }
 
-    // Check if we got to a logged-in state (onboarding or dashboard)
-    const onOnboarding = await page
-      .getByRole("heading", { name: /welcome to nixelo/i })
-      .waitFor({ state: "visible", timeout: 15000 })
-      .then(() => true)
-      .catch(() => false);
-
-    if (onOnboarding) {
-      console.log("📋 On onboarding page - completing onboarding...");
-
-      // Click "Skip for now" to complete onboarding
-      const skipButton = page.getByRole("button", { name: /skip for now/i });
-      await skipButton.waitFor({ state: "visible", timeout: 5000 });
-      await skipButton.click();
-
-      // Wait for dashboard to load
-      await page.waitForTimeout(2000);
-      console.log("✓ Onboarding completed");
-    }
-
-    // Verify we're on dashboard - look for navigation tabs or "My Work" heading
-    const onDashboard = await page
-      .getByRole("link", { name: /^dashboard$/i })
-      .or(page.getByRole("heading", { name: /my work/i }))
-      .waitFor({ state: "visible", timeout: 10000 })
-      .then(() => true)
-      .catch(() => false);
-
-    if (!onDashboard) {
-      // Check if we're still on landing page (sign up failed)
-      const stillOnLanding = await page
-        .getByRole("heading", { name: /revolutionize your workflow/i })
-        .isVisible()
-        .catch(() => false);
-
-      if (stillOnLanding) {
-        console.warn("⚠️  Sign up may have failed - still on landing page");
-        console.warn("    Dashboard tests will be skipped");
-      } else {
-        console.log("⚠️  Not on dashboard - checking current state...");
-        await page.screenshot({ path: path.join(AUTH_DIR, "auth-state.png") });
-      }
+    if (success) {
+      await context.storageState({ path: authStatePath });
+      console.log("✓ Auth state saved to", authStatePath);
     } else {
-      console.log("✓ On dashboard - auth state is valid");
+      console.warn("⚠️ Failed to create auth state");
+      console.warn("   Dashboard tests will be skipped");
+      await page.screenshot({ path: path.join(AUTH_DIR, "global-setup-error.png") });
+      console.log("📸 Error screenshot saved to .auth/global-setup-error.png");
     }
-
-    // Save the storage state regardless - tests will skip if auth is invalid
-    await context.storageState({ path: AUTH_STATE_PATH });
-    console.log("✓ Auth state saved to", AUTH_STATE_PATH);
   } catch (error) {
-    console.error("⚠️  Failed to create auth state:", error);
-    console.warn("    Dashboard tests will be skipped");
-
-    // Take a screenshot for debugging
+    console.error("⚠️ Global setup error:", error);
     try {
       await page.screenshot({ path: path.join(AUTH_DIR, "global-setup-error.png") });
       console.log("📸 Error screenshot saved to .auth/global-setup-error.png");
     } catch {
       // Ignore screenshot errors
     }
-
-    // Don't save invalid auth state - let tests skip properly
-    // by detecting missing file
   } finally {
     await browser.close();
   }

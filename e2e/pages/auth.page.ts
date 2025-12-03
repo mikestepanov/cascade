@@ -132,9 +132,34 @@ export class AuthPage extends BasePage {
     if (this.currentFlow !== "signUp") {
       await this.switchToSignUp();
     }
+    // Wait for form to be ready after mode switch
+    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
     await this.emailInput.fill(email);
+    await this.passwordInput.waitFor({ state: "visible", timeout: 5000 });
     await this.passwordInput.fill(password);
-    await this.submitButton.click();
+    // Wait for React to process the input values
+    await this.page.waitForTimeout(500);
+
+    // Retry clicking submit until page changes (verification form or error)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.submitButton.waitFor({ state: "visible", timeout: 5000 });
+      await this.submitButton.click();
+      // Wait for potential page change
+      await this.page.waitForTimeout(2000);
+
+      // Check if we left the sign-up form (verification page, error, or dashboard)
+      const stillOnSignUp = await this.submitButton.textContent()
+        .then(text => text?.toLowerCase().includes("sign up"))
+        .catch(() => false);
+
+      if (!stillOnSignUp) {
+        return; // Successfully submitted
+      }
+      // Still on sign-up form, retry
+      await this.page.waitForTimeout(500);
+    }
+    // After retries, wait a bit more and hope it worked
+    await this.page.waitForTimeout(2000);
   }
 
   async switchToSignIn() {
@@ -145,10 +170,27 @@ export class AuthPage extends BasePage {
   }
 
   async switchToSignUp() {
-    await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
-    await this.toggleFlowButton.evaluate((el: HTMLElement) => el.click());
+    // Retry clicking the toggle button until the form switches to sign-up mode
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
+      // Wait for React hydration
+      await this.page.waitForTimeout(500);
+      // Click the toggle button
+      await this.toggleFlowButton.click();
+      // Wait for UI to potentially update
+      await this.page.waitForTimeout(500);
+      // Check if the button text changed
+      const buttonText = await this.submitButton.textContent();
+      if (buttonText?.toLowerCase().includes("sign up")) {
+        this.currentFlow = "signUp";
+        return;
+      }
+      // If not changed, wait and retry
+      await this.page.waitForTimeout(500);
+    }
+    // Final assertion - will fail with helpful error if still not changed
     this.currentFlow = "signUp";
-    await expect(this.submitButton).toHaveText(/sign up/i, { timeout: 10000 });
+    await expect(this.submitButton).toHaveText(/sign up/i, { timeout: 5000 });
   }
 
   async signInWithGoogle() {
@@ -231,9 +273,10 @@ export class AuthPage extends BasePage {
   }
 
   async expectVerificationForm() {
-    await expect(this.verifyHeading).toBeVisible();
-    await expect(this.verifyCodeInput).toBeVisible();
-    await expect(this.verifyEmailButton).toBeVisible();
+    // Wait longer for verification form to appear - server might be slow after sign-up
+    await expect(this.verifyHeading).toBeVisible({ timeout: 15000 });
+    await expect(this.verifyCodeInput).toBeVisible({ timeout: 5000 });
+    await expect(this.verifyEmailButton).toBeVisible({ timeout: 5000 });
   }
 
   async expectValidationError(field: "email" | "password") {

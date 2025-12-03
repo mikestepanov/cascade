@@ -6,6 +6,13 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/ShadcnSelect";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
@@ -180,23 +187,24 @@ export function UserRatesManagement() {
               >
                 Apply To
               </label>
-              <select
-                id="rate-apply-to"
+              <Select
                 value={selectedProject}
-                onChange={(e) =>
-                  setSelectedProject(
-                    e.target.value === "default" ? "default" : (e.target.value as Id<"projects">),
-                  )
+                onValueChange={(value) =>
+                  setSelectedProject(value === "default" ? "default" : (value as Id<"projects">))
                 }
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               >
-                <option value="default">All Projects (Default)</option>
-                {projects?.map((project) => (
-                  <option key={project._id} value={project._id}>
-                    {project.name} (Override)
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id="rate-apply-to" className="w-full">
+                  <SelectValue placeholder="Select project..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">All Projects (Default)</SelectItem>
+                  {projects?.map((project) => (
+                    <SelectItem key={project._id} value={project._id}>
+                      {project.name} (Override)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
                 Project-specific rates override the default rate
               </p>
@@ -285,16 +293,17 @@ export function UserRatesManagement() {
                     className="w-full pl-8 pr-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
                   />
                 </div>
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                  <option value="CAD">CAD</option>
-                </select>
+                <Select value={currency} onValueChange={(value) => setCurrency(value)}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue placeholder="Currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="GBP">GBP</SelectItem>
+                    <SelectItem value="CAD">CAD</SelectItem>
+                  </SelectContent>
+                </Select>
               </Flex>
             </div>
 

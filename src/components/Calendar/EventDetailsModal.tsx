@@ -11,6 +11,13 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/ShadcnSelect";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -277,22 +284,26 @@ export function EventDetailsModal({ eventId, onClose }: EventDetailsModalProps) 
                     </Flex>
 
                     {/* Status Dropdown */}
-                    <select
+                    <Select
                       value={attendee.status || ""}
-                      onChange={(e) =>
+                      onValueChange={(value) =>
                         handleMarkAttendance(
                           attendee.userId,
-                          e.target.value as "present" | "tardy" | "absent",
+                          value as "present" | "tardy" | "absent",
                         )
                       }
                       disabled={isSavingAttendance}
-                      className="text-sm px-2 py-1 border border-ui-border-primary dark:border-ui-border-primary-dark rounded bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
                     >
-                      <option value="">Not marked</option>
-                      <option value="present">✓ Present</option>
-                      <option value="tardy">⏰ Tardy</option>
-                      <option value="absent">✗ Absent</option>
-                    </select>
+                      <SelectTrigger className="text-sm px-2 py-1 border border-ui-border-primary dark:border-ui-border-primary-dark rounded bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <SelectValue placeholder="Not marked" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Not marked</SelectItem>
+                        <SelectItem value="present">✓ Present</SelectItem>
+                        <SelectItem value="tardy">⏰ Tardy</SelectItem>
+                        <SelectItem value="absent">✗ Absent</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </Flex>
                 ))}
               </Flex>

@@ -1,6 +1,11 @@
 import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
-import { getOTPEndpoint } from "./e2e";
+import {
+  createTestUserEndpoint,
+  deleteTestUserEndpoint,
+  resetOnboardingEndpoint,
+  cleanupTestUsersEndpoint,
+} from "./e2e";
 import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 
 const http = httpRouter();
@@ -31,11 +36,33 @@ http.route({
   handler: triggerSync,
 });
 
-// E2E testing routes (for test email OTP retrieval)
+// E2E testing routes
+// Create a test user (bypassing email verification)
 http.route({
-  path: "/e2e/otp",
-  method: "GET",
-  handler: getOTPEndpoint,
+  path: "/e2e/create-test-user",
+  method: "POST",
+  handler: createTestUserEndpoint,
+});
+
+// Delete a test user
+http.route({
+  path: "/e2e/delete-test-user",
+  method: "POST",
+  handler: deleteTestUserEndpoint,
+});
+
+// Reset onboarding state for test user(s)
+http.route({
+  path: "/e2e/reset-onboarding",
+  method: "POST",
+  handler: resetOnboardingEndpoint,
+});
+
+// Garbage collection - cleanup old test users
+http.route({
+  path: "/e2e/cleanup",
+  method: "POST",
+  handler: cleanupTestUsersEndpoint,
 });
 
 export default http;

@@ -1469,13 +1469,6 @@ const applicationTables = {
     description: v.optional(v.string()),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
-
-  // E2E Test OTP storage (for test emails ending in @inbox.mailtrap.io)
-  e2eTestOTPs: defineTable({
-    email: v.string(),
-    otp: v.string(),
-    createdAt: v.number(),
-  }).index("by_email", ["email"]),
 };
 
 export default defineSchema({
@@ -1499,8 +1492,12 @@ export default defineSchema({
     desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
     // Invite tracking
     inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
+    // E2E Testing fields
+    isTestUser: v.optional(v.boolean()), // True if this is an E2E test user
+    testUserCreatedAt: v.optional(v.number()), // When test user was created (for garbage collection)
   })
     .index("email", ["email"])
+    .index("isTestUser", ["isTestUser"])
     .index("emailVerificationTime", ["emailVerificationTime"])
     .index("phone", ["phone"])
     .index("phoneVerificationTime", ["phoneVerificationTime"])

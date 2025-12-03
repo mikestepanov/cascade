@@ -5,6 +5,13 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/ShadcnSelect";
 
 interface BillingReportProps {
   projectId: Id<"projects">;
@@ -73,20 +80,23 @@ export function BillingReport({ projectId }: BillingReportProps) {
           </p>
         </div>
         <Flex gap="sm">
-          <select
+          <Select
             value={dateRange}
-            onChange={(e) => {
-              const value = e.target.value;
+            onValueChange={(value) => {
               if (value === "week" || value === "month" || value === "all") {
                 setDateRange(value);
               }
             }}
-            className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
-            <option value="week">Last 7 days</option>
-            <option value="month">Last 30 days</option>
-            <option value="all">All time</option>
-          </select>
+            <SelectTrigger className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+              <SelectValue placeholder="Select date range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">Last 7 days</SelectItem>
+              <SelectItem value="month">Last 30 days</SelectItem>
+              <SelectItem value="all">All time</SelectItem>
+            </SelectContent>
+          </Select>
           <button
             type="button"
             className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700"

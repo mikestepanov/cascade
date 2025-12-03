@@ -11,6 +11,7 @@ import {
   ProjectsPage,
   SettingsPage,
 } from "../pages";
+import { AUTH_PATHS } from "../config";
 
 /**
  * Authentication fixtures for tests requiring logged-in state
@@ -28,7 +29,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
-const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
+const AUTH_STATE_PATH = path.join(AUTH_DIR, path.basename(AUTH_PATHS.dashboard));
 
 /**
  * Check if auth state file exists and has valid authentication content

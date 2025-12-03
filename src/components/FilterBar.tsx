@@ -7,6 +7,13 @@ import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
 import { Modal } from "./ui/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/ShadcnSelect";
 
 type FilterValues = Record<string, unknown>;
 
@@ -81,27 +88,29 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           >
             Saved Filters:
           </label>
-          <select
-            id="savedFilters"
-            onChange={(e) => {
-              if (e.target.value) {
-                const selected = savedFilters?.find((f) => f._id === e.target.value);
+          <Select
+            value=""
+            onValueChange={(value) => {
+              if (value) {
+                const selected = savedFilters?.find((f) => f._id === value);
                 if (selected) {
                   handleLoadFilter(selected.filters);
                 }
               }
             }}
-            className="px-3 py-1.5 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-sm"
-            value=""
           >
-            <option value="">Select a filter...</option>
-            {savedFilters?.map((filter) => (
-              <option key={filter._id} value={filter._id}>
-                {filter.name} {filter.isPublic && "(Public)"}{" "}
-                {!filter.isOwner && `- by ${filter.creatorName}`}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="px-3 py-1.5 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-sm">
+              <SelectValue placeholder="Select a filter..." />
+            </SelectTrigger>
+            <SelectContent>
+              {savedFilters?.map((filter) => (
+                <SelectItem key={filter._id} value={filter._id}>
+                  {filter.name} {filter.isPublic && "(Public)"}{" "}
+                  {!filter.isOwner && `- by ${filter.creatorName}`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Flex>
 
         {/* Save Current Filter */}

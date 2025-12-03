@@ -3,6 +3,13 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/ShadcnSelect";
 import { BurnRateDashboard } from "./BurnRateDashboard";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { UserRatesManagement } from "./UserRatesManagement";
@@ -94,23 +101,24 @@ export function TimeTrackingPage() {
           >
             Project
           </label>
-          <select
-            id="tracking-project-filter"
+          <Select
             value={selectedProject}
-            onChange={(e) =>
-              setSelectedProject(
-                e.target.value === "all" ? "all" : (e.target.value as Id<"projects">),
-              )
+            onValueChange={(value) =>
+              setSelectedProject(value === "all" ? "all" : (value as Id<"projects">))
             }
-            className="px-3 py-2 text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
-            <option value="all">All Projects</option>
-            {projects?.map((project) => (
-              <option key={project._id} value={project._id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="tracking-project-filter" className="px-3 py-2 text-sm">
+              <SelectValue placeholder="Select project..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              {projects?.map((project) => (
+                <SelectItem key={project._id} value={project._id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Date range filter */}
@@ -122,16 +130,19 @@ export function TimeTrackingPage() {
             >
               Date Range
             </label>
-            <select
-              id="tracking-date-range"
+            <Select
               value={dateRange}
-              onChange={(e) => setDateRange(e.target.value as "week" | "month" | "all")}
-              className="px-3 py-2 text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+              onValueChange={(value) => setDateRange(value as "week" | "month" | "all")}
             >
-              <option value="week">Last 7 Days</option>
-              <option value="month">Last 30 Days</option>
-              <option value="all">All Time</option>
-            </select>
+              <SelectTrigger id="tracking-date-range" className="px-3 py-2 text-sm">
+                <SelectValue placeholder="Select range..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">Last 7 Days</SelectItem>
+                <SelectItem value="month">Last 30 Days</SelectItem>
+                <SelectItem value="all">All Time</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </Flex>
