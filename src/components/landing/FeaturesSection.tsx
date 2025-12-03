@@ -1,26 +1,27 @@
-import { ArrowIcon, ClarityIcon, TimeIcon, WorkflowIcon } from "./icons";
+import { FileText, PanelsTopLeft, Users } from "lucide-react";
+import { ArrowIcon } from "./icons";
 
 export function FeaturesSection() {
   const features = [
     {
-      icon: <WorkflowIcon />,
-      title: "Seamless Workflow Automation",
+      icon: <FileText className="w-6 h-6 text-cyan-400" />,
+      title: "Docs and issues, finally together",
       description:
-        "Automate repetitive tasks and streamline approvals to keep your projects moving without manual bottlenecks.",
+        "No more tab-switching between your wiki and your task board. Link specs to tickets, discussions to sprints. All in one place.",
       gradient: "cyan" as const,
     },
     {
-      icon: <TimeIcon />,
-      title: "Intelligent Time Tracking",
+      icon: <Users className="w-6 h-6 text-teal-400" />,
+      title: "Edit together, in real-time",
       description:
-        "Effortlessly capture every billable minute with smart detection that runs quietly in the background.",
+        "See who's typing, where they are, what changed. Collaborate like you're in the same room, even when you're not.",
       gradient: "teal" as const,
     },
     {
-      icon: <ClarityIcon />,
-      title: "Integrated Project Clarity",
+      icon: <PanelsTopLeft className="w-6 h-6 text-purple-400" />,
+      title: "See everything. Miss nothing.",
       description:
-        "Gain real-time visibility across all initiatives with unified dashboards that surface what matters most.",
+        "One dashboard that actually makes sense. No more digging through 5 different tools to find what you need.",
       gradient: "purple" as const,
     },
   ];
@@ -29,9 +30,11 @@ export function FeaturesSection() {
     <section id="features" className="px-6 py-24">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to succeed</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Stop juggling tools. Start shipping.
+          </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Powerful features designed to help teams work smarter, not harder.
+            Project management shouldn't feel like a second job.
           </p>
         </div>
 

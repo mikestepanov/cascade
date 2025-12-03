@@ -17,6 +17,10 @@ import {
  * Auth state is automatically created in global-setup.ts
  * Tests will skip if auth state is missing or invalid
  *
+ * IMPORTANT: Convex uses refresh tokens that are single-use. When a token is
+ * refreshed, the old refresh token is invalidated. This fixture saves the
+ * storage state after each test to preserve any refreshed tokens for subsequent tests.
+ *
  * @see https://playwright.dev/docs/auth
  */
 
@@ -71,12 +75,16 @@ export type AuthFixtures = {
   projectsPage: ProjectsPage;
   calendarPage: CalendarPage;
   settingsPage: SettingsPage;
+  saveAuthState: () => Promise<void>;
 };
 
 /**
  * Test fixture that uses saved authentication state
  * Tests will start already logged in
  * Skips tests if auth state doesn't exist or is invalid
+ *
+ * The fixture automatically saves storage state after each test to preserve
+ * any refreshed tokens (Convex uses single-use refresh tokens).
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
   // Use saved storage state (cookies, localStorage) - only if valid
@@ -88,27 +96,55 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(AUTH_STATE_PATH);
   },
 
-  authPage: async ({ page }, use) => {
+  // Save auth state after test - preserves refreshed tokens
+  // Only saves if auth tokens are still present (skips if user signed out)
+  saveAuthState: async ({ context }, use) => {
+    const save = async () => {
+      try {
+        // Get current state without saving to file first
+        const currentState = await context.storageState();
+
+        // Check if auth tokens are still present in localStorage
+        const hasAuthTokens = currentState.origins?.some((origin) =>
+          origin.localStorage?.some(
+            (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
+          ),
+        );
+
+        // Only save if auth tokens exist (don't overwrite with signed-out state)
+        if (hasAuthTokens) {
+          await context.storageState({ path: AUTH_STATE_PATH });
+        }
+      } catch {
+        // Ignore errors - context might be closed
+      }
+    };
+    await use(save);
+    // Auto-save after each test
+    await save();
+  },
+
+  authPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new AuthPage(page));
   },
 
-  dashboardPage: async ({ page }, use) => {
+  dashboardPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new DashboardPage(page));
   },
 
-  documentsPage: async ({ page }, use) => {
+  documentsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new DocumentsPage(page));
   },
 
-  projectsPage: async ({ page }, use) => {
+  projectsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new ProjectsPage(page));
   },
 
-  calendarPage: async ({ page }, use) => {
+  calendarPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new CalendarPage(page));
   },
 
-  settingsPage: async ({ page }, use) => {
+  settingsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new SettingsPage(page));
   },
 });

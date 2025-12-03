@@ -5,9 +5,9 @@
  * Automatically rotates between providers to maximize free tier usage.
  *
  * Providers (in priority order):
- * 1. SendPulse - 12,000/month, 400/day (highest capacity)
- * 2. Mailtrap - 4,000/month, 150/day
- * 3. Resend - 3,000/month, 100/day
+ * 1. Mailtrap - 4,000/month, 150/day (sandbox mode for dev/E2E)
+ * 2. Resend - 3,000/month, 100/day
+ * 3. SendPulse - 12,000/month, 400/day (highest capacity, configure later)
  *
  * Total free capacity: 19,000 emails/month
  */
@@ -26,19 +26,24 @@ const PROVIDER_CONFIG: Record<
   string,
   { freePerMonth: number; freePerDay: number; priority: number; factory: () => EmailProvider }
 > = {
-  sendpulse: {
-    freePerMonth: 12000,
-    freePerDay: 400,
-    priority: 1,
-    factory: () => new SendPulseProvider(),
-  },
   mailtrap: {
     freePerMonth: 4000,
     freePerDay: 150,
-    priority: 2,
+    priority: 1,
     factory: () => new MailtrapProvider(),
   },
-  resend: { freePerMonth: 3000, freePerDay: 100, priority: 3, factory: () => new ResendProvider() },
+  resend: {
+    freePerMonth: 3000,
+    freePerDay: 100,
+    priority: 2,
+    factory: () => new ResendProvider(),
+  },
+  sendpulse: {
+    freePerMonth: 12000,
+    freePerDay: 400,
+    priority: 3,
+    factory: () => new SendPulseProvider(),
+  },
 };
 
 // Providers sorted by priority

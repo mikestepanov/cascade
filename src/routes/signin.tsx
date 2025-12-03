@@ -25,26 +25,32 @@ function SignInPage() {
   return (
     <div className="min-h-screen w-full bg-[#0a0e17] text-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link
-          to="/"
-          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
+        <div className="mb-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
           >
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back to home
-        </Link>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            Back to Home
+          </Link>
+        </div>
         <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm">
-          <div className="text-center mb-6">
-            <NixeloLogo size={48} />
+          <div className="flex flex-col items-center mb-6">
+            <Link to="/" className="hover:opacity-80 transition-opacity">
+              <NixeloLogo size={48} />
+            </Link>
             <h1 className="text-2xl font-bold mt-4 mb-2">Welcome back</h1>
             <p className="text-gray-400 text-sm">Sign in to your account to continue</p>
           </div>

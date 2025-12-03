@@ -21,18 +21,32 @@ interface SendPulseSmtpResponse {
 }
 
 export class SendPulseProvider implements EmailProvider {
-  private clientId = getSendPulseId();
-  private clientSecret = getSendPulseSecret();
-  private defaultFrom = getSendPulseFromEmail();
+  private clientId: string | undefined;
+  private clientSecret: string | undefined;
+  private defaultFrom: string | undefined;
   private accessToken: string | undefined;
   private tokenExpiry = 0;
   private baseUrl = "https://api.sendpulse.com";
+
+  private getCredentials(): { clientId: string; clientSecret: string; defaultFrom: string } {
+    // Lazy-load credentials only when needed
+    if (!this.clientId) this.clientId = getSendPulseId();
+    if (!this.clientSecret) this.clientSecret = getSendPulseSecret();
+    if (!this.defaultFrom) this.defaultFrom = getSendPulseFromEmail();
+    return {
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
+      defaultFrom: this.defaultFrom,
+    };
+  }
 
   private async getAccessToken(): Promise<string> {
     // Return cached token if still valid
     if (this.accessToken && Date.now() < this.tokenExpiry) {
       return this.accessToken;
     }
+
+    const { clientId, clientSecret } = this.getCredentials();
 
     const response = await fetch(`${this.baseUrl}/oauth/access_token`, {
       method: "POST",
@@ -41,8 +55,8 @@ export class SendPulseProvider implements EmailProvider {
       },
       body: JSON.stringify({
         grant_type: "client_credentials",
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
+        client_id: clientId,
+        client_secret: clientSecret,
       }),
     });
 
@@ -70,7 +84,8 @@ export class SendPulseProvider implements EmailProvider {
   async send(params: EmailSendParams): Promise<EmailSendResult> {
     try {
       const token = await this.getAccessToken();
-      const fromParsed = this.parseFromAddress(params.from || this.defaultFrom);
+      const { defaultFrom } = this.getCredentials();
+      const fromParsed = this.parseFromAddress(params.from || defaultFrom);
       const toList = Array.isArray(params.to) ? params.to : [params.to];
 
       const response = await fetch(`${this.baseUrl}/smtp/emails`, {

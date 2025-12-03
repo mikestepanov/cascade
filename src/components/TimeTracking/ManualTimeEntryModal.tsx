@@ -1,13 +1,16 @@
 import { useMutation, useQuery } from "convex/react";
+import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { formatDateForInput } from "@/lib/formatting";
+import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+
+type EntryMode = "duration" | "timeRange";
 
 interface ManualTimeEntryModalProps {
   onClose: () => void;
@@ -35,13 +38,28 @@ export function ManualTimeEntryModal({
   const [tagInput, setTagInput] = useState("");
   const [billable, setBillable] = useState(false);
 
+  // Entry mode toggle
+  const [entryMode, setEntryMode] = useState<EntryMode>("duration");
+  const [durationInput, setDurationInput] = useState("");
+  const [durationSeconds, setDurationSeconds] = useState(0);
+
   // Fetch issues for selected project
   const projectIssues = useQuery(api.issues.list, projectId ? { projectId } : "skip");
 
-  // Calculate duration
+  // Calculate duration from time range
   const [duration, setDuration] = useState(0);
 
+  // Parse duration input when it changes
   useEffect(() => {
+    if (entryMode === "duration") {
+      const parsed = parseDuration(durationInput);
+      setDurationSeconds(parsed ?? 0);
+    }
+  }, [durationInput, entryMode]);
+
+  // Calculate duration from time range
+  useEffect(() => {
+    if (entryMode !== "timeRange") return;
     if (!(date && startTime && endTime)) {
       setDuration(0);
       return;
@@ -56,12 +74,22 @@ export function ManualTimeEntryModal({
         return;
       }
 
-      const durationSeconds = Math.floor((end.getTime() - start.getTime()) / 1000);
-      setDuration(durationSeconds);
+      const durationSecs = Math.floor((end.getTime() - start.getTime()) / 1000);
+      setDuration(durationSecs);
     } catch {
       setDuration(0);
     }
-  }, [date, startTime, endTime]);
+  }, [date, startTime, endTime, entryMode]);
+
+  // Quick increment handler for duration mode
+  const handleQuickIncrement = (minutes: number) => {
+    const newSeconds = durationSeconds + minutes * 60;
+    setDurationSeconds(newSeconds);
+    setDurationInput(formatDurationHuman(newSeconds));
+  };
+
+  // Get effective duration based on mode
+  const effectiveDuration = entryMode === "duration" ? durationSeconds : duration;
 
   const handleAddTag = () => {
     const tag = tagInput.trim();
@@ -76,47 +104,82 @@ export function ManualTimeEntryModal({
   };
 
   const handleSubmit = async () => {
-    if (!(date && startTime && endTime)) {
-      showError("Please fill in date, start time, and end time");
+    if (!date) {
+      showError("Please select a date");
       return;
     }
 
-    if (duration <= 0) {
-      showError("End time must be after start time");
-      return;
-    }
+    if (entryMode === "duration") {
+      if (effectiveDuration <= 0) {
+        showError("Please enter a valid duration");
+        return;
+      }
 
-    try {
-      const start = new Date(`${date}T${startTime}`);
-      const end = new Date(`${date}T${endTime}`);
+      try {
+        // For duration mode, create entry ending "now" (or end of selected date)
+        const dateObj = new Date(date);
+        const now = new Date();
+        // Use current time if date is today, otherwise use end of day
+        const endDate =
+          dateObj.toDateString() === now.toDateString()
+            ? now
+            : new Date(dateObj.setHours(17, 0, 0, 0));
+        const endTime = endDate.getTime();
+        const startTimeMs = endTime - effectiveDuration * 1000;
 
-      await createTimeEntry({
-        projectId,
-        issueId,
-        startTime: start.getTime(),
-        endTime: end.getTime(),
-        description: description || undefined,
-        activity: activity || undefined,
-        tags,
-        billable,
-      });
+        await createTimeEntry({
+          projectId,
+          issueId,
+          startTime: startTimeMs,
+          endTime: endTime,
+          description: description || undefined,
+          activity: activity || undefined,
+          tags,
+          billable,
+        });
 
-      showSuccess("Time entry created");
-      onClose();
-    } catch (error) {
-      showError(error, "Failed to create time entry");
+        showSuccess("Time entry created");
+        onClose();
+      } catch (error) {
+        showError(error, "Failed to create time entry");
+      }
+    } else {
+      // Time range mode
+      if (!(startTime && endTime)) {
+        showError("Please fill in start time and end time");
+        return;
+      }
+
+      if (duration <= 0) {
+        showError("End time must be after start time");
+        return;
+      }
+
+      try {
+        const start = new Date(`${date}T${startTime}`);
+        const end = new Date(`${date}T${endTime}`);
+
+        await createTimeEntry({
+          projectId,
+          issueId,
+          startTime: start.getTime(),
+          endTime: end.getTime(),
+          description: description || undefined,
+          activity: activity || undefined,
+          tags,
+          billable,
+        });
+
+        showSuccess("Time entry created");
+        onClose();
+      } catch (error) {
+        showError(error, "Failed to create time entry");
+      }
     }
   };
 
-  // Format duration for display (hours and minutes)
-  const formatDurationDisplay = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
+  // Check if duration input is valid (for showing error state)
+  const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
 
   return (
     <Modal isOpen={true} onClose={onClose} title="Log Time Manually" maxWidth="2xl">
@@ -127,6 +190,34 @@ export function ManualTimeEntryModal({
         }}
         className="space-y-4"
       >
+        {/* Mode Toggle */}
+        <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+          <button
+            type="button"
+            onClick={() => setEntryMode("duration")}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              entryMode === "duration"
+                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+            }`}
+          >
+            <Hourglass className="w-4 h-4" />
+            Duration
+          </button>
+          <button
+            type="button"
+            onClick={() => setEntryMode("timeRange")}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              entryMode === "timeRange"
+                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            Start/End Time
+          </button>
+        </div>
+
         {/* Date */}
         <div>
           <label
@@ -146,49 +237,136 @@ export function ManualTimeEntryModal({
           />
         </div>
 
-        {/* Time Range */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Duration Mode */}
+        {entryMode === "duration" && (
           <div>
             <label
-              htmlFor="time-entry-start"
+              htmlFor="time-entry-duration"
               className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
             >
-              Start Time *
+              Duration *
             </label>
             <input
-              id="time-entry-start"
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-              required
+              id="time-entry-duration"
+              type="text"
+              value={durationInput}
+              onChange={(e) => setDurationInput(e.target.value)}
+              placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+                isDurationInputValid
+                  ? "border-ui-border-primary dark:border-ui-border-primary-dark"
+                  : "border-red-500 dark:border-red-500"
+              }`}
             />
-          </div>
-          <div>
-            <label
-              htmlFor="time-entry-end"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              End Time *
-            </label>
-            <input
-              id="time-entry-end"
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-              required
-            />
-          </div>
-        </div>
+            {!isDurationInputValid ? (
+              <p className="text-xs text-red-500 mt-1">
+                Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
+              </p>
+            ) : (
+              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                Accepts: 1:30, 1.5, 1h 30m, 90m
+              </p>
+            )}
 
-        {/* Duration Display */}
-        {duration > 0 && (
-          <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-            <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-              Duration: {formatDurationDisplay(duration)}
-            </span>
+            {/* Quick Increment Buttons */}
+            <Flex gap="sm" className="mt-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => handleQuickIncrement(15)}
+              >
+                +15m
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => handleQuickIncrement(30)}
+              >
+                +30m
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => handleQuickIncrement(60)}
+              >
+                +1h
+              </Button>
+              {durationSeconds > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setDurationSeconds(0);
+                    setDurationInput("");
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+            </Flex>
+
+            {/* Duration Display */}
+            {durationSeconds > 0 && (
+              <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                  Duration: {formatDurationHuman(durationSeconds)}
+                </span>
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Time Range Mode */}
+        {entryMode === "timeRange" && (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="time-entry-start"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  Start Time *
+                </label>
+                <input
+                  id="time-entry-start"
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="time-entry-end"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  End Time *
+                </label>
+                <input
+                  id="time-entry-end"
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Duration Display */}
+            {duration > 0 && (
+              <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                  Duration: {formatDurationHuman(duration)}
+                </span>
+              </div>
+            )}
+          </>
         )}
 
         {/* Project Selection */}
@@ -361,7 +539,7 @@ export function ManualTimeEntryModal({
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button type="submit" variant="primary" disabled={duration <= 0}>
+          <Button type="submit" variant="primary" disabled={effectiveDuration <= 0}>
             Create Entry
           </Button>
         </Flex>

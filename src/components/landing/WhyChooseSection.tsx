@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 export function WhyChooseSection() {
   const stats = [
-    { value: 30, label: "Faster project delivery", color: "cyan" as const },
-    { value: 10, label: "Reduction in overhead", color: "teal" as const },
-    { value: 95, label: "Team adoption rate", color: "purple" as const },
-    { value: 95, label: "Customer satisfaction", color: "emerald" as const },
+    { value: 30, label: "Less time in meetings", color: "cyan" as const },
+    { value: 10, label: "Fewer tools to manage", color: "teal" as const },
+    { value: 95, label: "Actually use it daily", color: "purple" as const },
+    { value: 95, label: "Would recommend", color: "emerald" as const },
   ];
 
   return (
@@ -13,9 +13,9 @@ export function WhyChooseSection() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Nixelo?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Teams actually like using it</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Join thousands of teams who have transformed their workflow
+              No training required. No "change management" needed. It just works.
             </p>
           </div>
 

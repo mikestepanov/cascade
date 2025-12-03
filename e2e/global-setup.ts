@@ -2,16 +2,18 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type FullConfig } from "@playwright/test";
-import { waitForVerificationEmail } from "./utils/mailtrap";
+import { isMailtrapConfigured, waitForVerificationEmail } from "./utils/mailtrap";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, ".auth");
 const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
+// Generate unique test email for each run
+const timestamp = Date.now();
 // Test user credentials - use a real email that Mailtrap can receive
 const TEST_USER = {
-  email: `e2e-test-${Date.now()}@inbox.mailtrap.io`,
+  email: `e2e-test-${timestamp}@inbox.mailtrap.io`,
   password: "TestPassword123!",
 };
 
@@ -42,27 +44,16 @@ async function globalSetup(config: FullConfig): Promise<void> {
     // Wait for page to load
     await page.waitForLoadState("load");
 
-    // Wait for React hydration
-    await page.waitForFunction(
-      () => {
-        const buttons = document.querySelectorAll("button");
-        for (const button of buttons) {
-          const keys = Object.keys(button);
-          if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
-            return true;
-          }
-        }
-        return false;
-      },
-      { timeout: 30000 },
-    );
+    // Wait for the landing page to be interactive by checking for the Get Started link
+    // This is more reliable than checking React internals
+    const getStartedLink = page.getByRole("link", { name: /get started free/i });
+    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
 
+    // Short wait for React hydration to complete
     await page.waitForTimeout(500);
 
-    // Click "Get Started Free" to open login section
-    const getStartedButton = page.getByRole("button", { name: /get started free/i });
-    await getStartedButton.waitFor({ state: "visible", timeout: 10000 });
-    await getStartedButton.evaluate((el: HTMLElement) => el.click());
+    // Click "Get Started Free" link to navigate to sign in page
+    await getStartedLink.click();
 
     // Wait for login form to appear
     await page
@@ -73,7 +64,8 @@ async function globalSetup(config: FullConfig): Promise<void> {
     // Switch to sign up mode
     const toggleButton = page.getByRole("button", { name: /sign up instead/i });
     await toggleButton.waitFor({ state: "visible", timeout: 10000 });
-    await page.waitForLoadState("networkidle");
+    // Short wait for React to be ready (don't use networkidle - Convex WebSockets keep it active)
+    await page.waitForTimeout(500);
     await toggleButton.evaluate((el: HTMLElement) => el.click());
 
     // Wait for sign up form - button text changes to "Sign up"
@@ -107,12 +99,26 @@ async function globalSetup(config: FullConfig): Promise<void> {
     const verificationVisible = await verificationHeading.isVisible().catch(() => false);
 
     if (verificationVisible) {
-      console.log("📧 Email verification required, entering fixed OTP...");
+      console.log("📧 Email verification required...");
+
+      if (!isMailtrapConfigured()) {
+        console.warn("⚠️  Mailtrap not configured - cannot retrieve OTP");
+        console.warn("    Set MAILTRAP_API_TOKEN, MAILTRAP_ACCOUNT_ID, MAILTRAP_INBOX_ID");
+        throw new Error("Mailtrap not configured for E2E email verification");
+      }
+
+      // Wait for and retrieve the OTP from Mailtrap
+      console.log(`📬 Waiting for verification email to ${TEST_USER.email}...`);
+      const otp = await waitForVerificationEmail(TEST_USER.email, {
+        timeout: 60000, // 60 seconds to wait for email
+        pollInterval: 3000, // Poll every 3 seconds
+      });
+      console.log(`✓ Retrieved OTP code: ${otp}`);
 
       // Fill the 8-digit code input
       const codeInput = page.getByPlaceholder("8-digit code");
       await codeInput.waitFor({ state: "visible", timeout: 5000 });
-      await codeInput.fill(E2E_TEST_OTP);
+      await codeInput.fill(otp);
 
       // Click verify button
       const verifyButton = page.getByRole("button", { name: /verify email/i });
@@ -123,24 +129,36 @@ async function globalSetup(config: FullConfig): Promise<void> {
       console.log("✓ Verification code submitted");
     }
 
-    // Check if we got to a logged-in state
-    const isAuthenticated = await Promise.race([
-      // Check for dashboard elements
-      page
-        .locator("[data-tour='nav-dashboard'], [data-testid='dashboard']")
-        .waitFor({ state: "visible", timeout: 10000 })
-        .then(() => true)
-        .catch(() => false),
-      // Check for onboarding
-      page
-        .getByText(/welcome to nixelo|get started|choose your role/i)
-        .waitFor({ state: "visible", timeout: 10000 })
-        .then(() => true)
-        .catch(() => false),
-    ]);
+    // Check if we got to a logged-in state (onboarding or dashboard)
+    const onOnboarding = await page
+      .getByRole("heading", { name: /welcome to nixelo/i })
+      .waitFor({ state: "visible", timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
 
-    if (!isAuthenticated) {
-      // If none of the above, check if we're still on landing page (sign up failed)
+    if (onOnboarding) {
+      console.log("📋 On onboarding page - completing onboarding...");
+
+      // Click "Skip for now" to complete onboarding
+      const skipButton = page.getByRole("button", { name: /skip for now/i });
+      await skipButton.waitFor({ state: "visible", timeout: 5000 });
+      await skipButton.click();
+
+      // Wait for dashboard to load
+      await page.waitForTimeout(2000);
+      console.log("✓ Onboarding completed");
+    }
+
+    // Verify we're on dashboard - look for navigation tabs or "My Work" heading
+    const onDashboard = await page
+      .getByRole("link", { name: /^dashboard$/i })
+      .or(page.getByRole("heading", { name: /my work/i }))
+      .waitFor({ state: "visible", timeout: 10000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (!onDashboard) {
+      // Check if we're still on landing page (sign up failed)
       const stillOnLanding = await page
         .getByRole("heading", { name: /revolutionize your workflow/i })
         .isVisible()
@@ -149,7 +167,12 @@ async function globalSetup(config: FullConfig): Promise<void> {
       if (stillOnLanding) {
         console.warn("⚠️  Sign up may have failed - still on landing page");
         console.warn("    Dashboard tests will be skipped");
+      } else {
+        console.log("⚠️  Not on dashboard - checking current state...");
+        await page.screenshot({ path: path.join(AUTH_DIR, "auth-state.png") });
       }
+    } else {
+      console.log("✓ On dashboard - auth state is valid");
     }
 
     // Save the storage state regardless - tests will skip if auth is invalid

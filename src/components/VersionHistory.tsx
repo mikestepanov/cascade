@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { Clock, History, RotateCcw, X } from "@/lib/icons";
+import { Clock, History, RotateCcw } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Modal } from "./ui/Modal";
 
 /**
  * Get relative time string (e.g., "5 minutes ago")
@@ -76,117 +77,108 @@ export function VersionHistory({
     });
   };
 
-  if (!isOpen) {
-    return null;
-  }
+  // Custom header with icon
+  const versionHistoryHeader = (
+    <div className="flex items-center gap-3">
+      <History className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+      <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+        Version History
+      </h2>
+    </div>
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-        {/* Header */}
-        <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <History className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Version History
-            </h2>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      header={versionHistoryHeader}
+      maxWidth="2xl"
+      className="max-h-[80vh] flex flex-col"
+    >
+      {/* Content */}
+      <div className="flex-1 overflow-auto p-6">
+        {versions === undefined ? (
+          <div className="flex items-center justify-center py-12">
+            <LoadingSpinner size="lg" />
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="p-1 min-h-0"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          </Button>
-        </div>
+        ) : versions.length === 0 ? (
+          <div className="text-center py-12">
+            <Clock className="w-12 h-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              No version history yet
+            </h3>
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              Versions are automatically saved as you edit. Make some changes to create the first
+              version.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {versions.map((version, index) => {
+              const isLatest = index === 0;
+              const isSelected = selectedVersionId === version._id;
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-6">
-          {versions === undefined ? (
-            <div className="flex items-center justify-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : versions.length === 0 ? (
-            <div className="text-center py-12">
-              <Clock className="w-12 h-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                No version history yet
-              </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                Versions are automatically saved as you edit. Make some changes to create the first
-                version.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {versions.map((version, index) => {
-                const isLatest = index === 0;
-                const isSelected = selectedVersionId === version._id;
-
-                return (
-                  <div
-                    key={version._id}
-                    className={`p-4 rounded-lg border transition-colors ${
-                      isSelected
-                        ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                        : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          {isLatest && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
-                              Current
-                            </span>
-                          )}
-                          <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                            {version.title}
+              return (
+                <div
+                  key={version._id}
+                  className={`p-4 rounded-lg border transition-colors ${
+                    isSelected
+                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        {isLatest && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
+                            Current
                           </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {formatDate(version.createdAt)}
-                          </span>
-                          <span>by {version.createdByName}</span>
-                        </div>
-                        {version.changeDescription && (
-                          <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                            {version.changeDescription}
-                          </p>
                         )}
+                        <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {version.title}
+                        </span>
                       </div>
-
-                      {!isLatest && (
-                        <Button
-                          onClick={() => handleRestore(version._id)}
-                          size="sm"
-                          variant="outline"
-                          className="ml-4"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-                          Restore
-                        </Button>
+                      <div className="flex items-center gap-3 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          {formatDate(version.createdAt)}
+                        </span>
+                        <span>by {version.createdByName}</span>
+                      </div>
+                      {version.changeDescription && (
+                        <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          {version.changeDescription}
+                        </p>
                       )}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            💡 Tip: Versions are saved automatically every minute when you edit. Up to 50 recent
-            versions are kept.
-          </p>
-        </div>
+                    {!isLatest && (
+                      <Button
+                        onClick={() => handleRestore(version._id)}
+                        size="sm"
+                        variant="outline"
+                        className="ml-4"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                        Restore
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Footer */}
+      <div className="p-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          Tip: Versions are saved automatically every minute when you edit. Up to 50 recent versions
+          are kept.
+        </p>
+      </div>
+    </Modal>
   );
 }

@@ -10,85 +10,116 @@ import { expect, authenticatedTest as test } from "./fixtures";
 test.describe("Dashboard Navigation", () => {
   test("authenticated user lands on dashboard after login", async ({ dashboardPage }) => {
     await dashboardPage.goto();
-
-    // Verify dashboard is visible
     await dashboardPage.expectDashboard();
-
-    // Dashboard tab should be active by default
     await dashboardPage.expectActiveTab("dashboard");
-
-    // Main content should be loaded
     await dashboardPage.expectLoaded();
   });
 
   test("can navigate between tabs", async ({ dashboardPage }) => {
     await dashboardPage.goto();
 
-    // Navigate to projects
     await dashboardPage.navigateTo("projects");
     await dashboardPage.expectActiveTab("projects");
 
-    // Navigate to documents
     await dashboardPage.navigateTo("documents");
     await dashboardPage.expectActiveTab("documents");
 
-    // Navigate back to dashboard
     await dashboardPage.navigateTo("dashboard");
     await dashboardPage.expectActiveTab("dashboard");
   });
+});
 
-  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
+test.describe("Dashboard Content", () => {
+  test("displays main dashboard sections", async ({ dashboardPage }) => {
     await dashboardPage.goto();
-    await dashboardPage.expectDashboard();
+    await expect(dashboardPage.mainContent).toBeVisible();
+    await expect(dashboardPage.myIssuesSection).toBeVisible();
+    await expect(dashboardPage.projectsSection).toBeVisible();
+  });
 
-    // Sign out
-    await dashboardPage.signOut();
+  test("can filter issues", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await expect(dashboardPage.assignedTab).toBeVisible();
+    await expect(dashboardPage.createdTab).toBeVisible();
 
-    // Should see landing page
-    await expect(page.getByRole("button", { name: /get started free/i })).toBeVisible({
-      timeout: 10000,
-    });
+    await dashboardPage.filterIssues("created");
+    await dashboardPage.filterIssues("assigned");
   });
 });
 
-test.describe("Header Actions", () => {
-  test("can open command palette", async ({ dashboardPage }) => {
+test.describe("Command Palette", () => {
+  test("can open and close via button", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openCommandPalette();
+    await expect(dashboardPage.commandPalette).toBeVisible();
     await dashboardPage.closeCommandPalette();
+    await expect(dashboardPage.commandPalette).not.toBeVisible();
   });
 
-  test("can switch to dark theme", async ({ dashboardPage, page }) => {
+  test("can open via keyboard shortcut", async ({ dashboardPage }) => {
     await dashboardPage.goto();
+    await dashboardPage.pressCommandPaletteShortcut();
+    await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 5000 });
+  });
+});
 
-    // Switch to dark theme
+test.describe("Theme Toggle", () => {
+  test("can switch themes", async ({ dashboardPage, page }) => {
+    await dashboardPage.goto();
+    const html = page.locator("html");
+
     await dashboardPage.setTheme("dark");
+    await expect(html).toHaveClass(/dark/);
 
-    // Should have dark class
-    const htmlElement = page.locator("html");
-    await expect(htmlElement).toHaveClass(/dark/);
-  });
-
-  test("can switch to light theme", async ({ dashboardPage, page }) => {
-    await dashboardPage.goto();
-
-    // Switch to light theme
     await dashboardPage.setTheme("light");
+    await expect(html).not.toHaveClass(/dark/);
 
-    // Should not have dark class
-    const htmlElement = page.locator("html");
-    await expect(htmlElement).not.toHaveClass(/dark/);
+    await dashboardPage.setTheme("system");
   });
+});
 
-  test("can open global search", async ({ dashboardPage }) => {
+test.describe("Global Search", () => {
+  test("can open and close", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openGlobalSearch();
+    await expect(dashboardPage.globalSearchModal).toBeVisible();
     await dashboardPage.closeGlobalSearch();
+    await expect(dashboardPage.globalSearchModal).not.toBeVisible();
   });
+});
 
-  test("can open keyboard shortcuts help", async ({ dashboardPage }) => {
+test.describe("Keyboard Shortcuts Help", () => {
+  test("can open and close via button", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.openShortcutsHelp();
+    await expect(dashboardPage.shortcutsModal).toBeVisible();
     await dashboardPage.closeShortcutsHelp();
+    await expect(dashboardPage.shortcutsModal).not.toBeVisible();
+  });
+
+  test("can open via keyboard shortcut", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.pressShortcutsHelpShortcut();
+    await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe("Notifications", () => {
+  test("can open notifications panel", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.openNotifications();
+    await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
+  });
+});
+
+// Sign out tests run LAST - they invalidate auth tokens server-side
+test.describe("Sign Out", () => {
+  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
+    await dashboardPage.goto();
+    await dashboardPage.expectDashboard();
+    await dashboardPage.signOut();
+    await expect(page.getByRole("link", { name: /get started free/i })).toBeVisible({
+      timeout: 10000,
+    });
   });
 });

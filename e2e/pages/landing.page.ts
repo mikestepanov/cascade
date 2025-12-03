@@ -24,7 +24,7 @@ export class LandingPage extends BasePage {
   // ===================
   // Locators - Login Section (when visible)
   // ===================
-  readonly backToHomeButton: Locator;
+  readonly backToHomeLink: Locator;
   readonly loginSectionHeading: Locator;
 
   constructor(page: Page) {
@@ -32,8 +32,8 @@ export class LandingPage extends BasePage {
 
     // Navigation
     this.navLogo = page.locator("nav").getByText("nixelo");
-    this.navLoginButton = page.locator("nav").getByText("Login");
-    this.navGetStartedButton = page.locator("nav").getByRole("button", {
+    this.navLoginButton = page.locator("nav").getByText("Sign in");
+    this.navGetStartedButton = page.locator("nav").getByRole("link", {
       name: /get started/i,
     });
 
@@ -41,13 +41,13 @@ export class LandingPage extends BasePage {
     this.heroHeadline = page.getByRole("heading", {
       name: /revolutionize your workflow/i,
     });
-    this.heroGetStartedButton = page.getByRole("button", {
+    this.heroGetStartedButton = page.getByRole("link", {
       name: /get started free/i,
     });
-    this.watchDemoButton = page.getByRole("button", { name: /watch demo/i });
+    this.watchDemoButton = page.getByRole("link", { name: /watch demo/i });
 
     // Login Section (shown after clicking Get Started/Login)
-    this.backToHomeButton = page.getByRole("button", {
+    this.backToHomeLink = page.getByRole("link", {
       name: /back to home/i,
     });
     this.loginSectionHeading = page.getByRole("heading", {
@@ -72,11 +72,14 @@ export class LandingPage extends BasePage {
     // Wait for button to be ready
     await this.heroGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
 
-    // Wait for any pending navigation to complete
-    await this.page.waitForLoadState("networkidle");
+    // Short wait for React hydration (don't use networkidle - Convex WebSockets keep it active)
+    await this.page.waitForTimeout(500);
 
-    // Use evaluate to call native click which React intercepts
-    await this.heroGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    // Click the button to navigate to signin page
+    await this.heroGetStartedButton.click();
+
+    // Wait for signin page to load (URL changes to /signin)
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
 
     // Wait for login section to appear and stabilize
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
@@ -85,21 +88,25 @@ export class LandingPage extends BasePage {
 
   async clickNavLogin() {
     await this.navLoginButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.navLoginButton.evaluate((el: HTMLElement) => el.click());
+    await this.navLoginButton.click();
+    // Wait for signin page to load
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
   }
 
   async clickNavGetStarted() {
     await this.navGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.navGetStartedButton.evaluate((el: HTMLElement) => el.click());
+    await this.navGetStartedButton.click();
+    // Wait for signin page to load
+    await this.page.waitForURL("**/signin", { timeout: 10000 });
     await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
   }
 
   async goBackToHome() {
-    await this.backToHomeButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.backToHomeButton.evaluate((el: HTMLElement) => el.click());
+    await this.backToHomeLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.backToHomeLink.click();
     await this.heroHeadline.waitFor({ state: "visible", timeout: 10000 });
   }
 
@@ -115,6 +122,6 @@ export class LandingPage extends BasePage {
 
   async expectLoginSection() {
     await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
-    await expect(this.backToHomeButton).toBeVisible({ timeout: 10000 });
+    await expect(this.backToHomeLink).toBeVisible({ timeout: 10000 });
   }
 }

@@ -83,8 +83,8 @@ export class AuthPage extends BasePage {
     await this.waitForLoad();
 
     // Check if we're on the landing page (unauthenticated)
-    // The landing page has a "Get Started Free" button in the hero section
-    const getStartedButton = this.page.getByRole("button", {
+    // The landing page has a "Get Started Free" link in the hero section
+    const getStartedButton = this.page.getByRole("link", {
       name: /get started free/i,
     });
 

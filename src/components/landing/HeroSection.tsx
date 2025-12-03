@@ -35,13 +35,15 @@ export function HeroSection() {
           >
             Get Started Free
           </Link>
-          <button
-            type="button"
+          <a
+            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            target="_blank"
+            rel="noopener noreferrer"
             className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"
           >
             Watch Demo
             <PlayIcon className="w-4 h-4" />
-          </button>
+          </a>
         </div>
       </div>
     </section>

@@ -4,9 +4,16 @@ import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
-import { EmptyState } from "./ui/EmptyState";
-import { Input } from "./ui/form/Input";
-import { ModalBackdrop } from "./ui/ModalBackdrop";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandShortcut,
+} from "./ui/command";
 
 type SearchResult =
   | {
@@ -101,68 +108,6 @@ function SearchTab({
   );
 }
 
-// Search results container with all states
-function SearchResultsContainer({
-  query,
-  isLoading,
-  results,
-  hasMore,
-  totalCount,
-  onLoadMore,
-  onClose,
-}: {
-  query: string;
-  isLoading: boolean;
-  results: SearchResult[];
-  hasMore: boolean;
-  totalCount: number;
-  onLoadMore: () => void;
-  onClose: () => void;
-}) {
-  if (query.length < 2) {
-    return (
-      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-        <p className="text-sm">Type at least 2 characters to search</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-        <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
-        <p className="text-sm">Searching...</p>
-      </div>
-    );
-  }
-
-  if (results.length === 0) {
-    return <EmptyState icon="🔍" title="No results found" />;
-  }
-
-  return (
-    <>
-      <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-        {results.map((result) => (
-          <SearchResultItem key={result._id} result={result} onClose={onClose} />
-        ))}
-      </div>
-      {hasMore && (
-        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onLoadMore}
-            className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
-          >
-            Load More ({totalCount - results.length} remaining)
-          </Button>
-        </div>
-      )}
-    </>
-  );
-}
-
 // Search result item component
 function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
   const href =
@@ -171,12 +116,15 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
       : `/document/${result._id}`;
 
   return (
-    <a
-      href={href}
-      onClick={onClose}
-      className="block p-3 sm:p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+    <CommandItem
+      value={result._id}
+      onSelect={() => {
+        window.location.href = href;
+        onClose();
+      }}
+      className="p-3 sm:p-4 cursor-pointer data-[selected=true]:bg-ui-bg-secondary dark:data-[selected=true]:bg-ui-bg-secondary-dark"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 w-full">
         {/* Icon */}
         <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
           {result.type === "issue" ? (
@@ -228,7 +176,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
           </p>
         </div>
       </div>
-    </a>
+    </CommandItem>
   );
 }
 
@@ -265,6 +213,9 @@ export function GlobalSearch() {
     loadMore(issueHasMore, documentHasMore);
   };
 
+  const isLoading =
+    query.length >= 2 && (issueSearchResult === undefined || documentSearchResult === undefined);
+
   return (
     <>
       {/* Search Button */}
@@ -296,104 +247,112 @@ export function GlobalSearch() {
       </Button>
 
       {/* Search Modal */}
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <ModalBackdrop onClick={() => setIsOpen(false)} animated={false} />
+      <CommandDialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
+        <Command className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark" shouldFilter={false}>
+          <CommandInput
+            placeholder="Search issues and documents..."
+            value={query}
+            onValueChange={setQuery}
+            className="text-ui-text-primary dark:text-ui-text-primary-dark"
+          />
 
-          {/* Modal */}
-          <div className="fixed top-4 sm:top-20 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-auto sm:w-full max-w-2xl bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-2xl z-50">
-            {/* Search Input */}
-            <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-              <div className="relative">
-                <svg
-                  aria-hidden="true"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <Input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search issues and documents..."
-                  className="pl-10 pr-4 py-2 sm:py-3 text-base sm:text-lg border-none focus:outline-none bg-transparent text-ui-text-primary dark:text-ui-text-primary-dark"
-                />
+          {/* Tabs with counts */}
+          <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark overflow-x-auto">
+            <SearchTab
+              label="All"
+              isActive={activeTab === "all"}
+              count={issueTotal + documentTotal}
+              showCount={query.length >= 2}
+              onClick={() => setActiveTab("all")}
+            />
+            <SearchTab
+              label="Issues"
+              isActive={activeTab === "issues"}
+              count={issueTotal}
+              showCount={query.length >= 2}
+              onClick={() => setActiveTab("issues")}
+            />
+            <SearchTab
+              label="Documents"
+              isActive={activeTab === "documents"}
+              count={documentTotal}
+              showCount={query.length >= 2}
+              onClick={() => setActiveTab("documents")}
+            />
+          </div>
+
+          <CommandList className="max-h-80 sm:max-h-96">
+            {query.length < 2 ? (
+              <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <p className="text-sm">Type at least 2 characters to search</p>
               </div>
-            </div>
-
-            {/* Tabs with counts */}
-            <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark overflow-x-auto">
-              <SearchTab
-                label="All"
-                isActive={activeTab === "all"}
-                count={issueTotal + documentTotal}
-                showCount={query.length >= 2}
-                onClick={() => setActiveTab("all")}
-              />
-              <SearchTab
-                label="Issues"
-                isActive={activeTab === "issues"}
-                count={issueTotal}
-                showCount={query.length >= 2}
-                onClick={() => setActiveTab("issues")}
-              />
-              <SearchTab
-                label="Documents"
-                isActive={activeTab === "documents"}
-                count={documentTotal}
-                showCount={query.length >= 2}
-                onClick={() => setActiveTab("documents")}
-              />
-            </div>
-
-            {/* Results */}
-            <div className="max-h-80 sm:max-h-96 overflow-y-auto">
-              <SearchResultsContainer
-                query={query}
-                isLoading={issueSearchResult === undefined || documentSearchResult === undefined}
-                results={filteredResults}
-                hasMore={hasMore}
-                totalCount={totalCount}
-                onLoadMore={handleLoadMore}
-                onClose={() => setIsOpen(false)}
-              />
-            </div>
-
-            {/* Footer */}
-            <div className="p-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              <div className="flex items-center gap-4">
-                <span>
-                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                    ↑↓
-                  </kbd>{" "}
-                  Navigate
-                </span>
-                <span>
-                  <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                    Enter
-                  </kbd>{" "}
-                  Open
-                </span>
+            ) : isLoading ? (
+              <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+                <p className="text-sm">Searching...</p>
               </div>
+            ) : (
+              <>
+                <CommandEmpty className="p-8">
+                  <div className="text-center">
+                    <span className="text-4xl mb-4 block">🔍</span>
+                    <p className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
+                      No results found
+                    </p>
+                  </div>
+                </CommandEmpty>
+                {filteredResults.length > 0 && (
+                  <CommandGroup>
+                    {filteredResults.map((result) => (
+                      <SearchResultItem
+                        key={result._id}
+                        result={result}
+                        onClose={() => setIsOpen(false)}
+                      />
+                    ))}
+                  </CommandGroup>
+                )}
+                {hasMore && (
+                  <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLoadMore}
+                      className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+                    >
+                      Load More ({totalCount - filteredResults.length} remaining)
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </CommandList>
+
+          {/* Footer */}
+          <div className="p-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <div className="flex items-center gap-4">
               <span>
-                <kbd className="px-2 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
-                  Esc
-                </kbd>{" "}
-                Close
+                <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
+                  ↑↓
+                </CommandShortcut>{" "}
+                Navigate
+              </span>
+              <span>
+                <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
+                  Enter
+                </CommandShortcut>{" "}
+                Open
               </span>
             </div>
+            <span>
+              <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
+                Esc
+              </CommandShortcut>{" "}
+              Close
+            </span>
           </div>
-        </>
-      )}
+        </Command>
+      </CommandDialog>
     </>
   );
 }
