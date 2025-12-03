@@ -136,9 +136,11 @@ export class DashboardPage extends BasePage {
     this.assignedTab = page.getByRole("button", { name: /assigned/i });
     this.createdTab = page.getByRole("button", { name: /created/i });
 
-    // Modals - Command Palette (uses aria-label="Command palette")
-    this.commandPalette = page.getByRole("dialog", { name: /command palette/i });
-    this.commandPaletteInput = page.getByPlaceholder(/type a command|search/i);
+    // Modals - Command Palette (no aria-label, identify by input placeholder)
+    this.commandPaletteInput = page.getByPlaceholder(/type a command/i);
+    this.commandPalette = page.getByRole("dialog").filter({
+      has: this.commandPaletteInput,
+    });
 
     // Modals - Shortcuts (uses title="Keyboard Shortcuts" via aria-labelledby)
     this.shortcutsModal = page.getByRole("dialog", { name: /keyboard shortcuts/i });
@@ -150,10 +152,10 @@ export class DashboardPage extends BasePage {
     });
     this.globalSearchInput = page.getByPlaceholder(/search issues and documents/i);
 
-    // Notifications - dropdown panel (not a menu role, it's a div with "Notifications" heading)
-    this.notificationPanel = page
-      .locator(".absolute")
-      .filter({ has: page.getByRole("heading", { name: /notifications/i }) });
+    // Notifications - PopoverContent with "Notifications" h3 heading
+    this.notificationPanel = page.locator("[data-radix-popper-content-wrapper]").filter({
+      has: page.getByText("Notifications", { exact: true }),
+    });
     this.markAllReadButton = page.getByRole("button", { name: /mark all read/i });
     this.notificationItems = page.locator("[data-notification-item]");
 
