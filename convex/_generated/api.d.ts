@@ -38,6 +38,7 @@ import type * as dashboard from "../dashboard.js";
 import type * as documentTemplates from "../documentTemplates.js";
 import type * as documentVersions from "../documentVersions.js";
 import type * as documents from "../documents.js";
+import type * as e2e from "../e2e.js";
 import type * as email_digests from "../email/digests.js";
 import type * as email_helpers from "../email/helpers.js";
 import type * as email_index from "../email/index.js";
@@ -130,6 +131,7 @@ declare const fullApi: ApiFromModules<{
   documentTemplates: typeof documentTemplates;
   documentVersions: typeof documentVersions;
   documents: typeof documents;
+  e2e: typeof e2e;
   "email/digests": typeof email_digests;
   "email/helpers": typeof email_helpers;
   "email/index": typeof email_index;

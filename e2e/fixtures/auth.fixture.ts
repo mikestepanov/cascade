@@ -7,6 +7,7 @@ import {
   CalendarPage,
   DashboardPage,
   DocumentsPage,
+  OnboardingPage,
   ProjectsPage,
   SettingsPage,
 } from "../pages";
@@ -72,6 +73,7 @@ export type AuthFixtures = {
   authPage: AuthPage;
   dashboardPage: DashboardPage;
   documentsPage: DocumentsPage;
+  onboardingPage: OnboardingPage;
   projectsPage: ProjectsPage;
   calendarPage: CalendarPage;
   settingsPage: SettingsPage;
@@ -134,6 +136,10 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   documentsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new DocumentsPage(page));
+  },
+
+  onboardingPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
+    await use(new OnboardingPage(page));
   },
 
   projectsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {

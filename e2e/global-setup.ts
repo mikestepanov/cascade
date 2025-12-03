@@ -2,24 +2,69 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type FullConfig } from "@playwright/test";
-import { isMailtrapConfigured, waitForVerificationEmail } from "./utils/mailtrap";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, ".auth");
 const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
 
+// Convex site URL for E2E OTP retrieval
+const CONVEX_SITE_URL = "https://majestic-goshawk-53.convex.site";
+
 // Generate unique test email for each run
 const timestamp = Date.now();
-// Test user credentials - use a real email that Mailtrap can receive
+// Test user credentials - use a real email that triggers E2E test mode
 const TEST_USER = {
   email: `e2e-test-${timestamp}@inbox.mailtrap.io`,
   password: "TestPassword123!",
 };
 
 /**
+ * Wait for and retrieve OTP from Convex E2E endpoint
+ * Polls the endpoint until OTP is available or timeout
+ */
+async function waitForOTPFromConvex(
+  email: string,
+  options: { timeout: number; pollInterval: number } = { timeout: 30000, pollInterval: 2000 },
+): Promise<string> {
+  const endpoint = `${CONVEX_SITE_URL}/e2e/otp?email=${encodeURIComponent(email)}`;
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < options.timeout) {
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+
+      if (response.ok && data.otp) {
+        return data.otp;
+      }
+
+      // If not found yet, wait and retry
+      if (response.status === 404) {
+        await new Promise((resolve) => setTimeout(resolve, options.pollInterval));
+        continue;
+      }
+
+      // Other errors
+      if (!response.ok) {
+        console.warn(`OTP endpoint returned ${response.status}: ${data.error}`);
+      }
+    } catch (e) {
+      console.warn(`Failed to fetch OTP: ${e}`);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, options.pollInterval));
+  }
+
+  throw new Error(`Timeout waiting for OTP for ${email}`);
+}
+
+/**
  * Global setup - runs once before all tests
  * Automatically creates auth state by signing up a test user
+ *
+ * Uses Convex E2E OTP endpoint for test emails (@inbox.mailtrap.io)
+ * which bypasses actual email sending.
  *
  * @see https://playwright.dev/docs/test-global-setup-teardown
  */
@@ -84,7 +129,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
     await passwordInput.fill(TEST_USER.password);
 
     // Submit sign up
-    console.log("📤 Submitting sign up form...");
+    console.log(`📤 Submitting sign up form for ${TEST_USER.email}...`);
     await submitButton.click();
 
     // Wait for either verification page or direct auth
@@ -100,18 +145,12 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
     if (verificationVisible) {
       console.log("📧 Email verification required...");
+      console.log(`📬 Fetching OTP from Convex E2E endpoint for ${TEST_USER.email}...`);
 
-      if (!isMailtrapConfigured()) {
-        console.warn("⚠️  Mailtrap not configured - cannot retrieve OTP");
-        console.warn("    Set MAILTRAP_API_TOKEN, MAILTRAP_ACCOUNT_ID, MAILTRAP_INBOX_ID");
-        throw new Error("Mailtrap not configured for E2E email verification");
-      }
-
-      // Wait for and retrieve the OTP from Mailtrap
-      console.log(`📬 Waiting for verification email to ${TEST_USER.email}...`);
-      const otp = await waitForVerificationEmail(TEST_USER.email, {
-        timeout: 60000, // 60 seconds to wait for email
-        pollInterval: 3000, // Poll every 3 seconds
+      // Get OTP from Convex E2E endpoint (stored by OTPVerification for test emails)
+      const otp = await waitForOTPFromConvex(TEST_USER.email, {
+        timeout: 30000, // 30 seconds to wait for OTP
+        pollInterval: 2000, // Poll every 2 seconds
       });
       console.log(`✓ Retrieved OTP code: ${otp}`);
 
@@ -181,6 +220,14 @@ async function globalSetup(config: FullConfig): Promise<void> {
   } catch (error) {
     console.error("⚠️  Failed to create auth state:", error);
     console.warn("    Dashboard tests will be skipped");
+
+    // Take a screenshot for debugging
+    try {
+      await page.screenshot({ path: path.join(AUTH_DIR, "global-setup-error.png") });
+      console.log("📸 Error screenshot saved to .auth/global-setup-error.png");
+    } catch {
+      // Ignore screenshot errors
+    }
 
     // Don't save invalid auth state - let tests skip properly
     // by detecting missing file

@@ -1,4 +1,9 @@
 import { expect, test } from "./fixtures";
+import {
+  getTestEmailAddress,
+  isMailtrapConfigured,
+  waitForVerificationEmail,
+} from "./utils/mailtrap";
 
 /**
  * Authentication E2E Tests
@@ -100,50 +105,52 @@ test.describe("Password Reset", () => {
 });
 
 /**
- * Post-Login Navigation Tests
- * Verifies users see dashboard after successful authentication
- */
-test.describe("Post-Login Navigation", () => {
-  test("authenticated user should see dashboard by default", async () => {
-    // This test requires auth state - skip if not set up
-    // Use authenticatedTest fixture for actual authenticated tests
-    test.skip();
-  });
-});
-
-/**
- * Integration tests - require running backend
- * These test the full flow including API calls
+ * Integration tests - require running backend and Mailtrap configuration
+ * These test the full sign up and email verification flow
  */
 test.describe("Integration", () => {
-  // Skip by default - enable when running against real backend
   test.describe.configure({ mode: "serial" });
 
-  test.skip("sign up flow sends verification email", async ({ authPage }) => {
+  // Skip all tests if Mailtrap is not configured
+  test.beforeEach(() => {
+    test.skip(!isMailtrapConfigured(), "Mailtrap not configured - skipping integration tests");
+  });
+
+  test("sign up flow sends verification email", async ({ authPage }) => {
+    const testEmail = getTestEmailAddress("signup-test");
     await authPage.goto();
 
     // Sign up with test email
-    await authPage.signUp("test@example.com", "TestPassword123!");
+    await authPage.signUp(testEmail, "TestPassword123!");
 
     // Should show verification form
     await authPage.expectVerificationForm();
   });
 
-  test.skip("password reset flow sends code", async ({ authPage }) => {
+  test("can complete email verification", async ({ authPage, page }) => {
+    const testEmail = getTestEmailAddress("verify-test");
     await authPage.goto();
 
-    // Request password reset
-    await authPage.requestPasswordReset("existing@example.com");
+    // Sign up with test email
+    await authPage.signUp(testEmail, "TestPassword123!");
 
-    // Should show code entry form
-    await authPage.expectResetCodeForm();
-  });
+    // Wait for verification form
+    await authPage.expectVerificationForm();
 
-  test.skip("can complete email verification", async ({ authPage }) => {
-    // This would require:
-    // 1. Getting OTP from test email service
-    // 2. Entering the code
-    await authPage.goto();
-    await authPage.verifyEmail("12345678");
+    // Get OTP from Mailtrap
+    const otp = await waitForVerificationEmail(testEmail, {
+      timeout: 60000,
+      pollInterval: 3000,
+    });
+
+    // Enter the OTP
+    await authPage.verifyEmail(otp);
+
+    // Should either go to onboarding or dashboard
+    await expect(
+      page.getByRole("heading", { name: /welcome to nixelo/i }).or(
+        page.getByRole("link", { name: /^dashboard$/i })
+      )
+    ).toBeVisible({ timeout: 15000 });
   });
 });

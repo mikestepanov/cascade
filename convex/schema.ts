@@ -1469,6 +1469,13 @@ const applicationTables = {
     description: v.optional(v.string()),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
+
+  // E2E Test OTP storage (for test emails ending in @inbox.mailtrap.io)
+  e2eTestOTPs: defineTable({
+    email: v.string(),
+    otp: v.string(),
+    createdAt: v.number(),
+  }).index("by_email", ["email"]),
 };
 
 export default defineSchema({
