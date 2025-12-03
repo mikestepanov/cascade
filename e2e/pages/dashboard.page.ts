@@ -84,35 +84,36 @@ export class DashboardPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // Navigation tabs - using data-tour attributes when available
+    // Navigation tabs - TanStack Router uses links, not buttons
     this.dashboardTab = page
       .locator("[data-tour='nav-dashboard']")
-      .or(page.getByRole("button", { name: /my work|dashboard/i }));
+      .or(page.getByRole("link", { name: /^dashboard$/i }));
     this.documentsTab = page
       .locator("[data-tour='nav-documents']")
-      .or(page.getByRole("button", { name: /documents/i }));
+      .or(page.getByRole("link", { name: /^documents$/i }));
     this.projectsTab = page
       .locator("[data-tour='nav-projects']")
-      .or(page.getByRole("button", { name: /projects/i }));
+      .or(page.getByRole("link", { name: /^projects$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
-      .or(page.getByRole("button", { name: /timesheet/i }));
+      .or(page.getByRole("link", { name: /timesheet/i }));
     this.calendarTab = page
       .locator("[data-tour='nav-calendar']")
-      .or(page.getByRole("button", { name: /calendar/i }));
+      .or(page.getByRole("link", { name: /calendar/i }));
     this.settingsTab = page
       .locator("[data-tour='nav-settings']")
-      .or(page.getByRole("button", { name: /settings/i }));
+      .or(page.getByRole("link", { name: /settings/i }));
 
-    // Header actions
+    // Header actions - match actual UI text
     this.mobileMenuButton = page.getByRole("button", { name: /menu|toggle.*sidebar/i });
-    this.commandPaletteButton = page.getByRole("button", { name: /command|⌘k/i });
-    this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard|shortcuts|\?/i });
-    this.globalSearchButton = page.getByRole("button", { name: /search/i });
+    this.commandPaletteButton = page.getByRole("button", { name: /commands/i });
+    this.shortcutsHelpButton = page.getByRole("button", { name: /^\?$|keyboard|shortcuts/i });
+    this.globalSearchButton = page.getByPlaceholder(/search/i).or(page.getByRole("button", { name: /search/i }));
     this.notificationButton = page
       .locator("[data-tour='notifications']")
-      .or(page.getByRole("button", { name: /notification/i }));
-    this.signOutButton = page.getByRole("button", { name: /sign out|logout/i });
+      .or(page.getByRole("button", { name: /notification/i }))
+      .or(page.locator("button").filter({ has: page.locator("svg.lucide-bell") }));
+    this.signOutButton = page.getByRole("button", { name: /sign out/i });
 
     // Theme toggle buttons
     this.lightThemeButton = page.getByRole("button", { name: /light|☀️|sun/i });
@@ -167,8 +168,35 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async goto() {
-    await this.page.goto("/");
+    // Navigate to dashboard directly instead of relying on redirect
+    await this.page.goto("/dashboard");
+
+    // Wait for page to load
     await this.waitForLoad();
+
+    // Wait for either dashboard content OR redirect to signin (if auth failed)
+    // This gives Convex auth time to process the stored tokens
+    const dashboardContent = this.page.getByRole("heading", { name: /my work/i });
+    const dashboardTab = this.page.getByRole("link", { name: /^dashboard$/i });
+    const signinHeading = this.page.getByRole("heading", { name: /welcome back/i });
+
+    try {
+      // Wait for either dashboard or signin to be visible
+      await Promise.race([
+        dashboardContent.waitFor({ state: "visible", timeout: 15000 }),
+        dashboardTab.waitFor({ state: "visible", timeout: 15000 }),
+        signinHeading.waitFor({ state: "visible", timeout: 15000 }),
+      ]);
+
+      // If we ended up on signin, auth state is invalid
+      if (await signinHeading.isVisible().catch(() => false)) {
+        throw new Error("Auth state invalid - redirected to signin page");
+      }
+    } catch (error) {
+      // Take a screenshot for debugging
+      await this.page.screenshot({ path: "test-results/dashboard-goto-error.png" });
+      throw error;
+    }
   }
 
   async navigateTo(

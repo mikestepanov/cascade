@@ -129,24 +129,36 @@ async function globalSetup(config: FullConfig): Promise<void> {
       console.log("✓ Verification code submitted");
     }
 
-    // Check if we got to a logged-in state
-    const isAuthenticated = await Promise.race([
-      // Check for dashboard elements
-      page
-        .locator("[data-tour='nav-dashboard'], [data-testid='dashboard']")
-        .waitFor({ state: "visible", timeout: 10000 })
-        .then(() => true)
-        .catch(() => false),
-      // Check for onboarding
-      page
-        .getByText(/welcome to nixelo|get started|choose your role/i)
-        .waitFor({ state: "visible", timeout: 10000 })
-        .then(() => true)
-        .catch(() => false),
-    ]);
+    // Check if we got to a logged-in state (onboarding or dashboard)
+    const onOnboarding = await page
+      .getByRole("heading", { name: /welcome to nixelo/i })
+      .waitFor({ state: "visible", timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
 
-    if (!isAuthenticated) {
-      // If none of the above, check if we're still on landing page (sign up failed)
+    if (onOnboarding) {
+      console.log("📋 On onboarding page - completing onboarding...");
+
+      // Click "Skip for now" to complete onboarding
+      const skipButton = page.getByRole("button", { name: /skip for now/i });
+      await skipButton.waitFor({ state: "visible", timeout: 5000 });
+      await skipButton.click();
+
+      // Wait for dashboard to load
+      await page.waitForTimeout(2000);
+      console.log("✓ Onboarding completed");
+    }
+
+    // Verify we're on dashboard - look for navigation tabs or "My Work" heading
+    const onDashboard = await page
+      .getByRole("link", { name: /^dashboard$/i })
+      .or(page.getByRole("heading", { name: /my work/i }))
+      .waitFor({ state: "visible", timeout: 10000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (!onDashboard) {
+      // Check if we're still on landing page (sign up failed)
       const stillOnLanding = await page
         .getByRole("heading", { name: /revolutionize your workflow/i })
         .isVisible()
@@ -155,7 +167,12 @@ async function globalSetup(config: FullConfig): Promise<void> {
       if (stillOnLanding) {
         console.warn("⚠️  Sign up may have failed - still on landing page");
         console.warn("    Dashboard tests will be skipped");
+      } else {
+        console.log("⚠️  Not on dashboard - checking current state...");
+        await page.screenshot({ path: path.join(AUTH_DIR, "auth-state.png") });
       }
+    } else {
+      console.log("✓ On dashboard - auth state is valid");
     }
 
     // Save the storage state regardless - tests will skip if auth is invalid

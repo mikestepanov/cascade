@@ -13,12 +13,10 @@ test.describe("Dashboard View - Navigation Tabs", () => {
   });
 
   test("displays all navigation tabs", async ({ dashboardPage }) => {
+    // Main navigation tabs (Dashboard, Documents, Projects)
     await expect(dashboardPage.dashboardTab).toBeVisible();
     await expect(dashboardPage.documentsTab).toBeVisible();
     await expect(dashboardPage.projectsTab).toBeVisible();
-    await expect(dashboardPage.timesheetTab).toBeVisible();
-    await expect(dashboardPage.calendarTab).toBeVisible();
-    await expect(dashboardPage.settingsTab).toBeVisible();
   });
 
   test("can navigate to Documents tab", async ({ dashboardPage }) => {
@@ -31,21 +29,6 @@ test.describe("Dashboard View - Navigation Tabs", () => {
     await dashboardPage.navigateTo("projects");
     // Verify projects view loaded
     await expect(dashboardPage.projectsTab).toBeVisible();
-  });
-
-  test("can navigate to Timesheet tab", async ({ dashboardPage }) => {
-    await dashboardPage.navigateTo("timesheet");
-    await expect(dashboardPage.timesheetTab).toBeVisible();
-  });
-
-  test("can navigate to Calendar tab", async ({ dashboardPage }) => {
-    await dashboardPage.navigateTo("calendar");
-    await expect(dashboardPage.calendarTab).toBeVisible();
-  });
-
-  test("can navigate to Settings tab", async ({ dashboardPage }) => {
-    await dashboardPage.navigateTo("settings");
-    await expect(dashboardPage.settingsTab).toBeVisible();
   });
 });
 

@@ -172,3 +172,65 @@ export function formatFileSize(bytes: number): string {
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat("en-US").format(num);
 }
+
+/**
+ * Parse flexible duration input into seconds
+ * Accepts formats: "1:30", "1.5", "1h30m", "1h 30m", "90m", "1.5h", "90"
+ * @param input - Duration string in various formats
+ * @returns Duration in seconds, or null if invalid
+ */
+export function parseDuration(input: string): number | null {
+  const trimmed = input.trim().toLowerCase();
+  if (!trimmed) return null;
+
+  // Format: "1:30" or "01:30" (hours:minutes)
+  const colonMatch = trimmed.match(/^(\d+):(\d{1,2})$/);
+  if (colonMatch) {
+    const hours = Number.parseInt(colonMatch[1], 10);
+    const minutes = Number.parseInt(colonMatch[2], 10);
+    if (minutes >= 60) return null;
+    return hours * 3600 + minutes * 60;
+  }
+
+  // Format: "1h30m" or "1h 30m" or "2h" or "30m"
+  const hmsMatch = trimmed.match(/^(?:(\d+(?:\.\d+)?)\s*h)?\s*(?:(\d+)\s*m)?$/);
+  if (hmsMatch && (hmsMatch[1] || hmsMatch[2])) {
+    const hours = hmsMatch[1] ? Number.parseFloat(hmsMatch[1]) : 0;
+    const minutes = hmsMatch[2] ? Number.parseInt(hmsMatch[2], 10) : 0;
+    return Math.round(hours * 3600 + minutes * 60);
+  }
+
+  // Format: "1.5" or "1.5h" (decimal hours)
+  const decimalMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*h?$/);
+  if (decimalMatch) {
+    const hours = Number.parseFloat(decimalMatch[1]);
+    return Math.round(hours * 3600);
+  }
+
+  // Format: "90m" (minutes only)
+  const minutesOnlyMatch = trimmed.match(/^(\d+)\s*m$/);
+  if (minutesOnlyMatch) {
+    const minutes = Number.parseInt(minutesOnlyMatch[1], 10);
+    return minutes * 60;
+  }
+
+  return null;
+}
+
+/**
+ * Format duration in seconds to human-readable format
+ * @param seconds - Duration in seconds
+ * @returns Formatted string like "1h 30m" or "45m"
+ */
+export function formatDurationHuman(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (hours > 0 && minutes > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  if (hours > 0) {
+    return `${hours}h`;
+  }
+  return `${minutes}m`;
+}
