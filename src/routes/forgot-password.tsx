@@ -1,10 +1,10 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthPageLayout } from "@/components/auth/AuthPageLayout";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+import { getConvexSiteUrl } from "@/lib/convex";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordRoute,
@@ -25,32 +25,33 @@ function ForgotPasswordRoute() {
 }
 
 function ForgotPasswordPage() {
-  const { signIn } = useAuthActions();
   const [submitting, setSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [showReset, setShowReset] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
     const formEmail = formData.get("email") as string;
-    formData.set("flow", "reset");
 
-    void signIn("password", formData)
-      .then(() => {
-        setEmail(formEmail);
-        setShowReset(true);
-        toast.success("If an account exists, you'll receive a reset code");
-      })
-      .catch(() => {
-        // Don't reveal if email exists - show same message either way
-        setEmail(formEmail);
-        setShowReset(true);
-        toast.success("If an account exists, you'll receive a reset code");
-      })
-      .finally(() => setSubmitting(false));
+    try {
+      // Call our secure wrapper - always returns success
+      await fetch(`${getConvexSiteUrl()}/auth/request-reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formEmail }),
+      });
+    } catch {
+      // Ignore network errors
+    }
+
+    // Always show success and proceed to reset form
+    setEmail(formEmail);
+    setShowReset(true);
+    toast.success("If an account exists, you'll receive a reset code");
+    setSubmitting(false);
   };
 
   if (showReset) {

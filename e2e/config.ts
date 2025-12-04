@@ -5,8 +5,24 @@
  * API endpoints, and test settings.
  */
 
+/**
+ * Get a required environment variable. Throws if not defined.
+ */
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
 // Convex site URL for E2E API endpoints
-export const CONVEX_SITE_URL = "https://majestic-goshawk-53.convex.site";
+// Derived from VITE_CONVEX_URL (same pattern as frontend)
+function getConvexSiteUrl(): string {
+  return requireEnv("VITE_CONVEX_URL").replace(".convex.cloud", ".convex.site");
+}
+
+export const CONVEX_SITE_URL = getConvexSiteUrl();
 
 // E2E API Key for authenticated endpoints (optional in dev)
 export const E2E_API_KEY = process.env.E2E_API_KEY || "";

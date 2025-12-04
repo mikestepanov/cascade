@@ -24,6 +24,7 @@ import type * as apiKeys from "../apiKeys.js";
 import type * as api_issues from "../api/issues.js";
 import type * as attachments from "../attachments.js";
 import type * as auth from "../auth.js";
+import type * as authWrapper from "../authWrapper.js";
 import type * as automationRules from "../automationRules.js";
 import type * as availability from "../availability.js";
 import type * as bookingPages from "../bookingPages.js";
@@ -117,6 +118,7 @@ declare const fullApi: ApiFromModules<{
   "api/issues": typeof api_issues;
   attachments: typeof attachments;
   auth: typeof auth;
+  authWrapper: typeof authWrapper;
   automationRules: typeof automationRules;
   availability: typeof availability;
   bookingPages: typeof bookingPages;

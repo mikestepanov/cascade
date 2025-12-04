@@ -1,11 +1,9 @@
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { getConvexSiteUrl } from "@/lib/convex";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
-
-// Convex site URL - should match your deployment
-const CONVEX_SITE_URL = "https://majestic-goshawk-53.convex.site";
 
 /**
  * Developer Tools Tab
@@ -25,7 +23,7 @@ export function DevToolsTab() {
 
     setIsResettingOnboarding(true);
     try {
-      const response = await fetch(`${CONVEX_SITE_URL}/e2e/reset-onboarding`, {
+      const response = await fetch(`${getConvexSiteUrl()}/e2e/reset-onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

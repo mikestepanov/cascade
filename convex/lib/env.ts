@@ -23,6 +23,10 @@ export function getSiteUrl(): string {
   return requireEnv("SITE_URL");
 }
 
+export function getConvexSiteUrl(): string {
+  return requireEnv("CONVEX_SITE_URL");
+}
+
 // ===========================================
 // Google OAuth
 // ===========================================

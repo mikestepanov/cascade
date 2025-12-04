@@ -1,5 +1,6 @@
 import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
+import { securePasswordReset } from "./authWrapper";
 import {
   cleanupTestUsersEndpoint,
   createTestUserEndpoint,
@@ -34,6 +35,13 @@ http.route({
   path: "/google/sync",
   method: "POST",
   handler: triggerSync,
+});
+
+// Auth wrapper routes (security)
+http.route({
+  path: "/auth/request-reset",
+  method: "POST",
+  handler: securePasswordReset,
 });
 
 // E2E testing routes
