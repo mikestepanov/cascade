@@ -1,8 +1,11 @@
+import { useQuery } from "convex/react";
 import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserManagement } from "./Admin/UserManagement";
 import { UserTypeManager } from "./Admin/UserTypeManager";
 import { ApiKeysManager } from "./Settings/ApiKeysManager";
+import { DevToolsTab } from "./Settings/DevToolsTab";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
 import { OfflineTab } from "./Settings/OfflineTab";
@@ -10,9 +13,14 @@ import { PreferencesTab } from "./Settings/PreferencesTab";
 import { PumbleIntegration } from "./Settings/PumbleIntegration";
 import { Tab, Tabs } from "./ui/Tabs";
 
+const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
+
 export function Settings() {
+  const currentUser = useQuery(api.users.getCurrent);
+  const showDevTools = isTestEmail(currentUser?.email);
+
   const [activeTab, setActiveTab] = useState<
-    "integrations" | "apikeys" | "offline" | "preferences" | "admin"
+    "integrations" | "apikeys" | "offline" | "preferences" | "admin" | "developer"
   >("integrations");
 
   return (
@@ -61,6 +69,15 @@ export function Settings() {
           <Tab value="admin" isActive={activeTab === "admin"} onClick={() => setActiveTab("admin")}>
             Admin
           </Tab>
+          {showDevTools && (
+            <Tab
+              value="developer"
+              isActive={activeTab === "developer"}
+              onClick={() => setActiveTab("developer")}
+            >
+              Dev Tools
+            </Tab>
+          )}
         </Tabs>
 
         {/* Tab Content */}
@@ -70,6 +87,7 @@ export function Settings() {
           {activeTab === "offline" && <OfflineTab />}
           {activeTab === "preferences" && <PreferencesTab />}
           {activeTab === "admin" && <AdminTab />}
+          {activeTab === "developer" && showDevTools && <DevToolsTab />}
         </div>
       </div>
     </div>

@@ -1,29 +1,29 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { AuthPageLayout } from "@/components/auth/AuthPageLayout";
-import { SignInForm } from "@/components/auth/SignInForm";
+import { SignUpForm } from "@/components/auth/SignUpForm";
 
-export const Route = createFileRoute("/signin")({
-  component: SignInRoute,
+export const Route = createFileRoute("/signup")({
+  component: SignUpRoute,
   ssr: false,
 });
 
-function SignInRoute() {
+function SignUpRoute() {
   return (
     <>
       <Authenticated>
         <Navigate to="/dashboard" />
       </Authenticated>
       <Unauthenticated>
-        <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
-          <SignInForm />
+        <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
+          <SignUpForm />
           <div className="text-center text-sm text-gray-400 mt-4">
-            <span>Don't have an account? </span>
+            <span>Already have an account? </span>
             <Link
-              to="/signup"
+              to="/signin"
               className="text-brand-500 hover:text-brand-400 hover:underline font-medium"
             >
-              Sign up
+              Sign in
             </Link>
           </div>
         </AuthPageLayout>

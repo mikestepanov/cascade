@@ -27,7 +27,7 @@ export function NavHeader() {
             Sign in
           </Link>
           <Link
-            to="/signin"
+            to="/signup"
             className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
           >
             Get Started

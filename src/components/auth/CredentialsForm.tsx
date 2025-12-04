@@ -5,11 +5,13 @@ import { toast } from "sonner";
 interface CredentialsFormProps {
   onForgotPassword: () => void;
   onSignUpNeedsVerification: (email: string) => void;
+  onFlowChange?: (flow: "signIn" | "signUp") => void;
 }
 
 export function CredentialsForm({
   onForgotPassword,
   onSignUpNeedsVerification,
+  onFlowChange,
 }: CredentialsFormProps) {
   const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
@@ -48,7 +50,11 @@ export function CredentialsForm({
       });
   };
 
-  const toggleFlow = () => setFlow(flow === "signIn" ? "signUp" : "signIn");
+  const toggleFlow = () => {
+    const newFlow = flow === "signIn" ? "signUp" : "signIn";
+    setFlow(newFlow);
+    onFlowChange?.(newFlow);
+  };
 
   return (
     <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
