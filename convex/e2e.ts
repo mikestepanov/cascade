@@ -116,6 +116,11 @@ export const createTestUserInternal = internalMutation({
     password: v.string(),
     skipOnboarding: v.boolean(),
   },
+  returns: v.object({
+    success: v.boolean(),
+    userId: v.id("users"),
+    existing: v.boolean(),
+  }),
   handler: async (ctx, args) => {
     if (!isTestEmail(args.email)) {
       throw new Error("Only test emails allowed");
@@ -212,6 +217,10 @@ export const deleteTestUserInternal = internalMutation({
   args: {
     email: v.string(),
   },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.boolean(),
+  }),
   handler: async (ctx, args) => {
     if (!isTestEmail(args.email)) {
       throw new Error("Only test emails allowed");
@@ -302,6 +311,11 @@ export const resetOnboardingInternal = internalMutation({
   args: {
     email: v.optional(v.string()),
   },
+  returns: v.object({
+    success: v.boolean(),
+    error: v.optional(v.string()),
+    reset: v.optional(v.number()),
+  }),
   handler: async (ctx, args) => {
     if (args.email) {
       // Reset specific user's onboarding
@@ -378,6 +392,10 @@ export const cleanupTestUsersEndpoint = httpAction(async (ctx, request) => {
  */
 export const cleanupTestUsersInternal = internalMutation({
   args: {},
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
   handler: async (ctx) => {
     const cutoffTime = Date.now() - TEST_USER_EXPIRATION_MS;
 
@@ -430,6 +448,9 @@ export const cleanupTestUsersInternal = internalMutation({
 // Legacy exports for backwards compatibility (can be removed later)
 export const resetAllOnboarding = internalMutation({
   args: {},
+  returns: v.object({
+    deleted: v.number(),
+  }),
   handler: async (ctx) => {
     // Delete all userOnboarding records for test users
     const records = await ctx.db.query("userOnboarding").collect();
