@@ -4,7 +4,9 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
+import { Progress } from "../ui/progress";
 
 interface ProjectWizardProps {
   onComplete: (projectId: string) => void;
@@ -99,12 +101,7 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               {Math.round((step / 4) * 100)}% complete
             </span>
           </Flex>
-          <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
-            <div
-              className="bg-brand-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%` }}
-            />
-          </div>
+          <Progress value={(step / 4) * 100} />
         </div>
 
         {/* Step 1: Project Name & Key */}
@@ -161,22 +158,13 @@ export function ProjectWizard({ onComplete, onCancel }: ProjectWizardProps) {
               </p>
             </div>
 
-            <div>
-              <label
-                htmlFor="project-description"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Description (optional)
-              </label>
-              <textarea
-                id="project-description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="What is this project about?"
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                rows={3}
-              />
-            </div>
+            <Textarea
+              label="Description (optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What is this project about?"
+              rows={3}
+            />
           </div>
         )}
 

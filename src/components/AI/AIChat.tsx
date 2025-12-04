@@ -6,6 +6,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Skeleton } from "../ui/Skeleton";
@@ -55,10 +56,11 @@ function MessageItem({
       >
         {/* Copy button for assistant messages */}
         {message.role === "assistant" && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onCopy(message.content, messageId)}
-            className="absolute -right-2 -top-2 p-1.5 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md"
+            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
             title="Copy message"
           >
             {isCopied ? (
@@ -92,7 +94,7 @@ function MessageItem({
                 />
               </svg>
             )}
-          </button>
+          </Button>
         )}
 
         {/* Message content with markdown for assistant */}
@@ -245,12 +247,13 @@ export const AIChat = React.memo(function AIChat({
               maxHeight: `${AI_CONFIG.textarea.maxHeight}px`,
             }}
           />
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="icon"
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isSending}
-            className="flex-shrink-0 p-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
             aria-label="Send message"
+            className="flex-shrink-0"
           >
             {isSending ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -265,7 +268,7 @@ export const AIChat = React.memo(function AIChat({
                 />
               </svg>
             )}
-          </button>
+          </Button>
         </Flex>
         <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2 hidden sm:block">
           Press Enter to send, Shift+Enter for new line

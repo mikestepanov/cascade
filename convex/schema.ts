@@ -1492,8 +1492,12 @@ export default defineSchema({
     desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
     // Invite tracking
     inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
+    // E2E Testing fields
+    isTestUser: v.optional(v.boolean()), // True if this is an E2E test user
+    testUserCreatedAt: v.optional(v.number()), // When test user was created (for garbage collection)
   })
     .index("email", ["email"])
+    .index("isTestUser", ["isTestUser"])
     .index("emailVerificationTime", ["emailVerificationTime"])
     .index("phone", ["phone"])
     .index("phoneVerificationTime", ["phoneVerificationTime"])

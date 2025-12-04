@@ -3,8 +3,10 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 
 interface BulkOperationsBarProps {
   projectId: Id<"projects">;
@@ -108,32 +110,20 @@ export function BulkOperationsBar({
               <p className="font-medium">
                 {count} issue{count !== 1 ? "s" : ""} selected
               </p>
-              <button
-                type="button"
-                onClick={onClearSelection}
-                className="text-sm underline hover:no-underline"
-              >
+              <Button variant="link" size="sm" onClick={onClearSelection}>
                 Clear selection
-              </button>
+              </Button>
             </Flex>
 
             {/* Actions */}
             <Flex align="center" gap="sm" className="flex-wrap">
-              <button
-                type="button"
-                onClick={() => setShowActions(!showActions)}
-                className="px-4 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors font-medium"
-              >
+              <Button variant="secondary" onClick={() => setShowActions(!showActions)}>
                 {showActions ? "Hide Actions" : "Show Actions"}
-              </button>
+              </Button>
 
-              <button
-                type="button"
-                onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 bg-status-error text-white rounded hover:bg-status-error-hover transition-colors"
-              >
+              <Button variant="danger" onClick={() => setDeleteConfirm(true)}>
                 Delete
-              </button>
+              </Button>
             </Flex>
           </Flex>
 
@@ -144,79 +134,71 @@ export function BulkOperationsBar({
                 {/* Status */}
                 <div>
                   <div className="block text-sm font-medium mb-2">Change Status</div>
-                  <select
-                    onChange={(e) => e.target.value && handleUpdateStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select status...
-                    </option>
-                    {workflowStates.map((state) => (
-                      <option key={state.id} value={state.id}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Select onValueChange={handleUpdateStatus}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select status..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {workflowStates.map((state) => (
+                        <SelectItem key={state.id} value={state.id}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Priority */}
                 <div>
                   <div className="block text-sm font-medium mb-2">Change Priority</div>
-                  <select
-                    onChange={(e) => e.target.value && handleUpdatePriority(e.target.value)}
-                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select priority...
-                    </option>
-                    <option value="highest">Highest</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                    <option value="lowest">Lowest</option>
-                  </select>
+                  <Select onValueChange={handleUpdatePriority}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select priority..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="highest">Highest</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="lowest">Lowest</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Assignee */}
                 <div>
                   <div className="block text-sm font-medium mb-2">Assign To</div>
-                  <select
-                    onChange={(e) => e.target.value && handleAssign(e.target.value)}
-                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select assignee...
-                    </option>
-                    <option value="unassigned">Unassigned</option>
-                    {members?.map((member) => (
-                      <option key={member.userId} value={member.userId}>
-                        {member.userName}
-                      </option>
-                    ))}
-                  </select>
+                  <Select onValueChange={handleAssign}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select assignee..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {members?.map((member) => (
+                        <SelectItem key={member.userId} value={member.userId}>
+                          {member.userName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Sprint */}
                 <div>
                   <div className="block text-sm font-medium mb-2">Move to Sprint</div>
-                  <select
-                    onChange={(e) => e.target.value && handleMoveToSprint(e.target.value)}
-                    className="w-full px-3 py-2 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded border-0 focus:ring-2 focus:ring-white"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select sprint...
-                    </option>
-                    <option value="backlog">Backlog</option>
-                    {sprints?.map((sprint) => (
-                      <option key={sprint._id} value={sprint._id}>
-                        {sprint.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Select onValueChange={handleMoveToSprint}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select sprint..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="backlog">Backlog</SelectItem>
+                      {sprints?.map((sprint) => (
+                        <SelectItem key={sprint._id} value={sprint._id}>
+                          {sprint.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

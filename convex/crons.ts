@@ -29,4 +29,11 @@ crons.weekly(
   internal.email.digests.sendWeeklyDigests,
 );
 
+/**
+ * Cleanup old test users (E2E testing)
+ * Runs every hour to delete test users older than 1 hour
+ * Only affects users with isTestUser=true flag
+ */
+crons.interval("cleanup test users", { hours: 1 }, internal.e2e.cleanupTestUsersInternal);
+
 export default crons;

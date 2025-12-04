@@ -9,6 +9,7 @@ import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 /**
  * User row component for displaying user information in table
@@ -228,15 +229,18 @@ export function UserManagement() {
                   >
                     Role
                   </label>
-                  <select
-                    id="role"
+                  <Select
                     value={role}
-                    onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    onValueChange={(value) => setRole(value as "user" | "admin")}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
+                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     Admins can manage users and send invitations
                   </p>

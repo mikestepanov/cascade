@@ -6,7 +6,9 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 interface CreateEventModalProps {
   onClose: () => void;
@@ -220,22 +222,13 @@ export function CreateEventModal({
           )}
 
           {/* Description */}
-          <div>
-            <label
-              htmlFor="event-description"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Description
-            </label>
-            <textarea
-              id="event-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              placeholder="Add notes, agenda, or details..."
-            />
-          </div>
+          <Textarea
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            placeholder="Add notes, agenda, or details..."
+          />
 
           {/* Location */}
           <div>
@@ -285,23 +278,24 @@ export function CreateEventModal({
             >
               Link to Project (optional)
             </label>
-            <select
-              id="event-project"
-              value={selectedProjectId || ""}
-              onChange={(e) =>
-                setSelectedProjectId(
-                  e.target.value ? (e.target.value as Id<"projects">) : undefined,
-                )
+            <Select
+              value={selectedProjectId || "none"}
+              onValueChange={(value) =>
+                setSelectedProjectId(value === "none" ? undefined : (value as Id<"projects">))
               }
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
-              <option value="">No project</option>
-              {projects?.map((project) => (
-                <option key={project._id} value={project._id}>
-                  {project.name} ({project.key})
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+                <SelectValue placeholder="No project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No project</SelectItem>
+                {projects?.map((project) => (
+                  <SelectItem key={project._id} value={project._id}>
+                    {project.name} ({project.key})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Actions */}

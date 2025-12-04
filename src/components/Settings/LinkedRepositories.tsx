@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 /**
  * GitHub linked repositories management
@@ -47,19 +48,22 @@ export function LinkedRepositories() {
         >
           Select Project
         </label>
-        <select
-          id="project-selector"
+        <Select
           value={selectedProject || ""}
-          onChange={(e) => setSelectedProject(e.target.value as Id<"projects">)}
-          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+          onValueChange={(value) => setSelectedProject(value as Id<"projects">)}
         >
-          <option value="">-- Select a project --</option>
-          {projects?.map((project) => (
-            <option key={project._id} value={project._id}>
-              {project.name} ({project.key})
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+            <SelectValue placeholder="-- Select a project --" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">-- Select a project --</SelectItem>
+            {projects?.map((project) => (
+              <SelectItem key={project._id} value={project._id}>
+                {project.name} ({project.key})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Repository list */}

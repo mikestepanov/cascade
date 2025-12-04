@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Progress } from "../ui/progress";
 
 interface BurnRateDashboardProps {
   projectId: Id<"projects">;
@@ -208,12 +209,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="w-full h-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-brand-600 dark:bg-brand-500 rounded-full transition-all"
-                      style={{ width: `${percentOfTotal}%` }}
-                    />
-                  </div>
+                  <Progress value={percentOfTotal} />
                 </div>
               );
             })}

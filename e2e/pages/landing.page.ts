@@ -22,10 +22,10 @@ export class LandingPage extends BasePage {
   readonly watchDemoButton: Locator;
 
   // ===================
-  // Locators - Login Section (when visible)
+  // Locators - Auth Pages (after navigation)
   // ===================
-  readonly backToHomeLink: Locator;
-  readonly loginSectionHeading: Locator;
+  readonly signInHeading: Locator;
+  readonly signUpHeading: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -46,13 +46,9 @@ export class LandingPage extends BasePage {
     });
     this.watchDemoButton = page.getByRole("link", { name: /watch demo/i });
 
-    // Login Section (shown after clicking Get Started/Login)
-    this.backToHomeLink = page.getByRole("link", {
-      name: /back to home/i,
-    });
-    this.loginSectionHeading = page.getByRole("heading", {
-      name: /welcome back/i,
-    });
+    // Auth page headings (separate routes now)
+    this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
+    this.signUpHeading = page.getByRole("heading", { name: /create an account/i });
   }
 
   // ===================
@@ -75,14 +71,14 @@ export class LandingPage extends BasePage {
     // Short wait for React hydration (don't use networkidle - Convex WebSockets keep it active)
     await this.page.waitForTimeout(500);
 
-    // Click the button to navigate to signin page
+    // Click the button to navigate to signup page
     await this.heroGetStartedButton.click();
 
-    // Wait for signin page to load (URL changes to /signin)
-    await this.page.waitForURL("**/signin", { timeout: 10000 });
+    // Wait for signup page to load (URL changes to /signup)
+    await this.page.waitForURL("**/signup", { timeout: 10000 });
 
-    // Wait for login section to appear and stabilize
-    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    // Wait for signup heading to appear and stabilize
+    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300); // Let React finish rendering
   }
 
@@ -91,23 +87,17 @@ export class LandingPage extends BasePage {
     await this.navLoginButton.click();
     // Wait for signin page to load
     await this.page.waitForURL("**/signin", { timeout: 10000 });
-    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
   }
 
   async clickNavGetStarted() {
     await this.navGetStartedButton.waitFor({ state: "visible", timeout: 10000 });
     await this.navGetStartedButton.click();
-    // Wait for signin page to load
-    await this.page.waitForURL("**/signin", { timeout: 10000 });
-    await this.loginSectionHeading.waitFor({ state: "visible", timeout: 10000 });
+    // Wait for signup page to load
+    await this.page.waitForURL("**/signup", { timeout: 10000 });
+    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.page.waitForTimeout(300);
-  }
-
-  async goBackToHome() {
-    await this.backToHomeLink.waitFor({ state: "visible", timeout: 10000 });
-    await this.backToHomeLink.click();
-    await this.heroHeadline.waitFor({ state: "visible", timeout: 10000 });
   }
 
   // ===================
@@ -120,8 +110,11 @@ export class LandingPage extends BasePage {
     await expect(this.navGetStartedButton).toBeVisible({ timeout: 5000 });
   }
 
-  async expectLoginSection() {
-    await expect(this.loginSectionHeading).toBeVisible({ timeout: 10000 });
-    await expect(this.backToHomeLink).toBeVisible({ timeout: 10000 });
+  async expectSignInPage() {
+    await expect(this.signInHeading).toBeVisible({ timeout: 10000 });
+  }
+
+  async expectSignUpPage() {
+    await expect(this.signUpHeading).toBeVisible({ timeout: 10000 });
   }
 }

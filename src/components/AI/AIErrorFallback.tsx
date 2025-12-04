@@ -2,6 +2,7 @@
  * AIErrorFallback - Error boundary fallback for AI components
  */
 
+import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 
 export interface AIErrorFallbackProps {
@@ -41,13 +42,9 @@ export function AIErrorFallback({
         )}
 
         {onRetry && (
-          <button
-            type="button"
-            onClick={onRetry}
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
-          >
+          <Button variant="primary" onClick={onRetry}>
             Try Again
-          </button>
+          </Button>
         )}
       </div>
     </Flex>

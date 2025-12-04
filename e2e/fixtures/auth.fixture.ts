@@ -2,11 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test as base, expect } from "@playwright/test";
+import { AUTH_PATHS } from "../config";
 import {
   AuthPage,
   CalendarPage,
   DashboardPage,
   DocumentsPage,
+  OnboardingPage,
   ProjectsPage,
   SettingsPage,
 } from "../pages";
@@ -27,7 +29,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
-const AUTH_STATE_PATH = path.join(AUTH_DIR, "user.json");
+const AUTH_STATE_PATH = path.join(AUTH_DIR, path.basename(AUTH_PATHS.dashboard));
 
 /**
  * Check if auth state file exists and has valid authentication content
@@ -72,6 +74,7 @@ export type AuthFixtures = {
   authPage: AuthPage;
   dashboardPage: DashboardPage;
   documentsPage: DocumentsPage;
+  onboardingPage: OnboardingPage;
   projectsPage: ProjectsPage;
   calendarPage: CalendarPage;
   settingsPage: SettingsPage;
@@ -134,6 +137,10 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   documentsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new DocumentsPage(page));
+  },
+
+  onboardingPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
+    await use(new OnboardingPage(page));
   },
 
   projectsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {

@@ -97,9 +97,11 @@ export default defineConfig({
     // },
   ],
 
-  // Dev server configuration (Vite runs on port 5555)
+  // Web server configuration (Vite runs on port 5555)
+  // In CI: use preview mode to serve pre-built dist/ (faster)
+  // Locally: use dev mode for hot reload
   webServer: {
-    command: "pnpm run dev:frontend",
+    command: process.env.CI ? "pnpm run preview" : "pnpm run dev:frontend",
     url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

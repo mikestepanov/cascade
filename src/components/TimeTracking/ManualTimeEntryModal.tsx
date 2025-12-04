@@ -8,7 +8,9 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 type EntryMode = "duration" | "timeRange";
 
@@ -377,22 +379,25 @@ export function ManualTimeEntryModal({
           >
             Project
           </label>
-          <select
-            id="time-entry-project"
-            value={projectId || ""}
-            onChange={(e) => {
-              setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined);
+          <Select
+            value={projectId || "none"}
+            onValueChange={(value) => {
+              setProjectId(value === "none" ? undefined : (value as Id<"projects">));
               setIssueId(undefined); // Reset issue when project changes
             }}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
           >
-            <option value="">No project</option>
-            {projects?.map((project) => (
-              <option key={project._id} value={project._id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="time-entry-project" className="w-full">
+              <SelectValue placeholder="Select project..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">No project</SelectItem>
+              {projects?.map((project) => (
+                <SelectItem key={project._id} value={project._id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Issue Selection */}
@@ -404,41 +409,35 @@ export function ManualTimeEntryModal({
             >
               Issue (optional)
             </label>
-            <select
-              id="time-entry-issue"
-              value={issueId || ""}
-              onChange={(e) =>
-                setIssueId(e.target.value ? (e.target.value as Id<"issues">) : undefined)
+            <Select
+              value={issueId || "none"}
+              onValueChange={(value) =>
+                setIssueId(value === "none" ? undefined : (value as Id<"issues">))
               }
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
             >
-              <option value="">No issue</option>
-              {projectIssues.map((issue) => (
-                <option key={issue._id} value={issue._id}>
-                  {issue.key} - {issue.title}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="time-entry-issue" className="w-full">
+                <SelectValue placeholder="Select issue..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No issue</SelectItem>
+                {projectIssues.map((issue) => (
+                  <SelectItem key={issue._id} value={issue._id}>
+                    {issue.key} - {issue.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
         {/* Description */}
-        <div>
-          <label
-            htmlFor="time-entry-description"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Description
-          </label>
-          <textarea
-            id="time-entry-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What did you work on?"
-            rows={3}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none"
-          />
-        </div>
+        <Textarea
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What did you work on?"
+          rows={3}
+        />
 
         {/* Activity */}
         <div>
@@ -448,19 +447,22 @@ export function ManualTimeEntryModal({
           >
             Activity
           </label>
-          <select
-            id="time-entry-activity"
-            value={activity}
-            onChange={(e) => setActivity(e.target.value)}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          <Select
+            value={activity || "none"}
+            onValueChange={(value) => setActivity(value === "none" ? "" : value)}
           >
-            <option value="">Select activity...</option>
-            {ACTIVITY_TYPES.map((activityType) => (
-              <option key={activityType} value={activityType}>
-                {activityType}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="time-entry-activity" className="w-full">
+              <SelectValue placeholder="Select activity..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Select activity...</SelectItem>
+              {ACTIVITY_TYPES.map((activityType) => (
+                <SelectItem key={activityType} value={activityType}>
+                  {activityType}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Tags */}

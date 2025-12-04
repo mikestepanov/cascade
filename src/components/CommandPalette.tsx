@@ -13,7 +13,7 @@ import {
   CommandShortcut,
 } from "./ui/command";
 
-export interface CommandItem {
+export interface CommandAction {
   id: string;
   label: string;
   icon?: string;
@@ -26,7 +26,7 @@ export interface CommandItem {
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  commands: CommandItem[];
+  commands: CommandAction[];
 }
 
 export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProps) {

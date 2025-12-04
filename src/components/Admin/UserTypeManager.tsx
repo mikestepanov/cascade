@@ -7,7 +7,7 @@ import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
-import { Input, Select } from "../ui/form";
+import { Input, Select, Textarea } from "../ui/form";
 import { Modal } from "../ui/Modal";
 
 type EmploymentType = "employee" | "contractor" | "intern";
@@ -826,22 +826,13 @@ export function UserTypeManager() {
                       />
                     </div>
 
-                    <div>
-                      <label
-                        htmlFor="equity-notes"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-                      >
-                        Equity Notes
-                      </label>
-                      <textarea
-                        id="equity-notes"
-                        value={profileEquityNotes}
-                        onChange={(e) => setProfileEquityNotes(e.target.value)}
-                        placeholder="Additional notes about equity arrangement..."
-                        rows={2}
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark text-sm"
-                      />
-                    </div>
+                    <Textarea
+                      label="Equity Notes"
+                      value={profileEquityNotes}
+                      onChange={(e) => setProfileEquityNotes(e.target.value)}
+                      placeholder="Additional notes about equity arrangement..."
+                      rows={2}
+                    />
 
                     <div className="text-xs text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/40 p-2 rounded">
                       💡 Tip: Equity hours are non-paid hours compensated with equity. Set required

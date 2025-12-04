@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AuthLinkButton } from "./AuthLink";
 
 interface EmailVerificationFormProps {
   email: string;
@@ -72,14 +73,9 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
         <button className="auth-button" type="submit" disabled={submitting}>
           {submitting ? "Verifying..." : "Verify email"}
         </button>
-        <button
-          type="button"
-          className="text-sm text-brand-600 dark:text-brand-500 hover:underline disabled:opacity-50"
-          onClick={handleResend}
-          disabled={resending}
-        >
+        <AuthLinkButton onClick={handleResend} disabled={resending}>
           {resending ? "Sending..." : "Didn't receive a code? Resend"}
-        </button>
+        </AuthLinkButton>
       </form>
     </div>
   );

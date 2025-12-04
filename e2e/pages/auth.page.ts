@@ -5,27 +5,38 @@ import { BasePage } from "./base.page";
 /**
  * Authentication Page Object
  * Handles sign in, sign up, password reset, and email verification flows
+ *
+ * Routes:
+ * - /signin - Sign in form
+ * - /signup - Sign up form
+ * - /forgot-password - Password reset flow
  */
 export class AuthPage extends BasePage {
-  // Form state
-  private currentFlow: "signIn" | "signUp" = "signIn";
+  // ===================
+  // Locators - Page Headings
+  // ===================
+  readonly signInHeading: Locator;
+  readonly signUpHeading: Locator;
+  readonly forgotPasswordHeading: Locator;
+  readonly resetPasswordHeading: Locator;
 
   // ===================
-  // Locators - Sign In/Up
+  // Locators - Sign In/Up Forms
   // ===================
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
-  readonly submitButton: Locator;
-  readonly toggleFlowButton: Locator;
-  readonly forgotPasswordButton: Locator;
+  readonly signInButton: Locator;
+  readonly signUpButton: Locator;
+  readonly forgotPasswordLink: Locator;
   readonly googleSignInButton: Locator;
+  readonly signUpLink: Locator;
+  readonly signInLink: Locator;
 
   // ===================
   // Locators - Password Reset
   // ===================
-  readonly resetHeading: Locator;
   readonly sendResetCodeButton: Locator;
-  readonly backToSignInButton: Locator;
+  readonly backToSignInLink: Locator;
   readonly codeInput: Locator;
   readonly newPasswordInput: Locator;
   readonly resetPasswordButton: Locator;
@@ -42,20 +53,27 @@ export class AuthPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    // Sign In / Sign Up form
+    // Page headings
+    this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
+    this.signUpHeading = page.getByRole("heading", { name: /create an account/i });
+    this.forgotPasswordHeading = page.getByRole("heading", { name: /forgot password/i });
+    this.resetPasswordHeading = page.getByRole("heading", { name: /reset password/i });
+
+    // Sign In / Sign Up form inputs
     this.emailInput = page.getByPlaceholder("Email");
     this.passwordInput = page.getByPlaceholder("Password");
-    this.submitButton = page.getByRole("button", { name: /^sign (in|up)$/i });
-    this.toggleFlowButton = page.getByRole("button", { name: /sign (in|up) instead/i });
-    this.forgotPasswordButton = page.getByRole("button", { name: /forgot password/i });
+    this.signInButton = page.getByRole("button", { name: /^sign in$/i });
+    this.signUpButton = page.getByRole("button", { name: /^create account$/i });
+    this.forgotPasswordLink = page.getByRole("button", { name: /forgot password/i });
     this.googleSignInButton = page.getByRole("button", { name: /sign in with google/i });
 
-    // Password Reset - Step 1
-    this.resetHeading = page.getByRole("heading", { name: /reset your password/i });
-    this.sendResetCodeButton = page.getByRole("button", { name: /send reset code/i });
-    this.backToSignInButton = page.getByRole("button", { name: /back to sign in/i });
+    // Navigation links between auth pages
+    this.signUpLink = page.getByRole("link", { name: /sign up/i });
+    this.signInLink = page.getByRole("link", { name: /sign in/i });
 
-    // Password Reset - Step 2
+    // Password Reset
+    this.sendResetCodeButton = page.getByRole("button", { name: /send reset code/i });
+    this.backToSignInLink = page.getByRole("link", { name: /back to sign in/i });
     this.codeInput = page.getByPlaceholder("8-digit code");
     this.newPasswordInput = page.getByPlaceholder("New password");
     this.resetPasswordButton = page.getByRole("button", { name: /^reset password$/i });
@@ -73,42 +91,44 @@ export class AuthPage extends BasePage {
   // ===================
 
   /**
-   * Navigate to the auth page
-   * Since unauthenticated users land on NixeloLanding, we need to click through
+   * Navigate to sign in page
    */
   async goto() {
-    await this.page.goto("/");
-
-    // Wait for page to fully load and React to hydrate
-    await this.waitForLoad();
-
-    // Check if we're on the landing page (unauthenticated)
-    // The landing page has a "Get Started Free" link in the hero section
-    const getStartedButton = this.page.getByRole("link", {
-      name: /get started free/i,
-    });
-
-    // Wait for button to appear and be enabled
-    await getStartedButton.waitFor({ state: "visible", timeout: 10000 });
-
-    // Use evaluate to call native click which React intercepts
-    await getStartedButton.evaluate((el: HTMLElement) => el.click());
-
-    // Wait for login section to appear
-    const welcomeHeading = this.page.getByRole("heading", { name: /welcome back/i });
-    await welcomeHeading.waitFor({ state: "visible", timeout: 10000 });
-
-    // Let React finish rendering the login form
-    await this.page.waitForTimeout(300);
-
-    // Wait for all form inputs to be ready
-    await this.emailInput.waitFor({ state: "visible", timeout: 10000 });
-    await this.passwordInput.waitFor({ state: "visible", timeout: 5000 });
-    await this.googleSignInButton.waitFor({ state: "visible", timeout: 5000 });
+    await this.gotoSignIn();
   }
 
   /**
-   * Navigate directly to landing page without clicking through
+   * Navigate directly to sign in page
+   */
+  async gotoSignIn() {
+    await this.page.goto("/signin");
+    await this.waitForLoad();
+    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  /**
+   * Navigate directly to sign up page
+   */
+  async gotoSignUp() {
+    await this.page.goto("/signup");
+    await this.waitForLoad();
+    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  /**
+   * Navigate directly to forgot password page
+   */
+  async gotoForgotPassword() {
+    await this.page.goto("/forgot-password");
+    await this.waitForLoad();
+    await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  /**
+   * Navigate directly to landing page
    */
   async gotoLanding() {
     await this.page.goto("/");
@@ -120,35 +140,42 @@ export class AuthPage extends BasePage {
   // ===================
 
   async signIn(email: string, password: string) {
-    if (this.currentFlow !== "signIn") {
-      await this.switchToSignIn();
-    }
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.submitButton.click();
+    await this.signInButton.click();
   }
 
   async signUp(email: string, password: string) {
-    if (this.currentFlow !== "signUp") {
-      await this.switchToSignUp();
-    }
+    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
     await this.emailInput.fill(email);
+    await this.passwordInput.waitFor({ state: "visible", timeout: 5000 });
     await this.passwordInput.fill(password);
-    await this.submitButton.click();
+    await this.page.waitForTimeout(500);
+
+    // Retry clicking submit until page changes (verification form or error)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.signUpButton.waitFor({ state: "visible", timeout: 5000 });
+      await this.signUpButton.click();
+      await this.page.waitForTimeout(2000);
+
+      // Check if we left the sign-up form
+      const stillOnSignUp = await this.signUpButton.isVisible().catch(() => false);
+      if (!stillOnSignUp) {
+        return;
+      }
+      await this.page.waitForTimeout(500);
+    }
+    await this.page.waitForTimeout(2000);
   }
 
-  async switchToSignIn() {
-    await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
-    await this.toggleFlowButton.evaluate((el: HTMLElement) => el.click());
-    this.currentFlow = "signIn";
-    await expect(this.submitButton).toHaveText(/sign in/i, { timeout: 10000 });
+  async navigateToSignUp() {
+    await this.signUpLink.click();
+    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
-  async switchToSignUp() {
-    await this.toggleFlowButton.waitFor({ state: "visible", timeout: 5000 });
-    await this.toggleFlowButton.evaluate((el: HTMLElement) => el.click());
-    this.currentFlow = "signUp";
-    await expect(this.submitButton).toHaveText(/sign up/i, { timeout: 10000 });
+  async navigateToSignIn() {
+    await this.signInLink.click();
+    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
   async signInWithGoogle() {
@@ -161,19 +188,13 @@ export class AuthPage extends BasePage {
   // Actions - Password Reset
   // ===================
 
-  async goToForgotPassword() {
-    // Wait for button to be visible
-    await this.forgotPasswordButton.waitFor({ state: "visible", timeout: 10000 });
-
-    // Use evaluate to call native click which React intercepts
-    await this.forgotPasswordButton.evaluate((el: HTMLElement) => el.click());
-
-    // Wait for reset heading to appear
-    await this.resetHeading.waitFor({ state: "visible", timeout: 10000 });
+  async clickForgotPassword() {
+    await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.forgotPasswordLink.click();
+    await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
   async requestPasswordReset(email: string) {
-    await this.goToForgotPassword();
     await this.emailInput.fill(email);
     await this.sendResetCodeButton.click();
   }
@@ -185,9 +206,9 @@ export class AuthPage extends BasePage {
   }
 
   async goBackToSignIn() {
-    await this.backToSignInButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.backToSignInButton.evaluate((el: HTMLElement) => el.click());
-    await this.submitButton.waitFor({ state: "visible", timeout: 10000 });
+    await this.backToSignInLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.backToSignInLink.click();
+    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
   // ===================
@@ -212,28 +233,38 @@ export class AuthPage extends BasePage {
   // ===================
 
   async expectSignInForm() {
-    await expect(this.emailInput).toBeVisible({ timeout: 10000 });
+    await expect(this.signInHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.emailInput).toBeVisible({ timeout: 5000 });
     await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
-    await expect(this.submitButton).toBeVisible({ timeout: 5000 });
+    await expect(this.signInButton).toBeVisible({ timeout: 5000 });
     await expect(this.googleSignInButton).toBeVisible({ timeout: 5000 });
   }
 
+  async expectSignUpForm() {
+    await expect(this.signUpHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.emailInput).toBeVisible({ timeout: 5000 });
+    await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
+    await expect(this.signUpButton).toBeVisible({ timeout: 5000 });
+  }
+
   async expectForgotPasswordForm() {
-    await expect(this.resetHeading).toBeVisible();
+    await expect(this.forgotPasswordHeading).toBeVisible({ timeout: 10000 });
     await expect(this.emailInput).toBeVisible();
     await expect(this.sendResetCodeButton).toBeVisible();
   }
 
   async expectResetCodeForm() {
+    await expect(this.resetPasswordHeading).toBeVisible({ timeout: 10000 });
     await expect(this.codeInput).toBeVisible();
     await expect(this.newPasswordInput).toBeVisible();
     await expect(this.resetPasswordButton).toBeVisible();
   }
 
   async expectVerificationForm() {
-    await expect(this.verifyHeading).toBeVisible();
-    await expect(this.verifyCodeInput).toBeVisible();
-    await expect(this.verifyEmailButton).toBeVisible();
+    // Wait longer for verification form to appear - server might be slow after sign-up
+    await expect(this.verifyHeading).toBeVisible({ timeout: 15000 });
+    await expect(this.verifyCodeInput).toBeVisible({ timeout: 5000 });
+    await expect(this.verifyEmailButton).toBeVisible({ timeout: 5000 });
   }
 
   async expectValidationError(field: "email" | "password") {

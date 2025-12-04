@@ -3,6 +3,11 @@
  *
  * Sends verification emails using the universal email provider system.
  * Provider rotation and usage tracking are handled automatically.
+ *
+ * E2E Testing:
+ * Emails to @inbox.mailtrap.io are sent normally via the email provider system.
+ * When MAILTRAP_MODE=sandbox, emails land in the Mailtrap inbox where
+ * E2E tests can fetch them via Mailtrap API to extract the OTP.
  */
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
@@ -28,6 +33,11 @@ function generateOTP(): string {
  * - Provider rotation (SendPulse, Mailtrap, Resend, Mailgun)
  * - Free tier management (daily + monthly limits)
  * - Usage tracking
+ *
+ * E2E Testing:
+ * All emails are sent normally through the email provider system.
+ * When MAILTRAP_MODE=sandbox, emails land in the Mailtrap inbox.
+ * E2E tests use Mailtrap API to fetch emails and extract OTP codes.
  */
 export const OTPVerification = Resend({
   id: "otp-verification",
@@ -39,6 +49,8 @@ export const OTPVerification = Resend({
   // @ts-expect-error - ctx IS passed at runtime by @convex-dev/auth (see signIn.ts:92-95)
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
   async sendVerificationRequest({ identifier: email, token }, ctx) {
+    // Send verification email through the email provider system
+    // In dev/E2E (MAILTRAP_MODE=sandbox), emails go to Mailtrap inbox
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Verify your email",

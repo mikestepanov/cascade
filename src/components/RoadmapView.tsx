@@ -5,7 +5,9 @@ import { getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 import { Skeleton } from "./ui/Skeleton";
+import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -128,46 +130,35 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
 
         <div className="flex gap-3">
           {/* Epic Filter */}
-          <select
-            value={filterEpic}
-            onChange={(e) =>
-              setFilterEpic(e.target.value === "all" ? "all" : (e.target.value as Id<"issues">))
+          <Select
+            value={filterEpic === "all" ? "all" : filterEpic}
+            onValueChange={(value) =>
+              setFilterEpic(value === "all" ? "all" : (value as Id<"issues">))
             }
-            className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
           >
-            <option value="all">All Epics</option>
-            {epics.map((epic) => (
-              <option key={epic._id} value={epic._id}>
-                {epic.title}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+              <SelectValue placeholder="All Epics" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Epics</SelectItem>
+              {epics.map((epic) => (
+                <SelectItem key={epic._id} value={epic._id}>
+                  {epic.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("months")}
-              className={`px-3 py-1 rounded ${
-                viewMode === "months"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
-              }`}
-            >
-              Months
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("weeks")}
-              className={`px-3 py-1 rounded ${
-                viewMode === "weeks"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
-              }`}
-            >
-              Weeks
-            </button>
-          </div>
+          <ToggleGroup
+            type="single"
+            value={viewMode}
+            onValueChange={(value) => value && setViewMode(value as "months" | "weeks")}
+            size="sm"
+          >
+            <ToggleGroupItem value="months">Months</ToggleGroupItem>
+            <ToggleGroupItem value="weeks">Weeks</ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
 

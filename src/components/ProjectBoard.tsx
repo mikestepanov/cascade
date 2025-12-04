@@ -17,6 +17,7 @@ import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { BillingReport } from "./TimeTracker/BillingReport";
 import { Badge } from "./ui/Badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 import { SkeletonText } from "./ui/Skeleton";
 import { WebhooksManager } from "./WebhooksManager";
 
@@ -354,20 +355,24 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {/* Sprint Selector for Board */}
         {activeTab === "board" && project.boardType === "scrum" && (
           <div className="mt-4">
-            <select
-              value={selectedSprintId || ""}
-              onChange={(e) =>
-                setSelectedSprintId(e.target.value ? (e.target.value as Id<"sprints">) : undefined)
+            <Select
+              value={selectedSprintId || "active"}
+              onValueChange={(value) =>
+                setSelectedSprintId(value === "active" ? undefined : (value as Id<"sprints">))
               }
-              className="px-3 py-2 border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ui-border-focus"
             >
-              <option value="">Active Sprint</option>
-              {sprints?.map((sprint) => (
-                <option key={sprint._id} value={sprint._id}>
-                  {sprint.name} ({sprint.status})
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="px-3 py-2 border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ui-border-focus">
+                <SelectValue placeholder="Active Sprint" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active Sprint</SelectItem>
+                {sprints?.map((sprint) => (
+                  <SelectItem key={sprint._id} value={sprint._id}>
+                    {sprint.name} ({sprint.status})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>

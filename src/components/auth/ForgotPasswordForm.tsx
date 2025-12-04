@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AuthLinkButton } from "./AuthLink";
 
 interface ForgotPasswordFormProps {
   onCodeSent: (email: string) => void;
@@ -49,13 +50,7 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
         <button className="auth-button" type="submit" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
         </button>
-        <button
-          type="button"
-          className="text-sm text-brand-600 dark:text-brand-500 hover:underline"
-          onClick={onBack}
-        >
-          Back to sign in
-        </button>
+        <AuthLinkButton onClick={onBack}>Back to sign in</AuthLinkButton>
       </form>
     </div>
   );

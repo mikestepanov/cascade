@@ -7,6 +7,7 @@ import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Modal } from "../ui/Modal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
@@ -167,19 +168,19 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
             >
               Activity (optional)
             </label>
-            <select
-              id="timer-activity"
-              value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            >
-              <option value="">Select activity...</option>
-              {ACTIVITY_TYPES.map((activityType) => (
-                <option key={activityType} value={activityType}>
-                  {activityType}
-                </option>
-              ))}
-            </select>
+            <Select value={activity || "none"} onValueChange={(value) => setActivity(value === "none" ? "" : value)}>
+              <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark">
+                <SelectValue placeholder="Select activity..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Select activity...</SelectItem>
+                {ACTIVITY_TYPES.map((activityType) => (
+                  <SelectItem key={activityType} value={activityType}>
+                    {activityType}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <Flex justify="end" gap="sm" className="pt-4">
