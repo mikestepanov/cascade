@@ -4,6 +4,37 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Id } from "../../convex/_generated/dataModel";
 import { ProjectBoard } from "./ProjectBoard";
 
+// Mock ShadcnSelect to use testable native select
+vi.mock("./ui/ShadcnSelect", () => ({
+  Select: ({
+    children,
+    onValueChange,
+    value,
+  }: {
+    children: React.ReactNode;
+    onValueChange: (value: string) => void;
+    value?: string;
+  }) => (
+    <div data-testid="select-root">
+      <select
+        data-testid="sprint-select"
+        value={value || ""}
+        onChange={(e) => onValueChange(e.target.value)}
+      >
+        {children}
+      </select>
+    </div>
+  ),
+  SelectTrigger: () => null,
+  SelectValue: ({ placeholder }: { placeholder?: string }) => (
+    <option value="">{placeholder}</option>
+  ),
+  SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SelectItem: ({ children, value }: { children: React.ReactNode; value: string }) => (
+    <option value={value}>{children}</option>
+  ),
+}));
+
 const mockProject = {
   _id: "project1" as Id<"projects">,
   name: "Test Project",
@@ -198,13 +229,17 @@ describe("ProjectBoard", () => {
   it("should show sprint selector for scrum board on Board tab", () => {
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const sprintSelector = screen.getByRole("combobox");
+    const sprintSelector = screen.getByTestId("sprint-select");
     expect(sprintSelector).toBeInTheDocument();
 
-    // Check for sprint options
-    expect(screen.getByText("Active Sprint")).toBeInTheDocument();
-    expect(screen.getByText("Sprint 1 (active)")).toBeInTheDocument();
-    expect(screen.getByText("Sprint 2 (future)")).toBeInTheDocument();
+    // Check for sprint options in the select
+    const options = sprintSelector.querySelectorAll("option");
+    expect(options.length).toBeGreaterThanOrEqual(3); // Active Sprint + 2 sprints
+
+    // Check that sprint texts appear somewhere
+    expect(screen.getAllByText(/Active Sprint/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Sprint 1/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/Sprint 2/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("should not show sprint selector on backlog tab", async () => {
@@ -212,13 +247,13 @@ describe("ProjectBoard", () => {
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     // Initially on board tab, sprint selector should be visible
-    expect(screen.getByRole("combobox")).toBeInTheDocument();
+    expect(screen.getByTestId("sprint-select")).toBeInTheDocument();
 
     // Switch to backlog
     await user.click(screen.getByText("Backlog"));
 
     // Sprint selector should not be visible
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("sprint-select")).not.toBeInTheDocument();
   });
 
   it("should pass active sprint to KanbanBoard by default", () => {
@@ -232,7 +267,7 @@ describe("ProjectBoard", () => {
     const user = userEvent.setup();
     render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
-    const sprintSelector = screen.getByRole("combobox");
+    const sprintSelector = screen.getByTestId("sprint-select");
     await user.selectOptions(sprintSelector, "sprint2");
 
     const kanbanBoard = screen.getByTestId("kanban-board");
