@@ -26,6 +26,36 @@ function isTestEmail(email: string): boolean {
 }
 
 /**
+ * Validate E2E API key from request headers
+ * Returns error Response if invalid, null if valid
+ */
+function validateE2EApiKey(request: Request): Response | null {
+  const apiKey = process.env.E2E_API_KEY;
+
+  // If no API key is configured, reject all requests in production
+  if (!apiKey) {
+    // Allow in development (no key configured = development mode)
+    if (process.env.NODE_ENV === "production") {
+      return new Response(JSON.stringify({ error: "E2E endpoints disabled in production" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return null; // Allow in dev without key
+  }
+
+  const providedKey = request.headers.get("x-e2e-api-key");
+  if (providedKey !== apiKey) {
+    return new Response(JSON.stringify({ error: "Invalid or missing E2E API key" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  return null; // Valid
+}
+
+/**
  * Create a test user (bypassing email verification)
  * POST /e2e/create-test-user
  * Body: { email: string, password: string, skipOnboarding?: boolean }
@@ -34,6 +64,10 @@ function isTestEmail(email: string): boolean {
  * Only works for test emails (@inbox.mailtrap.io).
  */
 export const createTestUserEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { email, password, skipOnboarding = false } = body;
@@ -135,6 +169,10 @@ export const createTestUserInternal = internalMutation({
  * Body: { email: string }
  */
 export const deleteTestUserEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { email } = body;
@@ -228,6 +266,10 @@ export const deleteTestUserInternal = internalMutation({
  * Body: { email?: string } - if not provided, resets ALL test users' onboarding
  */
 export const resetOnboardingEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json().catch(() => ({}));
     const { email } = body as { email?: string };
@@ -312,7 +354,11 @@ export const resetOnboardingInternal = internalMutation({
  * POST /e2e/cleanup
  * Deletes test users older than 1 hour
  */
-export const cleanupTestUsersEndpoint = httpAction(async (ctx) => {
+export const cleanupTestUsersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
   try {
     const result = await ctx.runMutation(internal.e2e.cleanupTestUsersInternal, {});
     return new Response(JSON.stringify(result), {

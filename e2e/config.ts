@@ -8,6 +8,22 @@
 // Convex site URL for E2E API endpoints
 export const CONVEX_SITE_URL = "https://majestic-goshawk-53.convex.site";
 
+// E2E API Key for authenticated endpoints (optional in dev)
+export const E2E_API_KEY = process.env.E2E_API_KEY || "";
+
+/**
+ * Get headers for E2E API requests
+ */
+export function getE2EHeaders(): HeadersInit {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (E2E_API_KEY) {
+    headers["x-e2e-api-key"] = E2E_API_KEY;
+  }
+  return headers;
+}
+
 /**
  * Test Users Configuration
  *

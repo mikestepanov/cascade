@@ -356,16 +356,16 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
         {activeTab === "board" && project.boardType === "scrum" && (
           <div className="mt-4">
             <Select
-              value={selectedSprintId || ""}
+              value={selectedSprintId || "active"}
               onValueChange={(value) =>
-                setSelectedSprintId(value ? (value as Id<"sprints">) : undefined)
+                setSelectedSprintId(value === "active" ? undefined : (value as Id<"sprints">))
               }
             >
               <SelectTrigger className="px-3 py-2 border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ui-border-focus">
                 <SelectValue placeholder="Active Sprint" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Active Sprint</SelectItem>
+                <SelectItem value="active">Active Sprint</SelectItem>
                 {sprints?.map((sprint) => (
                   <SelectItem key={sprint._id} value={sprint._id}>
                     {sprint.name} ({sprint.status})

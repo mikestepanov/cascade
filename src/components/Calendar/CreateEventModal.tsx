@@ -279,16 +279,16 @@ export function CreateEventModal({
               Link to Project (optional)
             </label>
             <Select
-              value={selectedProjectId || ""}
+              value={selectedProjectId || "none"}
               onValueChange={(value) =>
-                setSelectedProjectId(value ? (value as Id<"projects">) : undefined)
+                setSelectedProjectId(value === "none" ? undefined : (value as Id<"projects">))
               }
             >
               <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
                 <SelectValue placeholder="No project" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No project</SelectItem>
+                <SelectItem value="none">No project</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name} ({project.key})

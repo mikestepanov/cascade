@@ -1,4 +1,4 @@
-import { E2E_ENDPOINTS, TEST_USERS } from "./config";
+import { E2E_ENDPOINTS, TEST_USERS, getE2EHeaders } from "./config";
 import { authenticatedTest as test, expect } from "./fixtures";
 
 /**
@@ -20,7 +20,7 @@ async function resetOnboarding(): Promise<void> {
   try {
     const response = await fetch(E2E_ENDPOINTS.resetOnboarding, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getE2EHeaders(),
       body: JSON.stringify({ email: TEST_USERS.dashboard.email }),
     });
     if (!response.ok) {

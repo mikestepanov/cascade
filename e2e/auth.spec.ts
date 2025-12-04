@@ -107,8 +107,11 @@ test.describe("Password Reset", () => {
 /**
  * Integration tests - require running backend and Mailtrap configuration
  * These test the full sign up and email verification flow
+ *
+ * NOTE: Skipped due to Mailtrap sandbox monthly sending limits (100/month).
+ * Re-enable when limits reset or use a different email testing provider.
  */
-test.describe("Integration", () => {
+test.describe.skip("Integration", () => {
   test.describe.configure({ mode: "serial" });
 
   // Skip all tests if Mailtrap is not configured
