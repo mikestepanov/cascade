@@ -7,6 +7,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 import { Skeleton } from "./ui/Skeleton";
+import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -149,30 +150,15 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
           </Select>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("months")}
-              className={`px-3 py-1 rounded ${
-                viewMode === "months"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
-              }`}
-            >
-              Months
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("weeks")}
-              className={`px-3 py-1 rounded ${
-                viewMode === "weeks"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
-              }`}
-            >
-              Weeks
-            </button>
-          </div>
+          <ToggleGroup
+            type="single"
+            value={viewMode}
+            onValueChange={(value) => value && setViewMode(value as "months" | "weeks")}
+            size="sm"
+          >
+            <ToggleGroupItem value="months">Months</ToggleGroupItem>
+            <ToggleGroupItem value="weeks">Weeks</ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
 

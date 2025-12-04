@@ -33,21 +33,18 @@ async function isOnDashboard(page: import("@playwright/test").Page): Promise<boo
  */
 async function trySignIn(page: import("@playwright/test").Page, baseURL: string): Promise<boolean> {
   try {
-    await page.goto(baseURL);
+    // Go directly to sign in page
+    await page.goto(`${baseURL}/signin`);
     await page.waitForLoadState("load");
     await page.waitForTimeout(1000);
 
-    // Check if already logged in (user might have valid session)
+    // Check if already logged in (redirected to dashboard)
     if (await isOnDashboard(page)) {
       console.log("✓ Already logged in, on dashboard");
       return true;
     }
 
-    const getStartedLink = page.getByRole("link", { name: /get started free/i });
-    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
-    await page.waitForTimeout(500);
-    await getStartedLink.click();
-
+    // Wait for sign in form
     await page
       .getByRole("heading", { name: /welcome back/i })
       .waitFor({ state: "visible", timeout: 10000 });
@@ -110,32 +107,20 @@ async function signUpNewUser(
   baseURL: string,
 ): Promise<boolean> {
   try {
-    await page.goto(baseURL);
+    // Go directly to sign up page
+    await page.goto(`${baseURL}/signup`);
     await page.waitForLoadState("load");
 
-    const getStartedLink = page.getByRole("link", { name: /get started free/i });
-    await getStartedLink.waitFor({ state: "visible", timeout: 30000 });
-    await page.waitForTimeout(500);
-    await getStartedLink.click();
-
+    // Wait for sign up form
     await page
-      .getByRole("heading", { name: /welcome back/i })
+      .getByRole("heading", { name: /create an account/i })
       .waitFor({ state: "visible", timeout: 10000 });
-    await page.waitForTimeout(300);
-
-    // Switch to sign up mode
-    const toggleButton = page.getByRole("button", { name: /sign up instead/i });
-    await toggleButton.waitFor({ state: "visible", timeout: 10000 });
-    await page.waitForTimeout(500);
-    await toggleButton.evaluate((el: HTMLElement) => el.click());
-
-    const submitButton = page.getByRole("button", { name: /^sign up$/i });
-    await submitButton.waitFor({ state: "visible", timeout: 10000 });
     await page.waitForTimeout(300);
 
     // Fill sign up form
     const emailInput = page.getByPlaceholder("Email");
     const passwordInput = page.getByPlaceholder("Password");
+    const submitButton = page.getByRole("button", { name: /^create account$/i });
 
     await emailInput.waitFor({ state: "visible", timeout: 10000 });
     await emailInput.fill(TEST_USERS.dashboard.email);

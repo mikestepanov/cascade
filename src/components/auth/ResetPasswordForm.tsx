@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AuthLinkButton } from "./AuthLink";
 
 interface ResetPasswordFormProps {
   email: string;
@@ -60,13 +61,7 @@ export function ResetPasswordForm({ email, onSuccess, onRetry }: ResetPasswordFo
         <button className="auth-button" type="submit" disabled={submitting}>
           {submitting ? "Resetting..." : "Reset password"}
         </button>
-        <button
-          type="button"
-          className="text-sm text-brand-600 dark:text-brand-500 hover:underline"
-          onClick={onRetry}
-        >
-          Didn't receive a code? Try again
-        </button>
+        <AuthLinkButton onClick={onRetry}>Didn't receive a code? Try again</AuthLinkButton>
       </form>
     </div>
   );

@@ -5,6 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 import { CreateEventModal } from "./CreateEventModal";
 import { EventDetailsModal } from "./EventDetailsModal";
 
@@ -125,30 +126,21 @@ export function CalendarView() {
 
           <Flex gap="md" align="center" className="gap-2 sm:gap-3">
             {/* View Mode Toggle */}
-            <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-1 sm:flex-initial">
-              <button
-                type="button"
-                onClick={() => setViewMode("week")}
-                className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
-                  viewMode === "week"
-                    ? "bg-brand-600 text-white"
-                    : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                } rounded-l-md`}
-              >
+            <ToggleGroup
+              type="single"
+              value={viewMode}
+              onValueChange={(value) => value && setViewMode(value as ViewMode)}
+              variant="brand"
+              size="sm"
+              className="flex-1 sm:flex-initial"
+            >
+              <ToggleGroupItem value="week" className="flex-1 sm:flex-initial">
                 Week
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("month")}
-                className={`flex-1 sm:flex-initial px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
-                  viewMode === "month"
-                    ? "bg-brand-600 text-white"
-                    : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                } rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
-              >
+              </ToggleGroupItem>
+              <ToggleGroupItem value="month" className="flex-1 sm:flex-initial">
                 Month
-              </button>
-            </div>
+              </ToggleGroupItem>
+            </ToggleGroup>
 
             <Button
               onClick={() => setShowCreateModal(true)}

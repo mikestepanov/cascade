@@ -3,6 +3,9 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 
+/** Check if email is a test email (@inbox.mailtrap.io) */
+const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
+
 /**
  * Get onboarding status for current user
  */
@@ -425,12 +428,19 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
 /**
  * Reset onboarding for testing purposes
  * Deletes the userOnboarding record so user can start fresh
+ * Only available for test accounts (@inbox.mailtrap.io)
  */
 export const resetOnboarding = mutation({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
+
+    // Get user and verify test email
+    const user = await ctx.db.get(userId);
+    if (!(user && isTestEmail(user.email))) {
+      throw new Error("Reset onboarding is only available for test accounts");
+    }
 
     // Delete onboarding record
     const onboarding = await ctx.db

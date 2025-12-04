@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
+import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 import { CalendarView } from "./CalendarView";
 import { RoadmapView } from "./RoadmapView";
 
@@ -17,34 +18,25 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
     <Flex direction="column" className="h-full">
       {/* View Switcher */}
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-3 sm:px-6 py-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
-        <Flex direction="column" gap="sm" className="sm:flex-row items-stretch sm:items-center">
-          <button
-            type="button"
-            onClick={() => setViewType("calendar")}
-            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-              viewType === "calendar"
-                ? "bg-brand-600 text-white"
-                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-            }`}
-          >
+        <ToggleGroup
+          type="single"
+          value={viewType}
+          onValueChange={(value) => value && setViewType(value as ViewType)}
+          variant="brand"
+        >
+          <ToggleGroupItem value="calendar">
             <span className="sm:hidden">📅 Calendar</span>
             <span className="hidden sm:inline">📅 Calendar (Events)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewType("roadmap")}
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="roadmap"
             disabled={!projectId}
-            className={`px-3 sm:px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-              viewType === "roadmap"
-                ? "bg-brand-600 text-white"
-                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-            } ${!projectId ? "opacity-50 cursor-not-allowed" : ""}`}
             title={!projectId ? "Select a project to view roadmap" : ""}
           >
             <span className="sm:hidden">🗺️ Roadmap</span>
             <span className="hidden sm:inline">🗺️ Roadmap (Issues)</span>
-          </button>
-        </Flex>
+          </ToggleGroupItem>
+        </ToggleGroup>
         {!projectId && viewType === "roadmap" && (
           <p className="text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
             Select a project from the sidebar to view the roadmap

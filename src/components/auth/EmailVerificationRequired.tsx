@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import { AuthLinkButton } from "./AuthLink";
 
 export function EmailVerificationRequired() {
   const { signIn, signOut } = useAuthActions();
@@ -99,22 +100,13 @@ export function EmailVerificationRequired() {
         </form>
 
         <div className="mt-6 text-center space-y-3">
-          <button
-            type="button"
-            className="text-sm text-brand-600 dark:text-brand-500 hover:underline disabled:opacity-50"
-            onClick={handleResend}
-            disabled={resending}
-          >
+          <AuthLinkButton onClick={handleResend} disabled={resending}>
             {resending ? "Sending..." : "Didn't receive a code? Resend"}
-          </button>
+          </AuthLinkButton>
           <div>
-            <button
-              type="button"
-              className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark hover:underline"
-              onClick={handleSignOut}
-            >
+            <AuthLinkButton onClick={handleSignOut} variant="muted">
               Sign out and use a different account
-            </button>
+            </AuthLinkButton>
           </div>
         </div>
       </div>

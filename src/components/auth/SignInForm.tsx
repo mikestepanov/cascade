@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AuthLinkButton } from "./AuthLink";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 
 export function SignInForm() {
@@ -51,13 +52,9 @@ export function SignInForm() {
         </button>
       </form>
       <div className="text-center mt-3">
-        <button
-          type="button"
-          className="text-sm text-gray-400 hover:text-brand-500 hover:underline"
-          onClick={() => navigate({ to: "/forgot-password" })}
-        >
+        <AuthLinkButton onClick={() => navigate({ to: "/forgot-password" })}>
           Forgot password?
-        </button>
+        </AuthLinkButton>
       </div>
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-gray-700" />

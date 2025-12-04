@@ -1,7 +1,6 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { AuthPageLayout } from "@/components/auth/AuthPageLayout";
-import { SignInForm } from "@/components/auth/SignInForm";
+import { AuthLink, AuthPageLayout, SignInForm } from "@/components/auth";
 
 export const Route = createFileRoute("/signin")({
   component: SignInRoute,
@@ -19,12 +18,7 @@ function SignInRoute() {
           <SignInForm />
           <div className="text-center text-sm text-gray-400 mt-4">
             <span>Don't have an account? </span>
-            <Link
-              to="/signup"
-              className="text-brand-500 hover:text-brand-400 hover:underline font-medium"
-            >
-              Sign up
-            </Link>
+            <AuthLink to="/signup">Sign up</AuthLink>
           </div>
         </AuthPageLayout>
       </Unauthenticated>

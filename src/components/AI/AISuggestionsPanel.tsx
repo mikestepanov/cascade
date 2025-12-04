@@ -4,9 +4,11 @@
 
 import React from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";
 import { Skeleton } from "../ui/Skeleton";
+import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
 
@@ -66,31 +68,28 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
         </button>
 
         {/* Filter Tabs */}
-        <Flex wrap gap="sm" className="mt-3">
-          <FilterButton
-            active={!selectedType}
-            onClick={() => setSelectedType(undefined)}
-            label="All"
-          />
-          <FilterButton
-            active={selectedType === "risk_detection"}
-            onClick={() => setSelectedType("risk_detection")}
-            label="⚠️ Risks"
-            variant="red"
-          />
-          <FilterButton
-            active={selectedType === "insight"}
-            onClick={() => setSelectedType("insight")}
-            label="💡 Insights"
-            variant="purple"
-          />
-          <FilterButton
-            active={selectedType === "sprint_planning"}
-            onClick={() => setSelectedType("sprint_planning")}
-            label="📅 Planning"
-            variant="green"
-          />
-        </Flex>
+        <ToggleGroup
+          type="single"
+          value={selectedType ?? "all"}
+          onValueChange={(value) =>
+            setSelectedType(value === "all" ? undefined : (value as SuggestionType))
+          }
+          className="mt-3 flex-wrap"
+          size="sm"
+        >
+          <ToggleGroupItem value="all" variant="brand">
+            All
+          </ToggleGroupItem>
+          <ToggleGroupItem value="risk_detection" variant="danger">
+            ⚠️ Risks
+          </ToggleGroupItem>
+          <ToggleGroupItem value="insight" variant="accent">
+            💡 Insights
+          </ToggleGroupItem>
+          <ToggleGroupItem value="sprint_planning" variant="success">
+            📅 Planning
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {/* Suggestions List */}
@@ -132,42 +131,6 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
 });
 
 // Sub-components
-
-interface FilterButtonProps {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  variant?: "default" | "red" | "purple" | "green";
-}
-
-const FilterButton = React.memo(function FilterButton({
-  active,
-  onClick,
-  label,
-  variant = "default",
-}: FilterButtonProps) {
-  const activeColors = {
-    default: "bg-brand-600 text-white",
-    red: "bg-status-error text-white",
-    purple: "bg-accent-600 text-white",
-    green: "bg-status-success text-white",
-  };
-
-  const inactiveColors =
-    "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1.5 text-xs rounded-full font-medium transition-colors ${
-        active ? activeColors[variant] : inactiveColors
-      }`}
-    >
-      {label}
-    </button>
-  );
-});
 
 interface SuggestionCardProps {
   suggestion: Doc<"aiSuggestions">;
@@ -218,20 +181,22 @@ const SuggestionCard = React.memo(function SuggestionCard({
           )}
           {!(suggestion.accepted || suggestion.dismissed) && (
             <Flex gap="sm" className="mt-3">
-              <button
-                type="button"
+              <Button
+                variant="success"
+                size="sm"
                 onClick={() => onAccept(suggestion._id)}
-                className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm bg-status-success text-white rounded-lg hover:bg-status-success/90 focus:outline-none focus:ring-2 focus:ring-status-success transition-colors touch-manipulation"
+                className="flex-1 sm:flex-none"
               >
                 ✓ Accept
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => onDismiss(suggestion._id)}
-                className="flex-1 sm:flex-none px-3 py-1.5 text-xs sm:text-sm bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-ui-border-secondary transition-colors touch-manipulation"
+                className="flex-1 sm:flex-none"
               >
                 ✗ Dismiss
-              </button>
+              </Button>
             </Flex>
           )}
           {suggestion.accepted && (

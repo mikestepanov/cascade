@@ -18,48 +18,32 @@ test.describe("Landing Page", () => {
     await landingPage.expectLandingPage();
   });
 
-  test("can navigate to login from hero CTA", async ({ landingPage }) => {
+  test("can navigate to signup from hero CTA", async ({ landingPage }) => {
     await landingPage.goto();
     await landingPage.clickGetStarted();
-    await landingPage.expectLoginSection();
+    await landingPage.expectSignUpPage();
   });
 
-  test("can navigate to login from nav", async ({ landingPage }) => {
+  test("can navigate to signup from nav", async ({ landingPage }) => {
     await landingPage.goto();
     await landingPage.clickNavGetStarted();
-    await landingPage.expectLoginSection();
+    await landingPage.expectSignUpPage();
   });
 
-  test("can go back to landing from login", async ({ landingPage }) => {
+  test("can navigate to signin from nav", async ({ landingPage }) => {
     await landingPage.goto();
-    await landingPage.clickGetStarted();
-    await landingPage.goBackToHome();
-    await landingPage.expectLandingPage();
+    await landingPage.clickNavLogin();
+    await landingPage.expectSignInPage();
   });
 });
 
-test.describe("Sign In / Sign Up", () => {
+test.describe("Sign In Page", () => {
   test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
+    await authPage.gotoSignIn();
   });
 
-  test("displays sign in form by default", async ({ authPage }) => {
+  test("displays sign in form", async ({ authPage }) => {
     await authPage.expectSignInForm();
-  });
-
-  test("can toggle between sign in and sign up", async ({ authPage }) => {
-    // Start on sign in
-    await expect(authPage.submitButton).toHaveText(/sign in/i);
-    await expect(authPage.forgotPasswordButton).toBeVisible();
-
-    // Switch to sign up
-    await authPage.switchToSignUp();
-    await expect(authPage.submitButton).toHaveText(/sign up/i);
-    await expect(authPage.forgotPasswordButton).not.toBeVisible();
-
-    // Switch back to sign in
-    await authPage.switchToSignIn();
-    await expect(authPage.submitButton).toHaveText(/sign in/i);
   });
 
   test("shows Google sign in option", async ({ authPage }) => {
@@ -67,37 +51,61 @@ test.describe("Sign In / Sign Up", () => {
     await expect(authPage.googleSignInButton).toContainText(/google/i);
   });
 
+  test("has link to forgot password", async ({ authPage }) => {
+    await expect(authPage.forgotPasswordLink).toBeVisible();
+  });
+
+  test("has link to sign up", async ({ authPage }) => {
+    await expect(authPage.signUpLink).toBeVisible();
+  });
+
   test("validates required fields", async ({ authPage }) => {
-    // Email required
     await expect(authPage.emailInput).toHaveAttribute("required", "");
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
+    await expect(authPage.passwordInput).toHaveAttribute("required", "");
+  });
+});
 
-    // Password required
+test.describe("Sign Up Page", () => {
+  test.beforeEach(async ({ authPage }) => {
+    await authPage.gotoSignUp();
+  });
+
+  test("displays sign up form", async ({ authPage }) => {
+    await authPage.expectSignUpForm();
+  });
+
+  test("has link to sign in", async ({ authPage }) => {
+    await expect(authPage.signInLink).toBeVisible();
+  });
+
+  test("validates required fields", async ({ authPage }) => {
+    await expect(authPage.emailInput).toHaveAttribute("required", "");
+    await expect(authPage.emailInput).toHaveAttribute("type", "email");
     await expect(authPage.passwordInput).toHaveAttribute("required", "");
   });
 });
 
 test.describe("Password Reset", () => {
-  test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
+  test("can navigate to forgot password from sign in", async ({ authPage }) => {
+    await authPage.gotoSignIn();
+    await authPage.clickForgotPassword();
+    await authPage.expectForgotPasswordForm();
   });
 
-  test("can navigate to forgot password", async ({ authPage }) => {
-    await authPage.goToForgotPassword();
+  test("can go directly to forgot password", async ({ authPage }) => {
+    await authPage.gotoForgotPassword();
     await authPage.expectForgotPasswordForm();
   });
 
   test("can go back to sign in", async ({ authPage }) => {
-    await authPage.goToForgotPassword();
+    await authPage.gotoForgotPassword();
     await authPage.goBackToSignIn();
-
-    await expect(authPage.submitButton).toBeVisible();
-    await expect(authPage.forgotPasswordButton).toBeVisible();
+    await authPage.expectSignInForm();
   });
 
   test("forgot password form has email input", async ({ authPage }) => {
-    await authPage.goToForgotPassword();
-
+    await authPage.gotoForgotPassword();
     await expect(authPage.emailInput).toBeVisible();
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
     await expect(authPage.emailInput).toHaveAttribute("required", "");
@@ -111,49 +119,50 @@ test.describe("Password Reset", () => {
  * NOTE: Skipped due to Mailtrap sandbox monthly sending limits (100/month).
  * Re-enable when limits reset or use a different email testing provider.
  */
-test.describe.skip("Integration", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe
+  .skip("Integration", () => {
+    test.describe.configure({ mode: "serial" });
 
-  // Skip all tests if Mailtrap is not configured
-  test.beforeEach(() => {
-    test.skip(!isMailtrapConfigured(), "Mailtrap not configured - skipping integration tests");
-  });
-
-  test("sign up flow sends verification email", async ({ authPage }) => {
-    const testEmail = getTestEmailAddress("signup-test");
-    await authPage.goto();
-
-    // Sign up with test email
-    await authPage.signUp(testEmail, "TestPassword123!");
-
-    // Should show verification form
-    await authPage.expectVerificationForm();
-  });
-
-  test("can complete email verification", async ({ authPage, page }) => {
-    const testEmail = getTestEmailAddress("verify-test");
-    await authPage.goto();
-
-    // Sign up with test email
-    await authPage.signUp(testEmail, "TestPassword123!");
-
-    // Wait for verification form
-    await authPage.expectVerificationForm();
-
-    // Get OTP from Mailtrap
-    const otp = await waitForVerificationEmail(testEmail, {
-      timeout: 60000,
-      pollInterval: 3000,
+    // Skip all tests if Mailtrap is not configured
+    test.beforeEach(() => {
+      test.skip(!isMailtrapConfigured(), "Mailtrap not configured - skipping integration tests");
     });
 
-    // Enter the OTP
-    await authPage.verifyEmail(otp);
+    test("sign up flow sends verification email", async ({ authPage }) => {
+      const testEmail = getTestEmailAddress("signup-test");
+      await authPage.gotoSignUp();
 
-    // Should either go to onboarding or dashboard
-    await expect(
-      page
-        .getByRole("heading", { name: /welcome to nixelo/i })
-        .or(page.getByRole("link", { name: /^dashboard$/i })),
-    ).toBeVisible({ timeout: 15000 });
+      // Sign up with test email
+      await authPage.signUp(testEmail, "TestPassword123!");
+
+      // Should show verification form
+      await authPage.expectVerificationForm();
+    });
+
+    test("can complete email verification", async ({ authPage, page }) => {
+      const testEmail = getTestEmailAddress("verify-test");
+      await authPage.gotoSignUp();
+
+      // Sign up with test email
+      await authPage.signUp(testEmail, "TestPassword123!");
+
+      // Wait for verification form
+      await authPage.expectVerificationForm();
+
+      // Get OTP from Mailtrap
+      const otp = await waitForVerificationEmail(testEmail, {
+        timeout: 60000,
+        pollInterval: 3000,
+      });
+
+      // Enter the OTP
+      await authPage.verifyEmail(otp);
+
+      // Should either go to onboarding or dashboard
+      await expect(
+        page
+          .getByRole("heading", { name: /welcome to nixelo/i })
+          .or(page.getByRole("link", { name: /^dashboard$/i })),
+      ).toBeVisible({ timeout: 15000 });
+    });
   });
-});

@@ -1,6 +1,5 @@
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { getConvexSiteUrl } from "@/lib/convex";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
@@ -13,31 +12,14 @@ import { Button } from "../ui/Button";
  */
 export function DevToolsTab() {
   const currentUser = useQuery(api.users.getCurrent);
+  const resetOnboardingMutation = useMutation(api.onboarding.resetOnboarding);
   const [isResettingOnboarding, setIsResettingOnboarding] = useState(false);
 
   const handleResetOnboarding = async () => {
-    if (!currentUser?.email) {
-      showError("No user email found");
-      return;
-    }
-
     setIsResettingOnboarding(true);
     try {
-      const response = await fetch(`${getConvexSiteUrl()}/e2e/reset-onboarding`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: currentUser.email }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        showSuccess("Onboarding reset! Refresh the page to see onboarding again.");
-      } else {
-        showError(result.error || "Failed to reset onboarding");
-      }
+      await resetOnboardingMutation();
+      showSuccess("Onboarding reset! Refresh the page to see onboarding again.");
     } catch (error) {
       showError(error, "Failed to reset onboarding");
     } finally {
