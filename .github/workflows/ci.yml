@@ -108,6 +108,8 @@ jobs:
 
       - name: Build
         run: pnpm run build
+        env:
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
 
   e2e-tests:
     name: E2E Tests
@@ -154,6 +156,11 @@ jobs:
         run: pnpm run e2e
         env:
           CI: true
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
+          MAILTRAP_API_TOKEN: ${{ secrets.MAILTRAP_API_TOKEN }}
+          MAILTRAP_ACCOUNT_ID: ${{ secrets.MAILTRAP_ACCOUNT_ID }}
+          MAILTRAP_INBOX_ID: ${{ secrets.MAILTRAP_INBOX_ID }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
