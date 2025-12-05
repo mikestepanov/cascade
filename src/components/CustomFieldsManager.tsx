@@ -64,11 +64,6 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
     }
   };
 
-  const handleCloseForm = () => {
-    setShowFormDialog(false);
-    setEditingField(null);
-  };
-
   return (
     <Flex direction="column" gap="xl">
       {/* Header */}
@@ -113,8 +108,13 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       <CustomFieldForm
         projectId={projectId}
         field={editingField}
-        isOpen={showFormDialog}
-        onClose={handleCloseForm}
+        open={showFormDialog}
+        onOpenChange={(open) => {
+          setShowFormDialog(open);
+          if (!open) {
+            setEditingField(null);
+          }
+        }}
       />
     </Flex>
   );

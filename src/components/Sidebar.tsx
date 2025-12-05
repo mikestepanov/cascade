@@ -9,9 +9,9 @@ import { DocumentTemplatesManager } from "./DocumentTemplatesManager";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Checkbox, Input } from "./ui/form";
-import { Modal } from "./ui/Modal";
 import { SkeletonList } from "./ui/Skeleton";
 
 interface SidebarProps {
@@ -193,17 +193,16 @@ export function Sidebar({ selectedDocumentId }: SidebarProps) {
       )}
 
       {/* Template Selection Modal */}
-      <Modal
-        isOpen={showTemplateModal}
-        onClose={() => setShowTemplateModal(false)}
-        title="Choose a Template"
-        maxWidth="4xl"
-        fullScreenOnMobile={true}
-      >
-        <div className="p-4">
-          <DocumentTemplatesManager onSelectTemplate={handleSelectTemplate} />
-        </div>
-      </Modal>
+      <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Choose a Template</DialogTitle>
+          </DialogHeader>
+          <div>
+            <DocumentTemplatesManager onSelectTemplate={handleSelectTemplate} />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Documents List */}
       <div className="flex-1 overflow-y-auto">

@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { useQuery } from "convex/react";
 import { ProjectSidebar } from "@/components/ProjectSidebar";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 export const Route = createFileRoute("/_auth/_app/projects/$key")({
   component: ProjectLayout,

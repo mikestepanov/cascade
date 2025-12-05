@@ -170,12 +170,18 @@ export function CalendarView() {
       </div>
 
       {/* Modals */}
-      {showCreateModal && (
-        <CreateEventModal onClose={() => setShowCreateModal(false)} defaultDate={currentDate} />
-      )}
+      <CreateEventModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        defaultDate={currentDate}
+      />
 
       {selectedEventId && (
-        <EventDetailsModal eventId={selectedEventId} onClose={() => setSelectedEventId(null)} />
+        <EventDetailsModal
+          eventId={selectedEventId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedEventId(null)}
+        />
       )}
     </Flex>
   );

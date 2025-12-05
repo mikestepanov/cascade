@@ -68,11 +68,6 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
     }
   };
 
-  const handleCloseForm = () => {
-    setShowFormDialog(false);
-    setEditingRule(null);
-  };
-
   return (
     <Flex direction="column" gap="xl">
       {/* Header */}
@@ -117,8 +112,13 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       <AutomationRuleForm
         projectId={projectId}
         rule={editingRule}
-        isOpen={showFormDialog}
-        onClose={handleCloseForm}
+        open={showFormDialog}
+        onOpenChange={(open) => {
+          setShowFormDialog(open);
+          if (!open) {
+            setEditingRule(null);
+          }
+        }}
       />
 
       {/* Delete Confirmation */}

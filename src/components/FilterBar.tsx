@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
-import { Modal } from "./ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 
 type FilterValues = Record<string, unknown>;
@@ -130,32 +130,36 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
       </Flex>
 
       {/* Save Filter Dialog */}
-      <Modal
-        isOpen={showSaveDialog}
-        onClose={() => {
-          setShowSaveDialog(false);
-          setFilterName("");
-          setIsPublic(false);
+      <Dialog
+        open={showSaveDialog}
+        onOpenChange={(open) => {
+          setShowSaveDialog(open);
+          if (!open) {
+            setFilterName("");
+            setIsPublic(false);
+          }
         }}
-        title="Save Filter"
-        maxWidth="md"
       >
-        <div className="p-6 space-y-4">
-          <Input
-            label="Filter Name"
-            type="text"
-            value={filterName}
-            onChange={(e) => setFilterName(e.target.value)}
-            placeholder="e.g., High Priority Bugs"
-          />
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Save Filter</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              label="Filter Name"
+              type="text"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              placeholder="e.g., High Priority Bugs"
+            />
 
-          <Checkbox
-            label="Share with team (make public)"
-            checked={isPublic}
-            onChange={(e) => setIsPublic(e.target.checked)}
-          />
-
-          <Flex gap="md" justify="end">
+            <Checkbox
+              label="Share with team (make public)"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+            />
+          </div>
+          <DialogFooter>
             <Button
               variant="secondary"
               onClick={() => {
@@ -167,9 +171,9 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               Cancel
             </Button>
             <Button onClick={handleSaveFilter}>Save</Button>
-          </Flex>
-        </div>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* My Filters List (if any saved) */}
       {savedFilters && savedFilters.length > 0 && (

@@ -35,15 +35,15 @@ interface CustomFieldFormProps {
     isRequired: boolean;
     description?: string;
   } | null;
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 /**
  * Extracted form component for creating/editing custom fields
  * Separated from CustomFieldsManager for better reusability
  */
-export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFieldFormProps) {
+export function CustomFieldForm({ projectId, field, open, onOpenChange }: CustomFieldFormProps) {
   const [name, setName] = useState("");
   const [fieldKey, setFieldKey] = useState("");
   const [fieldType, setFieldType] = useState<FieldType>("text");
@@ -107,7 +107,7 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
         showSuccess("Field created");
       }
 
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error instanceof Error ? error.message : "Failed to save field");
     } finally {
@@ -119,8 +119,8 @@ export function CustomFieldForm({ projectId, field, isOpen, onClose }: CustomFie
 
   return (
     <FormDialog
-      isOpen={isOpen}
-      onClose={onClose}
+      open={open}
+      onOpenChange={onOpenChange}
       onSave={handleSave}
       title={field ? "Edit Custom Field" : "Create Custom Field"}
       isLoading={isLoading}

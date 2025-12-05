@@ -290,9 +290,7 @@ export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
       {showEntries && timeEntries && <TimeEntriesList entries={timeEntries} />}
 
       {/* Log Time Modal */}
-      {showLogModal && (
-        <ManualTimeEntryModal onClose={() => setShowLogModal(false)} issueId={issueId} />
-      )}
+      <ManualTimeEntryModal open={showLogModal} onOpenChange={setShowLogModal} issueId={issueId} />
     </div>
   );
 }

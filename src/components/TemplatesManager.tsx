@@ -113,8 +113,8 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
       <TemplateForm
         projectId={projectId}
         template={editingTemplate}
-        isOpen={showModal}
-        onClose={handleCloseForm}
+        open={showModal}
+        onOpenChange={(open) => !open && handleCloseForm()}
       />
 
       {/* Delete Confirmation Dialog */}

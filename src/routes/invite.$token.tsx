@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { showError, showSuccess } from "@/lib/toast";
 import { SignInForm } from "@/SignInForm";
-import { api } from "../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 export const Route = createFileRoute("/invite/$token")({
   component: InviteRoute,

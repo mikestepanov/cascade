@@ -28,7 +28,6 @@ interface BoardAction {
 
 export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
-  const [createIssueStatus, setCreateIssueStatus] = useState<string>("");
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -183,8 +182,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     [draggedIssue, issues, updateIssueStatus],
   );
 
-  const handleCreateIssue = useCallback((status: string) => {
-    setCreateIssueStatus(status);
+  const handleCreateIssue = useCallback((_status: string) => {
     setShowCreateIssue(true);
   }, []);
 
@@ -279,20 +277,23 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         ))}
       </div>
 
-      {showCreateIssue && (
-        <CreateIssueModal
-          projectId={projectId}
-          sprintId={sprintId}
-          defaultStatus={createIssueStatus}
-          onClose={() => {
-            setShowCreateIssue(false);
-            setCreateIssueStatus("");
-          }}
-        />
-      )}
+      <CreateIssueModal
+        projectId={projectId}
+        sprintId={sprintId}
+        open={showCreateIssue}
+        onOpenChange={setShowCreateIssue}
+      />
 
       {selectedIssue && (
-        <IssueDetailModal issueId={selectedIssue} onClose={() => setSelectedIssue(null)} />
+        <IssueDetailModal
+          issueId={selectedIssue}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedIssue(null);
+            }
+          }}
+        />
       )}
 
       {/* Bulk Operations Bar */}

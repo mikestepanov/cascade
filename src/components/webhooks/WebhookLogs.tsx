@@ -4,16 +4,16 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Modal } from "../ui/Modal";
 
 interface WebhookLogsProps {
   webhookId: Id<"webhooks">;
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
+export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps) {
   const [selectedExecution, setSelectedExecution] = useState<string | null>(null);
 
   const executions = useQuery(api.webhooks.listExecutions, { webhookId });
@@ -65,8 +65,11 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Webhook Delivery Logs" maxWidth="5xl">
-      <div className="p-6">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-5xl">
+        <DialogHeader>
+          <DialogTitle>Webhook Delivery Logs</DialogTitle>
+        </DialogHeader>
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
@@ -186,7 +189,7 @@ export function WebhookLogs({ webhookId, isOpen, onClose }: WebhookLogsProps) {
             </div>
           </div>
         )}
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

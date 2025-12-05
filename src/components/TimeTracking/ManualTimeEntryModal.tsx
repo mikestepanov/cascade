@@ -7,15 +7,16 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 type EntryMode = "duration" | "timeRange";
 
 interface ManualTimeEntryModalProps {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   projectId?: Id<"projects">;
   issueId?: Id<"issues">;
 }
@@ -179,7 +180,8 @@ function ModeToggleButton({
 }
 
 export function ManualTimeEntryModal({
-  onClose,
+  open,
+  onOpenChange,
   projectId: initialProjectId,
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
@@ -287,7 +289,7 @@ export function ManualTimeEntryModal({
     try {
       await createTimeEntry(entryData);
       showSuccess("Time entry created");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to create time entry");
     }
@@ -297,358 +299,363 @@ export function ManualTimeEntryModal({
   const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Log Time Manually" maxWidth="2xl">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void handleSubmit();
-        }}
-        className="space-y-4"
-      >
-        {/* Mode Toggle */}
-        <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <ModeToggleButton
-            mode="duration"
-            currentMode={entryMode}
-            icon={Hourglass}
-            label="Duration"
-            onClick={() => setEntryMode("duration")}
-          />
-          <ModeToggleButton
-            mode="timeRange"
-            currentMode={entryMode}
-            icon={Clock}
-            label="Start/End Time"
-            onClick={() => setEntryMode("timeRange")}
-          />
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Log Time Manually</DialogTitle>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          {/* Mode Toggle */}
+          <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+            <ModeToggleButton
+              mode="duration"
+              currentMode={entryMode}
+              icon={Hourglass}
+              label="Duration"
+              onClick={() => setEntryMode("duration")}
+            />
+            <ModeToggleButton
+              mode="timeRange"
+              currentMode={entryMode}
+              icon={Clock}
+              label="Start/End Time"
+              onClick={() => setEntryMode("timeRange")}
+            />
+          </div>
 
-        {/* Date */}
-        <div>
-          <label
-            htmlFor="time-entry-date"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Date *
-          </label>
-          <input
-            id="time-entry-date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            max={formatDateForInput(Date.now())}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            required
-          />
-        </div>
-
-        {/* Duration Mode */}
-        {entryMode === "duration" && (
+          {/* Date */}
           <div>
             <label
-              htmlFor="time-entry-duration"
+              htmlFor="time-entry-date"
               className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
             >
-              Duration *
+              Date *
             </label>
             <input
-              id="time-entry-duration"
-              type="text"
-              value={durationInput}
-              onChange={(e) => setDurationInput(e.target.value)}
-              placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
-                isDurationInputValid
-                  ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-                  : "border-red-500 dark:border-red-500"
-              }`}
+              id="time-entry-date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={formatDateForInput(Date.now())}
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+              required
             />
-            {!isDurationInputValid ? (
-              <p className="text-xs text-red-500 mt-1">
-                Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
-              </p>
-            ) : (
-              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-                Accepts: 1:30, 1.5, 1h 30m, 90m
-              </p>
-            )}
+          </div>
 
-            {/* Quick Increment Buttons */}
-            <Flex gap="sm" className="mt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => handleQuickIncrement(15)}
+          {/* Duration Mode */}
+          {entryMode === "duration" && (
+            <div>
+              <label
+                htmlFor="time-entry-duration"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
               >
-                +15m
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => handleQuickIncrement(30)}
-              >
-                +30m
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => handleQuickIncrement(60)}
-              >
-                +1h
-              </Button>
-              {durationSeconds > 0 && (
+                Duration *
+              </label>
+              <input
+                id="time-entry-duration"
+                type="text"
+                value={durationInput}
+                onChange={(e) => setDurationInput(e.target.value)}
+                placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+                  isDurationInputValid
+                    ? "border-ui-border-primary dark:border-ui-border-primary-dark"
+                    : "border-red-500 dark:border-red-500"
+                }`}
+              />
+              {!isDurationInputValid ? (
+                <p className="text-xs text-red-500 mt-1">
+                  Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
+                </p>
+              ) : (
+                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                  Accepts: 1:30, 1.5, 1h 30m, 90m
+                </p>
+              )}
+
+              {/* Quick Increment Buttons */}
+              <Flex gap="sm" className="mt-2">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => {
-                    setDurationSeconds(0);
-                    setDurationInput("");
-                  }}
+                  onClick={() => handleQuickIncrement(15)}
                 >
-                  Clear
+                  +15m
                 </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => handleQuickIncrement(30)}
+                >
+                  +30m
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => handleQuickIncrement(60)}
+                >
+                  +1h
+                </Button>
+                {durationSeconds > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setDurationSeconds(0);
+                      setDurationInput("");
+                    }}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </Flex>
+
+              {/* Duration Display */}
+              {durationSeconds > 0 && (
+                <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                  <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                    Duration: {formatDurationHuman(durationSeconds)}
+                  </span>
+                </div>
               )}
-            </Flex>
-
-            {/* Duration Display */}
-            {durationSeconds > 0 && (
-              <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                  Duration: {formatDurationHuman(durationSeconds)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Time Range Mode */}
-        {entryMode === "timeRange" && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="time-entry-start"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Start Time *
-                </label>
-                <input
-                  id="time-entry-start"
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="time-entry-end"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  End Time *
-                </label>
-                <input
-                  id="time-entry-end"
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  required
-                />
-              </div>
             </div>
+          )}
 
-            {/* Duration Display */}
-            {duration > 0 && (
-              <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                  Duration: {formatDurationHuman(duration)}
-                </span>
+          {/* Time Range Mode */}
+          {entryMode === "timeRange" && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="time-entry-start"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  >
+                    Start Time *
+                  </label>
+                  <input
+                    id="time-entry-start"
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="time-entry-end"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  >
+                    End Time *
+                  </label>
+                  <input
+                    id="time-entry-end"
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                    required
+                  />
+                </div>
               </div>
-            )}
-          </>
-        )}
 
-        {/* Project Selection */}
-        <div>
-          <label
-            htmlFor="time-entry-project"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Project
-          </label>
-          <Select
-            value={projectId || "none"}
-            onValueChange={(value) => {
-              setProjectId(value === "none" ? undefined : (value as Id<"projects">));
-              setIssueId(undefined); // Reset issue when project changes
-            }}
-          >
-            <SelectTrigger id="time-entry-project" className="w-full">
-              <SelectValue placeholder="Select project..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No project</SelectItem>
-              {projects?.map((project) => (
-                <SelectItem key={project._id} value={project._id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+              {/* Duration Display */}
+              {duration > 0 && (
+                <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                  <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                    Duration: {formatDurationHuman(duration)}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
 
-        {/* Issue Selection */}
-        {projectId && projectIssues && projectIssues.length > 0 && (
+          {/* Project Selection */}
           <div>
             <label
-              htmlFor="time-entry-issue"
+              htmlFor="time-entry-project"
               className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
             >
-              Issue (optional)
+              Project
             </label>
             <Select
-              value={issueId || "none"}
-              onValueChange={(value) =>
-                setIssueId(value === "none" ? undefined : (value as Id<"issues">))
-              }
+              value={projectId || "none"}
+              onValueChange={(value) => {
+                setProjectId(value === "none" ? undefined : (value as Id<"projects">));
+                setIssueId(undefined); // Reset issue when project changes
+              }}
             >
-              <SelectTrigger id="time-entry-issue" className="w-full">
-                <SelectValue placeholder="Select issue..." />
+              <SelectTrigger id="time-entry-project" className="w-full">
+                <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No issue</SelectItem>
-                {projectIssues.map((issue) => (
-                  <SelectItem key={issue._id} value={issue._id}>
-                    {issue.key} - {issue.title}
+                <SelectItem value="none">No project</SelectItem>
+                {projects?.map((project) => (
+                  <SelectItem key={project._id} value={project._id}>
+                    {project.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-        )}
 
-        {/* Description */}
-        <Textarea
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="What did you work on?"
-          rows={3}
-        />
-
-        {/* Activity */}
-        <div>
-          <label
-            htmlFor="time-entry-activity"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Activity
-          </label>
-          <Select
-            value={activity || "none"}
-            onValueChange={(value) => setActivity(value === "none" ? "" : value)}
-          >
-            <SelectTrigger id="time-entry-activity" className="w-full">
-              <SelectValue placeholder="Select activity..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Select activity...</SelectItem>
-              {ACTIVITY_TYPES.map((activityType) => (
-                <SelectItem key={activityType} value={activityType}>
-                  {activityType}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Tags */}
-        <div>
-          <label
-            htmlFor="time-entry-tags"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Tags
-          </label>
-          <Flex gap="sm">
-            <input
-              id="time-entry-tags"
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleAddTag();
+          {/* Issue Selection */}
+          {projectId && projectIssues && projectIssues.length > 0 && (
+            <div>
+              <label
+                htmlFor="time-entry-issue"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Issue (optional)
+              </label>
+              <Select
+                value={issueId || "none"}
+                onValueChange={(value) =>
+                  setIssueId(value === "none" ? undefined : (value as Id<"issues">))
                 }
-              }}
-              placeholder="Add tag..."
-              className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            />
-            <Button onClick={handleAddTag} variant="secondary" size="sm">
-              Add
-            </Button>
-          </Flex>
-          {tags.length > 0 && (
-            <div className="mt-2">
-              <Flex gap="sm" className="flex-wrap">
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                  >
-                    {tag}
-                    <Button
-                      onClick={() => handleRemoveTag(tag)}
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
-                      aria-label={`Remove tag ${tag}`}
-                    >
-                      ×
-                    </Button>
-                  </span>
-                ))}
-              </Flex>
+              >
+                <SelectTrigger id="time-entry-issue" className="w-full">
+                  <SelectValue placeholder="Select issue..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No issue</SelectItem>
+                  {projectIssues.map((issue) => (
+                    <SelectItem key={issue._id} value={issue._id}>
+                      {issue.key} - {issue.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
-        </div>
 
-        {/* Billable */}
-        <div>
-          <label className="cursor-pointer">
-            <Flex align="center" gap="sm">
+          {/* Description */}
+          <Textarea
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What did you work on?"
+            rows={3}
+          />
+
+          {/* Activity */}
+          <div>
+            <label
+              htmlFor="time-entry-activity"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Activity
+            </label>
+            <Select
+              value={activity || "none"}
+              onValueChange={(value) => setActivity(value === "none" ? "" : value)}
+            >
+              <SelectTrigger id="time-entry-activity" className="w-full">
+                <SelectValue placeholder="Select activity..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Select activity...</SelectItem>
+                {ACTIVITY_TYPES.map((activityType) => (
+                  <SelectItem key={activityType} value={activityType}>
+                    {activityType}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label
+              htmlFor="time-entry-tags"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Tags
+            </label>
+            <Flex gap="sm">
               <input
-                type="checkbox"
-                checked={billable}
-                onChange={(e) => setBillable(e.target.checked)}
-                className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                id="time-entry-tags"
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTag();
+                  }
+                }}
+                placeholder="Add tag..."
+                className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               />
-              <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                Billable time
-              </span>
+              <Button onClick={handleAddTag} variant="secondary" size="sm">
+                Add
+              </Button>
             </Flex>
-          </label>
-          <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
-            Mark this time as billable to clients
-          </p>
-        </div>
+            {tags.length > 0 && (
+              <div className="mt-2">
+                <Flex gap="sm" className="flex-wrap">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
+                    >
+                      {tag}
+                      <Button
+                        onClick={() => handleRemoveTag(tag)}
+                        variant="ghost"
+                        size="sm"
+                        className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        ×
+                      </Button>
+                    </span>
+                  ))}
+                </Flex>
+              </div>
+            )}
+          </div>
 
-        <Flex justify="end" gap="sm" className="pt-4">
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" disabled={effectiveDuration <= 0}>
-            Create Entry
-          </Button>
-        </Flex>
-      </form>
-    </Modal>
+          {/* Billable */}
+          <div>
+            <label className="cursor-pointer">
+              <Flex align="center" gap="sm">
+                <input
+                  type="checkbox"
+                  checked={billable}
+                  onChange={(e) => setBillable(e.target.checked)}
+                  className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                />
+                <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  Billable time
+                </span>
+              </Flex>
+            </label>
+            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
+              Mark this time as billable to clients
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => onOpenChange(false)} variant="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={effectiveDuration <= 0}>
+              Create Entry
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -7,7 +7,7 @@ import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -91,10 +91,7 @@ function AppLayout() {
       />
 
       {/* Keyboard Shortcuts Help Modal */}
-      <KeyboardShortcutsHelp
-        isOpen={showShortcutsHelp}
-        onClose={() => setShowShortcutsHelp(false)}
-      />
+      <KeyboardShortcutsHelp open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
     </div>
   );
 }

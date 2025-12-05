@@ -267,12 +267,11 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
       })}
 
       {/* Manual Time Entry Modal */}
-      {showManualEntryModal && (
-        <ManualTimeEntryModal
-          onClose={() => setShowManualEntryModal(false)}
-          projectId={projectId}
-        />
-      )}
+      <ManualTimeEntryModal
+        open={showManualEntryModal}
+        onOpenChange={setShowManualEntryModal}
+        projectId={projectId}
+      />
     </Flex>
   );
 }

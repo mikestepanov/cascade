@@ -7,9 +7,9 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Input, Select, Textarea } from "./ui/form";
-import { Modal } from "./ui/Modal";
 
 interface DocumentTemplatesManagerProps {
   projectId?: Id<"projects">;
@@ -341,83 +341,82 @@ export function DocumentTemplatesManager({
       </Card>
 
       {/* Create/Edit Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={resetForm}
-        title={editingId ? "Edit Template" : "Create Template"}
-        maxWidth="2xl"
-        fullScreenOnMobile={true}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Template Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Weekly Sprint Review"
-              required
-              autoFocus
-            />
-
-            <Input
-              label="Icon (Emoji)"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              placeholder="📄"
-              maxLength={2}
-              required
-            />
-          </div>
-
-          <Textarea
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Brief description of what this template is for..."
-            rows={3}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-            >
-              <option value="meeting">Meeting</option>
-              <option value="planning">Planning</option>
-              <option value="engineering">Engineering</option>
-              <option value="design">Design</option>
-              <option value="other">Other</option>
-            </Select>
-
-            <div className="flex items-center gap-2 pt-7">
-              <input
-                type="checkbox"
-                id="isPublic"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-                className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
+      <Dialog open={showModal} onOpenChange={(open) => !open && resetForm()}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{editingId ? "Edit Template" : "Create Template"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Template Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., Weekly Sprint Review"
+                required
+                autoFocus
               />
-              <label
-                htmlFor="isPublic"
-                className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-              >
-                Make public (visible to all users)
-              </label>
-            </div>
-          </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" isLoading={isSubmitting}>
-              {editingId ? "Update" : "Create"} Template
-            </Button>
-            <Button type="button" variant="secondary" onClick={resetForm} disabled={isSubmitting}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Modal>
+              <Input
+                label="Icon (Emoji)"
+                value={icon}
+                onChange={(e) => setIcon(e.target.value)}
+                placeholder="📄"
+                maxLength={2}
+                required
+              />
+            </div>
+
+            <Textarea
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of what this template is for..."
+              rows={3}
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Select
+                label="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="meeting">Meeting</option>
+                <option value="planning">Planning</option>
+                <option value="engineering">Engineering</option>
+                <option value="design">Design</option>
+                <option value="other">Other</option>
+              </Select>
+
+              <div className="flex items-center gap-2 pt-7">
+                <input
+                  type="checkbox"
+                  id="isPublic"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
+                />
+                <label
+                  htmlFor="isPublic"
+                  className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+                >
+                  Make public (visible to all users)
+                </label>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="secondary" onClick={resetForm} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button type="submit" isLoading={isSubmitting}>
+                {editingId ? "Update" : "Create"} Template
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

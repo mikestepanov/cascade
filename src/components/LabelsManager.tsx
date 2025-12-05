@@ -10,10 +10,10 @@ import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ColorPicker } from "./ui/ColorPicker";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
 import { Input } from "./ui/form";
-import { Modal } from "./ui/Modal";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;
@@ -214,58 +214,58 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
       </Card>
 
       {/* Create/Edit Modal */}
-      <Modal
-        isOpen={modal.isOpen}
-        onClose={handleCloseModal}
-        title={form.editingId ? "Edit Label" : "Create Label"}
-        maxWidth="md"
-      >
-        <form onSubmit={handleSubmit}>
-          <Flex direction="column" gap="lg" className="p-6">
-            <Input
-              label="Label Name"
-              value={form.formData.name}
-              onChange={(e) => form.updateField("name", e.target.value)}
-              placeholder="e.g., bug, feature, urgent"
-              required
-              autoFocus
-            />
+      <Dialog open={modal.isOpen} onOpenChange={(open) => !open && handleCloseModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{form.editingId ? "Edit Label" : "Create Label"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <Flex direction="column" gap="lg" className="p-6">
+              <Input
+                label="Label Name"
+                value={form.formData.name}
+                onChange={(e) => form.updateField("name", e.target.value)}
+                placeholder="e.g., bug, feature, urgent"
+                required
+                autoFocus
+              />
 
-            <ColorPicker
-              value={form.formData.color}
-              onChange={(color) => form.updateField("color", color)}
-              label="Color"
-            />
+              <ColorPicker
+                value={form.formData.color}
+                onChange={(color) => form.updateField("color", color)}
+                label="Color"
+              />
 
-            {/* Preview */}
-            <div>
-              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                Preview
+              {/* Preview */}
+              <div>
+                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                  Preview
+                </div>
+                <span
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
+                  style={{ backgroundColor: form.formData.color }}
+                >
+                  {form.formData.name || "Label name"}
+                </span>
               </div>
-              <span
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
-                style={{ backgroundColor: form.formData.color }}
-              >
-                {form.formData.name || "Label name"}
-              </span>
-            </div>
 
-            <Flex gap="sm" className="pt-4">
-              <Button type="submit" isLoading={isSubmitting}>
-                {form.editingId ? "Update" : "Create"} Label
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleCloseModal}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
+              <DialogFooter className="pt-4">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCloseModal}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" isLoading={isSubmitting}>
+                  {form.editingId ? "Update" : "Create"} Label
+                </Button>
+              </DialogFooter>
             </Flex>
-          </Flex>
-        </form>
-      </Modal>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

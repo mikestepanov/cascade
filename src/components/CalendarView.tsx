@@ -243,7 +243,15 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
 
       {/* Issue Detail Modal */}
       {selectedIssue && (
-        <IssueDetailModal issueId={selectedIssue} onClose={() => setSelectedIssue(null)} />
+        <IssueDetailModal
+          issueId={selectedIssue}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedIssue(null);
+            }
+          }}
+        />
       )}
     </div>
   );

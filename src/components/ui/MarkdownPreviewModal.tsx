@@ -1,12 +1,12 @@
 import DOMPurify from "isomorphic-dompurify";
 import { useState } from "react";
 import { Button } from "./Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./Dialog";
 import { Flex } from "./Flex";
-import { Modal } from "./Modal";
 
 interface MarkdownPreviewModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   markdown: string;
   filename: string;
@@ -17,8 +17,8 @@ interface MarkdownPreviewModalProps {
  * Shows both raw markdown and rendered preview
  */
 export function MarkdownPreviewModal({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   onConfirm,
   markdown,
   filename,
@@ -32,8 +32,11 @@ export function MarkdownPreviewModal({
   const codeBlocks = (markdown.match(/```/g) || []).length / 2;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Preview Markdown Import" maxWidth="4xl">
-      <div className="p-6">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Preview Markdown Import</DialogTitle>
+        </DialogHeader>
         {/* File Info */}
         <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
           <Flex align="center" justify="between" className="text-sm">
@@ -105,16 +108,16 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Actions */}
-        <Flex gap="md" className="mt-6">
+        <DialogFooter>
+          <Button onClick={() => onOpenChange(false)} variant="secondary">
+            Cancel
+          </Button>
           <Button onClick={onConfirm} variant="primary">
             Import & Replace Content
           </Button>
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-        </Flex>
-      </div>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -5,10 +5,10 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { Input, Select, Textarea } from "../ui/form";
-import { Modal } from "../ui/Modal";
 
 type ComplianceStatus = "compliant" | "under_hours" | "over_hours" | "equity_under";
 
@@ -388,29 +388,30 @@ export function HourComplianceDashboard() {
       </Card>
 
       {/* Review Modal */}
-      <Modal
-        isOpen={!!reviewingRecord}
-        onClose={() => {
-          setReviewingRecord(null);
-          setReviewNotes("");
+      <Dialog
+        open={!!reviewingRecord}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReviewingRecord(null);
+            setReviewNotes("");
+          }
         }}
-        title="Review Compliance Record"
-        maxWidth="lg"
       >
-        <form onSubmit={handleReview} className="p-6">
-          <Flex direction="column" gap="lg">
-            <Textarea
-              label="Review Notes (Optional)"
-              value={reviewNotes}
-              onChange={(e) => setReviewNotes(e.target.value)}
-              placeholder="Add notes about this compliance record..."
-              rows={4}
-            />
-
-            <Flex gap="sm" className="pt-4">
-              <Button type="submit" isLoading={isSubmitting}>
-                Mark as Reviewed
-              </Button>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Review Compliance Record</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleReview}>
+            <Flex direction="column" gap="lg" className="p-6">
+              <Textarea
+                label="Review Notes (Optional)"
+                value={reviewNotes}
+                onChange={(e) => setReviewNotes(e.target.value)}
+                placeholder="Add notes about this compliance record..."
+                rows={4}
+              />
+            </Flex>
+            <DialogFooter>
               <Button
                 type="button"
                 variant="secondary"
@@ -422,10 +423,13 @@ export function HourComplianceDashboard() {
               >
                 Cancel
               </Button>
-            </Flex>
-          </Flex>
-        </form>
-      </Modal>
+              <Button type="submit" isLoading={isSubmitting}>
+                Mark as Reviewed
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Flex>
   );
 }

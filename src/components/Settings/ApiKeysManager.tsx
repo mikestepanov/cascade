@@ -8,11 +8,11 @@ import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
-import { Modal } from "../ui/Modal";
 
 /**
  * API Keys Manager
@@ -96,12 +96,14 @@ export function ApiKeysManager() {
       </div>
 
       {/* Generate Key Modal */}
-      {showGenerateModal && <GenerateKeyModal onClose={() => setShowGenerateModal(false)} />}
+      <GenerateKeyModal open={showGenerateModal} onOpenChange={setShowGenerateModal} />
 
       {/* Usage Stats Modal */}
-      {selectedKeyId && (
-        <UsageStatsModal keyId={selectedKeyId} onClose={() => setSelectedKeyId(null)} />
-      )}
+      <UsageStatsModal
+        open={selectedKeyId !== null}
+        onOpenChange={(open) => !open && setSelectedKeyId(null)}
+        keyId={selectedKeyId}
+      />
     </Card>
   );
 }
@@ -268,7 +270,13 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 /**
  * Generate API Key Modal
  */
-function GenerateKeyModal({ onClose }: { onClose: () => void }) {
+function GenerateKeyModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const generateKey = useMutation(api.apiKeys.generate);
   const [name, setName] = useState("");
   const [selectedScopes, setSelectedScopes] = useState<string[]>(["issues:read"]);
@@ -325,154 +333,170 @@ function GenerateKeyModal({ onClose }: { onClose: () => void }) {
     if (generatedKey) {
       navigator.clipboard.writeText(generatedKey);
       showSuccess("API key copied to clipboard!");
-      onClose();
+      onOpenChange(false);
     }
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Generate API Key" maxWidth="2xl">
-      <div className="p-6 space-y-6">
-        {!generatedKey ? (
-          <>
-            {/* Key Name */}
-            <Input
-              label={
-                <>
-                  Key Name <span className="text-status-error">*</span>
-                </>
-              }
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
-              helperText="A descriptive name to help you identify this key"
-            />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Generate API Key</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {!generatedKey ? (
+            <>
+              {/* Key Name */}
+              <Input
+                label={
+                  <>
+                    Key Name <span className="text-status-error">*</span>
+                  </>
+                }
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., CLI Tool, GitHub Actions, Claude Code"
+                helperText="A descriptive name to help you identify this key"
+              />
 
-            {/* Scopes */}
-            <div>
-              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                Permissions (Scopes) <span className="text-status-error">*</span>
-              </div>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {availableScopes.map((scope) => (
-                  // biome-ignore lint/a11y/useSemanticElements: Can't use button here as it contains a checkbox (nested interactive elements)
-                  <div
-                    key={scope.value}
-                    role="button"
-                    tabIndex={0}
-                    className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                    onClick={() => toggleScope(scope.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        toggleScope(scope.value);
-                      }
-                    }}
-                  >
-                    <Checkbox
-                      checked={selectedScopes.includes(scope.value)}
-                      onChange={() => toggleScope(scope.value)}
-                      className="mt-0.5"
-                    />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {scope.label}
-                      </p>
-                      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {scope.description}
-                      </p>
+              {/* Scopes */}
+              <div>
+                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                  Permissions (Scopes) <span className="text-status-error">*</span>
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {availableScopes.map((scope) => (
+                    // biome-ignore lint/a11y/useSemanticElements: Can't use button here as it contains a checkbox (nested interactive elements)
+                    <div
+                      key={scope.value}
+                      role="button"
+                      tabIndex={0}
+                      className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                      onClick={() => toggleScope(scope.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleScope(scope.value);
+                        }
+                      }}
+                    >
+                      <Checkbox
+                        checked={selectedScopes.includes(scope.value)}
+                        onChange={() => toggleScope(scope.value)}
+                        className="mt-0.5"
+                      />
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {scope.label}
+                        </p>
+                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          {scope.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Rate Limit */}
-            <Input
-              label="Rate Limit (requests per minute)"
-              type="number"
-              value={rateLimit.toString()}
-              onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
-              min="10"
-              max="1000"
-              helperText="Maximum number of API requests allowed per minute (default: 100)"
-            />
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-              <Button variant="secondary" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={handleGenerate} disabled={isGenerating}>
-                {isGenerating ? "Generating..." : "Generate API Key"}
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Success - Show Generated Key */}
-            <div className="text-center">
-              <Flex
-                justify="center"
-                align="center"
-                className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4"
-              >
-                <Key className="h-6 w-6 text-status-success dark:text-status-success" />
-              </Flex>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                API Key Generated!
-              </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
-                ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
-              </p>
-
-              {/* Generated Key Display */}
-              <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
-                <code className="text-sm font-mono text-status-success break-all select-all">
-                  {generatedKey}
-                </code>
+                  ))}
+                </div>
               </div>
 
-              {/* Copy Instructions */}
-              <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
-                <p className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
-                  Usage Example:
-                </p>
-                <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
-                  curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
-                  https://nixelo.app/api/issues
-                </code>
-              </div>
+              {/* Rate Limit */}
+              <Input
+                label="Rate Limit (requests per minute)"
+                type="number"
+                value={rateLimit.toString()}
+                onChange={(e) => setRateLimit(parseInt(e.target.value, 10) || 100)}
+                min="10"
+                max="1000"
+                helperText="Maximum number of API requests allowed per minute (default: 100)"
+              />
 
               {/* Actions */}
-              <Flex gap="md">
-                <Button variant="primary" onClick={copyAndClose} className="flex-1">
-                  <Flex justify="center" gap="sm" align="center">
-                    <Copy className="h-4 w-4" />
-                    Copy & Close
-                  </Flex>
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => onOpenChange(false)}>
+                  Cancel
                 </Button>
-                <Button variant="secondary" onClick={onClose}>
-                  I've Saved It
+                <Button variant="primary" onClick={handleGenerate} disabled={isGenerating}>
+                  {isGenerating ? "Generating..." : "Generate API Key"}
                 </Button>
-              </Flex>
-            </div>
-          </>
-        )}
-      </div>
-    </Modal>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              {/* Success - Show Generated Key */}
+              <div className="text-center">
+                <Flex
+                  justify="center"
+                  align="center"
+                  className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4"
+                >
+                  <Key className="h-6 w-6 text-status-success dark:text-status-success" />
+                </Flex>
+                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                  API Key Generated!
+                </h3>
+                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+                  ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
+                </p>
+
+                {/* Generated Key Display */}
+                <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
+                  <code className="text-sm font-mono text-status-success break-all select-all">
+                    {generatedKey}
+                  </code>
+                </div>
+
+                {/* Copy Instructions */}
+                <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
+                  <p className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
+                    Usage Example:
+                  </p>
+                  <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
+                    curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
+                    https://nixelo.app/api/issues
+                  </code>
+                </div>
+
+                {/* Actions */}
+                <DialogFooter>
+                  <Button variant="secondary" onClick={() => onOpenChange(false)}>
+                    I've Saved It
+                  </Button>
+                  <Button variant="primary" onClick={copyAndClose} className="flex-1">
+                    <Flex justify="center" gap="sm" align="center">
+                      <Copy className="h-4 w-4" />
+                      Copy & Close
+                    </Flex>
+                  </Button>
+                </DialogFooter>
+              </div>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 /**
  * Usage Statistics Modal
  */
-function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: () => void }) {
-  const stats = useQuery(api.apiKeys.getUsageStats, { keyId });
+function UsageStatsModal({
+  open,
+  onOpenChange,
+  keyId,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  keyId: Id<"apiKeys"> | null;
+}) {
+  const stats = useQuery(api.apiKeys.getUsageStats, keyId ? { keyId } : "skip");
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="API Key Usage Statistics" maxWidth="2xl">
-      <div className="p-6">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>API Key Usage Statistics</DialogTitle>
+        </DialogHeader>
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
@@ -580,14 +604,14 @@ function UsageStatsModal({ keyId, onClose }: { keyId: Id<"apiKeys">; onClose: ()
             </div>
 
             {/* Close Button */}
-            <div className="flex justify-end pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-              <Button variant="secondary" onClick={onClose}>
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => onOpenChange(false)}>
                 Close
               </Button>
-            </div>
+            </DialogFooter>
           </div>
         )}
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

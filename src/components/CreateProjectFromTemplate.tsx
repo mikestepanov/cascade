@@ -4,19 +4,19 @@ import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Textarea } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
-import { Modal } from "./ui/Modal";
 
 interface CreateProjectFromTemplateProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onProjectCreated?: (projectId: Id<"projects">) => void;
 }
 
 export function CreateProjectFromTemplate({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   onProjectCreated,
 }: CreateProjectFromTemplateProps) {
   const [step, setStep] = useState<"select" | "configure">("select");
@@ -58,7 +58,7 @@ export function CreateProjectFromTemplate({
 
       toast.success("Project created successfully");
       onProjectCreated?.(projectId);
-      onClose();
+      onOpenChange(false);
       resetForm();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to create project");
@@ -74,7 +74,7 @@ export function CreateProjectFromTemplate({
   };
 
   const handleClose = () => {
-    onClose();
+    onOpenChange(false);
     resetForm();
   };
 
@@ -92,185 +92,189 @@ export function CreateProjectFromTemplate({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={step === "select" ? "Choose a Template" : "Configure Project"}
-      size="large"
-    >
-      {step === "select" ? (
-        // Template Selection
-        <div className="space-y-6">
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Start with a pre-configured template to save time and follow best practices
-          </p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
+        </DialogHeader>
 
-          {!templates ? (
-            <div className="flex items-center justify-center py-8">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {templates.map((template) => (
-                <button
-                  type="button"
-                  key={template._id}
-                  onClick={() => handleSelectTemplate(template._id)}
-                  className="text-left p-6 border-2 border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="text-4xl flex-shrink-0">{template.icon}</div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-                        {template.name}
-                      </h3>
-                      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
-                        {template.description}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${getCategoryColor(template.category)}`}
-                        >
-                          {template.category}
-                        </span>
-                        <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark capitalize">
-                          {template.boardType}
-                        </span>
+        {step === "select" ? (
+          // Template Selection
+          <div className="space-y-6">
+            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              Start with a pre-configured template to save time and follow best practices
+            </p>
+
+            {!templates ? (
+              <div className="flex items-center justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {templates.map((template) => (
+                  <button
+                    type="button"
+                    key={template._id}
+                    onClick={() => handleSelectTemplate(template._id)}
+                    className="text-left p-6 border-2 border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="text-4xl flex-shrink-0">{template.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                          {template.name}
+                        </h3>
+                        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+                          {template.description}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-xs px-2 py-1 rounded ${getCategoryColor(template.category)}`}
+                          >
+                            {template.category}
+                          </span>
+                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark capitalize">
+                            {template.boardType}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          // Project Configuration
+          <div className="space-y-6">
+            {/* Template Info */}
+            {selectedTemplate && (
+              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{selectedTemplate.icon}</span>
+                  <div>
+                    <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {selectedTemplate.name}
+                    </h3>
+                    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                      {selectedTemplate.workflowStates.length} workflow states,{" "}
+                      {selectedTemplate.defaultLabels.length} default labels
+                    </p>
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        // Project Configuration
-        <div className="space-y-6">
-          {/* Template Info */}
-          {selectedTemplate && (
-            <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{selectedTemplate.icon}</span>
-                <div>
-                  <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {selectedTemplate.name}
-                  </h3>
-                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    {selectedTemplate.workflowStates.length} workflow states,{" "}
-                    {selectedTemplate.defaultLabels.length} default labels
-                  </p>
                 </div>
               </div>
+            )}
+
+            {/* Form */}
+            <div className="space-y-4">
+              <Input
+                label="Project Name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="My Awesome Project"
+                required
+              />
+
+              <Input
+                label="Project Key"
+                value={projectKey}
+                onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
+                placeholder="MAP"
+                required
+                helperText="Short code for issue keys (e.g., MAP-123)"
+              />
+
+              <Textarea
+                label="Description (Optional)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                placeholder="Project description..."
+              />
             </div>
-          )}
 
-          {/* Form */}
-          <div className="space-y-4">
-            <Input
-              label="Project Name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="My Awesome Project"
-              required
-            />
-
-            <Input
-              label="Project Key"
-              value={projectKey}
-              onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
-              placeholder="MAP"
-              required
-              helperText="Short code for issue keys (e.g., MAP-123)"
-            />
-
-            <Textarea
-              label="Description (Optional)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="Project description..."
-            />
-          </div>
-
-          {/* Preview */}
-          {selectedTemplate && (
-            <div>
-              <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-                What's Included:
-              </h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5 text-status-success"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {selectedTemplate.workflowStates.length} workflow states
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5 text-status-success"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {selectedTemplate.defaultLabels.length} pre-configured labels
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5 text-status-success"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
-                    {selectedTemplate.boardType} board type
-                  </span>
+            {/* Preview */}
+            {selectedTemplate && (
+              <div>
+                <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                  What's Included:
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <svg
+                      aria-hidden="true"
+                      className="w-5 h-5 text-status-success"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {selectedTemplate.workflowStates.length} workflow states
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg
+                      aria-hidden="true"
+                      className="w-5 h-5 text-status-success"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {selectedTemplate.defaultLabels.length} pre-configured labels
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg
+                      aria-hidden="true"
+                      className="w-5 h-5 text-status-success"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
+                      {selectedTemplate.boardType} board type
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Actions */}
-          <div className="flex justify-between">
-            <Button onClick={handleBack} variant="secondary">
-              ← Back to Templates
-            </Button>
-            <div className="flex gap-3">
-              <Button onClick={handleClose} variant="secondary">
-                Cancel
+            <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-3">
+              <Button onClick={handleBack} variant="secondary" className="w-full sm:w-auto">
+                ← Back to Templates
               </Button>
-              <Button onClick={handleCreate} disabled={!(projectName.trim() && projectKey.trim())}>
-                Create Project
-              </Button>
-            </div>
+              <div className="flex gap-3 w-full sm:w-auto">
+                <Button onClick={handleClose} variant="secondary" className="flex-1 sm:flex-none">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreate}
+                  disabled={!(projectName.trim() && projectKey.trim())}
+                  className="flex-1 sm:flex-none"
+                >
+                  Create Project
+                </Button>
+              </div>
+            </DialogFooter>
           </div>
-        </div>
-      )}
-    </Modal>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
