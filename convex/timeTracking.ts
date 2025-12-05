@@ -440,6 +440,71 @@ export const listTimeEntries = query({
   },
 });
 
+// Get current week timesheet for the logged in user
+export const getCurrentWeekTimesheet = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+
+    // Calculate week start (Monday) and end (Sunday)
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() + diffToMonday);
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    const startDate = weekStart.getTime();
+    const endDate = weekEnd.getTime();
+
+    // Get all entries for the week
+    const entries = await ctx.db
+      .query("timeEntries")
+      .withIndex("by_user_date", (q) =>
+        q.eq("userId", userId).gte("date", startDate).lte("date", endDate),
+      )
+      .collect();
+
+    // Group by day
+    const byDay: Record<string, Array<Doc<"timeEntries"> & { hours: number }>> = {};
+    let totalHours = 0;
+    let billableHours = 0;
+
+    for (const entry of entries) {
+      const dayKey = new Date(entry.date).toISOString().split("T")[0];
+      const hours = entry.duration / 3600;
+
+      if (!byDay[dayKey]) {
+        byDay[dayKey] = [];
+      }
+
+      byDay[dayKey].push({ ...entry, hours });
+      totalHours += hours;
+
+      if (entry.billable) {
+        billableHours += hours;
+      }
+    }
+
+    return {
+      startDate,
+      endDate,
+      byDay,
+      totalHours,
+      billableHours,
+      entries: entries.length,
+    };
+  },
+});
+
 // ===== Burn Rate & Cost Analysis =====
 
 export const getBurnRate = query({
@@ -719,6 +784,87 @@ export const listUserRates = query({
         };
       }),
     );
+  },
+});
+
+// Get billing summary for a project
+export const getProjectBilling = query({
+  args: {
+    projectId: v.id("projects"),
+    startDate: v.optional(v.number()),
+    endDate: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        totalHours: 0,
+        billableHours: 0,
+        nonBillableHours: 0,
+        totalRevenue: 0,
+        entries: 0,
+        byUser: {},
+      };
+    }
+
+    await assertCanAccessProject(ctx, args.projectId, userId);
+
+    // Get time entries for this project
+    let entries: Doc<"timeEntries">[];
+    const { startDate, endDate } = args;
+    if (startDate !== undefined && endDate !== undefined) {
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_project_date", (q) =>
+          q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
+        )
+        .collect();
+    } else {
+      entries = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+        .collect();
+    }
+
+    // Aggregate stats
+    let totalHours = 0;
+    let billableHours = 0;
+    let totalRevenue = 0;
+
+    const byUser: Record<string, { hours: number; billableHours: number; revenue: number }> = {};
+
+    for (const entry of entries) {
+      const hours = entry.duration / 3600;
+      totalHours += hours;
+
+      if (entry.billable) {
+        billableHours += hours;
+        totalRevenue += entry.totalCost || 0;
+      }
+
+      // Get user name for grouping
+      const user = await ctx.db.get(entry.userId);
+      const userName = user?.name || user?.email || "Unknown";
+
+      if (!byUser[userName]) {
+        byUser[userName] = { hours: 0, billableHours: 0, revenue: 0 };
+      }
+
+      byUser[userName].hours += hours;
+      if (entry.billable) {
+        byUser[userName].billableHours += hours;
+        byUser[userName].revenue += entry.totalCost || 0;
+      }
+    }
+
+    return {
+      totalHours,
+      billableHours,
+      nonBillableHours: totalHours - billableHours,
+      totalRevenue,
+      entries: entries.length,
+      byUser,
+    };
   },
 });
 

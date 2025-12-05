@@ -70,8 +70,11 @@ vi.mock("./IssueWatchers", () => ({
 describe("IssueDetailModal", () => {
   const mockUpdateIssue = vi.fn();
   const _mockCreateIssue = vi.fn();
-  const mockOnClose = vi.fn();
+  const mockOnOpenChange = vi.fn();
   const mockIssueId = "issue-123" as Id<"issues">;
+
+  const renderModal = () =>
+    render(<IssueDetailModal issueId={mockIssueId} open={true} onOpenChange={mockOnOpenChange} />);
 
   const mockIssue = {
     _id: mockIssueId,
@@ -98,7 +101,7 @@ describe("IssueDetailModal", () => {
   it("should show loading state when issue is undefined", () => {
     (useQuery as vi.Mock).mockReturnValue(undefined);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -107,7 +110,7 @@ describe("IssueDetailModal", () => {
   it("should render issue details", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("TEST-123")).toBeInTheDocument();
     expect(screen.getByText(/Fix authentication bug/i)).toBeInTheDocument();
@@ -117,7 +120,7 @@ describe("IssueDetailModal", () => {
   it("should display issue metadata", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Jane Smith")).toBeInTheDocument();
@@ -127,7 +130,7 @@ describe("IssueDetailModal", () => {
   it("should display labels", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("backend")).toBeInTheDocument();
     expect(screen.getByText("urgent")).toBeInTheDocument();
@@ -136,7 +139,7 @@ describe("IssueDetailModal", () => {
   it("should show correct type icon", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("🐛")).toBeInTheDocument(); // Bug icon
   });
@@ -144,7 +147,7 @@ describe("IssueDetailModal", () => {
   it("should show priority badge with correct color", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const priorityBadge = screen.getByText("high");
     expect(priorityBadge.className).toContain("bg-orange-100");
@@ -154,7 +157,7 @@ describe("IssueDetailModal", () => {
   it("should render TimeTracker component", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText(/Time Tracking/i)).toBeInTheDocument();
   });
@@ -163,24 +166,27 @@ describe("IssueDetailModal", () => {
     const user = userEvent.setup();
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
-    const closeButton = screen.getByRole("button", { name: /Close issue modal/i });
+    // Radix Dialog provides a close button with "Close" text in sr-only span
+    const closeButton = screen.getByRole("button", { name: /^Close$/i });
     await user.click(closeButton);
 
-    expect(mockOnClose).toHaveBeenCalled();
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it("should close modal when backdrop is clicked", async () => {
+  it("should close modal when close button is clicked via dialog-close", async () => {
     const user = userEvent.setup();
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
-    const backdrop = screen.getByLabelText("Close modal");
-    await user.click(backdrop);
+    // Radix Dialog uses data-slot="dialog-close" for close buttons
+    const closeButton = document.querySelector('[data-slot="dialog-close"]');
+    expect(closeButton).toBeTruthy();
+    await user.click(closeButton as Element);
 
-    expect(mockOnClose).toHaveBeenCalled();
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false);
   });
 
   it("should enter edit mode when Edit button is clicked", async () => {
@@ -192,7 +198,7 @@ describe("IssueDetailModal", () => {
       return callCount % 2 === 1 ? mockIssue : [];
     });
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
     await user.click(editButton);
@@ -209,7 +215,7 @@ describe("IssueDetailModal", () => {
       return callCount % 2 === 1 ? mockIssue : [];
     });
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
     await user.click(editButton);
@@ -240,7 +246,7 @@ describe("IssueDetailModal", () => {
     });
     mockUpdateIssue.mockResolvedValue(undefined);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
     await user.click(editButton);
@@ -269,7 +275,7 @@ describe("IssueDetailModal", () => {
       return callCount % 2 === 1 ? mockIssue : [];
     });
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
     await user.click(editButton);
@@ -289,7 +295,7 @@ describe("IssueDetailModal", () => {
     const issueWithoutDescription = { ...mockIssue, description: "" };
     (useQuery as vi.Mock).mockReturnValueOnce(issueWithoutDescription).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText(/No description provided/i)).toBeInTheDocument();
   });
@@ -298,7 +304,7 @@ describe("IssueDetailModal", () => {
     const issueWithoutAssignee = { ...mockIssue, assignee: null };
     (useQuery as vi.Mock).mockReturnValueOnce(issueWithoutAssignee).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText(/Unassigned/i)).toBeInTheDocument();
   });
@@ -307,7 +313,7 @@ describe("IssueDetailModal", () => {
     const issueWithoutLabels = { ...mockIssue, labels: [] };
     (useQuery as vi.Mock).mockReturnValueOnce(issueWithoutLabels).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.queryByText(/Labels/i)).not.toBeInTheDocument();
   });
@@ -323,7 +329,7 @@ describe("IssueDetailModal", () => {
 
     const { showError } = await import("@/lib/toast");
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
     await user.click(editButton);
@@ -343,7 +349,7 @@ describe("IssueDetailModal", () => {
   it("should display story points in metadata", () => {
     (useQuery as vi.Mock).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("Story Points:")).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
@@ -353,7 +359,7 @@ describe("IssueDetailModal", () => {
     const issueWithoutStoryPoints = { ...mockIssue, storyPoints: undefined };
     (useQuery as vi.Mock).mockReturnValueOnce(issueWithoutStoryPoints).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("Story Points:")).toBeInTheDocument();
     expect(screen.getByText("Not set")).toBeInTheDocument();
@@ -363,7 +369,7 @@ describe("IssueDetailModal", () => {
     const issueWithDecimalPoints = { ...mockIssue, storyPoints: 3.5 };
     (useQuery as vi.Mock).mockReturnValueOnce(issueWithDecimalPoints).mockReturnValueOnce([]);
 
-    render(<IssueDetailModal issueId={mockIssueId} onClose={mockOnClose} />);
+    renderModal();
 
     expect(screen.getByText("Story Points:")).toBeInTheDocument();
     expect(screen.getByText("3.5")).toBeInTheDocument();

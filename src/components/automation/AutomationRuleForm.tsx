@@ -19,15 +19,20 @@ interface AutomationRuleFormProps {
     actionType: string;
     actionValue: string;
   } | null;
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 /**
  * Extracted form component for creating/editing automation rules
  * Separated from AutomationRulesManager for better reusability
  */
-export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: AutomationRuleFormProps) {
+export function AutomationRuleForm({
+  projectId,
+  rule,
+  open,
+  onOpenChange,
+}: AutomationRuleFormProps) {
   const [name, setName] = useState(rule?.name || "");
   const [description, setDescription] = useState(rule?.description || "");
   const [trigger, setTrigger] = useState(rule?.trigger || "status_changed");
@@ -41,7 +46,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
 
   // Reset form when rule changes or dialog opens
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       if (rule) {
         setName(rule.name);
         setDescription(rule.description || "");
@@ -58,7 +63,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
         setActionValue("");
       }
     }
-  }, [rule, isOpen]);
+  }, [rule, open]);
 
   const handleSave = async () => {
     if (!(name.trim() && actionValue.trim())) {
@@ -96,7 +101,7 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
         showSuccess("Rule created");
       }
 
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to save rule");
     } finally {
@@ -106,8 +111,8 @@ export function AutomationRuleForm({ projectId, rule, isOpen, onClose }: Automat
 
   return (
     <FormDialog
-      isOpen={isOpen}
-      onClose={onClose}
+      open={open}
+      onOpenChange={onOpenChange}
       onSave={handleSave}
       title={rule ? "Edit Automation Rule" : "Create Automation Rule"}
       saveLabel={rule ? "Update Rule" : "Create Rule"}

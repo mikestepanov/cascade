@@ -90,7 +90,7 @@ export const list = query({
         const creator = await ctx.db.get(filter.userId);
         return {
           ...filter,
-          creatorName: creator?.name || "Unknown",
+          creatorName: creator?.name || creator?.email || "Unknown",
           isOwner: filter.userId === userId,
         };
       }),

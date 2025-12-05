@@ -4,11 +4,11 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Select } from "../ui/form/Select";
-import { Modal } from "../ui/Modal";
 
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -106,9 +106,11 @@ export function PumbleIntegration() {
       </div>
 
       {/* Add Webhook Modal */}
-      {showAddModal && (
-        <AddWebhookModal onClose={() => setShowAddModal(false)} projects={projects || []} />
-      )}
+      <AddWebhookModal
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+        projects={projects || []}
+      />
     </div>
   );
 }
@@ -327,23 +329,23 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       </Flex>
 
       {/* Edit Modal */}
-      {showEditModal && (
-        <EditWebhookModal
-          webhook={webhook}
-          projects={projects}
-          onClose={() => setShowEditModal(false)}
-        />
-      )}
+      <EditWebhookModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        webhook={webhook}
+        projects={projects}
+      />
     </div>
   );
 }
 
 interface AddWebhookModalProps {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   projects: Doc<"projects">[];
 }
 
-function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
+function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps) {
   const [name, setName] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(undefined);
@@ -401,7 +403,7 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
         sendStatusChanges,
       });
       showSuccess("Webhook added successfully!");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to add webhook");
     }
@@ -414,112 +416,118 @@ function AddWebhookModal({ onClose, projects }: AddWebhookModalProps) {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Add Pumble Webhook" maxWidth="2xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name */}
-        <Input
-          label="Webhook Name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Team Notifications"
-        />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add Pumble Webhook</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
+          <Input
+            label="Webhook Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g., Team Notifications"
+          />
 
-        {/* Webhook URL */}
-        <Input
-          label="Webhook URL"
-          type="url"
-          value={webhookUrl}
-          onChange={(e) => setWebhookUrl(e.target.value)}
-          placeholder="https://api.pumble.com/workspaces/.../..."
-          className="font-mono text-sm"
-          helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
-        />
+          {/* Webhook URL */}
+          <Input
+            label="Webhook URL"
+            type="url"
+            value={webhookUrl}
+            onChange={(e) => setWebhookUrl(e.target.value)}
+            placeholder="https://api.pumble.com/workspaces/.../..."
+            className="font-mono text-sm"
+            helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
+          />
 
-        {/* Project */}
-        <Select
-          label="Project (Optional)"
-          value={projectId || ""}
-          onChange={(e) =>
-            setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
-          }
-          helperText="Leave empty to receive notifications from all projects"
-        >
-          <option value="">All Projects</option>
-          {projects.map((project) => (
-            <option key={project._id} value={project._id}>
-              {project.name}
-            </option>
-          ))}
-        </Select>
-
-        {/* Events */}
-        <div>
-          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-            Events to Send
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {availableEvents.map((event) => (
-              <Checkbox
-                key={event.value}
-                label={event.label}
-                checked={selectedEvents.includes(event.value)}
-                onChange={() => toggleEvent(event.value)}
-              />
+          {/* Project */}
+          <Select
+            label="Project (Optional)"
+            value={projectId || ""}
+            onChange={(e) =>
+              setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
+            }
+            helperText="Leave empty to receive notifications from all projects"
+          >
+            <option value="">All Projects</option>
+            {projects.map((project) => (
+              <option key={project._id} value={project._id}>
+                {project.name}
+              </option>
             ))}
-          </div>
-        </div>
+          </Select>
 
-        {/* Additional Settings */}
-        <div>
-          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-            Additional Settings
+          {/* Events */}
+          <div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              Events to Send
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {availableEvents.map((event) => (
+                <Checkbox
+                  key={event.value}
+                  label={event.label}
+                  checked={selectedEvents.includes(event.value)}
+                  onChange={() => toggleEvent(event.value)}
+                />
+              ))}
+            </div>
           </div>
-          <div className="space-y-2">
-            <Checkbox
-              label="Send notifications for @mentions"
-              checked={sendMentions}
-              onChange={(e) => setSendMentions(e.target.checked)}
-            />
-            <Checkbox
-              label="Send notifications for assignments"
-              checked={sendAssignments}
-              onChange={(e) => setSendAssignments(e.target.checked)}
-            />
-            <Checkbox
-              label="Send notifications for status changes"
-              checked={sendStatusChanges}
-              onChange={(e) => setSendStatusChanges(e.target.checked)}
-            />
-          </div>
-        </div>
 
-        {/* Actions */}
-        <Flex
-          justify="end"
-          gap="md"
-          align="center"
-          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-        >
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
-            Add Webhook
-          </Button>
-        </Flex>
-      </form>
-    </Modal>
+          {/* Additional Settings */}
+          <div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              Additional Settings
+            </div>
+            <div className="space-y-2">
+              <Checkbox
+                label="Send notifications for @mentions"
+                checked={sendMentions}
+                onChange={(e) => setSendMentions(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for assignments"
+                checked={sendAssignments}
+                onChange={(e) => setSendAssignments(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for status changes"
+                checked={sendStatusChanges}
+                onChange={(e) => setSendStatusChanges(e.target.checked)}
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <DialogFooter>
+            <Button onClick={() => onOpenChange(false)} variant="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
+              Add Webhook
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 interface EditWebhookModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   webhook: Doc<"pumbleWebhooks">;
   projects: Doc<"projects">[];
-  onClose: () => void;
 }
 
-function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhookModalProps) {
+function EditWebhookModal({
+  open,
+  onOpenChange,
+  webhook,
+  projects: _projects,
+}: EditWebhookModalProps) {
   const [name, setName] = useState(webhook.name);
   const [webhookUrl, setWebhookUrl] = useState(webhook.webhookUrl);
   const [selectedEvents, setSelectedEvents] = useState<string[]>(webhook.events);
@@ -567,7 +575,7 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
         sendStatusChanges,
       });
       showSuccess("Webhook updated successfully!");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to update webhook");
     }
@@ -580,90 +588,90 @@ function EditWebhookModal({ webhook, projects: _projects, onClose }: EditWebhook
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Edit Webhook" maxWidth="2xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name */}
-        <div>
-          <label
-            htmlFor="webhook-name"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-          >
-            Webhook Name
-          </label>
-          <input
-            id="webhook-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit Webhook</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
+          <div>
+            <label
+              htmlFor="webhook-name"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+            >
+              Webhook Name
+            </label>
+            <input
+              id="webhook-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Webhook URL */}
+          <Input
+            label="Webhook URL"
+            type="url"
+            value={webhookUrl}
+            onChange={(e) => setWebhookUrl(e.target.value)}
+            className="font-mono text-sm"
           />
-        </div>
 
-        {/* Webhook URL */}
-        <Input
-          label="Webhook URL"
-          type="url"
-          value={webhookUrl}
-          onChange={(e) => setWebhookUrl(e.target.value)}
-          className="font-mono text-sm"
-        />
-
-        {/* Events */}
-        <div>
-          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-            Events to Send
+          {/* Events */}
+          <div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              Events to Send
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {availableEvents.map((event) => (
+                <Checkbox
+                  key={event.value}
+                  label={event.label}
+                  checked={selectedEvents.includes(event.value)}
+                  onChange={() => toggleEvent(event.value)}
+                />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {availableEvents.map((event) => (
+
+          {/* Additional Settings */}
+          <div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              Additional Settings
+            </div>
+            <div className="space-y-2">
               <Checkbox
-                key={event.value}
-                label={event.label}
-                checked={selectedEvents.includes(event.value)}
-                onChange={() => toggleEvent(event.value)}
+                label="Send notifications for @mentions"
+                checked={sendMentions}
+                onChange={(e) => setSendMentions(e.target.checked)}
               />
-            ))}
+              <Checkbox
+                label="Send notifications for assignments"
+                checked={sendAssignments}
+                onChange={(e) => setSendAssignments(e.target.checked)}
+              />
+              <Checkbox
+                label="Send notifications for status changes"
+                checked={sendStatusChanges}
+                onChange={(e) => setSendStatusChanges(e.target.checked)}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Additional Settings */}
-        <div>
-          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-            Additional Settings
-          </div>
-          <div className="space-y-2">
-            <Checkbox
-              label="Send notifications for @mentions"
-              checked={sendMentions}
-              onChange={(e) => setSendMentions(e.target.checked)}
-            />
-            <Checkbox
-              label="Send notifications for assignments"
-              checked={sendAssignments}
-              onChange={(e) => setSendAssignments(e.target.checked)}
-            />
-            <Checkbox
-              label="Send notifications for status changes"
-              checked={sendStatusChanges}
-              onChange={(e) => setSendStatusChanges(e.target.checked)}
-            />
-          </div>
-        </div>
-
-        {/* Actions */}
-        <Flex
-          justify="end"
-          gap="md"
-          align="center"
-          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-        >
-          <Button onClick={onClose} variant="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
-            Save Changes
-          </Button>
-        </Flex>
-      </form>
-    </Modal>
+          {/* Actions */}
+          <DialogFooter>
+            <Button onClick={() => onOpenChange(false)} variant="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

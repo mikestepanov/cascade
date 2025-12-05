@@ -48,7 +48,7 @@ export function AssigneeSearchDropdown({
   className = "",
 }: AssigneeSearchDropdownProps) {
   // Step 1: Load members from Convex (permission-filtered)
-  const members = useQuery(api.projects.getMembers, { projectId });
+  const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
   const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);

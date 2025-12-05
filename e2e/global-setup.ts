@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, type FullConfig } from "@playwright/test";
 import { AUTH_PATHS, TEST_USERS } from "./config";
-import { clearInbox, isMailtrapConfigured, waitForVerificationEmail } from "./utils/mailtrap";
+import { clearInbox, waitForVerificationEmail } from "./utils/mailtrap";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -140,12 +140,6 @@ async function signUpNewUser(
     if (verificationVisible) {
       console.log("📧 Email verification required...");
 
-      if (!isMailtrapConfigured()) {
-        console.warn("⚠️ Mailtrap not configured - cannot complete email verification");
-        console.warn("   Set MAILTRAP_API_TOKEN, MAILTRAP_ACCOUNT_ID, MAILTRAP_INBOX_ID");
-        return false;
-      }
-
       console.log("📬 Waiting for verification email via Mailtrap...");
       const otp = await waitForVerificationEmail(TEST_USERS.dashboard.email, {
         timeout: 60000,
@@ -209,10 +203,8 @@ async function globalSetup(config: FullConfig): Promise<void> {
   const baseURL = config.projects[0].use.baseURL || "http://localhost:5555";
 
   // Clear Mailtrap inbox before tests to avoid hitting inbox storage limits
-  if (isMailtrapConfigured()) {
-    console.log("📧 Clearing Mailtrap inbox...");
-    await clearInbox();
-  }
+  console.log("📧 Clearing Mailtrap inbox...");
+  await clearInbox();
 
   // Ensure .auth directory exists
   if (!fs.existsSync(AUTH_DIR)) {

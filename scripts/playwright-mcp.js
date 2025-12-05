@@ -14,7 +14,6 @@ const child = spawn(isWindows ? "npx.cmd" : "npx", ["@playwright/mcp@latest"], {
 });
 
 child.on("error", (err) => {
-  // biome-ignore lint/suspicious/noConsole: Required for error reporting in CLI tool
   console.error("Failed to start Playwright MCP:", err);
   process.exit(1);
 });

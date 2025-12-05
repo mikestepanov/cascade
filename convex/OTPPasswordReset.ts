@@ -53,8 +53,7 @@ export const OTPPasswordReset = Resend({
     });
 
     if (!result.success) {
-      console.error(`Failed to send password reset email: ${result.error}`);
-      throw new Error("Could not send password reset email");
+      throw new Error(`Could not send password reset email: ${result.error}`);
     }
   },
 });

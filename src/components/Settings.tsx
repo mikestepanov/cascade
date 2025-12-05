@@ -1,5 +1,4 @@
 import { useQuery } from "convex/react";
-import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserManagement } from "./Admin/UserManagement";
@@ -11,17 +10,13 @@ import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration"
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
 import { PumbleIntegration } from "./Settings/PumbleIntegration";
-import { Tab, Tabs } from "./ui/Tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/ShadcnTabs";
 
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
 export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
   const showDevTools = isTestEmail(currentUser?.email);
-
-  const [activeTab, setActiveTab] = useState<
-    "integrations" | "apikeys" | "offline" | "preferences" | "admin" | "developer"
-  >("integrations");
 
   return (
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
@@ -37,58 +32,37 @@ export function Settings() {
         </div>
 
         {/* Tabs */}
-        <Tabs className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0" aria-label="Settings tabs">
-          <Tab
-            value="integrations"
-            isActive={activeTab === "integrations"}
-            onClick={() => setActiveTab("integrations")}
-          >
-            Integrations
-          </Tab>
-          <Tab
-            value="apikeys"
-            isActive={activeTab === "apikeys"}
-            onClick={() => setActiveTab("apikeys")}
-          >
-            API Keys
-          </Tab>
-          <Tab
-            value="offline"
-            isActive={activeTab === "offline"}
-            onClick={() => setActiveTab("offline")}
-          >
-            Offline Mode
-          </Tab>
-          <Tab
-            value="preferences"
-            isActive={activeTab === "preferences"}
-            onClick={() => setActiveTab("preferences")}
-          >
-            Preferences
-          </Tab>
-          <Tab value="admin" isActive={activeTab === "admin"} onClick={() => setActiveTab("admin")}>
-            Admin
-          </Tab>
+        <Tabs defaultValue="integrations" className="w-full">
+          <TabsList className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="integrations">Integrations</TabsTrigger>
+            <TabsTrigger value="apikeys">API Keys</TabsTrigger>
+            <TabsTrigger value="offline">Offline Mode</TabsTrigger>
+            <TabsTrigger value="preferences">Preferences</TabsTrigger>
+            <TabsTrigger value="admin">Admin</TabsTrigger>
+            {showDevTools && <TabsTrigger value="developer">Dev Tools</TabsTrigger>}
+          </TabsList>
+
+          <TabsContent value="integrations">
+            <IntegrationsTab />
+          </TabsContent>
+          <TabsContent value="apikeys">
+            <ApiKeysManager />
+          </TabsContent>
+          <TabsContent value="offline">
+            <OfflineTab />
+          </TabsContent>
+          <TabsContent value="preferences">
+            <PreferencesTab />
+          </TabsContent>
+          <TabsContent value="admin">
+            <AdminTab />
+          </TabsContent>
           {showDevTools && (
-            <Tab
-              value="developer"
-              isActive={activeTab === "developer"}
-              onClick={() => setActiveTab("developer")}
-            >
-              Dev Tools
-            </Tab>
+            <TabsContent value="developer">
+              <DevToolsTab />
+            </TabsContent>
           )}
         </Tabs>
-
-        {/* Tab Content */}
-        <div>
-          {activeTab === "integrations" && <IntegrationsTab />}
-          {activeTab === "apikeys" && <ApiKeysManager />}
-          {activeTab === "offline" && <OfflineTab />}
-          {activeTab === "preferences" && <PreferencesTab />}
-          {activeTab === "admin" && <AdminTab />}
-          {activeTab === "developer" && showDevTools && <DevToolsTab />}
-        </div>
       </div>
     </div>
   );

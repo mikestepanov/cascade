@@ -5,17 +5,23 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
 import { Input, Select, Textarea } from "./ui/form";
-import { Modal } from "./ui/Modal";
 
 interface CreateIssueModalProps {
   projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueModalProps) {
+export function CreateIssueModal({
+  projectId,
+  sprintId,
+  open,
+  onOpenChange,
+}: CreateIssueModalProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -80,7 +86,7 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
       });
 
       showSuccess("Issue created successfully");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to create issue");
     } finally {
@@ -135,165 +141,169 @@ export function CreateIssueModal({ projectId, sprintId, onClose }: CreateIssueMo
   if (!project) return null;
 
   return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      title="Create Issue"
-      maxWidth="2xl"
-      fullScreenOnMobile={true}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
-        {/* Template Selector */}
-        {templates && templates.length > 0 && (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Create Issue</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Template Selector */}
+          {templates && templates.length > 0 && (
+            <Select
+              label="Use Template (Optional)"
+              value={selectedTemplate}
+              onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
+            >
+              <option value="">Start from scratch</option>
+              {templates.map((template) => (
+                <option key={template._id} value={template._id}>
+                  {template.name} ({template.type})
+                </option>
+              ))}
+            </Select>
+          )}
+
+          <Input
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter issue title..."
+            required
+          />
+
+          {/* AI Suggestions Button */}
+          <Flex align="center" gap="sm" className="pb-2">
+            <button
+              type="button"
+              onClick={handleGenerateAISuggestions}
+              disabled={!title.trim() || isGeneratingAI}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {isGeneratingAI ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <span>✨</span>
+                  <span>Get AI Suggestions</span>
+                </>
+              )}
+            </button>
+            {showAISuggestions && (
+              <Flex
+                align="center"
+                gap="xs"
+                className="text-sm text-status-success dark:text-status-success"
+              >
+                <span>✓</span>
+                <span>AI suggestions applied</span>
+              </Flex>
+            )}
+          </Flex>
+
+          <Textarea
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter issue description..."
+            rows={6}
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Select
+              label="Type"
+              value={type}
+              onChange={(e) =>
+                setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")
+              }
+            >
+              <option value="task">📋 Task</option>
+              <option value="bug">🐛 Bug</option>
+              <option value="story">📖 Story</option>
+              <option value="epic">🎯 Epic</option>
+              <option value="subtask">🔸 Sub-task</option>
+            </Select>
+
+            <Select
+              label="Priority"
+              value={priority}
+              onChange={(e) =>
+                setPriority(e.target.value as "lowest" | "low" | "medium" | "high" | "highest")
+              }
+            >
+              <option value="lowest">⬇️ Lowest</option>
+              <option value="low">↘️ Low</option>
+              <option value="medium">➡️ Medium</option>
+              <option value="high">↗️ High</option>
+              <option value="highest">⬆️ Highest</option>
+            </Select>
+          </div>
+
           <Select
-            label="Use Template (Optional)"
-            value={selectedTemplate}
-            onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
+            label="Assignee"
+            value={assigneeId}
+            onChange={(e) => setAssigneeId(e.target.value as Id<"users"> | "")}
           >
-            <option value="">Start from scratch</option>
-            {templates.map((template) => (
-              <option key={template._id} value={template._id}>
-                {template.name} ({template.type})
+            <option value="">Unassigned</option>
+            {project.members.map((member) => (
+              <option key={member._id} value={member._id}>
+                {member.name}
               </option>
             ))}
           </Select>
-        )}
 
-        <Input
-          label="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter issue title..."
-          required
-        />
+          <Input
+            label="Story Points"
+            type="number"
+            value={storyPoints}
+            onChange={(e) => setStoryPoints(e.target.value)}
+            placeholder="Enter story points (optional)"
+            min="0"
+            step="0.5"
+          />
 
-        {/* AI Suggestions Button */}
-        <Flex align="center" gap="sm" className="pb-2">
-          <button
-            type="button"
-            onClick={handleGenerateAISuggestions}
-            disabled={!title.trim() || isGeneratingAI}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            {isGeneratingAI ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Generating...</span>
-              </>
-            ) : (
-              <>
-                <span>✨</span>
-                <span>Get AI Suggestions</span>
-              </>
-            )}
-          </button>
-          {showAISuggestions && (
-            <Flex
-              align="center"
-              gap="xs"
-              className="text-sm text-status-success dark:text-status-success"
-            >
-              <span>✓</span>
-              <span>AI suggestions applied</span>
-            </Flex>
-          )}
-        </Flex>
-
-        <Textarea
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter issue description..."
-          rows={6}
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select
-            label="Type"
-            value={type}
-            onChange={(e) =>
-              setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")
-            }
-          >
-            <option value="task">📋 Task</option>
-            <option value="bug">🐛 Bug</option>
-            <option value="story">📖 Story</option>
-            <option value="epic">🎯 Epic</option>
-            <option value="subtask">🔸 Sub-task</option>
-          </Select>
-
-          <Select
-            label="Priority"
-            value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value as "lowest" | "low" | "medium" | "high" | "highest")
-            }
-          >
-            <option value="lowest">⬇️ Lowest</option>
-            <option value="low">↘️ Low</option>
-            <option value="medium">➡️ Medium</option>
-            <option value="high">↗️ High</option>
-            <option value="highest">⬆️ Highest</option>
-          </Select>
-        </div>
-
-        <Select
-          label="Assignee"
-          value={assigneeId}
-          onChange={(e) => setAssigneeId(e.target.value as Id<"users"> | "")}
-        >
-          <option value="">Unassigned</option>
-          {project.members.map((member) => (
-            <option key={member._id} value={member._id}>
-              {member.name}
-            </option>
-          ))}
-        </Select>
-
-        <Input
-          label="Story Points"
-          type="number"
-          value={storyPoints}
-          onChange={(e) => setStoryPoints(e.target.value)}
-          placeholder="Enter story points (optional)"
-          min="0"
-          step="0.5"
-        />
-
-        {/* Labels */}
-        {labels && labels.length > 0 && (
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
-            <div className="flex flex-wrap gap-2">
-              {labels.map((label) => (
-                <button
-                  key={label._id}
-                  type="button"
-                  onClick={() => toggleLabel(label._id)}
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
-                    selectedLabels.includes(label._id)
-                      ? "opacity-100 ring-2 ring-offset-2 ring-brand-600 dark:ring-brand-500"
-                      : "opacity-60 hover:opacity-80"
-                  }`}
-                  style={{ backgroundColor: label.color }}
-                >
-                  {selectedLabels.includes(label._id) && <span className="mr-1">✓</span>}
-                  {label.name}
-                </button>
-              ))}
+          {/* Labels */}
+          {labels && labels.length > 0 && (
+            <div>
+              <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
+              <div className="flex flex-wrap gap-2">
+                {labels.map((label) => (
+                  <button
+                    key={label._id}
+                    type="button"
+                    onClick={() => toggleLabel(label._id)}
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
+                      selectedLabels.includes(label._id)
+                        ? "opacity-100 ring-2 ring-offset-2 ring-brand-600 dark:ring-brand-500"
+                        : "opacity-60 hover:opacity-80"
+                    }`}
+                    style={{ backgroundColor: label.color }}
+                  >
+                    {selectedLabels.includes(label._id) && <span className="mr-1">✓</span>}
+                    {label.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <Flex gap="md" className="pt-4">
-          <Button type="submit" isLoading={isSubmitting}>
-            Create Issue
-          </Button>
-          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-        </Flex>
-      </form>
-    </Modal>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Create Issue
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

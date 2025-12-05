@@ -392,9 +392,8 @@ describe("NotificationCenter", () => {
     const heading = screen.getByRole("heading", { name: /Notifications/i });
     expect(heading).toBeInTheDocument();
 
-    // Click backdrop by aria-label
-    const backdrop = screen.getByLabelText("Close notifications");
-    await user.click(backdrop);
+    // Close popover by pressing Escape (Radix popovers close on Escape)
+    await user.keyboard("{Escape}");
 
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: /Notifications/i })).not.toBeInTheDocument();

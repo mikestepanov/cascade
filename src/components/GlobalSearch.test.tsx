@@ -274,9 +274,10 @@ describe("GlobalSearch", () => {
       expect(screen.getByPlaceholderText(/Search issues and documents/i)).toBeInTheDocument();
     });
 
-    // Find backdrop by role="button" and aria-label
-    const backdrop = screen.getByLabelText("Close modal");
-    await user.click(backdrop);
+    // Find the overlay by its data-slot attribute and click it
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+    expect(overlay).toBeInTheDocument();
+    if (overlay) await user.click(overlay);
 
     await waitFor(() => {
       expect(screen.queryByPlaceholderText(/Search issues and documents/i)).not.toBeInTheDocument();

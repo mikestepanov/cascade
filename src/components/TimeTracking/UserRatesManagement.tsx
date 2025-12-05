@@ -4,9 +4,9 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 export function UserRatesManagement() {
@@ -166,13 +166,11 @@ export function UserRatesManagement() {
       )}
 
       {/* Add/Edit Rate Modal */}
-      {showAddRate && (
-        <Modal
-          isOpen={showAddRate}
-          onClose={handleCloseModal}
-          title="Set Hourly Rate"
-          maxWidth="md"
-        >
+      <Dialog open={showAddRate} onOpenChange={(open) => !open && handleCloseModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set Hourly Rate</DialogTitle>
+          </DialogHeader>
           <div className="space-y-4">
             {/* Project Selection */}
             <div>
@@ -311,17 +309,17 @@ export function UserRatesManagement() {
               rows={2}
             />
 
-            <Flex justify="end" gap="sm" className="pt-4">
+            <DialogFooter>
               <Button onClick={handleCloseModal} variant="secondary">
                 Cancel
               </Button>
               <Button onClick={handleSaveRate} variant="primary">
                 Save Rate
               </Button>
-            </Flex>
+            </DialogFooter>
           </div>
-        </Modal>
-      )}
+        </DialogContent>
+      </Dialog>
     </Flex>
   );
 }

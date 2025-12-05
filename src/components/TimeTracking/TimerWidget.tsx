@@ -5,8 +5,8 @@ import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 export function TimerWidget() {
@@ -110,14 +110,18 @@ export function TimerWidget() {
         <span className="hidden sm:inline">Start Timer</span>
       </Button>
 
-      {showStartModal && (
-        <StartTimerModal isOpen={showStartModal} onClose={() => setShowStartModal(false)} />
-      )}
+      <StartTimerModal open={showStartModal} onOpenChange={setShowStartModal} />
     </>
   );
 }
 
-function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function StartTimerModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const startTimer = useMutation(api.timeTracking.startTimer);
   const [description, setDescription] = useState("");
   const [activity, setActivity] = useState("");
@@ -129,70 +133,78 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
         activity: activity || undefined,
       });
       showSuccess("Timer started");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to start timer");
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Start Timer" maxWidth="md">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void handleStart();
-        }}
-      >
-        <Flex direction="column" gap="lg">
-          <div>
-            <label
-              htmlFor="timer-description"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              What are you working on? (optional)
-            </label>
-            <input
-              id="timer-description"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g., Fixing login bug..."
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-            />
-          </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Start Timer</DialogTitle>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleStart();
+          }}
+        >
+          <Flex direction="column" gap="lg">
+            <div>
+              <label
+                htmlFor="timer-description"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                What are you working on? (optional)
+              </label>
+              <input
+                id="timer-description"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g., Fixing login bug..."
+                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="timer-activity"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Activity (optional)
-            </label>
-            <Select value={activity || "none"} onValueChange={(value) => setActivity(value === "none" ? "" : value)}>
-              <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark">
-                <SelectValue placeholder="Select activity..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Select activity...</SelectItem>
-                {ACTIVITY_TYPES.map((activityType) => (
-                  <SelectItem key={activityType} value={activityType}>
-                    {activityType}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <label
+                htmlFor="timer-activity"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Activity (optional)
+              </label>
+              <Select
+                value={activity || "none"}
+                onValueChange={(value) => setActivity(value === "none" ? "" : value)}
+              >
+                <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark">
+                  <SelectValue placeholder="Select activity..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Select activity...</SelectItem>
+                  {ACTIVITY_TYPES.map((activityType) => (
+                    <SelectItem key={activityType} value={activityType}>
+                      {activityType}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Flex justify="end" gap="sm" className="pt-4">
-            <Button onClick={onClose} variant="secondary">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary">
-              Start Timer
-            </Button>
+            <DialogFooter>
+              <Button onClick={() => onOpenChange(false)} variant="secondary">
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Start Timer
+              </Button>
+            </DialogFooter>
           </Flex>
-        </Flex>
-      </form>
-    </Modal>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

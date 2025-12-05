@@ -31,7 +31,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
     }
   };
 
-  const billing = useQuery(api.timeEntries.getProjectBilling, {
+  const billing = useQuery(api.timeTracking.getProjectBilling, {
     projectId,
     ...getDateRange(),
   });

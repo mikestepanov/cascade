@@ -74,6 +74,7 @@ import type * as offlineSync from "../offlineSync.js";
 import type * as onboarding from "../onboarding.js";
 import type * as presence from "../presence.js";
 import type * as projectAccess from "../projectAccess.js";
+import type * as projectMembers from "../projectMembers.js";
 import type * as projectTemplates from "../projectTemplates.js";
 import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
@@ -168,6 +169,7 @@ declare const fullApi: ApiFromModules<{
   onboarding: typeof onboarding;
   presence: typeof presence;
   projectAccess: typeof projectAccess;
+  projectMembers: typeof projectMembers;
   projectTemplates: typeof projectTemplates;
   projects: typeof projects;
   prosemirror: typeof prosemirror;

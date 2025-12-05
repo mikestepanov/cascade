@@ -40,7 +40,7 @@ export const create = mutation({
 });
 
 // List all labels for a project
-export const listByProject = query({
+export const list = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

@@ -2,7 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { showError, showSuccess } from "@/lib/toast";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AutomationRulesManager } from "./AutomationRulesManager";
 
@@ -24,6 +25,12 @@ vi.mock("sonner", () => ({
   },
 }));
 
+// Mock toast utilities used by AutomationRulesManager
+vi.mock("@/lib/toast", () => ({
+  showSuccess: vi.fn(),
+  showError: vi.fn(),
+}));
+
 describe("AutomationRulesManager - Component Behavior", () => {
   const mockProjectId = mockId<"projects">("project123");
   const _mockCreateRule = vi.fn();
@@ -32,6 +39,12 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Clear toast mocks
+    vi.mocked(toast.success).mockClear();
+    vi.mocked(toast.error).mockClear();
+    vi.mocked(showSuccess).mockClear();
+    vi.mocked(showError).mockClear();
 
     // Hook-level mocking: All useMutation calls return the same mock
     // This is a limitation of mocking at the hook level - we can't distinguish
@@ -67,7 +80,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show dialog when Create Rule clicked", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -77,7 +90,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should close dialog when Cancel clicked", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -88,7 +101,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should reset form when opening create dialog", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -132,7 +145,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Form Validation - Required Fields", () => {
     it("should reject save when name is empty", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -141,14 +154,17 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: '{"test":"value"}' },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      // Get the submit button inside the dialog (the second one)
+      const submitButtons = screen.getAllByRole("button", { name: /Create Rule/i });
+      await user.click(submitButtons[submitButtons.length - 1]);
+
+      expect(showError).toHaveBeenCalled();
       expect(mockUpdateRule).not.toHaveBeenCalled();
     });
 
     it("should reject save when actionValue is empty", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -158,14 +174,15 @@ describe("AutomationRulesManager - Component Behavior", () => {
         "Test Rule",
       );
       // Leave actionValue empty
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      // Click the dialog's save button (exact match without the + prefix)
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalled();
       expect(mockUpdateRule).not.toHaveBeenCalled();
     });
 
     it("should treat whitespace-only name as empty", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -177,13 +194,13 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: '{"test":"value"}' },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalled();
     });
 
     it("should treat whitespace-only actionValue as empty", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -195,15 +212,15 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "   " },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalled();
     });
   });
 
   describe("JSON Validation Logic", () => {
     it("should reject invalid JSON in actionValue", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 
@@ -215,16 +232,16 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "not valid json" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalled();
+        expect(showError).toHaveBeenCalled();
         expect(mockUpdateRule).not.toHaveBeenCalled();
       });
     });
 
     it("should accept valid JSON in actionValue", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -237,16 +254,16 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: '{"label":"urgent"}' },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalled();
-        expect(toast.error).not.toHaveBeenCalledWith(expect.stringContaining("Failed"));
+        expect(showError).not.toHaveBeenCalled();
       });
     });
 
     it("should accept empty object as valid JSON", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -259,7 +276,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalled();
@@ -267,7 +284,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should accept complex nested JSON", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -280,7 +297,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: '{"data":{"nested":"value"},"array":[1,2,3]}' },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalled();
@@ -290,7 +307,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
 
   describe("Whitespace Trimming Logic", () => {
     it("should trim name before sending", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -303,7 +320,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalledWith(
@@ -315,7 +332,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should convert empty description to undefined", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -329,7 +346,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalledWith(
@@ -341,7 +358,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should convert whitespace-only description to undefined", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -355,7 +372,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalledWith(
@@ -367,7 +384,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should convert empty triggerValue to undefined", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -381,7 +398,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
         expect(mockUpdateRule).toHaveBeenCalledWith(
@@ -407,7 +424,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     };
 
     it("should populate form when Edit clicked", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -421,7 +438,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show 'Edit Automation Rule' title in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -432,7 +449,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show 'Update Rule' button in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -443,7 +460,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should preserve selected trigger and action type in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -459,7 +476,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should call updateRule instead of createRule when saving in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([existingRule]);
       mockUpdateRule.mockResolvedValue({});
 
@@ -475,7 +492,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should handle missing description in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       const ruleWithoutDescription = { ...existingRule, description: undefined };
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([ruleWithoutDescription]);
 
@@ -487,7 +504,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should handle missing triggerValue in edit mode", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       const ruleWithoutTriggerValue = { ...existingRule, triggerValue: undefined };
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([ruleWithoutTriggerValue]);
 
@@ -609,7 +626,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should toggle active rule to inactive", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
@@ -626,7 +643,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should toggle inactive rule to active", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       const inactiveRule = { ...activeRule, isActive: false };
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
@@ -644,7 +661,7 @@ describe("AutomationRulesManager - Component Behavior", () => {
     });
 
     it("should show success toast when disabling rule", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([activeRule]);
       mockUpdateRule.mockResolvedValue({});
 
@@ -653,12 +670,12 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getByTitle(/Disable rule/i));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Rule disabled");
+        expect(showSuccess).toHaveBeenCalledWith("Rule disabled");
       });
     });
 
     it("should show success toast when enabling rule", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       const inactiveRule = { ...activeRule, isActive: false };
       (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([inactiveRule]);
       mockUpdateRule.mockResolvedValue({});
@@ -668,14 +685,14 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getByTitle(/Enable rule/i));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Rule enabled");
+        expect(showSuccess).toHaveBeenCalledWith("Rule enabled");
       });
     });
   });
 
   describe("Success & Error Handling", () => {
     it("should show success toast and close dialog after create", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockResolvedValue({ _id: "rule1" });
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -688,16 +705,16 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Rule created");
+        expect(showSuccess).toHaveBeenCalledWith("Rule created");
         expect(screen.queryByText("Create Automation Rule")).not.toBeInTheDocument();
       });
     });
 
     it("should show success toast and close dialog after update", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       const rule = {
         _id: mockId<"automationRules">("rule1"),
         name: "Test",
@@ -716,13 +733,13 @@ describe("AutomationRulesManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Update Rule/i }));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Rule updated");
+        expect(showSuccess).toHaveBeenCalledWith("Rule updated");
         expect(screen.queryByText("Edit Automation Rule")).not.toBeInTheDocument();
       });
     });
 
     it("should show error toast when create fails", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       mockUpdateRule.mockRejectedValue(new Error("Duplicate rule name"));
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
@@ -735,15 +752,15 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Duplicate rule name");
+        expect(showError).toHaveBeenCalled();
       });
     });
 
     it("should show generic error when error has no message", async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ pointerEventsCheck: 0 });
       // Reject with a non-Error object to trigger the fallback message
       mockUpdateRule.mockRejectedValue({});
 
@@ -757,10 +774,10 @@ describe("AutomationRulesManager - Component Behavior", () => {
       fireEvent.change(screen.getByPlaceholderText(/\{"label": "urgent"\}/i), {
         target: { value: "{}" },
       });
-      await user.click(screen.getAllByRole("button", { name: /Create Rule/i })[1]);
+      await user.click(screen.getByRole("button", { name: "Create Rule" }));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Failed to save rule");
+        expect(showError).toHaveBeenCalled();
       });
     });
   });

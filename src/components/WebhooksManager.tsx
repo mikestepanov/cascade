@@ -51,11 +51,6 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
     setShowModal(true);
   };
 
-  const handleCloseForm = () => {
-    setShowModal(false);
-    setEditingWebhook(null);
-  };
-
   return (
     <>
       <Card>
@@ -113,8 +108,8 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
       <WebhookForm
         projectId={projectId}
         webhook={editingWebhook}
-        isOpen={showModal}
-        onClose={handleCloseForm}
+        open={showModal}
+        onOpenChange={setShowModal}
       />
 
       {/* Delete Confirmation Dialog */}

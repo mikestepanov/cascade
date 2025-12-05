@@ -177,11 +177,13 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
       {/* Markdown Preview Modal */}
       <MarkdownPreviewModal
-        isOpen={showPreview}
-        onClose={() => {
-          setShowPreview(false);
-          setPreviewMarkdown("");
-          setPreviewFilename("");
+        open={showPreview}
+        onOpenChange={(open) => {
+          setShowPreview(open);
+          if (!open) {
+            setPreviewMarkdown("");
+            setPreviewFilename("");
+          }
         }}
         onConfirm={() => void handleConfirmImport()}
         markdown={previewMarkdown}
@@ -191,8 +193,8 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
       {/* Version History Modal */}
       <VersionHistory
         documentId={documentId}
-        isOpen={showVersionHistory}
-        onClose={() => setShowVersionHistory(false)}
+        open={showVersionHistory}
+        onOpenChange={setShowVersionHistory}
         onRestoreVersion={handleRestoreVersion}
       />
     </div>

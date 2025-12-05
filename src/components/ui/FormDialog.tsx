@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./Dialog";
 import { Flex } from "./Flex";
-import { Modal } from "./Modal";
 
 interface FormDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSave: () => void | Promise<void>;
   title: string;
   children: ReactNode;
@@ -19,8 +19,8 @@ interface FormDialogProps {
  * Standardizes the pattern used across all Manager components
  */
 export function FormDialog({
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   onSave,
   title,
   children,
@@ -32,24 +32,32 @@ export function FormDialog({
     await onSave();
   };
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth={size}>
-      <Flex direction="column" gap="lg">
-        {children}
+  // Map size prop to Tailwind classes
+  const sizeClassMap = {
+    sm: "sm:max-w-sm",
+    md: "sm:max-w-md",
+    lg: "sm:max-w-lg",
+    xl: "sm:max-w-xl",
+  };
 
-        <Flex
-          justify="end"
-          gap="sm"
-          className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-        >
-          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={sizeClassMap[size]}>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <Flex direction="column" gap="lg">
+          {children}
+        </Flex>
+        <DialogFooter>
+          <Button variant="secondary" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={isLoading}>
             {isLoading ? "Saving..." : saveLabel}
           </Button>
-        </Flex>
-      </Flex>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

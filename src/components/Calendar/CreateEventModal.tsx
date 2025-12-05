@@ -5,20 +5,22 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Modal } from "../ui/Modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 interface CreateEventModalProps {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   defaultDate?: Date;
   projectId?: Id<"projects">;
   issueId?: Id<"issues">;
 }
 
 export function CreateEventModal({
-  onClose,
+  open,
+  onOpenChange,
   defaultDate = new Date(),
   projectId,
   issueId,
@@ -72,7 +74,7 @@ export function CreateEventModal({
       });
 
       showSuccess("Event created successfully");
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error, "Failed to create event");
     } finally {
@@ -81,238 +83,239 @@ export function CreateEventModal({
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="Create Event" maxWidth="2xl">
-      <form onSubmit={handleSubmit}>
-        <Flex direction="column" gap="lg">
-          {/* Title */}
-          <div>
-            <label
-              htmlFor="event-title"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Event Title *
-            </label>
-            <input
-              id="event-title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              placeholder="Team standup, Client call, etc."
-            />
-          </div>
-
-          {/* Event Type */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-              Event Type
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {(["meeting", "deadline", "timeblock", "personal"] as const).map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => setEventType(type)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
-                    eventType === type
-                      ? "bg-brand-600 text-white"
-                      : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Date and Time */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-3 sm:col-span-1">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Create Event</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <Flex direction="column" gap="lg" className="p-6">
+            {/* Title */}
+            <div>
               <label
-                htmlFor="event-date"
+                htmlFor="event-title"
                 className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
               >
-                <Calendar className="w-4 h-4 inline mr-1" />
-                Date *
+                Event Title *
               </label>
               <input
-                id="event-date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                id="event-title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                placeholder="Team standup, Client call, etc."
               />
             </div>
-            <div>
-              <label
-                htmlFor="event-start-time"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                <Clock className="w-4 h-4 inline mr-1" />
-                Start Time
-              </label>
-              <input
-                id="event-start-time"
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                disabled={allDay}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="event-end-time"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                End Time
-              </label>
-              <input
-                id="event-end-time"
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                disabled={allDay}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-              />
-            </div>
-          </div>
 
-          {/* All Day Toggle */}
-          <div>
-            <label>
-              <Flex gap="sm" align="center" className="cursor-pointer">
+            {/* Event Type */}
+            <div>
+              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                Event Type
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {(["meeting", "deadline", "timeblock", "personal"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setEventType(type)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
+                      eventType === type
+                        ? "bg-brand-600 text-white"
+                        : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Date and Time */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="col-span-3 sm:col-span-1">
+                <label
+                  htmlFor="event-date"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  <Calendar className="w-4 h-4 inline mr-1" />
+                  Date *
+                </label>
                 <input
-                  type="checkbox"
-                  checked={allDay}
-                  onChange={(e) => setAllDay(e.target.checked)}
-                  className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                  id="event-date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
                 />
-                <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                  All day event
-                </span>
-              </Flex>
-            </label>
-          </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="event-start-time"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  Start Time
+                </label>
+                <input
+                  id="event-start-time"
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  disabled={allDay}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="event-end-time"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  End Time
+                </label>
+                <input
+                  id="event-end-time"
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  disabled={allDay}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                />
+              </div>
+            </div>
 
-          {/* Required Attendance (only for meetings) */}
-          {eventType === "meeting" && (
+            {/* All Day Toggle */}
             <div>
               <label>
                 <Flex gap="sm" align="center" className="cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isRequired}
-                    onChange={(e) => setIsRequired(e.target.checked)}
+                    checked={allDay}
+                    onChange={(e) => setAllDay(e.target.checked)}
                     className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                   />
                   <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                    Required attendance (track who attends)
+                    All day event
                   </span>
                 </Flex>
               </label>
-              {isRequired && (
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
-                  Admins can mark who attended, was tardy, or missed this meeting
-                </p>
-              )}
             </div>
-          )}
 
-          {/* Description */}
-          <Textarea
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            placeholder="Add notes, agenda, or details..."
-          />
+            {/* Required Attendance (only for meetings) */}
+            {eventType === "meeting" && (
+              <div>
+                <label>
+                  <Flex gap="sm" align="center" className="cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isRequired}
+                      onChange={(e) => setIsRequired(e.target.checked)}
+                      className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                    />
+                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                      Required attendance (track who attends)
+                    </span>
+                  </Flex>
+                </label>
+                {isRequired && (
+                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
+                    Admins can mark who attended, was tardy, or missed this meeting
+                  </p>
+                )}
+              </div>
+            )}
 
-          {/* Location */}
-          <div>
-            <label
-              htmlFor="event-location"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              <MapPin className="w-4 h-4 inline mr-1" />
-              Location
-            </label>
-            <input
-              id="event-location"
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              placeholder="Office, Zoom, Google Meet, etc."
+            {/* Description */}
+            <Textarea
+              label="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Add notes, agenda, or details..."
             />
-          </div>
 
-          {/* Meeting URL */}
-          {eventType === "meeting" && (
+            {/* Location */}
             <div>
               <label
-                htmlFor="event-meeting-url"
+                htmlFor="event-location"
                 className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
               >
-                <LinkIcon className="w-4 h-4 inline mr-1" />
-                Meeting Link
+                <MapPin className="w-4 h-4 inline mr-1" />
+                Location
               </label>
               <input
-                id="event-meeting-url"
-                type="url"
-                value={meetingUrl}
-                onChange={(e) => setMeetingUrl(e.target.value)}
+                id="event-location"
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                placeholder="https://zoom.us/j/..."
+                placeholder="Office, Zoom, Google Meet, etc."
               />
             </div>
-          )}
 
-          {/* Link to Project */}
-          <div>
-            <label
-              htmlFor="event-project"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Link to Project (optional)
-            </label>
-            <Select
-              value={selectedProjectId || "none"}
-              onValueChange={(value) =>
-                setSelectedProjectId(value === "none" ? undefined : (value as Id<"projects">))
-              }
-            >
-              <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
-                <SelectValue placeholder="No project" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No project</SelectItem>
-                {projects?.map((project) => (
-                  <SelectItem key={project._id} value={project._id}>
-                    {project.name} ({project.key})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Meeting URL */}
+            {eventType === "meeting" && (
+              <div>
+                <label
+                  htmlFor="event-meeting-url"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  <LinkIcon className="w-4 h-4 inline mr-1" />
+                  Meeting Link
+                </label>
+                <input
+                  id="event-meeting-url"
+                  type="url"
+                  value={meetingUrl}
+                  onChange={(e) => setMeetingUrl(e.target.value)}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                  placeholder="https://zoom.us/j/..."
+                />
+              </div>
+            )}
 
-          {/* Actions */}
-          <Flex
-            justify="end"
-            gap="md"
-            className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-          >
-            <Button onClick={onClose} variant="secondary">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" isLoading={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Event"}
-            </Button>
+            {/* Link to Project */}
+            <div>
+              <label
+                htmlFor="event-project"
+                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              >
+                Link to Project (optional)
+              </label>
+              <Select
+                value={selectedProjectId || "none"}
+                onValueChange={(value) =>
+                  setSelectedProjectId(value === "none" ? undefined : (value as Id<"projects">))
+                }
+              >
+                <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <SelectValue placeholder="No project" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No project</SelectItem>
+                  {projects?.map((project) => (
+                    <SelectItem key={project._id} value={project._id}>
+                      {project.name} ({project.key})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Actions */}
+            <DialogFooter className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+              <Button onClick={() => onOpenChange(false)} variant="secondary">
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" isLoading={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Event"}
+              </Button>
+            </DialogFooter>
           </Flex>
-        </Flex>
-      </form>
-    </Modal>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

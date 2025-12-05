@@ -1,12 +1,12 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { KeyboardShortcut } from "./ui/KeyboardShortcut";
-import { Modal } from "./ui/Modal";
 
 interface KeyboardShortcutsHelpProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelpProps) {
+export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsHelpProps) {
   const shortcuts = [
     {
       category: "General",
@@ -59,37 +59,45 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Keyboard Shortcuts" maxWidth="2xl">
-      <div className="p-6 space-y-6">
-        {shortcuts.map((section) => (
-          <div key={section.category}>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              {section.category}
-            </h3>
-            <div className="space-y-2">
-              {section.items.map((shortcut) => (
-                <div key={shortcut.description} className="flex items-center justify-between py-2">
-                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {shortcut.description}
-                  </span>
-                  <div className="flex gap-2">
-                    {shortcut.keys.map((key) => (
-                      <KeyboardShortcut key={key} shortcut={key} />
-                    ))}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Keyboard Shortcuts</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {shortcuts.map((section) => (
+            <div key={section.category}>
+              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                {section.category}
+              </h3>
+              <div className="space-y-2">
+                {section.items.map((shortcut) => (
+                  <div
+                    key={shortcut.description}
+                    className="flex items-center justify-between py-2"
+                  >
+                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {shortcut.description}
+                    </span>
+                    <div className="flex gap-2">
+                      {shortcut.keys.map((key) => (
+                        <KeyboardShortcut key={key} shortcut={key} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
-            commands and features.
-          </p>
+          <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
+              commands and features.
+            </p>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

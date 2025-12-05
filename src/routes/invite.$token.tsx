@@ -1,3 +1,4 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
@@ -5,7 +6,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { showError, showSuccess } from "@/lib/toast";
 import { SignInForm } from "@/SignInForm";
-import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/invite/$token")({
   component: InviteRoute,

@@ -4,9 +4,9 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
-import { Modal } from "./ui/Modal";
 
 interface UserStats {
   projects: number;
@@ -168,11 +168,11 @@ function ProfileHeader({
 
 interface UserProfileProps {
   userId?: Id<"users">;
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
+export function UserProfile({ userId, open, onOpenChange }: UserProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -214,37 +214,47 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
 
   if (!viewUser) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="User Profile">
-        <div className="flex items-center justify-center py-8">
-          <LoadingSpinner size="lg" />
-        </div>
-      </Modal>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>User Profile</DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner size="lg" />
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="User Profile" size="large">
-      <div className="space-y-6">
-        {/* Profile Header */}
-        <ProfileHeader
-          user={viewUser}
-          isOwnProfile={isOwnProfile}
-          isEditing={isEditing}
-          name={name}
-          email={email}
-          onEditClick={handleEdit}
-          onNameChange={setName}
-          onEmailChange={setEmail}
-        />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>User Profile</DialogTitle>
+        </DialogHeader>
 
-        {/* Stats Cards */}
-        {userStats && <UserStatsCards stats={userStats} />}
+        <div className="space-y-6">
+          {/* Profile Header */}
+          <ProfileHeader
+            user={viewUser}
+            isOwnProfile={isOwnProfile}
+            isEditing={isEditing}
+            name={name}
+            email={email}
+            onEditClick={handleEdit}
+            onNameChange={setName}
+            onEmailChange={setEmail}
+          />
 
-        {/* Account Info */}
-        <AccountInfo user={viewUser} />
+          {/* Stats Cards */}
+          {userStats && <UserStatsCards stats={userStats} />}
 
-        {/* Actions */}
-        <div className="flex justify-end gap-3">
+          {/* Account Info */}
+          <AccountInfo user={viewUser} />
+        </div>
+
+        <DialogFooter>
           {isEditing ? (
             <>
               <Button onClick={() => setIsEditing(false)} variant="secondary">
@@ -253,12 +263,12 @@ export function UserProfile({ userId, isOpen, onClose }: UserProfileProps) {
               <Button onClick={handleSave}>Save Changes</Button>
             </>
           ) : (
-            <Button onClick={onClose} variant="secondary">
+            <Button onClick={() => onOpenChange(false)} variant="secondary">
               Close
             </Button>
           )}
-        </div>
-      </div>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

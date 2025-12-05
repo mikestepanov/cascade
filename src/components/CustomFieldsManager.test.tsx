@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
-import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { showError, showSuccess } from "@/lib/toast";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldsManager } from "./CustomFieldsManager";
 
@@ -12,11 +12,10 @@ vi.mock("convex/react", () => ({
   useMutation: vi.fn(),
 }));
 
-vi.mock("sonner", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+// Mock toast utilities used by CustomFieldsManager and CustomFieldForm
+vi.mock("@/lib/toast", () => ({
+  showSuccess: vi.fn(),
+  showError: vi.fn(),
 }));
 
 describe("CustomFieldsManager - Component Behavior", () => {
@@ -27,6 +26,10 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Clear toast mocks
+    vi.mocked(showSuccess).mockClear();
+    vi.mocked(showError).mockClear();
 
     // Hook-level mocking: All useMutation calls return the same mock
     // This is a limitation of mocking at the hook level - we can't distinguish
@@ -83,15 +86,16 @@ describe("CustomFieldsManager - Component Behavior", () => {
       expect(screen.getByText("Create Custom Field")).toBeInTheDocument();
     });
 
-    it("should keep 'Add Field' button visible when form is open", async () => {
+    it("should open dialog when 'Add Field' button is clicked", async () => {
       const user = userEvent.setup();
 
       render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
-      // Button should still be visible (component doesn't hide it)
-      expect(screen.getByRole("button", { name: /Add Field/i })).toBeInTheDocument();
+      // Dialog should be open with form content
+      expect(screen.getByText("Create Custom Field")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/e.g., Sprint Points/i)).toBeInTheDocument();
     });
 
     it("should reset and hide form when Cancel is clicked", async () => {
@@ -138,7 +142,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockUpdateField).not.toHaveBeenCalled();
     });
 
@@ -152,7 +156,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       // Leave field key empty
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalledWith("Please fill in all required fields");
       expect(mockUpdateField).not.toHaveBeenCalled();
     });
 
@@ -166,7 +170,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.type(screen.getByPlaceholderText(/e.g., sprint_points/i), "valid_key");
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
-      expect(toast.error).toHaveBeenCalledWith("Please fill in all required fields");
+      expect(showError).toHaveBeenCalledWith("Please fill in all required fields");
     });
   });
 
@@ -489,7 +493,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await waitFor(() => {
         expect(mockUpdateField).toHaveBeenCalled();
-        expect(toast.error).not.toHaveBeenCalled();
+        expect(showError).not.toHaveBeenCalled();
       });
     });
   });
@@ -721,7 +725,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Field created");
+        expect(showSuccess).toHaveBeenCalledWith("Field created");
         expect(screen.queryByText("Create Custom Field")).not.toBeInTheDocument();
       });
     });
@@ -744,7 +748,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Field updated");
+        expect(showSuccess).toHaveBeenCalledWith("Field updated");
       });
     });
 
@@ -768,7 +772,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Field deleted");
+        expect(showSuccess).toHaveBeenCalledWith("Field deleted");
       });
     });
 
@@ -784,7 +788,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Duplicate field key");
+        expect(showError).toHaveBeenCalledWith("Duplicate field key");
       });
     });
 
@@ -801,7 +805,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Failed to save field");
+        expect(showError).toHaveBeenCalledWith("Failed to save field");
       });
     });
   });

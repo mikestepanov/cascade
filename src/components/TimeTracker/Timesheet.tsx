@@ -14,9 +14,9 @@ type TimeEntryWithHours = Doc<"timeEntries"> & {
 };
 
 export function Timesheet() {
-  const timesheet = useQuery(api.timeEntries.getCurrentWeekTimesheet);
-  const _updateEntry = useMutation(api.timeEntries.update);
-  const deleteEntry = useMutation(api.timeEntries.remove);
+  const timesheet = useQuery(api.timeTracking.getCurrentWeekTimesheet);
+  const _updateEntry = useMutation(api.timeTracking.updateTimeEntry);
+  const deleteEntry = useMutation(api.timeTracking.deleteTimeEntry);
 
   const [_editingEntry, _setEditingEntry] = useState<string | null>(null);
 

@@ -50,10 +50,18 @@ function StatItem({
   }, [value, delay]);
 
   const colors = {
-    cyan: { text: "text-cyan-400", bar: "bg-cyan-500", glow: "shadow-cyan-500/50" },
-    teal: { text: "text-teal-400", bar: "bg-teal-500", glow: "shadow-teal-500/50" },
-    purple: { text: "text-purple-400", bar: "bg-purple-500", glow: "shadow-purple-500/50" },
-    emerald: { text: "text-emerald-400", bar: "bg-emerald-500", glow: "shadow-emerald-500/50" },
+    cyan: { text: "text-cyan-400", bar: "bg-cyan-500 dark:bg-cyan-500", track: "bg-cyan-500/20" },
+    teal: { text: "text-teal-400", bar: "bg-teal-500 dark:bg-teal-500", track: "bg-teal-500/20" },
+    purple: {
+      text: "text-purple-400",
+      bar: "bg-purple-500 dark:bg-purple-500",
+      track: "bg-purple-500/20",
+    },
+    emerald: {
+      text: "text-emerald-400",
+      bar: "bg-emerald-500 dark:bg-emerald-500",
+      track: "bg-emerald-500/20",
+    },
   };
 
   return (
@@ -62,7 +70,7 @@ function StatItem({
       <p className="text-gray-400 text-sm mb-4">{label}</p>
       <Progress
         value={progress}
-        className="h-1.5 bg-gray-800"
+        className={`h-1.5 ${colors[color].track}`}
         indicatorClassName={`${colors[color].bar} transition-all duration-1000 ease-out`}
       />
     </div>

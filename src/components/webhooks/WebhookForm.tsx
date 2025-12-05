@@ -5,10 +5,9 @@ import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
-import { Flex } from "../ui/Flex";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Input } from "../ui/form";
 import { Checkbox } from "../ui/form/Checkbox";
-import { Modal } from "../ui/Modal";
 
 interface WebhookFormProps {
   projectId: Id<"projects">;
@@ -19,8 +18,8 @@ interface WebhookFormProps {
     secret?: string;
     events: string[];
   } | null;
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const AVAILABLE_EVENTS = [
@@ -36,7 +35,7 @@ const AVAILABLE_EVENTS = [
  * Form component for creating/editing webhooks
  * Extracted from WebhooksManager for better reusability
  */
-export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookFormProps) {
+export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookFormProps) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [secret, setSecret] = useState("");
@@ -86,7 +85,7 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
         await createWebhook({ projectId, ...webhookData });
         showSuccess("Webhook created");
       }
-      onClose();
+      onOpenChange(false);
     } catch (error) {
       showError(error instanceof Error ? error.message : "Failed to save webhook");
     } finally {
@@ -99,69 +98,73 @@ export function WebhookForm({ projectId, webhook, isOpen, onClose }: WebhookForm
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={webhook ? "Edit Webhook" : "Create Webhook"}
-      maxWidth="lg"
-      fullScreenOnMobile={true}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4 p-6">
-        <Input
-          label="Webhook Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Slack Notifications, Discord Bot"
-          required
-          autoFocus
-        />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{webhook ? "Edit Webhook" : "Create Webhook"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Webhook Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g., Slack Notifications, Discord Bot"
+            required
+            autoFocus
+          />
 
-        <Input
-          label="Webhook URL"
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://your-server.com/webhook"
-          required
-        />
+          <Input
+            label="Webhook URL"
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://your-server.com/webhook"
+            required
+          />
 
-        <Input
-          label="Secret (Optional)"
-          type="password"
-          value={secret}
-          onChange={(e) => setSecret(e.target.value)}
-          placeholder="Used to sign webhook payloads"
-          helpText="If provided, webhook payloads will be signed with HMAC-SHA256"
-        />
+          <Input
+            label="Secret (Optional)"
+            type="password"
+            value={secret}
+            onChange={(e) => setSecret(e.target.value)}
+            placeholder="Used to sign webhook payloads"
+            helpText="If provided, webhook payloads will be signed with HMAC-SHA256"
+          />
 
-        <div>
-          <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Events to Subscribe <span className="text-status-error">*</span>
+          <div>
+            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              Events to Subscribe <span className="text-status-error">*</span>
+            </div>
+            <div className="space-y-2 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+              {AVAILABLE_EVENTS.map((event) => (
+                <Checkbox
+                  key={event.value}
+                  label={event.label}
+                  checked={selectedEvents.includes(event.value)}
+                  onChange={() => toggleEvent(event.value)}
+                />
+              ))}
+            </div>
+            {selectedEvents.length === 0 && (
+              <p className="mt-1 text-sm text-status-error">Select at least one event</p>
+            )}
           </div>
-          <div className="space-y-2 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-            {AVAILABLE_EVENTS.map((event) => (
-              <Checkbox
-                key={event.value}
-                label={event.label}
-                checked={selectedEvents.includes(event.value)}
-                onChange={() => toggleEvent(event.value)}
-              />
-            ))}
-          </div>
-          {selectedEvents.length === 0 && (
-            <p className="mt-1 text-sm text-status-error">Select at least one event</p>
-          )}
-        </div>
 
-        <Flex gap="sm" className="pt-4">
-          <Button type="submit" isLoading={isSubmitting}>
-            {webhook ? "Update" : "Create"} Webhook
-          </Button>
-          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-        </Flex>
-      </form>
-    </Modal>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              {webhook ? "Update" : "Create"} Webhook
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -36,8 +36,8 @@ export function ExportButton({ projectId, sprintId, status }: ExportButtonProps)
       </button>
 
       <ImportExportModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
         projectId={projectId}
         sprintId={sprintId}
         status={status}

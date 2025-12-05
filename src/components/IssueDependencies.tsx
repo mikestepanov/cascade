@@ -6,9 +6,8 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { Flex } from "./ui/Flex";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select } from "./ui/form";
-import { Modal } from "./ui/Modal";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
@@ -204,93 +203,98 @@ export function IssueDependencies({ issueId, projectId: _projectId }: IssueDepen
       )}
 
       {/* Add Dependency Dialog */}
-      <Modal
-        isOpen={showAddDialog}
-        onClose={() => {
-          setShowAddDialog(false);
-          setSelectedIssueKey("");
-          setSearchQuery("");
+      <Dialog
+        open={showAddDialog}
+        onOpenChange={(open) => {
+          setShowAddDialog(open);
+          if (!open) {
+            setSelectedIssueKey("");
+            setSearchQuery("");
+          }
         }}
-        title="Add Dependency"
-        maxWidth="lg"
       >
-        <div className="p-6 space-y-4">
-          {/* Link Type */}
-          <Select
-            label="Relationship Type"
-            value={linkType}
-            onChange={(e) => setLinkType(e.target.value as "blocks" | "relates" | "duplicates")}
-          >
-            <option value="blocks">Blocks</option>
-            <option value="relates">Relates to</option>
-            <option value="duplicates">Duplicates</option>
-          </Select>
-
-          {/* Search Issues */}
-          <Input
-            label="Search Issue"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Type to search..."
-          />
-
-          {/* Search Results */}
-          {searchResults && searchResults.length > 0 && (
-            <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-              {searchResults
-                .filter((issue) => issue._id !== issueId)
-                .map((issue) => (
-                  <button
-                    type="button"
-                    key={issue._id}
-                    onClick={() => {
-                      setSelectedIssueKey(issue._id);
-                      setSearchQuery("");
-                    }}
-                    className={`w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0 ${
-                      selectedIssueKey === issue._id ? "bg-brand-50 dark:bg-brand-950" : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                      <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {issue.key}
-                      </span>
-                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
-                        {issue.title}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-            </div>
-          )}
-
-          {/* Selected Issue */}
-          {selectedIssueKey && (
-            <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              Selected: <span className="font-medium">{selectedIssueKey}</span>
-            </div>
-          )}
-
-          {/* Actions */}
-          <Flex gap="md" justify="end">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setShowAddDialog(false);
-                setSelectedIssueKey("");
-                setSearchQuery("");
-              }}
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add Dependency</DialogTitle>
+          </DialogHeader>
+          <div className="p-6 space-y-4">
+            {/* Link Type */}
+            <Select
+              label="Relationship Type"
+              value={linkType}
+              onChange={(e) => setLinkType(e.target.value as "blocks" | "relates" | "duplicates")}
             >
-              Cancel
-            </Button>
-            <Button onClick={handleAddLink} disabled={!selectedIssueKey}>
-              Add Dependency
-            </Button>
-          </Flex>
-        </div>
-      </Modal>
+              <option value="blocks">Blocks</option>
+              <option value="relates">Relates to</option>
+              <option value="duplicates">Duplicates</option>
+            </Select>
+
+            {/* Search Issues */}
+            <Input
+              label="Search Issue"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Type to search..."
+            />
+
+            {/* Search Results */}
+            {searchResults && searchResults.length > 0 && (
+              <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+                {searchResults
+                  .filter((issue) => issue._id !== issueId)
+                  .map((issue) => (
+                    <button
+                      type="button"
+                      key={issue._id}
+                      onClick={() => {
+                        setSelectedIssueKey(issue._id);
+                        setSearchQuery("");
+                      }}
+                      className={`w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0 ${
+                        selectedIssueKey === issue._id ? "bg-brand-50 dark:bg-brand-950" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{getTypeIcon(issue.type)}</span>
+                        <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          {issue.key}
+                        </span>
+                        <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                          {issue.title}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            )}
+
+            {/* Selected Issue */}
+            {selectedIssueKey && (
+              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                Selected: <span className="font-medium">{selectedIssueKey}</span>
+              </div>
+            )}
+
+            {/* Actions */}
+            <DialogFooter>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowAddDialog(false);
+                  setSelectedIssueKey("");
+                  setSearchQuery("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAddLink} disabled={!selectedIssueKey}>
+                Add Dependency
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation */}
       <ConfirmDialog
