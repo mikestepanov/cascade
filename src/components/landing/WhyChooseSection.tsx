@@ -52,8 +52,16 @@ function StatItem({
   const colors = {
     cyan: { text: "text-cyan-400", bar: "bg-cyan-500 dark:bg-cyan-500", track: "bg-cyan-500/20" },
     teal: { text: "text-teal-400", bar: "bg-teal-500 dark:bg-teal-500", track: "bg-teal-500/20" },
-    purple: { text: "text-purple-400", bar: "bg-purple-500 dark:bg-purple-500", track: "bg-purple-500/20" },
-    emerald: { text: "text-emerald-400", bar: "bg-emerald-500 dark:bg-emerald-500", track: "bg-emerald-500/20" },
+    purple: {
+      text: "text-purple-400",
+      bar: "bg-purple-500 dark:bg-purple-500",
+      track: "bg-purple-500/20",
+    },
+    emerald: {
+      text: "text-emerald-400",
+      bar: "bg-emerald-500 dark:bg-emerald-500",
+      track: "bg-emerald-500/20",
+    },
   };
 
   return (
