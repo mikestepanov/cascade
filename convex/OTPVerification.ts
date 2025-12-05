@@ -65,8 +65,7 @@ export const OTPVerification = Resend({
     });
 
     if (!result.success) {
-      console.error(`Failed to send verification email: ${result.error}`);
-      throw new Error("Could not send verification email");
+      throw new Error(`Could not send verification email: ${result.error}`);
     }
   },
 });

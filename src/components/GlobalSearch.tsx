@@ -108,6 +108,74 @@ function SearchTab({
   );
 }
 
+// Search list content component - renders based on query/loading state
+function SearchListContent({
+  query,
+  isLoading,
+  filteredResults,
+  hasMore,
+  totalCount,
+  onClose,
+  onLoadMore,
+}: {
+  query: string;
+  isLoading: boolean;
+  filteredResults: SearchResult[];
+  hasMore: boolean;
+  totalCount: number;
+  onClose: () => void;
+  onLoadMore: () => void;
+}) {
+  if (query.length < 2) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <p className="text-sm">Type at least 2 characters to search</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+        <p className="text-sm">Searching...</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <CommandEmpty className="p-8">
+        <div className="text-center">
+          <span className="text-4xl mb-4 block">🔍</span>
+          <p className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
+            No results found
+          </p>
+        </div>
+      </CommandEmpty>
+      {filteredResults.length > 0 && (
+        <CommandGroup>
+          {filteredResults.map((result) => (
+            <SearchResultItem key={result._id} result={result} onClose={onClose} />
+          ))}
+        </CommandGroup>
+      )}
+      {hasMore && (
+        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onLoadMore}
+            className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+          >
+            Load More ({totalCount - filteredResults.length} remaining)
+          </Button>
+        </div>
+      )}
+    </>
+  );
+}
+
 // Search result item component
 function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
   const href =
@@ -282,50 +350,15 @@ export function GlobalSearch() {
           </div>
 
           <CommandList className="max-h-80 sm:max-h-96">
-            {query.length < 2 ? (
-              <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                <p className="text-sm">Type at least 2 characters to search</p>
-              </div>
-            ) : isLoading ? (
-              <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
-                <p className="text-sm">Searching...</p>
-              </div>
-            ) : (
-              <>
-                <CommandEmpty className="p-8">
-                  <div className="text-center">
-                    <span className="text-4xl mb-4 block">🔍</span>
-                    <p className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
-                      No results found
-                    </p>
-                  </div>
-                </CommandEmpty>
-                {filteredResults.length > 0 && (
-                  <CommandGroup>
-                    {filteredResults.map((result) => (
-                      <SearchResultItem
-                        key={result._id}
-                        result={result}
-                        onClose={() => setIsOpen(false)}
-                      />
-                    ))}
-                  </CommandGroup>
-                )}
-                {hasMore && (
-                  <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLoadMore}
-                      className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
-                    >
-                      Load More ({totalCount - filteredResults.length} remaining)
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
+            <SearchListContent
+              query={query}
+              isLoading={isLoading}
+              filteredResults={filteredResults}
+              hasMore={hasMore}
+              totalCount={totalCount}
+              onClose={() => setIsOpen(false)}
+              onLoadMore={handleLoadMore}
+            />
           </CommandList>
 
           {/* Footer */}

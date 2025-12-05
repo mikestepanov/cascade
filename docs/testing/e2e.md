@@ -246,13 +246,7 @@ MAILTRAP_INBOX_ID=your_inbox_id
 import {
   waitForVerificationEmail,
   clearInbox,
-  isMailtrapConfigured
 } from "./utils/mailtrap";
-
-// Check if Mailtrap is configured
-if (!isMailtrapConfigured()) {
-  test.skip("Mailtrap not configured");
-}
 
 // Clear inbox before test
 await clearInbox();
@@ -268,7 +262,6 @@ const otp = await waitForVerificationEmail("user@example.com", {
 
 | Function | Description |
 |----------|-------------|
-| `isMailtrapConfigured()` | Returns `true` if all env vars set |
 | `waitForVerificationEmail(email, options)` | Polls inbox, returns OTP code |
 | `clearInbox()` | Deletes all messages (cleanup) |
 | `getTestEmailAddress(prefix)` | Generates unique test email |

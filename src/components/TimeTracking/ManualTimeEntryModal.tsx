@@ -20,6 +20,164 @@ interface ManualTimeEntryModalProps {
   issueId?: Id<"issues">;
 }
 
+interface TimeEntryData {
+  projectId?: Id<"projects">;
+  issueId?: Id<"issues">;
+  startTime: number;
+  endTime: number;
+  description: string | undefined;
+  activity: string | undefined;
+  tags: string[];
+  billable: boolean;
+}
+
+/**
+ * Calculate time entry data for duration mode
+ */
+function calculateDurationModeEntry(
+  date: string,
+  effectiveDuration: number,
+  projectId: Id<"projects"> | undefined,
+  issueId: Id<"issues"> | undefined,
+  description: string,
+  activity: string,
+  tags: string[],
+  billable: boolean,
+): TimeEntryData {
+  const dateObj = new Date(date);
+  const now = new Date();
+  // Use current time if date is today, otherwise use end of day
+  const endDate =
+    dateObj.toDateString() === now.toDateString() ? now : new Date(dateObj.setHours(17, 0, 0, 0));
+  const endTime = endDate.getTime();
+  const startTimeMs = endTime - effectiveDuration * 1000;
+
+  return {
+    projectId,
+    issueId,
+    startTime: startTimeMs,
+    endTime: endTime,
+    description: description || undefined,
+    activity: activity || undefined,
+    tags,
+    billable,
+  };
+}
+
+/**
+ * Add a tag to the list if it doesn't already exist
+ */
+function addTagToList(tags: string[], newTag: string): string[] {
+  const tag = newTag.trim();
+  if (tag && !tags.includes(tag)) {
+    return [...tags, tag];
+  }
+  return tags;
+}
+
+/**
+ * Parse duration input and return seconds (0 if invalid)
+ */
+function parseDurationToSeconds(input: string): number {
+  const parsed = parseDuration(input);
+  return parsed ?? 0;
+}
+
+/**
+ * Calculate duration in seconds from time range
+ */
+function calculateTimeRangeDuration(date: string, startTime: string, endTime: string): number {
+  if (!(date && startTime && endTime)) return 0;
+  try {
+    const start = new Date(`${date}T${startTime}`);
+    const end = new Date(`${date}T${endTime}`);
+    if (end <= start) return 0;
+    return Math.floor((end.getTime() - start.getTime()) / 1000);
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Validate time entry form input
+ * Returns error message if invalid, null if valid
+ */
+function validateTimeEntry(
+  date: string,
+  entryMode: EntryMode,
+  effectiveDuration: number,
+  startTime: string,
+  endTime: string,
+  duration: number,
+): string | null {
+  if (!date) return "Please select a date";
+  if (entryMode === "duration" && effectiveDuration <= 0) return "Please enter a valid duration";
+  if (entryMode === "timeRange" && !(startTime && endTime))
+    return "Please fill in start time and end time";
+  if (entryMode === "timeRange" && duration <= 0) return "End time must be after start time";
+  return null;
+}
+
+/**
+ * Calculate time entry data for time range mode
+ */
+function calculateTimeRangeModeEntry(
+  date: string,
+  startTime: string,
+  endTime: string,
+  projectId: Id<"projects"> | undefined,
+  issueId: Id<"issues"> | undefined,
+  description: string,
+  activity: string,
+  tags: string[],
+  billable: boolean,
+): TimeEntryData {
+  const start = new Date(`${date}T${startTime}`);
+  const end = new Date(`${date}T${endTime}`);
+
+  return {
+    projectId,
+    issueId,
+    startTime: start.getTime(),
+    endTime: end.getTime(),
+    description: description || undefined,
+    activity: activity || undefined,
+    tags,
+    billable,
+  };
+}
+
+// Mode toggle button component
+function ModeToggleButton({
+  mode,
+  currentMode,
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  mode: EntryMode;
+  currentMode: EntryMode;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+}) {
+  const isActive = currentMode === mode;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+        isActive
+          ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
+          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+      }`}
+    >
+      <Icon className="w-4 h-4" />
+      {label}
+    </button>
+  );
+}
+
 export function ManualTimeEntryModal({
   onClose,
   projectId: initialProjectId,
@@ -54,33 +212,14 @@ export function ManualTimeEntryModal({
   // Parse duration input when it changes
   useEffect(() => {
     if (entryMode === "duration") {
-      const parsed = parseDuration(durationInput);
-      setDurationSeconds(parsed ?? 0);
+      setDurationSeconds(parseDurationToSeconds(durationInput));
     }
   }, [durationInput, entryMode]);
 
   // Calculate duration from time range
   useEffect(() => {
     if (entryMode !== "timeRange") return;
-    if (!(date && startTime && endTime)) {
-      setDuration(0);
-      return;
-    }
-
-    try {
-      const start = new Date(`${date}T${startTime}`);
-      const end = new Date(`${date}T${endTime}`);
-
-      if (end <= start) {
-        setDuration(0);
-        return;
-      }
-
-      const durationSecs = Math.floor((end.getTime() - start.getTime()) / 1000);
-      setDuration(durationSecs);
-    } catch {
-      setDuration(0);
-    }
+    setDuration(calculateTimeRangeDuration(date, startTime, endTime));
   }, [date, startTime, endTime, entryMode]);
 
   // Quick increment handler for duration mode
@@ -94,9 +233,9 @@ export function ManualTimeEntryModal({
   const effectiveDuration = entryMode === "duration" ? durationSeconds : duration;
 
   const handleAddTag = () => {
-    const tag = tagInput.trim();
-    if (tag && !tags.includes(tag)) {
-      setTags([...tags, tag]);
+    const newTags = addTagToList(tags, tagInput);
+    if (newTags !== tags) {
+      setTags(newTags);
       setTagInput("");
     }
   };
@@ -106,77 +245,51 @@ export function ManualTimeEntryModal({
   };
 
   const handleSubmit = async () => {
-    if (!date) {
-      showError("Please select a date");
+    // Validate form input
+    const validationError = validateTimeEntry(
+      date,
+      entryMode,
+      effectiveDuration,
+      startTime,
+      endTime,
+      duration,
+    );
+    if (validationError) {
+      showError(validationError);
       return;
     }
 
-    if (entryMode === "duration") {
-      if (effectiveDuration <= 0) {
-        showError("Please enter a valid duration");
-        return;
-      }
+    // Calculate entry data based on mode
+    const entryData =
+      entryMode === "duration"
+        ? calculateDurationModeEntry(
+            date,
+            effectiveDuration,
+            projectId,
+            issueId,
+            description,
+            activity,
+            tags,
+            billable,
+          )
+        : calculateTimeRangeModeEntry(
+            date,
+            startTime,
+            endTime,
+            projectId,
+            issueId,
+            description,
+            activity,
+            tags,
+            billable,
+          );
 
-      try {
-        // For duration mode, create entry ending "now" (or end of selected date)
-        const dateObj = new Date(date);
-        const now = new Date();
-        // Use current time if date is today, otherwise use end of day
-        const endDate =
-          dateObj.toDateString() === now.toDateString()
-            ? now
-            : new Date(dateObj.setHours(17, 0, 0, 0));
-        const endTime = endDate.getTime();
-        const startTimeMs = endTime - effectiveDuration * 1000;
-
-        await createTimeEntry({
-          projectId,
-          issueId,
-          startTime: startTimeMs,
-          endTime: endTime,
-          description: description || undefined,
-          activity: activity || undefined,
-          tags,
-          billable,
-        });
-
-        showSuccess("Time entry created");
-        onClose();
-      } catch (error) {
-        showError(error, "Failed to create time entry");
-      }
-    } else {
-      // Time range mode
-      if (!(startTime && endTime)) {
-        showError("Please fill in start time and end time");
-        return;
-      }
-
-      if (duration <= 0) {
-        showError("End time must be after start time");
-        return;
-      }
-
-      try {
-        const start = new Date(`${date}T${startTime}`);
-        const end = new Date(`${date}T${endTime}`);
-
-        await createTimeEntry({
-          projectId,
-          issueId,
-          startTime: start.getTime(),
-          endTime: end.getTime(),
-          description: description || undefined,
-          activity: activity || undefined,
-          tags,
-          billable,
-        });
-
-        showSuccess("Time entry created");
-        onClose();
-      } catch (error) {
-        showError(error, "Failed to create time entry");
-      }
+    try {
+      await createTimeEntry(entryData);
+      showSuccess("Time entry created");
+      onClose();
+    } catch (error) {
+      showError(error, "Failed to create time entry");
     }
   };
 
@@ -194,30 +307,20 @@ export function ManualTimeEntryModal({
       >
         {/* Mode Toggle */}
         <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <button
-            type="button"
+          <ModeToggleButton
+            mode="duration"
+            currentMode={entryMode}
+            icon={Hourglass}
+            label="Duration"
             onClick={() => setEntryMode("duration")}
-            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              entryMode === "duration"
-                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
-          >
-            <Hourglass className="w-4 h-4" />
-            Duration
-          </button>
-          <button
-            type="button"
+          />
+          <ModeToggleButton
+            mode="timeRange"
+            currentMode={entryMode}
+            icon={Clock}
+            label="Start/End Time"
             onClick={() => setEntryMode("timeRange")}
-            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              entryMode === "timeRange"
-                ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
-          >
-            <Clock className="w-4 h-4" />
-            Start/End Time
-          </button>
+          />
         </div>
 
         {/* Date */}
