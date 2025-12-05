@@ -38,6 +38,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
+            <DialogTitle className="sr-only">Loading issue details</DialogTitle>
             <div className="flex items-center space-x-3">
               <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark h-8 w-8 rounded" />
               <div className="space-y-2">

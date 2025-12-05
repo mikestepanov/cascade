@@ -206,7 +206,7 @@ export function ManualTimeEntryModal({
   const [durationSeconds, setDurationSeconds] = useState(0);
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.list, projectId ? { projectId } : "skip");
+  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
 
   // Calculate duration from time range
   const [duration, setDuration] = useState(0);

@@ -584,7 +584,7 @@ export const listUsers = query({
 
         return {
           _id: user._id,
-          name: user.name,
+          name: user.name ?? user.email ?? "Unknown User",
           email: user.email,
           image: user.image,
           emailVerificationTime: user.emailVerificationTime,
