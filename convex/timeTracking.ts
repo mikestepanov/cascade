@@ -811,11 +811,12 @@ export const getProjectBilling = query({
 
     // Get time entries for this project
     let entries: Doc<"timeEntries">[];
-    if (args.startDate && args.endDate) {
+    const { startDate, endDate } = args;
+    if (startDate !== undefined && endDate !== undefined) {
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
-          q.eq("projectId", args.projectId).gte("date", args.startDate!).lte("date", args.endDate!),
+          q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
         )
         .collect();
     } else {

@@ -6,11 +6,11 @@ import { ExportButton } from "./ExportButton";
 
 // Mock the ImportExportModal component
 vi.mock("./ImportExportModal", () => ({
-  ImportExportModal: vi.fn(({ isOpen, onClose, projectId }) => {
-    if (!isOpen) return null;
+  ImportExportModal: vi.fn(({ open, onOpenChange, projectId }) => {
+    if (!open) return null;
     return (
       <div data-testid="import-export-modal">
-        <button type="button" onClick={onClose}>
+        <button type="button" onClick={() => onOpenChange(false)}>
           Close Modal
         </button>
         <div data-testid="modal-project-id">{projectId}</div>

@@ -30,7 +30,7 @@ vi.mock("@/lib/array-utils", () => ({
 
 describe("CreateIssueModal", () => {
   const mockCreateIssue = vi.fn();
-  const mockOnClose = vi.fn();
+  const mockOnOpenChange = vi.fn();
   const mockProjectId = "project-123" as Id<"projects">;
   const _mockSprintId = "sprint-456" as Id<"sprints">;
 
@@ -76,7 +76,9 @@ describe("CreateIssueModal", () => {
   });
 
   it("should render story points input field", () => {
-    render(<CreateIssueModal projectId={mockProjectId} onClose={mockOnClose} />);
+    render(
+      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+    );
 
     const storyPointsInput = screen.getByPlaceholderText(/Enter story points/i);
     expect(storyPointsInput).toBeInTheDocument();
@@ -87,7 +89,9 @@ describe("CreateIssueModal", () => {
 
   it("should allow user to enter story points", async () => {
     const user = userEvent.setup();
-    render(<CreateIssueModal projectId={mockProjectId} onClose={mockOnClose} />);
+    render(
+      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+    );
 
     const storyPointsInput = screen.getByPlaceholderText(/Enter story points/i);
     await user.type(storyPointsInput, "5");
@@ -107,7 +111,9 @@ describe("CreateIssueModal", () => {
       return [mockProject, mockTemplates, mockLabels][callIndex];
     });
 
-    render(<CreateIssueModal projectId={mockProjectId} onClose={mockOnClose} />);
+    render(
+      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+    );
 
     const titleInput = screen.getByPlaceholderText(/Enter issue title/i);
     const storyPointsInput = screen.getByPlaceholderText(/Enter story points/i);

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Cross-platform recursive file finder
 function findFiles(dir, pattern) {
@@ -16,7 +16,7 @@ function findFiles(dir, pattern) {
           results.push(fullPath);
         }
       }
-    } catch (e) {
+    } catch {
       // Directory not accessible, skip
     }
   }
@@ -26,108 +26,130 @@ function findFiles(dir, pattern) {
 }
 
 // Get all API calls from src (excluding comments)
-const srcFiles = findFiles('src', /\.(ts|tsx)$/);
+const srcFiles = findFiles("src", /\.(ts|tsx)$/);
 const apiCalls = new Map(); // call -> [files]
 
 for (const file of srcFiles) {
   try {
-    const content = fs.readFileSync(file, 'utf8');
-    const lines = content.split('\n');
+    const content = fs.readFileSync(file, "utf8");
+    const lines = content.split("\n");
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       // Skip comments
-      if (line.trim().startsWith('//') || line.trim().startsWith('*')) continue;
+      if (line.trim().startsWith("//") || line.trim().startsWith("*")) continue;
 
       const matches = line.matchAll(/api\.(\w+)\.(\w+)/g);
       for (const match of matches) {
-        const call = match[1] + '.' + match[2];
+        const call = `${match[1]}.${match[2]}`;
         if (!apiCalls.has(call)) {
           apiCalls.set(call, []);
         }
         apiCalls.get(call).push(`${file}:${i + 1}`);
       }
     }
-  } catch(e) {}
+  } catch {
+    // File not readable, skip
+  }
 }
 
 // Get all exported functions from convex (top-level only)
-const convexTopLevel = findFiles('convex', /\.ts$/).filter(f => {
-  const rel = path.relative('convex', f);
-  return !rel.includes(path.sep) && !rel.includes('.test.') && !rel.includes('schema') && !rel.includes('config');
+const convexTopLevel = findFiles("convex", /\.ts$/).filter((f) => {
+  const rel = path.relative("convex", f);
+  return !(
+    rel.includes(path.sep) ||
+    rel.includes(".test.") ||
+    rel.includes("schema") ||
+    rel.includes("config")
+  );
 });
 
 const exportedFuncs = new Map();
 
 for (const file of convexTopLevel) {
-  const module = path.basename(file, '.ts');
+  const moduleName = path.basename(file, ".ts");
   try {
-    const content = fs.readFileSync(file, 'utf8');
+    const content = fs.readFileSync(file, "utf8");
     const matches = content.matchAll(/export const (\w+)\s*=/g);
     const funcs = new Set();
     for (const match of matches) {
       funcs.add(match[1]);
     }
-    exportedFuncs.set(module, funcs);
-  } catch(e) {}
+    exportedFuncs.set(moduleName, funcs);
+  } catch {
+    // File not readable, skip
+  }
 }
 
 // Check subdirectories like ai/, email/, etc.
-const subdirs = ['ai', 'email', 'api', 'http', 'lib', 'internal'];
+const subdirs = ["ai", "email", "api", "http", "lib", "internal"];
 for (const subdir of subdirs) {
-  const subPath = path.join('convex', subdir);
+  const subPath = path.join("convex", subdir);
   if (!fs.existsSync(subPath)) continue;
 
   const subFiles = findFiles(subPath, /\.ts$/);
   for (const file of subFiles) {
-    const submodule = path.basename(file, '.ts');
+    const submodule = path.basename(file, ".ts");
     try {
-      const content = fs.readFileSync(file, 'utf8');
+      const content = fs.readFileSync(file, "utf8");
       const matches = content.matchAll(/export const (\w+)\s*=/g);
       const funcs = new Set();
       for (const match of matches) {
         funcs.add(match[1]);
       }
-      exportedFuncs.set(subdir + '.' + submodule, funcs);
-    } catch(e) {}
+      exportedFuncs.set(`${subdir}.${submodule}`, funcs);
+    } catch {
+      // File not readable, skip
+    }
   }
 }
 
 // Find mismatches
-console.log('=== CHECKING API CALLS ===\n');
+console.log("=== CHECKING API CALLS ===\n");
 let found = 0;
 for (const [call, files] of [...apiCalls.entries()].sort()) {
-  const [module, func] = call.split('.');
+  const [moduleName, func] = call.split(".");
 
   // Skip special cases (URL strings, not actual API calls)
-  if (module === 'convex') continue;
-  if (call === 'pumble.com') continue;
+  if (moduleName === "convex") continue;
+  if (call === "pumble.com") continue;
 
   // Check if it's a submodule call like ai.actions (these are valid nested modules)
   if (exportedFuncs.has(call)) continue;
 
   // Skip known valid submodule patterns (ai.actions, ai.mutations, ai.queries, etc.)
-  if (['ai.actions', 'ai.mutations', 'ai.queries', 'email.notifications', 'email.helpers'].includes(call)) continue;
+  if (
+    ["ai.actions", "ai.mutations", "ai.queries", "email.notifications", "email.helpers"].includes(
+      call,
+    )
+  )
+    continue;
 
-  const moduleFuncs = exportedFuncs.get(module);
+  const moduleFuncs = exportedFuncs.get(moduleName);
   if (!moduleFuncs) {
-    console.log('❌ MISSING MODULE: convex/' + module + '.ts');
-    console.log('   Used as: api.' + call);
-    console.log('   In: ' + files.slice(0, 3).join(', ') + (files.length > 3 ? ` (+${files.length - 3} more)` : ''));
+    console.log(`❌ MISSING MODULE: convex/${moduleName}.ts`);
+    console.log(`   Used as: api.${call}`);
+    console.log(
+      `   In: ${files.slice(0, 3).join(", ")}${files.length > 3 ? ` (+${files.length - 3} more)` : ""}`,
+    );
     found++;
   } else if (!moduleFuncs.has(func)) {
-    console.log('❌ MISSING FUNCTION: api.' + call);
-    console.log('   In: ' + files.slice(0, 3).join(', ') + (files.length > 3 ? ` (+${files.length - 3} more)` : ''));
-    console.log('   Available: ' + [...moduleFuncs].slice(0, 8).join(', ') + (moduleFuncs.size > 8 ? '...' : ''));
+    console.log(`❌ MISSING FUNCTION: api.${call}`);
+    console.log(
+      `   In: ${files.slice(0, 3).join(", ")}${files.length > 3 ? ` (+${files.length - 3} more)` : ""}`,
+    );
+    console.log(
+      `   Available: ${[...moduleFuncs].slice(0, 8).join(", ")}${moduleFuncs.size > 8 ? "..." : ""}`,
+    );
     found++;
   }
 }
 
-console.log('\n=== SUMMARY ===');
+console.log("\n=== SUMMARY ===");
 if (found === 0) {
-  console.log('✅ All ' + apiCalls.size + ' API calls are valid!');
+  console.log(`✅ All ${apiCalls.size} API calls are valid!`);
   process.exit(0);
 } else {
-  console.log('❌ Found ' + found + ' invalid API calls');
+  console.log(`❌ Found ${found} invalid API calls`);
   process.exit(1);
 }
