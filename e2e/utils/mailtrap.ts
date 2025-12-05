@@ -3,13 +3,30 @@
  *
  * Used to fetch verification emails and extract OTP codes
  * during automated signup testing.
+ *
+ * Required environment variables:
+ * - MAILTRAP_API_TOKEN
+ * - MAILTRAP_ACCOUNT_ID
+ * - MAILTRAP_INBOX_ID
  */
 
-const MAILTRAP_API_TOKEN = process.env.MAILTRAP_API_TOKEN;
-const MAILTRAP_ACCOUNT_ID = process.env.MAILTRAP_ACCOUNT_ID;
-const MAILTRAP_INBOX_ID = process.env.MAILTRAP_INBOX_ID;
-
 const MAILTRAP_API_BASE = "https://mailtrap.io/api";
+
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+function getMailtrapConfig() {
+  return {
+    apiToken: requireEnv("MAILTRAP_API_TOKEN"),
+    accountId: requireEnv("MAILTRAP_ACCOUNT_ID"),
+    inboxId: requireEnv("MAILTRAP_INBOX_ID"),
+  };
+}
 
 interface MailtrapMessage {
   id: number;
@@ -26,27 +43,15 @@ interface MailtrapMessage {
 }
 
 /**
- * Check if Mailtrap is configured
- */
-export function isMailtrapConfigured(): boolean {
-  return !!(MAILTRAP_API_TOKEN && MAILTRAP_ACCOUNT_ID && MAILTRAP_INBOX_ID);
-}
-
-/**
  * Fetch messages from Mailtrap inbox
  */
 async function fetchMessages(): Promise<MailtrapMessage[]> {
-  if (!isMailtrapConfigured()) {
-    throw new Error(
-      "Mailtrap not configured. Set MAILTRAP_API_TOKEN, MAILTRAP_ACCOUNT_ID, MAILTRAP_INBOX_ID",
-    );
-  }
-
-  const url = `${MAILTRAP_API_BASE}/accounts/${MAILTRAP_ACCOUNT_ID}/inboxes/${MAILTRAP_INBOX_ID}/messages`;
+  const config = getMailtrapConfig();
+  const url = `${MAILTRAP_API_BASE}/accounts/${config.accountId}/inboxes/${config.inboxId}/messages`;
 
   const response = await fetch(url, {
     headers: {
-      "Api-Token": MAILTRAP_API_TOKEN!,
+      "Api-Token": config.apiToken,
     },
   });
 
@@ -61,11 +66,12 @@ async function fetchMessages(): Promise<MailtrapMessage[]> {
  * Get the text body of a specific message
  */
 async function getMessageText(messageId: number): Promise<string> {
-  const url = `${MAILTRAP_API_BASE}/accounts/${MAILTRAP_ACCOUNT_ID}/inboxes/${MAILTRAP_INBOX_ID}/messages/${messageId}/body.txt`;
+  const config = getMailtrapConfig();
+  const url = `${MAILTRAP_API_BASE}/accounts/${config.accountId}/inboxes/${config.inboxId}/messages/${messageId}/body.txt`;
 
   const response = await fetch(url, {
     headers: {
-      "Api-Token": MAILTRAP_API_TOKEN!,
+      "Api-Token": config.apiToken,
     },
   });
 
@@ -131,16 +137,13 @@ export async function waitForVerificationEmail(
  * Delete all messages in the inbox (cleanup)
  */
 export async function clearInbox(): Promise<void> {
-  if (!isMailtrapConfigured()) {
-    return;
-  }
-
-  const url = `${MAILTRAP_API_BASE}/accounts/${MAILTRAP_ACCOUNT_ID}/inboxes/${MAILTRAP_INBOX_ID}/clean`;
+  const config = getMailtrapConfig();
+  const url = `${MAILTRAP_API_BASE}/accounts/${config.accountId}/inboxes/${config.inboxId}/clean`;
 
   await fetch(url, {
     method: "PATCH",
     headers: {
-      "Api-Token": MAILTRAP_API_TOKEN!,
+      "Api-Token": config.apiToken,
     },
   });
 }

@@ -1,5 +1,5 @@
-import { E2E_ENDPOINTS, TEST_USERS, getE2EHeaders } from "./config";
-import { authenticatedTest as test, expect } from "./fixtures";
+import { E2E_ENDPOINTS, getE2EHeaders, TEST_USERS } from "./config";
+import { expect, authenticatedTest as test } from "./fixtures";
 
 /**
  * Onboarding Wizard E2E Tests
@@ -37,12 +37,12 @@ async function resetOnboarding(): Promise<void> {
 // This allows re-testing the onboarding flow with an already-authenticated user.
 // The resetOnboarding() call clears the onboarding record, causing the app to show onboarding again.
 test.describe("Onboarding Wizard", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async () => {
     // Reset onboarding state before each test via HTTP endpoint
     await resetOnboarding();
   });
 
-  test("displays welcome page with role selection", async ({ page, saveAuthState }) => {
+  test("displays welcome page with role selection", async ({ page }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -56,7 +56,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(page.getByRole("heading", { name: /team member/i })).toBeVisible();
   });
 
-  test("can select team lead role", async ({ page, saveAuthState }) => {
+  test("can select team lead role", async ({ page }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -73,7 +73,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(continueButton).toBeVisible({ timeout: 5000 });
   });
 
-  test("can select team member role", async ({ page, saveAuthState }) => {
+  test("can select team member role", async ({ page }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -90,7 +90,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(continueButton).toBeVisible({ timeout: 5000 });
   });
 
-  test("can skip onboarding", async ({ page, saveAuthState }) => {
+  test("can skip onboarding", async ({ page }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 
@@ -110,7 +110,7 @@ test.describe("Onboarding Wizard", () => {
     await expect(page.getByRole("heading", { name: /my work/i })).toBeVisible({ timeout: 10000 });
   });
 
-  test("shows feature highlights", async ({ page, saveAuthState }) => {
+  test("shows feature highlights", async ({ page }) => {
     await page.goto("/onboarding");
     await page.waitForLoadState("networkidle");
 

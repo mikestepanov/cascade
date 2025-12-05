@@ -1,9 +1,5 @@
 import { expect, test } from "./fixtures";
-import {
-  getTestEmailAddress,
-  isMailtrapConfigured,
-  waitForVerificationEmail,
-} from "./utils/mailtrap";
+import { getTestEmailAddress, waitForVerificationEmail } from "./utils/mailtrap";
 
 /**
  * Authentication E2E Tests
@@ -122,11 +118,6 @@ test.describe("Password Reset", () => {
 test.describe
   .skip("Integration", () => {
     test.describe.configure({ mode: "serial" });
-
-    // Skip all tests if Mailtrap is not configured
-    test.beforeEach(() => {
-      test.skip(!isMailtrapConfigured(), "Mailtrap not configured - skipping integration tests");
-    });
 
     test("sign up flow sends verification email", async ({ authPage }) => {
       const testEmail = getTestEmailAddress("signup-test");

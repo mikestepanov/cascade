@@ -168,7 +168,10 @@ function StartTimerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
             >
               Activity (optional)
             </label>
-            <Select value={activity || "none"} onValueChange={(value) => setActivity(value === "none" ? "" : value)}>
+            <Select
+              value={activity || "none"}
+              onValueChange={(value) => setActivity(value === "none" ? "" : value)}
+            >
               <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark">
                 <SelectValue placeholder="Select activity..." />
               </SelectTrigger>
