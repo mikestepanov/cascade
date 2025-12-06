@@ -1,6 +1,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
@@ -62,8 +64,7 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
         We sent a verification code to <strong>{email}</strong>. Enter it below to continue.
       </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <input
-          className="auth-input-field"
+        <Input
           type="text"
           name="code"
           placeholder="8-digit code"
@@ -71,9 +72,9 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
           pattern="[0-9]{8}"
           maxLength={8}
         />
-        <button className="auth-button" type="submit" disabled={submitting}>
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
           {submitting ? "Verifying..." : "Verify email"}
-        </button>
+        </Button>
         <AuthLinkButton onClick={handleResend} disabled={resending}>
           {resending ? "Sending..." : "Didn't receive a code? Resend"}
         </AuthLinkButton>

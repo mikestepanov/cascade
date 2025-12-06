@@ -192,15 +192,6 @@ body {
   background: #111827;
 }
 
-/* only use this to update the style of the auth input fields. use a different class for all other input fields */
-.auth-input-field {
-  @apply w-full px-4 py-3 rounded-container bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:border-ui-border-focus dark:focus:border-ui-border-focus-dark focus:ring-1 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark outline-none transition-shadow shadow-sm hover:shadow;
-}
-
-/* only use this to update the style of the auth buttons. use the button class for all other buttons */
-.auth-button {
-  @apply w-full px-4 py-3 rounded bg-brand-600 dark:bg-brand-500 text-white font-semibold hover:bg-brand-700 dark:hover:bg-brand-600 transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed;
-}
 
 /* BlockNote editor customizations for minimal design */
 .bn-container {

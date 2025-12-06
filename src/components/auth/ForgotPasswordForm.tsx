@@ -1,6 +1,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
@@ -41,16 +43,10 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
         Enter your email and we'll send you a code to reset your password.
       </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <input
-          className="auth-input-field"
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-        />
-        <button className="auth-button" type="submit" disabled={submitting}>
+        <Input type="email" name="email" placeholder="Email" required />
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
-        </button>
+        </Button>
         <AuthLinkButton onClick={onBack}>Back to sign in</AuthLinkButton>
       </form>
     </div>

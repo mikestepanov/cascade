@@ -2,6 +2,8 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
 import { AuthLinkButton } from "./AuthLink";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 
@@ -38,13 +40,6 @@ export function SignInForm() {
       });
   };
 
-  const baseButtonStyles =
-    "w-full px-4 py-3 rounded font-semibold transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3";
-
-  const emailButtonStyles = `${baseButtonStyles} bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-2 border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:border-brand-500 dark:hover:border-brand-400`;
-
-  const submitButtonStyles = `${baseButtonStyles} bg-brand-600 dark:bg-brand-500 border-2 border-brand-600 dark:border-brand-500 text-white hover:bg-brand-700 dark:hover:bg-brand-600 hover:border-brand-700 dark:hover:border-brand-600`;
-
   return (
     <div className="w-full">
       <GoogleSignInButton />
@@ -60,20 +55,8 @@ export function SignInForm() {
           }`}
         >
           <div className="overflow-hidden flex flex-col gap-form-field">
-            <input
-              className="auth-input-field"
-              type="email"
-              name="email"
-              placeholder="Email"
-              required={formReady}
-            />
-            <input
-              className="auth-input-field"
-              type="password"
-              name="password"
-              placeholder="Password"
-              required={formReady}
-            />
+            <Input type="email" name="email" placeholder="Email" required={formReady} />
+            <Input type="password" name="password" placeholder="Password" required={formReady} />
           </div>
         </div>
         {showEmailForm && (
@@ -83,14 +66,16 @@ export function SignInForm() {
             </AuthLinkButton>
           </div>
         )}
-        <button
+        <Button
           type={showEmailForm ? "submit" : "button"}
-          className={showEmailForm ? submitButtonStyles : emailButtonStyles}
+          variant={showEmailForm ? "primary" : "secondary"}
+          size="lg"
+          className="w-full"
           onClick={!showEmailForm ? handleShowEmailForm : undefined}
           disabled={submitting}
         >
           {!showEmailForm ? (
-            <>
+            <div className="flex items-center gap-3">
               <svg
                 className="w-5 h-5"
                 viewBox="0 0 24 24"
@@ -105,13 +90,13 @@ export function SignInForm() {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
               <span>Continue with email</span>
-            </>
+            </div>
           ) : submitting ? (
             "Signing in..."
           ) : (
             "Sign in"
           )}
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -3,6 +3,8 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
@@ -85,8 +87,8 @@ export function EmailVerificationRequired() {
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input
-            className="auth-input-field text-center text-xl tracking-widest"
+          <Input
+            className="text-center text-xl tracking-widest"
             type="tel"
             inputMode="numeric"
             name="code"
@@ -95,9 +97,9 @@ export function EmailVerificationRequired() {
             pattern="[0-9]{8}"
             maxLength={8}
           />
-          <button className="auth-button" type="submit" disabled={submitting}>
+          <Button type="submit" size="lg" className="w-full" disabled={submitting}>
             {submitting ? "Verifying..." : "Verify email"}
-          </button>
+          </Button>
         </form>
 
         <div className="mt-6 text-center space-y-3">
