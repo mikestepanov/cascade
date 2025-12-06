@@ -84,7 +84,7 @@ function FeatureCard({
       `}
     >
       {/* Icon */}
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-0.5 mb-5`}>
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-[2px] mb-5`}>
         <div className="w-full h-full rounded-xl bg-gray-900/90 flex items-center justify-center">
           {icon}
         </div>

@@ -7,6 +7,7 @@ import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { Typography } from "./ui/Typography";
 
 interface TimeTrackerProps {
   issueId: Id<"issues">;
@@ -174,9 +175,9 @@ export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h3" className="text-sm font-semibold border-none">
             Time Tracking
-          </h3>
+          </Typography>
           <div className="flex items-center gap-2">
             {/* Timer Button */}
             {isTimerRunningForThisIssue ? (

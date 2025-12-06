@@ -6,6 +6,7 @@ import { ChartCard } from "./Analytics/ChartCard";
 import { MetricCard } from "./Analytics/MetricCard";
 import { RecentActivity } from "./Analytics/RecentActivity";
 import { Skeleton, SkeletonStatCard } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 
 interface Props {
   projectId: Id<"projects">;
@@ -66,12 +67,12 @@ export function AnalyticsDashboard({ projectId }: Props) {
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h1" className="text-xl sm:text-2xl font-bold border-none">
             Analytics Dashboard
-          </h1>
-          <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          </Typography>
+          <Typography variant="muted" className="mt-1 sm:text-base">
             Project insights, team velocity, and progress metrics
-          </p>
+          </Typography>
         </div>
 
         {/* Key Metrics */}

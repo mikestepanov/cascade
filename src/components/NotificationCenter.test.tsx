@@ -186,8 +186,8 @@ describe("NotificationCenter", () => {
 
     // Find the notification container by traversing up from the title
     const titleElement = screen.getByText("Unread");
-    // The notification div is a few levels up - it has the bg-brand-50 class for unread notifications
-    const notificationDiv = titleElement.closest(".bg-brand-50");
+    // The notification div is a few levels up - it has the bg-status-info-bg class for unread notifications
+    const notificationDiv = titleElement.closest(".bg-status-info-bg");
     expect(notificationDiv).toBeInTheDocument();
   });
 
