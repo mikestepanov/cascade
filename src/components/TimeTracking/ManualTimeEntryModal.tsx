@@ -366,11 +366,11 @@ export function ManualTimeEntryModal({
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
                   isDurationInputValid
                     ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-                    : "border-red-500 dark:border-red-500"
+                    : "border-status-error dark:border-status-error"
                 }`}
               />
               {!isDurationInputValid ? (
-                <p className="text-xs text-red-500 mt-1">
+                <p className="text-xs text-status-error mt-1">
                   Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
                 </p>
               ) : (

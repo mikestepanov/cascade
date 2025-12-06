@@ -50,7 +50,7 @@ export function SignInForm() {
       <GoogleSignInButton />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-gray-700" />
-        <span className="mx-4 text-gray-500 text-sm">or</span>
+        <span className="mx-4 text-ui-text-secondary text-sm">or</span>
         <hr className="grow border-gray-700" />
       </div>
       <form className="flex flex-col" onSubmit={handleSubmit}>

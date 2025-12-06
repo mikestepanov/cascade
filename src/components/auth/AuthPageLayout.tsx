@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { NixeloLogo } from "@/components/landing";
+import { Typography } from "../ui/Typography";
 
 interface AuthPageLayoutProps {
   title: string;
@@ -15,7 +16,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
         <div className="mb-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-white transition-colors text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -39,8 +40,15 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             <Link to="/" className="hover:opacity-80 transition-opacity">
               <NixeloLogo size={48} />
             </Link>
-            <h1 className="text-2xl font-bold mt-4 mb-2">{title}</h1>
-            <p className="text-gray-400 text-sm">{subtitle}</p>
+            <Typography
+              variant="h2"
+              className="text-2xl font-bold mt-4 mb-2 text-white border-none"
+            >
+              {title}
+            </Typography>
+            <Typography variant="muted" className="text-ui-text-tertiary">
+              {subtitle}
+            </Typography>
           </div>
           {children}
         </div>
