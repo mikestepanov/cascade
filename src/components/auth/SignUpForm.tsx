@@ -63,9 +63,9 @@ export function SignUpForm() {
     <div className="w-full">
       <GoogleSignInButton />
       <div className="flex items-center justify-center my-4">
-        <hr className="grow border-gray-700" />
+        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
-        <hr className="grow border-gray-700" />
+        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
       </div>
       <form className="flex flex-col" onSubmit={handleSubmit}>
         <div

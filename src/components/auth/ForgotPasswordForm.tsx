@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
 interface ForgotPasswordFormProps {
@@ -33,12 +34,12 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+      <Typography variant="h2" className="text-xl font-semibold mb-4 border-none">
         Reset your password
-      </h2>
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+      </Typography>
+      <Typography variant="p" color="secondary" className="mb-4 text-sm">
         Enter your email and we'll send you a code to reset your password.
-      </p>
+      </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
         <input
           className="auth-input-field"
