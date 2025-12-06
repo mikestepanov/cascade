@@ -7,7 +7,7 @@ export function HeroSection() {
       <div className="max-w-4xl mx-auto text-center">
         {/* Tag */}
         <div className="flex justify-center mb-8">
-          <span className="px-4 py-2 rounded-full border border-gray-700/50 text-xs text-gray-400 bg-gray-900/30 backdrop-blur-sm">
+          <span className="px-4 py-2 rounded-full border border-gray-700/50 text-xs text-ui-text-tertiary bg-gray-900/30 backdrop-blur-sm">
             Project Management · Time Tracking
           </span>
         </div>
@@ -22,7 +22,7 @@ export function HeroSection() {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10">
+        <p className="text-ui-text-tertiary text-lg max-w-2xl mx-auto mb-10">
           Experience the future of project management with integrated tracking, automation, and
           collaboration.
         </p>
@@ -39,7 +39,7 @@ export function HeroSection() {
             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-gray-300 hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"
+            className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-ui-text-tertiary hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"
           >
             Watch Demo
             <PlayIcon className="w-4 h-4" />

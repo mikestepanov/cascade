@@ -1,5 +1,6 @@
 import { ArrowLeft, Bell, CheckCircle, Clock, FileText, Kanban } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Typography } from "../ui/Typography";
 
 interface MemberOnboardingProps {
   onComplete: () => void;
@@ -21,23 +22,21 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
 
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+        <Typography variant="h2" className="mb-3 border-none text-3xl">
           You're All Set!
-        </h1>
-        <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
-          Here's what you need to know as a team member
-        </p>
+        </Typography>
+        <Typography variant="lead">Here's what you need to know as a team member</Typography>
       </div>
 
       {/* Info Card */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+      <div className="bg-status-info-bg dark:bg-status-info-bg-dark border border-status-info dark:border-status-info-bg-dark rounded-xl p-6">
         <div className="flex items-start gap-3">
-          <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-status-info-text dark:text-status-info-text-dark mt-0.5 flex-shrink-0" />
           <div>
-            <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+            <h3 className="font-medium text-status-info-text dark:text-status-info-text-dark mb-1">
               Waiting for an invitation?
             </h3>
-            <p className="text-sm text-blue-700 dark:text-blue-300">
+            <p className="text-sm text-status-info-text dark:text-status-info-text-dark">
               Your team lead will add you to projects. Once added, you'll see them on your dashboard
               and receive notifications for assigned tasks.
             </p>
@@ -53,7 +52,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Kanban className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+            <Kanban className="w-5 h-5 text-priority-low mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Work on Issues
@@ -65,7 +64,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
           </div>
 
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <FileText className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+            <FileText className="w-5 h-5 text-status-success mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Collaborate on Docs
@@ -77,7 +76,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
           </div>
 
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Clock className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+            <Clock className="w-5 h-5 text-status-warning mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Track Time
@@ -89,7 +88,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
           </div>
 
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Bell className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
+            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Stay Updated

@@ -8,6 +8,8 @@ interface BoardToolbarProps {
   onToggleSelectionMode: () => void;
 }
 
+import { Typography } from "../ui/Typography";
+
 /**
  * Kanban board toolbar with title, undo/redo buttons, and selection mode toggle
  * Extracted from KanbanBoard for better organization
@@ -23,9 +25,9 @@ export function BoardToolbar({
 }: BoardToolbarProps) {
   return (
     <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-2">
-      <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+      <Typography variant="h2" className="text-base sm:text-lg font-semibold border-none">
         {sprintId ? "Sprint Board" : "Kanban Board"}
-      </h2>
+      </Typography>
       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
         {/* Undo/Redo buttons */}
         <div className="hidden sm:flex items-center gap-1 mr-2 sm:mr-4">

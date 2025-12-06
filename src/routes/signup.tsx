@@ -16,7 +16,7 @@ function SignUpRoute() {
       <Unauthenticated>
         <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
           <SignUpForm />
-          <div className="text-center text-sm text-gray-400 mt-4">
+          <div className="text-center text-sm text-ui-text-tertiary mt-4">
             <span>Already have an account? </span>
             <AuthLink to="/signin">Sign in</AuthLink>
           </div>

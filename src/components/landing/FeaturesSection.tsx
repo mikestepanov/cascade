@@ -33,7 +33,7 @@ export function FeaturesSection() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Stop juggling tools. Start shipping.
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-ui-text-tertiary max-w-2xl mx-auto">
             Project management shouldn't feel like a second job.
           </p>
         </div>
@@ -84,7 +84,7 @@ function FeatureCard({
       `}
     >
       {/* Icon */}
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-[1px] mb-5`}>
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-[2px] mb-5`}>
         <div className="w-full h-full rounded-xl bg-gray-900/90 flex items-center justify-center">
           {icon}
         </div>
@@ -92,7 +92,7 @@ function FeatureCard({
 
       {/* Content */}
       <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
+      <p className="text-ui-text-tertiary text-sm leading-relaxed mb-4">{description}</p>
 
       {/* Link */}
       <a

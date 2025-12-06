@@ -7,6 +7,7 @@ import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { ProjectsList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
+import { Typography } from "./ui/Typography";
 
 type IssueFilter = "assigned" | "created" | "all";
 
@@ -55,12 +56,12 @@ export function Dashboard() {
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold border-none">
             My Work
-          </h1>
-          <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          </Typography>
+          <Typography variant="muted" className="mt-1 sm:text-base">
             Your personal dashboard and activity center
-          </p>
+          </Typography>
         </div>
 
         {/* Stats Cards */}

@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
 interface EmailVerificationFormProps {
@@ -54,12 +55,12 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+      <Typography variant="h2" className="text-xl font-semibold mb-4 border-none">
         Verify your email
-      </h2>
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+      </Typography>
+      <Typography variant="p" color="secondary" className="mb-4 text-sm">
         We sent a verification code to <strong>{email}</strong>. Enter it below to continue.
-      </p>
+      </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
         <input
           className="auth-input-field"

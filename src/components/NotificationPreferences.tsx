@@ -9,6 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import { Switch } from "./ui/Switch";
+import { Typography } from "./ui/Typography";
 
 export function NotificationPreferences() {
   const preferences = useQuery(api.notificationPreferences.get);
@@ -59,24 +60,24 @@ export function NotificationPreferences() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Typography variant="h1" className="text-2xl font-bold border-none">
           Notification Preferences
-        </h1>
-        <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        </Typography>
+        <Typography variant="muted" className="mt-2">
           Control how and when you receive notifications from Nixelo
-        </p>
+        </Typography>
       </div>
 
       {/* Master Toggle */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h3" className="text-lg font-medium border-none">
               Email Notifications
-            </h3>
-            <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            </Typography>
+            <Typography variant="p" color="secondary" className="mt-1 text-sm">
               Master switch for all email notifications. Turn this off to stop receiving all emails.
-            </p>
+            </Typography>
           </div>
           <Switch
             checked={preferences.emailEnabled}
@@ -89,9 +90,9 @@ export function NotificationPreferences() {
 
       {/* Individual Notification Types */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
-        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        <Typography variant="h3" className="text-lg font-medium mb-4">
           Notification Types
-        </h3>
+        </Typography>
 
         <div className="space-y-4">
           {/* Mentions */}
@@ -99,13 +100,13 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">@</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography variant="h4" className="font-medium text-base">
                   Mentions
-                </h4>
+                </Typography>
               </div>
-              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography variant="p" color="secondary" className="mt-1 text-sm">
                 When someone @mentions you in a comment or description
-              </p>
+              </Typography>
             </div>
             <Switch
               checked={preferences.emailMentions}
@@ -120,13 +121,13 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">👤</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography variant="h4" className="font-medium text-base">
                   Assignments
-                </h4>
+                </Typography>
               </div>
-              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography variant="p" color="secondary" className="mt-1 text-sm">
                 When you are assigned to an issue
-              </p>
+              </Typography>
             </div>
             <Switch
               checked={preferences.emailAssignments}
@@ -141,13 +142,13 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">💬</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography variant="h4" className="font-medium text-base">
                   Comments
-                </h4>
+                </Typography>
               </div>
-              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography variant="p" color="secondary" className="mt-1 text-sm">
                 When someone comments on your issues
-              </p>
+              </Typography>
             </div>
             <Switch
               checked={preferences.emailComments}
@@ -162,13 +163,13 @@ export function NotificationPreferences() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🔄</span>
-                <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography variant="h4" className="font-medium text-base">
                   Status Changes
-                </h4>
+                </Typography>
               </div>
-              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography variant="p" color="secondary" className="mt-1 text-sm">
                 When issue status changes on issues you're watching
-              </p>
+              </Typography>
             </div>
             <Switch
               checked={preferences.emailStatusChanges}
@@ -182,12 +183,12 @@ export function NotificationPreferences() {
 
       {/* Digest Emails */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
-        <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <Typography variant="h3" className="text-lg font-medium border-none mb-2">
           Email Digests
-        </h3>
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+        </Typography>
+        <Typography variant="p" color="secondary" className="mb-4 text-sm">
           Receive a summary of activity instead of individual emails
-        </p>
+        </Typography>
 
         <div className="space-y-2">
           <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
@@ -257,13 +258,16 @@ export function NotificationPreferences() {
         <div className="flex gap-3">
           <span className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</span>
           <div className="flex-1">
-            <h4 className="font-medium text-brand-900 dark:text-brand-100 mb-1">
+            <Typography
+              variant="h4"
+              className="font-medium text-brand-900 dark:text-brand-100 mb-1"
+            >
               Email Configuration
-            </h4>
-            <p className="text-sm text-brand-800 dark:text-brand-200">
+            </Typography>
+            <Typography variant="p" className="text-sm text-brand-800 dark:text-brand-200">
               Email notifications require Resend API configuration. If you're not receiving emails,
               contact your administrator to set up email notifications.
-            </p>
+            </Typography>
           </div>
         </div>
       </div>

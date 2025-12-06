@@ -15,7 +15,7 @@ export function NavHeader() {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-ui-text-tertiary hover:text-white transition-colors"
             >
               {item}
             </a>
@@ -23,7 +23,10 @@ export function NavHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link to="/signin" className="text-sm text-gray-400 hover:text-white transition-colors">
+          <Link
+            to="/signin"
+            className="text-sm text-ui-text-tertiary hover:text-white transition-colors"
+          >
             Sign in
           </Link>
           <Link

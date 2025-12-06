@@ -11,6 +11,7 @@ import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
 import { PumbleIntegration } from "./Settings/PumbleIntegration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/ShadcnTabs";
+import { Typography } from "./ui/Typography";
 
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
@@ -23,12 +24,12 @@ export function Settings() {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
             Settings
-          </h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="muted" className="mt-1 sm:mt-2 text-sm sm:text-base">
             Manage your account, integrations, and preferences
-          </p>
+          </Typography>
         </div>
 
         {/* Tabs */}

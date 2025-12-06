@@ -11,7 +11,7 @@ export function Footer() {
               <NixeloLogo />
               <span className="text-xl font-semibold">nixelo</span>
             </div>
-            <p className="text-gray-400 text-sm max-w-xs">
+            <p className="text-ui-text-tertiary text-sm max-w-xs">
               Revolutionizing project management with intelligent automation and seamless
               collaboration.
             </p>
@@ -23,7 +23,10 @@ export function Footer() {
             <ul className="space-y-2">
               {["Features", "Pricing", "Integrations", "Changelog"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a
+                    href="#"
+                    className="text-ui-text-tertiary hover:text-white text-sm transition-colors"
+                  >
                     {item}
                   </a>
                 </li>
@@ -36,7 +39,10 @@ export function Footer() {
             <ul className="space-y-2">
               {["About", "Blog", "Careers", "Contact"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a
+                    href="#"
+                    className="text-ui-text-tertiary hover:text-white text-sm transition-colors"
+                  >
                     {item}
                   </a>
                 </li>
@@ -49,7 +55,10 @@ export function Footer() {
             <ul className="space-y-2">
               {["Documentation", "Help Center", "API Reference", "Status"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a
+                    href="#"
+                    className="text-ui-text-tertiary hover:text-white text-sm transition-colors"
+                  >
                     {item}
                   </a>
                 </li>
@@ -59,14 +68,14 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">© 2025 Nixelo. All rights reserved.</p>
+          <p className="text-ui-text-secondary text-sm">© 2025 Nixelo. All rights reserved.</p>
           <div className="flex items-center gap-6">
             {/* Social Links */}
             <a
               href="https://www.facebook.com/nixeloapp/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-white transition-colors"
+              className="text-ui-text-secondary hover:text-white transition-colors"
             >
               <span className="sr-only">Follow us on Facebook</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -77,7 +86,7 @@ export function Footer() {
               href="https://www.tiktok.com/@nixeloapp"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-white transition-colors"
+              className="text-ui-text-secondary hover:text-white transition-colors"
             >
               <span className="sr-only">Follow us on TikTok</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -88,7 +97,7 @@ export function Footer() {
               href="https://www.patreon.com/nixelo"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-white transition-colors"
+              className="text-ui-text-secondary hover:text-white transition-colors"
             >
               <span className="sr-only">Support us on Patreon</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -96,13 +105,22 @@ export function Footer() {
               </svg>
             </a>
             <div className="h-4 w-px bg-gray-700" />
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+            <a
+              href="#"
+              className="text-ui-text-secondary hover:text-white text-sm transition-colors"
+            >
               Privacy
             </a>
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+            <a
+              href="#"
+              className="text-ui-text-secondary hover:text-white text-sm transition-colors"
+            >
               Terms
             </a>
-            <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">
+            <a
+              href="#"
+              className="text-ui-text-secondary hover:text-white text-sm transition-colors"
+            >
               Cookies
             </a>
           </div>

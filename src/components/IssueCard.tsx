@@ -2,6 +2,7 @@ import { memo } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
+import { Typography } from "./ui/Typography";
 
 interface Issue {
   _id: Id<"issues">;
@@ -87,9 +88,12 @@ export const IssueCard = memo(function IssueCard({
       </div>
 
       {/* Title */}
-      <h4 className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2 line-clamp-2">
+      <Typography
+        variant="h4"
+        className="text-xs sm:text-sm font-medium mb-2 line-clamp-2 border-none"
+      >
         {issue.title}
-      </h4>
+      </Typography>
 
       {/* Labels */}
       {issue.labels.length > 0 && (

@@ -16,7 +16,7 @@ function SignInRoute() {
       <Unauthenticated>
         <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
           <SignInForm />
-          <div className="text-center text-sm text-gray-400 mt-4">
+          <div className="text-center text-sm text-ui-text-tertiary mt-4">
             <span>Don't have an account? </span>
             <AuthLink to="/signup">Sign up</AuthLink>
           </div>

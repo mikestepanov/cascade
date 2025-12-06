@@ -3,6 +3,7 @@ import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
+import { Typography } from "../ui/Typography";
 
 /**
  * Developer Tools Tab
@@ -30,12 +31,16 @@ export function DevToolsTab() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div className="bg-status-info-bg dark:bg-status-info-bg-dark border border-status-info dark:border-status-info-bg-dark rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <span className="text-blue-600 dark:text-blue-400 text-xl">&#128736;</span>
+          <span className="text-status-info-text dark:text-status-info-text-dark text-xl">
+            &#128736;
+          </span>
           <div>
-            <h3 className="font-medium text-blue-800 dark:text-blue-200">Test Account Tools</h3>
-            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+            <h3 className="font-medium text-status-info-text dark:text-status-info-text-dark">
+              Test Account Tools
+            </h3>
+            <p className="text-sm text-status-info-text dark:text-status-info-text-dark mt-1">
               These tools are only visible for test accounts (@inbox.mailtrap.io).
             </p>
           </div>
@@ -44,13 +49,13 @@ export function DevToolsTab() {
 
       {/* Onboarding Section */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <Typography variant="h3" className="mb-2">
           Onboarding
-        </h3>
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+        </Typography>
+        <Typography variant="p" color="secondary" className="mb-4 text-sm">
           Reset your onboarding state to test the onboarding flow again. After resetting, refresh
           the page to see the onboarding wizard.
-        </p>
+        </Typography>
         <div className="flex items-center gap-4">
           <Button
             onClick={handleResetOnboarding}
@@ -69,13 +74,15 @@ export function DevToolsTab() {
 
       {/* User Info Section */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <Typography variant="h3" className="mb-2">
           Current User Info
-        </h3>
+        </Typography>
         {currentUser ? (
           <div className="text-sm space-y-2">
             <div className="flex gap-2">
-              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">ID:</span>
+              <Typography variant="small" color="secondary">
+                ID:
+              </Typography>
               <code className="text-ui-text-primary dark:text-ui-text-primary-dark font-mono">
                 {currentUser._id}
               </code>

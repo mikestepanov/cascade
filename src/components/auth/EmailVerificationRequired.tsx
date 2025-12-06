@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
 export function EmailVerificationRequired() {
@@ -74,13 +75,13 @@ export function EmailVerificationRequired() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+          <Typography variant="h1" className="text-2xl font-bold mb-2 border-none">
             Verify your email
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="p" color="secondary">
             We sent a verification code to{" "}
             <strong className="text-ui-text-primary dark:text-ui-text-primary-dark">{email}</strong>
-          </p>
+          </Typography>
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

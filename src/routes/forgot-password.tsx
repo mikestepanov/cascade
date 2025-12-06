@@ -88,7 +88,7 @@ function ForgotPasswordPage() {
           {submitting ? "Sending..." : "Send reset code"}
         </button>
       </form>
-      <div className="text-center text-sm text-gray-400 mt-4">
+      <div className="text-center text-sm text-ui-text-tertiary mt-4">
         <AuthLink to="/signin">Back to sign in</AuthLink>
       </div>
     </AuthPageLayout>

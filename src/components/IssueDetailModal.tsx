@@ -17,6 +17,7 @@ import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
+import { Typography } from "./ui/Typography";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -120,7 +121,9 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
               />
             ) : (
               <div className="flex items-start justify-between">
-                <h2 className="text-2xl font-bold text-ui-text-primary">{issue.title}</h2>
+                <Typography variant="h2" className="text-2xl font-bold border-none">
+                  {issue.title}
+                </Typography>
                 <button
                   type="button"
                   onClick={handleEdit}
@@ -144,10 +147,12 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
               />
             ) : (
               <div>
-                <h3 className="text-sm font-medium text-ui-text-primary mb-2">Description</h3>
-                <p className="text-ui-text-secondary whitespace-pre-wrap">
+                <Typography variant="h3" className="text-sm font-medium mb-2">
+                  Description
+                </Typography>
+                <Typography variant="p" color="secondary" className="whitespace-pre-wrap">
                   {issue.description || "No description provided"}
-                </p>
+                </Typography>
               </div>
             )}
           </div>
@@ -176,25 +181,33 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Time Tracking */}
           <div>
-            <h3 className="text-sm font-medium text-ui-text-primary mb-3">Time Tracking</h3>
+            <Typography variant="h3" className="text-sm font-medium mb-3">
+              Time Tracking
+            </Typography>
             <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours} />
           </div>
 
           {/* File Attachments */}
           <div>
-            <h3 className="text-sm font-medium text-ui-text-primary mb-3">Attachments</h3>
+            <Typography variant="h3" className="text-sm font-medium mb-3">
+              Attachments
+            </Typography>
             <FileAttachments issueId={issue._id} />
           </div>
 
           {/* Issue Watchers */}
           <div>
-            <h3 className="text-sm font-medium text-ui-text-primary mb-3">Watchers</h3>
+            <Typography variant="h3" className="text-sm font-medium mb-3">
+              Watchers
+            </Typography>
             <IssueWatchers issueId={issue._id} />
           </div>
 
           {/* Issue Dependencies */}
           <div>
-            <h3 className="text-sm font-medium text-ui-text-primary mb-3">Dependencies</h3>
+            <Typography variant="h3" className="text-sm font-medium mb-3">
+              Dependencies
+            </Typography>
             <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
           </div>
 
@@ -210,7 +223,9 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Comments */}
           <div>
-            <h3 className="text-sm font-medium text-ui-text-primary mb-3">Comments</h3>
+            <Typography variant="h3" className="text-sm font-medium mb-3">
+              Comments
+            </Typography>
             <IssueComments issueId={issue._id} projectId={issue.projectId} />
           </div>
         </div>
