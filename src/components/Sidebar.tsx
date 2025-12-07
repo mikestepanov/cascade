@@ -102,7 +102,7 @@ export function Sidebar({ selectedDocumentId }: SidebarProps) {
     <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <Typography variant="h2" className="text-lg font-semibold border-none mb-4">
+        <Typography variant="h2" className="text-lg font-semibold mb-4">
           Documents
         </Typography>
 

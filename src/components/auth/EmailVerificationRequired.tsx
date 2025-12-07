@@ -77,7 +77,7 @@ export function EmailVerificationRequired() {
               />
             </svg>
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-2 border-none">
+          <Typography variant="h1" className="text-2xl font-bold mb-2">
             Verify your email
           </Typography>
           <Typography variant="p" color="secondary">

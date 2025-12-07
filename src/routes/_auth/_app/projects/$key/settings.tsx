@@ -27,7 +27,7 @@ function ProjectSettingsPage() {
   // TODO: Create a proper ProjectSettings component
   return (
     <div className="p-6">
-      <Typography variant="h2" className="text-lg font-semibold mb-4 border-none">
+      <Typography variant="h2" className="text-lg font-semibold mb-4">
         Project Settings
       </Typography>
       <div className="space-y-4">

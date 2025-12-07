@@ -139,7 +139,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <Typography variant="h2" className="text-xl sm:text-2xl font-bold border-none">
+        <Typography variant="h2" className="text-xl sm:text-2xl font-bold">
           Calendar View
         </Typography>
 

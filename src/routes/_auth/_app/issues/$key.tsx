@@ -29,7 +29,7 @@ function IssuePage() {
     return (
       <div className="flex h-full items-center justify-center text-ui-text-tertiary">
         <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2 border-none">
+          <Typography variant="h2" className="text-xl font-medium mb-2">
             Issue not found
           </Typography>
           <Typography variant="p" color="secondary">

@@ -112,7 +112,7 @@ function OnboardingPage() {
           {step === "role-select" && (
             <div className="space-y-8">
               <div className="text-center">
-                <Typography variant="h1" className="text-3xl font-bold mb-3 border-none">
+                <Typography variant="h1" className="text-3xl font-bold mb-3">
                   Welcome to Nixelo
                 </Typography>
                 <Typography variant="lead">

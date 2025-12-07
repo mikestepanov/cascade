@@ -28,7 +28,7 @@ function ProjectLayout() {
     return (
       <div className="flex h-full items-center justify-center text-ui-text-tertiary">
         <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2 border-none">
+          <Typography variant="h2" className="text-xl font-medium mb-2">
             Project not found
           </Typography>
           <Typography variant="p" color="secondary">
@@ -64,7 +64,7 @@ function ProjectLayout() {
         {/* Project Header */}
         <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
           <div className="px-6 py-4">
-            <Typography variant="h1" className="text-xl font-semibold border-none">
+            <Typography variant="h1" className="text-xl font-semibold">
               {project.name}
             </Typography>
             <Typography variant="p" color="secondary" className="text-sm">

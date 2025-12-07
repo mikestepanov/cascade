@@ -60,9 +60,7 @@ export function NotificationPreferences() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <Typography variant="h1" className="text-2xl font-bold border-none">
-          Notification Preferences
-        </Typography>
+        <Typography variant="h1">Notification Preferences</Typography>
         <Typography variant="muted" className="mt-2">
           Control how and when you receive notifications from Nixelo
         </Typography>
@@ -72,9 +70,7 @@ export function NotificationPreferences() {
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <Typography variant="h3" className="text-lg font-medium border-none">
-              Email Notifications
-            </Typography>
+            <Typography variant="h3">Email Notifications</Typography>
             <Typography variant="p" color="secondary" className="mt-1 text-sm">
               Master switch for all email notifications. Turn this off to stop receiving all emails.
             </Typography>
@@ -90,7 +86,7 @@ export function NotificationPreferences() {
 
       {/* Individual Notification Types */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6 mb-6">
-        <Typography variant="h3" className="text-lg font-medium mb-4">
+        <Typography variant="h3" className="mb-4">
           Notification Types
         </Typography>
 
@@ -183,7 +179,7 @@ export function NotificationPreferences() {
 
       {/* Digest Emails */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
-        <Typography variant="h3" className="text-lg font-medium border-none mb-2">
+        <Typography variant="h3" className="mb-2">
           Email Digests
         </Typography>
         <Typography variant="p" color="secondary" className="mb-4 text-sm">

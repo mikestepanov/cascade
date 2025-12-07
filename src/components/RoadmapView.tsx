@@ -121,7 +121,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Typography variant="h2" className="text-2xl font-bold border-none">
+          <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
           </Typography>
           <Typography variant="muted" className="mt-1">

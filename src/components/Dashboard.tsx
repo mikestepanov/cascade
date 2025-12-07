@@ -56,7 +56,7 @@ export function Dashboard() {
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="mb-6">
-          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold border-none">
+          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
             My Work
           </Typography>
           <Typography variant="muted" className="mt-1 sm:text-base">

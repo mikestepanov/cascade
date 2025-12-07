@@ -175,7 +175,7 @@ export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
         <div className="flex items-center justify-between mb-3">
-          <Typography variant="h3" className="text-sm font-semibold border-none">
+          <Typography variant="h3" className="text-sm font-semibold">
             Time Tracking
           </Typography>
           <div className="flex items-center gap-2">

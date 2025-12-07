@@ -121,7 +121,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
               />
             ) : (
               <div className="flex items-start justify-between">
-                <Typography variant="h2" className="text-2xl font-bold border-none">
+                <Typography variant="h2" className="border-none">
                   {issue.title}
                 </Typography>
                 <button
@@ -147,7 +147,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
               />
             ) : (
               <div>
-                <Typography variant="h3" className="text-sm font-medium mb-2">
+                <Typography variant="h3" className="text-sm font-medium mb-2 border-none">
                   Description
                 </Typography>
                 <Typography variant="p" color="secondary" className="whitespace-pre-wrap">
@@ -181,7 +181,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Time Tracking */}
           <div>
-            <Typography variant="h3" className="text-sm font-medium mb-3">
+            <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Time Tracking
             </Typography>
             <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours} />
@@ -189,7 +189,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* File Attachments */}
           <div>
-            <Typography variant="h3" className="text-sm font-medium mb-3">
+            <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Attachments
             </Typography>
             <FileAttachments issueId={issue._id} />
@@ -197,7 +197,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Issue Watchers */}
           <div>
-            <Typography variant="h3" className="text-sm font-medium mb-3">
+            <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Watchers
             </Typography>
             <IssueWatchers issueId={issue._id} />
@@ -205,7 +205,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Issue Dependencies */}
           <div>
-            <Typography variant="h3" className="text-sm font-medium mb-3">
+            <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Dependencies
             </Typography>
             <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
@@ -223,7 +223,7 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
 
           {/* Comments */}
           <div>
-            <Typography variant="h3" className="text-sm font-medium mb-3">
+            <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Comments
             </Typography>
             <IssueComments issueId={issue._id} projectId={issue.projectId} />

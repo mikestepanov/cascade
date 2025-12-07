@@ -22,7 +22,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
 
       {/* Header */}
       <div className="text-center">
-        <Typography variant="h2" className="mb-3 border-none text-3xl">
+        <Typography variant="h2" className="mb-3 text-3xl">
           You're All Set!
         </Typography>
         <Typography variant="lead">Here's what you need to know as a team member</Typography>

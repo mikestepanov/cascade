@@ -37,7 +37,7 @@ export function ResetPasswordForm({ email, onSuccess, onRetry }: ResetPasswordFo
 
   return (
     <div className="w-full">
-      <Typography variant="h2" className="text-xl font-semibold mb-4 border-none">
+      <Typography variant="h2" className="text-xl font-semibold mb-4">
         Enter reset code
       </Typography>
       <Typography variant="p" color="secondary" className="mb-4 text-sm">

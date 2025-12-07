@@ -112,7 +112,7 @@ export function NotificationCenter() {
       >
         {/* Header */}
         <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
-          <Typography variant="h3" className="text-lg font-semibold border-none">
+          <Typography variant="h3" className="text-lg font-semibold">
             Notifications
           </Typography>
           {unreadCount && unreadCount > 0 && (

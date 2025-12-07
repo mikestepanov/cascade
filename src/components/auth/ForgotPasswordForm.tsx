@@ -36,7 +36,7 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
 
   return (
     <div className="w-full">
-      <Typography variant="h2" className="text-xl font-semibold mb-4 border-none">
+      <Typography variant="h2" className="text-xl font-semibold mb-4">
         Reset your password
       </Typography>
       <Typography variant="p" color="secondary" className="mb-4 text-sm">

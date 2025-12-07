@@ -25,7 +25,7 @@ export function BoardToolbar({
 }: BoardToolbarProps) {
   return (
     <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-2">
-      <Typography variant="h2" className="text-base sm:text-lg font-semibold border-none">
+      <Typography variant="h2" className="text-base sm:text-lg font-semibold">
         {sprintId ? "Sprint Board" : "Kanban Board"}
       </Typography>
       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">

@@ -40,7 +40,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             <Link to="/" className="hover:opacity-80 transition-opacity">
               <NixeloLogo size={48} />
             </Link>
-            <Typography variant="h2" className="text-2xl font-bold mt-4 mb-2 border-none">
+            <Typography variant="h2" className="text-2xl font-bold mt-4 mb-2">
               {title}
             </Typography>
             <Typography variant="muted" className="text-ui-text-tertiary">

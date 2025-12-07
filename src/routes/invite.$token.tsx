@@ -3,10 +3,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { SignInForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
-import { SignInForm } from "@/SignInForm";
 
 export const Route = createFileRoute("/invite/$token")({
   component: InviteRoute,
@@ -68,7 +68,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3 border-none">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invalid Invitation
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -91,7 +91,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-warning-bg dark:bg-status-warning-bg-dark w-fit mx-auto mb-6">
             <Clock className="w-12 h-12 text-status-warning-text dark:text-status-warning-text-dark" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3 border-none">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Expired
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -114,7 +114,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark w-fit mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-status-success dark:text-status-success-text-dark" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3 border-none">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Already Accepted
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -136,7 +136,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3 border-none">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Revoked
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -175,7 +175,7 @@ function InviteRoute() {
           {/* Invitation Card */}
           <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-2xl shadow-lg p-8 mb-6">
             <div className="text-center mb-6">
-              <Typography variant="h1" className="text-2xl font-bold mb-2 border-none">
+              <Typography variant="h1" className="text-2xl font-bold mb-2">
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">
