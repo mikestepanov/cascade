@@ -2,7 +2,6 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { SignOutButton } from "../SignOutButton";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
-import { ThemeToggle } from "./ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./TimeTracking/TimerWidget";
 
 // Navigation item configuration
@@ -148,7 +147,6 @@ export function AppHeader({
 
         <NavTimerWidget />
         <GlobalSearch />
-        <ThemeToggle />
         <NotificationCenter />
         <SignOutButton />
       </div>
