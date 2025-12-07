@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/_app/issues/$key")({
   component: IssuePage,
@@ -28,10 +29,12 @@ function IssuePage() {
     return (
       <div className="flex h-full items-center justify-center text-ui-text-tertiary">
         <div className="text-center">
-          <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h2" className="text-xl font-medium mb-2">
             Issue not found
-          </h2>
-          <p>The issue "{key}" does not exist or you don't have access to it.</p>
+          </Typography>
+          <Typography variant="p" color="secondary">
+            The issue "{key}" does not exist or you don't have access to it.
+          </Typography>
           <Link
             to="/dashboard"
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
@@ -61,21 +64,23 @@ function IssuePage() {
           <span
             className={`px-2 py-0.5 rounded text-xs font-medium ${
               issue.status === "done"
-                ? "bg-green-100 text-green-800"
+                ? "bg-status-success-bg text-status-success-text"
                 : issue.status === "in-progress"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-gray-100 text-gray-800"
+                  ? "bg-status-info-bg text-status-info-text"
+                  : "bg-ui-bg-tertiary text-ui-text-secondary"
             }`}
           >
             {issue.status}
           </span>
         </div>
-        <h1 className="text-2xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        <Typography variant="h1" className="text-2xl font-semibold mb-4">
           {issue.title}
-        </h1>
+        </Typography>
         {issue.description && (
           <div className="prose dark:prose-invert max-w-none">
-            <p className="text-ui-text-secondary">{issue.description}</p>
+            <Typography variant="p" color="secondary">
+              {issue.description}
+            </Typography>
           </div>
         )}
         <div className="mt-6 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">

@@ -3,6 +3,9 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
+import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
 export function EmailVerificationRequired() {
@@ -74,18 +77,18 @@ export function EmailVerificationRequired() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+          <Typography variant="h1" className="text-2xl font-bold mb-2">
             Verify your email
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="p" color="secondary">
             We sent a verification code to{" "}
             <strong className="text-ui-text-primary dark:text-ui-text-primary-dark">{email}</strong>
-          </p>
+          </Typography>
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input
-            className="auth-input-field text-center text-xl tracking-widest"
+          <Input
+            className="text-center text-xl tracking-widest"
             type="tel"
             inputMode="numeric"
             name="code"
@@ -94,9 +97,9 @@ export function EmailVerificationRequired() {
             pattern="[0-9]{8}"
             maxLength={8}
           />
-          <button className="auth-button" type="submit" disabled={submitting}>
+          <Button type="submit" size="lg" className="w-full" disabled={submitting}>
             {submitting ? "Verifying..." : "Verify email"}
-          </button>
+          </Button>
         </form>
 
         <div className="mt-6 text-center space-y-3">

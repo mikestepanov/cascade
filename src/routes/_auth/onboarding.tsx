@@ -10,6 +10,7 @@ import { MemberOnboarding } from "@/components/Onboarding/MemberOnboarding";
 import { RoleSelector } from "@/components/Onboarding/RoleSelector";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/onboarding")({
   component: OnboardingPage,
@@ -111,12 +112,12 @@ function OnboardingPage() {
           {step === "role-select" && (
             <div className="space-y-8">
               <div className="text-center">
-                <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                <Typography variant="h1" className="text-3xl font-bold mb-3">
                   Welcome to Nixelo
-                </h1>
-                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
+                </Typography>
+                <Typography variant="lead">
                   Tell us a bit about how you'll be using Nixelo
-                </p>
+                </Typography>
               </div>
 
               <RoleSelector onSelect={handleRoleSelect} />

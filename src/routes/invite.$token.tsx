@@ -3,9 +3,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { SignInForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
+import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
-import { SignInForm } from "@/SignInForm";
 
 export const Route = createFileRoute("/invite/$token")({
   component: InviteRoute,
@@ -64,16 +65,16 @@ function InviteRoute() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-red-100 dark:bg-red-900/30 w-fit mx-auto mb-6">
-            <AlertCircle className="w-12 h-12 text-red-600" />
+          <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invalid Invitation
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+          </Typography>
+          <Typography variant="p" color="secondary" className="mb-6">
             This invitation link is invalid or has been removed. Please contact the person who
             invited you for a new link.
-          </p>
+          </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Home
           </Button>
@@ -87,16 +88,16 @@ function InviteRoute() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-amber-100 dark:bg-amber-900/30 w-fit mx-auto mb-6">
-            <Clock className="w-12 h-12 text-amber-600" />
+          <div className="p-4 rounded-full bg-status-warning-bg dark:bg-status-warning-bg-dark w-fit mx-auto mb-6">
+            <Clock className="w-12 h-12 text-status-warning-text dark:text-status-warning-text-dark" />
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Expired
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+          </Typography>
+          <Typography variant="p" color="secondary" className="mb-6">
             This invitation has expired. Please contact{" "}
             <span className="font-medium">{invite.inviterName}</span> to send a new invitation.
-          </p>
+          </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Home
           </Button>
@@ -110,15 +111,15 @@ function InviteRoute() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/30 w-fit mx-auto mb-6">
-            <CheckCircle className="w-12 h-12 text-green-600" />
+          <div className="p-4 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark w-fit mx-auto mb-6">
+            <CheckCircle className="w-12 h-12 text-status-success dark:text-status-success-text-dark" />
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Already Accepted
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+          </Typography>
+          <Typography variant="p" color="secondary" className="mb-6">
             This invitation has already been accepted. You can sign in to access your account.
-          </p>
+          </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Dashboard
           </Button>
@@ -132,16 +133,16 @@ function InviteRoute() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-red-100 dark:bg-red-900/30 w-fit mx-auto mb-6">
-            <AlertCircle className="w-12 h-12 text-red-600" />
+          <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
           </div>
-          <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Revoked
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+          </Typography>
+          <Typography variant="p" color="secondary" className="mb-6">
             This invitation has been revoked. Please contact the team administrator if you believe
             this is a mistake.
-          </p>
+          </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Home
           </Button>
@@ -174,10 +175,10 @@ function InviteRoute() {
           {/* Invitation Card */}
           <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-2xl shadow-lg p-8 mb-6">
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              <Typography variant="h1" className="text-2xl font-bold mb-2">
                 You're Invited!
-              </h1>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography variant="p" color="secondary">
                 <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   {invite.inviterName}
                 </span>{" "}
@@ -191,7 +192,7 @@ function InviteRoute() {
                 ) : (
                   "has invited you to join Nixelo"
                 )}
-              </p>
+              </Typography>
             </div>
 
             {/* Invite Details */}
@@ -240,7 +241,7 @@ function InviteRoute() {
               {/* User is logged in - show accept button */}
               <div className="space-y-4">
                 {acceptError && (
-                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm">
+                  <div className="p-3 rounded-lg bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark text-sm">
                     {acceptError}
                   </div>
                 )}

@@ -1,6 +1,9 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/form/Input";
+import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
 
 interface ResetPasswordFormProps {
@@ -34,15 +37,14 @@ export function ResetPasswordForm({ email, onSuccess, onRetry }: ResetPasswordFo
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+      <Typography variant="h2" className="text-xl font-semibold mb-4">
         Enter reset code
-      </h2>
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+      </Typography>
+      <Typography variant="p" color="secondary" className="mb-4 text-sm">
         We sent a code to <strong>{email}</strong>. Enter it below with your new password.
-      </p>
+      </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <input
-          className="auth-input-field"
+        <Input
           type="text"
           name="code"
           placeholder="8-digit code"
@@ -50,17 +52,16 @@ export function ResetPasswordForm({ email, onSuccess, onRetry }: ResetPasswordFo
           pattern="[0-9]{8}"
           maxLength={8}
         />
-        <input
-          className="auth-input-field"
+        <Input
           type="password"
           name="newPassword"
           placeholder="New password"
           required
           minLength={8}
         />
-        <button className="auth-button" type="submit" disabled={submitting}>
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
           {submitting ? "Resetting..." : "Reset password"}
-        </button>
+        </Button>
         <AuthLinkButton onClick={onRetry}>Didn't receive a code? Try again</AuthLinkButton>
       </form>
     </div>
