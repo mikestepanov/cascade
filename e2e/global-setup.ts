@@ -94,8 +94,10 @@ async function clickContinueWithEmail(page: import("@playwright/test").Page): Pr
 async function trySignIn(page: import("@playwright/test").Page, baseURL: string): Promise<boolean> {
   try {
     // Go to sign in page and wait for Convex to hydrate
+    // Use domcontentloaded - networkidle never resolves due to Convex WebSockets
     await page.goto(`${baseURL}/signin`);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1000); // Allow React to hydrate
 
     // Check if already logged in (redirected to dashboard)
     if (await isOnDashboard(page)) {
@@ -135,7 +137,10 @@ async function trySignIn(page: import("@playwright/test").Page, baseURL: string)
     // Wait for navigation - either dashboard or onboarding
     // Use domcontentloaded because Convex WebSockets keep network busy
     try {
-      await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000, waitUntil: "domcontentloaded" });
+      await page.waitForURL(/\/(dashboard|onboarding)/, {
+        timeout: 15000,
+        waitUntil: "domcontentloaded",
+      });
     } catch {
       // URL wait may timeout due to Convex, but check if we're already there
       console.log("⚠️ URL wait timed out, checking current location...");
@@ -187,7 +192,9 @@ async function trySignIn(page: import("@playwright/test").Page, baseURL: string)
 /**
  * Helper to handle being on onboarding or dashboard after authentication
  */
-async function handleOnboardingOrDashboard(page: import("@playwright/test").Page): Promise<boolean> {
+async function handleOnboardingOrDashboard(
+  page: import("@playwright/test").Page,
+): Promise<boolean> {
   if (await isOnDashboard(page)) {
     console.log("✓ Already on dashboard");
     return true;
@@ -290,15 +297,50 @@ async function signUpNewUser(
     await submitButton.waitFor({ state: "visible", timeout: 5000 });
     await submitButton.click();
 
-    // Wait for either verification page or onboarding/dashboard
+    // Wait for either verification page, error toast, or redirect
+    // The form stays on /signup but shows verification form or error toast
     const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
+    const errorToast = page.locator('[data-sonner-toast][data-type="error"]');
 
-    // Wait for either verification or onboarding to appear
-    await Promise.race([
-      verificationHeading.waitFor({ state: "visible", timeout: 15000 }),
-      onboardingHeading.waitFor({ state: "visible", timeout: 15000 }),
-      page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 }),
-    ]);
+    // Poll for either state to appear (Promise.race with timeouts doesn't work well)
+    let foundState: "verification" | "error" | "redirect" | null = null;
+    const startTime = Date.now();
+    const timeout = 15000;
+
+    while (Date.now() - startTime < timeout && !foundState) {
+      // Check for verification form
+      if (await verificationHeading.isVisible().catch(() => false)) {
+        foundState = "verification";
+        break;
+      }
+
+      // Check for error toast (email already registered)
+      if (await errorToast.isVisible().catch(() => false)) {
+        foundState = "error";
+        break;
+      }
+
+      // Check for redirect to onboarding/dashboard
+      const currentUrl = page.url();
+      if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
+        foundState = "redirect";
+        break;
+      }
+
+      await page.waitForTimeout(500);
+    }
+
+    // Handle error case - email may already exist, should try sign-in
+    if (foundState === "error") {
+      console.log("⚠️ Sign-up error (email may already exist), trying sign-in instead...");
+      return false; // Will trigger sign-in retry in caller
+    }
+
+    if (!foundState) {
+      console.log("⚠️ Timed out waiting for sign-up result");
+      await page.screenshot({ path: path.join(AUTH_DIR, "debug-signup-timeout.png") });
+      return false;
+    }
 
     // Check if email verification is required
     if (await verificationHeading.isVisible().catch(() => false)) {
@@ -324,7 +366,10 @@ async function signUpNewUser(
     }
 
     // Handle onboarding if present
-    if (page.url().includes("/onboarding") || (await onboardingHeading.isVisible().catch(() => false))) {
+    if (
+      page.url().includes("/onboarding") ||
+      (await onboardingHeading.isVisible().catch(() => false))
+    ) {
       console.log("📋 Completing onboarding...");
       const skipButton = page.getByRole("button", { name: /skip for now/i });
       await skipButton.waitFor({ state: "visible", timeout: 5000 });
@@ -385,6 +430,12 @@ async function globalSetup(config: FullConfig): Promise<void> {
     if (!success) {
       console.log("ℹ️ Sign-in failed, attempting sign-up with email verification...");
       success = await signUpNewUser(page, baseURL);
+
+      // Step 3: If sign-up failed (e.g., email already exists), retry sign-in
+      if (!success) {
+        console.log("ℹ️ Sign-up failed, retrying sign-in...");
+        success = await trySignIn(page, baseURL);
+      }
     }
 
     if (success) {

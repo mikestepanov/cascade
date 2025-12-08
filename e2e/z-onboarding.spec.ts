@@ -36,8 +36,15 @@ async function resetOnboarding(): Promise<void> {
 // NOTE: These tests reset the dashboard user's onboarding state before running.
 // This allows re-testing the onboarding flow with an already-authenticated user.
 // The resetOnboarding() call clears the onboarding record, causing the app to show onboarding again.
+// Skip auth save for ALL onboarding tests - the resetOnboarding mutation and navigation
+// can trigger token refreshes that corrupt the auth state file.
+// Uses ensureAuthenticated to re-login if tokens were invalidated by signout test.
 test.describe("Onboarding Wizard", () => {
-  test.beforeEach(async () => {
+  test.use({ skipAuthSave: true });
+
+  test.beforeEach(async ({ ensureAuthenticated }) => {
+    // Re-authenticate if needed (e.g., after signout test invalidated tokens)
+    await ensureAuthenticated();
     // Reset onboarding state before each test via HTTP endpoint
     await resetOnboarding();
   });
@@ -126,94 +133,117 @@ test.describe("Onboarding Wizard", () => {
   });
 });
 
+// Team Lead Flow runs BEFORE Team Member Flow because Team Lead doesn't navigate away
+// from onboarding (just goes back to role selection), while Team Member completes
+// onboarding and navigates to dashboard which can corrupt auth state.
 test.describe("Onboarding - Team Lead Flow", () => {
-    test.beforeEach(async ({ page }) => {
-      // Reset onboarding state via HTTP endpoint
-      await resetOnboarding();
+  // Skip auth save for this test - onboarding state changes can affect auth state
+  test.use({ skipAuthSave: true });
 
-      // Navigate to onboarding
-      await page.goto("/onboarding");
-      await page.waitForLoadState("networkidle");
+  test("shows team lead features and can go back to role selection", async ({
+    page,
+    ensureAuthenticated,
+  }) => {
+    // Re-authenticate if needed (e.g., after signout test)
+    await ensureAuthenticated();
+    // Reset onboarding state via HTTP endpoint
+    await resetOnboarding();
 
-      // Select team lead role
-      await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
-        timeout: 10000,
-      });
-      // Click Team Lead card using evaluate to ensure React state updates
-      const teamLeadCard = page.getByRole("button", { name: /team lead/i });
-      await teamLeadCard.evaluate((el: HTMLElement) => el.click());
-      // Wait for selection state to update and Continue to be enabled
-      await expect(page.getByRole("button", { name: /continue/i })).toBeEnabled({ timeout: 5000 });
-      // Click Continue button
-      await page.getByRole("button", { name: /continue/i }).click();
-      await page.waitForTimeout(500);
+    // Navigate to onboarding
+    await page.goto("/onboarding");
+    await page.waitForLoadState("networkidle");
+
+    // Wait for role selection to appear
+    await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
+      timeout: 10000,
     });
 
-    test("shows project creation option", async ({ page }) => {
-      // Should show option to create a project
-      await expect(
-        page.getByText(/create.*project/i).or(page.getByRole("button", { name: /create/i })),
-      ).toBeVisible({ timeout: 5000 });
+    // Wait for Convex real-time updates to settle after the DB mutation
+    await page.waitForTimeout(2000);
+
+    // Select Team Lead role - click the heading within the card
+    await page.getByRole("heading", { name: /team lead/i }).click();
+
+    // Wait for Continue button to be enabled (indicates selection was registered)
+    const continueButton = page.getByRole("button", { name: /continue/i });
+    await expect(continueButton).toBeEnabled({ timeout: 5000 });
+
+    // Click Continue and wait for navigation to Team Lead flow
+    await continueButton.click();
+
+    // Wait for Team Lead flow to load - "Perfect for Team Leads" heading
+    await expect(page.getByRole("heading", { name: /perfect for team leads/i })).toBeVisible({
+      timeout: 10000,
     });
 
-    test("can go back to role selection", async ({ page }) => {
-      // Find and click back button
-      const backButton = page.getByRole("button", { name: /back/i });
+    // Verify "Let's set up your workspace" button is present
+    await expect(page.getByRole("button", { name: /let's set up your workspace/i })).toBeVisible({
+      timeout: 5000,
+    });
 
-      if (await backButton.isVisible().catch(() => false)) {
-        await backButton.click();
+    // Test back navigation
+    const backButton = page.getByRole("button", { name: /back/i });
+    await expect(backButton).toBeVisible({ timeout: 5000 });
+    await backButton.click();
 
-        // Should return to role selection
-        await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
-          timeout: 5000,
-        });
-      }
+    // Should return to role selection
+    await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
+      timeout: 5000,
     });
   });
+});
 
+// Team Member Flow runs LAST because it completes onboarding and navigates to dashboard.
+// Uses ensureAuthenticated to re-login if tokens were invalidated by signout test.
 test.describe("Onboarding - Team Member Flow", () => {
-    test.beforeEach(async ({ page }) => {
-      // Reset onboarding state via HTTP endpoint
-      await resetOnboarding();
+  test.use({ skipAuthSave: true });
 
-      // Navigate to onboarding
-      await page.goto("/onboarding");
-      await page.waitForLoadState("networkidle");
+  test("shows member-specific content and can complete onboarding", async ({
+    page,
+    ensureAuthenticated,
+  }) => {
+    // Re-authenticate if needed (e.g., after signout test)
+    await ensureAuthenticated();
+    // Reset onboarding state via HTTP endpoint
+    await resetOnboarding();
 
-      // Select team member role
-      await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
-        timeout: 10000,
-      });
-      // Click Team Member card using evaluate to ensure React state updates
-      const teamMemberCard = page.getByRole("button", { name: /team member/i });
-      await teamMemberCard.evaluate((el: HTMLElement) => el.click());
-      // Wait for selection state to update and Continue to be enabled
-      await expect(page.getByRole("button", { name: /continue/i })).toBeEnabled({ timeout: 5000 });
-      // Click Continue button
-      await page.getByRole("button", { name: /continue/i }).click();
-      await page.waitForTimeout(500);
+    // Navigate to onboarding and wait for initial load
+    await page.goto("/onboarding");
+    await page.waitForLoadState("networkidle");
+
+    // Wait for role selection to appear
+    await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
+      timeout: 10000,
     });
 
-    test("shows member-specific content", async ({ page }) => {
-      // Should show member flow content
-      await expect(
-        page
-          .getByText(/join|explore|ready|complete/i)
-          .or(page.getByRole("button", { name: /complete|finish/i })),
-      ).toBeVisible({ timeout: 5000 });
+    // Wait for Convex real-time updates to settle after the DB mutation
+    await page.waitForTimeout(2000);
+
+    // Select Team Member role - click the heading within the card
+    await page.getByRole("heading", { name: /team member/i }).click();
+
+    // Wait for Continue button to be enabled (indicates selection was registered)
+    const continueButton = page.getByRole("button", { name: /continue/i });
+    await expect(continueButton).toBeEnabled({ timeout: 5000 });
+
+    // Click Continue and wait for navigation to Team Member flow
+    await continueButton.click();
+
+    // Wait for Team Member flow to load - "You're All Set!" heading
+    await expect(page.getByRole("heading", { name: /you're all set/i })).toBeVisible({
+      timeout: 10000,
     });
 
-    test("can complete onboarding", async ({ page }) => {
-      // Find complete button
-      const completeButton = page.getByRole("button", { name: /complete|finish|done/i });
+    // Verify "Go to Dashboard" button is present
+    const dashboardButton = page.getByRole("button", { name: /go to dashboard/i });
+    await expect(dashboardButton).toBeVisible({ timeout: 5000 });
 
-      if (await completeButton.isVisible().catch(() => false)) {
-        await completeButton.click();
+    // Click "Go to Dashboard" button to complete onboarding
+    await dashboardButton.click();
 
-        // Should navigate to dashboard
-        await expect(page.getByRole("link", { name: /^dashboard$/i })).toBeVisible({
-          timeout: 10000,
-        });
-      }
+    // Should navigate to dashboard - look for "My Work" heading
+    await expect(page.getByRole("heading", { name: /my work/i })).toBeVisible({
+      timeout: 10000,
     });
   });
+});

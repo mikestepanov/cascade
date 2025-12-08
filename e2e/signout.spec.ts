@@ -3,16 +3,20 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Sign Out E2E Tests
  *
- * IMPORTANT: This file is named with a 'z-' prefix to ensure it runs LAST.
- * The sign out test invalidates auth tokens server-side, which would cause
- * subsequent authenticated tests to fail.
+ * This file runs BEFORE z-onboarding.spec.ts alphabetically.
+ * Sign out invalidates tokens server-side, but z-onboarding tests
+ * will load fresh auth state from the file saved before this test ran.
  */
 
 test.describe("Sign Out", () => {
+  test.use({ skipAuthSave: true });
+
   test("sign out returns to landing page", async ({ page }) => {
     // Navigate to any authenticated page - may land on dashboard or onboarding
+    // Use domcontentloaded - networkidle never resolves due to Convex WebSockets
     await page.goto("/dashboard");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1000); // Allow React to hydrate
 
     // Wait for either dashboard or onboarding to load
     const dashboard = page.getByRole("heading", { name: /my work/i });

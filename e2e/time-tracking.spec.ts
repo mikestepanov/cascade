@@ -11,7 +11,17 @@ import { expect, authenticatedTest as test } from "./fixtures";
  */
 
 test.describe("Time Tracking", () => {
-  test("user can track time on an issue", async ({ dashboardPage, projectsPage, page }) => {
+  test.use({ skipAuthSave: true });
+
+  test("user can track time on an issue", async ({
+    dashboardPage,
+    projectsPage,
+    page,
+    ensureAuthenticated,
+  }) => {
+    // Re-authenticate if needed (e.g., after signout test invalidated tokens)
+    await ensureAuthenticated();
+
     // 1. Navigate to Projects
     await dashboardPage.goto();
     await dashboardPage.navigateTo("projects");
