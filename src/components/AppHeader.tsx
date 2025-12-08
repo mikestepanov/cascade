@@ -1,9 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { SignOutButton } from "../SignOutButton";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
-import { ThemeToggle } from "./ThemeToggle";
 import { TimerWidget as NavTimerWidget } from "./TimeTracking/TimerWidget";
+import { UserMenu } from "./UserMenu";
 
 // Navigation item configuration
 const navItems = [
@@ -148,9 +147,8 @@ export function AppHeader({
 
         <NavTimerWidget />
         <GlobalSearch />
-        <ThemeToggle />
         <NotificationCenter />
-        <SignOutButton />
+        <UserMenu />
       </div>
     </header>
   );
