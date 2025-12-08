@@ -1,4 +1,6 @@
+import { useSearch } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserManagement } from "./Admin/UserManagement";
@@ -14,9 +16,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/ShadcnTabs";
 
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
+const validTabs = ["integrations", "apikeys", "offline", "preferences", "admin", "developer"] as const;
+type TabValue = (typeof validTabs)[number];
+
 export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
   const showDevTools = isTestEmail(currentUser?.email);
+
+  // Get tab from URL search params (e.g., /settings/profile?tab=admin)
+  const search = useSearch({ strict: false }) as { tab?: string };
+  const urlTab = search?.tab;
+  const initialTab: TabValue =
+    urlTab && validTabs.includes(urlTab as TabValue) ? (urlTab as TabValue) : "integrations";
+
+  // Use controlled tabs for URL-based navigation
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
 
   return (
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
@@ -32,7 +46,7 @@ export function Settings() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="integrations" className="w-full">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="w-full">
           <TabsList className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0 w-full justify-start overflow-x-auto">
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
             <TabsTrigger value="apikeys">API Keys</TabsTrigger>

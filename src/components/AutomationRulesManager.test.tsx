@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
 import type { Id } from "../../convex/_generated/dataModel";
 import { AutomationRulesManager } from "./AutomationRulesManager";

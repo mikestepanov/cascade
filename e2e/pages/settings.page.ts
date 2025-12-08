@@ -138,26 +138,43 @@ export class SettingsPage extends BasePage {
     this.userTypeManager = page.locator("[data-user-type-manager]");
     this.hourComplianceDashboard = page.locator("[data-hour-compliance]");
 
-    // Invite user modal
-    this.inviteUserModal = page.getByRole("dialog").filter({ hasText: /invite.*user/i });
-    this.inviteEmailInput = page.getByPlaceholder(/email/i);
-    this.inviteRoleSelect = page.getByRole("combobox", { name: /role/i });
-    this.sendInviteButton = page.getByRole("button", { name: /send.*invite|invite/i });
+    // Invite user form (it's an inline Card, not a dialog)
+    this.inviteUserModal = page.getByRole("heading", { name: /send invitation/i });
+    this.inviteEmailInput = page.getByPlaceholder("user@example.com");
+    this.inviteRoleSelect = page.getByLabel(/role/i);
+    this.sendInviteButton = page.getByRole("button", { name: "Send Invitation", exact: true });
   }
 
   // ===================
   // Actions - Navigation
   // ===================
 
+  /**
+   * Navigate directly to settings page
+   */
+  async goto() {
+    await this.page.goto("/settings/profile");
+    await this.waitForLoad();
+    // Wait for settings page to load - look for integrations tab (always visible)
+    await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
+  }
+
   async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
-    const tabs = {
-      integrations: this.integrationsTab,
-      apiKeys: this.apiKeysTab,
-      offline: this.offlineTab,
-      preferences: this.preferencesTab,
-      admin: this.adminTab,
+    // Map tab names to URL parameter values
+    const tabParams: Record<string, string> = {
+      integrations: "integrations",
+      apiKeys: "apikeys",
+      offline: "offline",
+      preferences: "preferences",
+      admin: "admin",
     };
-    await tabs[tab].evaluate((el: HTMLElement) => el.click());
+
+    // Navigate using URL with tab parameter for reliable tab switching
+    await this.page.goto(`/settings/profile?tab=${tabParams[tab]}`);
+    await this.waitForLoad();
+
+    // Wait for tab content to load
+    await this.page.waitForTimeout(500);
   }
 
   // ===================
@@ -211,7 +228,21 @@ export class SettingsPage extends BasePage {
   // ===================
 
   async openInviteUserModal() {
-    await this.inviteUserButton.evaluate((el: HTMLElement) => el.click());
+    // Wait for the Admin tab content to be fully loaded
+    await this.page.waitForTimeout(1000);
+
+    // Use the first "Invite User" button (header one, not empty state one)
+    const inviteBtn = this.inviteUserButton.first();
+    await inviteBtn.waitFor({ state: "visible", timeout: 5000 });
+
+    // Scroll into view and wait for it to be stable
+    await inviteBtn.scrollIntoViewIfNeeded();
+    await this.page.waitForTimeout(300);
+
+    // Click using standard Playwright click
+    await inviteBtn.click();
+
+    // Wait for form to appear
     await expect(this.inviteUserModal).toBeVisible({ timeout: 5000 });
   }
 
@@ -219,9 +250,12 @@ export class SettingsPage extends BasePage {
     await this.openInviteUserModal();
     await this.inviteEmailInput.fill(email);
     if (role) {
-      await this.inviteRoleSelect.selectOption(role);
+      // Radix Select - click trigger with "User" text (default value), then select option
+      const selectTrigger = this.page.getByRole("combobox").filter({ hasText: /^User$|^Admin$/ });
+      await selectTrigger.click();
+      await this.page.getByRole("option", { name: new RegExp(`^${role}$`, "i") }).click();
     }
-    await this.sendInviteButton.evaluate((el: HTMLElement) => el.click());
+    await this.sendInviteButton.click();
   }
 
   // ===================

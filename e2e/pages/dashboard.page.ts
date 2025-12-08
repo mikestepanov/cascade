@@ -181,7 +181,7 @@ export class DashboardPage extends BasePage {
     // Wait for page to load
     await this.waitForLoad();
 
-    // Wait for either dashboard content OR redirect to signin/landing (if auth failed)
+    // Wait for either dashboard content OR redirect to signin/landing/onboarding (if auth failed or onboarding needed)
     // This gives Convex auth time to process the stored tokens
     const dashboardContent = this.page.getByRole("heading", { name: /my work/i });
     const dashboardTab = this.page.getByRole("link", { name: /^dashboard$/i });
@@ -189,14 +189,16 @@ export class DashboardPage extends BasePage {
     const landingHeading = this.page.getByRole("heading", {
       name: /revolutionize your workflow/i,
     });
+    const onboardingHeading = this.page.getByRole("heading", { name: /welcome to nixelo/i });
 
     try {
-      // Wait for either dashboard, signin, or landing page to be visible
+      // Wait for either dashboard, signin, landing, or onboarding page to be visible
       await Promise.race([
         dashboardContent.waitFor({ state: "visible", timeout: 15000 }),
         dashboardTab.waitFor({ state: "visible", timeout: 15000 }),
         signinHeading.waitFor({ state: "visible", timeout: 15000 }),
         landingHeading.waitFor({ state: "visible", timeout: 15000 }),
+        onboardingHeading.waitFor({ state: "visible", timeout: 15000 }),
       ]);
 
       // If we ended up on signin, auth state is invalid
@@ -209,6 +211,16 @@ export class DashboardPage extends BasePage {
         throw new Error(
           "Auth state invalid or expired - redirected to landing page. JWT may have expired.",
         );
+      }
+
+      // If we ended up on onboarding, complete it by clicking "Skip for now"
+      if (await onboardingHeading.isVisible().catch(() => false)) {
+        // "Skip for now" can be either a link or button depending on design
+        const skipElement = this.page.getByText(/skip for now/i);
+        await skipElement.waitFor({ state: "visible", timeout: 5000 });
+        await skipElement.click();
+        // Wait for redirect to dashboard
+        await dashboardContent.waitFor({ state: "visible", timeout: 10000 });
       }
     } catch (error) {
       // Take a screenshot for debugging
@@ -230,8 +242,7 @@ export class DashboardPage extends BasePage {
     };
     // Wait for tab to be visible and stable
     await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
-    await this.page.waitForTimeout(100);
-    await tabs[tab].click({ force: true });
+    await tabs[tab].click();
     await this.waitForLoad();
   }
 

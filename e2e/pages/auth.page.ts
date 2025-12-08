@@ -6,6 +6,10 @@ import { BasePage } from "./base.page";
  * Authentication Page Object
  * Handles sign in, sign up, password reset, and email verification flows
  *
+ * Note: Sign In/Sign Up forms have a two-step flow:
+ * 1. Click "Continue with email" to reveal form fields
+ * 2. Fill email/password and submit
+ *
  * Routes:
  * - /signin - Sign in form
  * - /signup - Sign up form
@@ -23,6 +27,7 @@ export class AuthPage extends BasePage {
   // ===================
   // Locators - Sign In/Up Forms
   // ===================
+  readonly continueWithEmailButton: Locator;
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly signInButton: Locator;
@@ -31,6 +36,39 @@ export class AuthPage extends BasePage {
   readonly googleSignInButton: Locator;
   readonly signUpLink: Locator;
   readonly signInLink: Locator;
+
+  /**
+   * Dynamic submit button - returns signInButton or signUpButton based on visibility
+   * Used by tests that need a generic submit button reference
+   */
+  get submitButton(): Locator {
+    // Return a locator that matches either button
+    return this.page.getByRole("button", { name: /^(sign in|create account)$/i });
+  }
+
+  /**
+   * Dynamic toggle flow button - returns sign up or sign in link based on current page
+   * On sign-in page: shows "Sign up" link
+   * On sign-up page: shows "Sign in" link
+   */
+  get toggleFlowButton(): Locator {
+    // Return a locator that matches the navigation link between sign-in and sign-up
+    return this.page.getByRole("link", { name: /sign (in|up)/i });
+  }
+
+  /**
+   * Alias for forgotPasswordLink - some tests reference it as forgotPasswordButton
+   */
+  get forgotPasswordButton(): Locator {
+    return this.forgotPasswordLink;
+  }
+
+  /**
+   * Alias for backToSignInLink - some tests reference it as backToSignInButton
+   */
+  get backToSignInButton(): Locator {
+    return this.backToSignInLink;
+  }
 
   // ===================
   // Locators - Password Reset
@@ -59,11 +97,13 @@ export class AuthPage extends BasePage {
     this.forgotPasswordHeading = page.getByRole("heading", { name: /forgot password/i });
     this.resetPasswordHeading = page.getByRole("heading", { name: /reset password/i });
 
-    // Sign In / Sign Up form inputs
+    // Sign In / Sign Up form - two-step flow
+    this.continueWithEmailButton = page.getByRole("button", { name: /continue with email/i });
     this.emailInput = page.getByPlaceholder("Email");
     this.passwordInput = page.getByPlaceholder("Password");
-    this.signInButton = page.getByRole("button", { name: /^sign in$/i });
-    this.signUpButton = page.getByRole("button", { name: /^create account$/i });
+    // These buttons appear after clicking "Continue with email"
+    this.signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+    this.signUpButton = page.getByRole("button", { name: "Create account", exact: true });
     this.forgotPasswordLink = page.getByRole("button", { name: /forgot password/i });
     this.googleSignInButton = page.getByRole("button", { name: /sign in with google/i });
 
@@ -98,23 +138,25 @@ export class AuthPage extends BasePage {
   }
 
   /**
-   * Navigate directly to sign in page
+   * Navigate to sign in page and expand email form
    */
   async gotoSignIn() {
     await this.page.goto("/signin");
-    await this.waitForLoad();
+    await this.page.waitForLoadState("networkidle");
     await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
-    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+    // Expand form using robust click logic
+    await this.expandEmailForm();
   }
 
   /**
-   * Navigate directly to sign up page
+   * Navigate to sign up page and expand email form
    */
   async gotoSignUp() {
     await this.page.goto("/signup");
-    await this.waitForLoad();
+    await this.page.waitForLoadState("networkidle");
     await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
-    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+    // Expand form using robust click logic
+    await this.expandEmailForm();
   }
 
   /**
@@ -122,7 +164,7 @@ export class AuthPage extends BasePage {
    */
   async gotoForgotPassword() {
     await this.page.goto("/forgot-password");
-    await this.waitForLoad();
+    await this.page.waitForLoadState("networkidle");
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
     await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
   }
@@ -136,36 +178,75 @@ export class AuthPage extends BasePage {
   }
 
   // ===================
+  // Actions - Form Expansion
+  // ===================
+
+  /**
+   * Expand the email form by clicking "Continue with email"
+   * Call this after navigating if form is collapsed
+   * Uses multiple strategies to handle React hydration timing
+   */
+  async expandEmailForm() {
+    // Check if form is expanded by looking for the submit button (Sign in or Create account)
+    const submitButtonLocator = this.page.getByRole("button", { name: /^(sign in|create account)$/i });
+    const isFormExpanded = await submitButtonLocator.isVisible().catch(() => false);
+
+    if (!isFormExpanded) {
+      // Wait for button to be attached and visible before clicking
+      await this.continueWithEmailButton.waitFor({ state: "attached", timeout: 5000 });
+      await this.continueWithEmailButton.waitFor({ state: "visible", timeout: 5000 });
+
+      // Give React time to attach event handlers after hydration
+      await this.page.waitForTimeout(500);
+
+      // Try clicking with multiple strategies
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          // Use evaluate to trigger a proper click that React will handle
+          await this.continueWithEmailButton.evaluate((btn) => {
+            const event = new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            });
+            btn.dispatchEvent(event);
+          });
+
+          // Wait for form to expand
+          await submitButtonLocator.waitFor({ state: "visible", timeout: 3000 });
+          break;
+        } catch {
+          if (attempt < 3) {
+            await this.page.waitForTimeout(500);
+          } else {
+            // Final fallback: try Playwright's native click
+            await this.continueWithEmailButton.click({ timeout: 5000 });
+            await submitButtonLocator.waitFor({ state: "visible", timeout: 3000 });
+          }
+        }
+      }
+
+      // Wait for formReady state (350ms delay after click enables required attributes)
+      await this.page.waitForTimeout(400);
+    }
+  }
+
+  // ===================
   // Actions - Sign In/Up
   // ===================
 
   async signIn(email: string, password: string) {
+    await this.expandEmailForm();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.signInButton.click();
   }
 
   async signUp(email: string, password: string) {
-    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+    await this.expandEmailForm();
     await this.emailInput.fill(email);
-    await this.passwordInput.waitFor({ state: "visible", timeout: 5000 });
     await this.passwordInput.fill(password);
-    await this.page.waitForTimeout(500);
-
-    // Retry clicking submit until page changes (verification form or error)
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await this.signUpButton.waitFor({ state: "visible", timeout: 5000 });
-      await this.signUpButton.click();
-      await this.page.waitForTimeout(2000);
-
-      // Check if we left the sign-up form
-      const stillOnSignUp = await this.signUpButton.isVisible().catch(() => false);
-      if (!stillOnSignUp) {
-        return;
-      }
-      await this.page.waitForTimeout(500);
-    }
-    await this.page.waitForTimeout(2000);
+    await this.signUpButton.click();
   }
 
   async navigateToSignUp() {
@@ -176,6 +257,16 @@ export class AuthPage extends BasePage {
   async navigateToSignIn() {
     await this.signInLink.click();
     await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+  }
+
+  async switchToSignUp() {
+    await this.navigateToSignUp();
+    await this.expandEmailForm();
+  }
+
+  async switchToSignIn() {
+    await this.navigateToSignIn();
+    await this.expandEmailForm();
   }
 
   async signInWithGoogle() {
@@ -189,9 +280,21 @@ export class AuthPage extends BasePage {
   // ===================
 
   async clickForgotPassword() {
+    // Forgot password link appears after form is expanded
+    await this.expandEmailForm();
+    // Wait for form to stabilize (formReady state) before clicking
+    await this.page.waitForTimeout(400);
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
-    await this.forgotPasswordLink.click();
+    // Use force:true to avoid issues with element being re-rendered
+    await this.forgotPasswordLink.click({ force: true });
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
+  }
+
+  /**
+   * Alias for clickForgotPassword - navigates to forgot password from sign in
+   */
+  async goToForgotPassword() {
+    await this.clickForgotPassword();
   }
 
   async requestPasswordReset(email: string) {
@@ -209,6 +312,8 @@ export class AuthPage extends BasePage {
     await this.backToSignInLink.waitFor({ state: "visible", timeout: 10000 });
     await this.backToSignInLink.click();
     await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+    // Expand the form after navigation
+    await this.expandEmailForm();
   }
 
   // ===================
@@ -232,8 +337,18 @@ export class AuthPage extends BasePage {
   // Assertions
   // ===================
 
+  /**
+   * Wait for form to be fully ready (formReady state)
+   * The form has a 350ms delay before setting formReady=true which enables required attributes
+   */
+  async waitForFormReady() {
+    await this.page.waitForTimeout(400);
+  }
+
   async expectSignInForm() {
     await expect(this.signInHeading).toBeVisible({ timeout: 10000 });
+    // Expand form if collapsed (after navigation from forgot-password, form is collapsed)
+    await this.expandEmailForm();
     await expect(this.emailInput).toBeVisible({ timeout: 5000 });
     await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
     await expect(this.signInButton).toBeVisible({ timeout: 5000 });
@@ -242,6 +357,8 @@ export class AuthPage extends BasePage {
 
   async expectSignUpForm() {
     await expect(this.signUpHeading).toBeVisible({ timeout: 10000 });
+    // Expand form if collapsed
+    await this.expandEmailForm();
     await expect(this.emailInput).toBeVisible({ timeout: 5000 });
     await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
     await expect(this.signUpButton).toBeVisible({ timeout: 5000 });

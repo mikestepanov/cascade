@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { TEST_USERS } from "./config";
 
-const BASE_URL = "http://localhost:5556";
+const BASE_URL = "http://localhost:5555";
 
 /**
  * Test that mailtrap account (@inbox.mailtrap.io) shows Dev Tools tab
@@ -24,12 +24,28 @@ test("Mailtrap account shows Dev Tools tab in Settings", async ({ page }) => {
   const heading = page.getByRole("heading", { name: /welcome back/i });
   await heading.waitFor({ state: "visible", timeout: 15000 });
 
+  console.log("Expanding email form...");
+
+  // Click "Continue with email" to expand form (two-step auth flow)
+  const continueButton = page.getByRole("button", { name: /continue with email/i });
+  await continueButton.waitFor({ state: "visible", timeout: 5000 });
+  await page.waitForTimeout(500); // Wait for React hydration
+  await continueButton.evaluate((btn) => {
+    const event = new MouseEvent("click", { bubbles: true, cancelable: true, view: window });
+    btn.dispatchEvent(event);
+  });
+
+  // Wait for form to expand
+  const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+  await signInButton.waitFor({ state: "visible", timeout: 5000 });
+  await page.waitForTimeout(400); // Wait for formReady state
+
   console.log("Filling signin form...");
 
   // Fill signin form
   await page.getByPlaceholder("Email").fill(testEmail);
   await page.getByPlaceholder("Password").fill(testPassword);
-  await page.getByRole("button", { name: /^sign in$/i }).click();
+  await signInButton.click();
 
   console.log("Signin form submitted...");
 

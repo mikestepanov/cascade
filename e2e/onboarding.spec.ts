@@ -126,15 +126,12 @@ test.describe("Onboarding Wizard", () => {
   });
 });
 
-test.describe
-  .skip("Onboarding - Team Lead Flow", () => {
+test.describe("Onboarding - Team Lead Flow", () => {
     test.beforeEach(async ({ page }) => {
       // Reset onboarding state via HTTP endpoint
       await resetOnboarding();
 
-      // Navigate to root first to force fresh data fetch, then to onboarding
-      await page.goto("/");
-      await page.waitForLoadState("networkidle");
+      // Navigate to onboarding
       await page.goto("/onboarding");
       await page.waitForLoadState("networkidle");
 
@@ -142,7 +139,14 @@ test.describe
       await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
         timeout: 10000,
       });
-      await page.getByText(/team lead/i).click();
+      // Click Team Lead card using evaluate to ensure React state updates
+      const teamLeadCard = page.getByRole("button", { name: /team lead/i });
+      await teamLeadCard.evaluate((el: HTMLElement) => el.click());
+      // Wait for selection state to update and Continue to be enabled
+      await expect(page.getByRole("button", { name: /continue/i })).toBeEnabled({ timeout: 5000 });
+      // Click Continue button
+      await page.getByRole("button", { name: /continue/i }).click();
+      await page.waitForTimeout(500);
     });
 
     test("shows project creation option", async ({ page }) => {
@@ -167,18 +171,12 @@ test.describe
     });
   });
 
-// NOTE: This test requires a user that has NOT completed onboarding.
-// The resetOnboarding API clears the DB record, but the authenticated user's
-// session still redirects to dashboard. Need fresh user or different approach.
-test.describe
-  .skip("Onboarding - Team Member Flow", () => {
+test.describe("Onboarding - Team Member Flow", () => {
     test.beforeEach(async ({ page }) => {
       // Reset onboarding state via HTTP endpoint
       await resetOnboarding();
 
-      // Navigate to root first to force fresh data fetch, then to onboarding
-      await page.goto("/");
-      await page.waitForLoadState("networkidle");
+      // Navigate to onboarding
       await page.goto("/onboarding");
       await page.waitForLoadState("networkidle");
 
@@ -186,7 +184,14 @@ test.describe
       await expect(page.getByRole("heading", { name: /welcome to nixelo/i })).toBeVisible({
         timeout: 10000,
       });
-      await page.getByText(/team member/i).click();
+      // Click Team Member card using evaluate to ensure React state updates
+      const teamMemberCard = page.getByRole("button", { name: /team member/i });
+      await teamMemberCard.evaluate((el: HTMLElement) => el.click());
+      // Wait for selection state to update and Continue to be enabled
+      await expect(page.getByRole("button", { name: /continue/i })).toBeEnabled({ timeout: 5000 });
+      // Click Continue button
+      await page.getByRole("button", { name: /continue/i }).click();
+      await page.waitForTimeout(500);
     });
 
     test("shows member-specific content", async ({ page }) => {
