@@ -4,6 +4,7 @@ import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { Typography } from "./ui/Typography";
 
 interface CalendarViewProps {
   projectId: Id<"projects">;
@@ -138,9 +139,9 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Typography variant="h2" className="text-xl sm:text-2xl font-bold">
           Calendar View
-        </h2>
+        </Typography>
 
         {/* Month Navigation */}
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
@@ -166,9 +167,12 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
             </svg>
           </button>
 
-          <h3 className="text-lg sm:text-xl font-semibold w-full sm:min-w-48 text-center text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="h3"
+            className="text-lg sm:text-xl font-semibold w-full sm:min-w-48 text-center"
+          >
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-          </h3>
+          </Typography>
 
           <button
             type="button"

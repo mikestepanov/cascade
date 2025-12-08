@@ -7,6 +7,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Checkbox, Input, Select, Textarea } from "./ui/form";
+import { Typography } from "./ui/Typography";
 
 interface ProjectSidebarProps {
   selectedProjectId: Id<"projects"> | null;
@@ -56,9 +57,9 @@ export function ProjectSidebar({ selectedProjectId }: ProjectSidebarProps) {
     <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        <Typography variant="h2" className="text-lg font-semibold mb-4">
           Projects
-        </h2>
+        </Typography>
 
         {/* Create Project Button */}
         <Button
@@ -158,9 +159,9 @@ export function ProjectSidebar({ selectedProjectId }: ProjectSidebarProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                      <Typography variant="h3" className="font-medium text-base truncate">
                         {project.name}
-                      </h3>
+                      </Typography>
                       <Badge variant="neutral">{project.key}</Badge>
                     </div>
                     <div className="flex items-center space-x-2 mb-1">

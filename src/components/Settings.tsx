@@ -9,10 +9,13 @@ import { ApiKeysManager } from "./Settings/ApiKeysManager";
 import { DevToolsTab } from "./Settings/DevToolsTab";
 import { GitHubIntegration } from "./Settings/GitHubIntegration";
 import { GoogleCalendarIntegration } from "./Settings/GoogleCalendarIntegration";
+import { NotificationsTab } from "./Settings/NotificationsTab";
 import { OfflineTab } from "./Settings/OfflineTab";
 import { PreferencesTab } from "./Settings/PreferencesTab";
+import { ProfileTab } from "./Settings/ProfileTab";
 import { PumbleIntegration } from "./Settings/PumbleIntegration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/ShadcnTabs";
+import { Typography } from "./ui/Typography";
 
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
@@ -37,17 +40,19 @@ export function Settings() {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
             Settings
-          </h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="muted" className="mt-1 sm:mt-2 text-sm sm:text-base">
             Manage your account, integrations, and preferences
-          </p>
+          </Typography>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="w-full">
           <TabsList className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
             <TabsTrigger value="apikeys">API Keys</TabsTrigger>
             <TabsTrigger value="offline">Offline Mode</TabsTrigger>
@@ -56,6 +61,12 @@ export function Settings() {
             {showDevTools && <TabsTrigger value="developer">Dev Tools</TabsTrigger>}
           </TabsList>
 
+          <TabsContent value="profile">
+            <ProfileTab />
+          </TabsContent>
+          <TabsContent value="notifications">
+            <NotificationsTab />
+          </TabsContent>
           <TabsContent value="integrations">
             <IntegrationsTab />
           </TabsContent>

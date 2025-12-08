@@ -143,7 +143,7 @@ export function highlightMatches(
  * {results.map(({ item, score, matches }) => (
  *   <div key={item._id}>
  *     <span>{item.name}</span>
- *     {score && <span className="text-gray-500">({(score * 100).toFixed(0)}%)</span>}
+ *     {score && <span className="text-ui-text-secondary">({(score * 100).toFixed(0)}%)</span>}
  *   </div>
  * ))}
  * ```

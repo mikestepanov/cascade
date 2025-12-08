@@ -4,6 +4,7 @@ import { showError } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Typography } from "./ui/Typography";
 
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,9 +112,9 @@ export function NotificationCenter() {
       >
         {/* Header */}
         <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h3" className="text-lg font-semibold">
             Notifications
-          </h3>
+          </Typography>
           {unreadCount && unreadCount > 0 && (
             <button
               type="button"
@@ -139,7 +140,7 @@ export function NotificationCenter() {
                 <div
                   key={notification._id}
                   className={`p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors ${
-                    !notification.isRead ? "bg-brand-50 dark:bg-brand-900/20" : ""
+                    !notification.isRead ? "bg-status-info-bg dark:bg-brand-900/20" : ""
                   }`}
                 >
                   <div className="flex items-start gap-3">

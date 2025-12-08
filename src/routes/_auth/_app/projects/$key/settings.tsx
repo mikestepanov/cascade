@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/_app/projects/$key/settings")({
   component: ProjectSettingsPage,
@@ -26,21 +27,33 @@ function ProjectSettingsPage() {
   // TODO: Create a proper ProjectSettings component
   return (
     <div className="p-6">
-      <h2 className="text-lg font-semibold mb-4">Project Settings</h2>
+      <Typography variant="h2" className="text-lg font-semibold mb-4">
+        Project Settings
+      </Typography>
       <div className="space-y-4">
         <div>
-          <span className="block text-sm font-medium text-ui-text-secondary mb-1">
+          <Typography variant="small" color="secondary" className="block mb-1">
             Project Name
-          </span>
-          <p className="text-ui-text-primary">{project.name}</p>
+          </Typography>
+          <Typography variant="p" className="mt-0">
+            {project.name}
+          </Typography>
         </div>
         <div>
-          <span className="block text-sm font-medium text-ui-text-secondary mb-1">Project Key</span>
-          <p className="text-ui-text-primary">{project.key}</p>
+          <Typography variant="small" color="secondary" className="block mb-1">
+            Project Key
+          </Typography>
+          <Typography variant="p" className="mt-0">
+            {project.key}
+          </Typography>
         </div>
         <div>
-          <span className="block text-sm font-medium text-ui-text-secondary mb-1">Description</span>
-          <p className="text-ui-text-primary">{project.description || "No description"}</p>
+          <Typography variant="small" color="secondary" className="block mb-1">
+            Description
+          </Typography>
+          <Typography variant="p" className="mt-0">
+            {project.description || "No description"}
+          </Typography>
         </div>
       </div>
     </div>

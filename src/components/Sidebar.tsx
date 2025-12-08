@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Checkbox, Input } from "./ui/form";
 import { SkeletonList } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 
 interface SidebarProps {
   selectedDocumentId: Id<"documents"> | null;
@@ -101,9 +102,9 @@ export function Sidebar({ selectedDocumentId }: SidebarProps) {
     <div className="w-full sm:w-72 lg:w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-r border-ui-border-primary dark:border-ui-border-primary-dark flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        <Typography variant="h2" className="text-lg font-semibold mb-4">
           Documents
-        </h2>
+        </Typography>
 
         {/* Search */}
         <div className="mb-4">
@@ -243,9 +244,9 @@ export function Sidebar({ selectedDocumentId }: SidebarProps) {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                    <Typography variant="h3" className="font-medium text-base truncate">
                       {doc.title}
-                    </h3>
+                    </Typography>
                     <div className="flex items-center space-x-2 mt-1">
                       <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                         by {doc.creatorName}

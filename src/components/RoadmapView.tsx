@@ -8,6 +8,7 @@ import { IssueDetailModal } from "./IssueDetailModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 import { Skeleton } from "./ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
+import { Typography } from "./ui/Typography";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -120,12 +121,12 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
-          </h2>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          </Typography>
+          <Typography variant="muted" className="mt-1">
             Visualize issue timeline and dependencies
-          </p>
+          </Typography>
         </div>
 
         <div className="flex gap-3">

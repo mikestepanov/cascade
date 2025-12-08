@@ -3,6 +3,7 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { useQuery } from "convex/react";
 import { ProjectSidebar } from "@/components/ProjectSidebar";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/_app/projects/$key")({
   component: ProjectLayout,
@@ -27,10 +28,12 @@ function ProjectLayout() {
     return (
       <div className="flex h-full items-center justify-center text-ui-text-tertiary">
         <div className="text-center">
-          <h2 className="text-xl font-medium mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h2" className="text-xl font-medium mb-2">
             Project not found
-          </h2>
-          <p>The project "{key}" does not exist or you don't have access to it.</p>
+          </Typography>
+          <Typography variant="p" color="secondary">
+            The project "{key}" does not exist or you don't have access to it.
+          </Typography>
           <Link
             to="/projects"
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
@@ -49,8 +52,8 @@ function ProjectLayout() {
       currentPath.endsWith(`/${tab}`) || (tab === "board" && currentPath.endsWith(`/${key}`));
     return `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
       isActive
-        ? "border-primary-600 text-primary-600"
-        : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-gray-300"
+        ? "border-brand-600 text-brand-600"
+        : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary"
     }`;
   };
 
@@ -61,12 +64,12 @@ function ProjectLayout() {
         {/* Project Header */}
         <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
           <div className="px-6 py-4">
-            <h1 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h1" className="text-xl font-semibold">
               {project.name}
-            </h1>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            </Typography>
+            <Typography variant="p" color="secondary" className="text-sm">
               {project.key}
-            </p>
+            </Typography>
           </div>
           {/* Tab Navigation */}
           <nav className="flex px-6 -mb-px">
