@@ -41,26 +41,94 @@ export function getE2EHeaders(): HeadersInit {
 }
 
 /**
+ * User Roles
+ */
+export type PlatformRole = "user" | "admin";
+export type ProjectRole = "viewer" | "editor" | "admin";
+export type OnboardingPersona = "team_lead" | "team_member";
+
+/**
+ * Test User Configuration
+ */
+export interface TestUser {
+  email: string;
+  password: string;
+  platformRole: PlatformRole;
+  onboardingPersona?: OnboardingPersona;
+  description: string;
+}
+
+/**
  * Test Users Configuration
  *
- * Dashboard user: Persistent user with completed onboarding
- * - Used for dashboard, projects, issues tests
- * - Created once, reused across runs
+ * All test users use @inbox.mailtrap.io domain for email verification.
+ * Users are created on first run and reused across test runs.
  *
- * Onboarding user: Fresh user created via API (no email verification)
- * - Used for onboarding wizard tests
- * - Created per test run, cleaned up after
+ * Platform Roles:
+ * - admin: Full platform access, can manage users and invites
+ * - user: Standard user access
+ *
+ * Onboarding Personas:
+ * - team_lead: Creates projects, manages team
+ * - team_member: Joins existing projects
  */
 export const TEST_USERS = {
-  // Persistent dashboard user - completed onboarding
+  // Platform admin user - full admin access
+  admin: {
+    email: "e2e-admin@inbox.mailtrap.io",
+    password: "E2ETestPassword123!",
+    platformRole: "admin" as PlatformRole,
+    onboardingPersona: "team_lead" as OnboardingPersona,
+    description: "Platform admin with full access",
+  },
+
+  // Team lead user - creates and manages projects
+  teamLead: {
+    email: "e2e-teamlead@inbox.mailtrap.io",
+    password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_lead" as OnboardingPersona,
+    description: "Team lead who creates and manages projects",
+  },
+
+  // Team member user - joins projects, standard access
+  teamMember: {
+    email: "e2e-member@inbox.mailtrap.io",
+    password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_member" as OnboardingPersona,
+    description: "Team member with standard access",
+  },
+
+  // Viewer user - read-only project access
+  viewer: {
+    email: "e2e-viewer@inbox.mailtrap.io",
+    password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_member" as OnboardingPersona,
+    description: "Viewer with read-only project access",
+  },
+
+  // Legacy alias for backward compatibility
   dashboard: {
     email: "e2e-dashboard@inbox.mailtrap.io",
     password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_lead" as OnboardingPersona,
+    description: "Default dashboard user (legacy)",
   },
-  // Prefix for fresh auth test users (timestamp will be appended)
-  authTestPrefix: "e2e-auth",
-  // Prefix for fresh onboarding test users
-  onboardingTestPrefix: "e2e-onboarding",
+} as const;
+
+// Default user for most tests (backward compatible)
+export const DEFAULT_TEST_USER = TEST_USERS.dashboard;
+
+/**
+ * Prefixes for dynamically created test users
+ */
+export const TEST_USER_PREFIXES = {
+  auth: "e2e-auth",
+  onboarding: "e2e-onboarding",
+  temp: "e2e-temp",
 };
 
 /**
@@ -92,12 +160,15 @@ export const TIMEOUTS = {
 };
 
 /**
- * Auth state file paths
+ * Auth state file paths for each test user
  */
 export const AUTH_PATHS = {
-  // Dashboard user auth state (completed onboarding)
+  admin: ".auth/user-admin.json",
+  teamLead: ".auth/user-teamlead.json",
+  teamMember: ".auth/user-member.json",
+  viewer: ".auth/user-viewer.json",
+  // Legacy paths for backward compatibility
   dashboard: ".auth/user-dashboard.json",
-  // Onboarding user auth state (not completed onboarding)
   onboarding: ".auth/user-onboarding.json",
 };
 

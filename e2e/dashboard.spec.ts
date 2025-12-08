@@ -64,17 +64,23 @@ test.describe("Command Palette", () => {
 });
 
 test.describe("Theme Toggle", () => {
-  test("can switch themes", async ({ dashboardPage, page }) => {
-    await dashboardPage.goto();
+  test("can switch themes via settings", async ({ settingsPage, page }) => {
+    // Navigate to Settings > Preferences
+    await settingsPage.goto();
+    await settingsPage.switchToTab("preferences");
+
     const html = page.locator("html");
 
-    await dashboardPage.setTheme("dark");
+    // Switch to dark theme (ToggleGroupItem with aria-label)
+    await page.getByRole("radio", { name: /dark theme/i }).click();
     await expect(html).toHaveClass(/dark/);
 
-    await dashboardPage.setTheme("light");
+    // Switch to light theme
+    await page.getByRole("radio", { name: /light theme/i }).click();
     await expect(html).not.toHaveClass(/dark/);
 
-    await dashboardPage.setTheme("system");
+    // Switch to system theme
+    await page.getByRole("radio", { name: /system theme/i }).click();
   });
 });
 

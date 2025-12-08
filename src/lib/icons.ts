@@ -16,12 +16,12 @@ export { default as Calendar } from "lucide-react/dist/esm/icons/calendar";
 // Actions
 export { default as Check } from "lucide-react/dist/esm/icons/check";
 export { default as CheckCircle } from "lucide-react/dist/esm/icons/check-circle";
-
 // Navigation & Arrows
 export { default as ChevronDown } from "lucide-react/dist/esm/icons/chevron-down";
 export { default as ChevronLeft } from "lucide-react/dist/esm/icons/chevron-left";
 export { default as ChevronRight } from "lucide-react/dist/esm/icons/chevron-right";
 export { default as ChevronUp } from "lucide-react/dist/esm/icons/chevron-up";
+export { default as Circle } from "lucide-react/dist/esm/icons/circle";
 export { default as Clock } from "lucide-react/dist/esm/icons/clock";
 export { default as Copy } from "lucide-react/dist/esm/icons/copy";
 // Business
