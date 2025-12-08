@@ -64,15 +64,15 @@ test.describe("Sign Up Form - Elements", () => {
   });
 
   test("displays all sign up form elements", async ({ authPage, page }) => {
-    // Heading stays "Welcome back" (UI doesn't change heading for sign up)
-    await expect(page.getByRole("heading", { name: /welcome back/i })).toBeVisible();
+    // Heading changes to "Create an account" on sign up page
+    await expect(page.getByRole("heading", { name: /create an account/i })).toBeVisible();
 
     // Same form inputs
     await expect(authPage.emailInput).toBeVisible();
     await expect(authPage.passwordInput).toBeVisible();
 
-    // Submit button text changes to "Sign up"
-    await expect(authPage.submitButton).toHaveText(/sign up/i);
+    // Submit button text is "Create account"
+    await expect(authPage.submitButton).toHaveText(/create account/i);
 
     // Toggle link changes to "Sign in instead"
     await expect(authPage.toggleFlowButton).toContainText(/sign in/i);
@@ -82,8 +82,8 @@ test.describe("Sign Up Form - Elements", () => {
   });
 
   test("can switch between sign in and sign up", async ({ authPage }) => {
-    // Currently on sign up
-    await expect(authPage.submitButton).toHaveText(/sign up/i);
+    // Currently on sign up - button says "Create account"
+    await expect(authPage.submitButton).toHaveText(/create account/i);
 
     // Switch to sign in
     await authPage.switchToSignIn();
@@ -91,7 +91,7 @@ test.describe("Sign Up Form - Elements", () => {
 
     // Switch back to sign up
     await authPage.switchToSignUp();
-    await expect(authPage.submitButton).toHaveText(/sign up/i);
+    await expect(authPage.submitButton).toHaveText(/create account/i);
   });
 });
 
@@ -103,7 +103,7 @@ test.describe("Forgot Password Form - Elements", () => {
 
   test("displays forgot password form elements", async ({ authPage, page }) => {
     // Heading
-    await expect(page.getByRole("heading", { name: /reset your password/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /forgot password/i })).toBeVisible();
 
     // Email input
     await expect(authPage.emailInput).toBeVisible();
@@ -137,8 +137,8 @@ test.describe("Login Section - Back Navigation", () => {
     await landingPage.goto();
     await landingPage.clickGetStarted();
 
-    // Verify we're on login section
-    await expect(page.getByRole("heading", { name: /welcome back/i })).toBeVisible();
+    // Verify we're on sign up page (Get Started navigates to signup)
+    await expect(page.getByRole("heading", { name: /create an account/i })).toBeVisible();
 
     // Click back
     await landingPage.goBackToHome();

@@ -69,14 +69,14 @@ export class ProjectsPage extends BasePage {
       .locator("[data-project-item]")
       .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
-    // Create project form
+    // Create project form - look for form containing project inputs
     this.createProjectForm = page
       .locator("[data-create-project-form]")
-      .or(page.locator("form").filter({ hasText: /project name|create project/i }));
+      .or(page.locator("form").filter({ has: page.getByPlaceholder(/project name/i) }));
     this.projectNameInput = page
       .getByPlaceholder(/project name/i)
       .or(page.getByLabel(/project name/i));
-    this.projectKeyInput = page.getByPlaceholder(/key|prefix/i).or(page.getByLabel(/key/i));
+    this.projectKeyInput = page.getByPlaceholder(/project key/i);
     this.projectDescriptionInput = page
       .getByPlaceholder(/description/i)
       .or(page.getByLabel(/description/i));
@@ -88,13 +88,14 @@ export class ProjectsPage extends BasePage {
     this.createButton = page.getByRole("button", { name: /^create$/i });
     this.cancelButton = page.getByRole("button", { name: /cancel/i });
 
-    // Project board
+    // Project board - look for Kanban Board heading or board container
     this.projectBoard = page
       .locator("[data-project-board]")
-      .or(page.locator(".kanban-board, [role='grid']"));
+      .or(page.getByRole("heading", { name: /kanban board/i }));
     this.boardColumns = page.locator("[data-board-column]").or(page.locator(".kanban-column"));
     this.issueCards = page.locator("[data-issue-card]").or(page.locator(".issue-card"));
-    this.createIssueButton = page.getByRole("button", { name: /create.*issue|new.*issue|\+ add/i });
+    // Create issue - look for "Add issue" button (column headers have "Add issue to X")
+    this.createIssueButton = page.getByRole("button", { name: /add issue/i }).first();
 
     // Create issue modal
     this.createIssueModal = page
@@ -132,7 +133,7 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async openCreateProjectForm() {
-    await this.newProjectButton.evaluate((el: HTMLElement) => el.click());
+    await this.newProjectButton.click();
     await expect(this.createProjectForm).toBeVisible({ timeout: 5000 });
   }
 
@@ -157,7 +158,7 @@ export class ProjectsPage extends BasePage {
   }
 
   async openCreateIssueModal() {
-    await this.createIssueButton.evaluate((el: HTMLElement) => el.click());
+    await this.createIssueButton.click();
     await expect(this.createIssueModal).toBeVisible({ timeout: 5000 });
   }
 

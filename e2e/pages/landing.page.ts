@@ -100,6 +100,17 @@ export class LandingPage extends BasePage {
     await this.page.waitForTimeout(300);
   }
 
+  /**
+   * Navigate back to landing page from auth pages using browser back or logo click
+   */
+  async goBackToHome() {
+    // Use browser back navigation
+    await this.page.goBack();
+    // Wait for landing page to load
+    await this.page.waitForURL("**/", { timeout: 10000 });
+    await this.heroHeadline.waitFor({ state: "visible", timeout: 10000 });
+  }
+
   // ===================
   // Assertions
   // ===================
@@ -116,5 +127,19 @@ export class LandingPage extends BasePage {
 
   async expectSignUpPage() {
     await expect(this.signUpHeading).toBeVisible({ timeout: 10000 });
+  }
+
+  /**
+   * Alias for expectSignInPage - tests may call it expectLoginSection
+   */
+  async expectLoginSection() {
+    await this.expectSignInPage();
+  }
+
+  /**
+   * Alias for expectSignUpPage - tests may call it expectSignUpSection
+   */
+  async expectSignUpSection() {
+    await this.expectSignUpPage();
   }
 }

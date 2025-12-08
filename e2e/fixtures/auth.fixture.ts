@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { test as base, expect } from "@playwright/test";
-import { AUTH_PATHS } from "../config";
+import { AUTH_PATHS, TEST_USERS } from "../config";
 import {
   AuthPage,
   CalendarPage,
@@ -79,6 +79,8 @@ export type AuthFixtures = {
   calendarPage: CalendarPage;
   settingsPage: SettingsPage;
   saveAuthState: () => Promise<void>;
+  ensureAuthenticated: () => Promise<void>;
+  forceNewContext: boolean;
 };
 
 /**
@@ -99,10 +101,93 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(AUTH_STATE_PATH);
   },
 
+  // Flag to skip auto-save for specific tests (e.g., onboarding tests that corrupt state)
+  skipAuthSave: [false, { option: true }],
+
+  // Re-authenticate if current tokens are invalid (e.g., after signout test)
+  // Call this in beforeEach if your test might run after signout
+  ensureAuthenticated: async ({ page }, use) => {
+    const reauth = async () => {
+      // Navigate to check if we're authenticated
+      await page.goto("/dashboard");
+      await page.waitForLoadState("domcontentloaded");
+      await page.waitForTimeout(1500);
+
+      // Check current URL - if redirected away from dashboard, we need to re-auth
+      const currentUrl = page.url();
+      const needsReauth = !(
+        currentUrl.includes("/dashboard") || currentUrl.includes("/onboarding")
+      );
+
+      if (needsReauth) {
+        // Clear all storage to start fresh (removes any corrupted tokens)
+        await page.context().clearCookies();
+        await page.evaluate(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        });
+
+        // Navigate to signin
+        await page.goto("/signin");
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(2000); // Extra wait for React hydration after clearing storage
+
+        // Click "Continue with email" with retry logic (like global-setup)
+        const continueWithEmail = page.getByRole("button", { name: /continue with email/i });
+        const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+
+        await continueWithEmail.waitFor({ state: "visible", timeout: 5000 });
+        await page.waitForTimeout(500); // Let React hydrate
+
+        // Try multiple times with MouseEvent dispatch
+        let formExpanded = false;
+        for (let attempt = 1; attempt <= 3 && !formExpanded; attempt++) {
+          await continueWithEmail.evaluate((btn) => {
+            const event = new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            });
+            btn.dispatchEvent(event);
+          });
+
+          try {
+            await signInButton.waitFor({ state: "visible", timeout: 2000 });
+            formExpanded = true;
+          } catch {
+            await page.waitForTimeout(500);
+          }
+        }
+
+        // Fallback to Playwright click
+        if (!formExpanded) {
+          await continueWithEmail.click();
+          await signInButton.waitFor({ state: "visible", timeout: 3000 });
+        }
+
+        // Fill credentials using placeholder (like global-setup)
+        const emailInput = page.getByPlaceholder("Email");
+        await emailInput.fill(TEST_USERS.dashboard.email);
+        await page.getByPlaceholder("Password").fill(TEST_USERS.dashboard.password);
+
+        // Wait for form to be ready (350ms delay in React component)
+        await page.waitForTimeout(400);
+
+        await signInButton.click();
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(2000);
+      }
+    };
+    await use(reauth);
+  },
+
   // Save auth state after test - preserves refreshed tokens
   // Only saves if auth tokens are still present (skips if user signed out)
-  saveAuthState: async ({ context }, use) => {
+  saveAuthState: async ({ context, skipAuthSave }, use) => {
     const save = async () => {
+      if (skipAuthSave) {
+        return; // Skip saving for tests that opt out
+      }
       try {
         // Get current state without saving to file first
         const currentState = await context.storageState();
@@ -123,7 +208,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
       }
     };
     await use(save);
-    // Auto-save after each test
+    // Auto-save after each test (unless skipAuthSave is true)
     await save();
   },
 
