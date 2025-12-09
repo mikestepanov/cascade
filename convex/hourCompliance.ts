@@ -405,8 +405,9 @@ export const listComplianceRecords = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // Return empty for non-admins (UI-driven visibility)
     if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+      return [];
     }
 
     let records: Doc<"hourComplianceRecords">[];
@@ -474,8 +475,16 @@ export const getComplianceSummary = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // Return empty summary for non-admins (UI-driven visibility)
     if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+      return {
+        totalRecords: 0,
+        compliant: 0,
+        underHours: 0,
+        overHours: 0,
+        equityUnder: 0,
+        complianceRate: 0,
+      };
     }
 
     let records = await ctx.db.query("hourComplianceRecords").order("desc").take(1000); // Get recent records

@@ -1,9 +1,52 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium, type FullConfig } from "@playwright/test";
-import { AUTH_PATHS, TEST_USERS } from "./config";
+import { type BrowserContext, chromium, type FullConfig, type Page } from "@playwright/test";
+import {
+  AUTH_PATHS,
+  E2E_ENDPOINTS,
+  getE2EHeaders,
+  RBAC_TEST_CONFIG,
+  TEST_USERS,
+  type TestUser,
+} from "./config";
 import { clearInbox, waitForVerificationEmail } from "./utils/mailtrap";
+
+/**
+ * Delete a test user via E2E API (to allow fresh sign-up)
+ */
+async function deleteTestUser(email: string): Promise<boolean> {
+  try {
+    const response = await fetch(E2E_ENDPOINTS.deleteTestUser, {
+      method: "POST",
+      headers: getE2EHeaders(),
+      body: JSON.stringify({ email }),
+    });
+    const result = await response.json();
+    return result.success === true;
+  } catch (error) {
+    console.warn(`  ⚠️ Failed to delete user ${email}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Verify a test user's email via E2E API (bypass email verification)
+ */
+async function verifyTestUser(email: string): Promise<boolean> {
+  try {
+    const response = await fetch(E2E_ENDPOINTS.verifyTestUser, {
+      method: "POST",
+      headers: getE2EHeaders(),
+      body: JSON.stringify({ email }),
+    });
+    const result = await response.json();
+    return result.success === true && result.verified === true;
+  } catch (error) {
+    console.warn(`  ⚠️ Failed to verify user ${email}:`, error);
+    return false;
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,105 +131,19 @@ async function clickContinueWithEmail(page: import("@playwright/test").Page): Pr
 }
 
 /**
- * Try to sign in with existing credentials
- * Returns true if sign-in was successful
+ * Check if we're on the onboarding page
  */
-async function trySignIn(page: import("@playwright/test").Page, baseURL: string): Promise<boolean> {
-  try {
-    // Go to sign in page and wait for Convex to hydrate
-    // Use domcontentloaded - networkidle never resolves due to Convex WebSockets
-    await page.goto(`${baseURL}/signin`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(1000); // Allow React to hydrate
-
-    // Check if already logged in (redirected to dashboard)
-    if (await isOnDashboard(page)) {
-      console.log("✓ Already logged in, on dashboard");
-      return true;
-    }
-
-    // Wait for sign in form to be visible (indicates hydration complete)
-    await page
-      .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 10000 });
-
-    // Click "Continue with email" to reveal form fields
-    const formExpanded = await clickContinueWithEmail(page);
-    if (!formExpanded) {
-      console.log("⚠️ Could not expand sign-in form");
-      return false;
-    }
-
-    // Fill form fields
-    const emailInput = page.getByPlaceholder("Email");
-    const passwordInput = page.getByPlaceholder("Password");
-
-    await emailInput.fill(TEST_USERS.dashboard.email);
-    await passwordInput.fill(TEST_USERS.dashboard.password);
-
-    console.log(`🔐 Trying to sign in as ${TEST_USERS.dashboard.email}...`);
-
-    // Wait for form to be ready (350ms delay in React component)
-    await page.waitForTimeout(400);
-
-    // After clicking "Continue with email", the button text changes to "Sign in"
-    const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-    await signInButton.waitFor({ state: "visible", timeout: 5000 });
-    await signInButton.click();
-
-    // Wait for navigation - either dashboard or onboarding
-    // Use domcontentloaded because Convex WebSockets keep network busy
-    try {
-      await page.waitForURL(/\/(dashboard|onboarding)/, {
-        timeout: 15000,
-        waitUntil: "domcontentloaded",
-      });
-    } catch {
-      // URL wait may timeout due to Convex, but check if we're already there
-      console.log("⚠️ URL wait timed out, checking current location...");
-    }
-
-    // Check current URL regardless of timeout
-    const currentUrl = page.url();
-    console.log(`📍 Current URL: ${currentUrl}`);
-
-    // Check if we made it to dashboard
-    if (await isOnDashboard(page)) {
-      console.log("✓ Sign-in successful, on dashboard");
-      return true;
-    }
-
-    // Check if we hit onboarding
-    if (currentUrl.includes("/onboarding")) {
-      console.log("📋 On onboarding - completing...");
-      const skipButton = page.getByRole("button", { name: /skip for now/i });
-      await skipButton.waitFor({ state: "visible", timeout: 5000 });
-      await skipButton.click();
-
-      // Wait for redirect to dashboard
-      try {
-        await page.waitForURL(/\/dashboard/, { timeout: 10000, waitUntil: "domcontentloaded" });
-      } catch {
-        // May timeout but check if we're there
-      }
-
-      if (await isOnDashboard(page)) {
-        console.log("✓ Onboarding complete, on dashboard");
-        return true;
-      }
-    }
-
-    return false;
-  } catch (error) {
-    console.log(`ℹ️ Sign-in attempt failed: ${error}`);
-    // Even if we caught an error, check if we're already authenticated
-    const currentUrl = page.url();
-    if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
-      console.log("📍 Despite error, we're at auth-protected page. Attempting to complete...");
-      return await handleOnboardingOrDashboard(page);
-    }
-    return false;
+async function isOnOnboarding(page: import("@playwright/test").Page): Promise<boolean> {
+  // Check URL
+  if (page.url().includes("/onboarding")) {
+    return true;
   }
+  // Check for onboarding heading
+  const welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
+  if (await welcomeHeading.isVisible().catch(() => false)) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -195,200 +152,292 @@ async function trySignIn(page: import("@playwright/test").Page, baseURL: string)
 async function handleOnboardingOrDashboard(
   page: import("@playwright/test").Page,
 ): Promise<boolean> {
+  // Wait a moment for the page to settle
+  await page.waitForTimeout(1000);
+
   if (await isOnDashboard(page)) {
     console.log("✓ Already on dashboard");
     return true;
   }
 
-  if (page.url().includes("/onboarding")) {
+  if (await isOnOnboarding(page)) {
     console.log("📋 On onboarding - completing...");
-    const skipButton = page.getByRole("button", { name: /skip for now/i });
-    try {
-      await skipButton.waitFor({ state: "visible", timeout: 5000 });
-      await skipButton.click();
-      await page.waitForTimeout(2000); // Give time for redirect
-      if (await isOnDashboard(page)) {
-        return true;
-      }
-    } catch {
-      console.log("⚠️ Could not skip onboarding");
+    // Try clicking "Skip for now" - could be a button or link
+    const skipSelectors = [
+      page.getByRole("button", { name: /skip for now/i }),
+      page.getByRole("link", { name: /skip for now/i }),
+      page.getByText(/skip for now/i),
+    ];
+
+    for (const skipElement of skipSelectors) {
+      try {
+        if (await skipElement.isVisible().catch(() => false)) {
+          await skipElement.click();
+          await page.waitForTimeout(2000); // Give time for redirect
+          if (await isOnDashboard(page)) {
+            return true;
+          }
+          break;
+        }
+      } catch {}
     }
+    console.log("⚠️ Could not skip onboarding");
   }
 
   return false;
 }
 
 /**
- * Sign up a new user with email verification
- * Uses Mailtrap API to get the OTP
+ * Try to sign in with specific user credentials
  */
-async function signUpNewUser(
-  page: import("@playwright/test").Page,
-  baseURL: string,
-): Promise<boolean> {
+async function trySignInUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
   try {
-    // Go to sign up page and wait for page to load
-    await page.goto(`${baseURL}/signup`);
-    // Don't use networkidle - Convex WebSockets keep it busy
+    await page.goto(`${baseURL}/signin`);
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(1000); // Allow React to hydrate
+    await page.waitForTimeout(1000);
 
-    // Check current URL - we might have been redirected if already logged in
-    const currentUrl = page.url();
-    console.log(`📍 After navigating to /signup, current URL: ${currentUrl}`);
-
-    // If we're already on onboarding or dashboard, we're authenticated
-    if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
-      console.log("✓ Already authenticated, handling redirect...");
-      return await handleOnboardingOrDashboard(page);
-    }
-
-    // Check for sign up form or onboarding heading
-    const signUpHeading = page.getByRole("heading", { name: /create an account/i });
-    const onboardingHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
-
-    // Wait for either to appear
-    try {
-      await Promise.race([
-        signUpHeading.waitFor({ state: "visible", timeout: 5000 }),
-        onboardingHeading.waitFor({ state: "visible", timeout: 5000 }),
-      ]);
-    } catch {
-      // Neither appeared, check what we have
-      console.log("⚠️ Neither sign-up nor onboarding heading visible");
-    }
-
-    // If we're on onboarding, we're already authenticated
-    if (await onboardingHeading.isVisible().catch(() => false)) {
-      console.log("✓ Already authenticated (on onboarding), completing...");
-      return await handleOnboardingOrDashboard(page);
-    }
-
-    // If sign up form isn't visible, something went wrong
-    if (!(await signUpHeading.isVisible().catch(() => false))) {
-      console.log("⚠️ Sign up heading not visible, checking dashboard...");
-      if (await isOnDashboard(page)) {
-        return true;
-      }
-      return false;
-    }
-
-    // Click "Continue with email" to reveal form fields
-    const formExpanded = await clickContinueWithEmail(page);
-    if (!formExpanded) {
-      console.log("⚠️ Could not expand sign-up form");
-      return false;
-    }
-
-    // Fill form fields
-    const emailInput = page.getByPlaceholder("Email");
-    const passwordInput = page.getByPlaceholder("Password");
-
-    await emailInput.fill(TEST_USERS.dashboard.email);
-    await passwordInput.fill(TEST_USERS.dashboard.password);
-
-    console.log(`📤 Signing up as ${TEST_USERS.dashboard.email}...`);
-
-    // Wait for form to be ready (350ms delay in React component)
-    await page.waitForTimeout(400);
-
-    // After clicking "Continue with email", the button text changes to "Create account"
-    const submitButton = page.getByRole("button", { name: "Create account", exact: true });
-    await submitButton.waitFor({ state: "visible", timeout: 5000 });
-    await submitButton.click();
-
-    // Wait for either verification page, error toast, or redirect
-    // The form stays on /signup but shows verification form or error toast
-    const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
-    const errorToast = page.locator('[data-sonner-toast][data-type="error"]');
-
-    // Poll for either state to appear (Promise.race with timeouts doesn't work well)
-    let foundState: "verification" | "error" | "redirect" | null = null;
-    const startTime = Date.now();
-    const timeout = 15000;
-
-    while (Date.now() - startTime < timeout && !foundState) {
-      // Check for verification form
-      if (await verificationHeading.isVisible().catch(() => false)) {
-        foundState = "verification";
-        break;
-      }
-
-      // Check for error toast (email already registered)
-      if (await errorToast.isVisible().catch(() => false)) {
-        foundState = "error";
-        break;
-      }
-
-      // Check for redirect to onboarding/dashboard
-      const currentUrl = page.url();
-      if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
-        foundState = "redirect";
-        break;
-      }
-
-      await page.waitForTimeout(500);
-    }
-
-    // Handle error case - email may already exist, should try sign-in
-    if (foundState === "error") {
-      console.log("⚠️ Sign-up error (email may already exist), trying sign-in instead...");
-      return false; // Will trigger sign-in retry in caller
-    }
-
-    if (!foundState) {
-      console.log("⚠️ Timed out waiting for sign-up result");
-      await page.screenshot({ path: path.join(AUTH_DIR, "debug-signup-timeout.png") });
-      return false;
-    }
-
-    // Check if email verification is required
-    if (await verificationHeading.isVisible().catch(() => false)) {
-      console.log("📧 Email verification required...");
-
-      console.log("📬 Waiting for verification email via Mailtrap...");
-      const otp = await waitForVerificationEmail(TEST_USERS.dashboard.email, {
-        timeout: 60000,
-        pollInterval: 3000,
-      });
-      console.log(`✓ Retrieved OTP: ${otp}`);
-
-      const codeInput = page.getByPlaceholder("8-digit code");
-      await codeInput.waitFor({ state: "visible", timeout: 5000 });
-      await codeInput.fill(otp);
-
-      const verifyButton = page.getByRole("button", { name: /verify email/i });
-      await verifyButton.click();
-
-      // Wait for navigation after verification
-      await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 });
-      console.log("✓ Email verified");
-    }
-
-    // Handle onboarding if present
-    if (
-      page.url().includes("/onboarding") ||
-      (await onboardingHeading.isVisible().catch(() => false))
-    ) {
-      console.log("📋 Completing onboarding...");
-      const skipButton = page.getByRole("button", { name: /skip for now/i });
-      await skipButton.waitFor({ state: "visible", timeout: 5000 });
-      await skipButton.click();
-
-      // Wait for redirect to dashboard
-      await page.waitForURL(/\/dashboard/, { timeout: 10000 });
-    }
-
+    // Check if already logged in
     if (await isOnDashboard(page)) {
-      console.log("✓ Sign-up complete, on dashboard");
       return true;
     }
 
-    console.warn("⚠️ Not on dashboard after sign-up");
-    await page.screenshot({ path: "e2e/.auth/debug-after-signup.png" });
+    // Wait for sign in form
+    await page
+      .getByRole("heading", { name: /welcome back/i })
+      .waitFor({ state: "visible", timeout: 10000 });
+
+    // Click "Continue with email"
+    const formExpanded = await clickContinueWithEmail(page);
+    if (!formExpanded) return false;
+
+    // Fill credentials
+    await page.getByPlaceholder("Email").fill(user.email);
+    await page.getByPlaceholder("Password").fill(user.password);
+    await page.waitForTimeout(400);
+
+    // Submit
+    const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+    await signInButton.waitFor({ state: "visible", timeout: 5000 });
+    await signInButton.click();
+
+    // Wait for navigation
+    try {
+      await page.waitForURL(/\/(dashboard|onboarding)/, {
+        timeout: 15000,
+        waitUntil: "domcontentloaded",
+      });
+    } catch {
+      // Check if we're there anyway
+    }
+
+    return await handleOnboardingOrDashboard(page);
+  } catch {
     return false;
+  }
+}
+
+/**
+ * Wait for either verification screen or redirect after signup
+ */
+async function waitForSignUpResult(page: Page): Promise<"verification" | "redirect" | null> {
+  const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < 15000) {
+    if (await verificationHeading.isVisible().catch(() => false)) {
+      return "verification";
+    }
+    const url = page.url();
+    if (url.includes("/onboarding") || url.includes("/dashboard")) {
+      return "redirect";
+    }
+    await page.waitForTimeout(500);
+  }
+  return null;
+}
+
+/**
+ * Complete email verification with OTP
+ */
+async function completeEmailVerification(page: Page, email: string): Promise<boolean> {
+  console.log(`  📬 Waiting for verification email for ${email}...`);
+  try {
+    const otp = await waitForVerificationEmail(email, {
+      timeout: 90000,
+      pollInterval: 2000,
+    });
+    console.log(`  ✓ Retrieved OTP: ${otp}`);
+
+    const codeInput = page.getByPlaceholder("8-digit code");
+    await codeInput.waitFor({ state: "visible", timeout: 5000 });
+    await codeInput.fill(otp);
+
+    const verifyButton = page.getByRole("button", { name: /verify email/i });
+    await verifyButton.click();
+    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 });
+    return true;
+  } catch (verifyError) {
+    console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
+    return false;
+  }
+}
+
+/**
+ * Sign up a specific user with email verification
+ */
+async function signUpUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
+  try {
+    await page.goto(`${baseURL}/signup`);
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1000);
+
+    const currentUrl = page.url();
+    if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
+      return await handleOnboardingOrDashboard(page);
+    }
+
+    const signUpHeading = page.getByRole("heading", { name: /create an account/i });
+    await signUpHeading.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+
+    if (!(await signUpHeading.isVisible().catch(() => false))) {
+      return await isOnDashboard(page);
+    }
+
+    const formExpanded = await clickContinueWithEmail(page);
+    if (!formExpanded) return false;
+
+    await page.getByPlaceholder("Email").fill(user.email);
+    await page.getByPlaceholder("Password").fill(user.password);
+    await page.waitForTimeout(400);
+
+    const submitButton = page.getByRole("button", { name: "Create account", exact: true });
+    await submitButton.waitFor({ state: "visible", timeout: 5000 });
+    console.log(`  📤 Submitting sign-up form for ${user.email}...`);
+    await submitButton.click();
+
+    // Wait a moment for the sign-up to process
+    await page.waitForTimeout(3000);
+
+    // Try to verify the user via API (the sign-up creates account in DB even if UI doesn't redirect)
+    console.log(`  🔐 Verifying user via API...`);
+    const verified = await verifyTestUser(user.email);
+    if (verified) {
+      console.log(`  ✓ User verified via API, signing in...`);
+      // Now sign in with the verified account
+      await page.goto(`${baseURL}/signin`);
+      await page.waitForLoadState("domcontentloaded");
+      await page.waitForTimeout(1000);
+
+      // Check if already logged in
+      if (await isOnDashboard(page)) {
+        return true;
+      }
+
+      // Expand email form and sign in
+      const formExpandedForSignIn = await clickContinueWithEmail(page);
+      if (!formExpandedForSignIn) return false;
+
+      await page.getByPlaceholder("Email").fill(user.email);
+      await page.getByPlaceholder("Password").fill(user.password);
+      await page.waitForTimeout(400);
+
+      const signInBtn = page.getByRole("button", { name: "Sign in", exact: true });
+      await signInBtn.waitFor({ state: "visible", timeout: 5000 });
+      await signInBtn.click();
+
+      try {
+        await page.waitForURL(/\/(dashboard|onboarding)/, {
+          timeout: 15000,
+          waitUntil: "domcontentloaded",
+        });
+      } catch {
+        // Check if we're there anyway
+      }
+
+      return await handleOnboardingOrDashboard(page);
+    }
+
+    // If API verification failed, check sign-up result the old way
+    console.log(`  ⚠️ API verification failed, checking sign-up result...`);
+    const signUpResult = await waitForSignUpResult(page);
+    console.log(`  📋 Sign-up result: ${signUpResult || "timeout"}`);
+
+    if (signUpResult === "verification") {
+      const emailVerified = await completeEmailVerification(page, user.email);
+      if (!emailVerified) return false;
+    } else if (signUpResult === null) {
+      // Check current page state
+      const url = page.url();
+      console.log(`  📍 Current URL after timeout: ${url}`);
+      const screenshotPath = `e2e/.auth/signup-timeout-${user.email.split("@")[0]}.png`;
+      await page.screenshot({ path: screenshotPath });
+      console.log(`  📸 Screenshot saved: ${screenshotPath}`);
+    }
+
+    return await handleOnboardingOrDashboard(page);
   } catch (error) {
-    console.error("❌ Sign-up error:", error);
+    console.error(`  ❌ Sign-up error for ${user.email}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Set up auth state for a specific test user
+ */
+async function setupTestUser(
+  context: BrowserContext,
+  page: Page,
+  baseURL: string,
+  userKey: string,
+  user: TestUser,
+  authPath: string,
+): Promise<boolean> {
+  const authStatePath = path.join(AUTH_DIR, path.basename(authPath));
+
+  // Check if auth file already exists and is recent (less than 1 hour old)
+  if (fs.existsSync(authStatePath)) {
+    const stats = fs.statSync(authStatePath);
+    const ageMs = Date.now() - stats.mtimeMs;
+    if (ageMs < 60 * 60 * 1000) {
+      console.log(`  ✓ ${userKey}: Using existing auth state (${Math.round(ageMs / 60000)}m old)`);
+      return true;
+    }
+  }
+
+  console.log(`  🔧 ${userKey}: Setting up auth for ${user.email}...`);
+
+  // Clear context storage before each user
+  await context.clearCookies();
+
+  // Try sign-in first
+  let success = await trySignInUser(page, baseURL, user);
+
+  // If sign-in failed, delete existing user (likely unverified) and create fresh
+  if (!success) {
+    console.log(`  ℹ️ ${userKey}: Sign-in failed, deleting existing user if any...`);
+    const deleted = await deleteTestUser(user.email);
+    if (deleted) {
+      console.log(`  ✓ ${userKey}: Deleted existing user, attempting fresh sign-up...`);
+    } else {
+      console.log(`  ℹ️ ${userKey}: No existing user to delete, attempting sign-up...`);
+    }
+
+    success = await signUpUser(page, baseURL, user);
+
+    // Retry sign-in if sign-up still failed (shouldn't happen now)
+    if (!success) {
+      console.log(`  ℹ️ ${userKey}: Sign-up failed, retrying sign-in...`);
+      success = await trySignInUser(page, baseURL, user);
+    }
+  }
+
+  if (success) {
+    await context.storageState({ path: authStatePath });
+    console.log(`  ✓ ${userKey}: Auth state saved`);
+    return true;
+  } else {
+    console.warn(`  ⚠️ ${userKey}: Failed to create auth state`);
+    await page.screenshot({ path: path.join(AUTH_DIR, `setup-error-${userKey}.png`) });
     return false;
   }
 }
@@ -396,17 +445,19 @@ async function signUpNewUser(
 /**
  * Global setup - runs once before all tests
  *
- * Strategy for dashboard user:
- * 1. Try to sign in with existing credentials
- * 2. If sign-in fails, sign up with email verification via Mailtrap
- * 3. Complete onboarding and save auth state
+ * Sets up auth state for all configured test users:
+ * - dashboard: Default user for most tests
+ * - admin: Platform admin user
+ * - teamLead: Team lead user
+ * - teamMember: Team member user
+ * - viewer: Read-only user
  *
  * @see https://playwright.dev/docs/test-global-setup-teardown
  */
 async function globalSetup(config: FullConfig): Promise<void> {
   const baseURL = config.projects[0].use.baseURL || "http://localhost:5555";
 
-  // Clear Mailtrap inbox before tests to avoid hitting inbox storage limits
+  // Clear Mailtrap inbox before tests
   console.log("📧 Clearing Mailtrap inbox...");
   await clearInbox();
 
@@ -415,49 +466,70 @@ async function globalSetup(config: FullConfig): Promise<void> {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  const authStatePath = path.join(AUTH_DIR, path.basename(AUTH_PATHS.dashboard));
-
   const browser = await chromium.launch();
-  const context = await browser.newContext();
-  const page = await context.newPage();
 
-  try {
-    // Step 1: Try to sign in first (for subsequent runs)
-    console.log("🔧 Attempting sign-in with dashboard user...");
-    let success = await trySignIn(page, baseURL);
+  // Define users to set up
+  // For RBAC tests, we need teamLead (admin), teamMember (editor), and viewer
+  // Creating multiple users requires sequential email verification (~90s per new user)
+  const usersToSetup: Array<{ key: string; user: TestUser; authPath: string }> = [
+    { key: "dashboard", user: TEST_USERS.dashboard, authPath: AUTH_PATHS.dashboard },
+    // RBAC test users - enable these for permission boundary testing
+    { key: "teamLead", user: TEST_USERS.teamLead, authPath: AUTH_PATHS.teamLead },
+    { key: "teamMember", user: TEST_USERS.teamMember, authPath: AUTH_PATHS.teamMember },
+    { key: "viewer", user: TEST_USERS.viewer, authPath: AUTH_PATHS.viewer },
+  ];
 
-    // Step 2: If sign-in failed, try sign-up with email verification
-    if (!success) {
-      console.log("ℹ️ Sign-in failed, attempting sign-up with email verification...");
-      success = await signUpNewUser(page, baseURL);
+  console.log(`\n👥 Setting up ${usersToSetup.length} test user(s)...\n`);
 
-      // Step 3: If sign-up failed (e.g., email already exists), retry sign-in
-      if (!success) {
-        console.log("ℹ️ Sign-up failed, retrying sign-in...");
-        success = await trySignIn(page, baseURL);
+  for (const { key, user, authPath } of usersToSetup) {
+    // Create fresh context for each user
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    try {
+      await setupTestUser(context, page, baseURL, key, user, authPath);
+    } catch (error) {
+      console.error(`  ❌ ${key}: Setup error:`, error);
+      try {
+        await page.screenshot({ path: path.join(AUTH_DIR, `setup-error-${key}.png`) });
+      } catch {
+        // Ignore
       }
+    } finally {
+      await context.close();
     }
+  }
 
-    if (success) {
-      await context.storageState({ path: authStatePath });
-      console.log("✓ Auth state saved to", authStatePath);
+  await browser.close();
+
+  // Set up RBAC test project with users in their roles
+  console.log("\n🔐 Setting up RBAC test project...\n");
+  try {
+    const response = await fetch(E2E_ENDPOINTS.setupRbacProject, {
+      method: "POST",
+      headers: getE2EHeaders(),
+      body: JSON.stringify({
+        projectKey: RBAC_TEST_CONFIG.projectKey,
+        adminEmail: TEST_USERS.teamLead.email,
+        editorEmail: TEST_USERS.teamMember.email,
+        viewerEmail: TEST_USERS.viewer.email,
+      }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log(`  ✓ RBAC project created: ${result.projectKey}`);
+      console.log(`    - Admin: ${TEST_USERS.teamLead.email}`);
+      console.log(`    - Editor: ${TEST_USERS.teamMember.email}`);
+      console.log(`    - Viewer: ${TEST_USERS.viewer.email}`);
     } else {
-      console.warn("⚠️ Failed to create auth state");
-      console.warn("   Dashboard tests will be skipped");
-      await page.screenshot({ path: path.join(AUTH_DIR, "global-setup-error.png") });
-      console.log("📸 Error screenshot saved to .auth/global-setup-error.png");
+      console.warn(`  ⚠️ RBAC project setup failed: ${result.error}`);
     }
   } catch (error) {
-    console.error("⚠️ Global setup error:", error);
-    try {
-      await page.screenshot({ path: path.join(AUTH_DIR, "global-setup-error.png") });
-      console.log("📸 Error screenshot saved to .auth/global-setup-error.png");
-    } catch {
-      // Ignore screenshot errors
-    }
-  } finally {
-    await browser.close();
+    console.warn(`  ⚠️ RBAC project setup error:`, error);
   }
+
+  console.log("\n✅ Global setup complete\n");
 }
 
 export default globalSetup;

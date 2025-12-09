@@ -503,10 +503,10 @@ export const listInvites = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user is admin
+    // Check if user is admin - return empty array for non-admins (UI-driven visibility)
     const isAdmin = await isPlatformAdmin(ctx, userId);
     if (!isAdmin) {
-      throw new Error("Only admins can view invitations");
+      return [];
     }
 
     // Filter by status if provided
@@ -559,10 +559,10 @@ export const listUsers = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user is admin
+    // Check if user is admin - return empty array for non-admins (UI-driven visibility)
     const isAdmin = await isPlatformAdmin(ctx, userId);
     if (!isAdmin) {
-      throw new Error("Only admins can view users");
+      return [];
     }
 
     const users = await ctx.db.query("users").collect();

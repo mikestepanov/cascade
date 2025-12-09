@@ -32,8 +32,13 @@ test.describe("Sign Out", () => {
       await expect(dashboard).toBeVisible({ timeout: 10000 });
     }
 
-    // Now sign out
-    const signOutButton = page.getByRole("button", { name: /sign out/i });
+    // Open user menu (click the avatar button in the header)
+    const userMenuButton = page.getByRole("button", { name: "User menu" });
+    await userMenuButton.click();
+    await page.waitForTimeout(300); // Wait for dropdown to open
+
+    // Click sign out in the dropdown menu
+    const signOutButton = page.getByRole("menuitem", { name: /sign out/i });
     await signOutButton.click();
 
     // Should return to landing page

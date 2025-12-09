@@ -56,6 +56,48 @@ export const updateProfile = mutation({
   },
 });
 
+/**
+ * Check if the current user is a platform admin
+ * Returns true if user is:
+ * - Owner or admin in any company
+ * - Creator of any project (backward compatibility)
+ * - Admin in any project (backward compatibility)
+ */
+export const isPlatformAdmin = query({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return false;
+
+    // Primary: Check if user is admin or owner in any company
+    const companyMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
+      .first();
+
+    if (companyMembership) return true;
+
+    // Fallback: Check if user has created a project (backward compatibility)
+    const createdProjects = await ctx.db
+      .query("projects")
+      .withIndex("by_creator", (q) => q.eq("createdBy", userId))
+      .first();
+
+    if (createdProjects) return true;
+
+    // Fallback: Check if user has admin role in any project (backward compatibility)
+    const adminMembership = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("role"), "admin"))
+      .first();
+
+    return !!adminMembership;
+  },
+});
+
 export const getUserStats = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {

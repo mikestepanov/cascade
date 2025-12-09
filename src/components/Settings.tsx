@@ -19,12 +19,23 @@ import { Typography } from "./ui/Typography";
 
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
-const validTabs = ["integrations", "apikeys", "offline", "preferences", "admin", "developer"] as const;
+const validTabs = [
+  "integrations",
+  "apikeys",
+  "offline",
+  "preferences",
+  "admin",
+  "developer",
+] as const;
 type TabValue = (typeof validTabs)[number];
 
 export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
+  const isAdmin = useQuery(api.users.isPlatformAdmin);
   const showDevTools = isTestEmail(currentUser?.email);
+
+  // Don't show admin tab while loading to prevent UI flicker
+  const showAdminTab = isAdmin === true;
 
   // Get tab from URL search params (e.g., /settings/profile?tab=admin)
   const search = useSearch({ strict: false }) as { tab?: string };
@@ -49,7 +60,11 @@ export function Settings() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as TabValue)}
+          className="w-full"
+        >
           <TabsList className="mb-6 sm:mb-8 -mx-3 sm:mx-0 px-3 sm:px-0 w-full justify-start overflow-x-auto">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
@@ -57,7 +72,7 @@ export function Settings() {
             <TabsTrigger value="apikeys">API Keys</TabsTrigger>
             <TabsTrigger value="offline">Offline Mode</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
-            <TabsTrigger value="admin">Admin</TabsTrigger>
+            {showAdminTab && <TabsTrigger value="admin">Admin</TabsTrigger>}
             {showDevTools && <TabsTrigger value="developer">Dev Tools</TabsTrigger>}
           </TabsList>
 
@@ -79,9 +94,11 @@ export function Settings() {
           <TabsContent value="preferences">
             <PreferencesTab />
           </TabsContent>
-          <TabsContent value="admin">
-            <AdminTab />
-          </TabsContent>
+          {showAdminTab && (
+            <TabsContent value="admin">
+              <AdminTab />
+            </TabsContent>
+          )}
           {showDevTools && (
             <TabsContent value="developer">
               <DevToolsTab />
