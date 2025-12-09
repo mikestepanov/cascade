@@ -35,8 +35,8 @@ test.describe("User Invitations", () => {
     await row.getByRole("button", { name: /revoke/i }).click();
 
     // 5. Verify revocation - wait for success toast or status change
-    await expect(
-      page.getByText(/invitation revoked|revoked successfully/i).first()
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/invitation revoked|revoked successfully/i).first()).toBeVisible({
+      timeout: 5000,
+    });
   });
 });

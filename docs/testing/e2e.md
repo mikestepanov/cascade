@@ -180,21 +180,55 @@ test("can sign in", async ({ authPage }) => {
 
 ## Authentication
 
-### Saving Auth State
+### Test Users
 
-For tests requiring logged-in users:
+Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for email verification.
 
-```bash
-# 1. Start dev server
-pnpm dev
+| User Key | Email | Role | Description |
+|----------|-------|------|-------------|
+| `dashboard` | `e2e-dashboard@inbox.mailtrap.io` | user | Default test user (created automatically) |
+| `admin` | `e2e-admin@inbox.mailtrap.io` | admin | Platform admin with full access |
+| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | user | Team lead persona |
+| `teamMember` | `e2e-member@inbox.mailtrap.io` | user | Team member persona |
+| `viewer` | `e2e-viewer@inbox.mailtrap.io` | user | Read-only access |
 
-# 2. Run auth setup (opens browser)
-pnpm e2e:setup-auth
+**Password:** All test users use `E2ETestPassword123!`
+
+### Automatic User Setup
+
+The `dashboard` user is created automatically by `global-setup.ts` on first run:
+1. Tries to sign in (if user exists)
+2. If sign-in fails, signs up with email verification via Mailtrap
+3. Saves auth state to `e2e/.auth/user-dashboard.json`
+
+Auth state is cached for 1 hour to avoid re-authentication on every run.
+
+### Enabling Additional Test Users
+
+To create additional users, uncomment them in `e2e/global-setup.ts`:
+
+```typescript
+const usersToSetup = [
+  { key: "dashboard", user: TEST_USERS.dashboard, authPath: AUTH_PATHS.dashboard },
+  // Uncomment to create (requires ~90s per user for email verification):
+  // { key: "admin", user: TEST_USERS.admin, authPath: AUTH_PATHS.admin },
+  // { key: "teamLead", user: TEST_USERS.teamLead, authPath: AUTH_PATHS.teamLead },
+];
 ```
 
-This opens a browser where you manually log in. The session is saved to `e2e/.auth/user.json`.
+**Note:** Each new user requires email verification (~90 seconds), so enable only what you need.
 
-### Using Auth State in Tests
+### Auth State Files
+
+| File | User |
+|------|------|
+| `e2e/.auth/user-dashboard.json` | Default dashboard user |
+| `e2e/.auth/user-admin.json` | Admin user |
+| `e2e/.auth/user-teamlead.json` | Team lead user |
+| `e2e/.auth/user-member.json` | Team member user |
+| `e2e/.auth/user-viewer.json` | Viewer user |
+
+### Using Authenticated Tests
 
 ```typescript
 import { authenticatedTest, expect } from "./fixtures";
@@ -205,17 +239,45 @@ authenticatedTest("shows dashboard", async ({ dashboardPage }) => {
 });
 ```
 
+### Re-Authentication After Sign Out
+
+Tests that run after sign-out (which invalidates tokens) use `ensureAuthenticated`:
+
+```typescript
+test("test after signout", async ({ page, ensureAuthenticated }) => {
+  await ensureAuthenticated();  // Re-logs in if needed
+  // ... rest of test
+});
+```
+
+### Skipping Auth State Save
+
+Tests that modify auth state should use `skipAuthSave` to prevent corrupting the auth file:
+
+```typescript
+test.describe("Sign Out Tests", () => {
+  test.use({ skipAuthSave: true });
+
+  test("can sign out", async ({ page }) => {
+    // This test invalidates tokens but won't corrupt auth file
+  });
+});
+```
+
 ### Auth Fixture Implementation
 
 ```typescript
 // e2e/fixtures/auth.fixture.ts
-const AUTH_STATE_PATH = path.join(__dirname, "../.auth/user.json");
-
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: AUTH_STATE_PATH,  // Uses saved cookies/localStorage
+  storageState: AUTH_PATHS.dashboard,  // Uses saved cookies/localStorage
+  skipAuthSave: [false, { option: true }],  // Option to skip saving
 
-  dashboardPage: async ({ page }, use) => {
-    await use(new DashboardPage(page));
+  ensureAuthenticated: async ({ page }, use) => {
+    // Re-authenticates if tokens are invalid
+  },
+
+  saveAuthState: async ({ context, skipAuthSave }, use) => {
+    // Saves auth state after test (unless skipAuthSave is true)
   },
 });
 ```

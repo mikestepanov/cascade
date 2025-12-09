@@ -62,7 +62,8 @@ export function NotificationsTab() {
             <div className="flex-1">
               <Typography variant="h3">Email Notifications</Typography>
               <Typography variant="p" color="secondary" className="mt-1 text-sm">
-                Master switch for all email notifications. Turn this off to stop receiving all emails.
+                Master switch for all email notifications. Turn this off to stop receiving all
+                emails.
               </Typography>
             </div>
             <Switch

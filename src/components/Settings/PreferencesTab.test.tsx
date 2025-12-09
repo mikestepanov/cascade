@@ -5,7 +5,7 @@ import { ThemeProvider } from "../../contexts/ThemeContext";
 import { PreferencesTab } from "./PreferencesTab";
 
 // Mock localStorage
-const localStorageMock = (function () {
+const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: vi.fn((key: string) => store[key] || null),
@@ -42,7 +42,7 @@ describe("PreferencesTab", () => {
     render(
       <ThemeProvider>
         <PreferencesTab />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     expect(screen.getByText("Theme")).toBeInTheDocument();
@@ -56,7 +56,7 @@ describe("PreferencesTab", () => {
     render(
       <ThemeProvider>
         <PreferencesTab />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     const darkButton = screen.getByLabelText("Dark theme");

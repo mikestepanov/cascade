@@ -321,9 +321,9 @@ export const listUserProfiles = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check admin permissions
+    // Check admin permissions - return empty for non-admins (UI-driven visibility)
     if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+      return [];
     }
 
     let profiles: Doc<"userProfiles">[];
@@ -376,9 +376,9 @@ export const getUsersWithoutProfiles = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check admin permissions
+    // Check admin permissions - return empty for non-admins (UI-driven visibility)
     if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+      return [];
     }
 
     // Get all users

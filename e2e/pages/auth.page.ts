@@ -188,7 +188,9 @@ export class AuthPage extends BasePage {
    */
   async expandEmailForm() {
     // Check if form is expanded by looking for the submit button (Sign in or Create account)
-    const submitButtonLocator = this.page.getByRole("button", { name: /^(sign in|create account)$/i });
+    const submitButtonLocator = this.page.getByRole("button", {
+      name: /^(sign in|create account)$/i,
+    });
     const isFormExpanded = await submitButtonLocator.isVisible().catch(() => false);
 
     if (!isFormExpanded) {

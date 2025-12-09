@@ -1,7 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { Avatar } from "./ui/Avatar";
 import {
@@ -30,13 +30,7 @@ export function UserMenu() {
           className="rounded-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
           aria-label="User menu"
         >
-          <Avatar
-            name={user.name}
-            email={user.email}
-            src={user.image}
-            size="md"
-            variant="brand"
-          />
+          <Avatar name={user.name} email={user.email} src={user.image} size="md" variant="brand" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
@@ -58,7 +52,10 @@ export function UserMenu() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => void signOut()} className="cursor-pointer text-status-error dark:text-status-error-dark focus:text-status-error dark:focus:text-status-error-dark">
+        <DropdownMenuItem
+          onClick={() => void signOut()}
+          className="cursor-pointer text-status-error dark:text-status-error-dark focus:text-status-error dark:focus:text-status-error-dark"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>
         </DropdownMenuItem>
