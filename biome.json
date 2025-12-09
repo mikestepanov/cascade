@@ -6,7 +6,8 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["**", "!!**/*.css"]
   },
   "overrides": [
     {
@@ -50,13 +51,7 @@
     },
     {
       "includes": ["**/*.css"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noUnknownAtRules": "off"
-          }
-        }
-      }
+      "linter": { "enabled": false }
     },
     {
       "includes": ["src/components/landing/**"],

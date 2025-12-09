@@ -475,9 +475,16 @@ export const getComplianceSummary = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Return null for non-admins (UI-driven visibility)
+    // Return empty summary for non-admins (UI-driven visibility)
     if (!(await isAdmin(ctx, userId))) {
-      return null;
+      return {
+        totalRecords: 0,
+        compliant: 0,
+        underHours: 0,
+        overHours: 0,
+        equityUnder: 0,
+        complianceRate: 0,
+      };
     }
 
     let records = await ctx.db.query("hourComplianceRecords").order("desc").take(1000); // Get recent records

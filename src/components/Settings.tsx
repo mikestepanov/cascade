@@ -34,6 +34,9 @@ export function Settings() {
   const isAdmin = useQuery(api.users.isPlatformAdmin);
   const showDevTools = isTestEmail(currentUser?.email);
 
+  // Don't show admin tab while loading to prevent UI flicker
+  const showAdminTab = isAdmin === true;
+
   // Get tab from URL search params (e.g., /settings/profile?tab=admin)
   const search = useSearch({ strict: false }) as { tab?: string };
   const urlTab = search?.tab;
@@ -69,7 +72,7 @@ export function Settings() {
             <TabsTrigger value="apikeys">API Keys</TabsTrigger>
             <TabsTrigger value="offline">Offline Mode</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
-            {isAdmin && <TabsTrigger value="admin">Admin</TabsTrigger>}
+            {showAdminTab && <TabsTrigger value="admin">Admin</TabsTrigger>}
             {showDevTools && <TabsTrigger value="developer">Dev Tools</TabsTrigger>}
           </TabsList>
 
@@ -91,7 +94,7 @@ export function Settings() {
           <TabsContent value="preferences">
             <PreferencesTab />
           </TabsContent>
-          {isAdmin && (
+          {showAdminTab && (
             <TabsContent value="admin">
               <AdminTab />
             </TabsContent>

@@ -33,7 +33,7 @@ test.describe("Sign Out", () => {
     }
 
     // Open user menu (click the avatar button in the header)
-    const userMenuButton = page.locator('button[aria-haspopup="menu"]').last();
+    const userMenuButton = page.getByRole("button", { name: "User menu" });
     await userMenuButton.click();
     await page.waitForTimeout(300); // Wait for dropdown to open
 

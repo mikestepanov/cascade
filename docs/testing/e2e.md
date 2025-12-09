@@ -186,11 +186,11 @@ Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for e
 
 | User Key | Email | Role | Description |
 |----------|-------|------|-------------|
-| `dashboard` | `e2e-dashboard@inbox.mailtrap.io` | user | Default test user (created automatically) |
+| `dashboard` | `e2e-dashboard@inbox.mailtrap.io` | editor | Default test user (created automatically) |
 | `admin` | `e2e-admin@inbox.mailtrap.io` | admin | Platform admin with full access |
-| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | user | Team lead persona |
-| `teamMember` | `e2e-member@inbox.mailtrap.io` | user | Team member persona |
-| `viewer` | `e2e-viewer@inbox.mailtrap.io` | user | Read-only access |
+| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Project admin with management access |
+| `teamMember` | `e2e-member@inbox.mailtrap.io` | editor | Team member with edit permissions |
+| `viewer` | `e2e-viewer@inbox.mailtrap.io` | viewer | Read-only access |
 
 **Password:** All test users use `E2ETestPassword123!`
 

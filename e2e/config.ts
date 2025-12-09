@@ -143,6 +143,22 @@ export const E2E_ENDPOINTS = {
   createTestUser: `${CONVEX_SITE_URL}/e2e/create-test-user`,
   // Delete test user (POST)
   deleteTestUser: `${CONVEX_SITE_URL}/e2e/delete-test-user`,
+  // Verify test user's email (POST) - bypasses email verification
+  verifyTestUser: `${CONVEX_SITE_URL}/e2e/verify-test-user`,
+  // Clean up old test users (POST)
+  cleanup: `${CONVEX_SITE_URL}/e2e/cleanup`,
+  // Set up RBAC test project with users in different roles (POST)
+  setupRbacProject: `${CONVEX_SITE_URL}/e2e/setup-rbac-project`,
+  // Clean up RBAC test project (POST)
+  cleanupRbacProject: `${CONVEX_SITE_URL}/e2e/cleanup-rbac-project`,
+};
+
+/**
+ * RBAC Test Configuration
+ */
+export const RBAC_TEST_CONFIG = {
+  projectKey: "RBAC",
+  projectName: "RBAC Test Project",
 };
 
 /**

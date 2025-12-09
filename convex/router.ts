@@ -2,10 +2,13 @@ import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
 import { securePasswordReset } from "./authWrapper";
 import {
+  cleanupRbacProjectEndpoint,
   cleanupTestUsersEndpoint,
   createTestUserEndpoint,
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
+  setupRbacProjectEndpoint,
+  verifyTestUserEndpoint,
 } from "./e2e";
 import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 
@@ -71,6 +74,27 @@ http.route({
   path: "/e2e/cleanup",
   method: "POST",
   handler: cleanupTestUsersEndpoint,
+});
+
+// Set up RBAC test project with users in different roles
+http.route({
+  path: "/e2e/setup-rbac-project",
+  method: "POST",
+  handler: setupRbacProjectEndpoint,
+});
+
+// Clean up RBAC test project
+http.route({
+  path: "/e2e/cleanup-rbac-project",
+  method: "POST",
+  handler: cleanupRbacProjectEndpoint,
+});
+
+// Verify a test user's email (bypass verification flow)
+http.route({
+  path: "/e2e/verify-test-user",
+  method: "POST",
+  handler: verifyTestUserEndpoint,
 });
 
 export default http;

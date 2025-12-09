@@ -64,6 +64,8 @@ export const updateProfile = mutation({
  * - Admin in any project (backward compatibility)
  */
 export const isPlatformAdmin = query({
+  args: {},
+  returns: v.boolean(),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return false;

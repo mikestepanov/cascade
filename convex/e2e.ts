@@ -220,52 +220,77 @@ export const deleteTestUserInternal = internalMutation({
   returns: v.object({
     success: v.boolean(),
     deleted: v.boolean(),
+    deletedAccounts: v.number(),
   }),
   handler: async (ctx, args) => {
     if (!isTestEmail(args.email)) {
       throw new Error("Only test emails allowed");
     }
 
+    let deletedUserData = false;
+    let deletedAccountsCount = 0;
+
+    // First, delete any authAccounts by email (providerAccountId) - this catches orphaned accounts
+    // For password provider, providerAccountId is the email address
+    const accountsByEmail = await ctx.db
+      .query("authAccounts")
+      .filter((q) => q.eq(q.field("providerAccountId"), args.email))
+      .collect();
+    for (const account of accountsByEmail) {
+      await ctx.db.delete(account._id);
+      deletedAccountsCount++;
+    }
+
+    // Note: authVerificationCodes doesn't have an identifier field we can filter on
+    // Orphaned verification codes will be garbage collected by the auth system
+
     const user = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("email"), args.email))
       .first();
 
-    if (!user) {
-      return { success: true, deleted: false };
+    if (user) {
+      // Delete user's onboarding record
+      const onboarding = await ctx.db
+        .query("userOnboarding")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .first();
+      if (onboarding) {
+        await ctx.db.delete(onboarding._id);
+      }
+
+      // Delete user's auth sessions (if any)
+      const sessions = await ctx.db
+        .query("authSessions")
+        .withIndex("userId", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const session of sessions) {
+        await ctx.db.delete(session._id);
+      }
+
+      // Delete user's auth accounts by userId (might be duplicates from above)
+      const accounts = await ctx.db
+        .query("authAccounts")
+        .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const account of accounts) {
+        await ctx.db.delete(account._id);
+        deletedAccountsCount++;
+      }
+
+      // Note: authRefreshTokens are tied to sessions, which we've already deleted
+      // The auth system will clean up orphaned refresh tokens
+
+      // Delete the user
+      await ctx.db.delete(user._id);
+      deletedUserData = true;
     }
 
-    // Delete user's onboarding record
-    const onboarding = await ctx.db
-      .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .first();
-    if (onboarding) {
-      await ctx.db.delete(onboarding._id);
-    }
-
-    // Delete user's auth sessions (if any)
-    const sessions = await ctx.db
-      .query("authSessions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
-      .collect();
-    for (const session of sessions) {
-      await ctx.db.delete(session._id);
-    }
-
-    // Delete user's auth accounts (if any)
-    const accounts = await ctx.db
-      .query("authAccounts")
-      .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
-      .collect();
-    for (const account of accounts) {
-      await ctx.db.delete(account._id);
-    }
-
-    // Delete the user
-    await ctx.db.delete(user._id);
-
-    return { success: true, deleted: true };
+    return {
+      success: true,
+      deleted: deletedUserData || deletedAccountsCount > 0,
+      deletedAccounts: deletedAccountsCount,
+    };
   },
 });
 
@@ -442,6 +467,405 @@ export const cleanupTestUsersInternal = internalMutation({
     }
 
     return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Set up RBAC test project with users assigned to specific roles
+ * POST /e2e/setup-rbac-project
+ * Body: {
+ *   projectKey: string,
+ *   adminEmail: string,
+ *   editorEmail: string,
+ *   viewerEmail: string
+ * }
+ *
+ * Creates a project and assigns users with their respective roles.
+ * Returns the project ID for use in tests.
+ */
+export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { projectKey, adminEmail, editorEmail, viewerEmail } = body;
+
+    if (!(projectKey && adminEmail && editorEmail && viewerEmail)) {
+      return new Response(
+        JSON.stringify({
+          error: "Missing required fields: projectKey, adminEmail, editorEmail, viewerEmail",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Validate all emails are test emails
+    for (const email of [adminEmail, editorEmail, viewerEmail]) {
+      if (!isTestEmail(email)) {
+        return new Response(JSON.stringify({ error: `Only test emails allowed: ${email}` }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const result = await ctx.runMutation(internal.e2e.setupRbacProjectInternal, {
+      projectKey,
+      adminEmail,
+      editorEmail,
+      viewerEmail,
+    });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to set up RBAC test project
+ */
+export const setupRbacProjectInternal = internalMutation({
+  args: {
+    projectKey: v.string(),
+    adminEmail: v.string(),
+    editorEmail: v.string(),
+    viewerEmail: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    projectId: v.optional(v.id("projects")),
+    projectKey: v.optional(v.string()),
+    error: v.optional(v.string()),
+    users: v.optional(
+      v.object({
+        admin: v.optional(v.id("users")),
+        editor: v.optional(v.id("users")),
+        viewer: v.optional(v.id("users")),
+      }),
+    ),
+  }),
+  handler: async (ctx, args) => {
+    // Find all users
+    const adminUser = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.adminEmail))
+      .first();
+    const editorUser = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.editorEmail))
+      .first();
+    const viewerUser = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.viewerEmail))
+      .first();
+
+    if (!adminUser) {
+      return { success: false, error: `Admin user not found: ${args.adminEmail}` };
+    }
+    if (!editorUser) {
+      return { success: false, error: `Editor user not found: ${args.editorEmail}` };
+    }
+    if (!viewerUser) {
+      return { success: false, error: `Viewer user not found: ${args.viewerEmail}` };
+    }
+
+    // Check if project already exists
+    let project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", args.projectKey))
+      .first();
+
+    const now = Date.now();
+
+    if (!project) {
+      // Create the project with admin as creator
+      const projectId = await ctx.db.insert("projects", {
+        name: `RBAC Test Project (${args.projectKey})`,
+        key: args.projectKey,
+        description: "E2E test project for RBAC permission testing",
+        createdBy: adminUser._id,
+        createdAt: now,
+        updatedAt: now,
+        boardType: "kanban",
+        workflowStates: [
+          { id: "backlog", name: "Backlog", category: "todo", order: 0 },
+          { id: "todo", name: "To Do", category: "todo", order: 1 },
+          { id: "in-progress", name: "In Progress", category: "inprogress", order: 2 },
+          { id: "review", name: "Review", category: "inprogress", order: 3 },
+          { id: "done", name: "Done", category: "done", order: 4 },
+        ],
+      });
+
+      project = await ctx.db.get(projectId);
+    }
+
+    if (!project) {
+      return { success: false, error: "Failed to create project" };
+    }
+
+    // Add/update project members with roles
+    const memberConfigs = [
+      { userId: adminUser._id, role: "admin" as const },
+      { userId: editorUser._id, role: "editor" as const },
+      { userId: viewerUser._id, role: "viewer" as const },
+    ];
+
+    for (const config of memberConfigs) {
+      // Check if member already exists
+      const existingMember = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_project_user", (q) =>
+          q.eq("projectId", project!._id).eq("userId", config.userId),
+        )
+        .first();
+
+      if (existingMember) {
+        // Update role if different
+        if (existingMember.role !== config.role) {
+          await ctx.db.patch(existingMember._id, { role: config.role });
+        }
+      } else {
+        // Add new member
+        await ctx.db.insert("projectMembers", {
+          projectId: project._id,
+          userId: config.userId,
+          role: config.role,
+          addedBy: adminUser._id,
+          addedAt: now,
+        });
+      }
+    }
+
+    return {
+      success: true,
+      projectId: project._id,
+      projectKey: project.key,
+      users: {
+        admin: adminUser._id,
+        editor: editorUser._id,
+        viewer: viewerUser._id,
+      },
+    };
+  },
+});
+
+/**
+ * Clean up RBAC test project and its data
+ * POST /e2e/cleanup-rbac-project
+ * Body: { projectKey: string }
+ */
+export const cleanupRbacProjectEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { projectKey } = body;
+
+    if (!projectKey) {
+      return new Response(JSON.stringify({ error: "Missing projectKey" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.cleanupRbacProjectInternal, { projectKey });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to clean up RBAC test project
+ */
+export const cleanupRbacProjectInternal = internalMutation({
+  args: {
+    projectKey: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.object({
+      project: v.boolean(),
+      members: v.number(),
+      issues: v.number(),
+      sprints: v.number(),
+    }),
+  }),
+  handler: async (ctx, args) => {
+    const project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", args.projectKey))
+      .first();
+
+    if (!project) {
+      return {
+        success: true,
+        deleted: { project: false, members: 0, issues: 0, sprints: 0 },
+      };
+    }
+
+    // Delete all project members
+    const members = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const member of members) {
+      await ctx.db.delete(member._id);
+    }
+
+    // Delete all issues
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const issue of issues) {
+      // Delete issue comments
+      const comments = await ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const comment of comments) {
+        await ctx.db.delete(comment._id);
+      }
+      // Delete issue activity
+      const activities = await ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const activity of activities) {
+        await ctx.db.delete(activity._id);
+      }
+      await ctx.db.delete(issue._id);
+    }
+
+    // Delete all sprints
+    const sprints = await ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .collect();
+    for (const sprint of sprints) {
+      await ctx.db.delete(sprint._id);
+    }
+
+    // Delete the project
+    await ctx.db.delete(project._id);
+
+    return {
+      success: true,
+      deleted: {
+        project: true,
+        members: members.length,
+        issues: issues.length,
+        sprints: sprints.length,
+      },
+    };
+  },
+});
+
+/**
+ * Verify a test user's email directly (bypassing email verification flow)
+ * POST /e2e/verify-test-user
+ * Body: { email: string }
+ */
+export const verifyTestUserEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(JSON.stringify({ error: "Only test emails allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.verifyTestUserInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to verify a test user's email
+ */
+export const verifyTestUserInternal = internalMutation({
+  args: {
+    email: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    verified: v.boolean(),
+    error: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // Find the authAccount by email
+    const account = await ctx.db
+      .query("authAccounts")
+      .filter((q) => q.eq(q.field("providerAccountId"), args.email))
+      .first();
+
+    if (!account) {
+      return { success: false, verified: false, error: "Account not found" };
+    }
+
+    // Find the user
+    const user = await ctx.db.get(account.userId);
+    if (!user) {
+      return { success: false, verified: false, error: "User not found" };
+    }
+
+    // Update the authAccount with emailVerified timestamp (ISO string format)
+    await ctx.db.patch(account._id, {
+      emailVerified: new Date().toISOString(),
+    });
+
+    // Update the user with emailVerificationTime
+    await ctx.db.patch(user._id, {
+      emailVerificationTime: Date.now(),
+    });
+
+    return { success: true, verified: true };
   },
 });
 
