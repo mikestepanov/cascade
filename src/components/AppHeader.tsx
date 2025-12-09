@@ -9,6 +9,7 @@ const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "🏠" },
   { to: "/documents", label: "Documents", icon: "📄" },
   { to: "/projects", label: "Projects", icon: "📋" },
+  { to: "/time-tracking", label: "Time Tracking", icon: "⏱️" },
 ] as const;
 
 interface AppHeaderProps {
