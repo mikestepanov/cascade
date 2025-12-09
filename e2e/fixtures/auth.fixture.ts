@@ -12,6 +12,7 @@ import {
   ProjectsPage,
   SettingsPage,
 } from "../pages";
+import { trySignInUser } from "../utils";
 
 /**
  * Authentication fixtures for tests requiring logged-in state
@@ -127,55 +128,9 @@ export const authenticatedTest = base.extend<AuthFixtures>({
           sessionStorage.clear();
         });
 
-        // Navigate to signin
-        await page.goto("/signin");
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(2000); // Extra wait for React hydration after clearing storage
-
-        // Click "Continue with email" with retry logic (like global-setup)
-        const continueWithEmail = page.getByRole("button", { name: /continue with email/i });
-        const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-
-        await continueWithEmail.waitFor({ state: "visible", timeout: 5000 });
-        await page.waitForTimeout(500); // Let React hydrate
-
-        // Try multiple times with MouseEvent dispatch
-        let formExpanded = false;
-        for (let attempt = 1; attempt <= 3 && !formExpanded; attempt++) {
-          await continueWithEmail.evaluate((btn) => {
-            const event = new MouseEvent("click", {
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            });
-            btn.dispatchEvent(event);
-          });
-
-          try {
-            await signInButton.waitFor({ state: "visible", timeout: 2000 });
-            formExpanded = true;
-          } catch {
-            await page.waitForTimeout(500);
-          }
-        }
-
-        // Fallback to Playwright click
-        if (!formExpanded) {
-          await continueWithEmail.click();
-          await signInButton.waitFor({ state: "visible", timeout: 3000 });
-        }
-
-        // Fill credentials using placeholder (like global-setup)
-        const emailInput = page.getByPlaceholder("Email");
-        await emailInput.fill(TEST_USERS.dashboard.email);
-        await page.getByPlaceholder("Password").fill(TEST_USERS.dashboard.password);
-
-        // Wait for form to be ready (350ms delay in React component)
-        await page.waitForTimeout(400);
-
-        await signInButton.click();
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(2000);
+        // Use shared sign-in helper
+        const baseURL = page.url().split("/").slice(0, 3).join("/");
+        await trySignInUser(page, baseURL, TEST_USERS.dashboard);
       }
     };
     await use(reauth);

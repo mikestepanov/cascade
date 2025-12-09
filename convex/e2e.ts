@@ -12,6 +12,7 @@
  */
 
 import { v } from "convex/values";
+import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import { httpAction, internalMutation } from "./_generated/server";
 
@@ -89,9 +90,13 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
       );
     }
 
+    // Hash the password using Scrypt (same as Convex Auth)
+    const scrypt = new Scrypt();
+    const passwordHash = await scrypt.hash(password);
+
     const result = await ctx.runMutation(internal.e2e.createTestUserInternal, {
       email,
-      password,
+      passwordHash,
       skipOnboarding,
     });
 
@@ -108,12 +113,12 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
 });
 
 /**
- * Internal mutation to create test user
+ * Internal mutation to create test user with full auth credentials
  */
 export const createTestUserInternal = internalMutation({
   args: {
     email: v.string(),
-    password: v.string(),
+    passwordHash: v.string(),
     skipOnboarding: v.boolean(),
   },
   returns: v.object({
@@ -133,7 +138,26 @@ export const createTestUserInternal = internalMutation({
       .first();
 
     if (existingUser) {
-      // User exists - just return success (idempotent)
+      // User exists - check if authAccount exists too
+      const existingAccount = await ctx.db
+        .query("authAccounts")
+        .filter((q) => q.eq(q.field("providerAccountId"), args.email))
+        .first();
+
+      if (existingAccount) {
+        // Full user exists - just return success (idempotent)
+        return { success: true, userId: existingUser._id, existing: true };
+      }
+
+      // User exists but no authAccount - create it
+      await ctx.db.insert("authAccounts", {
+        userId: existingUser._id,
+        provider: "password",
+        providerAccountId: args.email,
+        secret: args.passwordHash,
+        emailVerified: new Date().toISOString(),
+      });
+
       return { success: true, userId: existingUser._id, existing: true };
     }
 
@@ -145,9 +169,14 @@ export const createTestUserInternal = internalMutation({
       testUserCreatedAt: Date.now(),
     });
 
-    // Create auth account (password hash would be handled by auth system)
-    // Note: This is a simplified version - in practice, the user would sign up
-    // through the UI and we'd use Mailtrap for email verification
+    // Create auth account with password hash
+    await ctx.db.insert("authAccounts", {
+      userId,
+      provider: "password",
+      providerAccountId: args.email,
+      secret: args.passwordHash,
+      emailVerified: new Date().toISOString(),
+    });
 
     // If skipOnboarding is true, create completed onboarding record
     if (args.skipOnboarding) {

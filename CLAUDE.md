@@ -91,9 +91,9 @@ nixelo/
 │   │           ├── index.tsx    # Redirects to profile
 │   │           └── profile.tsx  # Profile settings
 │   ├── components/               # React components
-│   │   ├── Sidebar.tsx          # Document navigation sidebar
+│   │   ├── AppSidebar.tsx       # Unified app navigation sidebar
+│   │   ├── AppHeader.tsx        # Top header with actions
 │   │   ├── DocumentEditor.tsx   # Collaborative document editor
-│   │   ├── ProjectSidebar.tsx   # Project navigation
 │   │   ├── ProjectBoard.tsx     # Project kanban board container
 │   │   ├── KanbanBoard.tsx      # Drag-and-drop kanban board
 │   │   ├── IssueCard.tsx        # Individual issue card
@@ -252,6 +252,50 @@ nixelo/
    - `route.tsx` - Layout file for a directory (renders `<Outlet />`)
    - `index.tsx` - Index route for a directory
    - `routeTree.gen.ts` - Auto-generated, do not edit manually
+
+### UI Component Library
+
+The project has a reusable component library in `src/components/ui/`. **Always use these instead of raw HTML elements:**
+
+| Component | Use Instead Of | Key Props |
+|-----------|---------------|-----------|
+| `Button` | `<button>` | `variant` (primary, secondary, ghost, danger, link), `size` (sm, md, lg, icon), `leftIcon`, `rightIcon`, `isLoading` |
+| `Flex` | `<div className="flex ...">` | `direction` (row, column), `gap` (none, xs, sm, md, lg, xl), `align`, `justify`, `wrap` |
+| `Typography` | `<h1>`, `<h2>`, `<p>`, etc. | `variant` (h1, h2, h3, p, small), `color` (primary, secondary, tertiary) |
+| `Card` | custom card divs | Standard card container with consistent styling |
+| `Input` | `<input>` | Standard form input with labels and error states |
+| `Textarea` | `<textarea>` | Multi-line text input |
+| `Select` | `<select>` | Dropdown selection |
+| `Checkbox` | `<input type="checkbox">` | Checkbox with label |
+| `Switch` | toggle switches | Boolean toggle |
+| `Dialog` | modal divs | Modal dialogs |
+| `ConfirmDialog` | confirmation modals | Confirm/cancel dialogs |
+| `Tooltip` | title attributes | Hover tooltips (use with `TooltipProvider`, `TooltipTrigger`, `TooltipContent`) |
+| `Badge` | status spans | Status indicators, tags |
+| `Avatar` | user images | User profile pictures |
+| `LoadingSpinner` | custom spinners | Loading indicators |
+| `EmptyState` | empty content divs | Empty state messaging |
+| `DropdownMenu` | custom dropdowns | Action menus |
+| `Popover` | custom popovers | Floating content |
+
+**Example usage:**
+```typescript
+import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
+import { Typography } from "@/components/ui/Typography";
+
+function MyComponent() {
+  return (
+    <Flex direction="column" gap="md">
+      <Typography variant="h2">Title</Typography>
+      <Flex gap="sm">
+        <Button variant="primary">Save</Button>
+        <Button variant="ghost">Cancel</Button>
+      </Flex>
+    </Flex>
+  );
+}
+```
 
 ### Convex Backend Patterns
 

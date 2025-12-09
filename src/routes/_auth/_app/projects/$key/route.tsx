@@ -1,7 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { ProjectSidebar } from "@/components/ProjectSidebar";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 
@@ -58,39 +57,36 @@ function ProjectLayout() {
   };
 
   return (
-    <div className="flex h-full">
-      <ProjectSidebar selectedProjectId={project._id} />
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Project Header */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-          <div className="px-6 py-4">
-            <Typography variant="h1" className="text-xl font-semibold">
-              {project.name}
-            </Typography>
-            <Typography variant="p" color="secondary" className="text-sm">
-              {project.key}
-            </Typography>
-          </div>
-          {/* Tab Navigation */}
-          <nav className="flex px-6 -mb-px">
-            <Link to={`/projects/${key}/board`} className={getTabClass("board")}>
-              Board
-            </Link>
-            <Link to={`/projects/${key}/calendar`} className={getTabClass("calendar")}>
-              Calendar
-            </Link>
-            <Link to={`/projects/${key}/timesheet`} className={getTabClass("timesheet")}>
-              Timesheet
-            </Link>
-            <Link to={`/projects/${key}/settings`} className={getTabClass("settings")}>
-              Settings
-            </Link>
-          </nav>
+    <div className="flex flex-col h-full">
+      {/* Project Header */}
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
+        <div className="px-6 py-4">
+          <Typography variant="h1" className="text-xl font-semibold">
+            {project.name}
+          </Typography>
+          <Typography variant="p" color="secondary" className="text-sm">
+            {project.key}
+          </Typography>
         </div>
-        {/* Content */}
-        <div className="flex-1 overflow-auto">
-          <Outlet />
-        </div>
+        {/* Tab Navigation */}
+        <nav className="flex px-6 -mb-px">
+          <Link to={`/projects/${key}/board`} className={getTabClass("board")}>
+            Board
+          </Link>
+          <Link to={`/projects/${key}/calendar`} className={getTabClass("calendar")}>
+            Calendar
+          </Link>
+          <Link to={`/projects/${key}/timesheet`} className={getTabClass("timesheet")}>
+            Timesheet
+          </Link>
+          <Link to={`/projects/${key}/settings`} className={getTabClass("settings")}>
+            Settings
+          </Link>
+        </nav>
+      </div>
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        <Outlet />
       </div>
     </div>
   );

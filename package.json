@@ -82,6 +82,7 @@
     "fuse.js": "^7.1.0",
     "isomorphic-dompurify": "^2.33.0",
     "jszip": "^3.10.1",
+    "lucia": "^3.2.2",
     "lucide-react": "^0.555.0",
     "posthog-js": "^1.301.0",
     "react": "^19.2.1",

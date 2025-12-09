@@ -3,11 +3,13 @@ import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { AppSidebar } from "@/components/AppSidebar";
 import { CommandPalette, useCommands } from "@/components/CommandPalette";
 import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
+import { SidebarProvider } from "@/hooks/useSidebarState";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -71,27 +73,35 @@ function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-      {/* Global header with navigation */}
-      <AppHeader
-        onShowCommandPalette={() => setShowCommandPalette(true)}
-        onShowShortcutsHelp={() => setShowShortcutsHelp(true)}
-      />
+    <SidebarProvider>
+      <div className="min-h-screen flex bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+        {/* Unified sidebar */}
+        <AppSidebar />
 
-      {/* Main content area */}
-      <main className="flex-1 overflow-hidden">
-        <Outlet />
-      </main>
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Slim header */}
+          <AppHeader
+            onShowCommandPalette={() => setShowCommandPalette(true)}
+            onShowShortcutsHelp={() => setShowShortcutsHelp(true)}
+          />
 
-      {/* Command Palette Modal */}
-      <CommandPalette
-        isOpen={showCommandPalette}
-        onClose={() => setShowCommandPalette(false)}
-        commands={commands}
-      />
+          {/* Page content */}
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
 
-      {/* Keyboard Shortcuts Help Modal */}
-      <KeyboardShortcutsHelp open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
-    </div>
+        {/* Command Palette Modal */}
+        <CommandPalette
+          isOpen={showCommandPalette}
+          onClose={() => setShowCommandPalette(false)}
+          commands={commands}
+        />
+
+        {/* Keyboard Shortcuts Help Modal */}
+        <KeyboardShortcutsHelp open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
+      </div>
+    </SidebarProvider>
   );
 }

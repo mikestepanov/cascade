@@ -1,0 +1,281 @@
+/**
+ * Auth UI Helpers
+ *
+ * Shared browser interaction helpers for authentication flows.
+ * Used by both global-setup.ts and auth.fixture.ts to avoid duplication.
+ */
+
+import type { Page } from "@playwright/test";
+import type { TestUser } from "../config";
+import { waitForVerificationEmail } from "./mailtrap";
+
+/**
+ * Check if we're on the dashboard
+ */
+export async function isOnDashboard(page: Page): Promise<boolean> {
+  const dashboardIndicators = [
+    page.getByRole("heading", { name: /my work/i }),
+    page.getByText("Your personal dashboard"),
+    page.getByText("ASSIGNED TO ME"),
+  ];
+
+  for (const indicator of dashboardIndicators) {
+    if (await indicator.isVisible().catch(() => false)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Check if we're on the onboarding page
+ */
+export async function isOnOnboarding(page: Page): Promise<boolean> {
+  if (page.url().includes("/onboarding")) {
+    return true;
+  }
+  const welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
+  if (await welcomeHeading.isVisible().catch(() => false)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Click the "Continue with email" button and wait for form to expand
+ * Uses multiple strategies to handle React hydration timing
+ */
+export async function clickContinueWithEmail(page: Page): Promise<boolean> {
+  const continueButton = page.getByRole("button", { name: /continue with email/i });
+  const submitButton = page.getByRole("button", { name: /^(sign in|create account)$/i });
+
+  // Check if form is already expanded
+  if (await submitButton.isVisible().catch(() => false)) {
+    return true;
+  }
+
+  // Wait for button to be ready and React to hydrate
+  await continueButton.waitFor({ state: "visible", timeout: 5000 });
+  await page.waitForTimeout(500);
+
+  // Try clicking with multiple strategies
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    console.log(`📍 Click attempt ${attempt}...`);
+
+    try {
+      await continueButton.evaluate((btn) => {
+        const event = new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        });
+        btn.dispatchEvent(event);
+      });
+
+      await submitButton.waitFor({ state: "visible", timeout: 3000 });
+      console.log("✓ Form expanded successfully");
+      return true;
+    } catch {
+      if (attempt < 3) {
+        console.log(`⚠️ Attempt ${attempt} failed, waiting before retry...`);
+        await page.waitForTimeout(500);
+      }
+    }
+  }
+
+  // Final fallback: try Playwright's native click
+  console.log("⚠️ MouseEvent approach failed, trying Playwright click...");
+  try {
+    await continueButton.click({ timeout: 5000 });
+    await submitButton.waitFor({ state: "visible", timeout: 3000 });
+    return true;
+  } catch {
+    console.log("⚠️ Form still not expanded after all attempts");
+    return false;
+  }
+}
+
+/**
+ * Handle being on onboarding or dashboard after authentication
+ */
+export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> {
+  await page.waitForTimeout(1000);
+
+  if (await isOnDashboard(page)) {
+    console.log("✓ Already on dashboard");
+    return true;
+  }
+
+  if (await isOnOnboarding(page)) {
+    console.log("📋 On onboarding - completing...");
+    const skipSelectors = [
+      page.getByRole("button", { name: /skip for now/i }),
+      page.getByRole("link", { name: /skip for now/i }),
+      page.getByText(/skip for now/i),
+    ];
+
+    for (const skipElement of skipSelectors) {
+      try {
+        if (await skipElement.isVisible().catch(() => false)) {
+          await skipElement.click();
+          await page.waitForTimeout(2000);
+          if (await isOnDashboard(page)) {
+            return true;
+          }
+          break;
+        }
+      } catch {
+        // Continue to next selector
+      }
+    }
+    console.log("⚠️ Could not skip onboarding");
+  }
+
+  return false;
+}
+
+/**
+ * Try to sign in with specific user credentials
+ */
+export async function trySignInUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
+  try {
+    await page.goto(`${baseURL}/signin`);
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1000);
+
+    if (await isOnDashboard(page)) {
+      return true;
+    }
+
+    await page
+      .getByRole("heading", { name: /welcome back/i })
+      .waitFor({ state: "visible", timeout: 10000 });
+
+    const formExpanded = await clickContinueWithEmail(page);
+    if (!formExpanded) return false;
+
+    await page.getByPlaceholder("Email").fill(user.email);
+    await page.getByPlaceholder("Password").fill(user.password);
+    await page.waitForTimeout(400);
+
+    const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+    await signInButton.waitFor({ state: "visible", timeout: 5000 });
+    await signInButton.click();
+
+    try {
+      await page.waitForURL(/\/(dashboard|onboarding)/, {
+        timeout: 15000,
+        waitUntil: "domcontentloaded",
+      });
+    } catch {
+      // Check if we're there anyway
+    }
+
+    return await handleOnboardingOrDashboard(page);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Wait for either verification screen or redirect after signup
+ */
+export async function waitForSignUpResult(page: Page): Promise<"verification" | "redirect" | null> {
+  const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < 15000) {
+    if (await verificationHeading.isVisible().catch(() => false)) {
+      return "verification";
+    }
+    const url = page.url();
+    if (url.includes("/onboarding") || url.includes("/dashboard")) {
+      return "redirect";
+    }
+    await page.waitForTimeout(500);
+  }
+  return null;
+}
+
+/**
+ * Complete email verification with OTP from Mailtrap
+ */
+export async function completeEmailVerification(page: Page, email: string): Promise<boolean> {
+  console.log(`  📬 Waiting for verification email for ${email}...`);
+  try {
+    const otp = await waitForVerificationEmail(email, {
+      timeout: 90000,
+      pollInterval: 2000,
+    });
+    console.log(`  ✓ Retrieved OTP: ${otp}`);
+
+    const codeInput = page.getByPlaceholder("8-digit code");
+    await codeInput.waitFor({ state: "visible", timeout: 5000 });
+    await codeInput.fill(otp);
+
+    const verifyButton = page.getByRole("button", { name: /verify email/i });
+    await verifyButton.click();
+    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 });
+    return true;
+  } catch (verifyError) {
+    console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
+    return false;
+  }
+}
+
+/**
+ * Sign up a user via UI (for testing actual sign-up flow)
+ * Uses Mailtrap for email verification
+ */
+export async function signUpUserViaUI(
+  page: Page,
+  baseURL: string,
+  user: TestUser,
+): Promise<boolean> {
+  try {
+    await page.goto(`${baseURL}/signup`);
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(1000);
+
+    const currentUrl = page.url();
+    if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
+      return await handleOnboardingOrDashboard(page);
+    }
+
+    const signUpHeading = page.getByRole("heading", { name: /create an account/i });
+    await signUpHeading.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+
+    if (!(await signUpHeading.isVisible().catch(() => false))) {
+      return await isOnDashboard(page);
+    }
+
+    const formExpanded = await clickContinueWithEmail(page);
+    if (!formExpanded) return false;
+
+    await page.getByPlaceholder("Email").fill(user.email);
+    await page.getByPlaceholder("Password").fill(user.password);
+    await page.waitForTimeout(400);
+
+    const submitButton = page.getByRole("button", { name: "Create account", exact: true });
+    await submitButton.waitFor({ state: "visible", timeout: 5000 });
+    console.log(`  📤 Submitting sign-up form for ${user.email}...`);
+    await submitButton.click();
+
+    const signUpResult = await waitForSignUpResult(page);
+    console.log(`  📋 Sign-up result: ${signUpResult || "timeout"}`);
+
+    if (signUpResult === "verification") {
+      const emailVerified = await completeEmailVerification(page, user.email);
+      if (!emailVerified) return false;
+    } else if (signUpResult === null) {
+      const url = page.url();
+      console.log(`  📍 Current URL after timeout: ${url}`);
+      return false;
+    }
+
+    return await handleOnboardingOrDashboard(page);
+  } catch (error) {
+    console.error(`  ❌ Sign-up error for ${user.email}:`, error);
+    return false;
+  }
+}
