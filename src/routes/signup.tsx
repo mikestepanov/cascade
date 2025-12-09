@@ -1,6 +1,6 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { AuthLink, AuthPageLayout, SignUpForm } from "@/components/auth";
+import { AuthLink, AuthPageLayout, PostAuthRedirect, SignUpForm } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/signup")({
@@ -12,8 +12,7 @@ function SignUpRoute() {
   return (
     <>
       <Authenticated>
-        {/* Redirect to /dashboard which triggers company resolution in $companySlug route */}
-        <Navigate to={ROUTES.dashboard("dashboard")} />
+        <PostAuthRedirect />
       </Authenticated>
       <Unauthenticated>
         <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">

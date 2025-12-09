@@ -9,7 +9,6 @@ import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
-import { ROUTES } from "@/config/routes";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
 import { SidebarProvider } from "@/hooks/useSidebarState";
 
@@ -41,7 +40,6 @@ export const Route = createFileRoute("/_auth/_app/$companySlug")({
 
 function CompanyLayout() {
   const { companySlug } = Route.useParams();
-  const navigate = useNavigate();
 
   // Get user's companies for access check
   const userCompanies = useQuery(api.companies.getUserCompanies);
@@ -58,18 +56,8 @@ function CompanyLayout() {
     );
   }
 
-  // Company not found - redirect to user's first company if available
+  // Company not found
   if (company === null) {
-    if (userCompanies.length > 0) {
-      // Redirect to the user's first company
-      navigate({ to: ROUTES.dashboard(userCompanies[0].slug), replace: true });
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-          <LoadingSpinner size="lg" />
-        </div>
-      );
-    }
-
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
         <div className="text-center">

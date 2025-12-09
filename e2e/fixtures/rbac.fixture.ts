@@ -93,6 +93,7 @@ export type RbacFixtures = {
   // RBAC project info
   rbacProjectKey: string;
   rbacProjectUrl: string;
+  rbacCompanySlug: string;
 
   // Helper to navigate to RBAC project
   gotoRbacProject: (page: Page) => Promise<void>;
@@ -168,13 +169,17 @@ export const rbacTest = base.extend<RbacFixtures>({
   // RBAC project info
   rbacProjectKey: RBAC_TEST_CONFIG.projectKey,
 
-  rbacProjectUrl: `/projects/${RBAC_TEST_CONFIG.projectKey}/board`,
+  rbacCompanySlug: RBAC_TEST_CONFIG.companySlug,
+
+  rbacProjectUrl: `/${RBAC_TEST_CONFIG.companySlug}/projects/${RBAC_TEST_CONFIG.projectKey}/board`,
 
   // Helper to navigate to RBAC project
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
   gotoRbacProject: async ({}, use) => {
     const goto = async (page: Page) => {
-      await page.goto(`/projects/${RBAC_TEST_CONFIG.projectKey}/board`);
+      await page.goto(
+        `/${RBAC_TEST_CONFIG.companySlug}/projects/${RBAC_TEST_CONFIG.projectKey}/board`,
+      );
       await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(1000);
     };

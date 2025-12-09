@@ -561,6 +561,7 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 
 /**
  * Internal mutation to set up RBAC test project
+ * Uses the admin user's existing company instead of creating a new one
  */
 export const setupRbacProjectInternal = internalMutation({
   args: {
@@ -573,6 +574,8 @@ export const setupRbacProjectInternal = internalMutation({
     success: v.boolean(),
     projectId: v.optional(v.id("projects")),
     projectKey: v.optional(v.string()),
+    companyId: v.optional(v.id("companies")),
+    companySlug: v.optional(v.string()),
     error: v.optional(v.string()),
     users: v.optional(
       v.object({
@@ -607,20 +610,70 @@ export const setupRbacProjectInternal = internalMutation({
       return { success: false, error: `Viewer user not found: ${args.viewerEmail}` };
     }
 
-    // Check if project already exists
+    const now = Date.now();
+
+    // =========================================================================
+    // Step 1: Find the admin user's existing company (created during login)
+    // =========================================================================
+    const adminMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_user", (q) => q.eq("userId", adminUser._id))
+      .first();
+
+    if (!adminMembership) {
+      return { success: false, error: "Admin user has no company membership" };
+    }
+
+    const company = await ctx.db.get(adminMembership.companyId);
+    if (!company) {
+      return { success: false, error: "Admin's company not found" };
+    }
+
+    // =========================================================================
+    // Step 2: Add editor and viewer as company members (if not already)
+    // =========================================================================
+    const usersToAddToCompany = [
+      { userId: editorUser._id, role: "member" as const },
+      { userId: viewerUser._id, role: "member" as const },
+    ];
+
+    for (const config of usersToAddToCompany) {
+      const existingMember = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_company_user", (q) =>
+          q.eq("companyId", company._id).eq("userId", config.userId),
+        )
+        .first();
+
+      if (!existingMember) {
+        await ctx.db.insert("companyMembers", {
+          companyId: company._id,
+          userId: config.userId,
+          role: config.role,
+          addedBy: adminUser._id,
+          addedAt: now,
+        });
+      }
+
+      // Set as user's default company
+      await ctx.db.patch(config.userId, { defaultCompanyId: company._id });
+    }
+
+    // =========================================================================
+    // Step 3: Create/ensure RBAC test project (associated with company)
+    // =========================================================================
     let project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
       .first();
 
-    const now = Date.now();
-
     if (!project) {
-      // Create the project with admin as creator
+      // Create the project with admin as creator, associated with company
       const projectId = await ctx.db.insert("projects", {
         name: `RBAC Test Project (${args.projectKey})`,
         key: args.projectKey,
         description: "E2E test project for RBAC permission testing",
+        companyId: company._id,
         createdBy: adminUser._id,
         createdAt: now,
         updatedAt: now,
@@ -635,13 +688,21 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       project = await ctx.db.get(projectId);
+    } else if (!project.companyId) {
+      // Update existing project to associate with company
+      await ctx.db.patch(project._id, { companyId: company._id });
     }
 
     if (!project) {
       return { success: false, error: "Failed to create project" };
     }
 
-    // Add/update project members with roles
+    // Store project ID to avoid non-null assertions in callbacks
+    const projectId = project._id;
+
+    // =========================================================================
+    // Step 4: Add/update project members with roles
+    // =========================================================================
     const memberConfigs = [
       { userId: adminUser._id, role: "admin" as const },
       { userId: editorUser._id, role: "editor" as const },
@@ -653,7 +714,7 @@ export const setupRbacProjectInternal = internalMutation({
       const existingMember = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", project!._id).eq("userId", config.userId),
+          q.eq("projectId", projectId).eq("userId", config.userId),
         )
         .first();
 
@@ -678,6 +739,8 @@ export const setupRbacProjectInternal = internalMutation({
       success: true,
       projectId: project._id,
       projectKey: project.key,
+      companyId: company._id,
+      companySlug: company.slug,
       users: {
         admin: adminUser._id,
         editor: editorUser._id,

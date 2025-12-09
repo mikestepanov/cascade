@@ -161,8 +161,12 @@ export const E2E_ENDPOINTS = {
 export const RBAC_TEST_CONFIG = {
   projectKey: "RBAC",
   projectName: "RBAC Test Project",
-  /** Company slug for URL paths - uses the E2E test company */
-  companySlug: "e2e-test-company",
+  /**
+   * Company slug for URL paths.
+   * Uses "dashboard" because that's the auto-created company when test users first log in.
+   * The RBAC setup will use this existing company instead of creating a new one.
+   */
+  companySlug: "dashboard",
 };
 
 /**

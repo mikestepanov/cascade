@@ -89,11 +89,11 @@ export function AppSidebar() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      {/* Mobile overlay - special case, not using Button due to full-screen styling */}
+      {/* Mobile overlay - clickable to close sidebar */}
       {isMobileOpen && (
         <button
           type="button"
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden cursor-default"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={closeMobile}
           onKeyDown={(e) => e.key === "Escape" && closeMobile()}
           aria-label="Close sidebar"

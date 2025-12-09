@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
@@ -26,6 +26,23 @@ function AppLayout() {
     isAuthenticated ? undefined : "skip",
   );
 
+  // Determine redirect targets
+  const shouldRedirectToHome = !(isAuthLoading || isAuthenticated);
+  const shouldRedirectToOnboarding =
+    !isAuthLoading &&
+    isAuthenticated &&
+    onboardingStatus !== undefined &&
+    (onboardingStatus === null || !onboardingStatus.onboardingCompleted);
+
+  // Handle redirects in useEffect to avoid state updates during render
+  useEffect(() => {
+    if (shouldRedirectToHome) {
+      navigate({ to: ROUTES.home });
+    } else if (shouldRedirectToOnboarding) {
+      navigate({ to: ROUTES.onboarding });
+    }
+  }, [shouldRedirectToHome, shouldRedirectToOnboarding, navigate]);
+
   // Loading state
   if (isAuthLoading || onboardingStatus === undefined || userCompanies === undefined) {
     return (
@@ -36,14 +53,12 @@ function AppLayout() {
   }
 
   // Redirect to sign in if not authenticated
-  if (!isAuthenticated) {
-    navigate({ to: ROUTES.home });
+  if (shouldRedirectToHome) {
     return null;
   }
 
   // Redirect to onboarding if not completed
-  if (onboardingStatus === null || !onboardingStatus.onboardingCompleted) {
-    navigate({ to: ROUTES.onboarding });
+  if (shouldRedirectToOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />
@@ -63,13 +78,14 @@ function AppLayout() {
 function InitializeCompany() {
   const navigate = useNavigate();
   const initializeDefaultCompany = useMutation(api.companies.initializeDefaultCompany);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const initRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
-      if (isInitializing) return;
-      setIsInitializing(true);
+      // Use ref to prevent duplicate initialization calls (survives re-renders)
+      if (initRef.current) return;
+      initRef.current = true;
       try {
         const result = await initializeDefaultCompany({});
         // Navigate to the new company's dashboard
@@ -81,11 +97,11 @@ function InitializeCompany() {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to create company");
-        setIsInitializing(false);
+        initRef.current = false; // Allow retry on error
       }
     };
     init();
-  }, [initializeDefaultCompany, isInitializing, navigate]);
+  }, [initializeDefaultCompany, navigate]);
 
   if (error) {
     return (

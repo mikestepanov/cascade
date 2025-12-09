@@ -11,8 +11,19 @@ import { waitForVerificationEmail } from "./mailtrap";
 
 /**
  * Check if we're on the dashboard
+ * Handles both old (/dashboard) and new (/:companySlug/dashboard) URL patterns
  */
 export async function isOnDashboard(page: Page): Promise<boolean> {
+  // First check URL pattern - new pattern is /:companySlug/dashboard
+  const url = page.url();
+  const dashboardUrlPattern = /\/[^/]+\/dashboard$/;
+  if (dashboardUrlPattern.test(url) || url.endsWith("/dashboard")) {
+    // URL matches dashboard pattern, wait a moment for page to load
+    await page.waitForTimeout(500);
+    return true;
+  }
+
+  // Check for dashboard content indicators as fallback
   const dashboardIndicators = [
     page.getByRole("heading", { name: /my work/i }),
     page.getByText("Your personal dashboard"),
@@ -196,7 +207,8 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     await signInButton.click();
 
     try {
-      await page.waitForURL(/\/(dashboard|onboarding)/, {
+      // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
+      await page.waitForURL(/\/(onboarding|[^/]+\/dashboard)/, {
         timeout: 15000,
         waitUntil: "domcontentloaded",
       });
@@ -224,7 +236,8 @@ export async function waitForSignUpResult(page: Page): Promise<"verification" | 
       return "verification";
     }
     const url = page.url();
-    if (url.includes("/onboarding") || url.includes("/dashboard")) {
+    // Check for onboarding or dashboard patterns (both old and new URL structures)
+    if (url.includes("/onboarding") || /\/[^/]+\/dashboard/.test(url)) {
       return "redirect";
     }
     await page.waitForTimeout(500);
@@ -250,7 +263,8 @@ export async function completeEmailVerification(page: Page, email: string): Prom
 
     const verifyButton = page.getByRole("button", { name: /verify email/i });
     await verifyButton.click();
-    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 });
+    // Wait for redirect to onboarding or company dashboard
+    await page.waitForURL(/\/(onboarding|[^/]+\/dashboard)/, { timeout: 15000 });
     return true;
   } catch (verifyError) {
     console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
@@ -273,7 +287,8 @@ export async function signUpUserViaUI(
     await page.waitForTimeout(1000);
 
     const currentUrl = page.url();
-    if (currentUrl.includes("/onboarding") || currentUrl.includes("/dashboard")) {
+    // Check for onboarding or dashboard patterns (both old and new URL structures)
+    if (currentUrl.includes("/onboarding") || /\/[^/]+\/dashboard/.test(currentUrl)) {
       return await handleOnboardingOrDashboard(page);
     }
 

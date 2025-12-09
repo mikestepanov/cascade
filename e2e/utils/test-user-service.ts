@@ -5,7 +5,7 @@
  * Single source of truth for API interactions.
  */
 
-import { E2E_ENDPOINTS, getE2EHeaders, type TestUser } from "../config";
+import { E2E_ENDPOINTS, getE2EHeaders } from "../config";
 
 export interface CreateUserResult {
   success: boolean;

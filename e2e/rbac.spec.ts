@@ -12,7 +12,7 @@
  * - Viewer: e2e-viewer@inbox.mailtrap.io
  */
 
-import { expect, RBAC_USERS, rbacTest } from "./fixtures";
+import { expect, rbacTest } from "./fixtures";
 
 rbacTest.describe("RBAC - Project Access", () => {
   rbacTest(
@@ -34,11 +34,11 @@ rbacTest.describe("RBAC - Project Access", () => {
 
   rbacTest(
     "all roles can see project in sidebar",
-    async ({ adminPage, editorPage, viewerPage, rbacProjectKey }) => {
+    async ({ adminPage, editorPage, viewerPage, rbacProjectKey, rbacCompanySlug }) => {
       // Navigate to projects page
-      await adminPage.goto("/projects");
-      await editorPage.goto("/projects");
-      await viewerPage.goto("/projects");
+      await adminPage.goto(`/${rbacCompanySlug}/projects`);
+      await editorPage.goto(`/${rbacCompanySlug}/projects`);
+      await viewerPage.goto(`/${rbacCompanySlug}/projects`);
 
       // Check sidebar for project
       await expect(adminPage.getByText(rbacProjectKey)).toBeVisible();
@@ -87,59 +87,75 @@ rbacTest.describe("RBAC - Issue Creation", () => {
 });
 
 rbacTest.describe("RBAC - Project Settings Access", () => {
-  rbacTest("admin can access project settings", async ({ adminPage, rbacProjectKey }) => {
-    await adminPage.goto(`/projects/${rbacProjectKey}/settings`);
-    await adminPage.waitForLoadState("domcontentloaded");
+  rbacTest(
+    "admin can access project settings",
+    async ({ adminPage, rbacProjectKey, rbacCompanySlug }) => {
+      await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
+      await adminPage.waitForLoadState("domcontentloaded");
 
-    // Admin should see settings page
-    await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible();
-  });
+      // Admin should see settings page
+      await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible();
+    },
+  );
 
-  rbacTest("editor cannot access project settings", async ({ editorPage, rbacProjectKey }) => {
-    await editorPage.goto(`/projects/${rbacProjectKey}/settings`);
-    await editorPage.waitForLoadState("domcontentloaded");
+  rbacTest(
+    "editor cannot access project settings",
+    async ({ editorPage, rbacProjectKey, rbacCompanySlug }) => {
+      await editorPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
+      await editorPage.waitForLoadState("domcontentloaded");
 
-    // Editor should be redirected to board (wait for redirect to complete)
-    // The redirect happens via React useEffect, so we need to wait for URL change
-    await editorPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 10000 });
+      // Editor should be redirected to board (wait for redirect to complete)
+      // The redirect happens via React useEffect, so we need to wait for URL change
+      await editorPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 10000 });
 
-    // Verify they're on the board page
-    expect(editorPage.url()).toContain("/board");
-    expect(editorPage.url()).not.toContain("/settings");
-  });
+      // Verify they're on the board page
+      expect(editorPage.url()).toContain("/board");
+      expect(editorPage.url()).not.toContain("/settings");
+    },
+  );
 
-  rbacTest("viewer cannot access project settings", async ({ viewerPage, rbacProjectKey }) => {
-    await viewerPage.goto(`/projects/${rbacProjectKey}/settings`);
-    await viewerPage.waitForLoadState("domcontentloaded");
+  rbacTest(
+    "viewer cannot access project settings",
+    async ({ viewerPage, rbacProjectKey, rbacCompanySlug }) => {
+      await viewerPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
+      await viewerPage.waitForLoadState("domcontentloaded");
 
-    // Viewer should be redirected to board (wait for redirect to complete)
-    // The redirect happens via React useEffect, so we need to wait for URL change
-    await viewerPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 10000 });
+      // Viewer should be redirected to board (wait for redirect to complete)
+      // The redirect happens via React useEffect, so we need to wait for URL change
+      await viewerPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 10000 });
 
-    // Verify they're on the board page
-    expect(viewerPage.url()).toContain("/board");
-    expect(viewerPage.url()).not.toContain("/settings");
-  });
+      // Verify they're on the board page
+      expect(viewerPage.url()).toContain("/board");
+      expect(viewerPage.url()).not.toContain("/settings");
+    },
+  );
 });
 
 rbacTest.describe("RBAC - Settings Tab Visibility", () => {
   // Helper to get the PROJECT settings tab (not the user settings in sidebar)
-  const getProjectSettingsTab = (page: import("@playwright/test").Page, projectKey: string) =>
-    page.locator(`a[href="/projects/${projectKey}/settings"]`);
+  // Now uses company slug in the href pattern
+  const getProjectSettingsTab = (
+    page: import("@playwright/test").Page,
+    companySlug: string,
+    projectKey: string,
+  ) => page.locator(`a[href="/${companySlug}/projects/${projectKey}/settings"]`);
 
-  rbacTest("admin sees settings tab", async ({ adminPage, gotoRbacProject, rbacProjectKey }) => {
-    await gotoRbacProject(adminPage);
+  rbacTest(
+    "admin sees settings tab",
+    async ({ adminPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
+      await gotoRbacProject(adminPage);
 
-    const settingsTab = getProjectSettingsTab(adminPage, rbacProjectKey);
-    await expect(settingsTab).toBeVisible();
-  });
+      const settingsTab = getProjectSettingsTab(adminPage, rbacCompanySlug, rbacProjectKey);
+      await expect(settingsTab).toBeVisible();
+    },
+  );
 
   rbacTest(
     "editor does not see settings tab",
-    async ({ editorPage, gotoRbacProject, rbacProjectKey }) => {
+    async ({ editorPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
       await gotoRbacProject(editorPage);
 
-      const settingsTab = getProjectSettingsTab(editorPage, rbacProjectKey);
+      const settingsTab = getProjectSettingsTab(editorPage, rbacCompanySlug, rbacProjectKey);
       // Settings tab should not be visible for editor
       const count = await settingsTab.count();
       expect(count).toBe(0);
@@ -148,10 +164,10 @@ rbacTest.describe("RBAC - Settings Tab Visibility", () => {
 
   rbacTest(
     "viewer does not see settings tab",
-    async ({ viewerPage, gotoRbacProject, rbacProjectKey }) => {
+    async ({ viewerPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
       await gotoRbacProject(viewerPage);
 
-      const settingsTab = getProjectSettingsTab(viewerPage, rbacProjectKey);
+      const settingsTab = getProjectSettingsTab(viewerPage, rbacCompanySlug, rbacProjectKey);
       const count = await settingsTab.count();
       expect(count).toBe(0);
     },
@@ -163,8 +179,8 @@ rbacTest.describe("RBAC - Member Management", () => {
   // TODO: Enable these tests once ProjectSettings component has member management
   rbacTest.skip(
     "admin can see member management in settings",
-    async ({ adminPage, rbacProjectKey }) => {
-      await adminPage.goto(`/projects/${rbacProjectKey}/settings`);
+    async ({ adminPage, rbacProjectKey, rbacCompanySlug }) => {
+      await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
       await adminPage.waitForLoadState("domcontentloaded");
 
       // Look for members/team section
@@ -179,8 +195,8 @@ rbacTest.describe("RBAC - Member Management", () => {
 
   rbacTest.skip(
     "admin can see all three test users in members list",
-    async ({ adminPage, rbacProjectKey }) => {
-      await adminPage.goto(`/projects/${rbacProjectKey}/settings`);
+    async ({ adminPage, rbacProjectKey, rbacCompanySlug }) => {
+      await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
       await adminPage.waitForLoadState("domcontentloaded");
 
       // Check that all RBAC users are listed
@@ -193,54 +209,60 @@ rbacTest.describe("RBAC - Member Management", () => {
 });
 
 rbacTest.describe("RBAC - Sprint Management", () => {
-  rbacTest("admin can access sprints view", async ({ adminPage, rbacProjectKey }) => {
-    // Navigate to sprints tab
-    await adminPage.goto(`/projects/${rbacProjectKey}/board`);
-    await adminPage.waitForLoadState("domcontentloaded");
+  rbacTest(
+    "admin can access sprints view",
+    async ({ adminPage, rbacProjectKey, rbacCompanySlug }) => {
+      // Navigate to sprints tab
+      await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+      await adminPage.waitForLoadState("domcontentloaded");
 
-    const sprintsTab = adminPage
-      .getByRole("tab", { name: /sprint/i })
-      .or(adminPage.getByRole("link", { name: /sprint/i }));
+      const sprintsTab = adminPage
+        .getByRole("tab", { name: /sprint/i })
+        .or(adminPage.getByRole("link", { name: /sprint/i }));
 
-    if (await sprintsTab.isVisible().catch(() => false)) {
-      await sprintsTab.click();
-      await adminPage.waitForTimeout(500);
+      if (await sprintsTab.isVisible().catch(() => false)) {
+        await sprintsTab.click();
+        await adminPage.waitForTimeout(500);
 
-      // Should see sprint management UI
-      const createSprintButton = adminPage.getByRole("button", {
-        name: /create sprint|new sprint/i,
-      });
-      await expect(createSprintButton).toBeVisible();
-    }
-  });
+        // Should see sprint management UI
+        const createSprintButton = adminPage.getByRole("button", {
+          name: /create sprint|new sprint/i,
+        });
+        await expect(createSprintButton).toBeVisible();
+      }
+    },
+  );
 
-  rbacTest("editor can access sprints view", async ({ editorPage, rbacProjectKey }) => {
-    await editorPage.goto(`/projects/${rbacProjectKey}/board`);
-    await editorPage.waitForLoadState("domcontentloaded");
+  rbacTest(
+    "editor can access sprints view",
+    async ({ editorPage, rbacProjectKey, rbacCompanySlug }) => {
+      await editorPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+      await editorPage.waitForLoadState("domcontentloaded");
 
-    const sprintsTab = editorPage
-      .getByRole("tab", { name: /sprint/i })
-      .or(editorPage.getByRole("link", { name: /sprint/i }));
+      const sprintsTab = editorPage
+        .getByRole("tab", { name: /sprint/i })
+        .or(editorPage.getByRole("link", { name: /sprint/i }));
 
-    if (await sprintsTab.isVisible().catch(() => false)) {
-      await sprintsTab.click();
-      await editorPage.waitForTimeout(500);
+      if (await sprintsTab.isVisible().catch(() => false)) {
+        await sprintsTab.click();
+        await editorPage.waitForTimeout(500);
 
-      // Editor should also be able to create sprints
-      const createSprintButton = editorPage.getByRole("button", {
-        name: /create sprint|new sprint/i,
-      });
-      await expect(createSprintButton).toBeVisible();
-    }
-  });
+        // Editor should also be able to create sprints
+        const createSprintButton = editorPage.getByRole("button", {
+          name: /create sprint|new sprint/i,
+        });
+        await expect(createSprintButton).toBeVisible();
+      }
+    },
+  );
 });
 
 rbacTest.describe("RBAC - Analytics Access", () => {
   rbacTest(
     "all roles can view analytics",
-    async ({ adminPage, editorPage, viewerPage, rbacProjectKey }) => {
-      const checkAnalytics = async (page: typeof adminPage, role: string) => {
-        await page.goto(`/projects/${rbacProjectKey}/board`);
+    async ({ adminPage, editorPage, viewerPage, rbacProjectKey, rbacCompanySlug }) => {
+      const checkAnalytics = async (page: typeof adminPage, _role: string) => {
+        await page.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
         await page.waitForLoadState("domcontentloaded");
 
         const analyticsTab = page
@@ -273,7 +295,14 @@ rbacTest.describe("RBAC - Permission Summary", () => {
    */
   rbacTest(
     "permission matrix verification",
-    async ({ adminPage, editorPage, viewerPage, gotoRbacProject, rbacProjectKey }) => {
+    async ({
+      adminPage,
+      editorPage,
+      viewerPage,
+      gotoRbacProject,
+      rbacProjectKey,
+      rbacCompanySlug,
+    }) => {
       const results: Record<string, Record<string, boolean>> = {
         admin: {},
         editor: {},
@@ -282,7 +311,7 @@ rbacTest.describe("RBAC - Permission Summary", () => {
 
       // Helper to get the PROJECT settings tab (not the user settings in sidebar)
       const getProjectSettingsTab = (page: import("@playwright/test").Page) =>
-        page.locator(`a[href="/projects/${rbacProjectKey}/settings"]`);
+        page.locator(`a[href="/${rbacCompanySlug}/projects/${rbacProjectKey}/settings"]`);
 
       // Helper to wait for board to load and check visibility
       const checkBoardVisible = async (page: import("@playwright/test").Page): Promise<boolean> => {

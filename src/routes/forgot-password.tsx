@@ -1,8 +1,8 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { AuthLink, AuthPageLayout, ResetPasswordForm } from "@/components/auth";
+import { AuthLink, AuthPageLayout, PostAuthRedirect, ResetPasswordForm } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -15,7 +15,7 @@ function ForgotPasswordRoute() {
   return (
     <>
       <Authenticated>
-        <Navigate to={ROUTES.dashboard("dashboard")} />
+        <PostAuthRedirect />
       </Authenticated>
       <Unauthenticated>
         <ForgotPasswordPage />

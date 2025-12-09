@@ -33,14 +33,29 @@ vi.mock("../../convex/_generated/api", () => ({
   },
 }));
 
-// Mock Link
-vi.mock("@tanstack/react-router", () => ({
-  Link: ({ to, children, className, onClick }: any) => (
-    <a href={to} className={className} onClick={onClick}>
-      {children}
-    </a>
-  ),
+// Mock useCompany hook
+vi.mock("@/routes/_auth/_app/$companySlug/route", () => ({
+  useCompany: () => ({
+    companyId: "company123",
+    companySlug: "test-company",
+    companyName: "Test Company",
+    userRole: "admin",
+  }),
 }));
+
+// Mock TanStack Router - use importOriginal to preserve all exports
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+  return {
+    ...actual,
+    Link: ({ to, children, className, onClick }: any) => (
+      <a href={to} className={className} onClick={onClick}>
+        {children}
+      </a>
+    ),
+    useNavigate: () => vi.fn(),
+  };
+});
 
 describe("UserMenu", () => {
   it("renders user avatar", () => {
