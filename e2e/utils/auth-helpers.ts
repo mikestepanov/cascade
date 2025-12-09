@@ -143,13 +143,36 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
 
   if (await isOnOnboarding(page)) {
     console.log("📋 On onboarding - completing...");
-    const skipSelectors = [
-      page.getByRole("button", { name: /skip for now/i }),
+
+    // Wait for onboarding page to load (it starts in "loading" state)
+    // The "Skip for now" button only appears after queries load and step changes to "role-select"
+    const skipButton = page.getByRole("button", { name: /skip for now/i });
+
+    try {
+      // Wait up to 15 seconds for the skip button to appear (queries need to load)
+      await skipButton.waitFor({ state: "visible", timeout: 15000 });
+      console.log("✓ Skip button found, clicking...");
+      await skipButton.click();
+
+      // Wait for navigation to dashboard
+      await page.waitForURL(/\/[^/]+\/dashboard/, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(1000);
+
+      if (await isOnDashboard(page)) {
+        console.log("✓ Successfully skipped to dashboard");
+        return true;
+      }
+    } catch (error) {
+      console.log("⚠️ Skip button not found after waiting:", String(error).slice(0, 100));
+    }
+
+    // Fallback: try other selectors
+    const fallbackSelectors = [
       page.getByRole("link", { name: /skip for now/i }),
       page.getByText(/skip for now/i),
     ];
 
-    for (const skipElement of skipSelectors) {
+    for (const skipElement of fallbackSelectors) {
       try {
         if (await skipElement.isVisible().catch(() => false)) {
           await skipElement.click();

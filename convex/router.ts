@@ -12,6 +12,11 @@ import {
   verifyTestUserEndpoint,
 } from "./e2e";
 import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
+import {
+  handleCallback as handleGitHubCallback,
+  initiateAuth as initiateGitHubAuth,
+  listRepos as listGitHubRepos,
+} from "./http/githubOAuth";
 
 const http = httpRouter();
 
@@ -39,6 +44,25 @@ http.route({
   path: "/google/sync",
   method: "POST",
   handler: triggerSync,
+});
+
+// GitHub OAuth routes (for repository linking)
+http.route({
+  path: "/github/auth",
+  method: "GET",
+  handler: initiateGitHubAuth,
+});
+
+http.route({
+  path: "/github/callback",
+  method: "GET",
+  handler: handleGitHubCallback,
+});
+
+http.route({
+  path: "/github/repos",
+  method: "GET",
+  handler: listGitHubRepos,
 });
 
 // Auth wrapper routes (security)

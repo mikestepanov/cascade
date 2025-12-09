@@ -11,6 +11,10 @@ import { ProjectsPage } from "../pages";
  * Provides fixtures for testing role-based access control with multiple users.
  * Each user (admin, editor, viewer) has their own browser context with saved auth state.
  *
+ * IMPORTANT: Each test gets fresh browser contexts created from the saved auth state files.
+ * This is necessary because Convex auth uses refresh token rotation - once a token
+ * is used, it gets rotated and the old one becomes invalid.
+ *
  * Usage:
  *   rbacTest("viewer cannot create issues", async ({ viewerPage, viewerProjectsPage }) => {
  *     // Test with viewer's context
@@ -20,12 +24,35 @@ import { ProjectsPage } from "../pages";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
+const RBAC_CONFIG_PATH = path.join(AUTH_DIR, "rbac-config.json");
 
 type UserRole = "admin" | "editor" | "viewer";
 
-interface UserContext {
-  context: BrowserContext;
-  page: Page;
+interface SavedRbacConfig {
+  projectKey: string;
+  companySlug: string;
+  projectId?: string;
+  companyId?: string;
+}
+
+/**
+ * Get RBAC config - reads from saved file (actual values from API) or falls back to static config
+ */
+function getRbacConfig(): { projectKey: string; companySlug: string } {
+  try {
+    if (fs.existsSync(RBAC_CONFIG_PATH)) {
+      const content = fs.readFileSync(RBAC_CONFIG_PATH, "utf-8");
+      const config: SavedRbacConfig = JSON.parse(content);
+      if (config.projectKey && config.companySlug) {
+        return { projectKey: config.projectKey, companySlug: config.companySlug };
+      }
+    }
+  } catch {
+    // Fall through to default
+  }
+  // Fallback to static config (should not happen if global-setup ran correctly)
+  console.warn("⚠️ Could not read RBAC config from file, using static config");
+  return { projectKey: RBAC_TEST_CONFIG.projectKey, companySlug: RBAC_TEST_CONFIG.companySlug };
 }
 
 /**
@@ -74,6 +101,7 @@ function isAuthStateValid(role: UserRole): boolean {
   }
 }
 
+// Test-scoped fixtures type
 export type RbacFixtures = {
   // Admin (project owner) - can do everything
   adminContext: BrowserContext;
@@ -101,12 +129,13 @@ export type RbacFixtures = {
 
 /**
  * RBAC Test fixture with multiple user contexts
+ * All contexts and pages are TEST-scoped - fresh for each test
  */
 export const rbacTest = base.extend<RbacFixtures>({
-  // Admin context and page
-  adminContext: async ({ browser }, use, testInfo) => {
+  // Test-scoped admin context - fresh for each test
+  adminContext: async ({ browser }, use) => {
     if (!isAuthStateValid("admin")) {
-      testInfo.skip(true, "Admin auth state not found. Run global setup with RBAC users enabled.");
+      throw new Error("Admin auth state not found. Run global setup first.");
     }
     const context = await browser.newContext({
       storageState: getAuthPath("admin"),
@@ -115,19 +144,10 @@ export const rbacTest = base.extend<RbacFixtures>({
     await context.close();
   },
 
-  adminPage: async ({ adminContext }, use) => {
-    const page = await adminContext.newPage();
-    await use(page);
-  },
-
-  adminProjectsPage: async ({ adminPage }, use) => {
-    await use(new ProjectsPage(adminPage));
-  },
-
-  // Editor context and page
-  editorContext: async ({ browser }, use, testInfo) => {
+  // Test-scoped editor context
+  editorContext: async ({ browser }, use) => {
     if (!isAuthStateValid("editor")) {
-      testInfo.skip(true, "Editor auth state not found. Run global setup with RBAC users enabled.");
+      throw new Error("Editor auth state not found. Run global setup first.");
     }
     const context = await browser.newContext({
       storageState: getAuthPath("editor"),
@@ -136,19 +156,10 @@ export const rbacTest = base.extend<RbacFixtures>({
     await context.close();
   },
 
-  editorPage: async ({ editorContext }, use) => {
-    const page = await editorContext.newPage();
-    await use(page);
-  },
-
-  editorProjectsPage: async ({ editorPage }, use) => {
-    await use(new ProjectsPage(editorPage));
-  },
-
-  // Viewer context and page
-  viewerContext: async ({ browser }, use, testInfo) => {
+  // Test-scoped viewer context
+  viewerContext: async ({ browser }, use) => {
     if (!isAuthStateValid("viewer")) {
-      testInfo.skip(true, "Viewer auth state not found. Run global setup with RBAC users enabled.");
+      throw new Error("Viewer auth state not found. Run global setup first.");
     }
     const context = await browser.newContext({
       storageState: getAuthPath("viewer"),
@@ -157,31 +168,91 @@ export const rbacTest = base.extend<RbacFixtures>({
     await context.close();
   },
 
+  // Test-scoped pages
+  adminPage: async ({ adminContext }, use) => {
+    const page = await adminContext.newPage();
+    await use(page);
+    await page.close();
+  },
+
+  adminProjectsPage: async ({ adminPage }, use) => {
+    await use(new ProjectsPage(adminPage));
+  },
+
+  editorPage: async ({ editorContext }, use) => {
+    const page = await editorContext.newPage();
+    await use(page);
+    await page.close();
+  },
+
+  editorProjectsPage: async ({ editorPage }, use) => {
+    await use(new ProjectsPage(editorPage));
+  },
+
   viewerPage: async ({ viewerContext }, use) => {
     const page = await viewerContext.newPage();
     await use(page);
+    await page.close();
   },
 
   viewerProjectsPage: async ({ viewerPage }, use) => {
     await use(new ProjectsPage(viewerPage));
   },
 
-  // RBAC project info
-  rbacProjectKey: RBAC_TEST_CONFIG.projectKey,
-
-  rbacCompanySlug: RBAC_TEST_CONFIG.companySlug,
-
-  rbacProjectUrl: `/${RBAC_TEST_CONFIG.companySlug}/projects/${RBAC_TEST_CONFIG.projectKey}/board`,
-
-  // Helper to navigate to RBAC project
+  // RBAC project info - read from saved config (actual values from API)
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
-  gotoRbacProject: async ({}, use) => {
+  rbacProjectKey: async ({}, use) => {
+    const config = getRbacConfig();
+    await use(config.projectKey);
+  },
+
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
+  rbacCompanySlug: async ({}, use) => {
+    const config = getRbacConfig();
+    await use(config.companySlug);
+  },
+
+  rbacProjectUrl: async ({ rbacCompanySlug, rbacProjectKey }, use) => {
+    await use(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+  },
+
+  // Helper to navigate to RBAC project with auth initialization
+  // This helper first visits the landing page to initialize Convex auth,
+  // then navigates to the target project board URL
+  gotoRbacProject: async ({ rbacCompanySlug, rbacProjectKey }, use) => {
     const goto = async (page: Page) => {
-      await page.goto(
-        `/${RBAC_TEST_CONFIG.companySlug}/projects/${RBAC_TEST_CONFIG.projectKey}/board`,
-      );
+      const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
+
+      // First, initialize auth by visiting landing page
+      // This triggers Convex to load auth tokens from localStorage
+      await page.goto("/");
       await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(1000);
+
+      // Wait for auth to process - should redirect to dashboard if authenticated
+      try {
+        await page.waitForURL(/\/([\w-]+)\/dashboard/, { timeout: 10000 });
+      } catch {
+        // No redirect - might still be on landing page, give it more time
+        await page.waitForTimeout(2000);
+      }
+
+      // Now navigate to the target protected route
+      await page.goto(targetUrl);
+      await page.waitForLoadState("domcontentloaded");
+
+      // Wait for the page to fully render
+      await page.waitForTimeout(1500);
+
+      // Check if we got redirected to landing page (auth not working)
+      const currentUrl = page.url();
+      if (currentUrl === "http://localhost:5555/" || currentUrl.endsWith("/signin")) {
+        // Auth failed - log and retry once more
+        console.log(`Auth redirect detected for ${targetUrl}, retrying...`);
+        await page.waitForTimeout(3000);
+        await page.goto(targetUrl);
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(1500);
+      }
     };
     await use(goto);
   },

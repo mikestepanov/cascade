@@ -26,6 +26,7 @@ interface IssueCardProps {
   selectionMode?: boolean;
   isSelected?: boolean;
   onToggleSelect?: (issueId: Id<"issues">) => void;
+  canEdit?: boolean;
 }
 
 export const IssueCard = memo(function IssueCard({
@@ -35,6 +36,7 @@ export const IssueCard = memo(function IssueCard({
   selectionMode = false,
   isSelected = false,
   onToggleSelect,
+  canEdit = true,
 }: IssueCardProps) {
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (selectionMode && onToggleSelect) {
@@ -55,8 +57,8 @@ export const IssueCard = memo(function IssueCard({
   return (
     <button
       type="button"
-      draggable={!selectionMode}
-      onDragStart={selectionMode ? undefined : onDragStart}
+      draggable={canEdit && !selectionMode}
+      onDragStart={canEdit && !selectionMode ? onDragStart : undefined}
       onClick={handleClick}
       className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
         isSelected

@@ -17,7 +17,7 @@ import {
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
@@ -29,10 +29,12 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebarState();
 
-  // Get company from URL context
-  const { companySlug, companyName } = useCompany();
+  // Get company from URL context - use optional to handle early render
+  const company = useCompanyOptional();
+  const companySlug = company?.companySlug ?? "";
+  const companyName = company?.companyName ?? "";
 
-  // Admin check for Time Tracking
+  // All hooks must be called unconditionally
   const isAdmin = useQuery(api.users.isPlatformAdmin);
   const showTimeTracking = isAdmin === true;
 
@@ -47,6 +49,24 @@ export function AppSidebar() {
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createProject = useMutation(api.projects.create);
+
+  // Show loading sidebar placeholder if company context isn't ready
+  if (!company) {
+    return (
+      <aside
+        className={cn(
+          "fixed lg:relative z-50 lg:z-auto h-screen",
+          "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+          "border-r border-ui-border-primary dark:border-ui-border-primary-dark",
+          "w-64",
+        )}
+      >
+        <div className="p-4 animate-pulse">
+          <div className="h-6 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded w-3/4" />
+        </div>
+      </aside>
+    );
+  }
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);

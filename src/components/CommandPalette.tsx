@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import {
   Command,
@@ -147,10 +147,16 @@ export function useCommands({
   onCreateProject?: () => void;
 } = {}) {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const company = useCompanyOptional();
+  const companySlug = company?.companySlug ?? "";
   const _projects = useQuery(api.dashboard.getMyProjects);
   const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
+
+  // Return empty commands if company context is not available
+  if (!company) {
+    return [];
+  }
 
   const commands: CommandItem[] = [
     // Navigation

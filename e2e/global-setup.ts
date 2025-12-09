@@ -40,14 +40,13 @@ async function setupTestUser(
 ): Promise<boolean> {
   const authStatePath = path.join(AUTH_DIR, path.basename(authPath));
 
-  // Check if auth file already exists and is recent (less than 1 hour old)
+  // IMPORTANT: Always create fresh auth state because Convex uses refresh token rotation.
+  // Once a refresh token is used, it becomes invalid. Reusing old auth state files
+  // will fail because the tokens have been rotated by previous test runs.
+  // Delete any existing auth file to force fresh sign-in.
   if (fs.existsSync(authStatePath)) {
-    const stats = fs.statSync(authStatePath);
-    const ageMs = Date.now() - stats.mtimeMs;
-    if (ageMs < 60 * 60 * 1000) {
-      console.log(`  ✓ ${userKey}: Using existing auth state (${Math.round(ageMs / 60000)}m old)`);
-      return true;
-    }
+    fs.unlinkSync(authStatePath);
+    console.log(`  🗑️ ${userKey}: Deleted stale auth state`);
   }
 
   console.log(`  🔧 ${userKey}: Setting up auth for ${user.email}...`);
@@ -144,9 +143,23 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
   if (rbacResult.success) {
     console.log(`  ✓ RBAC project created: ${rbacResult.projectKey}`);
+    console.log(`    - Company slug: ${rbacResult.companySlug}`);
     console.log(`    - Admin: ${TEST_USERS.teamLead.email}`);
     console.log(`    - Editor: ${TEST_USERS.teamMember.email}`);
     console.log(`    - Viewer: ${TEST_USERS.viewer.email}`);
+
+    // Save RBAC config for tests to use (actual company slug from API)
+    const rbacConfig = {
+      projectKey: rbacResult.projectKey,
+      companySlug: rbacResult.companySlug,
+      projectId: rbacResult.projectId,
+      companyId: rbacResult.companyId,
+    };
+    fs.writeFileSync(
+      path.join(AUTH_DIR, "rbac-config.json"),
+      JSON.stringify(rbacConfig, null, 2),
+    );
+    console.log(`  ✓ RBAC config saved to .auth/rbac-config.json`);
   } else {
     console.warn(`  ⚠️ RBAC project setup failed: ${rbacResult.error}`);
   }

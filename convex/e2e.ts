@@ -144,19 +144,76 @@ export const createTestUserInternal = internalMutation({
         .filter((q) => q.eq(q.field("providerAccountId"), args.email))
         .first();
 
-      if (existingAccount) {
-        // Full user exists - just return success (idempotent)
-        return { success: true, userId: existingUser._id, existing: true };
+      if (!existingAccount) {
+        // User exists but no authAccount - create it
+        await ctx.db.insert("authAccounts", {
+          userId: existingUser._id,
+          provider: "password",
+          providerAccountId: args.email,
+          secret: args.passwordHash,
+          emailVerified: new Date().toISOString(),
+        });
       }
 
-      // User exists but no authAccount - create it
-      await ctx.db.insert("authAccounts", {
-        userId: existingUser._id,
-        provider: "password",
-        providerAccountId: args.email,
-        secret: args.passwordHash,
-        emailVerified: new Date().toISOString(),
-      });
+      // Ensure existing user has company and onboarding set up when skipOnboarding is true
+      if (args.skipOnboarding) {
+        const now = Date.now();
+        const emailPrefix = args.email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase();
+
+        // Check if user has onboarding record
+        const existingOnboarding = await ctx.db
+          .query("userOnboarding")
+          .withIndex("by_user", (q) => q.eq("userId", existingUser._id))
+          .first();
+
+        if (!existingOnboarding) {
+          await ctx.db.insert("userOnboarding", {
+            userId: existingUser._id,
+            onboardingCompleted: true,
+            onboardingStep: 5,
+            sampleProjectCreated: false,
+            tourShown: true,
+            wizardCompleted: true,
+            checklistDismissed: true,
+            createdAt: now,
+            updatedAt: now,
+          });
+        } else if (!existingOnboarding.onboardingCompleted) {
+          // Mark existing onboarding as complete
+          await ctx.db.patch(existingOnboarding._id, { onboardingCompleted: true, onboardingStep: 5 });
+        }
+
+        // Check if user has company membership
+        const existingMembership = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_user", (q) => q.eq("userId", existingUser._id))
+          .first();
+
+        if (!existingMembership) {
+          // Create a company for the user
+          const randomSuffix = Math.random().toString(36).substring(2, 8);
+          const slug = `${emailPrefix}-${randomSuffix}`;
+
+          const companyId = await ctx.db.insert("companies", {
+            name: `Test Company (${emailPrefix})`,
+            slug,
+            timezone: "UTC",
+            createdBy: existingUser._id,
+            createdAt: now,
+            updatedAt: now,
+          });
+
+          await ctx.db.insert("companyMembers", {
+            companyId,
+            userId: existingUser._id,
+            role: "admin",
+            addedBy: existingUser._id,
+            addedAt: now,
+          });
+
+          await ctx.db.patch(existingUser._id, { defaultCompanyId: companyId });
+        }
+      }
 
       return { success: true, userId: existingUser._id, existing: true };
     }
@@ -178,8 +235,11 @@ export const createTestUserInternal = internalMutation({
       emailVerified: new Date().toISOString(),
     });
 
-    // If skipOnboarding is true, create completed onboarding record
+    // If skipOnboarding is true, create completed onboarding record AND a default company
     if (args.skipOnboarding) {
+      const now = Date.now();
+
+      // Create onboarding record
       await ctx.db.insert("userOnboarding", {
         userId,
         onboardingCompleted: true,
@@ -188,9 +248,36 @@ export const createTestUserInternal = internalMutation({
         tourShown: true,
         wizardCompleted: true,
         checklistDismissed: true,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        createdAt: now,
+        updatedAt: now,
       });
+
+      // Generate a unique slug from email prefix + random suffix
+      const emailPrefix = args.email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase();
+      const randomSuffix = Math.random().toString(36).substring(2, 8);
+      const slug = `${emailPrefix}-${randomSuffix}`;
+
+      // Create a default company for the user
+      const companyId = await ctx.db.insert("companies", {
+        name: `Test Company (${emailPrefix})`,
+        slug,
+        timezone: "UTC",
+        createdBy: userId,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      // Add user as admin of the company
+      await ctx.db.insert("companyMembers", {
+        companyId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+        addedAt: now,
+      });
+
+      // Set as user's default company
+      await ctx.db.patch(userId, { defaultCompanyId: companyId });
     }
 
     return { success: true, userId, existing: false };

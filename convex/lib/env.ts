@@ -44,6 +44,22 @@ export function isGoogleOAuthConfigured(): boolean {
 }
 
 // ===========================================
+// GitHub OAuth (for repository linking, not authentication)
+// ===========================================
+
+export function getGitHubClientId(): string {
+  return requireEnv("GITHUB_CLIENT_ID");
+}
+
+export function getGitHubClientSecret(): string {
+  return requireEnv("GITHUB_CLIENT_SECRET");
+}
+
+export function isGitHubOAuthConfigured(): boolean {
+  return !!process.env.GITHUB_CLIENT_ID && !!process.env.GITHUB_CLIENT_SECRET;
+}
+
+// ===========================================
 // Bot Service
 // ===========================================
 

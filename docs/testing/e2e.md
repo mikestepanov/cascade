@@ -228,6 +228,31 @@ const usersToSetup = [
 | `e2e/.auth/user-member.json` | Team member user |
 | `e2e/.auth/user-viewer.json` | Viewer user |
 
+### IMPORTANT: Convex Auth Token Rotation
+
+**Convex Auth uses refresh token rotation** - once a refresh token is used, it's invalidated and a new one is issued. This has critical implications for E2E testing:
+
+**The Problem:**
+1. Global setup signs in users and saves auth state (JWT + refresh token) to files
+2. Test 1 loads auth from file, uses tokens → tokens get rotated in browser
+3. Test 2 loads auth from SAME file → old tokens are now INVALID
+4. Test 2 fails with authentication errors
+
+**The Solution (implemented in `global-setup.ts`):**
+```typescript
+// Always delete stale auth files and create fresh tokens
+if (fs.existsSync(authStatePath)) {
+  fs.unlinkSync(authStatePath);
+  console.log(`  🗑️ ${userKey}: Deleted stale auth state`);
+}
+```
+
+**Key Rules for Convex Auth E2E Tests:**
+1. **Never reuse auth state** - Always create fresh auth per test run
+2. **Consolidate related tests** - Tests sharing the same user should be in one test file
+3. **One user per test** - Don't use multiple auth contexts in a single test (tokens rotate independently)
+4. **Worker isolation** - Use `--workers=1` for RBAC tests to ensure sequential execution
+
 ### Using Authenticated Tests
 
 ```typescript
@@ -628,6 +653,102 @@ npx @playwright/mcp@latest
 - Use `waitForLoadState("networkidle")`
 - Check for race conditions
 
+## RBAC Testing
+
+RBAC (Role-Based Access Control) tests verify permission boundaries for different user roles.
+
+### Test Structure
+
+RBAC tests are consolidated by role to avoid token rotation issues:
+
+```
+e2e/
+├── fixtures/
+│   └── rbac.fixture.ts    # RBAC-specific fixtures (admin/editor/viewer contexts)
+└── rbac.spec.ts           # Consolidated RBAC tests (3 tests, one per role)
+```
+
+### Test Users & Roles
+
+| Role | User | Permissions |
+|------|------|-------------|
+| Admin | `teamLead` | Full control - manage settings, members, delete project |
+| Editor | `teamMember` | Create/edit issues, sprints, documents |
+| Viewer | `viewer` | Read-only access, can only view and comment |
+
+### Running RBAC Tests
+
+```bash
+# Run all RBAC tests (must use --workers=1)
+pnpm e2e --grep "admin has full|editor has limited|viewer has read-only" --workers=1
+
+# Run specific role test
+pnpm e2e --grep "admin has full" --workers=1
+```
+
+### RBAC Fixtures
+
+The `rbacTest` fixture provides authenticated contexts for each role:
+
+```typescript
+import { rbacTest, expect } from "./fixtures";
+
+rbacTest("admin has full project access", async ({
+  adminPage,           // Admin's page instance
+  gotoRbacProject,     // Helper to navigate to RBAC project
+  rbacProjectKey,      // Project key (e.g., "RBAC")
+  rbacCompanySlug,     // Company slug from API
+}) => {
+  await gotoRbacProject(adminPage);
+  // ... test admin permissions
+});
+```
+
+### Why Tests Are Consolidated
+
+Due to Convex auth token rotation, each role's tests must be in a SINGLE test:
+
+**Before (17 tests - FAILED):**
+```typescript
+rbacTest("admin can view board", ...);     // Uses admin token → ROTATED
+rbacTest("admin can create issue", ...);   // Same file → OLD TOKEN → FAIL
+```
+
+**After (3 tests - PASSES):**
+```typescript
+rbacTest("admin has full project access", async ({ adminPage }) => {
+  // All admin assertions in ONE test
+  // 1. View board ✓
+  // 2. Create issue ✓
+  // 3. Access settings ✓
+  // ... etc
+});
+```
+
+### Known Issues
+
+**KanbanBoard shows "add issue" buttons to viewers:**
+- The UI doesn't hide create buttons for viewers
+- Backend correctly rejects viewer mutations
+- Test documents this as a known bug (not failing assertion)
+- TODO: Fix KanbanBoard to check user role before showing buttons
+
+### RBAC Config
+
+RBAC project configuration is saved by global-setup:
+
+```
+e2e/.auth/rbac-config.json
+{
+  "projectKey": "RBAC",
+  "companySlug": "e2e-teamlead-xxxxx",  // Actual slug from API
+  "projectId": "...",
+  "companyId": "..."
+}
+```
+
+This file is read by `rbac.fixture.ts` to get the correct company slug for navigation URLs.
+
 ---
 
 **Related Documentation:**
@@ -637,4 +758,4 @@ npx @playwright/mcp@latest
 
 ---
 
-*Last Updated: 2025-12-01*
+*Last Updated: 2025-12-09*

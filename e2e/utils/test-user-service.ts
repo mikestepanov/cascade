@@ -25,6 +25,8 @@ export interface RbacProjectResult {
   success: boolean;
   projectKey?: string;
   projectId?: string;
+  companySlug?: string;
+  companyId?: string;
   error?: string;
 }
 

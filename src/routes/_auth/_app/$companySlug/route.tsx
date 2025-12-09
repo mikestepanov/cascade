@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { createContext, useCallback, useContext, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -34,21 +34,46 @@ export function useCompany(): CompanyContextType {
   return context;
 }
 
+/**
+ * Optional hook to access company - returns null if not in company context
+ * Use this for components that might render before context is available
+ */
+export function useCompanyOptional(): CompanyContextType | null {
+  return useContext(CompanyContext);
+}
+
 export const Route = createFileRoute("/_auth/_app/$companySlug")({
   component: CompanyLayout,
+  ssr: false, // Disable SSR to prevent hydration issues with CompanyContext
 });
 
 function CompanyLayout() {
   const { companySlug } = Route.useParams();
+  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
-  // Get user's companies for access check
-  const userCompanies = useQuery(api.companies.getUserCompanies);
+  // Skip queries until auth is ready - this prevents queries from running during auth hydration
+  const userCompanies = useQuery(
+    api.companies.getUserCompanies,
+    isAuthenticated ? undefined : "skip",
+  );
 
-  // Fetch company by slug
-  const company = useQuery(api.companies.getCompanyBySlug, { slug: companySlug });
+  // Fetch company by slug - also skip until authenticated
+  const company = useQuery(
+    api.companies.getCompanyBySlug,
+    isAuthenticated ? { slug: companySlug } : "skip",
+  );
 
-  // Loading state
-  if (company === undefined || userCompanies === undefined) {
+  // Loading state - wait for auth AND queries
+  if (isAuthLoading || company === undefined || userCompanies === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  // Not authenticated - parent _auth route should handle this, but just in case
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />

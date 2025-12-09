@@ -85,18 +85,19 @@ In the **User Management** interface, you can:
 
 ### Accepting Invitations
 
-**Current Implementation:**
-Users need to sign up with the exact email address that received the invitation. After signing up:
+**Invite Acceptance Flow:**
 
-1. User creates account with email/password or Google
-2. System automatically matches their email to pending invitations
-3. User can call `acceptInvite` mutation with the token to activate their account
+1. User clicks invite link → navigates to `/invite/:token`
+2. Page displays invite details (inviter, role, company)
+3. User signs up or signs in (if already has account)
+4. After authentication, invite is automatically accepted
+5. User is redirected to the company dashboard via `PostAuthRedirect`
 
-**Future Enhancement:**
-You can add a dedicated invite acceptance page at `/invite/:token` that:
-- Displays invite details (who invited them, role, etc.)
-- Allows user to create account or sign in
-- Automatically accepts the invite after authentication
+**Route:** `src/routes/invite.$token.tsx`
+
+**Components used:**
+- `PostAuthRedirect` - handles post-auth navigation to company dashboard
+- Invite page shows accept button for authenticated users
 
 ### Invitation States
 
@@ -173,7 +174,7 @@ await useMutation(api.invites.acceptInvite, {
 
 ## Email Integration (TODO)
 
-Currently, invitation emails are not sent automatically. To implement email sending:
+The `/invite/:token` page is implemented. To enable automatic invitation emails:
 
 1. Configure Resend (already in dependencies):
    ```typescript
@@ -188,8 +189,6 @@ Currently, invitation emails are not sent automatically. To implement email send
    const inviteLink = `${process.env.SITE_URL}/invite/${token}`;
    await sendInviteEmail(args.email, inviteLink, invite.role);
    ```
-
-4. Create `/invite/:token` page in the frontend to handle invite acceptance
 
 ## Troubleshooting
 
@@ -212,4 +211,4 @@ Currently, invitation emails are not sent automatically. To implement email send
 
 ---
 
-*Last Updated: 2025-11-27*
+*Last Updated: 2025-12-09*

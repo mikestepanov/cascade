@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
@@ -15,14 +15,21 @@ type IssueFilter = "assigned" | "created" | "all";
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const company = useCompanyOptional();
+  const companySlug = company?.companySlug ?? "";
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
+  // All hooks must be called unconditionally
   const myIssues = useQuery(api.dashboard.getMyIssues);
   const myCreatedIssues = useQuery(api.dashboard.getMyCreatedIssues);
   const myProjects = useQuery(api.dashboard.getMyProjects);
   const recentActivity = useQuery(api.dashboard.getMyRecentActivity, { limit: 10 });
   const stats = useQuery(api.dashboard.getMyStats);
+
+  // Don't render dashboard if company context isn't ready
+  if (!company) {
+    return null;
+  }
 
   const displayIssues =
     issueFilter === "assigned"

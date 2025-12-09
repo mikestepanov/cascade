@@ -103,6 +103,8 @@ nixelo/
 │   │   └── AI/                  # AI components (chat, suggestions)
 │   ├── lib/                     # Utility functions
 │   │   └── utils.ts             # cn() for className merging
+│   ├── config/                  # App configuration
+│   │   └── routes.ts            # Centralized route constants (ROUTES object)
 │   ├── router.tsx               # TanStack Router configuration
 │   ├── routeTree.gen.ts         # Auto-generated route tree (do not edit)
 │   ├── SignInForm.tsx           # Authentication form
@@ -252,6 +254,94 @@ nixelo/
    - `route.tsx` - Layout file for a directory (renders `<Outlet />`)
    - `index.tsx` - Index route for a directory
    - `routeTree.gen.ts` - Auto-generated, do not edit manually
+
+### Routing & Navigation
+
+**IMPORTANT:** Always use centralized route constants from `src/config/routes.ts`. Never hardcode URL paths.
+
+#### Route Constants (`src/config/routes.ts`)
+
+The `ROUTES` object provides type-safe URL generation for all application routes:
+
+```typescript
+import { ROUTES } from "@/config/routes";
+
+// Static routes
+ROUTES.home           // "/"
+ROUTES.signin         // "/signin"
+ROUTES.signup         // "/signup"
+ROUTES.forgotPassword // "/forgot-password"
+ROUTES.onboarding     // "/onboarding"
+
+// Dynamic routes (require parameters)
+ROUTES.invite(token)                      // "/invite/:token"
+ROUTES.dashboard(slug)                    // "/:slug/dashboard"
+ROUTES.documents.list(slug)               // "/:slug/documents"
+ROUTES.documents.detail(slug, id)         // "/:slug/documents/:id"
+ROUTES.projects.list(slug)                // "/:slug/projects"
+ROUTES.projects.board(slug, key)          // "/:slug/projects/:key/board"
+ROUTES.projects.calendar(slug, key)       // "/:slug/projects/:key/calendar"
+ROUTES.projects.timesheet(slug, key)      // "/:slug/projects/:key/timesheet"
+ROUTES.projects.settings(slug, key)       // "/:slug/projects/:key/settings"
+ROUTES.issues.detail(slug, key)           // "/:slug/issues/:key"
+ROUTES.settings.profile(slug)             // "/:slug/settings/profile"
+ROUTES.timeTracking(slug)                 // "/:slug/time-tracking"
+```
+
+#### Route Categories
+
+| Category | Auth Required | Company Required | Examples |
+|----------|--------------|------------------|----------|
+| **Public** | No | No | `/`, `/signin`, `/signup`, `/forgot-password`, `/invite/:token` |
+| **Auth** | Yes | No | `/onboarding` |
+| **App** | Yes | Yes | `/:slug/dashboard`, `/:slug/projects`, etc. |
+
+#### Usage Examples
+
+```typescript
+import { ROUTES } from "@/config/routes";
+import { Link, useNavigate } from "@tanstack/react-router";
+
+// With <Link> component
+<Link to={ROUTES.dashboard(companySlug)}>Dashboard</Link>
+<Link to={ROUTES.projects.board(companySlug, projectKey)}>Board</Link>
+
+// With navigate function
+const navigate = useNavigate();
+navigate({ to: ROUTES.signin });
+navigate({ to: ROUTES.dashboard(slug), replace: true });
+
+// In components with company context
+const { companySlug } = useCompany(); // from CompanyContext
+<Link to={ROUTES.projects.list(companySlug)}>Projects</Link>
+```
+
+#### Post-Auth Redirect Flow
+
+After authentication (signin/signup/invite acceptance), use the `PostAuthRedirect` component:
+
+```typescript
+import { PostAuthRedirect } from "@/components/auth";
+import { Authenticated } from "convex/react";
+
+// In auth pages (signin, signup, forgot-password)
+<Authenticated>
+  <PostAuthRedirect />
+</Authenticated>
+```
+
+**`PostAuthRedirect` behavior:**
+1. Queries user's companies and onboarding status
+2. If onboarding incomplete → redirects to `/onboarding`
+3. If user has companies → redirects to first company's dashboard
+4. Shows loading spinner while determining destination
+
+#### Guidelines
+
+1. **Always use `ROUTES.*` constants** - never hardcode paths like `"/dashboard"` or `"/${slug}/projects"`
+2. **Import from `@/config/routes`** - centralized location for all routes
+3. **Use `PostAuthRedirect`** - for post-authentication navigation instead of static redirects
+4. **Company-scoped routes** - always pass `companySlug` from context or route params
 
 ### UI Component Library
 
@@ -947,7 +1037,7 @@ The project includes Chef (Convex's development platform) integration:
 
 ---
 
-**Last Updated:** 2025-12-01
+**Last Updated:** 2025-12-09
 **Convex Deployment:** peaceful-salmon-964
 **Node Version:** 18+
 **Package Manager:** pnpm (preferred)

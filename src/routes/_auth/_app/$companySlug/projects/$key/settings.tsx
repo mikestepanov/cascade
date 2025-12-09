@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Typography } from "@/components/ui/Typography";
+import { ProjectSettings } from "@/components/ProjectSettings";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/settings")({
@@ -43,38 +43,20 @@ function ProjectSettingsPage() {
     );
   }
 
-  // TODO: Create a proper ProjectSettings component
   return (
     <div className="p-6">
-      <Typography variant="h2" className="text-lg font-semibold mb-4">
-        Project Settings
-      </Typography>
-      <div className="space-y-4">
-        <div>
-          <Typography variant="small" color="secondary" className="block mb-1">
-            Project Name
-          </Typography>
-          <Typography variant="p" className="mt-0">
-            {project.name}
-          </Typography>
-        </div>
-        <div>
-          <Typography variant="small" color="secondary" className="block mb-1">
-            Project Key
-          </Typography>
-          <Typography variant="p" className="mt-0">
-            {project.key}
-          </Typography>
-        </div>
-        <div>
-          <Typography variant="small" color="secondary" className="block mb-1">
-            Description
-          </Typography>
-          <Typography variant="p" className="mt-0">
-            {project.description || "No description"}
-          </Typography>
-        </div>
-      </div>
+      <ProjectSettings
+        projectId={project._id}
+        name={project.name}
+        projectKey={project.key}
+        description={project.description}
+        workflowStates={project.workflowStates}
+        members={project.members}
+        createdBy={project.createdBy}
+        ownerId={project.ownerId}
+        isOwner={project.isOwner}
+        companySlug={companySlug}
+      />
     </div>
   );
 }
