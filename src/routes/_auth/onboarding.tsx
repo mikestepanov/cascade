@@ -11,6 +11,7 @@ import { RoleSelector } from "@/components/Onboarding/RoleSelector";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/onboarding")({
   component: OnboardingPage,
@@ -26,6 +27,7 @@ function OnboardingPage() {
   // Queries
   const inviteStatus = useQuery(api.onboarding.checkInviteStatus);
   const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
+  const userCompanies = useQuery(api.companies.getUserCompanies);
 
   // Mutations
   const setPersona = useMutation(api.onboarding.setOnboardingPersona);
@@ -35,8 +37,10 @@ function OnboardingPage() {
   useEffect(() => {
     if (inviteStatus !== undefined && onboardingStatus !== undefined && step === "loading") {
       if (inviteStatus?.wasInvited) {
+        // Invited users go to welcome screen (no role selection needed - role set by inviter)
         setStep("invited");
       } else {
+        // Self-signup users pick their role
         setStep("role-select");
       }
     }
@@ -53,14 +57,29 @@ function OnboardingPage() {
     }
   };
 
+  // Navigate to the user's company dashboard
+  const navigateToCompany = () => {
+    if (userCompanies && userCompanies.length > 0) {
+      navigate({ to: ROUTES.dashboard(userCompanies[0].slug) });
+    } else {
+      // Fallback - this shouldn't happen if onboarding is done correctly
+      navigate({ to: ROUTES.home });
+    }
+  };
+
   const handleComplete = async () => {
     await completeOnboarding();
-    navigate({ to: "/dashboard" });
+    navigateToCompany();
   };
 
   const handleSkip = async () => {
     await completeOnboarding();
-    navigate({ to: "/dashboard" });
+    navigateToCompany();
+  };
+
+  // Called when workspace is created during lead/member flow
+  const handleWorkspaceCreated = (slug: string) => {
+    navigate({ to: ROUTES.dashboard(slug) });
   };
 
   const handleProjectCreated = (_projectId: Id<"projects">) => {
@@ -99,11 +118,11 @@ function OnboardingPage() {
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-2xl">
-          {/* Invited User Flow */}
+          {/* Invited User Flow - skip role selection, go straight to complete */}
           {step === "invited" && inviteStatus && (
             <InvitedWelcome
               inviterName={inviteStatus.inviterName || "Someone"}
-              onStartTour={() => setStep("role-select")}
+              onStartTour={handleComplete}
               onSkip={handleComplete}
             />
           )}
@@ -134,12 +153,17 @@ function OnboardingPage() {
               onComplete={handleComplete}
               onCreateProject={handleProjectCreated}
               onBack={() => setStep("role-select")}
+              onWorkspaceCreated={handleWorkspaceCreated}
             />
           )}
 
           {/* Team Member Flow */}
           {step === "member-flow" && (
-            <MemberOnboarding onComplete={handleComplete} onBack={() => setStep("role-select")} />
+            <MemberOnboarding
+              onComplete={handleComplete}
+              onBack={() => setStep("role-select")}
+              onWorkspaceCreated={handleWorkspaceCreated}
+            />
           )}
         </div>
       </main>

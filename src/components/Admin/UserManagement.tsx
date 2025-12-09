@@ -75,7 +75,7 @@ export function UserManagement() {
   const [activeTab, setActiveTab] = useState<"invites" | "users">("invites");
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"user" | "admin">("user");
+  const [role, setRole] = useState<"user" | "superAdmin">("user");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Queries
@@ -231,18 +231,18 @@ export function UserManagement() {
                   </label>
                   <Select
                     value={role}
-                    onValueChange={(value) => setRole(value as "user" | "admin")}
+                    onValueChange={(value) => setRole(value as "user" | "superAdmin")}
                   >
                     <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="superAdmin">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    Admins can manage users and send invitations
+                    Super Admins have full system access and can manage all users
                   </p>
                 </div>
 

@@ -1,6 +1,7 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { AuthLink, AuthPageLayout, SignInForm } from "@/components/auth";
+import { AuthLink, AuthPageLayout, PostAuthRedirect, SignInForm } from "@/components/auth";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/signin")({
   component: SignInRoute,
@@ -11,14 +12,14 @@ function SignInRoute() {
   return (
     <>
       <Authenticated>
-        <Navigate to="/dashboard" />
+        <PostAuthRedirect />
       </Authenticated>
       <Unauthenticated>
         <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
           <SignInForm />
           <div className="text-center text-sm text-ui-text-tertiary mt-4">
             <span>Don't have an account? </span>
-            <AuthLink to="/signup">Sign up</AuthLink>
+            <AuthLink to={ROUTES.signup}>Sign up</AuthLink>
           </div>
         </AuthPageLayout>
       </Unauthenticated>

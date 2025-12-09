@@ -1,6 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
@@ -13,6 +15,7 @@ type IssueFilter = "assigned" | "created" | "all";
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { companySlug } = useCompany();
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -30,11 +33,11 @@ export function Dashboard() {
 
   // Navigation helpers
   const navigateToProject = (projectKey: string) => {
-    navigate({ to: "/projects/$key/board", params: { key: projectKey } });
+    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
   const navigateToProjects = () => {
-    navigate({ to: "/projects" });
+    navigate({ to: ROUTES.projects.list(companySlug) });
   };
 
   // Keyboard navigation for issue list

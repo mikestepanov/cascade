@@ -1,16 +1,16 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { ProjectSidebar } from "@/components/ProjectSidebar";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
-export const Route = createFileRoute("/_auth/_app/projects/$key")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
   component: ProjectLayout,
 });
 
 function ProjectLayout() {
-  const { key } = Route.useParams();
+  const { companySlug, key } = Route.useParams();
   const location = useLocation();
 
   // Get project by key
@@ -35,7 +35,7 @@ function ProjectLayout() {
             The project "{key}" does not exist or you don't have access to it.
           </Typography>
           <Link
-            to="/projects"
+            to={ROUTES.projects.list(companySlug)}
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
           >
             Back to projects
@@ -58,39 +58,44 @@ function ProjectLayout() {
   };
 
   return (
-    <div className="flex h-full">
-      <ProjectSidebar selectedProjectId={project._id} />
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Project Header */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-          <div className="px-6 py-4">
-            <Typography variant="h1" className="text-xl font-semibold">
-              {project.name}
-            </Typography>
-            <Typography variant="p" color="secondary" className="text-sm">
-              {project.key}
-            </Typography>
-          </div>
-          {/* Tab Navigation */}
-          <nav className="flex px-6 -mb-px">
-            <Link to={`/projects/${key}/board`} className={getTabClass("board")}>
-              Board
-            </Link>
-            <Link to={`/projects/${key}/calendar`} className={getTabClass("calendar")}>
-              Calendar
-            </Link>
-            <Link to={`/projects/${key}/timesheet`} className={getTabClass("timesheet")}>
-              Timesheet
-            </Link>
-            <Link to={`/projects/${key}/settings`} className={getTabClass("settings")}>
+    <div className="flex flex-col h-full">
+      {/* Project Header */}
+      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
+        <div className="px-6 py-4">
+          <Typography variant="h1" className="text-xl font-semibold">
+            {project.name}
+          </Typography>
+          <Typography variant="p" color="secondary" className="text-sm">
+            {project.key}
+          </Typography>
+        </div>
+        {/* Tab Navigation */}
+        <nav className="flex px-6 -mb-px">
+          <Link to={ROUTES.projects.board(companySlug, key)} className={getTabClass("board")}>
+            Board
+          </Link>
+          <Link to={ROUTES.projects.calendar(companySlug, key)} className={getTabClass("calendar")}>
+            Calendar
+          </Link>
+          <Link
+            to={ROUTES.projects.timesheet(companySlug, key)}
+            className={getTabClass("timesheet")}
+          >
+            Timesheet
+          </Link>
+          {project.userRole === "admin" && (
+            <Link
+              to={ROUTES.projects.settings(companySlug, key)}
+              className={getTabClass("settings")}
+            >
               Settings
             </Link>
-          </nav>
-        </div>
-        {/* Content */}
-        <div className="flex-1 overflow-auto">
-          <Outlet />
-        </div>
+          )}
+        </nav>
+      </div>
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        <Outlet />
       </div>
     </div>
   );

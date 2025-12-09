@@ -1,19 +1,141 @@
-import { ArrowLeft, Bell, CheckCircle, Clock, FileText, Kanban } from "lucide-react";
+import { useMutation } from "convex/react";
+import { ArrowLeft, Bell, Building2, Clock, FileText, Kanban } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { showError, showSuccess } from "@/lib/toast";
+import { api } from "../../../convex/_generated/api";
 import { Typography } from "../ui/Typography";
 
 interface MemberOnboardingProps {
   onComplete: () => void;
   onBack: () => void;
+  onWorkspaceCreated?: (slug: string) => void;
 }
 
-export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) {
+type MemberStep = "workspace" | "features";
+
+export function MemberOnboarding({
+  onComplete,
+  onBack,
+  onWorkspaceCreated,
+}: MemberOnboardingProps) {
+  const [step, setStep] = useState<MemberStep>("workspace");
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createdSlug, setCreatedSlug] = useState<string | null>(null);
+
+  const createCompany = useMutation(api.companies.createCompany);
+  const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
+
+  const handleCreateWorkspace = async () => {
+    if (!workspaceName.trim()) {
+      setWorkspaceError("Please enter a workspace name");
+      return;
+    }
+
+    setIsCreating(true);
+    setWorkspaceError(null);
+
+    try {
+      const result = await createCompany({
+        name: workspaceName.trim(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      setCreatedSlug(result.slug);
+      showSuccess("Workspace created!");
+      setStep("features");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create workspace";
+      setWorkspaceError(message);
+      showError(error, "Failed to create workspace");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleFinish = async () => {
+    await completeOnboarding();
+    if (createdSlug && onWorkspaceCreated) {
+      onWorkspaceCreated(createdSlug);
+    } else {
+      onComplete();
+    }
+  };
+
+  if (step === "workspace") {
+    return (
+      <div className="space-y-8">
+        {/* Back button */}
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+
+        {/* Header */}
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+            <Building2 className="w-8 h-8 text-primary-600" />
+          </div>
+          <Typography variant="h1" className="text-3xl font-bold mb-3">
+            Name Your Workspace
+          </Typography>
+          <Typography variant="p" color="secondary" className="text-lg">
+            Create a workspace for your team to collaborate
+          </Typography>
+        </div>
+
+        {/* Workspace Name Input */}
+        <div className="max-w-md mx-auto space-y-4">
+          <div>
+            <Input
+              type="text"
+              placeholder="e.g., Acme Corp, My Team, Design Studio"
+              value={workspaceName}
+              onChange={(e) => {
+                setWorkspaceName(e.target.value);
+                setWorkspaceError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isCreating) {
+                  handleCreateWorkspace();
+                }
+              }}
+              className="text-center text-lg"
+              autoFocus
+            />
+            {workspaceError && (
+              <Typography variant="p" className="text-red-500 text-sm mt-2 text-center">
+                {workspaceError}
+              </Typography>
+            )}
+          </div>
+
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleCreateWorkspace}
+            disabled={isCreating || !workspaceName.trim()}
+            className="w-full"
+          >
+            {isCreating ? "Creating..." : "Create Workspace"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Back button */}
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => setStep("workspace")}
         className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -25,23 +147,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
         <Typography variant="h2" className="mb-3 text-3xl">
           You're All Set!
         </Typography>
-        <Typography variant="lead">Here's what you need to know as a team member</Typography>
-      </div>
-
-      {/* Info Card */}
-      <div className="bg-status-info-bg dark:bg-status-info-bg-dark border border-status-info dark:border-status-info-bg-dark rounded-xl p-6">
-        <div className="flex items-start gap-3">
-          <CheckCircle className="w-5 h-5 text-status-info-text dark:text-status-info-text-dark mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="font-medium text-status-info-text dark:text-status-info-text-dark mb-1">
-              Waiting for an invitation?
-            </h3>
-            <p className="text-sm text-status-info-text dark:text-status-info-text-dark">
-              Your team lead will add you to projects. Once added, you'll see them on your dashboard
-              and receive notifications for assigned tasks.
-            </p>
-          </div>
-        </div>
+        <Typography variant="lead">Here's what you can do in your workspace</Typography>
       </div>
 
       {/* What you can do */}
@@ -118,7 +224,7 @@ export function MemberOnboarding({ onComplete, onBack }: MemberOnboardingProps) 
 
       {/* Continue */}
       <div className="flex justify-center">
-        <Button variant="primary" size="lg" onClick={onComplete} className="min-w-[200px]">
+        <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-[200px]">
           Go to Dashboard
         </Button>
       </div>

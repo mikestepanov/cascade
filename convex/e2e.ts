@@ -12,6 +12,7 @@
  */
 
 import { v } from "convex/values";
+import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import { httpAction, internalMutation } from "./_generated/server";
 
@@ -89,9 +90,13 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
       );
     }
 
+    // Hash the password using Scrypt (same as Convex Auth)
+    const scrypt = new Scrypt();
+    const passwordHash = await scrypt.hash(password);
+
     const result = await ctx.runMutation(internal.e2e.createTestUserInternal, {
       email,
-      password,
+      passwordHash,
       skipOnboarding,
     });
 
@@ -108,12 +113,12 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
 });
 
 /**
- * Internal mutation to create test user
+ * Internal mutation to create test user with full auth credentials
  */
 export const createTestUserInternal = internalMutation({
   args: {
     email: v.string(),
-    password: v.string(),
+    passwordHash: v.string(),
     skipOnboarding: v.boolean(),
   },
   returns: v.object({
@@ -133,7 +138,26 @@ export const createTestUserInternal = internalMutation({
       .first();
 
     if (existingUser) {
-      // User exists - just return success (idempotent)
+      // User exists - check if authAccount exists too
+      const existingAccount = await ctx.db
+        .query("authAccounts")
+        .filter((q) => q.eq(q.field("providerAccountId"), args.email))
+        .first();
+
+      if (existingAccount) {
+        // Full user exists - just return success (idempotent)
+        return { success: true, userId: existingUser._id, existing: true };
+      }
+
+      // User exists but no authAccount - create it
+      await ctx.db.insert("authAccounts", {
+        userId: existingUser._id,
+        provider: "password",
+        providerAccountId: args.email,
+        secret: args.passwordHash,
+        emailVerified: new Date().toISOString(),
+      });
+
       return { success: true, userId: existingUser._id, existing: true };
     }
 
@@ -145,9 +169,14 @@ export const createTestUserInternal = internalMutation({
       testUserCreatedAt: Date.now(),
     });
 
-    // Create auth account (password hash would be handled by auth system)
-    // Note: This is a simplified version - in practice, the user would sign up
-    // through the UI and we'd use Mailtrap for email verification
+    // Create auth account with password hash
+    await ctx.db.insert("authAccounts", {
+      userId,
+      provider: "password",
+      providerAccountId: args.email,
+      secret: args.passwordHash,
+      emailVerified: new Date().toISOString(),
+    });
 
     // If skipOnboarding is true, create completed onboarding record
     if (args.skipOnboarding) {
@@ -532,6 +561,7 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 
 /**
  * Internal mutation to set up RBAC test project
+ * Uses the admin user's existing company instead of creating a new one
  */
 export const setupRbacProjectInternal = internalMutation({
   args: {
@@ -544,6 +574,8 @@ export const setupRbacProjectInternal = internalMutation({
     success: v.boolean(),
     projectId: v.optional(v.id("projects")),
     projectKey: v.optional(v.string()),
+    companyId: v.optional(v.id("companies")),
+    companySlug: v.optional(v.string()),
     error: v.optional(v.string()),
     users: v.optional(
       v.object({
@@ -578,20 +610,70 @@ export const setupRbacProjectInternal = internalMutation({
       return { success: false, error: `Viewer user not found: ${args.viewerEmail}` };
     }
 
-    // Check if project already exists
+    const now = Date.now();
+
+    // =========================================================================
+    // Step 1: Find the admin user's existing company (created during login)
+    // =========================================================================
+    const adminMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_user", (q) => q.eq("userId", adminUser._id))
+      .first();
+
+    if (!adminMembership) {
+      return { success: false, error: "Admin user has no company membership" };
+    }
+
+    const company = await ctx.db.get(adminMembership.companyId);
+    if (!company) {
+      return { success: false, error: "Admin's company not found" };
+    }
+
+    // =========================================================================
+    // Step 2: Add editor and viewer as company members (if not already)
+    // =========================================================================
+    const usersToAddToCompany = [
+      { userId: editorUser._id, role: "member" as const },
+      { userId: viewerUser._id, role: "member" as const },
+    ];
+
+    for (const config of usersToAddToCompany) {
+      const existingMember = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_company_user", (q) =>
+          q.eq("companyId", company._id).eq("userId", config.userId),
+        )
+        .first();
+
+      if (!existingMember) {
+        await ctx.db.insert("companyMembers", {
+          companyId: company._id,
+          userId: config.userId,
+          role: config.role,
+          addedBy: adminUser._id,
+          addedAt: now,
+        });
+      }
+
+      // Set as user's default company
+      await ctx.db.patch(config.userId, { defaultCompanyId: company._id });
+    }
+
+    // =========================================================================
+    // Step 3: Create/ensure RBAC test project (associated with company)
+    // =========================================================================
     let project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
       .first();
 
-    const now = Date.now();
-
     if (!project) {
-      // Create the project with admin as creator
+      // Create the project with admin as creator, associated with company
       const projectId = await ctx.db.insert("projects", {
         name: `RBAC Test Project (${args.projectKey})`,
         key: args.projectKey,
         description: "E2E test project for RBAC permission testing",
+        companyId: company._id,
         createdBy: adminUser._id,
         createdAt: now,
         updatedAt: now,
@@ -606,13 +688,21 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       project = await ctx.db.get(projectId);
+    } else if (!project.companyId) {
+      // Update existing project to associate with company
+      await ctx.db.patch(project._id, { companyId: company._id });
     }
 
     if (!project) {
       return { success: false, error: "Failed to create project" };
     }
 
-    // Add/update project members with roles
+    // Store project ID to avoid non-null assertions in callbacks
+    const projectId = project._id;
+
+    // =========================================================================
+    // Step 4: Add/update project members with roles
+    // =========================================================================
     const memberConfigs = [
       { userId: adminUser._id, role: "admin" as const },
       { userId: editorUser._id, role: "editor" as const },
@@ -624,7 +714,7 @@ export const setupRbacProjectInternal = internalMutation({
       const existingMember = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", project!._id).eq("userId", config.userId),
+          q.eq("projectId", projectId).eq("userId", config.userId),
         )
         .first();
 
@@ -649,6 +739,8 @@ export const setupRbacProjectInternal = internalMutation({
       success: true,
       projectId: project._id,
       projectKey: project.key,
+      companyId: company._id,
+      companySlug: company.slug,
       users: {
         admin: adminUser._id,
         editor: editorUser._id,
@@ -866,6 +958,119 @@ export const verifyTestUserInternal = internalMutation({
     });
 
     return { success: true, verified: true };
+  },
+});
+
+/**
+ * Debug endpoint: Verify password against stored hash
+ * POST /e2e/debug-verify-password
+ * Body: { email: string, password: string }
+ *
+ * Returns whether the password matches the stored hash.
+ * Useful for debugging auth issues.
+ */
+export const debugVerifyPasswordEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email, password } = body;
+
+    if (!(email && password)) {
+      return new Response(JSON.stringify({ error: "Missing email or password" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(JSON.stringify({ error: "Only test emails allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.debugVerifyPasswordInternal, {
+      email,
+      password,
+    });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to verify password against stored hash
+ */
+export const debugVerifyPasswordInternal = internalMutation({
+  args: {
+    email: v.string(),
+    password: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    accountFound: v.boolean(),
+    hasStoredHash: v.boolean(),
+    passwordMatches: v.optional(v.boolean()),
+    emailVerified: v.optional(v.boolean()),
+    error: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // Find the authAccount by email (providerAccountId)
+    const account = await ctx.db
+      .query("authAccounts")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("provider"), "password"),
+          q.eq(q.field("providerAccountId"), args.email),
+        ),
+      )
+      .first();
+
+    if (!account) {
+      return {
+        success: false,
+        accountFound: false,
+        hasStoredHash: false,
+        error: "No password account found for this email",
+      };
+    }
+
+    const storedHash = account.secret;
+    if (!storedHash) {
+      return {
+        success: false,
+        accountFound: true,
+        hasStoredHash: false,
+        error: "Account exists but has no password hash",
+      };
+    }
+
+    // Verify the password using Scrypt (same as Convex Auth)
+    const scrypt = new Scrypt();
+    const passwordMatches = await scrypt.verify(storedHash, args.password);
+
+    return {
+      success: true,
+      accountFound: true,
+      hasStoredHash: true,
+      passwordMatches,
+      emailVerified: !!account.emailVerified,
+    };
   },
 });
 

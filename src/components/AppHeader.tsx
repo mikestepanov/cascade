@@ -1,95 +1,31 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { useSidebarState } from "@/hooks/useSidebarState";
+import { Menu } from "@/lib/icons";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
 import { TimerWidget as NavTimerWidget } from "./TimeTracking/TimerWidget";
 import { UserMenu } from "./UserMenu";
 
-// Navigation item configuration
-const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/documents", label: "Documents", icon: "📄" },
-  { to: "/projects", label: "Projects", icon: "📋" },
-  { to: "/time-tracking", label: "Time Tracking", icon: "⏱️" },
-] as const;
-
 interface AppHeaderProps {
-  isMobileSidebarOpen?: boolean;
-  onToggleMobileSidebar?: () => void;
   onShowCommandPalette?: () => void;
   onShowShortcutsHelp?: () => void;
 }
 
-export function AppHeader({
-  isMobileSidebarOpen = false,
-  onToggleMobileSidebar,
-  onShowCommandPalette,
-  onShowShortcutsHelp,
-}: AppHeaderProps) {
-  const location = useLocation();
-
-  // Check if current path matches or starts with a nav item path
-  const isActive = (path: string) => {
-    if (path === "/dashboard") {
-      return location.pathname === "/dashboard";
-    }
-    return location.pathname.startsWith(path);
-  };
+export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHeaderProps) {
+  const { isMobileOpen, toggleMobile } = useSidebarState();
 
   return (
-    <header className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
-      <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
+    <header className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* Mobile Hamburger Menu */}
-        {onToggleMobileSidebar && (
-          <button
-            type="button"
-            onClick={onToggleMobileSidebar}
-            className="lg:hidden p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
-            aria-label="Toggle sidebar menu"
-            aria-expanded={isMobileSidebarOpen}
-          >
-            <svg
-              aria-hidden="true"
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        )}
-
-        {/* View Switcher - Using TanStack Router Link */}
-        <nav
-          className="flex bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg p-1 overflow-x-auto"
-          aria-label="Main navigation"
+        <button
+          type="button"
+          onClick={toggleMobile}
+          className="lg:hidden p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
+          aria-label="Toggle sidebar menu"
+          aria-expanded={isMobileOpen}
         >
-          {navItems.map((item) => {
-            const active = isActive(item.to);
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
-                  active
-                    ? "bg-ui-bg-primary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-                    : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
-                aria-current={active ? "page" : undefined}
-              >
-                <span className="sm:hidden" aria-hidden="true">
-                  {item.icon}
-                </span>
-                <span className="hidden sm:inline">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -126,7 +62,7 @@ export function AppHeader({
           <button
             type="button"
             onClick={onShowShortcutsHelp}
-            className="p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
+            className="hidden sm:block p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
             aria-label="Keyboard shortcuts"
           >
             <svg

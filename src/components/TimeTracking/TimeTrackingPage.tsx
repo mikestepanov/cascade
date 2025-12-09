@@ -8,12 +8,27 @@ import { BurnRateDashboard } from "./BurnRateDashboard";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { UserRatesManagement } from "./UserRatesManagement";
 
-export function TimeTrackingPage() {
+interface TimeTrackingPageProps {
+  /** Pre-selected project ID (locks to this project) */
+  projectId?: Id<"projects">;
+  /** User's role in the project - controls tab visibility */
+  userRole?: "admin" | "editor" | "viewer" | null;
+  /** If true, show all tabs regardless of role (for platform admins) */
+  isGlobalAdmin?: boolean;
+}
+
+export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTrackingPageProps) {
   const [activeTab, setActiveTab] = useState<"entries" | "burn-rate" | "rates">("entries");
-  const [selectedProject, setSelectedProject] = useState<Id<"projects"> | "all">("all");
+  const [selectedProject, setSelectedProject] = useState<Id<"projects"> | "all">(
+    projectId ?? "all",
+  );
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("week");
 
-  const projects = useQuery(api.projects.list);
+  // Only fetch projects list if no projectId is locked
+  const projects = useQuery(api.projects.list, projectId ? "skip" : undefined);
+
+  // Determine if user can see sensitive tabs (burn rate, hourly rates)
+  const canSeeSensitiveTabs = isGlobalAdmin || userRole === "admin";
 
   // Calculate date range
   const now = Date.now();
@@ -60,60 +75,66 @@ export function TimeTrackingPage() {
           >
             Time Entries
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("burn-rate")}
-            className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "burn-rate"
-                ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
-          >
-            Burn Rate & Costs
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("rates")}
-            className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "rates"
-                ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
-          >
-            Hourly Rates
-          </button>
+          {canSeeSensitiveTabs && (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveTab("burn-rate")}
+                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === "burn-rate"
+                    ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+                }`}
+              >
+                Burn Rate & Costs
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("rates")}
+                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === "rates"
+                    ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
+                }`}
+              >
+                Hourly Rates
+              </button>
+            </>
+          )}
         </nav>
       </div>
 
       {/* Filters */}
       <Flex align="center" gap="lg" className="flex-wrap">
-        {/* Project filter */}
-        <div>
-          <label
-            htmlFor="tracking-project-filter"
-            className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
-            Project
-          </label>
-          <Select
-            value={selectedProject}
-            onValueChange={(value) =>
-              setSelectedProject(value === "all" ? "all" : (value as Id<"projects">))
-            }
-          >
-            <SelectTrigger id="tracking-project-filter" className="px-3 py-2 text-sm">
-              <SelectValue placeholder="Select project..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Projects</SelectItem>
-              {projects?.map((project) => (
-                <SelectItem key={project._id} value={project._id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Project filter - only show if not locked to a specific project */}
+        {!projectId && (
+          <div>
+            <label
+              htmlFor="tracking-project-filter"
+              className="block text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Project
+            </label>
+            <Select
+              value={selectedProject}
+              onValueChange={(value) =>
+                setSelectedProject(value === "all" ? "all" : (value as Id<"projects">))
+              }
+            >
+              <SelectTrigger id="tracking-project-filter" className="px-3 py-2 text-sm">
+                <SelectValue placeholder="Select project..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Projects</SelectItem>
+                {projects?.map((project) => (
+                  <SelectItem key={project._id} value={project._id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Date range filter */}
         {activeTab === "entries" && (
@@ -151,11 +172,12 @@ export function TimeTrackingPage() {
           />
         )}
 
-        {activeTab === "burn-rate" && selectedProject !== "all" && (
+        {/* Sensitive tabs - only render if user has permission */}
+        {canSeeSensitiveTabs && activeTab === "burn-rate" && selectedProject !== "all" && (
           <BurnRateDashboard projectId={selectedProject} />
         )}
 
-        {activeTab === "burn-rate" && selectedProject === "all" && (
+        {canSeeSensitiveTabs && activeTab === "burn-rate" && selectedProject === "all" && (
           <div className="text-center p-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
             <svg
               className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
@@ -181,7 +203,7 @@ export function TimeTrackingPage() {
           </div>
         )}
 
-        {activeTab === "rates" && <UserRatesManagement />}
+        {canSeeSensitiveTabs && activeTab === "rates" && <UserRatesManagement />}
       </div>
     </Flex>
   );

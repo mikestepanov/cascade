@@ -3,13 +3,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
-export const Route = createFileRoute("/_auth/_app/issues/$key")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/issues/$key")({
   component: IssuePage,
 });
 
 function IssuePage() {
-  const { key } = Route.useParams(); // e.g., "PROJ-123"
+  const { companySlug, key } = Route.useParams(); // e.g., "PROJ-123"
 
   // Parse project key from issue key (e.g., "PROJ-123" -> "PROJ")
   const parts = key.split("-");
@@ -36,7 +37,7 @@ function IssuePage() {
             The issue "{key}" does not exist or you don't have access to it.
           </Typography>
           <Link
-            to="/dashboard"
+            to={ROUTES.dashboard(companySlug)}
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
           >
             Back to dashboard
@@ -46,13 +47,11 @@ function IssuePage() {
     );
   }
 
-  // TODO: Create a proper IssueDetailPage component
-  // For now, redirect to the project board where the issue can be viewed
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-4">
         <Link
-          to={`/projects/${projectKey}/board`}
+          to={ROUTES.projects.board(companySlug, projectKey)}
           className="text-sm text-primary-600 hover:text-primary-700"
         >
           ← Back to {projectKey} board

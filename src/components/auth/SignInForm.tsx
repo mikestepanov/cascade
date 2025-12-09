@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ROUTES } from "@/config/routes";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { AuthLinkButton } from "./AuthLink";
@@ -61,7 +62,7 @@ export function SignInForm() {
         </div>
         {showEmailForm && (
           <div className="text-right mb-3">
-            <AuthLinkButton onClick={() => navigate({ to: "/forgot-password" })}>
+            <AuthLinkButton onClick={() => navigate({ to: ROUTES.forgotPassword })}>
               Forgot password?
             </AuthLinkButton>
           </div>

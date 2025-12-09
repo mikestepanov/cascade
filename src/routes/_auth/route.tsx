@@ -1,6 +1,7 @@
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -19,7 +20,7 @@ function AuthLayout() {
         <Outlet />
       </Authenticated>
       <Unauthenticated>
-        <Navigate to="/" />
+        <Navigate to={ROUTES.home} />
       </Unauthenticated>
     </>
   );

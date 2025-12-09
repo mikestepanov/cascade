@@ -1,6 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import {
   Command,
@@ -145,6 +147,7 @@ export function useCommands({
   onCreateProject?: () => void;
 } = {}) {
   const navigate = useNavigate();
+  const { companySlug } = useCompany();
   const _projects = useQuery(api.dashboard.getMyProjects);
   const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -157,7 +160,7 @@ export function useCommands({
       icon: "🏠",
       description: "View your personal dashboard",
       keywords: ["home", "my work"],
-      action: () => navigate({ to: "/dashboard" }),
+      action: () => navigate({ to: ROUTES.dashboard(companySlug) }),
       group: "Navigation",
     },
     {
@@ -166,7 +169,7 @@ export function useCommands({
       icon: "📄",
       description: "View all documents",
       keywords: ["docs", "files"],
-      action: () => navigate({ to: "/documents" }),
+      action: () => navigate({ to: ROUTES.documents.list(companySlug) }),
       group: "Navigation",
     },
     {
@@ -175,7 +178,7 @@ export function useCommands({
       icon: "📋",
       description: "View all projects",
       keywords: ["boards", "kanban"],
-      action: () => navigate({ to: "/projects" }),
+      action: () => navigate({ to: ROUTES.projects.list(companySlug) }),
       group: "Navigation",
     },
 

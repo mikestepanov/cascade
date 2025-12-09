@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { ProjectBoard } from "@/components/ProjectBoard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
-export const Route = createFileRoute("/_auth/_app/projects/$key/board")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/board")({
   component: BoardPage,
 });
 

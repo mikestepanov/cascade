@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ROUTES } from "@/config/routes";
 import { PlayIcon } from "./icons";
 
 export function HeroSection() {
@@ -30,7 +31,7 @@ export function HeroSection() {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            to="/signup"
+            to={ROUTES.signup}
             className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
           >
             Get Started Free
