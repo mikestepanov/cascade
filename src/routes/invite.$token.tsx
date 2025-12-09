@@ -6,6 +6,7 @@ import { useState } from "react";
 import { SignInForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
 
 export const Route = createFileRoute("/invite/$token")({
@@ -24,7 +25,7 @@ function InviteRoute() {
   const acceptInvite = useMutation(api.invites.acceptInvite);
 
   const goToHome = () => {
-    navigate({ to: "/" });
+    navigate({ to: ROUTES.home });
   };
 
   const handleAcceptInvite = async () => {
@@ -36,7 +37,8 @@ function InviteRoute() {
         ? "Welcome! You've joined the project."
         : "Welcome! You've joined the team.";
       showSuccess(successMessage);
-      navigate({ to: "/dashboard" });
+      // Redirect to dashboard - company resolution happens in $companySlug route
+      navigate({ to: ROUTES.dashboard("dashboard") });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to accept invite";
       setAcceptError(message);

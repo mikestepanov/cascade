@@ -2,6 +2,8 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
+import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { Avatar } from "./ui/Avatar";
 import {
@@ -17,6 +19,7 @@ import {
 export function UserMenu() {
   const user = useQuery(api.users.getCurrent);
   const { signOut } = useAuthActions();
+  const { companySlug } = useCompany();
 
   if (!user) {
     return null;
@@ -45,7 +48,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to="/settings/profile" className="cursor-pointer w-full">
+            <Link to={ROUTES.settings.profile(companySlug)} className="cursor-pointer w-full">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>

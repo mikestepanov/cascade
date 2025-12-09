@@ -4,6 +4,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -36,13 +37,13 @@ function AppLayout() {
 
   // Redirect to sign in if not authenticated
   if (!isAuthenticated) {
-    navigate({ to: "/" });
+    navigate({ to: ROUTES.home });
     return null;
   }
 
   // Redirect to onboarding if not completed
   if (onboardingStatus === null || !onboardingStatus.onboardingCompleted) {
-    navigate({ to: "/onboarding" });
+    navigate({ to: ROUTES.onboarding });
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />
@@ -73,7 +74,7 @@ function InitializeCompany() {
         const result = await initializeDefaultCompany({});
         // Navigate to the new company's dashboard
         if (result.slug) {
-          navigate({ to: `/${result.slug}/dashboard`, replace: true });
+          navigate({ to: ROUTES.dashboard(result.slug), replace: true });
         } else {
           // Fallback: reload to trigger company query refresh
           window.location.reload();

@@ -11,6 +11,7 @@ import { RoleSelector } from "@/components/Onboarding/RoleSelector";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/onboarding")({
   component: OnboardingPage,
@@ -59,10 +60,10 @@ function OnboardingPage() {
   // Navigate to the user's company dashboard
   const navigateToCompany = () => {
     if (userCompanies && userCompanies.length > 0) {
-      navigate({ to: `/${userCompanies[0].slug}/dashboard` });
+      navigate({ to: ROUTES.dashboard(userCompanies[0].slug) });
     } else {
       // Fallback - this shouldn't happen if onboarding is done correctly
-      navigate({ to: "/" });
+      navigate({ to: ROUTES.home });
     }
   };
 
@@ -78,7 +79,7 @@ function OnboardingPage() {
 
   // Called when workspace is created during lead/member flow
   const handleWorkspaceCreated = (slug: string) => {
-    navigate({ to: `/${slug}/dashboard` });
+    navigate({ to: ROUTES.dashboard(slug) });
   };
 
   const handleProjectCreated = (_projectId: Id<"projects">) => {

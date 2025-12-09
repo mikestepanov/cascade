@@ -8,6 +8,36 @@
  */
 
 export const ROUTES = {
+  // ============================================
+  // Public routes (no auth required)
+  // ============================================
+
+  /** Home/Landing page */
+  home: "/" as const,
+
+  /** Sign in page */
+  signin: "/signin" as const,
+
+  /** Sign up page */
+  signup: "/signup" as const,
+
+  /** Forgot password page */
+  forgotPassword: "/forgot-password" as const,
+
+  /** Invite acceptance page */
+  invite: (token: string) => `/invite/${token}` as const,
+
+  // ============================================
+  // Auth routes (auth required, no company)
+  // ============================================
+
+  /** Onboarding page */
+  onboarding: "/onboarding" as const,
+
+  // ============================================
+  // App routes (auth + company required)
+  // ============================================
+
   /** Dashboard: /:slug/dashboard */
   dashboard: (slug: string) => `/${slug}/dashboard` as const,
 
