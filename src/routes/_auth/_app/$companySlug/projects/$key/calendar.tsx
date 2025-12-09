@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { UnifiedCalendarView } from "@/components/Calendar/UnifiedCalendarView";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
-export const Route = createFileRoute("/_auth/_app/projects/$key/calendar")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/calendar")({
   component: CalendarPage,
 });
 

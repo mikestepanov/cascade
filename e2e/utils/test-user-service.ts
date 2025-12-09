@@ -142,6 +142,33 @@ export class TestUserService {
       return { deleted: 0 };
     }
   }
+
+  /**
+   * Debug: Verify password against stored hash (for debugging auth issues)
+   */
+  async debugVerifyPassword(
+    email: string,
+    password: string,
+  ): Promise<{
+    success: boolean;
+    accountFound: boolean;
+    hasStoredHash: boolean;
+    passwordMatches?: boolean;
+    emailVerified?: boolean;
+    error?: string;
+  }> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.debugVerifyPassword, {
+        method: "POST",
+        headers: getE2EHeaders(),
+        body: JSON.stringify({ email, password }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to verify password for ${email}:`, error);
+      return { success: false, accountFound: false, hasStoredHash: false, error: String(error) };
+    }
+  }
 }
 
 // Singleton instance for convenience

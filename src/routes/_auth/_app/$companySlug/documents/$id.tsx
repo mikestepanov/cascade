@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import type { Id } from "../../../../convex/_generated/dataModel";
+import type { Id } from "../../../../../convex/_generated/dataModel";
 
 // Lazy load DocumentEditor (heavy - includes BlockNote)
 const DocumentEditor = lazy(() =>
@@ -10,7 +10,7 @@ const DocumentEditor = lazy(() =>
   })),
 );
 
-export const Route = createFileRoute("/_auth/_app/documents/$id")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/documents/$id")({
   component: DocumentPage,
 });
 

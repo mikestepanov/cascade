@@ -65,6 +65,62 @@ async function assertCompanyOwner(
 }
 
 /**
+ * Reserved slugs that cannot be used as company slugs
+ * These are route paths in the application - GitHub-style validation
+ */
+const RESERVED_SLUGS = [
+  // App routes
+  "dashboard",
+  "documents",
+  "projects",
+  "issues",
+  "settings",
+  "time-tracking",
+  "timetracking",
+  // Auth routes
+  "onboarding",
+  "invite",
+  "login",
+  "signin",
+  "signup",
+  "register",
+  "logout",
+  "signout",
+  // System routes
+  "api",
+  "admin",
+  "app",
+  "auth",
+  "oauth",
+  "callback",
+  "webhooks",
+  "health",
+  "status",
+  // Reserved terms
+  "www",
+  "mail",
+  "email",
+  "support",
+  "help",
+  "about",
+  "contact",
+  "legal",
+  "privacy",
+  "terms",
+  "blog",
+  "docs",
+  "pricing",
+  "enterprise",
+] as const;
+
+/**
+ * Check if a slug is reserved
+ */
+function isReservedSlug(slug: string): boolean {
+  return RESERVED_SLUGS.includes(slug.toLowerCase() as (typeof RESERVED_SLUGS)[number]);
+}
+
+/**
  * Generate URL-friendly slug from company name
  */
 function generateSlug(name: string): string {
@@ -101,6 +157,14 @@ export const createCompany = mutation({
 
     // Generate slug from name
     const baseSlug = generateSlug(args.name);
+
+    // Validate slug is not reserved (GitHub-style validation)
+    if (isReservedSlug(baseSlug)) {
+      throw new Error(
+        `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
+      );
+    }
+
     let slug = baseSlug;
     let counter = 1;
 
@@ -181,6 +245,14 @@ export const updateCompany = mutation({
       updates.name = args.name;
       // Regenerate slug if name changes
       const baseSlug = generateSlug(args.name);
+
+      // Validate slug is not reserved (GitHub-style validation)
+      if (isReservedSlug(baseSlug)) {
+        throw new Error(
+          `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
+        );
+      }
+
       let slug = baseSlug;
       let counter = 1;
 
@@ -531,41 +603,69 @@ export const getUserRole = query({
 // ============================================================================
 
 /**
- * Initialize default company for existing users
- * Creates a default company and assigns all existing users to it
- * This is a one-time migration function
+ * Initialize default company for a user
+ * Creates a personal workspace named after the user
  */
 export const initializeDefaultCompany = mutation({
   args: {
-    companyName: v.optional(v.string()), // Optional custom name, defaults to "Default Company"
+    companyName: v.optional(v.string()), // Optional custom name
     timezone: v.optional(v.string()), // Optional timezone, defaults to "America/New_York"
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if default company already exists
-    const existingCompany = await ctx.db
-      .query("companies")
-      .withIndex("by_slug", (q) => q.eq("slug", "default-company"))
+    // Check if user already has a company
+    const existingMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .first();
 
-    if (existingCompany) {
+    if (existingMembership) {
+      const existingCompany = await ctx.db.get(existingMembership.companyId);
       return {
-        companyId: existingCompany._id,
-        message: "Default company already exists",
+        companyId: existingMembership.companyId,
+        slug: existingCompany?.slug,
+        message: "User already has a company",
         usersAssigned: 0,
       };
     }
 
+    // Get user info to generate company name
+    const user = await ctx.db.get(userId);
+    const userName = user?.name || user?.email?.split("@")[0] || "user";
+
     const now = Date.now();
-    const companyName = args.companyName || "Default Company";
+    const companyName = args.companyName || `${userName}'s Workspace`;
     const timezone = args.timezone || "America/New_York";
 
-    // Create default company
+    // Generate slug from company name
+    let baseSlug = generateSlug(companyName);
+
+    // If generated slug is reserved, append "workspace"
+    if (isReservedSlug(baseSlug)) {
+      baseSlug = `${baseSlug}-workspace`;
+    }
+
+    // Ensure slug is unique
+    let slug = baseSlug;
+    let counter = 1;
+    while (true) {
+      const existing = await ctx.db
+        .query("companies")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .first();
+
+      if (!existing) break;
+
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    // Create company
     const companyId = await ctx.db.insert("companies", {
       name: companyName,
-      slug: "default-company",
+      slug,
       timezone,
       settings: {
         defaultMaxHoursPerWeek: 40,
@@ -578,42 +678,23 @@ export const initializeDefaultCompany = mutation({
       updatedAt: now,
     });
 
-    // Get all users
-    const allUsers = await ctx.db.query("users").collect();
+    // Add current user as owner
+    await ctx.db.insert("companyMembers", {
+      companyId,
+      userId,
+      role: "owner",
+      addedBy: userId,
+      addedAt: now,
+    });
 
-    // Assign all users to default company as members
-    let usersAssigned = 0;
-    for (const user of allUsers) {
-      // Check if user is already a company member somewhere
-      const existingMembership = await ctx.db
-        .query("companyMembers")
-        .withIndex("by_user", (q) => q.eq("userId", user._id))
-        .first();
-
-      if (existingMembership) continue; // Skip if already a member of any company
-
-      // Add user as member
-      const role = user._id === userId ? "owner" : "member";
-      await ctx.db.insert("companyMembers", {
-        companyId,
-        userId: user._id,
-        role,
-        addedBy: userId,
-        addedAt: now,
-      });
-
-      // Set as user's default company if they don't have one
-      if (!user.defaultCompanyId) {
-        await ctx.db.patch(user._id, { defaultCompanyId: companyId });
-      }
-
-      usersAssigned++;
-    }
+    // Set as user's default company
+    await ctx.db.patch(userId, { defaultCompanyId: companyId });
 
     return {
       companyId,
-      message: `Default company created with ${usersAssigned} users`,
-      usersAssigned,
+      slug,
+      message: "Company created successfully",
+      usersAssigned: 1,
     };
   },
 });

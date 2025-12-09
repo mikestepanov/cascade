@@ -5,6 +5,7 @@ import {
   cleanupRbacProjectEndpoint,
   cleanupTestUsersEndpoint,
   createTestUserEndpoint,
+  debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
   setupRbacProjectEndpoint,
@@ -95,6 +96,13 @@ http.route({
   path: "/e2e/verify-test-user",
   method: "POST",
   handler: verifyTestUserEndpoint,
+});
+
+// Debug: Verify a password against stored hash
+http.route({
+  path: "/e2e/debug-verify-password",
+  method: "POST",
+  handler: debugVerifyPasswordEndpoint,
 });
 
 export default http;

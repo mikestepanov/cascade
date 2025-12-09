@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/Typography";
 
-export const Route = createFileRoute("/_auth/_app/documents/")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/documents/")({
   component: DocumentsListPage,
 });
 

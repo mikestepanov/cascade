@@ -170,7 +170,7 @@ function buildInviteEmail(
 export const sendInvite = mutation({
   args: {
     email: v.string(),
-    role: v.union(v.literal("user"), v.literal("admin")),
+    role: v.union(v.literal("user"), v.literal("superAdmin")),
     // Optional project-level invite fields
     projectId: v.optional(v.id("projects")),
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),

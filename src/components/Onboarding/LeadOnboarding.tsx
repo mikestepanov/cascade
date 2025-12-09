@@ -1,35 +1,90 @@
 import { useMutation } from "convex/react";
-import { ArrowLeft, FolderPlus, Sparkles, UserPlus } from "lucide-react";
+import { ArrowLeft, Building2, FolderPlus, Sparkles, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import { Typography } from "../ui/Typography";
 import { FeatureHighlights } from "./FeatureHighlights";
 
 interface LeadOnboardingProps {
   onComplete: () => void;
   onCreateProject: (projectId: Id<"projects">) => void;
   onBack: () => void;
+  onWorkspaceCreated?: (slug: string) => void;
 }
 
-type LeadStep = "features" | "project-choice" | "creating";
+type LeadStep = "features" | "workspace" | "project-choice" | "creating";
 
-export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnboardingProps) {
+export function LeadOnboarding({
+  onComplete,
+  onCreateProject,
+  onBack,
+  onWorkspaceCreated,
+}: LeadOnboardingProps) {
   const [step, setStep] = useState<LeadStep>("features");
   const [isCreating, setIsCreating] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const createSampleProject = useMutation(api.onboarding.createSampleProject);
+  const createCompany = useMutation(api.companies.createCompany);
+  const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
+
+  const handleCreateWorkspace = async () => {
+    if (!workspaceName.trim()) {
+      setWorkspaceError("Please enter a workspace name");
+      return;
+    }
+
+    setIsCreating(true);
+    setWorkspaceError(null);
+
+    try {
+      const result = await createCompany({
+        name: workspaceName.trim(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      setCreatedSlug(result.slug);
+      showSuccess("Workspace created!");
+      setStep("project-choice");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create workspace";
+      setWorkspaceError(message);
+      showError(error, "Failed to create workspace");
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleCreateSample = async () => {
     setIsCreating(true);
     try {
       const projectId = await createSampleProject();
+      await completeOnboarding();
       showSuccess("Sample project created! Explore and customize it.");
-      onCreateProject(projectId as Id<"projects">);
+
+      // Navigate to the new workspace
+      if (createdSlug && onWorkspaceCreated) {
+        onWorkspaceCreated(createdSlug);
+      } else {
+        onCreateProject(projectId as Id<"projects">);
+      }
     } catch (error) {
       showError(error, "Failed to create sample project");
       setIsCreating(false);
+    }
+  };
+
+  const handleFinishWithoutProject = async () => {
+    await completeOnboarding();
+    if (createdSlug && onWorkspaceCreated) {
+      onWorkspaceCreated(createdSlug);
+    } else {
+      onComplete();
     }
   };
 
@@ -82,7 +137,7 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
 
         {/* Continue */}
         <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={() => setStep("project-choice")}>
+          <Button variant="primary" size="lg" onClick={() => setStep("workspace")}>
             Let's set up your workspace
           </Button>
         </div>
@@ -90,7 +145,7 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
     );
   }
 
-  if (step === "project-choice") {
+  if (step === "workspace") {
     return (
       <div className="space-y-8">
         {/* Back button */}
@@ -105,12 +160,78 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
 
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+            <Building2 className="w-8 h-8 text-primary-600" />
+          </div>
+          <Typography variant="h1" className="text-3xl font-bold mb-3">
+            Name Your Workspace
+          </Typography>
+          <Typography variant="p" color="secondary" className="text-lg">
+            This is where your team will collaborate
+          </Typography>
+        </div>
+
+        {/* Workspace Name Input */}
+        <div className="max-w-md mx-auto space-y-4">
+          <div>
+            <Input
+              type="text"
+              placeholder="e.g., Acme Corp, My Startup, Design Team"
+              value={workspaceName}
+              onChange={(e) => {
+                setWorkspaceName(e.target.value);
+                setWorkspaceError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !isCreating) {
+                  handleCreateWorkspace();
+                }
+              }}
+              className="text-center text-lg"
+              autoFocus
+            />
+            {workspaceError && (
+              <Typography variant="p" className="text-red-500 text-sm mt-2 text-center">
+                {workspaceError}
+              </Typography>
+            )}
+          </div>
+
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={handleCreateWorkspace}
+            disabled={isCreating || !workspaceName.trim()}
+            className="w-full"
+          >
+            {isCreating ? "Creating..." : "Create Workspace"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === "project-choice") {
+    return (
+      <div className="space-y-8">
+        {/* Back button */}
+        <button
+          type="button"
+          onClick={() => setStep("workspace")}
+          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+
+        {/* Header */}
+        <div className="text-center">
+          <Typography variant="h1" className="text-3xl font-bold mb-3">
             Start Your First Project
-          </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
+          </Typography>
+          <Typography variant="p" color="secondary" className="text-lg">
             How would you like to get started?
-          </p>
+          </Typography>
         </div>
 
         {/* Options */}
@@ -127,12 +248,12 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
                 <Sparkles className="w-6 h-6 text-primary-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <Typography variant="h3" className="font-semibold mb-1">
                   {isCreating ? "Creating..." : "Start with a Sample"}
-                </h3>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography variant="p" color="secondary" className="text-sm">
                   Explore Nixelo with pre-filled demo issues and sprints
-                </p>
+                </Typography>
               </div>
               <span className="text-xs text-primary-600 font-medium">Recommended</span>
             </div>
@@ -141,7 +262,7 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
           {/* Start Fresh */}
           <button
             type="button"
-            onClick={onComplete}
+            onClick={handleFinishWithoutProject}
             disabled={isCreating}
             className="p-6 rounded-xl border-2 border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -150,12 +271,12 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
                 <FolderPlus className="w-6 h-6 text-ui-text-secondary dark:text-ui-text-secondary-dark" />
               </div>
               <div>
-                <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                <Typography variant="h3" className="font-semibold mb-1">
                   Start from Scratch
-                </h3>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography variant="p" color="secondary" className="text-sm">
                   Create your own project with a blank canvas
-                </p>
+                </Typography>
               </div>
               <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                 For experienced users
@@ -166,7 +287,12 @@ export function LeadOnboarding({ onComplete, onCreateProject, onBack }: LeadOnbo
 
         {/* Skip option */}
         <div className="text-center">
-          <Button variant="ghost" size="sm" onClick={onComplete} disabled={isCreating}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleFinishWithoutProject}
+            disabled={isCreating}
+          >
             I'll explore on my own
           </Button>
         </div>

@@ -1,15 +1,9 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
-import { useCallback, useState } from "react";
-import { AppHeader } from "@/components/AppHeader";
-import { AppSidebar } from "@/components/AppSidebar";
-import { CommandPalette, useCommands } from "@/components/CommandPalette";
-import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
-import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
-import { SidebarProvider } from "@/hooks/useSidebarState";
+import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -17,49 +11,33 @@ export const Route = createFileRoute("/_auth/_app")({
 
 function AppLayout() {
   const navigate = useNavigate();
-  const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
+  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
-  // UI state for modals
-  const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
-  const [_showAIAssistant, setShowAIAssistant] = useState(false);
-
-  // Navigation callback for keyboard shortcuts
-  const handleNavigate = useCallback(
-    (to: string) => {
-      navigate({ to });
-    },
-    [navigate],
+  // Global auth gate - wait for auth to be ready before making any queries
+  const onboardingStatus = useQuery(
+    api.onboarding.getOnboardingStatus,
+    isAuthenticated ? undefined : "skip",
   );
 
-  // Build keyboard shortcuts
-  const shortcuts = createKeyboardShortcuts({
-    navigate: handleNavigate,
-    setShowCommandPalette,
-    setShowShortcutsHelp,
-    setShowAIAssistant,
-  });
+  // Get user's companies to redirect to default
+  const userCompanies = useQuery(
+    api.companies.getUserCompanies,
+    isAuthenticated ? undefined : "skip",
+  );
 
-  const sequences = createKeySequences({
-    navigate: handleNavigate,
-    setShowCommandPalette,
-    setShowShortcutsHelp,
-    setShowAIAssistant,
-  });
-
-  // Enable keyboard shortcuts
-  useKeyboardShortcutsWithSequences(shortcuts, sequences, true);
-
-  // Build command palette commands
-  const commands = useCommands();
-
-  // Loading state while checking onboarding
-  if (onboardingStatus === undefined) {
+  // Loading state
+  if (isAuthLoading || onboardingStatus === undefined || userCompanies === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />
       </div>
     );
+  }
+
+  // Redirect to sign in if not authenticated
+  if (!isAuthenticated) {
+    navigate({ to: "/" });
+    return null;
   }
 
   // Redirect to onboarding if not completed
@@ -72,36 +50,65 @@ function AppLayout() {
     );
   }
 
-  return (
-    <SidebarProvider>
-      <div className="min-h-screen flex bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-        {/* Unified sidebar */}
-        <AppSidebar />
+  // User has no companies - initialize default company
+  if (userCompanies.length === 0) {
+    return <InitializeCompany />;
+  }
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Slim header */}
-          <AppHeader
-            onShowCommandPalette={() => setShowCommandPalette(true)}
-            onShowShortcutsHelp={() => setShowShortcutsHelp(true)}
-          />
+  return <Outlet />;
+}
 
-          {/* Page content */}
-          <main className="flex-1 overflow-auto">
-            <Outlet />
-          </main>
+// Component to initialize default company for users without one
+function InitializeCompany() {
+  const navigate = useNavigate();
+  const initializeDefaultCompany = useMutation(api.companies.initializeDefaultCompany);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      if (isInitializing) return;
+      setIsInitializing(true);
+      try {
+        const result = await initializeDefaultCompany({});
+        // Navigate to the new company's dashboard
+        if (result.slug) {
+          navigate({ to: `/${result.slug}/dashboard`, replace: true });
+        } else {
+          // Fallback: reload to trigger company query refresh
+          window.location.reload();
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to create company");
+        setIsInitializing(false);
+      }
+    };
+    init();
+  }, [initializeDefaultCompany, isInitializing, navigate]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+        <div className="text-center">
+          <Typography variant="h2" className="text-xl font-medium mb-2 text-red-600">
+            Error
+          </Typography>
+          <Typography variant="p" color="secondary">
+            {error}
+          </Typography>
         </div>
-
-        {/* Command Palette Modal */}
-        <CommandPalette
-          isOpen={showCommandPalette}
-          onClose={() => setShowCommandPalette(false)}
-          commands={commands}
-        />
-
-        {/* Keyboard Shortcuts Help Modal */}
-        <KeyboardShortcutsHelp open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
       </div>
-    </SidebarProvider>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="text-center">
+        <LoadingSpinner size="lg" />
+        <Typography variant="p" color="secondary" className="mt-4">
+          Setting up your workspace...
+        </Typography>
+      </div>
+    </div>
   );
 }

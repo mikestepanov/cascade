@@ -43,7 +43,7 @@ export function getE2EHeaders(): HeadersInit {
 /**
  * User Roles
  */
-export type PlatformRole = "user" | "admin";
+export type PlatformRole = "user" | "superAdmin";
 export type ProjectRole = "viewer" | "editor" | "admin";
 export type OnboardingPersona = "team_lead" | "team_member";
 
@@ -77,7 +77,7 @@ export const TEST_USERS = {
   admin: {
     email: "e2e-admin@inbox.mailtrap.io",
     password: "E2ETestPassword123!",
-    platformRole: "admin" as PlatformRole,
+    platformRole: "superAdmin" as PlatformRole,
     onboardingPersona: "team_lead" as OnboardingPersona,
     description: "Platform admin with full access",
   },
@@ -151,6 +151,8 @@ export const E2E_ENDPOINTS = {
   setupRbacProject: `${CONVEX_SITE_URL}/e2e/setup-rbac-project`,
   // Clean up RBAC test project (POST)
   cleanupRbacProject: `${CONVEX_SITE_URL}/e2e/cleanup-rbac-project`,
+  // Debug: Verify password against stored hash (POST)
+  debugVerifyPassword: `${CONVEX_SITE_URL}/e2e/debug-verify-password`,
 };
 
 /**
@@ -159,6 +161,8 @@ export const E2E_ENDPOINTS = {
 export const RBAC_TEST_CONFIG = {
   projectKey: "RBAC",
   projectName: "RBAC Test Project",
+  /** Company slug for URL paths - uses the E2E test company */
+  companySlug: "e2e-test-company",
 };
 
 /**

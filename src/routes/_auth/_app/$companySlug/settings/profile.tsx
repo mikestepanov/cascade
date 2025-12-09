@@ -5,7 +5,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 // Lazy load Settings component
 const Settings = lazy(() => import("@/components/Settings").then((m) => ({ default: m.Settings })));
 
-export const Route = createFileRoute("/_auth/_app/settings/profile")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/settings/profile")({
   component: SettingsProfilePage,
 });
 

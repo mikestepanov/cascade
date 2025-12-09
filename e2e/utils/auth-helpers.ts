@@ -43,56 +43,80 @@ export async function isOnOnboarding(page: Page): Promise<boolean> {
 
 /**
  * Click the "Continue with email" button and wait for form to expand
- * Uses multiple strategies to handle React hydration timing
+ * Waits specifically for the button text to change to "Sign in" or "Create account"
  */
 export async function clickContinueWithEmail(page: Page): Promise<boolean> {
   const continueButton = page.getByRole("button", { name: /continue with email/i });
-  const submitButton = page.getByRole("button", { name: /^(sign in|create account)$/i });
+  const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
+  const createAccountButton = page.getByRole("button", { name: "Create account", exact: true });
 
-  // Check if form is already expanded
-  if (await submitButton.isVisible().catch(() => false)) {
+  // Check if form is already expanded by looking for the submit button
+  const signInVisible = await signInButton.isVisible().catch(() => false);
+  const createAccountVisible = await createAccountButton.isVisible().catch(() => false);
+
+  if (signInVisible || createAccountVisible) {
+    console.log("✓ Form already expanded (submit button visible)");
     return true;
   }
 
-  // Wait for button to be ready and React to hydrate
-  await continueButton.waitFor({ state: "visible", timeout: 5000 });
-  await page.waitForTimeout(500);
+  // Check if continue button exists
+  const continueVisible = await continueButton.isVisible().catch(() => false);
+  if (!continueVisible) {
+    console.log("❌ Continue button not found");
+    return false;
+  }
 
-  // Try clicking with multiple strategies
+  // Wait for page to be fully loaded and React to hydrate
+  await page.waitForLoadState("networkidle");
+  await page.waitForTimeout(1500); // Extra time for React hydration
+
+  // Try clicking multiple times
   for (let attempt = 1; attempt <= 3; attempt++) {
     console.log(`📍 Click attempt ${attempt}...`);
 
     try {
-      await continueButton.evaluate((btn) => {
-        const event = new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        });
-        btn.dispatchEvent(event);
-      });
+      // Click the button
+      await continueButton.click({ timeout: 5000 });
 
-      await submitButton.waitFor({ state: "visible", timeout: 3000 });
-      console.log("✓ Form expanded successfully");
-      return true;
-    } catch {
-      if (attempt < 3) {
-        console.log(`⚠️ Attempt ${attempt} failed, waiting before retry...`);
-        await page.waitForTimeout(500);
+      // Wait for button text to change - this is the definitive indicator
+      // The button should change from "Continue with email" to "Sign in" or "Create account"
+      try {
+        await Promise.race([
+          signInButton.waitFor({ state: "visible", timeout: 3000 }),
+          createAccountButton.waitFor({ state: "visible", timeout: 3000 }),
+        ]);
+        console.log("✓ Form expanded successfully (button text changed)");
+        return true;
+      } catch {
+        // Button text didn't change, try again
+        console.log(`⚠️ Button text didn't change after click ${attempt}`);
       }
+    } catch (error) {
+      console.log(`⚠️ Click ${attempt} failed:`, String(error).slice(0, 100));
+    }
+
+    if (attempt < 3) {
+      await page.waitForTimeout(1000);
     }
   }
 
-  // Final fallback: try Playwright's native click
-  console.log("⚠️ MouseEvent approach failed, trying Playwright click...");
+  // Final attempt with force click
+  console.log("⚠️ Regular clicks failed, trying force click...");
   try {
-    await continueButton.click({ timeout: 5000 });
-    await submitButton.waitFor({ state: "visible", timeout: 3000 });
+    await continueButton.click({ force: true, timeout: 5000 });
+
+    await Promise.race([
+      signInButton.waitFor({ state: "visible", timeout: 5000 }),
+      createAccountButton.waitFor({ state: "visible", timeout: 5000 }),
+    ]);
+    console.log("✓ Form expanded with force click");
     return true;
-  } catch {
-    console.log("⚠️ Form still not expanded after all attempts");
-    return false;
+  } catch (e) {
+    console.log("⚠️ Force click also failed:", String(e).slice(0, 100));
   }
+
+  console.log("⚠️ Form still not expanded after all attempts");
+  return false;
 }
 
 /**
@@ -139,25 +163,34 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
  */
 export async function trySignInUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
   try {
+    console.log(`  🔐 Attempting sign-in for ${user.email}...`);
     await page.goto(`${baseURL}/signin`);
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(1000);
 
     if (await isOnDashboard(page)) {
+      console.log("  ✓ Already on dashboard");
       return true;
     }
 
+    console.log("  📋 Waiting for sign-in page...");
     await page
       .getByRole("heading", { name: /welcome back/i })
       .waitFor({ state: "visible", timeout: 10000 });
 
+    console.log("  📧 Expanding email form...");
     const formExpanded = await clickContinueWithEmail(page);
-    if (!formExpanded) return false;
+    if (!formExpanded) {
+      console.log("  ❌ Failed to expand email form");
+      return false;
+    }
 
+    console.log("  📝 Filling credentials...");
     await page.getByPlaceholder("Email").fill(user.email);
     await page.getByPlaceholder("Password").fill(user.password);
     await page.waitForTimeout(400);
 
+    console.log("  🚀 Clicking sign-in button...");
     const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
     await signInButton.waitFor({ state: "visible", timeout: 5000 });
     await signInButton.click();
@@ -167,12 +200,14 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         timeout: 15000,
         waitUntil: "domcontentloaded",
       });
+      console.log("  ✓ Redirected to:", page.url());
     } catch {
-      // Check if we're there anyway
+      console.log("  ⚠️ No redirect detected, checking current page...");
     }
 
     return await handleOnboardingOrDashboard(page);
-  } catch {
+  } catch (error) {
+    console.log("  ❌ Sign-in error:", String(error).slice(0, 200));
     return false;
   }
 }

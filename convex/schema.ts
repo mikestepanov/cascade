@@ -1098,7 +1098,7 @@ const applicationTables = {
   // User Invitations
   invites: defineTable({
     email: v.string(), // Email address to invite
-    role: v.union(v.literal("user"), v.literal("admin")), // Platform role (not project role)
+    role: v.union(v.literal("user"), v.literal("superAdmin")), // Platform role: superAdmin = full system access
     companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
     projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))), // Role in project if projectId is set

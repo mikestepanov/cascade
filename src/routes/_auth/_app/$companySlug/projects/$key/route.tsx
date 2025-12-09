@@ -3,13 +3,14 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
-export const Route = createFileRoute("/_auth/_app/projects/$key")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
   component: ProjectLayout,
 });
 
 function ProjectLayout() {
-  const { key } = Route.useParams();
+  const { companySlug, key } = Route.useParams();
   const location = useLocation();
 
   // Get project by key
@@ -34,7 +35,7 @@ function ProjectLayout() {
             The project "{key}" does not exist or you don't have access to it.
           </Typography>
           <Link
-            to="/projects"
+            to={ROUTES.projects.list(companySlug)}
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
           >
             Back to projects
@@ -70,18 +71,26 @@ function ProjectLayout() {
         </div>
         {/* Tab Navigation */}
         <nav className="flex px-6 -mb-px">
-          <Link to={`/projects/${key}/board`} className={getTabClass("board")}>
+          <Link to={ROUTES.projects.board(companySlug, key)} className={getTabClass("board")}>
             Board
           </Link>
-          <Link to={`/projects/${key}/calendar`} className={getTabClass("calendar")}>
+          <Link to={ROUTES.projects.calendar(companySlug, key)} className={getTabClass("calendar")}>
             Calendar
           </Link>
-          <Link to={`/projects/${key}/timesheet`} className={getTabClass("timesheet")}>
+          <Link
+            to={ROUTES.projects.timesheet(companySlug, key)}
+            className={getTabClass("timesheet")}
+          >
             Timesheet
           </Link>
-          <Link to={`/projects/${key}/settings`} className={getTabClass("settings")}>
-            Settings
-          </Link>
+          {project.userRole === "admin" && (
+            <Link
+              to={ROUTES.projects.settings(companySlug, key)}
+              className={getTabClass("settings")}
+            >
+              Settings
+            </Link>
+          )}
         </nav>
       </div>
       {/* Content */}

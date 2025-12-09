@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { ROUTES } from "@/config/routes";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
   ChevronDown,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
@@ -26,6 +28,9 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebarState();
+
+  // Get company from URL context
+  const { companySlug, companyName } = useCompany();
 
   // Admin check for Time Tracking
   const isAdmin = useQuery(api.users.isPlatformAdmin);
@@ -43,9 +48,8 @@ export function AppSidebar() {
   const createDocument = useMutation(api.documents.create);
   const createProject = useMutation(api.projects.create);
 
-  const isActive = (path: string) => {
-    if (path === "/dashboard") return location.pathname === "/dashboard";
-    return location.pathname.startsWith(path);
+  const isActive = (pathPart: string) => {
+    return location.pathname.includes(pathPart);
   };
 
   const handleCreateDocument = async () => {
@@ -54,7 +58,7 @@ export function AppSidebar() {
         title: "Untitled Document",
         isPublic: false,
       });
-      navigate({ to: "/documents/$id", params: { id: docId } });
+      navigate({ to: ROUTES.documents.detail(companySlug, docId) });
       showSuccess("Document created");
       closeMobile();
     } catch (error) {
@@ -71,7 +75,7 @@ export function AppSidebar() {
         isPublic: false,
         boardType: "kanban",
       });
-      navigate({ to: "/projects/$key/board", params: { key } });
+      navigate({ to: ROUTES.projects.board(companySlug, key) });
       showSuccess("Project created");
       closeMobile();
     } catch (error) {
@@ -107,16 +111,16 @@ export function AppSidebar() {
         )}
       >
         <Flex direction="column" className="h-full">
-          {/* Header with logo and collapse toggle */}
+          {/* Header with company name and collapse toggle */}
           <Flex
             align="center"
             justify="between"
             className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
           >
             {!isCollapsed && (
-              <Link to="/dashboard" onClick={handleNavClick}>
-                <Typography variant="h3" className="text-lg font-bold">
-                  Nixelo
+              <Link to={ROUTES.dashboard(companySlug)} onClick={handleNavClick}>
+                <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
+                  {companyName}
                 </Typography>
               </Link>
             )}
@@ -139,7 +143,7 @@ export function AppSidebar() {
           <Flex as="nav" direction="column" gap="xs" className="flex-1 overflow-y-auto p-2">
             {/* Dashboard */}
             <NavItem
-              to="/dashboard"
+              to={ROUTES.dashboard(companySlug)}
               icon={Home}
               label="Dashboard"
               isActive={isActive("/dashboard")}
@@ -156,16 +160,15 @@ export function AppSidebar() {
               isActive={isActive("/documents")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateDocument}
-              navigateTo="/documents"
+              navigateTo={ROUTES.documents.list(companySlug)}
               onClick={handleNavClick}
             >
               {documents?.slice(0, 10).map((doc) => (
                 <NavSubItem
                   key={doc._id}
-                  to="/documents/$id"
-                  params={{ id: doc._id }}
+                  to={ROUTES.documents.detail(companySlug, doc._id)}
                   label={doc.title}
-                  isActive={location.pathname === `/documents/${doc._id}`}
+                  isActive={location.pathname.includes(`/documents/${doc._id}`)}
                   onClick={handleNavClick}
                 />
               ))}
@@ -185,16 +188,15 @@ export function AppSidebar() {
               isActive={isActive("/projects")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateProject}
-              navigateTo="/projects"
+              navigateTo={ROUTES.projects.list(companySlug)}
               onClick={handleNavClick}
             >
               {projects?.slice(0, 10).map((project) => (
                 <NavSubItem
                   key={project._id}
-                  to="/projects/$key/board"
-                  params={{ key: project.key }}
+                  to={ROUTES.projects.board(companySlug, project.key)}
                   label={`${project.key} - ${project.name}`}
-                  isActive={location.pathname.startsWith(`/projects/${project.key}`)}
+                  isActive={location.pathname.includes(`/projects/${project.key}`)}
                   onClick={handleNavClick}
                 />
               ))}
@@ -208,7 +210,7 @@ export function AppSidebar() {
             {/* Time Tracking (admin only) */}
             {showTimeTracking && (
               <NavItem
-                to="/time-tracking"
+                to={ROUTES.timeTracking(companySlug)}
                 icon={Clock}
                 label="Time Tracking"
                 isActive={isActive("/time-tracking")}
@@ -221,7 +223,7 @@ export function AppSidebar() {
           {/* Bottom section - Settings */}
           <div className="p-2 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <NavItem
-              to="/settings/profile"
+              to={ROUTES.settings.profile(companySlug)}
               icon={Settings}
               label="Settings"
               isActive={isActive("/settings")}
@@ -391,17 +393,15 @@ function CollapsibleSection({
 // Sub-item Component
 interface NavSubItemProps {
   to: string;
-  params?: Record<string, string>;
   label: string;
   isActive: boolean;
   onClick?: () => void;
 }
 
-function NavSubItem({ to, params, label, isActive, onClick }: NavSubItemProps) {
+function NavSubItem({ to, label, isActive, onClick }: NavSubItemProps) {
   return (
     <Link
       to={to}
-      params={params}
       onClick={onClick}
       className={cn(
         "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",

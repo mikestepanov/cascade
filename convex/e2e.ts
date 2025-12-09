@@ -898,6 +898,119 @@ export const verifyTestUserInternal = internalMutation({
   },
 });
 
+/**
+ * Debug endpoint: Verify password against stored hash
+ * POST /e2e/debug-verify-password
+ * Body: { email: string, password: string }
+ *
+ * Returns whether the password matches the stored hash.
+ * Useful for debugging auth issues.
+ */
+export const debugVerifyPasswordEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email, password } = body;
+
+    if (!(email && password)) {
+      return new Response(JSON.stringify({ error: "Missing email or password" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(JSON.stringify({ error: "Only test emails allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.debugVerifyPasswordInternal, {
+      email,
+      password,
+    });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to verify password against stored hash
+ */
+export const debugVerifyPasswordInternal = internalMutation({
+  args: {
+    email: v.string(),
+    password: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    accountFound: v.boolean(),
+    hasStoredHash: v.boolean(),
+    passwordMatches: v.optional(v.boolean()),
+    emailVerified: v.optional(v.boolean()),
+    error: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // Find the authAccount by email (providerAccountId)
+    const account = await ctx.db
+      .query("authAccounts")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("provider"), "password"),
+          q.eq(q.field("providerAccountId"), args.email),
+        ),
+      )
+      .first();
+
+    if (!account) {
+      return {
+        success: false,
+        accountFound: false,
+        hasStoredHash: false,
+        error: "No password account found for this email",
+      };
+    }
+
+    const storedHash = account.secret;
+    if (!storedHash) {
+      return {
+        success: false,
+        accountFound: true,
+        hasStoredHash: false,
+        error: "Account exists but has no password hash",
+      };
+    }
+
+    // Verify the password using Scrypt (same as Convex Auth)
+    const scrypt = new Scrypt();
+    const passwordMatches = await scrypt.verify(storedHash, args.password);
+
+    return {
+      success: true,
+      accountFound: true,
+      hasStoredHash: true,
+      passwordMatches,
+      emailVerified: !!account.emailVerified,
+    };
+  },
+});
+
 // Legacy exports for backwards compatibility (can be removed later)
 export const resetAllOnboarding = internalMutation({
   args: {},
