@@ -192,7 +192,11 @@ export function IssueDetailModal({
             <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Time Tracking
             </Typography>
-            <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours} />
+            <TimeTracker
+              issueId={issue._id}
+              projectId={issue.projectId}
+              estimatedHours={issue.estimatedHours}
+            />
           </div>
 
           {/* File Attachments */}

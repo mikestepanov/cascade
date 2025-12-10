@@ -1,21 +1,18 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { TimeEntryModal } from "./TimeEntryModal";
 
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
-  const _startTimer = useMutation(api.timeTracking.startTimer);
   const stopTimer = useMutation(api.timeTracking.stopTimer);
 
   const [currentDuration, setCurrentDuration] = useState(0);
-  const [showStartModal, setShowStartModal] = useState(false);
+  const [showTimeEntryModal, setShowTimeEntryModal] = useState(false);
 
   // Update duration every second if timer is running
   useEffect(() => {
@@ -68,10 +65,10 @@ export function TimerWidget() {
             {formatDuration(currentDuration)}
           </span>
 
-          {/* Description */}
-          {runningTimer.description && (
+          {/* Description or Issue */}
+          {(runningTimer.description || runningTimer.issue) && (
             <span className="text-xs text-brand-700 dark:text-brand-300 max-w-[150px] truncate">
-              {runningTimer.description}
+              {runningTimer.issue ? runningTimer.issue.key : runningTimer.description}
             </span>
           )}
         </Flex>
@@ -93,7 +90,7 @@ export function TimerWidget() {
   return (
     <>
       <Button
-        onClick={() => setShowStartModal(true)}
+        onClick={() => setShowTimeEntryModal(true)}
         variant="secondary"
         size="sm"
         leftIcon={
@@ -110,101 +107,11 @@ export function TimerWidget() {
         <span className="hidden sm:inline">Start Timer</span>
       </Button>
 
-      <StartTimerModal open={showStartModal} onOpenChange={setShowStartModal} />
+      <TimeEntryModal
+        open={showTimeEntryModal}
+        onOpenChange={setShowTimeEntryModal}
+        defaultMode="timer"
+      />
     </>
-  );
-}
-
-function StartTimerModal({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const startTimer = useMutation(api.timeTracking.startTimer);
-  const [description, setDescription] = useState("");
-  const [activity, setActivity] = useState("");
-
-  const handleStart = async () => {
-    try {
-      await startTimer({
-        description: description || undefined,
-        activity: activity || undefined,
-      });
-      showSuccess("Timer started");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to start timer");
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Start Timer</DialogTitle>
-        </DialogHeader>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void handleStart();
-          }}
-        >
-          <Flex direction="column" gap="lg">
-            <div>
-              <label
-                htmlFor="timer-description"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                What are you working on? (optional)
-              </label>
-              <input
-                id="timer-description"
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., Fixing login bug..."
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="timer-activity"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Activity (optional)
-              </label>
-              <Select
-                value={activity || "none"}
-                onValueChange={(value) => setActivity(value === "none" ? "" : value)}
-              >
-                <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark">
-                  <SelectValue placeholder="Select activity..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Select activity...</SelectItem>
-                  {ACTIVITY_TYPES.map((activityType) => (
-                    <SelectItem key={activityType} value={activityType}>
-                      {activityType}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <DialogFooter>
-              <Button onClick={() => onOpenChange(false)} variant="secondary">
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary">
-                Start Timer
-              </Button>
-            </DialogFooter>
-          </Flex>
-        </form>
-      </DialogContent>
-    </Dialog>
   );
 }

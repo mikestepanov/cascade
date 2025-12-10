@@ -53,6 +53,7 @@ export const startTimer = mutation({
     issueId: v.optional(v.id("issues")),
     description: v.optional(v.string()),
     activity: v.optional(v.string()),
+    billable: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -96,7 +97,7 @@ export const startTimer = mutation({
       hourlyRate: rate?.hourlyRate,
       totalCost: 0,
       currency: rate?.currency || "USD",
-      billable: true,
+      billable: args.billable ?? true,
       billed: false,
       invoiceId: undefined,
       isEquityHour: false,

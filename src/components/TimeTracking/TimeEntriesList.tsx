@@ -9,7 +9,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
-import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
+import { TimeEntryModal } from "./TimeEntryModal";
 
 interface TimeEntriesListProps {
   projectId?: Id<"projects">;
@@ -266,8 +266,8 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         );
       })}
 
-      {/* Manual Time Entry Modal */}
-      <ManualTimeEntryModal
+      {/* Time Entry Modal */}
+      <TimeEntryModal
         open={showManualEntryModal}
         onOpenChange={setShowManualEntryModal}
         projectId={projectId}
