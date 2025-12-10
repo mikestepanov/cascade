@@ -725,14 +725,6 @@ rbacTest("admin has full project access", async ({ adminPage }) => {
 });
 ```
 
-### Known Issues
-
-**KanbanBoard shows "add issue" buttons to viewers:**
-- The UI doesn't hide create buttons for viewers
-- Backend correctly rejects viewer mutations
-- Test documents this as a known bug (not failing assertion)
-- TODO: Fix KanbanBoard to check user role before showing buttons
-
 ### RBAC Config
 
 RBAC project configuration is saved by global-setup:
