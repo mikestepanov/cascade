@@ -13,9 +13,10 @@ import { SkeletonProjectCard } from "./ui/Skeleton";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
+  canEdit?: boolean;
 }
 
-export function SprintManager({ projectId }: SprintManagerProps) {
+export function SprintManager({ projectId, canEdit = true }: SprintManagerProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newSprintName, setNewSprintName] = useState("");
   const [newSprintGoal, setNewSprintGoal] = useState("");
@@ -93,10 +94,12 @@ export function SprintManager({ projectId }: SprintManagerProps) {
         <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
           Sprint Management
         </h2>
-        <Button onClick={() => setShowCreateForm(true)} variant="primary">
-          <span className="hidden sm:inline">Create Sprint</span>
-          <span className="sm:hidden">+ Sprint</span>
-        </Button>
+        {canEdit && (
+          <Button onClick={() => setShowCreateForm(true)} variant="primary">
+            <span className="hidden sm:inline">Create Sprint</span>
+            <span className="sm:hidden">+ Sprint</span>
+          </Button>
+        )}
       </div>
 
       {/* Create Sprint Form */}
@@ -173,26 +176,28 @@ export function SprintManager({ projectId }: SprintManagerProps) {
                     </p>
                   )}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                  {sprint.status === "future" && (
-                    <Button
-                      onClick={() => void handleStartSprint(sprint._id)}
-                      variant="success"
-                      size="sm"
-                    >
-                      Start Sprint
-                    </Button>
-                  )}
-                  {sprint.status === "active" && (
-                    <Button
-                      onClick={() => void handleCompleteSprint(sprint._id)}
-                      variant="secondary"
-                      size="sm"
-                    >
-                      Complete Sprint
-                    </Button>
-                  )}
-                </div>
+                {canEdit && (
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    {sprint.status === "future" && (
+                      <Button
+                        onClick={() => void handleStartSprint(sprint._id)}
+                        variant="success"
+                        size="sm"
+                      >
+                        Start Sprint
+                      </Button>
+                    )}
+                    {sprint.status === "active" && (
+                      <Button
+                        onClick={() => void handleCompleteSprint(sprint._id)}
+                        variant="secondary"
+                        size="sm"
+                      >
+                        Complete Sprint
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))

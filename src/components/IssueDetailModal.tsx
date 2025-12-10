@@ -23,9 +23,15 @@ interface IssueDetailModalProps {
   issueId: Id<"issues">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  canEdit?: boolean;
 }
 
-export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailModalProps) {
+export function IssueDetailModal({
+  issueId,
+  open,
+  onOpenChange,
+  canEdit = true,
+}: IssueDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -124,13 +130,15 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
                 <Typography variant="h2" className="border-none">
                   {issue.title}
                 </Typography>
-                <button
-                  type="button"
-                  onClick={handleEdit}
-                  className="text-sm text-brand-600 hover:text-brand-700"
-                >
-                  Edit
-                </button>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={handleEdit}
+                    className="text-sm text-brand-600 hover:text-brand-700"
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
             )}
           </div>

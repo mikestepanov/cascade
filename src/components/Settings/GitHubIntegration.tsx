@@ -10,7 +10,7 @@ import { LinkedRepositories } from "./LinkedRepositories";
 
 // Get the Convex HTTP URL for GitHub OAuth
 const CONVEX_URL = import.meta.env.VITE_CONVEX_URL as string;
-const GITHUB_AUTH_URL = CONVEX_URL?.replace(".cloud", ".site") + "/github/auth";
+const GITHUB_AUTH_URL = `${CONVEX_URL?.replace(".cloud", ".site")}/github/auth`;
 
 interface GitHubConnectionData {
   githubUserId: string;
@@ -121,12 +121,7 @@ export function GitHubIntegration() {
                 {isDisconnecting ? "Disconnecting..." : "Disconnect"}
               </Button>
             ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleConnect}
-                disabled={isConnecting}
-              >
+              <Button variant="primary" size="sm" onClick={handleConnect} disabled={isConnecting}>
                 {isConnecting ? "Connecting..." : "Connect GitHub"}
               </Button>
             )}

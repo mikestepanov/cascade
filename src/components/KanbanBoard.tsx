@@ -297,6 +297,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
               setSelectedIssue(null);
             }
           }}
+          canEdit={canEdit}
         />
       )}
 

@@ -1,13 +1,14 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { Input, Select } from "../ui/form";
 import { Flex } from "../ui/Flex";
-import { Badge } from "../ui/Badge";
+import { Input, Select } from "../ui/form";
+import { Typography } from "../ui/Typography";
 
 interface WorkflowState {
   id: string;
@@ -59,10 +60,12 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
 
     // Ensure at least one state per category
     const categories = new Set(states.map((s) => s.category));
-    if (!categories.has("todo") || !categories.has("inprogress") || !categories.has("done")) {
+    if (!(categories.has("todo") && categories.has("inprogress") && categories.has("done"))) {
       showError(
-        new Error("Workflow must have at least one state in each category (To Do, In Progress, Done)"),
-        "Validation error"
+        new Error(
+          "Workflow must have at least one state in each category (To Do, In Progress, Done)",
+        ),
+        "Validation error",
       );
       return;
     }
@@ -146,12 +149,10 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
       <div className="p-6">
         <Flex justify="between" align="center" className="mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              Workflow
-            </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <Typography variant="large">Workflow</Typography>
+            <Typography variant="small" color="secondary">
               Configure issue status workflow
-            </p>
+            </Typography>
           </div>
           {!isEditing && (
             <Button variant="secondary" size="sm" onClick={handleEdit}>
@@ -196,9 +197,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                   />
                   <Select
                     value={state.category}
-                    onChange={(e) =>
-                      handleStateChange(index, "category", e.target.value)
-                    }
+                    onChange={(e) => handleStateChange(index, "category", e.target.value)}
                     options={CATEGORY_OPTIONS}
                     className="w-36"
                   />
@@ -218,7 +217,10 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               + Add State
             </Button>
 
-            <Flex gap="sm" className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+            <Flex
+              gap="sm"
+              className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
+            >
               <Button onClick={handleSave} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>
@@ -231,9 +233,13 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
           <div className="space-y-4">
             {(["todo", "inprogress", "done"] as const).map((category) => (
               <div key={category}>
-                <h4 className="text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 capitalize">
-                  {category === "inprogress" ? "In Progress" : category === "todo" ? "To Do" : "Done"}
-                </h4>
+                <Typography variant="small" color="secondary" className="mb-2 capitalize">
+                  {category === "inprogress"
+                    ? "In Progress"
+                    : category === "todo"
+                      ? "To Do"
+                      : "Done"}
+                </Typography>
                 <Flex gap="sm" wrap="wrap">
                   {groupedStates[category].map((state) => (
                     <Badge key={state.id} className={CATEGORY_COLORS[state.category]}>

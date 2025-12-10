@@ -1,15 +1,16 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { Input, Select } from "../ui/form";
-import { Flex } from "../ui/Flex";
 import { Avatar } from "../ui/Avatar";
 import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Flex } from "../ui/Flex";
+import { Input, Select } from "../ui/form";
+import { Typography } from "../ui/Typography";
 
 interface Member {
   _id: Id<"users">;
@@ -80,7 +81,10 @@ export function MemberManagement({
     }
   };
 
-  const handleRoleChange = async (memberId: Id<"users">, newRole: "admin" | "editor" | "viewer") => {
+  const handleRoleChange = async (
+    memberId: Id<"users">,
+    newRole: "admin" | "editor" | "viewer",
+  ) => {
     setChangingRoleFor(memberId);
     try {
       await updateMemberRole({
@@ -122,12 +126,10 @@ export function MemberManagement({
         <div className="p-6">
           <Flex justify="between" align="center" className="mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                Members
-              </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography variant="large">Members</Typography>
+              <Typography variant="small" color="secondary">
                 {members.length} member{members.length !== 1 ? "s" : ""}
-              </p>
+              </Typography>
             </div>
             {!showAddForm && (
               <Button variant="secondary" size="sm" onClick={() => setShowAddForm(true)}>
@@ -138,9 +140,9 @@ export function MemberManagement({
 
           {showAddForm && (
             <div className="mb-6 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-              <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              <Typography variant="small" className="mb-3">
                 Add New Member
-              </h4>
+              </Typography>
               <div className="space-y-3">
                 <Input
                   label="Email Address"
@@ -191,18 +193,16 @@ export function MemberManagement({
                   />
                   <div>
                     <Flex gap="sm" align="center">
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {member.name}
-                      </span>
+                      <Typography variant="small">{member.name}</Typography>
                       {isOwner(member._id) && (
                         <Badge variant="default" size="sm">
                           Owner
                         </Badge>
                       )}
                     </Flex>
-                    <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography variant="small" color="secondary">
                       {member.email}
-                    </span>
+                    </Typography>
                   </div>
                 </Flex>
 
@@ -216,7 +216,10 @@ export function MemberManagement({
                       <Select
                         value={member.role}
                         onChange={(e) =>
-                          handleRoleChange(member._id, e.target.value as "admin" | "editor" | "viewer")
+                          handleRoleChange(
+                            member._id,
+                            e.target.value as "admin" | "editor" | "viewer",
+                          )
                         }
                         options={ROLE_OPTIONS}
                         disabled={changingRoleFor === member._id}

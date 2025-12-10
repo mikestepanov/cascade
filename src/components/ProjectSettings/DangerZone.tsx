@@ -1,14 +1,15 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { ROUTES } from "@/config/routes";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { Input } from "../ui/form";
 import { Flex } from "../ui/Flex";
-import { ROUTES } from "@/config/routes";
+import { Input } from "../ui/form";
+import { Typography } from "../ui/Typography";
 
 interface DangerZoneProps {
   projectId: Id<"projects">;
@@ -56,21 +57,23 @@ export function DangerZone({
   return (
     <Card className="border-status-error/50">
       <div className="p-6">
-        <h3 className="text-lg font-semibold text-status-error mb-2">Danger Zone</h3>
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+        <Typography variant="large" color="error" className="mb-2">
+          Danger Zone
+        </Typography>
+        <Typography variant="small" color="secondary" className="mb-4">
           Irreversible actions that affect the entire project
-        </p>
+        </Typography>
 
         <div className="p-4 bg-status-error/5 border border-status-error/20 rounded-lg">
           <Flex justify="between" align="start">
             <div className="flex-1">
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="small" className="font-medium">
                 Delete this project
-              </h4>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              </Typography>
+              <Typography variant="small" color="secondary" className="mt-1">
                 Once you delete a project, there is no going back. This will permanently delete the
                 project "{projectName}" and all its issues, sprints, and data.
-              </p>
+              </Typography>
             </div>
             {!showConfirm && (
               <Button variant="danger" size="sm" onClick={() => setShowConfirm(true)}>
@@ -81,9 +84,9 @@ export function DangerZone({
 
           {showConfirm && (
             <div className="mt-4 pt-4 border-t border-status-error/20">
-              <p className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              <Typography variant="small" className="mb-3">
                 To confirm, type <strong className="font-mono">{projectKey}</strong> below:
-              </p>
+              </Typography>
               <Input
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}

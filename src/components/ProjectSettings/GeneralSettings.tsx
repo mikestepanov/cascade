@@ -1,12 +1,13 @@
 import { useMutation } from "convex/react";
 import { useState } from "react";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { Input, Textarea } from "../ui/form";
 import { Flex } from "../ui/Flex";
+import { Input, Textarea } from "../ui/form";
+import { Typography } from "../ui/Typography";
 
 interface GeneralSettingsProps {
   projectId: Id<"projects">;
@@ -64,9 +65,7 @@ export function GeneralSettings({
     <Card>
       <div className="p-6">
         <Flex justify="between" align="center" className="mb-4">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-            General
-          </h3>
+          <Typography variant="large">General</Typography>
           {!isEditing && (
             <Button variant="secondary" size="sm" onClick={handleEdit}>
               Edit
@@ -83,15 +82,18 @@ export function GeneralSettings({
               placeholder="Enter project name"
             />
             <div>
-              <label className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <Typography variant="small" color="secondary" className="block mb-1">
                 Project Key
-              </label>
-              <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark font-mono bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-3 py-2 rounded">
+              </Typography>
+              <Typography
+                variant="muted"
+                className="font-mono bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-3 py-2 rounded block"
+              >
                 {projectKey}
-              </p>
-              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+              </Typography>
+              <Typography variant="muted" className="mt-1 text-xs">
                 Project key cannot be changed after creation
-              </p>
+              </Typography>
             </div>
             <Textarea
               label="Description"
@@ -112,28 +114,28 @@ export function GeneralSettings({
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <Typography variant="small" color="secondary" className="block mb-1">
                 Project Name
-              </label>
-              <p className="text-ui-text-primary dark:text-ui-text-primary-dark">
+              </Typography>
+              <Typography variant="p" className="mt-0">
                 {name}
-              </p>
+              </Typography>
             </div>
             <div>
-              <label className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <Typography variant="small" color="secondary" className="block mb-1">
                 Project Key
-              </label>
-              <p className="text-ui-text-primary dark:text-ui-text-primary-dark font-mono">
+              </Typography>
+              <Typography variant="p" className="mt-0 font-mono">
                 {projectKey}
-              </p>
+              </Typography>
             </div>
             <div>
-              <label className="block text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <Typography variant="small" color="secondary" className="block mb-1">
                 Description
-              </label>
-              <p className="text-ui-text-primary dark:text-ui-text-primary-dark">
+              </Typography>
+              <Typography variant="p" className="mt-0">
                 {description || "No description"}
-              </p>
+              </Typography>
             </div>
           </div>
         )}
