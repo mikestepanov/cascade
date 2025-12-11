@@ -16,9 +16,17 @@ interface TimeEntriesListProps {
   userId?: Id<"users">;
   startDate?: number;
   endDate?: number;
+  /** Whether billing is enabled for the company */
+  billingEnabled?: boolean;
 }
 
-export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeEntriesListProps) {
+export function TimeEntriesList({
+  projectId,
+  userId,
+  startDate,
+  endDate,
+  billingEnabled = true,
+}: TimeEntriesListProps) {
   const entries = useQuery(api.timeTracking.listTimeEntries, {
     projectId,
     userId,
@@ -271,6 +279,7 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         open={showManualEntryModal}
         onOpenChange={setShowManualEntryModal}
         projectId={projectId}
+        billingEnabled={billingEnabled}
       />
     </Flex>
   );

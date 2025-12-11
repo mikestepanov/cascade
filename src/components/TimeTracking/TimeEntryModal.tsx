@@ -23,6 +23,8 @@ interface TimeEntryModalProps {
   issueId?: Id<"issues">;
   /** Default mode when opening */
   defaultMode?: "timer" | "log";
+  /** Whether billing is enabled for the company (shows billable checkbox) */
+  billingEnabled?: boolean;
 }
 
 /**
@@ -91,6 +93,7 @@ export function TimeEntryModal({
   projectId: initialProjectId,
   issueId: initialIssueId,
   defaultMode = "log",
+  billingEnabled = true,
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const startTimer = useMutation(api.timeTracking.startTimer);
@@ -397,22 +400,24 @@ export function TimeEntryModal({
             </Select>
           </div>
 
-          {/* Billable */}
-          <div>
-            <label className="cursor-pointer">
-              <Flex align="center" gap="sm">
-                <input
-                  type="checkbox"
-                  checked={billable}
-                  onChange={(e) => setBillable(e.target.checked)}
-                  className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                />
-                <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Billable time
-                </span>
-              </Flex>
-            </label>
-          </div>
+          {/* Billable - only show if billing is enabled for company */}
+          {billingEnabled && (
+            <div>
+              <label className="cursor-pointer">
+                <Flex align="center" gap="sm">
+                  <input
+                    type="checkbox"
+                    checked={billable}
+                    onChange={(e) => setBillable(e.target.checked)}
+                    className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                  />
+                  <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    Billable time
+                  </span>
+                </Flex>
+              </label>
+            </div>
+          )}
 
           {/* Duration Mode Fields */}
           {entryMode === "duration" && (

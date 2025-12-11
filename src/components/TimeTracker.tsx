@@ -13,6 +13,8 @@ interface TimeTrackerProps {
   issueId: Id<"issues">;
   projectId?: Id<"projects">;
   estimatedHours?: number;
+  /** Whether billing is enabled for the company */
+  billingEnabled?: boolean;
 }
 
 /**
@@ -128,7 +130,12 @@ function TimeEntriesList({
   );
 }
 
-export function TimeTracker({ issueId, projectId, estimatedHours = 0 }: TimeTrackerProps) {
+export function TimeTracker({
+  issueId,
+  projectId,
+  estimatedHours = 0,
+  billingEnabled = true,
+}: TimeTrackerProps) {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
 
@@ -297,6 +304,7 @@ export function TimeTracker({ issueId, projectId, estimatedHours = 0 }: TimeTrac
         onOpenChange={setShowLogModal}
         projectId={projectId}
         issueId={issueId}
+        billingEnabled={billingEnabled}
       />
     </div>
   );
