@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
+import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -35,6 +36,14 @@ export function IssueDetailModal({
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  // Get company context for settings
+  const companyContext = useCompanyOptional();
+  const company = useQuery(
+    api.companies.getCompany,
+    companyContext ? { companyId: companyContext.companyId } : "skip",
+  );
+  const billingEnabled = company?.settings?.billingEnabled;
 
   const issue = useQuery(api.issues.get, { id: issueId });
   const subtasks = useQuery(api.issues.listSubtasks, { parentId: issueId });
@@ -196,6 +205,7 @@ export function IssueDetailModal({
               issueId={issue._id}
               projectId={issue.projectId}
               estimatedHours={issue.estimatedHours}
+              billingEnabled={billingEnabled}
             />
           </div>
 

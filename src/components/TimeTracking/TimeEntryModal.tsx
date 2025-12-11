@@ -93,7 +93,7 @@ export function TimeEntryModal({
   projectId: initialProjectId,
   issueId: initialIssueId,
   defaultMode = "log",
-  billingEnabled = true,
+  billingEnabled,
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const startTimer = useMutation(api.timeTracking.startTimer);

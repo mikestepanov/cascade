@@ -134,6 +134,13 @@ function generateSlug(name: string): string {
 // Mutations
 // ============================================================================
 
+const DEFAULT_COMPANY_SETTINGS = {
+  defaultMaxHoursPerWeek: 40,
+  defaultMaxHoursPerDay: 8,
+  requiresTimeApproval: false,
+  billingEnabled: true,
+};
+
 /**
  * Create a new company
  * Creator automatically becomes owner
@@ -183,12 +190,12 @@ export const createCompany = mutation({
 
     const now = Date.now();
 
-    // Create company
+    // Create company with default settings if not provided
     const companyId = await ctx.db.insert("companies", {
       name: args.name,
       slug,
       timezone: args.timezone,
-      settings: args.settings,
+      settings: args.settings ?? DEFAULT_COMPANY_SETTINGS,
       createdBy: userId,
       createdAt: now,
       updatedAt: now,
@@ -667,12 +674,7 @@ export const initializeDefaultCompany = mutation({
       name: companyName,
       slug,
       timezone,
-      settings: {
-        defaultMaxHoursPerWeek: 40,
-        defaultMaxHoursPerDay: 8,
-        requiresTimeApproval: false,
-        billingEnabled: true,
-      },
+      settings: DEFAULT_COMPANY_SETTINGS,
       createdBy: userId,
       createdAt: now,
       updatedAt: now,

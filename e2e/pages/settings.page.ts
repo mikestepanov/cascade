@@ -152,25 +152,30 @@ export class SettingsPage extends BasePage {
   /**
    * Navigate directly to settings page
    */
-  async goto() {
-    await this.page.goto("/settings/profile");
+  async goto(companySlug?: string) {
+    // Use provided slug or default to TEST_COMPANY_SLUG
+    const slug = companySlug || "nixelo-e2e";
+
+    // Navigate directly to settings URL
+    await this.page.goto(`/${slug}/settings/profile`);
     await this.waitForLoad();
+
     // Wait for settings page to load - look for integrations tab (always visible)
     await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
   }
 
   async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
-    // Map tab names to URL parameter values
-    const tabParams: Record<string, string> = {
-      integrations: "integrations",
-      apiKeys: "apikeys",
-      offline: "offline",
-      preferences: "preferences",
-      admin: "admin",
+    // Map tab names to their locators
+    const tabLocators: Record<string, () => Promise<void>> = {
+      integrations: async () => await this.integrationsTab.first().click(),
+      apiKeys: async () => await this.apiKeysTab.first().click(),
+      offline: async () => await this.offlineTab.first().click(),
+      preferences: async () => await this.preferencesTab.first().click(),
+      admin: async () => await this.adminTab.first().click(),
     };
 
-    // Navigate using URL with tab parameter for reliable tab switching
-    await this.page.goto(`/settings/profile?tab=${tabParams[tab]}`);
+    // Click the tab directly
+    await tabLocators[tab]();
     await this.waitForLoad();
 
     // Wait for tab content to load

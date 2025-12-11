@@ -35,7 +35,7 @@ export function AppSidebar() {
   const companyName = company?.companyName ?? "";
 
   // All hooks must be called unconditionally
-  const isAdmin = useQuery(api.users.isPlatformAdmin);
+  const isAdmin = useQuery(api.users.isCompanyAdmin);
   const showTimeTracking = isAdmin === true;
 
   // Section expand states

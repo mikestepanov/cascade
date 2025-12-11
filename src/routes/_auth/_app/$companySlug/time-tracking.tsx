@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/time-tracking")({
 function TimeTrackingPageRoute() {
   const { companySlug } = Route.useParams();
   const navigate = useNavigate();
-  const isAdmin = useQuery(api.users.isPlatformAdmin);
+  const isAdmin = useQuery(api.users.isCompanyAdmin);
 
   // Redirect non-admins to dashboard
   useEffect(() => {

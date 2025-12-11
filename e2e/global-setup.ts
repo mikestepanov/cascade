@@ -2,8 +2,7 @@
  * Global Setup - Runs once before all tests
  *
  * Creates auth state for fixed test users:
- * - dashboard: Default user for most tests
- * - teamLead: Team lead (admin in RBAC)
+ * - teamLead: Team lead (admin in RBAC) - default user for most tests
  * - teamMember: Team member (editor in RBAC)
  * - viewer: Read-only user (viewer in RBAC)
  *
@@ -28,6 +27,22 @@ const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, ".auth");
 
 /**
+ * Result from setting up a test user
+ */
+interface SetupResult {
+  success: boolean;
+  companySlug?: string;
+}
+
+/**
+ * Extract company slug from URL (e.g., /e2e-dashboard-xxxxx/dashboard -> e2e-dashboard-xxxxx)
+ */
+function extractCompanySlug(url: string): string | undefined {
+  const match = url.match(/\/([^/]+)\/(dashboard|settings|projects|documents|issues)/);
+  return match?.[1];
+}
+
+/**
  * Set up auth state for a specific test user
  */
 async function setupTestUser(
@@ -37,7 +52,7 @@ async function setupTestUser(
   userKey: string,
   user: TestUser,
   authPath: string,
-): Promise<boolean> {
+): Promise<SetupResult> {
   const authStatePath = path.join(AUTH_DIR, path.basename(authPath));
 
   // IMPORTANT: Always create fresh auth state because Convex uses refresh token rotation.
@@ -54,34 +69,33 @@ async function setupTestUser(
   // Clear context storage
   await context.clearCookies();
 
-  // Try sign-in first (user might already exist)
-  let success = await trySignInUser(page, baseURL, user);
+  // Always delete and recreate user to ensure deterministic company slug
+  // This ensures the slug is derived from email prefix without random suffix
+  console.log(`  🗑️ ${userKey}: Deleting existing user to ensure fresh state...`);
+  await testUserService.deleteTestUser(user.email);
 
-  if (!success) {
-    // Recreate user via API
-    console.log(`  ℹ️ ${userKey}: Sign-in failed, recreating user via API...`);
-    await testUserService.deleteTestUser(user.email);
+  const createResult = await testUserService.createTestUser(user.email, user.password, true);
+  let success = false;
 
-    const createResult = await testUserService.createTestUser(user.email, user.password, true);
-    if (createResult.success) {
-      console.log(`  ✓ ${userKey}: User created via API (${createResult.userId})`);
-      success = await trySignInUser(page, baseURL, user);
-      if (!success) {
-        console.warn(`  ⚠️ ${userKey}: Sign-in failed after API user creation`);
-      }
-    } else {
-      console.warn(`  ⚠️ ${userKey}: API user creation failed: ${createResult.error}`);
+  if (createResult.success) {
+    console.log(`  ✓ ${userKey}: User created via API (${createResult.userId})`);
+    success = await trySignInUser(page, baseURL, user);
+    if (!success) {
+      console.warn(`  ⚠️ ${userKey}: Sign-in failed after API user creation`);
     }
+  } else {
+    console.warn(`  ⚠️ ${userKey}: API user creation failed: ${createResult.error}`);
   }
 
   if (success) {
     await context.storageState({ path: authStatePath });
+    const companySlug = extractCompanySlug(page.url());
     console.log(`  ✓ ${userKey}: Auth state saved`);
-    return true;
+    return { success: true, companySlug };
   } else {
     console.warn(`  ⚠️ ${userKey}: Failed to create auth state`);
     await page.screenshot({ path: path.join(AUTH_DIR, `setup-error-${userKey}.png`) });
-    return false;
+    return { success: false };
   }
 }
 
@@ -102,9 +116,8 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
   const browser = await chromium.launch();
 
-  // Users to set up
+  // Users to set up (teamLead is the default user for most tests)
   const usersToSetup: Array<{ key: string; user: TestUser; authPath: string }> = [
-    { key: "dashboard", user: TEST_USERS.dashboard, authPath: AUTH_PATHS.dashboard },
     { key: "teamLead", user: TEST_USERS.teamLead, authPath: AUTH_PATHS.teamLead },
     { key: "teamMember", user: TEST_USERS.teamMember, authPath: AUTH_PATHS.teamMember },
     { key: "viewer", user: TEST_USERS.viewer, authPath: AUTH_PATHS.viewer },
@@ -112,12 +125,16 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
   console.log(`\n👥 Setting up ${usersToSetup.length} test user(s)...\n`);
 
+  // Store company slugs for each user
+  const userConfigs: Record<string, { companySlug?: string }> = {};
+
   for (const { key, user, authPath } of usersToSetup) {
     const context = await browser.newContext();
     const page = await context.newPage();
 
     try {
-      await setupTestUser(context, page, baseURL, key, user, authPath);
+      const result = await setupTestUser(context, page, baseURL, key, user, authPath);
+      userConfigs[key] = { companySlug: result.companySlug };
     } catch (error) {
       console.error(`  ❌ ${key}: Setup error:`, error);
       try {
@@ -131,6 +148,19 @@ async function globalSetup(config: FullConfig): Promise<void> {
   }
 
   await browser.close();
+
+  // Save default user config for tests to use (teamLead is the default)
+  if (userConfigs.teamLead?.companySlug) {
+    const dashboardConfig = {
+      companySlug: userConfigs.teamLead.companySlug,
+      email: TEST_USERS.teamLead.email,
+    };
+    fs.writeFileSync(
+      path.join(AUTH_DIR, "dashboard-config.json"),
+      JSON.stringify(dashboardConfig, null, 2),
+    );
+    console.log(`  ✓ Default user config saved: ${dashboardConfig.companySlug}`);
+  }
 
   // Set up RBAC test project
   console.log("\n🔐 Setting up RBAC test project...\n");

@@ -134,7 +134,7 @@ export function TimeTracker({
   issueId,
   projectId,
   estimatedHours = 0,
-  billingEnabled = true,
+  billingEnabled,
 }: TimeTrackerProps) {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showEntries, setShowEntries] = useState(false);

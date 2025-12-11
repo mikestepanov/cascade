@@ -108,19 +108,17 @@ export const TEST_USERS = {
     onboardingPersona: "team_member" as OnboardingPersona,
     description: "Viewer with read-only project access",
   },
-
-  // Legacy alias for backward compatibility
-  dashboard: {
-    email: "e2e-dashboard@inbox.mailtrap.io",
-    password: "E2ETestPassword123!",
-    platformRole: "user" as PlatformRole,
-    onboardingPersona: "team_lead" as OnboardingPersona,
-    description: "Default dashboard user (legacy)",
-  },
 } as const;
 
-// Default user for most tests (backward compatible)
-export const DEFAULT_TEST_USER = TEST_USERS.dashboard;
+// Default user for most tests - use teamLead
+export const DEFAULT_TEST_USER = TEST_USERS.teamLead;
+
+/**
+ * Test company configuration
+ * All test users (teamLead, teamMember, viewer) share this single company.
+ */
+export const TEST_COMPANY_NAME = "Nixelo E2E";
+export const TEST_COMPANY_SLUG = "nixelo-e2e";
 
 /**
  * Prefixes for dynamically created test users
@@ -191,8 +189,6 @@ export const AUTH_PATHS = {
   teamLead: ".auth/user-teamlead.json",
   teamMember: ".auth/user-member.json",
   viewer: ".auth/user-viewer.json",
-  // Legacy paths for backward compatibility
-  dashboard: ".auth/user-dashboard.json",
   onboarding: ".auth/user-onboarding.json",
 };
 

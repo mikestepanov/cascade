@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
@@ -10,6 +11,14 @@ import { TimeEntryModal } from "./TimeEntryModal";
 export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
   const stopTimer = useMutation(api.timeTracking.stopTimer);
+
+  // Get company context for billing settings
+  const companyContext = useCompanyOptional();
+  const company = useQuery(
+    api.companies.getCompany,
+    companyContext ? { companyId: companyContext.companyId } : "skip",
+  );
+  const billingEnabled = company?.settings?.billingEnabled;
 
   const [currentDuration, setCurrentDuration] = useState(0);
   const [showTimeEntryModal, setShowTimeEntryModal] = useState(false);
@@ -111,6 +120,7 @@ export function TimerWidget() {
         open={showTimeEntryModal}
         onOpenChange={setShowTimeEntryModal}
         defaultMode="timer"
+        billingEnabled={billingEnabled}
       />
     </>
   );

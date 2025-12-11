@@ -25,7 +25,7 @@ export function TimeEntriesList({
   userId,
   startDate,
   endDate,
-  billingEnabled = true,
+  billingEnabled,
 }: TimeEntriesListProps) {
   const entries = useQuery(api.timeTracking.listTimeEntries, {
     projectId,

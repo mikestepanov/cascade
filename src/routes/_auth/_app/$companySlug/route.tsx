@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
 import { createContext, useCallback, useContext, useState } from "react";
@@ -14,7 +15,7 @@ import { SidebarProvider } from "@/hooks/useSidebarState";
 
 // Company context type
 interface CompanyContextType {
-  companyId: string;
+  companyId: Id<"companies">;
   companySlug: string;
   companyName: string;
   userRole: "owner" | "admin" | "member";

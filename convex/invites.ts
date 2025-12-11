@@ -5,8 +5,8 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 import { sendEmail } from "./email/index";
 import { getSiteUrl } from "./lib/env";
 
-// Helper: Check if user is a platform admin
-async function isPlatformAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
+// Helper: Check if user is a company admin
+async function isCompanyAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   // Primary: Check if user is admin or owner in any company
   const companyMembership = await ctx.db
     .query("companyMembers")
@@ -185,7 +185,7 @@ export const sendInvite = mutation({
     }
 
     // Check permissions and get project info
-    const isPlatAdmin = await isPlatformAdmin(ctx, userId);
+    const isPlatAdmin = await isCompanyAdmin(ctx, userId);
     let projectName: string | undefined;
     const effectiveProjectRole = args.projectRole || "editor";
 
@@ -277,7 +277,7 @@ export const revokeInvite = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin
-    const isAdmin = await isPlatformAdmin(ctx, userId);
+    const isAdmin = await isCompanyAdmin(ctx, userId);
     if (!isAdmin) {
       throw new Error("Only admins can revoke invites");
     }
@@ -315,7 +315,7 @@ export const resendInvite = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin
-    const isAdmin = await isPlatformAdmin(ctx, userId);
+    const isAdmin = await isCompanyAdmin(ctx, userId);
     if (!isAdmin) {
       throw new Error("Only admins can resend invites");
     }
@@ -504,7 +504,7 @@ export const listInvites = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isPlatformAdmin(ctx, userId);
+    const isAdmin = await isCompanyAdmin(ctx, userId);
     if (!isAdmin) {
       return [];
     }
@@ -560,7 +560,7 @@ export const listUsers = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isPlatformAdmin(ctx, userId);
+    const isAdmin = await isCompanyAdmin(ctx, userId);
     if (!isAdmin) {
       return [];
     }

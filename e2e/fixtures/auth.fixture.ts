@@ -30,7 +30,23 @@ import { trySignInUser } from "../utils";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
-const AUTH_STATE_PATH = path.join(AUTH_DIR, path.basename(AUTH_PATHS.dashboard));
+const AUTH_STATE_PATH = path.join(AUTH_DIR, path.basename(AUTH_PATHS.teamLead));
+const DASHBOARD_CONFIG_PATH = path.join(AUTH_DIR, "dashboard-config.json");
+
+/**
+ * Load dashboard config (company slug, etc.)
+ */
+function loadDashboardConfig(): { companySlug: string; email: string } | null {
+  try {
+    if (fs.existsSync(DASHBOARD_CONFIG_PATH)) {
+      const content = fs.readFileSync(DASHBOARD_CONFIG_PATH, "utf-8");
+      return JSON.parse(content);
+    }
+  } catch {
+    // Ignore errors
+  }
+  return null;
+}
 
 /**
  * Check if auth state file exists and has valid authentication content
@@ -82,6 +98,8 @@ export type AuthFixtures = {
   saveAuthState: () => Promise<void>;
   ensureAuthenticated: () => Promise<void>;
   forceNewContext: boolean;
+  /** Company slug for the default test user (from dashboard-config.json) */
+  companySlug: string;
 };
 
 /**
@@ -130,7 +148,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
         // Use shared sign-in helper
         const baseURL = page.url().split("/").slice(0, 3).join("/");
-        await trySignInUser(page, baseURL, TEST_USERS.dashboard);
+        await trySignInUser(page, baseURL, TEST_USERS.teamLead);
       }
     };
     await use(reauth);
@@ -165,6 +183,16 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(save);
     // Auto-save after each test (unless skipAuthSave is true)
     await save();
+  },
+
+  // Company slug for the default test user (teamLead)
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
+  companySlug: async ({}, use, testInfo) => {
+    const config = loadDashboardConfig();
+    if (!config?.companySlug) {
+      testInfo.skip(true, "Default user config not found. Global setup may have failed.");
+    }
+    await use(config?.companySlug || "");
   },
 
   authPage: async ({ page, saveAuthState: _saveAuthState }, use) => {

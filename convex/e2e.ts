@@ -190,12 +190,12 @@ export const createTestUserInternal = internalMutation({
           .first();
 
         if (!existingMembership) {
-          // Create a company for the user
-          const randomSuffix = Math.random().toString(36).substring(2, 8);
-          const slug = `${emailPrefix}-${randomSuffix}`;
+          // Create the shared E2E test company
+          const companyName = "Nixelo E2E";
+          const slug = "nixelo-e2e";
 
           const companyId = await ctx.db.insert("companies", {
-            name: `Test Company (${emailPrefix})`,
+            name: companyName,
             slug,
             timezone: "UTC",
             createdBy: existingUser._id,
@@ -252,14 +252,13 @@ export const createTestUserInternal = internalMutation({
         updatedAt: now,
       });
 
-      // Generate a unique slug from email prefix + random suffix
-      const emailPrefix = args.email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase();
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-      const slug = `${emailPrefix}-${randomSuffix}`;
+      // Create the shared E2E test company
+      const companyName = "Nixelo E2E";
+      const slug = "nixelo-e2e";
 
-      // Create a default company for the user
+      // Create the company
       const companyId = await ctx.db.insert("companies", {
-        name: `Test Company (${emailPrefix})`,
+        name: companyName,
         slug,
         timezone: "UTC",
         createdBy: userId,
@@ -396,6 +395,31 @@ export const deleteTestUserInternal = internalMutation({
 
       // Note: authRefreshTokens are tied to sessions, which we've already deleted
       // The auth system will clean up orphaned refresh tokens
+
+      // Delete user's company memberships and any companies they created
+      const memberships = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const membership of memberships) {
+        // Check if user is the company creator - if so, delete the company
+        const company = await ctx.db.get(membership.companyId);
+        if (company?.createdBy === user._id) {
+          // Delete all members of this company first
+          const companyMembers = await ctx.db
+            .query("companyMembers")
+            .withIndex("by_company", (q) => q.eq("companyId", company._id))
+            .collect();
+          for (const member of companyMembers) {
+            await ctx.db.delete(member._id);
+          }
+          // Delete the company
+          await ctx.db.delete(company._id);
+        } else {
+          // Just delete the membership
+          await ctx.db.delete(membership._id);
+        }
+      }
 
       // Delete the user
       await ctx.db.delete(user._id);

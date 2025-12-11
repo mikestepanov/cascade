@@ -57,13 +57,13 @@ export const updateProfile = mutation({
 });
 
 /**
- * Check if the current user is a platform admin
+ * Check if the current user is a company admin
  * Returns true if user is:
  * - Owner or admin in any company
  * - Creator of any project (backward compatibility)
  * - Admin in any project (backward compatibility)
  */
-export const isPlatformAdmin = query({
+export const isCompanyAdmin = query({
   args: {},
   returns: v.boolean(),
   handler: async (ctx) => {

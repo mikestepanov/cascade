@@ -186,47 +186,40 @@ Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for e
 
 | User Key | Email | Role | Description |
 |----------|-------|------|-------------|
-| `dashboard` | `e2e-dashboard@inbox.mailtrap.io` | editor | Default test user (created automatically) |
-| `admin` | `e2e-admin@inbox.mailtrap.io` | admin | Platform admin with full access |
-| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Project admin with management access |
+| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Default test user, project admin |
 | `teamMember` | `e2e-member@inbox.mailtrap.io` | editor | Team member with edit permissions |
 | `viewer` | `e2e-viewer@inbox.mailtrap.io` | viewer | Read-only access |
 
 **Password:** All test users use `E2ETestPassword123!`
 
+### Test Company
+
+All test users share a single company:
+
+| Property | Value |
+|----------|-------|
+| Company Name | `Nixelo E2E` |
+| Company Slug | `nixelo-e2e` |
+
+This ensures deterministic URLs: `http://localhost:5555/nixelo-e2e/dashboard`
+
 ### Automatic User Setup
 
-The `dashboard` user is created automatically by `global-setup.ts` on first run:
-1. Tries to sign in (if user exists)
-2. If sign-in fails, signs up with email verification via Mailtrap
-3. Saves auth state to `e2e/.auth/user-dashboard.json`
+Test users are created automatically by `global-setup.ts` on each run:
+1. Deletes any existing user and their company (ensures fresh state)
+2. Creates user via E2E API endpoint (bypasses email verification)
+3. Signs in via browser to get auth tokens
+4. Saves auth state to `e2e/.auth/user-*.json`
 
-Auth state is cached for 1 hour to avoid re-authentication on every run.
-
-### Enabling Additional Test Users
-
-To create additional users, uncomment them in `e2e/global-setup.ts`:
-
-```typescript
-const usersToSetup = [
-  { key: "dashboard", user: TEST_USERS.dashboard, authPath: AUTH_PATHS.dashboard },
-  // Uncomment to create (requires ~90s per user for email verification):
-  // { key: "admin", user: TEST_USERS.admin, authPath: AUTH_PATHS.admin },
-  // { key: "teamLead", user: TEST_USERS.teamLead, authPath: AUTH_PATHS.teamLead },
-];
-```
-
-**Note:** Each new user requires email verification (~90 seconds), so enable only what you need.
+**Important:** Auth state is NOT cached - fresh tokens are created each run to avoid Convex refresh token rotation issues.
 
 ### Auth State Files
 
 | File | User |
 |------|------|
-| `e2e/.auth/user-dashboard.json` | Default dashboard user |
-| `e2e/.auth/user-admin.json` | Admin user |
-| `e2e/.auth/user-teamlead.json` | Team lead user |
-| `e2e/.auth/user-member.json` | Team member user |
-| `e2e/.auth/user-viewer.json` | Viewer user |
+| `e2e/.auth/user-teamlead.json` | Team lead (default) |
+| `e2e/.auth/user-member.json` | Team member |
+| `e2e/.auth/user-viewer.json` | Viewer |
 
 ### IMPORTANT: Convex Auth Token Rotation
 
@@ -294,7 +287,7 @@ test.describe("Sign Out Tests", () => {
 ```typescript
 // e2e/fixtures/auth.fixture.ts
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: AUTH_PATHS.dashboard,  // Uses saved cookies/localStorage
+  storageState: AUTH_PATHS.teamLead,  // Uses saved cookies/localStorage
   skipAuthSave: [false, { option: true }],  // Option to skip saving
 
   ensureAuthenticated: async ({ page }, use) => {
@@ -733,7 +726,7 @@ RBAC project configuration is saved by global-setup:
 e2e/.auth/rbac-config.json
 {
   "projectKey": "RBAC",
-  "companySlug": "e2e-teamlead-xxxxx",  // Actual slug from API
+  "companySlug": "nixelo-e2e",  // Deterministic slug for all test users
   "projectId": "...",
   "companyId": "..."
 }
@@ -750,4 +743,4 @@ This file is read by `rbac.fixture.ts` to get the correct company slug for navig
 
 ---
 
-*Last Updated: 2025-12-09*
+*Last Updated: 2025-12-10*
