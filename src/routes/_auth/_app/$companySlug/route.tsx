@@ -19,6 +19,7 @@ interface CompanyContextType {
   companySlug: string;
   companyName: string;
   userRole: "owner" | "admin" | "member";
+  billingEnabled: boolean;
 }
 
 const CompanyContext = createContext<CompanyContextType | null>(null);
@@ -121,6 +122,7 @@ function CompanyLayout() {
     companySlug: company.slug,
     companyName: company.name,
     userRole: userCompany.userRole,
+    billingEnabled: company.settings.billingEnabled,
   };
 
   return (

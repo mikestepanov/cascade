@@ -2,8 +2,8 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ProjectSettings } from "@/components/ProjectSettings";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/settings")({

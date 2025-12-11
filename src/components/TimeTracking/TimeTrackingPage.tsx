@@ -25,13 +25,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
   );
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("week");
 
-  // Get company context for billing settings
+  // Get billing setting from company context
   const companyContext = useCompanyOptional();
-  const company = useQuery(
-    api.companies.getCompany,
-    companyContext ? { companyId: companyContext.companyId } : "skip",
-  );
-  const billingEnabled = company?.settings?.billingEnabled;
+  const billingEnabled = companyContext?.billingEnabled;
 
   // Only fetch projects list if no projectId is locked
   const projects = useQuery(api.projects.list, projectId ? "skip" : undefined);

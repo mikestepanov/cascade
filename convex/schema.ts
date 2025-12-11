@@ -1131,15 +1131,13 @@ const applicationTables = {
     name: v.string(), // Company name
     slug: v.string(), // URL-friendly slug: "acme-corp", "example-agency"
     timezone: v.string(), // Company default timezone (IANA): "America/New_York", "Europe/London"
-    // Company settings
-    settings: v.optional(
-      v.object({
-        defaultMaxHoursPerWeek: v.number(), // Company-wide default max hours per week
-        defaultMaxHoursPerDay: v.number(), // Company-wide default max hours per day
-        requiresTimeApproval: v.boolean(), // Require time entry approval by default
-        billingEnabled: v.boolean(), // Enable billing features
-      }),
-    ),
+    // Company settings (required)
+    settings: v.object({
+      defaultMaxHoursPerWeek: v.number(), // Company-wide default max hours per week
+      defaultMaxHoursPerDay: v.number(), // Company-wide default max hours per day
+      requiresTimeApproval: v.boolean(), // Require time entry approval by default
+      billingEnabled: v.boolean(), // Enable billing features
+    }),
     // Metadata
     createdBy: v.id("users"), // Company creator (becomes owner)
     createdAt: v.number(),

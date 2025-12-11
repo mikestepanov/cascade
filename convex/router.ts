@@ -9,14 +9,15 @@ import {
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
   setupRbacProjectEndpoint,
+  updateCompanySettingsEndpoint,
   verifyTestUserEndpoint,
 } from "./e2e";
-import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 import {
   handleCallback as handleGitHubCallback,
   initiateAuth as initiateGitHubAuth,
   listRepos as listGitHubRepos,
 } from "./http/githubOAuth";
+import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 
 const http = httpRouter();
 
@@ -127,6 +128,13 @@ http.route({
   path: "/e2e/debug-verify-password",
   method: "POST",
   handler: debugVerifyPasswordEndpoint,
+});
+
+// Update company settings for testing different profiles
+http.route({
+  path: "/e2e/update-company-settings",
+  method: "POST",
+  handler: updateCompanySettingsEndpoint,
 });
 
 export default http;

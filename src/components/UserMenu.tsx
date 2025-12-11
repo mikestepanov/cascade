@@ -23,7 +23,7 @@ export function UserMenu() {
   const companySlug = company?.companySlug ?? "";
 
   // Don't render menu if user or company context isn't ready
-  if (!user || !company) {
+  if (!(user && company)) {
     return null;
   }
 

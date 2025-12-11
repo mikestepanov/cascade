@@ -125,10 +125,11 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   // Re-authenticate if current tokens are invalid (e.g., after signout test)
   // Call this in beforeEach if your test might run after signout
-  ensureAuthenticated: async ({ page }, use) => {
+  ensureAuthenticated: async ({ page, companySlug }, use) => {
     const reauth = async () => {
-      // Navigate to check if we're authenticated
-      await page.goto("/dashboard");
+      // Navigate to check if we're authenticated (use company-scoped dashboard)
+      const dashboardUrl = companySlug ? `/${companySlug}/dashboard` : "/";
+      await page.goto(dashboardUrl);
       await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(1500);
 

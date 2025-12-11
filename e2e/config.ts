@@ -121,6 +121,58 @@ export const TEST_COMPANY_NAME = "Nixelo E2E";
 export const TEST_COMPANY_SLUG = "nixelo-e2e";
 
 /**
+ * Company Settings Type
+ * Matches the schema in convex/schema.ts
+ */
+export interface CompanySettings {
+  defaultMaxHoursPerWeek: number;
+  defaultMaxHoursPerDay: number;
+  requiresTimeApproval: boolean;
+  billingEnabled: boolean;
+}
+
+/**
+ * Settings Profiles for E2E Testing
+ *
+ * Use these profiles to test different settings configurations.
+ * Most tests should use 'default'. Only use specific profiles
+ * when testing features affected by that setting.
+ */
+export const SETTINGS_PROFILES: Record<string, CompanySettings> = {
+  // Default profile - used by most tests
+  default: {
+    defaultMaxHoursPerWeek: 40,
+    defaultMaxHoursPerDay: 8,
+    requiresTimeApproval: false,
+    billingEnabled: true,
+  },
+
+  // Billing disabled - for testing billing feature gates
+  billingDisabled: {
+    defaultMaxHoursPerWeek: 40,
+    defaultMaxHoursPerDay: 8,
+    requiresTimeApproval: false,
+    billingEnabled: false,
+  },
+
+  // Time approval required - for testing approval workflows
+  timeApprovalRequired: {
+    defaultMaxHoursPerWeek: 40,
+    defaultMaxHoursPerDay: 8,
+    requiresTimeApproval: true,
+    billingEnabled: true,
+  },
+
+  // Strict time limits - for testing hour limit enforcement
+  strictTimeLimits: {
+    defaultMaxHoursPerWeek: 20,
+    defaultMaxHoursPerDay: 4,
+    requiresTimeApproval: true,
+    billingEnabled: true,
+  },
+};
+
+/**
  * Prefixes for dynamically created test users
  */
 export const TEST_USER_PREFIXES = {
@@ -151,6 +203,8 @@ export const E2E_ENDPOINTS = {
   cleanupRbacProject: `${CONVEX_SITE_URL}/e2e/cleanup-rbac-project`,
   // Debug: Verify password against stored hash (POST)
   debugVerifyPassword: `${CONVEX_SITE_URL}/e2e/debug-verify-password`,
+  // Update company settings (POST) - for testing different settings profiles
+  updateCompanySettings: `${CONVEX_SITE_URL}/e2e/update-company-settings`,
 };
 
 /**

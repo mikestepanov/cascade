@@ -26,11 +26,6 @@ export function Dashboard() {
   const recentActivity = useQuery(api.dashboard.getMyRecentActivity, { limit: 10 });
   const stats = useQuery(api.dashboard.getMyStats);
 
-  // Don't render dashboard if company context isn't ready
-  if (!company) {
-    return null;
-  }
-
   const displayIssues =
     issueFilter === "assigned"
       ? myIssues
@@ -60,6 +55,11 @@ export function Dashboard() {
     onSelect: (project) => navigateToProject(project.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
+
+  // Don't render dashboard if company context isn't ready
+  if (!company) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">

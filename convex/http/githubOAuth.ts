@@ -288,7 +288,14 @@ export const listRepos = httpAction(async (ctx, _request) => {
 
     // Transform to a simpler format
     const simplifiedRepos = repos.map(
-      (repo: { id: number; name: string; full_name: string; owner: { login: string }; private: boolean; description: string | null }) => ({
+      (repo: {
+        id: number;
+        name: string;
+        full_name: string;
+        owner: { login: string };
+        private: boolean;
+        description: string | null;
+      }) => ({
         id: String(repo.id),
         name: repo.name,
         fullName: repo.full_name,

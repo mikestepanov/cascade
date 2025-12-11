@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../../convex/_generated/api";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { showError, showSuccess } from "@/lib/toast";
+import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
+import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { Flex } from "../ui/Flex";
@@ -64,7 +64,7 @@ export function CompanySettings() {
       formData.requiresTimeApproval !== settings.requiresTimeApproval ||
       formData.billingEnabled !== settings.billingEnabled);
 
-  if (!company || !formData) {
+  if (!(company && formData)) {
     return (
       <Card>
         <CardBody>

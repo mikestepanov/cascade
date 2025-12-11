@@ -12,13 +12,9 @@ export function TimerWidget() {
   const runningTimer = useQuery(api.timeTracking.getRunningTimer);
   const stopTimer = useMutation(api.timeTracking.stopTimer);
 
-  // Get company context for billing settings
+  // Get billing setting from company context
   const companyContext = useCompanyOptional();
-  const company = useQuery(
-    api.companies.getCompany,
-    companyContext ? { companyId: companyContext.companyId } : "skip",
-  );
-  const billingEnabled = company?.settings?.billingEnabled;
+  const billingEnabled = companyContext?.billingEnabled;
 
   const [currentDuration, setCurrentDuration] = useState(0);
   const [showTimeEntryModal, setShowTimeEntryModal] = useState(false);

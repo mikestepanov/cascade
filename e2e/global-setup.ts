@@ -185,10 +185,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
       projectId: rbacResult.projectId,
       companyId: rbacResult.companyId,
     };
-    fs.writeFileSync(
-      path.join(AUTH_DIR, "rbac-config.json"),
-      JSON.stringify(rbacConfig, null, 2),
-    );
+    fs.writeFileSync(path.join(AUTH_DIR, "rbac-config.json"), JSON.stringify(rbacConfig, null, 2));
     console.log(`  ✓ RBAC config saved to .auth/rbac-config.json`);
   } else {
     console.warn(`  ⚠️ RBAC project setup failed: ${rbacResult.error}`);

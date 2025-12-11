@@ -1,10 +1,10 @@
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
+import { DangerZone } from "./DangerZone";
 import { GeneralSettings } from "./GeneralSettings";
 import { MemberManagement } from "./MemberManagement";
 import { WorkflowSettings } from "./WorkflowSettings";
-import { DangerZone } from "./DangerZone";
-import { Typography } from "../ui/Typography";
-import { Flex } from "../ui/Flex";
 
 interface WorkflowState {
   id: string;
@@ -87,7 +87,7 @@ export function ProjectSettings({
   );
 }
 
+export { DangerZone } from "./DangerZone";
 export { GeneralSettings } from "./GeneralSettings";
 export { MemberManagement } from "./MemberManagement";
 export { WorkflowSettings } from "./WorkflowSettings";
-export { DangerZone } from "./DangerZone";

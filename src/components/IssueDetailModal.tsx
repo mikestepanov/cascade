@@ -37,13 +37,9 @@ export function IssueDetailModal({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // Get company context for settings
+  // Get billing setting from company context
   const companyContext = useCompanyOptional();
-  const company = useQuery(
-    api.companies.getCompany,
-    companyContext ? { companyId: companyContext.companyId } : "skip",
-  );
-  const billingEnabled = company?.settings?.billingEnabled;
+  const billingEnabled = companyContext?.billingEnabled;
 
   const issue = useQuery(api.issues.get, { id: issueId });
   const subtasks = useQuery(api.issues.listSubtasks, { parentId: issueId });
