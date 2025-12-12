@@ -222,11 +222,12 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     console.log("  📝 Filling credentials...");
     await page.getByPlaceholder("Email").fill(user.email);
     await page.getByPlaceholder("Password").fill(user.password);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(500);
 
     console.log("  🚀 Clicking sign-in button...");
     const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-    await signInButton.waitFor({ state: "visible", timeout: 5000 });
+    await signInButton.waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForTimeout(300); // Small delay for button to be clickable
     await signInButton.click();
 
     try {

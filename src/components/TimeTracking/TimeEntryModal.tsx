@@ -182,8 +182,18 @@ export function TimeEntryModal({
     setTags(tags.filter((t) => t !== tagToRemove));
   };
 
+  // Validation: require either [project + issue] OR [description + activity]
+  const hasTaskContext = projectId && issueId;
+  const hasManualContext = description.trim() && activity;
+  const hasValidContext = hasTaskContext || hasManualContext;
+
   // Handle starting a timer
   const handleStartTimer = async () => {
+    if (!hasValidContext) {
+      showError("Please select a project and issue, or fill in description and activity");
+      return;
+    }
+
     try {
       await startTimer({
         projectId,
@@ -191,6 +201,7 @@ export function TimeEntryModal({
         description: description || undefined,
         activity: activity || undefined,
         billable,
+        tags: tags.length > 0 ? tags : undefined,
       });
       showSuccess("Timer started");
       onOpenChange(false);
@@ -201,7 +212,11 @@ export function TimeEntryModal({
 
   // Handle logging past time
   const handleLogTime = async () => {
-    // Validate
+    // Validate context
+    if (!hasValidContext) {
+      showError("Please select a project and issue, or fill in description and activity");
+      return;
+    }
     if (!date) {
       showError("Please select a date");
       return;
@@ -419,6 +434,57 @@ export function TimeEntryModal({
             </div>
           )}
 
+          {/* Tags - common to all modes */}
+          <div>
+            <label
+              htmlFor="time-entry-tags"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Tags
+            </label>
+            <Flex gap="sm">
+              <input
+                id="time-entry-tags"
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddTag();
+                  }
+                }}
+                placeholder="Add tag..."
+                className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+              />
+              <Button type="button" onClick={handleAddTag} variant="secondary" size="sm">
+                Add
+              </Button>
+            </Flex>
+            {tags.length > 0 && (
+              <div className="mt-2">
+                <Flex gap="sm" className="flex-wrap">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="hover:text-brand-900 dark:hover:text-brand-100"
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </Flex>
+              </div>
+            )}
+          </div>
+
           {/* Duration Mode Fields */}
           {entryMode === "duration" && (
             <>
@@ -515,57 +581,6 @@ export function TimeEntryModal({
                   </div>
                 )}
               </div>
-
-              {/* Tags */}
-              <div>
-                <label
-                  htmlFor="time-entry-tags"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Tags
-                </label>
-                <Flex gap="sm">
-                  <input
-                    id="time-entry-tags"
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="Add tag..."
-                    className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  />
-                  <Button type="button" onClick={handleAddTag} variant="secondary" size="sm">
-                    Add
-                  </Button>
-                </Flex>
-                {tags.length > 0 && (
-                  <div className="mt-2">
-                    <Flex gap="sm" className="flex-wrap">
-                      {tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTag(tag)}
-                            className="hover:text-brand-900 dark:hover:text-brand-100"
-                            aria-label={`Remove tag ${tag}`}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </Flex>
-                  </div>
-                )}
-              </div>
             </>
           )}
 
@@ -635,57 +650,6 @@ export function TimeEntryModal({
                   </span>
                 </div>
               )}
-
-              {/* Tags */}
-              <div>
-                <label
-                  htmlFor="time-entry-tags-range"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Tags
-                </label>
-                <Flex gap="sm">
-                  <input
-                    id="time-entry-tags-range"
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="Add tag..."
-                    className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  />
-                  <Button type="button" onClick={handleAddTag} variant="secondary" size="sm">
-                    Add
-                  </Button>
-                </Flex>
-                {tags.length > 0 && (
-                  <div className="mt-2">
-                    <Flex gap="sm" className="flex-wrap">
-                      {tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTag(tag)}
-                            className="hover:text-brand-900 dark:hover:text-brand-100"
-                            aria-label={`Remove tag ${tag}`}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </Flex>
-                  </div>
-                )}
-              </div>
             </>
           )}
 

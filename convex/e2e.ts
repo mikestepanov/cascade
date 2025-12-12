@@ -14,6 +14,7 @@
 import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { httpAction, internalMutation } from "./_generated/server";
 
 // Test user expiration (1 hour - for garbage collection)
@@ -192,24 +193,37 @@ export const createTestUserInternal = internalMutation({
           .first();
 
         if (!existingMembership) {
-          // Create the shared E2E test company
+          // Check if shared E2E test company already exists
           const companyName = "Nixelo E2E";
           const slug = "nixelo-e2e";
 
-          const companyId = await ctx.db.insert("companies", {
-            name: companyName,
-            slug,
-            timezone: "UTC",
-            settings: {
-              defaultMaxHoursPerWeek: 40,
-              defaultMaxHoursPerDay: 8,
-              requiresTimeApproval: false,
-              billingEnabled: true,
-            },
-            createdBy: existingUser._id,
-            createdAt: now,
-            updatedAt: now,
-          });
+          const existingCompany = await ctx.db
+            .query("companies")
+            .withIndex("by_slug", (q) => q.eq("slug", slug))
+            .first();
+
+          let companyId: Id<"companies">;
+
+          if (existingCompany) {
+            // Company exists - just add this user as a member
+            companyId = existingCompany._id;
+          } else {
+            // Create the company
+            companyId = await ctx.db.insert("companies", {
+              name: companyName,
+              slug,
+              timezone: "UTC",
+              settings: {
+                defaultMaxHoursPerWeek: 40,
+                defaultMaxHoursPerDay: 8,
+                requiresTimeApproval: false,
+                billingEnabled: true,
+              },
+              createdBy: existingUser._id,
+              createdAt: now,
+              updatedAt: now,
+            });
+          }
 
           await ctx.db.insert("companyMembers", {
             companyId,
@@ -243,7 +257,7 @@ export const createTestUserInternal = internalMutation({
       emailVerified: new Date().toISOString(),
     });
 
-    // If skipOnboarding is true, create completed onboarding record AND a default company
+    // If skipOnboarding is true, create completed onboarding record AND add to shared company
     if (args.skipOnboarding) {
       const now = Date.now();
 
@@ -260,25 +274,37 @@ export const createTestUserInternal = internalMutation({
         updatedAt: now,
       });
 
-      // Create the shared E2E test company
+      // Check if shared E2E test company already exists
       const companyName = "Nixelo E2E";
       const slug = "nixelo-e2e";
 
-      // Create the company
-      const companyId = await ctx.db.insert("companies", {
-        name: companyName,
-        slug,
-        timezone: "UTC",
-        settings: {
-          defaultMaxHoursPerWeek: 40,
-          defaultMaxHoursPerDay: 8,
-          requiresTimeApproval: false,
-          billingEnabled: true,
-        },
-        createdBy: userId,
-        createdAt: now,
-        updatedAt: now,
-      });
+      const existingCompany = await ctx.db
+        .query("companies")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .first();
+
+      let companyId: Id<"companies">;
+
+      if (existingCompany) {
+        // Company exists - just add this user as a member
+        companyId = existingCompany._id;
+      } else {
+        // Create the company (first user creates it)
+        companyId = await ctx.db.insert("companies", {
+          name: companyName,
+          slug,
+          timezone: "UTC",
+          settings: {
+            defaultMaxHoursPerWeek: 40,
+            defaultMaxHoursPerDay: 8,
+            requiresTimeApproval: false,
+            billingEnabled: true,
+          },
+          createdBy: userId,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
 
       // Add user as admin of the company
       await ctx.db.insert("companyMembers", {
