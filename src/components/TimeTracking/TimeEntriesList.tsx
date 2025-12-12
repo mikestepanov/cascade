@@ -9,16 +9,24 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
-import { ManualTimeEntryModal } from "./ManualTimeEntryModal";
+import { TimeEntryModal } from "./TimeEntryModal";
 
 interface TimeEntriesListProps {
   projectId?: Id<"projects">;
   userId?: Id<"users">;
   startDate?: number;
   endDate?: number;
+  /** Whether billing is enabled for the company */
+  billingEnabled?: boolean;
 }
 
-export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeEntriesListProps) {
+export function TimeEntriesList({
+  projectId,
+  userId,
+  startDate,
+  endDate,
+  billingEnabled,
+}: TimeEntriesListProps) {
   const entries = useQuery(api.timeTracking.listTimeEntries, {
     projectId,
     userId,
@@ -266,11 +274,12 @@ export function TimeEntriesList({ projectId, userId, startDate, endDate }: TimeE
         );
       })}
 
-      {/* Manual Time Entry Modal */}
-      <ManualTimeEntryModal
+      {/* Time Entry Modal */}
+      <TimeEntryModal
         open={showManualEntryModal}
         onOpenChange={setShowManualEntryModal}
         projectId={projectId}
+        billingEnabled={billingEnabled}
       />
     </Flex>
   );

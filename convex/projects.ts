@@ -239,6 +239,139 @@ export const getByKey = query({
   },
 });
 
+export const update = mutation({
+  args: {
+    projectId: v.id("projects"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    isPublic: v.optional(v.boolean()),
+    isCompanyPublic: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Only project admins can update project settings
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
+
+    const updates: Record<string, unknown> = {
+      updatedAt: Date.now(),
+    };
+
+    if (args.name !== undefined) {
+      updates.name = args.name;
+    }
+    if (args.description !== undefined) {
+      updates.description = args.description;
+    }
+    if (args.isPublic !== undefined) {
+      updates.isPublic = args.isPublic;
+    }
+    if (args.isCompanyPublic !== undefined) {
+      updates.isCompanyPublic = args.isCompanyPublic;
+    }
+
+    await ctx.db.patch(args.projectId, updates);
+    return { projectId: args.projectId };
+  },
+});
+
+export const deleteProject = mutation({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Only project owner can delete the project
+    if (project.createdBy !== userId && project.ownerId !== userId) {
+      throw new Error("Only project owner can delete the project");
+    }
+
+    // Delete all related data
+    // 1. Delete all issues
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+
+    for (const issue of issues) {
+      // Delete issue comments
+      const comments = await ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const comment of comments) {
+        await ctx.db.delete(comment._id);
+      }
+
+      // Delete issue activity
+      const activities = await ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .collect();
+      for (const activity of activities) {
+        await ctx.db.delete(activity._id);
+      }
+
+      // Delete issue links
+      const linksFrom = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issue._id))
+        .collect();
+      for (const link of linksFrom) {
+        await ctx.db.delete(link._id);
+      }
+      const linksTo = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_to_issue", (q) => q.eq("toIssueId", issue._id))
+        .collect();
+      for (const link of linksTo) {
+        await ctx.db.delete(link._id);
+      }
+
+      await ctx.db.delete(issue._id);
+    }
+
+    // 2. Delete all sprints
+    const sprints = await ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    for (const sprint of sprints) {
+      await ctx.db.delete(sprint._id);
+    }
+
+    // 3. Delete all project members
+    const members = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    for (const member of members) {
+      await ctx.db.delete(member._id);
+    }
+
+    // 4. Delete the project itself
+    await ctx.db.delete(args.projectId);
+    return { deleted: true };
+  },
+});
+
 export const updateWorkflow = mutation({
   args: {
     projectId: v.id("projects"),

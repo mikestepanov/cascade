@@ -152,29 +152,34 @@ export class SettingsPage extends BasePage {
   /**
    * Navigate directly to settings page
    */
-  async goto() {
-    await this.page.goto("/settings/profile");
+  async goto(companySlug?: string) {
+    // Use provided slug or default to TEST_COMPANY_SLUG
+    const slug = companySlug || "nixelo-e2e";
+
+    // Navigate directly to settings URL
+    await this.page.goto(`/${slug}/settings/profile`);
     await this.waitForLoad();
+
     // Wait for settings page to load - look for integrations tab (always visible)
     await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
   }
 
   async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
-    // Map tab names to URL parameter values
-    const tabParams: Record<string, string> = {
-      integrations: "integrations",
-      apiKeys: "apikeys",
-      offline: "offline",
-      preferences: "preferences",
-      admin: "admin",
-    };
+    // Wait for React to fully hydrate and attach event handlers
+    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForTimeout(1000);
 
-    // Navigate using URL with tab parameter for reliable tab switching
-    await this.page.goto(`/settings/profile?tab=${tabParams[tab]}`);
+    // Use getByRole("tab") directly - Radix UI tabs have role="tab"
+    const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
+    await tabLocator.waitFor({ state: "visible", timeout: 5000 });
+
+    // Focus first, then click - ensures React event handlers are attached
+    await tabLocator.focus();
+    await tabLocator.click();
+
+    // Wait for tab to become active
+    await expect(tabLocator).toHaveAttribute("aria-selected", "true", { timeout: 5000 });
     await this.waitForLoad();
-
-    // Wait for tab content to load
-    await this.page.waitForTimeout(500);
   }
 
   // ===================
@@ -229,11 +234,11 @@ export class SettingsPage extends BasePage {
 
   async openInviteUserModal() {
     // Wait for the Admin tab content to be fully loaded
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(2000);
 
     // Use the first "Invite User" button (header one, not empty state one)
     const inviteBtn = this.inviteUserButton.first();
-    await inviteBtn.waitFor({ state: "visible", timeout: 5000 });
+    await inviteBtn.waitFor({ state: "visible", timeout: 15000 });
 
     // Scroll into view and wait for it to be stable
     await inviteBtn.scrollIntoViewIfNeeded();

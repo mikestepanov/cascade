@@ -12,30 +12,30 @@ import { waitForVerificationEmail } from "./mailtrap";
 /**
  * Check if we're on the dashboard
  * Handles both old (/dashboard) and new (/:companySlug/dashboard) URL patterns
+ *
+ * This only checks URL pattern. For content verification, use waitForDashboardContent().
  */
 export async function isOnDashboard(page: Page): Promise<boolean> {
-  // First check URL pattern - new pattern is /:companySlug/dashboard
   const url = page.url();
   const dashboardUrlPattern = /\/[^/]+\/dashboard$/;
-  if (dashboardUrlPattern.test(url) || url.endsWith("/dashboard")) {
-    // URL matches dashboard pattern, wait a moment for page to load
-    await page.waitForTimeout(500);
+  return dashboardUrlPattern.test(url) || url.endsWith("/dashboard");
+}
+
+/**
+ * Wait for dashboard content to be fully loaded (My Work heading visible)
+ * Call this after confirming URL is dashboard to ensure content rendered.
+ *
+ * @returns true if content loaded, false if timed out
+ */
+export async function waitForDashboardContent(page: Page, timeout = 15000): Promise<boolean> {
+  const myWorkHeading = page.getByRole("heading", { name: /my work/i });
+
+  try {
+    await myWorkHeading.waitFor({ state: "visible", timeout });
     return true;
+  } catch {
+    return false;
   }
-
-  // Check for dashboard content indicators as fallback
-  const dashboardIndicators = [
-    page.getByRole("heading", { name: /my work/i }),
-    page.getByText("Your personal dashboard"),
-    page.getByText("ASSIGNED TO ME"),
-  ];
-
-  for (const indicator of dashboardIndicators) {
-    if (await indicator.isVisible().catch(() => false)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 /**
@@ -78,56 +78,25 @@ export async function clickContinueWithEmail(page: Page): Promise<boolean> {
   }
 
   // Wait for page to be fully loaded and React to hydrate
+  // On cold starts, React needs more time to attach click handlers
   await page.waitForLoadState("networkidle");
-  await page.waitForTimeout(1500); // Extra time for React hydration
+  await page.waitForTimeout(3000);
 
-  // Try clicking multiple times
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    console.log(`📍 Click attempt ${attempt}...`);
+  // Click the button
+  await continueButton.click({ timeout: 5000 });
 
-    try {
-      // Click the button
-      await continueButton.click({ timeout: 5000 });
-
-      // Wait for button text to change - this is the definitive indicator
-      // The button should change from "Continue with email" to "Sign in" or "Create account"
-      try {
-        await Promise.race([
-          signInButton.waitFor({ state: "visible", timeout: 3000 }),
-          createAccountButton.waitFor({ state: "visible", timeout: 3000 }),
-        ]);
-        console.log("✓ Form expanded successfully (button text changed)");
-        return true;
-      } catch {
-        // Button text didn't change, try again
-        console.log(`⚠️ Button text didn't change after click ${attempt}`);
-      }
-    } catch (error) {
-      console.log(`⚠️ Click ${attempt} failed:`, String(error).slice(0, 100));
-    }
-
-    if (attempt < 3) {
-      await page.waitForTimeout(1000);
-    }
-  }
-
-  // Final attempt with force click
-  console.log("⚠️ Regular clicks failed, trying force click...");
+  // Wait for form to expand
   try {
-    await continueButton.click({ force: true, timeout: 5000 });
-
     await Promise.race([
       signInButton.waitFor({ state: "visible", timeout: 5000 }),
       createAccountButton.waitFor({ state: "visible", timeout: 5000 }),
     ]);
-    console.log("✓ Form expanded with force click");
+    console.log("✓ Form expanded successfully");
     return true;
-  } catch (e) {
-    console.log("⚠️ Force click also failed:", String(e).slice(0, 100));
+  } catch {
+    console.log("❌ Form did not expand after click");
+    return false;
   }
-
-  console.log("⚠️ Form still not expanded after all attempts");
-  return false;
 }
 
 /**
@@ -143,13 +112,36 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
 
   if (await isOnOnboarding(page)) {
     console.log("📋 On onboarding - completing...");
-    const skipSelectors = [
-      page.getByRole("button", { name: /skip for now/i }),
+
+    // Wait for onboarding page to load (it starts in "loading" state)
+    // The "Skip for now" button only appears after queries load and step changes to "role-select"
+    const skipButton = page.getByRole("button", { name: /skip for now/i });
+
+    try {
+      // Wait up to 15 seconds for the skip button to appear (queries need to load)
+      await skipButton.waitFor({ state: "visible", timeout: 15000 });
+      console.log("✓ Skip button found, clicking...");
+      await skipButton.click();
+
+      // Wait for navigation to dashboard
+      await page.waitForURL(/\/[^/]+\/dashboard/, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(1000);
+
+      if (await isOnDashboard(page)) {
+        console.log("✓ Successfully skipped to dashboard");
+        return true;
+      }
+    } catch (error) {
+      console.log("⚠️ Skip button not found after waiting:", String(error).slice(0, 100));
+    }
+
+    // Fallback: try other selectors
+    const fallbackSelectors = [
       page.getByRole("link", { name: /skip for now/i }),
       page.getByText(/skip for now/i),
     ];
 
-    for (const skipElement of skipSelectors) {
+    for (const skipElement of fallbackSelectors) {
       try {
         if (await skipElement.isVisible().catch(() => false)) {
           await skipElement.click();
@@ -187,7 +179,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     console.log("  📋 Waiting for sign-in page...");
     await page
       .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 15000 });
 
     console.log("  📧 Expanding email form...");
     const formExpanded = await clickContinueWithEmail(page);
@@ -196,14 +188,18 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       return false;
     }
 
+    // Wait for form to stabilize after expansion (React hydration on cold starts)
+    await page.waitForTimeout(1000);
+
     console.log("  📝 Filling credentials...");
     await page.getByPlaceholder("Email").fill(user.email);
     await page.getByPlaceholder("Password").fill(user.password);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(500);
 
     console.log("  🚀 Clicking sign-in button...");
     const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-    await signInButton.waitFor({ state: "visible", timeout: 5000 });
+    await signInButton.waitFor({ state: "visible", timeout: 15000 });
+    await page.waitForTimeout(300); // Small delay for button to be clickable
     await signInButton.click();
 
     try {

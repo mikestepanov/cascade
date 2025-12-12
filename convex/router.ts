@@ -9,8 +9,14 @@ import {
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
   setupRbacProjectEndpoint,
+  updateCompanySettingsEndpoint,
   verifyTestUserEndpoint,
 } from "./e2e";
+import {
+  handleCallback as handleGitHubCallback,
+  initiateAuth as initiateGitHubAuth,
+  listRepos as listGitHubRepos,
+} from "./http/githubOAuth";
 import { handleCallback, initiateAuth, triggerSync } from "./http/googleOAuth";
 
 const http = httpRouter();
@@ -39,6 +45,25 @@ http.route({
   path: "/google/sync",
   method: "POST",
   handler: triggerSync,
+});
+
+// GitHub OAuth routes (for repository linking)
+http.route({
+  path: "/github/auth",
+  method: "GET",
+  handler: initiateGitHubAuth,
+});
+
+http.route({
+  path: "/github/callback",
+  method: "GET",
+  handler: handleGitHubCallback,
+});
+
+http.route({
+  path: "/github/repos",
+  method: "GET",
+  handler: listGitHubRepos,
 });
 
 // Auth wrapper routes (security)
@@ -103,6 +128,13 @@ http.route({
   path: "/e2e/debug-verify-password",
   method: "POST",
   handler: debugVerifyPasswordEndpoint,
+});
+
+// Update company settings for testing different profiles
+http.route({
+  path: "/e2e/update-company-settings",
+  method: "POST",
+  handler: updateCompanySettingsEndpoint,
 });
 
 export default http;

@@ -169,6 +169,8 @@ Help users with:
 
 Be concise, helpful, and professional.`;
 
+    // Track response time
+    const startTime = Date.now();
     const response = await generateText({
       model: anthropic(CLAUDE_OPUS),
       messages: [
@@ -176,6 +178,7 @@ Be concise, helpful, and professional.`;
         { role: "user", content: args.message },
       ],
     });
+    const responseTime = Date.now() - startTime;
 
     // Extract usage information type-safely
     const usage = extractUsage(response.usage);
@@ -199,6 +202,7 @@ Be concise, helpful, and professional.`;
       promptTokens: usage.promptTokens,
       completionTokens: usage.completionTokens,
       totalTokens: usage.totalTokens,
+      responseTime,
       success: true,
     });
 
@@ -258,6 +262,7 @@ export const trackUsage = internalAction({
     promptTokens: v.number(),
     completionTokens: v.number(),
     totalTokens: v.number(),
+    responseTime: v.number(),
     success: v.boolean(),
   },
   handler: async (ctx, args) => {

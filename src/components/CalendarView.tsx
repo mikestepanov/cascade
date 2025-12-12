@@ -9,9 +9,10 @@ import { Typography } from "./ui/Typography";
 interface CalendarViewProps {
   projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
+  canEdit?: boolean;
 }
 
-export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
+export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
@@ -255,6 +256,7 @@ export function CalendarView({ projectId, sprintId }: CalendarViewProps) {
               setSelectedIssue(null);
             }
           }}
+          canEdit={canEdit}
         />
       )}
     </div>

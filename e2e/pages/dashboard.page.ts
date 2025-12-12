@@ -174,59 +174,27 @@ export class DashboardPage extends BasePage {
   // Navigation
   // ===================
 
-  async goto() {
-    // Navigate to dashboard directly instead of relying on redirect
-    await this.page.goto("/dashboard");
+  async goto(companySlug?: string) {
+    // Use provided slug or default to TEST_COMPANY_SLUG
+    const slug = companySlug || "nixelo-e2e";
+    const dashboardUrl = `/${slug}/dashboard`;
 
-    // Wait for page to load
+    // Check if already on dashboard - skip navigation to avoid token rotation
+    const currentUrl = this.page.url();
+    if (currentUrl.includes(`/${slug}/dashboard`)) {
+      // Already on dashboard, just verify it's loaded
+      const isLoaded = await this.commandPaletteButton.isVisible().catch(() => false);
+      if (isLoaded) {
+        return; // Already on loaded dashboard, no need to navigate
+      }
+    }
+
+    // Navigate directly to dashboard URL
+    await this.page.goto(dashboardUrl);
     await this.waitForLoad();
 
-    // Wait for either dashboard content OR redirect to signin/landing/onboarding (if auth failed or onboarding needed)
-    // This gives Convex auth time to process the stored tokens
-    const dashboardContent = this.page.getByRole("heading", { name: /my work/i });
-    const dashboardTab = this.page.getByRole("link", { name: /^dashboard$/i });
-    const signinHeading = this.page.getByRole("heading", { name: /welcome back/i });
-    const landingHeading = this.page.getByRole("heading", {
-      name: /revolutionize your workflow/i,
-    });
-    const onboardingHeading = this.page.getByRole("heading", { name: /welcome to nixelo/i });
-
-    try {
-      // Wait for either dashboard, signin, landing, or onboarding page to be visible
-      await Promise.race([
-        dashboardContent.waitFor({ state: "visible", timeout: 15000 }),
-        dashboardTab.waitFor({ state: "visible", timeout: 15000 }),
-        signinHeading.waitFor({ state: "visible", timeout: 15000 }),
-        landingHeading.waitFor({ state: "visible", timeout: 15000 }),
-        onboardingHeading.waitFor({ state: "visible", timeout: 15000 }),
-      ]);
-
-      // If we ended up on signin, auth state is invalid
-      if (await signinHeading.isVisible().catch(() => false)) {
-        throw new Error("Auth state invalid - redirected to signin page");
-      }
-
-      // If we ended up on landing page, auth state is invalid or expired
-      if (await landingHeading.isVisible().catch(() => false)) {
-        throw new Error(
-          "Auth state invalid or expired - redirected to landing page. JWT may have expired.",
-        );
-      }
-
-      // If we ended up on onboarding, complete it by clicking "Skip for now"
-      if (await onboardingHeading.isVisible().catch(() => false)) {
-        // "Skip for now" can be either a link or button depending on design
-        const skipElement = this.page.getByText(/skip for now/i);
-        await skipElement.waitFor({ state: "visible", timeout: 5000 });
-        await skipElement.click();
-        // Wait for redirect to dashboard
-        await dashboardContent.waitFor({ state: "visible", timeout: 10000 });
-      }
-    } catch (error) {
-      // Take a screenshot for debugging
-      await this.page.screenshot({ path: "test-results/dashboard-goto-error.png" });
-      throw error;
-    }
+    // Wait for dashboard app shell to load (command palette button is always visible)
+    await this.commandPaletteButton.waitFor({ state: "visible", timeout: 15000 });
   }
 
   async navigateTo(
@@ -351,25 +319,23 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async expectDashboard() {
-    // Check for dashboard heading or navigation tab (either one indicates we're on dashboard)
-    const dashboardHeading = this.page.getByRole("heading", { name: /my work/i });
-    // Use .first() to avoid strict mode violation when both are visible
-    await expect(dashboardHeading.or(this.dashboardTab).first()).toBeVisible();
+    // Check for command palette button (always visible in app shell) as indicator of dashboard
+    await expect(this.commandPaletteButton).toBeVisible();
   }
 
   async expectActiveTab(
     tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
   ) {
-    const tabs = {
-      dashboard: this.dashboardTab,
-      documents: this.documentsTab,
-      projects: this.projectsTab,
-      timesheet: this.timesheetTab,
-      calendar: this.calendarTab,
-      settings: this.settingsTab,
+    // Check URL contains the tab path segment
+    const tabPaths = {
+      dashboard: /\/dashboard/,
+      documents: /\/documents/,
+      projects: /\/projects/,
+      timesheet: /\/timesheet/,
+      calendar: /\/calendar/,
+      settings: /\/settings/,
     };
-    // Check tab is visible (active tab styling varies, so just check visibility)
-    await expect(tabs[tab]).toBeVisible();
+    await expect(this.page).toHaveURL(tabPaths[tab]);
   }
 
   async expectLoading() {
@@ -377,6 +343,7 @@ export class DashboardPage extends BasePage {
   }
 
   async expectLoaded() {
-    await expect(this.loadingSpinner).not.toBeVisible();
+    // Wait longer for company context to load (auth tokens, company data)
+    await expect(this.loadingSpinner).not.toBeVisible({ timeout: 15000 });
   }
 }

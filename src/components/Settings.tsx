@@ -2,6 +2,7 @@ import { useSearch } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { CompanySettings } from "./Admin/CompanySettings";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserManagement } from "./Admin/UserManagement";
 import { UserTypeManager } from "./Admin/UserTypeManager";
@@ -31,7 +32,7 @@ type TabValue = (typeof validTabs)[number];
 
 export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
-  const isAdmin = useQuery(api.users.isPlatformAdmin);
+  const isAdmin = useQuery(api.users.isCompanyAdmin);
   const showDevTools = isTestEmail(currentUser?.email);
 
   // Don't show admin tab while loading to prevent UI flicker
@@ -123,6 +124,7 @@ function IntegrationsTab() {
 function AdminTab() {
   return (
     <div className="space-y-8">
+      <CompanySettings />
       <UserManagement />
       <UserTypeManager />
       <HourComplianceDashboard />

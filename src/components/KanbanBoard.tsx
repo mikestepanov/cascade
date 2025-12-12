@@ -233,6 +233,9 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
 
   const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
 
+  // Only admin and editor roles can edit (create/move issues)
+  const canEdit = project.userRole !== "viewer";
+
   const handleClearSelection = () => {
     setSelectedIssueIds(new Set());
     setSelectionMode(false);
@@ -267,6 +270,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
             columnIndex={columnIndex}
             selectionMode={selectionMode}
             selectedIssueIds={selectedIssueIds}
+            canEdit={canEdit}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onDragStart={handleDragStart}
@@ -293,6 +297,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
               setSelectedIssue(null);
             }
           }}
+          canEdit={canEdit}
         />
       )}
 

@@ -31,7 +31,7 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
 
-      // Create a project to satisfy "isPlatformAdmin" fallback check
+      // Create a project to satisfy "isCompanyAdmin" fallback check
       await createTestProject(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);

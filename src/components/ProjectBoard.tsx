@@ -74,11 +74,13 @@ function TabContent({
   projectId,
   selectedSprintId,
   activeSprint,
+  canEdit,
 }: {
   activeTab: TabType;
   projectId: Id<"projects">;
   selectedSprintId?: Id<"sprints">;
   activeSprint?: Id<"sprints">;
+  canEdit: boolean;
 }) {
   const sprintId = selectedSprintId || activeSprint;
 
@@ -89,13 +91,13 @@ function TabContent({
     return <KanbanBoard projectId={projectId} />;
   }
   if (activeTab === "sprints") {
-    return <SprintManager projectId={projectId} />;
+    return <SprintManager projectId={projectId} canEdit={canEdit} />;
   }
   if (activeTab === "roadmap") {
-    return <RoadmapView projectId={projectId} sprintId={sprintId} />;
+    return <RoadmapView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "calendar") {
-    return <CalendarView projectId={projectId} sprintId={sprintId} />;
+    return <CalendarView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "activity") {
     return (
@@ -384,6 +386,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           projectId={projectId}
           selectedSprintId={selectedSprintId}
           activeSprint={activeSprint?._id}
+          canEdit={project.userRole !== "viewer"}
         />
       </div>
     </div>

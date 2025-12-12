@@ -266,8 +266,8 @@ export const handleCallback = httpAction(async (_ctx, request) => {
  * Trigger manual sync
  * POST /google/sync
  *
- * NOTE: This endpoint is not yet implemented.
- * TODO: Complete Google Calendar sync implementation
+ * Fetches events from Google Calendar and syncs them to Nixelo.
+ * Requires an authenticated user with a connected Google Calendar.
  */
 export const triggerSync = httpAction(async (ctx, _request) => {
   try {

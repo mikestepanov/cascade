@@ -57,6 +57,7 @@ import type * as github from "../github.js";
 import type * as googleCalendar from "../googleCalendar.js";
 import type * as hourCompliance from "../hourCompliance.js";
 import type * as http from "../http.js";
+import type * as http_githubOAuth from "../http/githubOAuth.js";
 import type * as http_googleOAuth from "../http/googleOAuth.js";
 import type * as internal_ai from "../internal/ai.js";
 import type * as invites from "../invites.js";
@@ -152,6 +153,7 @@ declare const fullApi: ApiFromModules<{
   googleCalendar: typeof googleCalendar;
   hourCompliance: typeof hourCompliance;
   http: typeof http;
+  "http/githubOAuth": typeof http_githubOAuth;
   "http/googleOAuth": typeof http_googleOAuth;
   "internal/ai": typeof internal_ai;
   invites: typeof invites;

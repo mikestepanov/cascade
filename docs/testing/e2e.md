@@ -186,47 +186,65 @@ Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for e
 
 | User Key | Email | Role | Description |
 |----------|-------|------|-------------|
-| `dashboard` | `e2e-dashboard@inbox.mailtrap.io` | editor | Default test user (created automatically) |
-| `admin` | `e2e-admin@inbox.mailtrap.io` | admin | Platform admin with full access |
-| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Project admin with management access |
+| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Default test user, project admin |
 | `teamMember` | `e2e-member@inbox.mailtrap.io` | editor | Team member with edit permissions |
 | `viewer` | `e2e-viewer@inbox.mailtrap.io` | viewer | Read-only access |
 
 **Password:** All test users use `E2ETestPassword123!`
 
+### Test Company
+
+All test users share a single company:
+
+| Property | Value |
+|----------|-------|
+| Company Name | `Nixelo E2E` |
+| Company Slug | `nixelo-e2e` |
+
+This ensures deterministic URLs: `http://localhost:5555/nixelo-e2e/dashboard`
+
 ### Automatic User Setup
 
-The `dashboard` user is created automatically by `global-setup.ts` on first run:
-1. Tries to sign in (if user exists)
-2. If sign-in fails, signs up with email verification via Mailtrap
-3. Saves auth state to `e2e/.auth/user-dashboard.json`
+Test users are created automatically by `global-setup.ts` on each run:
+1. Deletes any existing user and their company (ensures fresh state)
+2. Creates user via E2E API endpoint (bypasses email verification)
+3. Signs in via browser to get auth tokens
+4. Saves auth state to `e2e/.auth/user-*.json`
 
-Auth state is cached for 1 hour to avoid re-authentication on every run.
-
-### Enabling Additional Test Users
-
-To create additional users, uncomment them in `e2e/global-setup.ts`:
-
-```typescript
-const usersToSetup = [
-  { key: "dashboard", user: TEST_USERS.dashboard, authPath: AUTH_PATHS.dashboard },
-  // Uncomment to create (requires ~90s per user for email verification):
-  // { key: "admin", user: TEST_USERS.admin, authPath: AUTH_PATHS.admin },
-  // { key: "teamLead", user: TEST_USERS.teamLead, authPath: AUTH_PATHS.teamLead },
-];
-```
-
-**Note:** Each new user requires email verification (~90 seconds), so enable only what you need.
+**Important:** Auth state is NOT cached - fresh tokens are created each run to avoid Convex refresh token rotation issues.
 
 ### Auth State Files
 
 | File | User |
 |------|------|
-| `e2e/.auth/user-dashboard.json` | Default dashboard user |
-| `e2e/.auth/user-admin.json` | Admin user |
-| `e2e/.auth/user-teamlead.json` | Team lead user |
-| `e2e/.auth/user-member.json` | Team member user |
-| `e2e/.auth/user-viewer.json` | Viewer user |
+| `e2e/.auth/user-teamlead.json` | Team lead (default) |
+| `e2e/.auth/user-member.json` | Team member |
+| `e2e/.auth/user-viewer.json` | Viewer |
+
+### IMPORTANT: Convex Auth Token Rotation
+
+**Convex Auth uses refresh token rotation** - once a refresh token is used, it's invalidated and a new one is issued. This has critical implications for E2E testing:
+
+**The Problem:**
+1. Global setup signs in users and saves auth state (JWT + refresh token) to files
+2. Test 1 loads auth from file, uses tokens → tokens get rotated in browser
+3. Test 2 loads auth from SAME file → old tokens are now INVALID
+4. Test 2 fails with authentication errors
+
+**The Solution (implemented in `global-setup.ts`):**
+```typescript
+// Always delete stale auth files and create fresh tokens
+if (fs.existsSync(authStatePath)) {
+  fs.unlinkSync(authStatePath);
+  console.log(`  🗑️ ${userKey}: Deleted stale auth state`);
+}
+```
+
+**Key Rules for Convex Auth E2E Tests:**
+1. **Never reuse auth state** - Always create fresh auth per test run
+2. **Consolidate related tests** - Tests sharing the same user should be in one test file
+3. **One user per test** - Don't use multiple auth contexts in a single test (tokens rotate independently)
+4. **Worker isolation** - Use `--workers=1` for RBAC tests to ensure sequential execution
 
 ### Using Authenticated Tests
 
@@ -269,7 +287,7 @@ test.describe("Sign Out Tests", () => {
 ```typescript
 // e2e/fixtures/auth.fixture.ts
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: AUTH_PATHS.dashboard,  // Uses saved cookies/localStorage
+  storageState: AUTH_PATHS.teamLead,  // Uses saved cookies/localStorage
   skipAuthSave: [false, { option: true }],  // Option to skip saving
 
   ensureAuthenticated: async ({ page }, use) => {
@@ -628,6 +646,94 @@ npx @playwright/mcp@latest
 - Use `waitForLoadState("networkidle")`
 - Check for race conditions
 
+## RBAC Testing
+
+RBAC (Role-Based Access Control) tests verify permission boundaries for different user roles.
+
+### Test Structure
+
+RBAC tests are consolidated by role to avoid token rotation issues:
+
+```
+e2e/
+├── fixtures/
+│   └── rbac.fixture.ts    # RBAC-specific fixtures (admin/editor/viewer contexts)
+└── rbac.spec.ts           # Consolidated RBAC tests (3 tests, one per role)
+```
+
+### Test Users & Roles
+
+| Role | User | Permissions |
+|------|------|-------------|
+| Admin | `teamLead` | Full control - manage settings, members, delete project |
+| Editor | `teamMember` | Create/edit issues, sprints, documents |
+| Viewer | `viewer` | Read-only access, can only view and comment |
+
+### Running RBAC Tests
+
+```bash
+# Run all RBAC tests (must use --workers=1)
+pnpm e2e --grep "admin has full|editor has limited|viewer has read-only" --workers=1
+
+# Run specific role test
+pnpm e2e --grep "admin has full" --workers=1
+```
+
+### RBAC Fixtures
+
+The `rbacTest` fixture provides authenticated contexts for each role:
+
+```typescript
+import { rbacTest, expect } from "./fixtures";
+
+rbacTest("admin has full project access", async ({
+  adminPage,           // Admin's page instance
+  gotoRbacProject,     // Helper to navigate to RBAC project
+  rbacProjectKey,      // Project key (e.g., "RBAC")
+  rbacCompanySlug,     // Company slug from API
+}) => {
+  await gotoRbacProject(adminPage);
+  // ... test admin permissions
+});
+```
+
+### Why Tests Are Consolidated
+
+Due to Convex auth token rotation, each role's tests must be in a SINGLE test:
+
+**Before (17 tests - FAILED):**
+```typescript
+rbacTest("admin can view board", ...);     // Uses admin token → ROTATED
+rbacTest("admin can create issue", ...);   // Same file → OLD TOKEN → FAIL
+```
+
+**After (3 tests - PASSES):**
+```typescript
+rbacTest("admin has full project access", async ({ adminPage }) => {
+  // All admin assertions in ONE test
+  // 1. View board ✓
+  // 2. Create issue ✓
+  // 3. Access settings ✓
+  // ... etc
+});
+```
+
+### RBAC Config
+
+RBAC project configuration is saved by global-setup:
+
+```
+e2e/.auth/rbac-config.json
+{
+  "projectKey": "RBAC",
+  "companySlug": "nixelo-e2e",  // Deterministic slug for all test users
+  "projectId": "...",
+  "companyId": "..."
+}
+```
+
+This file is read by `rbac.fixture.ts` to get the correct company slug for navigation URLs.
+
 ---
 
 **Related Documentation:**
@@ -637,4 +743,4 @@ npx @playwright/mcp@latest
 
 ---
 
-*Last Updated: 2025-12-01*
+*Last Updated: 2025-12-10*

@@ -25,6 +25,8 @@ export interface RbacProjectResult {
   success: boolean;
   projectKey?: string;
   projectId?: string;
+  companySlug?: string;
+  companyId?: string;
   error?: string;
 }
 
@@ -167,6 +169,43 @@ export class TestUserService {
     } catch (error) {
       console.warn(`  ⚠️ Failed to verify password for ${email}:`, error);
       return { success: false, accountFound: false, hasStoredHash: false, error: String(error) };
+    }
+  }
+
+  /**
+   * Update company settings for testing different profiles
+   * @param companySlug - The company slug to update
+   * @param settings - Partial settings to update (only provided fields are changed)
+   */
+  async updateCompanySettings(
+    companySlug: string,
+    settings: {
+      defaultMaxHoursPerWeek?: number;
+      defaultMaxHoursPerDay?: number;
+      requiresTimeApproval?: boolean;
+      billingEnabled?: boolean;
+    },
+  ): Promise<{
+    success: boolean;
+    companyId?: string;
+    updatedSettings?: {
+      defaultMaxHoursPerWeek: number;
+      defaultMaxHoursPerDay: number;
+      requiresTimeApproval: boolean;
+      billingEnabled: boolean;
+    };
+    error?: string;
+  }> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.updateCompanySettings, {
+        method: "POST",
+        headers: getE2EHeaders(),
+        body: JSON.stringify({ companySlug, settings }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to update company settings for ${companySlug}:`, error);
+      return { success: false, error: String(error) };
     }
   }
 }

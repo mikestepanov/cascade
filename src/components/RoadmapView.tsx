@@ -13,9 +13,10 @@ import { Typography } from "./ui/Typography";
 interface RoadmapViewProps {
   projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
+  canEdit?: boolean;
 }
 
-export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
+export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapViewProps) {
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [viewMode, setViewMode] = useState<"months" | "weeks">("months");
   const [filterEpic, setFilterEpic] = useState<Id<"issues"> | "all">("all");
@@ -257,6 +258,7 @@ export function RoadmapView({ projectId, sprintId }: RoadmapViewProps) {
               setSelectedIssue(null);
             }
           }}
+          canEdit={canEdit}
         />
       )}
     </div>

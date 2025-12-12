@@ -4,14 +4,17 @@ import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
-import { ManualTimeEntryModal } from "./TimeTracking/ManualTimeEntryModal";
+import { TimeEntryModal } from "./TimeTracking/TimeEntryModal";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Typography } from "./ui/Typography";
 
 interface TimeTrackerProps {
   issueId: Id<"issues">;
+  projectId?: Id<"projects">;
   estimatedHours?: number;
+  /** Whether billing is enabled for the company */
+  billingEnabled?: boolean;
 }
 
 /**
@@ -127,7 +130,12 @@ function TimeEntriesList({
   );
 }
 
-export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
+export function TimeTracker({
+  issueId,
+  projectId,
+  estimatedHours = 0,
+  billingEnabled,
+}: TimeTrackerProps) {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showEntries, setShowEntries] = useState(false);
 
@@ -152,7 +160,7 @@ export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
 
   const handleStartTimer = async () => {
     try {
-      await startTimer({ issueId });
+      await startTimer({ projectId, issueId });
       showSuccess("Timer started");
     } catch (error) {
       showError(error, "Failed to start timer");
@@ -291,7 +299,13 @@ export function TimeTracker({ issueId, estimatedHours = 0 }: TimeTrackerProps) {
       {showEntries && timeEntries && <TimeEntriesList entries={timeEntries} />}
 
       {/* Log Time Modal */}
-      <ManualTimeEntryModal open={showLogModal} onOpenChange={setShowLogModal} issueId={issueId} />
+      <TimeEntryModal
+        open={showLogModal}
+        onOpenChange={setShowLogModal}
+        projectId={projectId}
+        issueId={issueId}
+        billingEnabled={billingEnabled}
+      />
     </div>
   );
 }

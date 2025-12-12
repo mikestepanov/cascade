@@ -5,115 +5,129 @@ import { expect, authenticatedTest as test } from "./fixtures";
  *
  * Tests for authenticated user experience.
  * Requires auth state to be set up first: pnpm e2e:setup-auth
+ *
+ * Uses serial mode to prevent auth token rotation issues between tests.
+ * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
+ * Test 2 loading stale tokens from file will fail. Serial mode ensures
+ * tokens are properly propagated between tests.
  */
 
-test.describe("Dashboard Navigation", () => {
-  test("authenticated user lands on dashboard after login", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.expectDashboard();
-    await dashboardPage.expectActiveTab("dashboard");
-    await dashboardPage.expectLoaded();
+test.describe("Dashboard Tests", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
+
+  // Re-authenticate if tokens were invalidated (e.g., by signout test in another file)
+  test.beforeEach(async ({ ensureAuthenticated }) => {
+    await ensureAuthenticated();
   });
 
-  test("can navigate between tabs", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
+  test.describe("Dashboard Navigation", () => {
+    test("authenticated user lands on dashboard after login", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.expectDashboard();
+      await dashboardPage.expectActiveTab("dashboard");
+      await dashboardPage.expectLoaded();
+    });
 
-    await dashboardPage.navigateTo("projects");
-    await dashboardPage.expectActiveTab("projects");
+    test("can navigate between tabs", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
 
-    await dashboardPage.navigateTo("documents");
-    await dashboardPage.expectActiveTab("documents");
+      await dashboardPage.navigateTo("projects");
+      await dashboardPage.expectActiveTab("projects");
 
-    await dashboardPage.navigateTo("dashboard");
-    await dashboardPage.expectActiveTab("dashboard");
-  });
-});
+      await dashboardPage.navigateTo("documents");
+      await dashboardPage.expectActiveTab("documents");
 
-test.describe("Dashboard Content", () => {
-  test("displays main dashboard sections", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await expect(dashboardPage.mainContent).toBeVisible();
-    await expect(dashboardPage.myIssuesSection).toBeVisible();
-    await expect(dashboardPage.projectsSection).toBeVisible();
-  });
-
-  test("can filter issues", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await expect(dashboardPage.assignedTab).toBeVisible();
-    await expect(dashboardPage.createdTab).toBeVisible();
-
-    await dashboardPage.filterIssues("created");
-    await dashboardPage.filterIssues("assigned");
-  });
-});
-
-test.describe("Command Palette", () => {
-  test("can open and close via button", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.openCommandPalette();
-    await expect(dashboardPage.commandPalette).toBeVisible();
-    await dashboardPage.closeCommandPalette();
-    await expect(dashboardPage.commandPalette).not.toBeVisible();
+      await dashboardPage.navigateTo("dashboard");
+      await dashboardPage.expectActiveTab("dashboard");
+    });
   });
 
-  test("can open via keyboard shortcut", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.pressCommandPaletteShortcut();
-    await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 5000 });
-  });
-});
+  test.describe("Dashboard Content", () => {
+    test("displays main dashboard sections", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await expect(dashboardPage.mainContent).toBeVisible();
+      await expect(dashboardPage.myIssuesSection).toBeVisible();
+      await expect(dashboardPage.projectsSection).toBeVisible();
+    });
 
-test.describe("Theme Toggle", () => {
-  test("can switch themes via settings", async ({ settingsPage, page }) => {
-    // Navigate to Settings > Preferences
-    await settingsPage.goto();
-    await settingsPage.switchToTab("preferences");
+    test("can filter issues", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await expect(dashboardPage.assignedTab).toBeVisible();
+      await expect(dashboardPage.createdTab).toBeVisible();
 
-    const html = page.locator("html");
-
-    // Switch to dark theme (ToggleGroupItem with aria-label)
-    await page.getByRole("radio", { name: /dark theme/i }).click();
-    await expect(html).toHaveClass(/dark/);
-
-    // Switch to light theme
-    await page.getByRole("radio", { name: /light theme/i }).click();
-    await expect(html).not.toHaveClass(/dark/);
-
-    // Switch to system theme
-    await page.getByRole("radio", { name: /system theme/i }).click();
-  });
-});
-
-test.describe("Global Search", () => {
-  test("can open and close", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.openGlobalSearch();
-    await expect(dashboardPage.globalSearchModal).toBeVisible();
-    await dashboardPage.closeGlobalSearch();
-    await expect(dashboardPage.globalSearchModal).not.toBeVisible();
-  });
-});
-
-test.describe("Keyboard Shortcuts Help", () => {
-  test("can open and close via button", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.openShortcutsHelp();
-    await expect(dashboardPage.shortcutsModal).toBeVisible();
-    await dashboardPage.closeShortcutsHelp();
-    await expect(dashboardPage.shortcutsModal).not.toBeVisible();
+      await dashboardPage.filterIssues("created");
+      await dashboardPage.filterIssues("assigned");
+    });
   });
 
-  test("can open via keyboard shortcut", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.pressShortcutsHelpShortcut();
-    await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
-  });
-});
+  test.describe("Command Palette", () => {
+    test("can open and close via button", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openCommandPalette();
+      await expect(dashboardPage.commandPalette).toBeVisible();
+      await dashboardPage.closeCommandPalette();
+      await expect(dashboardPage.commandPalette).not.toBeVisible();
+    });
 
-test.describe("Notifications", () => {
-  test("can open notifications panel", async ({ dashboardPage }) => {
-    await dashboardPage.goto();
-    await dashboardPage.openNotifications();
-    await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
+    test("can open via keyboard shortcut", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.pressCommandPaletteShortcut();
+      await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 5000 });
+    });
+  });
+
+  test.describe("Theme Toggle", () => {
+    test("can switch themes via settings", async ({ settingsPage, page }) => {
+      await settingsPage.goto();
+      await settingsPage.switchToTab("preferences");
+
+      const html = page.locator("html");
+
+      // Switch to dark theme
+      await page.getByText("Dark").click();
+      await expect(html).toHaveClass(/dark/);
+
+      // Switch to light theme
+      await page.getByText("Light").click();
+      await expect(html).not.toHaveClass(/dark/);
+
+      // Switch to system theme
+      await page.getByText("System").click();
+    });
+  });
+
+  test.describe("Global Search", () => {
+    test("can open and close", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openGlobalSearch();
+      await expect(dashboardPage.globalSearchModal).toBeVisible();
+      await dashboardPage.closeGlobalSearch();
+      await expect(dashboardPage.globalSearchModal).not.toBeVisible();
+    });
+  });
+
+  test.describe("Keyboard Shortcuts Help", () => {
+    test("can open and close via button", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openShortcutsHelp();
+      await expect(dashboardPage.shortcutsModal).toBeVisible();
+      await dashboardPage.closeShortcutsHelp();
+      await expect(dashboardPage.shortcutsModal).not.toBeVisible();
+    });
+
+    test("can open via keyboard shortcut", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.pressShortcutsHelpShortcut();
+      await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
+    });
+  });
+
+  test.describe("Notifications", () => {
+    test("can open notifications panel", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openNotifications();
+      await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
+    });
   });
 });

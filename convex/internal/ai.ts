@@ -199,6 +199,7 @@ export const trackUsage = internalMutation({
     promptTokens: v.number(),
     completionTokens: v.number(),
     totalTokens: v.number(),
+    responseTime: v.number(),
     success: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -221,7 +222,7 @@ export const trackUsage = internalMutation({
       promptTokens: args.promptTokens,
       completionTokens: args.completionTokens,
       totalTokens: args.totalTokens,
-      responseTime: 0, // TODO: Calculate actual response time
+      responseTime: args.responseTime,
       success: args.success,
       createdAt: Date.now(),
     });

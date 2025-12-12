@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -23,12 +24,22 @@ interface IssueDetailModalProps {
   issueId: Id<"issues">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  canEdit?: boolean;
 }
 
-export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailModalProps) {
+export function IssueDetailModal({
+  issueId,
+  open,
+  onOpenChange,
+  canEdit = true,
+}: IssueDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  // Get billing setting from company context
+  const companyContext = useCompanyOptional();
+  const billingEnabled = companyContext?.billingEnabled;
 
   const issue = useQuery(api.issues.get, { id: issueId });
   const subtasks = useQuery(api.issues.listSubtasks, { parentId: issueId });
@@ -124,13 +135,15 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
                 <Typography variant="h2" className="border-none">
                   {issue.title}
                 </Typography>
-                <button
-                  type="button"
-                  onClick={handleEdit}
-                  className="text-sm text-brand-600 hover:text-brand-700"
-                >
-                  Edit
-                </button>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={handleEdit}
+                    className="text-sm text-brand-600 hover:text-brand-700"
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -184,7 +197,12 @@ export function IssueDetailModal({ issueId, open, onOpenChange }: IssueDetailMod
             <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Time Tracking
             </Typography>
-            <TimeTracker issueId={issue._id} estimatedHours={issue.estimatedHours} />
+            <TimeTracker
+              issueId={issue._id}
+              projectId={issue.projectId}
+              estimatedHours={issue.estimatedHours}
+              billingEnabled={billingEnabled}
+            />
           </div>
 
           {/* File Attachments */}

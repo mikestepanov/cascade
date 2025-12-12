@@ -28,6 +28,7 @@ interface KanbanColumnProps {
   columnIndex: number;
   selectionMode: boolean;
   selectedIssueIds: Set<Id<"issues">>;
+  canEdit: boolean;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, stateId: string) => void;
   onDragStart: (e: React.DragEvent, issueId: Id<"issues">) => void;
@@ -47,6 +48,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   columnIndex,
   selectionMode,
   selectedIssueIds,
+  canEdit,
   onDragOver,
   onDrop,
   onDragStart,
@@ -77,28 +79,30 @@ export const KanbanColumn = memo(function KanbanColumn({
               {stateIssues.length}
             </Badge>
           </div>
-          <button
-            type="button"
-            onClick={() => onCreateIssue(state.id)}
-            className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
-            aria-label={`Add issue to ${state.name}`}
-            {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
-          >
-            <svg
-              aria-hidden="true"
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {canEdit && (
+            <button
+              type="button"
+              onClick={() => onCreateIssue(state.id)}
+              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
+              aria-label={`Add issue to ${state.name}`}
+              {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
+              <svg
+                aria-hidden="true"
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -119,6 +123,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               selectionMode={selectionMode}
               isSelected={selectedIssueIds.has(issue._id)}
               onToggleSelect={onToggleSelect}
+              canEdit={canEdit}
             />
           </div>
         ))}

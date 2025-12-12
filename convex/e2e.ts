@@ -14,6 +14,7 @@
 import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { httpAction, internalMutation } from "./_generated/server";
 
 // Test user expiration (1 hour - for garbage collection)
@@ -144,19 +145,97 @@ export const createTestUserInternal = internalMutation({
         .filter((q) => q.eq(q.field("providerAccountId"), args.email))
         .first();
 
-      if (existingAccount) {
-        // Full user exists - just return success (idempotent)
-        return { success: true, userId: existingUser._id, existing: true };
+      if (!existingAccount) {
+        // User exists but no authAccount - create it
+        await ctx.db.insert("authAccounts", {
+          userId: existingUser._id,
+          provider: "password",
+          providerAccountId: args.email,
+          secret: args.passwordHash,
+          emailVerified: new Date().toISOString(),
+        });
       }
 
-      // User exists but no authAccount - create it
-      await ctx.db.insert("authAccounts", {
-        userId: existingUser._id,
-        provider: "password",
-        providerAccountId: args.email,
-        secret: args.passwordHash,
-        emailVerified: new Date().toISOString(),
-      });
+      // Ensure existing user has company and onboarding set up when skipOnboarding is true
+      if (args.skipOnboarding) {
+        const now = Date.now();
+
+        // Check if user has onboarding record
+        const existingOnboarding = await ctx.db
+          .query("userOnboarding")
+          .withIndex("by_user", (q) => q.eq("userId", existingUser._id))
+          .first();
+
+        if (!existingOnboarding) {
+          await ctx.db.insert("userOnboarding", {
+            userId: existingUser._id,
+            onboardingCompleted: true,
+            onboardingStep: 5,
+            sampleProjectCreated: false,
+            tourShown: true,
+            wizardCompleted: true,
+            checklistDismissed: true,
+            createdAt: now,
+            updatedAt: now,
+          });
+        } else if (!existingOnboarding.onboardingCompleted) {
+          // Mark existing onboarding as complete
+          await ctx.db.patch(existingOnboarding._id, {
+            onboardingCompleted: true,
+            onboardingStep: 5,
+          });
+        }
+
+        // Check if user has company membership
+        const existingMembership = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_user", (q) => q.eq("userId", existingUser._id))
+          .first();
+
+        if (!existingMembership) {
+          // Check if shared E2E test company already exists
+          const companyName = "Nixelo E2E";
+          const slug = "nixelo-e2e";
+
+          const existingCompany = await ctx.db
+            .query("companies")
+            .withIndex("by_slug", (q) => q.eq("slug", slug))
+            .first();
+
+          let companyId: Id<"companies">;
+
+          if (existingCompany) {
+            // Company exists - just add this user as a member
+            companyId = existingCompany._id;
+          } else {
+            // Create the company
+            companyId = await ctx.db.insert("companies", {
+              name: companyName,
+              slug,
+              timezone: "UTC",
+              settings: {
+                defaultMaxHoursPerWeek: 40,
+                defaultMaxHoursPerDay: 8,
+                requiresTimeApproval: false,
+                billingEnabled: true,
+              },
+              createdBy: existingUser._id,
+              createdAt: now,
+              updatedAt: now,
+            });
+          }
+
+          await ctx.db.insert("companyMembers", {
+            companyId,
+            userId: existingUser._id,
+            role: "admin",
+            addedBy: existingUser._id,
+            addedAt: now,
+          });
+
+          await ctx.db.patch(existingUser._id, { defaultCompanyId: companyId });
+        }
+      }
 
       return { success: true, userId: existingUser._id, existing: true };
     }
@@ -178,8 +257,11 @@ export const createTestUserInternal = internalMutation({
       emailVerified: new Date().toISOString(),
     });
 
-    // If skipOnboarding is true, create completed onboarding record
+    // If skipOnboarding is true, create completed onboarding record AND add to shared company
     if (args.skipOnboarding) {
+      const now = Date.now();
+
+      // Create onboarding record
       await ctx.db.insert("userOnboarding", {
         userId,
         onboardingCompleted: true,
@@ -188,9 +270,53 @@ export const createTestUserInternal = internalMutation({
         tourShown: true,
         wizardCompleted: true,
         checklistDismissed: true,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        createdAt: now,
+        updatedAt: now,
       });
+
+      // Check if shared E2E test company already exists
+      const companyName = "Nixelo E2E";
+      const slug = "nixelo-e2e";
+
+      const existingCompany = await ctx.db
+        .query("companies")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .first();
+
+      let companyId: Id<"companies">;
+
+      if (existingCompany) {
+        // Company exists - just add this user as a member
+        companyId = existingCompany._id;
+      } else {
+        // Create the company (first user creates it)
+        companyId = await ctx.db.insert("companies", {
+          name: companyName,
+          slug,
+          timezone: "UTC",
+          settings: {
+            defaultMaxHoursPerWeek: 40,
+            defaultMaxHoursPerDay: 8,
+            requiresTimeApproval: false,
+            billingEnabled: true,
+          },
+          createdBy: userId,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+
+      // Add user as admin of the company
+      await ctx.db.insert("companyMembers", {
+        companyId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+        addedAt: now,
+      });
+
+      // Set as user's default company
+      await ctx.db.patch(userId, { defaultCompanyId: companyId });
     }
 
     return { success: true, userId, existing: false };
@@ -309,6 +435,31 @@ export const deleteTestUserInternal = internalMutation({
 
       // Note: authRefreshTokens are tied to sessions, which we've already deleted
       // The auth system will clean up orphaned refresh tokens
+
+      // Delete user's company memberships and any companies they created
+      const memberships = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const membership of memberships) {
+        // Check if user is the company creator - if so, delete the company
+        const company = await ctx.db.get(membership.companyId);
+        if (company?.createdBy === user._id) {
+          // Delete all members of this company first
+          const companyMembers = await ctx.db
+            .query("companyMembers")
+            .withIndex("by_company", (q) => q.eq("companyId", company._id))
+            .collect();
+          for (const member of companyMembers) {
+            await ctx.db.delete(member._id);
+          }
+          // Delete the company
+          await ctx.db.delete(company._id);
+        } else {
+          // Just delete the membership
+          await ctx.db.delete(membership._id);
+        }
+      }
 
       // Delete the user
       await ctx.db.delete(user._id);
@@ -868,6 +1019,131 @@ export const cleanupRbacProjectInternal = internalMutation({
         issues: issues.length,
         sprints: sprints.length,
       },
+    };
+  },
+});
+
+/**
+ * Update company settings for E2E testing
+ * POST /e2e/update-company-settings
+ * Body: {
+ *   companySlug: string,
+ *   settings: {
+ *     defaultMaxHoursPerWeek?: number,
+ *     defaultMaxHoursPerDay?: number,
+ *     requiresTimeApproval?: boolean,
+ *     billingEnabled?: boolean,
+ *   }
+ * }
+ *
+ * Allows tests to change settings profiles (e.g., enable/disable billing).
+ */
+export const updateCompanySettingsEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { companySlug, settings } = body;
+
+    if (!companySlug) {
+      return new Response(JSON.stringify({ error: "Missing companySlug" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!settings || typeof settings !== "object") {
+      return new Response(JSON.stringify({ error: "Missing or invalid settings" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.updateCompanySettingsInternal, {
+      companySlug,
+      settings,
+    });
+
+    return new Response(JSON.stringify(result), {
+      status: result.success ? 200 : 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to update company settings
+ */
+export const updateCompanySettingsInternal = internalMutation({
+  args: {
+    companySlug: v.string(),
+    settings: v.object({
+      defaultMaxHoursPerWeek: v.optional(v.number()),
+      defaultMaxHoursPerDay: v.optional(v.number()),
+      requiresTimeApproval: v.optional(v.boolean()),
+      billingEnabled: v.optional(v.boolean()),
+    }),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    error: v.optional(v.string()),
+    companyId: v.optional(v.id("companies")),
+    updatedSettings: v.optional(
+      v.object({
+        defaultMaxHoursPerWeek: v.number(),
+        defaultMaxHoursPerDay: v.number(),
+        requiresTimeApproval: v.boolean(),
+        billingEnabled: v.boolean(),
+      }),
+    ),
+  }),
+  handler: async (ctx, args) => {
+    // Find company by slug
+    const company = await ctx.db
+      .query("companies")
+      .withIndex("by_slug", (q) => q.eq("slug", args.companySlug))
+      .first();
+
+    if (!company) {
+      return { success: false, error: `Company not found: ${args.companySlug}` };
+    }
+
+    // Get current settings or use defaults
+    const currentSettings = company.settings ?? {
+      defaultMaxHoursPerWeek: 40,
+      defaultMaxHoursPerDay: 8,
+      requiresTimeApproval: false,
+      billingEnabled: true,
+    };
+
+    // Merge with provided settings
+    const newSettings = {
+      defaultMaxHoursPerWeek:
+        args.settings.defaultMaxHoursPerWeek ?? currentSettings.defaultMaxHoursPerWeek,
+      defaultMaxHoursPerDay:
+        args.settings.defaultMaxHoursPerDay ?? currentSettings.defaultMaxHoursPerDay,
+      requiresTimeApproval:
+        args.settings.requiresTimeApproval ?? currentSettings.requiresTimeApproval,
+      billingEnabled: args.settings.billingEnabled ?? currentSettings.billingEnabled,
+    };
+
+    // Update company settings
+    await ctx.db.patch(company._id, {
+      settings: newSettings,
+      updatedAt: Date.now(),
+    });
+
+    return {
+      success: true,
+      companyId: company._id,
+      updatedSettings: newSettings,
     };
   },
 });

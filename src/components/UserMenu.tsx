@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { api } from "../../convex/_generated/api";
 import { Avatar } from "./ui/Avatar";
 import {
@@ -19,11 +19,14 @@ import {
 export function UserMenu() {
   const user = useQuery(api.users.getCurrent);
   const { signOut } = useAuthActions();
-  const { companySlug } = useCompany();
+  const company = useCompanyOptional();
 
-  if (!user) {
+  // Don't render menu if user or company context isn't ready
+  if (!(user && company)) {
     return null;
   }
+
+  const { companySlug } = company;
 
   return (
     <DropdownMenu>
