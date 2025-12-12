@@ -8,9 +8,21 @@ import { expect, authenticatedTest as test } from "./fixtures";
  * 1. Admin sends an invite
  * 2. Invite appears in the list
  * 3. Admin can revoke the invite
+ *
+ * Uses serial mode to prevent auth token rotation issues between tests.
+ * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
+ * Test 2 loading stale tokens from file will fail.
  */
 
 test.describe("User Invitations", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
+
+  // Re-authenticate if tokens were invalidated (e.g., by signout test in another file)
+  test.beforeEach(async ({ ensureAuthenticated }) => {
+    await ensureAuthenticated();
+  });
+
   test("admin can send and revoke invites", async ({ settingsPage, page }) => {
     // 1. Navigate to Settings -> Admin (go directly via URL, no nav tab for settings)
     await settingsPage.goto();

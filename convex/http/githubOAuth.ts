@@ -197,10 +197,12 @@ export const handleCallback = httpAction(async (_ctx, request) => {
             <script>
               // Pass tokens to opener window for saving via authenticated mutation
               if (window.opener) {
+                // Use opener's origin for security instead of wildcard
+                const targetOrigin = window.opener.location.origin;
                 window.opener.postMessage({
                   type: 'github-connected',
                   data: ${JSON.stringify(connectionData)}
-                }, '*');
+                }, targetOrigin);
               }
               // Auto-close after 3 seconds
               setTimeout(() => {

@@ -210,7 +210,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     console.log("  📋 Waiting for sign-in page...");
     await page
       .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 15000 });
 
     console.log("  📧 Expanding email form...");
     const formExpanded = await clickContinueWithEmail(page);

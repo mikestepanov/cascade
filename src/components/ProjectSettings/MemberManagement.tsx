@@ -201,7 +201,7 @@ export function MemberManagement({
                       )}
                     </Flex>
                     <Typography variant="small" color="secondary">
-                      {member.email}
+                      {member.email || "No email"}
                     </Typography>
                   </div>
                 </Flex>

@@ -6,10 +6,21 @@ import { expect, authenticatedTest as test } from "./fixtures";
  * This file runs BEFORE z-onboarding.spec.ts alphabetically.
  * Sign out invalidates tokens server-side, but z-onboarding tests
  * will load fresh auth state from the file saved before this test ran.
+ *
+ * Uses serial mode to prevent auth token rotation issues between tests.
+ * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
+ * Test 2 loading stale tokens from file will fail.
  */
 
 test.describe("Sign Out", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
   test.use({ skipAuthSave: true });
+
+  // Re-authenticate if tokens were invalidated before this test
+  test.beforeEach(async ({ ensureAuthenticated }) => {
+    await ensureAuthenticated();
+  });
 
   test("sign out returns to landing page", async ({ page }) => {
     // Navigate to any authenticated page - may land on dashboard or onboarding

@@ -279,6 +279,7 @@ export const update = mutation({
     }
 
     await ctx.db.patch(args.projectId, updates);
+    return { projectId: args.projectId };
   },
 });
 
@@ -367,6 +368,7 @@ export const deleteProject = mutation({
 
     // 4. Delete the project itself
     await ctx.db.delete(args.projectId);
+    return { deleted: true };
   },
 });
 

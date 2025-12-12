@@ -21,7 +21,7 @@ async function resetOnboarding(): Promise<void> {
     const response = await fetch(E2E_ENDPOINTS.resetOnboarding, {
       method: "POST",
       headers: getE2EHeaders(),
-      body: JSON.stringify({ email: TEST_USERS.dashboard.email }),
+      body: JSON.stringify({ email: TEST_USERS.teamLead.email }),
     });
     if (!response.ok) {
       console.warn(`Failed to reset onboarding: ${response.status}`);
@@ -39,7 +39,13 @@ async function resetOnboarding(): Promise<void> {
 // Skip auth save for ALL onboarding tests - the resetOnboarding mutation and navigation
 // can trigger token refreshes that corrupt the auth state file.
 // Uses ensureAuthenticated to re-login if tokens were invalidated by signout test.
+//
+// Uses serial mode to prevent auth token rotation issues between tests.
+// Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
+// Test 2 loading stale tokens from file will fail.
 test.describe("Onboarding Wizard", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
   test.use({ skipAuthSave: true });
 
   test.beforeEach(async ({ ensureAuthenticated }) => {
@@ -137,6 +143,8 @@ test.describe("Onboarding Wizard", () => {
 // from onboarding (just goes back to role selection), while Team Member completes
 // onboarding and navigates to dashboard which can corrupt auth state.
 test.describe("Onboarding - Team Lead Flow", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
   // Skip auth save for this test - onboarding state changes can affect auth state
   test.use({ skipAuthSave: true });
 
@@ -196,6 +204,8 @@ test.describe("Onboarding - Team Lead Flow", () => {
 // Team Member Flow runs LAST because it completes onboarding and navigates to dashboard.
 // Uses ensureAuthenticated to re-login if tokens were invalidated by signout test.
 test.describe("Onboarding - Team Member Flow", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
   test.use({ skipAuthSave: true });
 
   test("shows member-specific content and can complete onboarding", async ({

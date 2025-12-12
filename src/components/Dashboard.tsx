@@ -9,6 +9,7 @@ import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { ProjectsList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Typography } from "./ui/Typography";
 
 type IssueFilter = "assigned" | "created" | "all";
@@ -16,7 +17,6 @@ type IssueFilter = "assigned" | "created" | "all";
 export function Dashboard() {
   const navigate = useNavigate();
   const company = useCompanyOptional();
-  const companySlug = company?.companySlug ?? "";
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   // All hooks must be called unconditionally
@@ -56,10 +56,16 @@ export function Dashboard() {
     enabled: !!myProjects && myProjects.length > 0,
   });
 
-  // Don't render dashboard if company context isn't ready
+  // Show loading while company context loads
   if (!company) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
+
+  const { companySlug } = company;
 
   return (
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">

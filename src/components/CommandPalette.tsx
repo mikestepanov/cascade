@@ -148,7 +148,6 @@ export function useCommands({
 } = {}) {
   const navigate = useNavigate();
   const company = useCompanyOptional();
-  const companySlug = company?.companySlug ?? "";
   const _projects = useQuery(api.dashboard.getMyProjects);
   const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
@@ -157,6 +156,8 @@ export function useCommands({
   if (!company) {
     return [];
   }
+
+  const { companySlug } = company;
 
   const commands: CommandItem[] = [
     // Navigation

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../../convex/_generated/api";
@@ -29,9 +29,11 @@ export function CompanySettings() {
   const settings = company?.settings;
 
   // Initialize form data when company loads
-  if (settings && !formData) {
-    setFormData({ ...settings });
-  }
+  useEffect(() => {
+    if (settings && !formData) {
+      setFormData({ ...settings });
+    }
+  }, [settings, formData]);
 
   const handleSave = async () => {
     if (!formData) return;

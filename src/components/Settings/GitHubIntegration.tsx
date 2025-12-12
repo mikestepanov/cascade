@@ -32,6 +32,11 @@ export function GitHubIntegration() {
   // Listen for OAuth callback message
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
+      // Validate message origin for security
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
       if (event.data?.type === "github-connected") {
         const data = event.data.data as GitHubConnectionData;
         setIsConnecting(true);

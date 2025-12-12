@@ -20,12 +20,13 @@ export function UserMenu() {
   const user = useQuery(api.users.getCurrent);
   const { signOut } = useAuthActions();
   const company = useCompanyOptional();
-  const companySlug = company?.companySlug ?? "";
 
   // Don't render menu if user or company context isn't ready
   if (!(user && company)) {
     return null;
   }
+
+  const { companySlug } = company;
 
   return (
     <DropdownMenu>

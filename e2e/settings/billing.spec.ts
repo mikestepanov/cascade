@@ -7,8 +7,20 @@ import { testUserService } from "../utils";
  *
  * Tests behavior when billing is enabled vs disabled.
  * Uses settings profiles to toggle billingEnabled.
+ *
+ * Uses serial mode to prevent auth token rotation issues between tests.
+ * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
+ * Test 2 loading stale tokens from file will fail.
  */
 authenticatedTest.describe("Billing Settings", () => {
+  // Run tests serially to prevent auth token rotation issues
+  authenticatedTest.describe.configure({ mode: "serial" });
+
+  // Re-authenticate if tokens were invalidated (e.g., by signout test in another file)
+  authenticatedTest.beforeEach(async ({ ensureAuthenticated }) => {
+    await ensureAuthenticated();
+  });
+
   // Reset to default settings after each test
   authenticatedTest.afterEach(async () => {
     await testUserService.updateCompanySettings(TEST_COMPANY_SLUG, SETTINGS_PROFILES.default);
