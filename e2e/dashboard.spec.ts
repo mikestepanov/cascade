@@ -79,22 +79,21 @@ test.describe("Dashboard Tests", () => {
 
   test.describe("Theme Toggle", () => {
     test("can switch themes via settings", async ({ settingsPage, page }) => {
-      // Navigate to Settings > Preferences
       await settingsPage.goto();
       await settingsPage.switchToTab("preferences");
 
       const html = page.locator("html");
 
-      // Switch to dark theme (ToggleGroupItem with aria-label)
-      await page.getByRole("radio", { name: /dark theme/i }).click();
+      // Switch to dark theme
+      await page.getByText("Dark").click();
       await expect(html).toHaveClass(/dark/);
 
       // Switch to light theme
-      await page.getByRole("radio", { name: /light theme/i }).click();
+      await page.getByText("Light").click();
       await expect(html).not.toHaveClass(/dark/);
 
       // Switch to system theme
-      await page.getByRole("radio", { name: /system theme/i }).click();
+      await page.getByText("System").click();
     });
   });
 

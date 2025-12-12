@@ -165,21 +165,21 @@ export class SettingsPage extends BasePage {
   }
 
   async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
-    // Map tab names to their locators
-    const tabLocators: Record<string, () => Promise<void>> = {
-      integrations: async () => await this.integrationsTab.first().click(),
-      apiKeys: async () => await this.apiKeysTab.first().click(),
-      offline: async () => await this.offlineTab.first().click(),
-      preferences: async () => await this.preferencesTab.first().click(),
-      admin: async () => await this.adminTab.first().click(),
-    };
+    // Wait for React to fully hydrate and attach event handlers
+    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForTimeout(1000);
 
-    // Click the tab directly
-    await tabLocators[tab]();
+    // Use getByRole("tab") directly - Radix UI tabs have role="tab"
+    const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
+    await tabLocator.waitFor({ state: "visible", timeout: 5000 });
+
+    // Focus first, then click - ensures React event handlers are attached
+    await tabLocator.focus();
+    await tabLocator.click();
+
+    // Wait for tab to become active
+    await expect(tabLocator).toHaveAttribute("aria-selected", "true", { timeout: 5000 });
     await this.waitForLoad();
-
-    // Wait for tab content to load
-    await this.page.waitForTimeout(500);
   }
 
   // ===================

@@ -78,56 +78,25 @@ export async function clickContinueWithEmail(page: Page): Promise<boolean> {
   }
 
   // Wait for page to be fully loaded and React to hydrate
+  // On cold starts, React needs more time to attach click handlers
   await page.waitForLoadState("networkidle");
-  await page.waitForTimeout(1500); // Extra time for React hydration
+  await page.waitForTimeout(3000);
 
-  // Try clicking multiple times
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    console.log(`📍 Click attempt ${attempt}...`);
+  // Click the button
+  await continueButton.click({ timeout: 5000 });
 
-    try {
-      // Click the button
-      await continueButton.click({ timeout: 5000 });
-
-      // Wait for button text to change - this is the definitive indicator
-      // The button should change from "Continue with email" to "Sign in" or "Create account"
-      try {
-        await Promise.race([
-          signInButton.waitFor({ state: "visible", timeout: 3000 }),
-          createAccountButton.waitFor({ state: "visible", timeout: 3000 }),
-        ]);
-        console.log("✓ Form expanded successfully (button text changed)");
-        return true;
-      } catch {
-        // Button text didn't change, try again
-        console.log(`⚠️ Button text didn't change after click ${attempt}`);
-      }
-    } catch (error) {
-      console.log(`⚠️ Click ${attempt} failed:`, String(error).slice(0, 100));
-    }
-
-    if (attempt < 3) {
-      await page.waitForTimeout(1000);
-    }
-  }
-
-  // Final attempt with force click
-  console.log("⚠️ Regular clicks failed, trying force click...");
+  // Wait for form to expand
   try {
-    await continueButton.click({ force: true, timeout: 5000 });
-
     await Promise.race([
       signInButton.waitFor({ state: "visible", timeout: 5000 }),
       createAccountButton.waitFor({ state: "visible", timeout: 5000 }),
     ]);
-    console.log("✓ Form expanded with force click");
+    console.log("✓ Form expanded successfully");
     return true;
-  } catch (e) {
-    console.log("⚠️ Force click also failed:", String(e).slice(0, 100));
+  } catch {
+    console.log("❌ Form did not expand after click");
+    return false;
   }
-
-  console.log("⚠️ Form still not expanded after all attempts");
-  return false;
 }
 
 /**
