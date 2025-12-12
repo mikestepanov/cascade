@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { useCompany } from "@/hooks/useCompanyContext";
 import { showError, showSuccess } from "@/lib/toast";
-import { useCompany } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";

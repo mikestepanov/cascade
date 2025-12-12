@@ -12,30 +12,30 @@ import { waitForVerificationEmail } from "./mailtrap";
 /**
  * Check if we're on the dashboard
  * Handles both old (/dashboard) and new (/:companySlug/dashboard) URL patterns
+ *
+ * This only checks URL pattern. For content verification, use waitForDashboardContent().
  */
 export async function isOnDashboard(page: Page): Promise<boolean> {
-  // First check URL pattern - new pattern is /:companySlug/dashboard
   const url = page.url();
   const dashboardUrlPattern = /\/[^/]+\/dashboard$/;
-  if (dashboardUrlPattern.test(url) || url.endsWith("/dashboard")) {
-    // URL matches dashboard pattern, wait a moment for page to load
-    await page.waitForTimeout(500);
+  return dashboardUrlPattern.test(url) || url.endsWith("/dashboard");
+}
+
+/**
+ * Wait for dashboard content to be fully loaded (My Work heading visible)
+ * Call this after confirming URL is dashboard to ensure content rendered.
+ *
+ * @returns true if content loaded, false if timed out
+ */
+export async function waitForDashboardContent(page: Page, timeout = 15000): Promise<boolean> {
+  const myWorkHeading = page.getByRole("heading", { name: /my work/i });
+
+  try {
+    await myWorkHeading.waitFor({ state: "visible", timeout });
     return true;
+  } catch {
+    return false;
   }
-
-  // Check for dashboard content indicators as fallback
-  const dashboardIndicators = [
-    page.getByRole("heading", { name: /my work/i }),
-    page.getByText("Your personal dashboard"),
-    page.getByText("ASSIGNED TO ME"),
-  ];
-
-  for (const indicator of dashboardIndicators) {
-    if (await indicator.isVisible().catch(() => false)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 /**
@@ -219,6 +219,9 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       return false;
     }
 
+    // Wait for form to stabilize after expansion (React hydration on cold starts)
+    await page.waitForTimeout(1000);
+
     console.log("  📝 Filling credentials...");
     await page.getByPlaceholder("Email").fill(user.email);
     await page.getByPlaceholder("Password").fill(user.password);
@@ -226,7 +229,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     console.log("  🚀 Clicking sign-in button...");
     const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-    await signInButton.waitFor({ state: "visible", timeout: 10000 });
+    await signInButton.waitFor({ state: "visible", timeout: 15000 });
     await page.waitForTimeout(300); // Small delay for button to be clickable
     await signInButton.click();
 

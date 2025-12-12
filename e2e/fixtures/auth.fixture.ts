@@ -140,6 +140,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
       );
 
       if (needsReauth) {
+        console.log("  🔄 ensureAuthenticated: redirected to signin, re-authenticating...");
         // Clear all storage to start fresh (removes any corrupted tokens)
         await page.context().clearCookies();
         await page.evaluate(() => {

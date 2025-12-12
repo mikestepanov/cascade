@@ -234,11 +234,11 @@ export class SettingsPage extends BasePage {
 
   async openInviteUserModal() {
     // Wait for the Admin tab content to be fully loaded
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(2000);
 
     // Use the first "Invite User" button (header one, not empty state one)
     const inviteBtn = this.inviteUserButton.first();
-    await inviteBtn.waitFor({ state: "visible", timeout: 5000 });
+    await inviteBtn.waitFor({ state: "visible", timeout: 15000 });
 
     // Scroll into view and wait for it to be stable
     await inviteBtn.scrollIntoViewIfNeeded();

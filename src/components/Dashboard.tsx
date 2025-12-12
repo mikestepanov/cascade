@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";

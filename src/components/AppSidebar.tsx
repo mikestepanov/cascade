@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
   ChevronDown,
@@ -17,7 +18,6 @@ import {
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";

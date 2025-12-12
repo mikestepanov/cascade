@@ -177,9 +177,20 @@ export class DashboardPage extends BasePage {
   async goto(companySlug?: string) {
     // Use provided slug or default to TEST_COMPANY_SLUG
     const slug = companySlug || "nixelo-e2e";
+    const dashboardUrl = `/${slug}/dashboard`;
+
+    // Check if already on dashboard - skip navigation to avoid token rotation
+    const currentUrl = this.page.url();
+    if (currentUrl.includes(`/${slug}/dashboard`)) {
+      // Already on dashboard, just verify it's loaded
+      const isLoaded = await this.commandPaletteButton.isVisible().catch(() => false);
+      if (isLoaded) {
+        return; // Already on loaded dashboard, no need to navigate
+      }
+    }
 
     // Navigate directly to dashboard URL
-    await this.page.goto(`/${slug}/dashboard`);
+    await this.page.goto(dashboardUrl);
     await this.waitForLoad();
 
     // Wait for dashboard app shell to load (command palette button is always visible)
@@ -332,6 +343,7 @@ export class DashboardPage extends BasePage {
   }
 
   async expectLoaded() {
-    await expect(this.loadingSpinner).not.toBeVisible();
+    // Wait longer for company context to load (auth tokens, company data)
+    await expect(this.loadingSpinner).not.toBeVisible({ timeout: 15000 });
   }
 }

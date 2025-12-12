@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";

@@ -1,8 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
-import { createContext, useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppSidebar } from "@/components/AppSidebar";
 import { CommandPalette, useCommands } from "@/components/CommandPalette";
@@ -10,39 +9,17 @@ import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
+import {
+  CompanyContext,
+  type CompanyContextType,
+  useCompany,
+  useCompanyOptional,
+} from "@/hooks/useCompanyContext";
 import { useKeyboardShortcutsWithSequences } from "@/hooks/useKeyboardShortcuts";
 import { SidebarProvider } from "@/hooks/useSidebarState";
 
-// Company context type
-interface CompanyContextType {
-  companyId: Id<"companies">;
-  companySlug: string;
-  companyName: string;
-  userRole: "owner" | "admin" | "member";
-  billingEnabled: boolean;
-}
-
-const CompanyContext = createContext<CompanyContextType | null>(null);
-
-/**
- * Hook to access current company from URL
- * Must be used within a $companySlug route
- */
-export function useCompany(): CompanyContextType {
-  const context = useContext(CompanyContext);
-  if (!context) {
-    throw new Error("useCompany must be used within a company route");
-  }
-  return context;
-}
-
-/**
- * Optional hook to access company - returns null if not in company context
- * Use this for components that might render before context is available
- */
-export function useCompanyOptional(): CompanyContextType | null {
-  return useContext(CompanyContext);
-}
+// Re-export hooks for backwards compatibility with existing imports
+export { useCompany, useCompanyOptional };
 
 export const Route = createFileRoute("/_auth/_app/$companySlug")({
   component: CompanyLayout,

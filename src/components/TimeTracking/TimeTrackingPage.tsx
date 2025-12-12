@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";

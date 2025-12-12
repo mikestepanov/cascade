@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import { ROUTES } from "@/config/routes";
-import { useCompanyOptional } from "@/routes/_auth/_app/$companySlug/route";
+import { useCompanyOptional } from "@/hooks/useCompanyContext";
 import { api } from "../../convex/_generated/api";
 import { Avatar } from "./ui/Avatar";
 import {
