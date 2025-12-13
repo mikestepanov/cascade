@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -9,7 +11,20 @@ import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
-import { Input, Select, Textarea } from "./ui/form";
+
+// =============================================================================
+// Schema
+// =============================================================================
+
+const categories = ["meeting", "planning", "engineering", "design", "other"] as const;
+
+const templateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  category: z.enum(categories),
+  icon: z.string().min(1, "Icon is required").max(2),
+  isPublic: z.boolean(),
+});
 
 interface DocumentTemplatesManagerProps {
   projectId?: Id<"projects">;
@@ -20,15 +35,10 @@ export function DocumentTemplatesManager({
   projectId,
   onSelectTemplate,
 }: DocumentTemplatesManagerProps) {
+  // UI State
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<Id<"documentTemplates"> | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("planning");
-  const [icon, setIcon] = useState("📄");
-  const [isPublic, setIsPublic] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"documentTemplates"> | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const templates = useQuery(api.documentTemplates.list, {
@@ -39,62 +49,62 @@ export function DocumentTemplatesManager({
   const updateTemplate = useMutation(api.documentTemplates.update);
   const deleteTemplate = useMutation(api.documentTemplates.remove);
 
+  const form = useAppForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      category: "planning" as const,
+      icon: "📄",
+      isPublic: false,
+    },
+    validators: { onChange: templateSchema },
+    onSubmit: async ({ value }) => {
+      try {
+        const templateData = {
+          name: value.name.trim(),
+          description: value.description?.trim() || undefined,
+          category: value.category,
+          icon: value.icon,
+          content: {
+            type: "doc",
+            content: [
+              {
+                type: "heading",
+                attrs: { level: 1 },
+                content: [{ type: "text", text: value.name }],
+              },
+              { type: "paragraph", content: [] },
+            ],
+          },
+          isPublic: value.isPublic,
+          projectId,
+        };
+
+        if (editingId) {
+          await updateTemplate({
+            id: editingId,
+            name: templateData.name,
+            description: templateData.description,
+            category: templateData.category,
+            icon: templateData.icon,
+            isPublic: templateData.isPublic,
+          });
+          showSuccess("Template updated");
+        } else {
+          await createTemplate(templateData);
+          showSuccess("Template created");
+        }
+        resetForm();
+      } catch (error) {
+        showError(error, "Failed to save template");
+      }
+    },
+  });
+
   const resetForm = () => {
-    setName("");
-    setDescription("");
-    setCategory("planning");
-    setIcon("📄");
-    setIsPublic(false);
+    form.reset();
     setEditingId(null);
     setShowModal(false);
-    setIsSubmitting(false);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setIsSubmitting(true);
-    try {
-      const templateData = {
-        name: name.trim(),
-        description: description.trim() || undefined,
-        category,
-        icon,
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: name }],
-            },
-            { type: "paragraph", content: [] },
-          ],
-        }, // Empty template content
-        isPublic,
-        projectId,
-      };
-
-      if (editingId) {
-        await updateTemplate({
-          id: editingId,
-          name: templateData.name,
-          description: templateData.description,
-          category: templateData.category,
-          icon: templateData.icon,
-          isPublic: templateData.isPublic,
-        });
-        showSuccess("Template updated");
-      } else {
-        await createTemplate(templateData);
-        showSuccess("Template created");
-      }
-      resetForm();
-    } catch (error) {
-      showError(error, "Failed to save template");
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const startEdit = (template: {
@@ -106,13 +116,21 @@ export function DocumentTemplatesManager({
     isPublic: boolean;
   }) => {
     setEditingId(template._id);
-    setName(template.name);
-    setDescription(template.description || "");
-    setCategory(template.category);
-    setIcon(template.icon);
-    setIsPublic(template.isPublic);
+    form.setFieldValue("name", template.name);
+    form.setFieldValue("description", template.description || "");
+    form.setFieldValue("category", template.category as (typeof categories)[number]);
+    form.setFieldValue("icon", template.icon);
+    form.setFieldValue("isPublic", template.isPublic);
     setShowModal(true);
   };
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!showModal) {
+      form.reset();
+      setEditingId(null);
+    }
+  }, [showModal, form]);
 
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm) return;
@@ -346,73 +364,103 @@ export function DocumentTemplatesManager({
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit Template" : "Create Template"}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Template Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Weekly Sprint Review"
-                required
-                autoFocus
-              />
+              <form.Field name="name">
+                {(field) => (
+                  <FormInput
+                    field={field}
+                    label="Template Name"
+                    placeholder="e.g., Weekly Sprint Review"
+                    required
+                    autoFocus
+                  />
+                )}
+              </form.Field>
 
-              <Input
-                label="Icon (Emoji)"
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                placeholder="📄"
-                maxLength={2}
-                required
-              />
+              <form.Field name="icon">
+                {(field) => (
+                  <FormInput
+                    field={field}
+                    label="Icon (Emoji)"
+                    placeholder="📄"
+                    maxLength={2}
+                    required
+                  />
+                )}
+              </form.Field>
             </div>
 
-            <Textarea
-              label="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of what this template is for..."
-              rows={3}
-            />
+            <form.Field name="description">
+              {(field) => (
+                <FormTextarea
+                  field={field}
+                  label="Description"
+                  placeholder="Brief description of what this template is for..."
+                  rows={3}
+                />
+              )}
+            </form.Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Select
-                label="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-              >
-                <option value="meeting">Meeting</option>
-                <option value="planning">Planning</option>
-                <option value="engineering">Engineering</option>
-                <option value="design">Design</option>
-                <option value="other">Other</option>
-              </Select>
+              <form.Field name="category">
+                {(field) => (
+                  <FormSelect field={field} label="Category" required>
+                    <option value="meeting">Meeting</option>
+                    <option value="planning">Planning</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="design">Design</option>
+                    <option value="other">Other</option>
+                  </FormSelect>
+                )}
+              </form.Field>
 
-              <div className="flex items-center gap-2 pt-7">
-                <input
-                  type="checkbox"
-                  id="isPublic"
-                  checked={isPublic}
-                  onChange={(e) => setIsPublic(e.target.checked)}
-                  className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
-                />
-                <label
-                  htmlFor="isPublic"
-                  className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-                >
-                  Make public (visible to all users)
-                </label>
-              </div>
+              <form.Field name="isPublic">
+                {(field) => (
+                  <div className="flex items-center gap-2 pt-7">
+                    <input
+                      type="checkbox"
+                      id="isPublic"
+                      checked={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                      onBlur={field.handleBlur}
+                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
+                    />
+                    <label
+                      htmlFor="isPublic"
+                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+                    >
+                      Make public (visible to all users)
+                    </label>
+                  </div>
+                )}
+              </form.Field>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="secondary" onClick={resetForm} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" isLoading={isSubmitting}>
-                {editingId ? "Update" : "Create"} Template
-              </Button>
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={resetForm}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" isLoading={isSubmitting}>
+                      {editingId ? "Update" : "Create"} Template
+                    </Button>
+                  </>
+                )}
+              </form.Subscribe>
             </DialogFooter>
           </form>
         </DialogContent>

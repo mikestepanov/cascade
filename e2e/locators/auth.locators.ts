@@ -8,7 +8,7 @@
  * This eliminates duplication and ensures consistency.
  */
 
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 /**
  * Auth form locators - for sign in/sign up forms

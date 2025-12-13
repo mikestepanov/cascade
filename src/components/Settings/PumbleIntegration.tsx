@@ -1,5 +1,8 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { toggleInArray } from "@/lib/array-utils";
+import { FormInput, FormSelect, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
@@ -7,8 +10,33 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
-import { Input } from "../ui/form/Input";
-import { Select } from "../ui/form/Select";
+import { Typography } from "../ui/Typography";
+
+// =============================================================================
+// Schema & Constants
+// =============================================================================
+
+const webhookSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  webhookUrl: z
+    .string()
+    .url("Invalid URL")
+    .refine((url) => url.includes("pumble.com"), {
+      message: "Must be a valid Pumble webhook URL",
+    }),
+  sendMentions: z.boolean(),
+  sendAssignments: z.boolean(),
+  sendStatusChanges: z.boolean(),
+});
+
+const AVAILABLE_EVENTS = [
+  { value: "issue.created", label: "Issue Created" },
+  { value: "issue.updated", label: "Issue Updated" },
+  { value: "issue.assigned", label: "Issue Assigned" },
+  { value: "issue.completed", label: "Issue Completed" },
+  { value: "issue.deleted", label: "Issue Deleted" },
+  { value: "comment.created", label: "Comment Added" },
+];
 
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -346,74 +374,65 @@ interface AddWebhookModalProps {
 }
 
 function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps) {
-  const [name, setName] = useState("");
-  const [webhookUrl, setWebhookUrl] = useState("");
+  // Events kept outside form due to checkbox array pattern
   const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(undefined);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([
     "issue.created",
     "issue.updated",
     "issue.assigned",
   ]);
-  const [sendMentions, setSendMentions] = useState(true);
-  const [sendAssignments, setSendAssignments] = useState(true);
-  const [sendStatusChanges, setSendStatusChanges] = useState(true);
 
   const addWebhook = useMutation(api.pumble.addWebhook);
 
-  const availableEvents = [
-    { value: "issue.created", label: "Issue Created" },
-    { value: "issue.updated", label: "Issue Updated" },
-    { value: "issue.assigned", label: "Issue Assigned" },
-    { value: "issue.completed", label: "Issue Completed" },
-    { value: "issue.deleted", label: "Issue Deleted" },
-    { value: "comment.created", label: "Comment Added" },
-  ];
+  const form = useAppForm({
+    defaultValues: {
+      name: "",
+      webhookUrl: "",
+      sendMentions: true,
+      sendAssignments: true,
+      sendStatusChanges: true,
+    },
+    validators: { onChange: webhookSchema },
+    onSubmit: async ({ value }) => {
+      if (selectedEvents.length === 0) {
+        showError("Please select at least one event");
+        return;
+      }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      try {
+        await addWebhook({
+          name: value.name.trim(),
+          webhookUrl: value.webhookUrl.trim(),
+          projectId,
+          events: selectedEvents,
+          sendMentions: value.sendMentions,
+          sendAssignments: value.sendAssignments,
+          sendStatusChanges: value.sendStatusChanges,
+        });
+        showSuccess("Webhook added successfully!");
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to add webhook");
+      }
+    },
+  });
 
-    if (!name.trim()) {
-      showError("Please enter a webhook name");
-      return;
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+      setProjectId(undefined);
+      setSelectedEvents(["issue.created", "issue.updated", "issue.assigned"]);
     }
-
-    if (!webhookUrl.trim()) {
-      showError("Please enter a webhook URL");
-      return;
-    }
-
-    if (!webhookUrl.includes("pumble.com")) {
-      showError("Invalid Pumble webhook URL");
-      return;
-    }
-
-    if (selectedEvents.length === 0) {
-      showError("Please select at least one event");
-      return;
-    }
-
-    try {
-      await addWebhook({
-        name: name.trim(),
-        webhookUrl: webhookUrl.trim(),
-        projectId,
-        events: selectedEvents,
-        sendMentions,
-        sendAssignments,
-        sendStatusChanges,
-      });
-      showSuccess("Webhook added successfully!");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to add webhook");
-    }
-  };
+  }, [open, form]);
 
   const toggleEvent = (event: string) => {
-    setSelectedEvents((prev) =>
-      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
-    );
+    setSelectedEvents((prev) => toggleInArray(prev, event));
   };
+
+  const sendMentions = form.useStore((state) => state.values.sendMentions);
+  const sendAssignments = form.useStore((state) => state.values.sendAssignments);
+  const sendStatusChanges = form.useStore((state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -421,51 +440,75 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
         <DialogHeader>
           <DialogTitle>Add Pumble Webhook</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-6"
+        >
           {/* Name */}
-          <Input
-            label="Webhook Name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Team Notifications"
-          />
+          <form.Field name="name">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Webhook Name"
+                placeholder="e.g., Team Notifications"
+                required
+              />
+            )}
+          </form.Field>
 
           {/* Webhook URL */}
-          <Input
-            label="Webhook URL"
-            type="url"
-            value={webhookUrl}
-            onChange={(e) => setWebhookUrl(e.target.value)}
-            placeholder="https://api.pumble.com/workspaces/.../..."
-            className="font-mono text-sm"
-            helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
-          />
+          <form.Field name="webhookUrl">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Webhook URL"
+                type="url"
+                placeholder="https://api.pumble.com/workspaces/.../..."
+                className="font-mono text-sm"
+                helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
+                required
+              />
+            )}
+          </form.Field>
 
           {/* Project */}
-          <Select
-            label="Project (Optional)"
-            value={projectId || ""}
-            onChange={(e) =>
-              setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
-            }
-            helperText="Leave empty to receive notifications from all projects"
-          >
-            <option value="">All Projects</option>
-            {projects.map((project) => (
-              <option key={project._id} value={project._id}>
-                {project.name}
-              </option>
-            ))}
-          </Select>
+          <div>
+            <label
+              htmlFor="project-select"
+              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
+              Project (Optional)
+            </label>
+            <select
+              id="project-select"
+              value={projectId || ""}
+              onChange={(e) =>
+                setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
+              }
+              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+            >
+              <option value="">All Projects</option>
+              {projects.map((project) => (
+                <option key={project._id} value={project._id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+            <Typography variant="muted" className="mt-1">
+              Leave empty to receive notifications from all projects
+            </Typography>
+          </div>
 
           {/* Events */}
           <div>
             <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Events to Send
+              Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {availableEvents.map((event) => (
+              {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox
                   key={event.value}
                   label={event.label}
@@ -474,6 +517,11 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
                 />
               ))}
             </div>
+            {selectedEvents.length === 0 && (
+              <Typography variant="small" color="error" className="mt-1">
+                Select at least one event
+              </Typography>
+            )}
           </div>
 
           {/* Additional Settings */}
@@ -485,29 +533,45 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               <Checkbox
                 label="Send notifications for @mentions"
                 checked={sendMentions}
-                onChange={(e) => setSendMentions(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendMentions", e.target.checked)}
               />
               <Checkbox
                 label="Send notifications for assignments"
                 checked={sendAssignments}
-                onChange={(e) => setSendAssignments(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendAssignments", e.target.checked)}
               />
               <Checkbox
                 label="Send notifications for status changes"
                 checked={sendStatusChanges}
-                onChange={(e) => setSendStatusChanges(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendStatusChanges", e.target.checked)}
               />
             </div>
           </div>
 
           {/* Actions */}
           <DialogFooter>
-            <Button onClick={() => onOpenChange(false)} variant="secondary">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
-              Add Webhook
-            </Button>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <>
+                  <Button
+                    type="button"
+                    onClick={() => onOpenChange(false)}
+                    variant="secondary"
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="bg-accent-600 hover:bg-accent-700"
+                    isLoading={isSubmitting}
+                  >
+                    Add Webhook
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -528,64 +592,61 @@ function EditWebhookModal({
   webhook,
   projects: _projects,
 }: EditWebhookModalProps) {
-  const [name, setName] = useState(webhook.name);
-  const [webhookUrl, setWebhookUrl] = useState(webhook.webhookUrl);
+  // Events kept outside form due to checkbox array pattern
   const [selectedEvents, setSelectedEvents] = useState<string[]>(webhook.events);
-  const [sendMentions, setSendMentions] = useState(webhook.sendMentions);
-  const [sendAssignments, setSendAssignments] = useState(webhook.sendAssignments);
-  const [sendStatusChanges, setSendStatusChanges] = useState(webhook.sendStatusChanges);
 
   const updateWebhook = useMutation(api.pumble.updateWebhook);
 
-  const availableEvents = [
-    { value: "issue.created", label: "Issue Created" },
-    { value: "issue.updated", label: "Issue Updated" },
-    { value: "issue.assigned", label: "Issue Assigned" },
-    { value: "issue.completed", label: "Issue Completed" },
-    { value: "issue.deleted", label: "Issue Deleted" },
-    { value: "comment.created", label: "Comment Added" },
-  ];
+  const form = useAppForm({
+    defaultValues: {
+      name: webhook.name,
+      webhookUrl: webhook.webhookUrl,
+      sendMentions: webhook.sendMentions,
+      sendAssignments: webhook.sendAssignments,
+      sendStatusChanges: webhook.sendStatusChanges,
+    },
+    validators: { onChange: webhookSchema },
+    onSubmit: async ({ value }) => {
+      if (selectedEvents.length === 0) {
+        showError("Please select at least one event");
+        return;
+      }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      try {
+        await updateWebhook({
+          webhookId: webhook._id,
+          name: value.name.trim(),
+          webhookUrl: value.webhookUrl.trim(),
+          events: selectedEvents,
+          sendMentions: value.sendMentions,
+          sendAssignments: value.sendAssignments,
+          sendStatusChanges: value.sendStatusChanges,
+        });
+        showSuccess("Webhook updated successfully!");
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to update webhook");
+      }
+    },
+  });
 
-    if (!name.trim()) {
-      showError("Please enter a webhook name");
-      return;
-    }
-
-    if (!webhookUrl.trim()) {
-      showError("Please enter a webhook URL");
-      return;
-    }
-
-    if (selectedEvents.length === 0) {
-      showError("Please select at least one event");
-      return;
-    }
-
-    try {
-      await updateWebhook({
-        webhookId: webhook._id,
-        name: name.trim(),
-        webhookUrl: webhookUrl.trim(),
-        events: selectedEvents,
-        sendMentions,
-        sendAssignments,
-        sendStatusChanges,
-      });
-      showSuccess("Webhook updated successfully!");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to update webhook");
-    }
-  };
+  // Reset form when webhook changes
+  useEffect(() => {
+    form.setFieldValue("name", webhook.name);
+    form.setFieldValue("webhookUrl", webhook.webhookUrl);
+    form.setFieldValue("sendMentions", webhook.sendMentions);
+    form.setFieldValue("sendAssignments", webhook.sendAssignments);
+    form.setFieldValue("sendStatusChanges", webhook.sendStatusChanges);
+    setSelectedEvents(webhook.events);
+  }, [webhook, form]);
 
   const toggleEvent = (event: string) => {
-    setSelectedEvents((prev) =>
-      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event],
-    );
+    setSelectedEvents((prev) => toggleInArray(prev, event));
   };
+
+  const sendMentions = form.useStore((state) => state.values.sendMentions);
+  const sendAssignments = form.useStore((state) => state.values.sendAssignments);
+  const sendStatusChanges = form.useStore((state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -593,40 +654,45 @@ function EditWebhookModal({
         <DialogHeader>
           <DialogTitle>Edit Webhook</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-6"
+        >
           {/* Name */}
-          <div>
-            <label
-              htmlFor="webhook-name"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-            >
-              Webhook Name
-            </label>
-            <input
-              id="webhook-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
+          <form.Field name="name">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Webhook Name"
+                placeholder="e.g., Team Notifications"
+                required
+              />
+            )}
+          </form.Field>
 
           {/* Webhook URL */}
-          <Input
-            label="Webhook URL"
-            type="url"
-            value={webhookUrl}
-            onChange={(e) => setWebhookUrl(e.target.value)}
-            className="font-mono text-sm"
-          />
+          <form.Field name="webhookUrl">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Webhook URL"
+                type="url"
+                className="font-mono text-sm"
+                required
+              />
+            )}
+          </form.Field>
 
           {/* Events */}
           <div>
             <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Events to Send
+              Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {availableEvents.map((event) => (
+              {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox
                   key={event.value}
                   label={event.label}
@@ -635,6 +701,11 @@ function EditWebhookModal({
                 />
               ))}
             </div>
+            {selectedEvents.length === 0 && (
+              <Typography variant="small" color="error" className="mt-1">
+                Select at least one event
+              </Typography>
+            )}
           </div>
 
           {/* Additional Settings */}
@@ -646,29 +717,45 @@ function EditWebhookModal({
               <Checkbox
                 label="Send notifications for @mentions"
                 checked={sendMentions}
-                onChange={(e) => setSendMentions(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendMentions", e.target.checked)}
               />
               <Checkbox
                 label="Send notifications for assignments"
                 checked={sendAssignments}
-                onChange={(e) => setSendAssignments(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendAssignments", e.target.checked)}
               />
               <Checkbox
                 label="Send notifications for status changes"
                 checked={sendStatusChanges}
-                onChange={(e) => setSendStatusChanges(e.target.checked)}
+                onChange={(e) => form.setFieldValue("sendStatusChanges", e.target.checked)}
               />
             </div>
           </div>
 
           {/* Actions */}
           <DialogFooter>
-            <Button onClick={() => onOpenChange(false)} variant="secondary">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" className="bg-accent-600 hover:bg-accent-700">
-              Save Changes
-            </Button>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <>
+                  <Button
+                    type="button"
+                    onClick={() => onOpenChange(false)}
+                    variant="secondary"
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="bg-accent-600 hover:bg-accent-700"
+                    isLoading={isSubmitting}
+                  >
+                    Save Changes
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>

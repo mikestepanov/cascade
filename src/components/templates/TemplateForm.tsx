@@ -1,97 +1,104 @@
 import { useMutation } from "convex/react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { z } from "zod";
+import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
+import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
-import { Input, Select, Textarea } from "../ui/form";
 
-type IssueType = "task" | "bug" | "story" | "epic";
-type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
+// =============================================================================
+// Schema
+// =============================================================================
+
+const issueTypes = ["task", "bug", "story", "epic"] as const;
+const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
+
+const templateSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  type: z.enum(issueTypes),
+  titleTemplate: z.string().min(1, "Title template is required"),
+  descriptionTemplate: z.string().optional(),
+  defaultPriority: z.enum(priorities),
+  defaultLabels: z.string().optional(),
+});
+
+// =============================================================================
+// Component
+// =============================================================================
 
 interface TemplateFormProps {
   projectId: Id<"projects">;
   template?: {
     _id: Id<"issueTemplates">;
     name: string;
-    type: IssueType;
+    type: "task" | "bug" | "story" | "epic";
     titleTemplate: string;
     descriptionTemplate: string;
-    defaultPriority: IssuePriority;
+    defaultPriority: "lowest" | "low" | "medium" | "high" | "highest";
     defaultLabels?: string[];
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Form component for creating/editing issue templates
- * Extracted from TemplatesManager for better reusability
- */
 export function TemplateForm({ projectId, template, open, onOpenChange }: TemplateFormProps) {
-  const [name, setName] = useState("");
-  const [type, setType] = useState<IssueType>("task");
-  const [titleTemplate, setTitleTemplate] = useState("");
-  const [descriptionTemplate, setDescriptionTemplate] = useState("");
-  const [defaultPriority, setDefaultPriority] = useState<IssuePriority>("medium");
-  const [defaultLabels, setDefaultLabels] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const createTemplate = useMutation(api.templates.create);
   const updateTemplate = useMutation(api.templates.update);
 
-  // Reset form when template changes or dialog opens
+  const form = useAppForm({
+    defaultValues: {
+      name: "",
+      type: "task" as const,
+      titleTemplate: "",
+      descriptionTemplate: "",
+      defaultPriority: "medium" as const,
+      defaultLabels: "",
+    },
+    validators: { onChange: templateSchema },
+    onSubmit: async ({ value }) => {
+      try {
+        const templateData = {
+          name: value.name.trim(),
+          type: value.type,
+          titleTemplate: value.titleTemplate.trim(),
+          descriptionTemplate: value.descriptionTemplate?.trim() || "",
+          defaultPriority: value.defaultPriority,
+          defaultLabels:
+            value.defaultLabels
+              ?.split(",")
+              .map((l) => l.trim())
+              .filter(Boolean) || [],
+        };
+
+        if (template) {
+          await updateTemplate({ id: template._id, ...templateData });
+          showSuccess("Template updated");
+        } else {
+          await createTemplate({ projectId, ...templateData });
+          showSuccess("Template created");
+        }
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to save template");
+      }
+    },
+  });
+
+  // Reset form when template changes
   useEffect(() => {
     if (template) {
-      setName(template.name);
-      setType(template.type);
-      setTitleTemplate(template.titleTemplate);
-      setDescriptionTemplate(template.descriptionTemplate);
-      setDefaultPriority(template.defaultPriority);
-      setDefaultLabels(template.defaultLabels?.join(", ") || "");
+      form.setFieldValue("name", template.name);
+      form.setFieldValue("type", template.type);
+      form.setFieldValue("titleTemplate", template.titleTemplate);
+      form.setFieldValue("descriptionTemplate", template.descriptionTemplate);
+      form.setFieldValue("defaultPriority", template.defaultPriority);
+      form.setFieldValue("defaultLabels", template.defaultLabels?.join(", ") || "");
     } else {
-      setName("");
-      setType("task");
-      setTitleTemplate("");
-      setDescriptionTemplate("");
-      setDefaultPriority("medium");
-      setDefaultLabels("");
+      form.reset();
     }
-    setIsSubmitting(false);
-  }, [template]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setIsSubmitting(true);
-    try {
-      const templateData = {
-        name: name.trim(),
-        type,
-        titleTemplate: titleTemplate.trim(),
-        descriptionTemplate: descriptionTemplate.trim(),
-        defaultPriority,
-        defaultLabels: defaultLabels
-          .split(",")
-          .map((l) => l.trim())
-          .filter(Boolean),
-      };
-
-      if (template) {
-        await updateTemplate({ id: template._id, ...templateData });
-        toast.success("Template updated");
-      } else {
-        await createTemplate({ projectId, ...templateData });
-        toast.success("Template created");
-      }
-      onOpenChange(false);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save template");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  }, [template, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -99,81 +106,104 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
         <DialogHeader>
           <DialogTitle>{template ? "Edit Template" : "Create Template"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Template Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Bug Report, Feature Request"
-              required
-              autoFocus
-            />
+            <form.Field name="name">
+              {(field) => (
+                <FormInput
+                  field={field}
+                  label="Template Name"
+                  placeholder="e.g., Bug Report, Feature Request"
+                  required
+                  autoFocus
+                />
+              )}
+            </form.Field>
 
-            <Select
-              label="Issue Type"
-              value={type}
-              onChange={(e) => setType(e.target.value as IssueType)}
-              required
-            >
-              <option value="task">Task</option>
-              <option value="bug">Bug</option>
-              <option value="story">Story</option>
-              <option value="epic">Epic</option>
-            </Select>
+            <form.Field name="type">
+              {(field) => (
+                <FormSelect field={field} label="Issue Type" required>
+                  <option value="task">Task</option>
+                  <option value="bug">Bug</option>
+                  <option value="story">Story</option>
+                  <option value="epic">Epic</option>
+                </FormSelect>
+              )}
+            </form.Field>
           </div>
 
-          <Input
-            label="Title Template"
-            value={titleTemplate}
-            onChange={(e) => setTitleTemplate(e.target.value)}
-            placeholder="e.g., [BUG] {description}"
-            helpText="Use {placeholders} for dynamic content"
-            required
-          />
+          <form.Field name="titleTemplate">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Title Template"
+                placeholder="e.g., [BUG] {description}"
+                helperText="Use {placeholders} for dynamic content"
+                required
+              />
+            )}
+          </form.Field>
 
-          <Textarea
-            label="Description Template"
-            value={descriptionTemplate}
-            onChange={(e) => setDescriptionTemplate(e.target.value)}
-            placeholder="## Steps to Reproduce&#10;1. &#10;2. &#10;&#10;## Expected Result&#10;&#10;## Actual Result"
-            rows={6}
-            className="font-mono text-sm"
-          />
+          <form.Field name="descriptionTemplate">
+            {(field) => (
+              <FormTextarea
+                field={field}
+                label="Description Template"
+                placeholder="## Steps to Reproduce&#10;1. &#10;2. &#10;&#10;## Expected Result&#10;&#10;## Actual Result"
+                rows={6}
+                className="font-mono text-sm"
+              />
+            )}
+          </form.Field>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Default Priority"
-              value={defaultPriority}
-              onChange={(e) => setDefaultPriority(e.target.value as IssuePriority)}
-            >
-              <option value="lowest">Lowest</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="highest">Highest</option>
-            </Select>
+            <form.Field name="defaultPriority">
+              {(field) => (
+                <FormSelect field={field} label="Default Priority">
+                  <option value="lowest">Lowest</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="highest">Highest</option>
+                </FormSelect>
+              )}
+            </form.Field>
 
-            <Input
-              label="Default Labels (comma separated)"
-              value={defaultLabels}
-              onChange={(e) => setDefaultLabels(e.target.value)}
-              placeholder="bug, frontend, urgent"
-            />
+            <form.Field name="defaultLabels">
+              {(field) => (
+                <FormInput
+                  field={field}
+                  label="Default Labels (comma separated)"
+                  placeholder="bug, frontend, urgent"
+                />
+              )}
+            </form.Field>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              {template ? "Update" : "Create"} Template
-            </Button>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" isLoading={isSubmitting}>
+                    {template ? "Update" : "Create"} Template
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>
