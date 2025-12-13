@@ -10,6 +10,8 @@ import { expect, authenticatedTest as test } from "./fixtures";
  * Uses serial mode to prevent auth token rotation issues between tests.
  * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
  * Test 2 loading stale tokens from file will fail.
+ *
+ * Uses DashboardPage and LandingPage page objects for consistent locators.
  */
 
 test.describe("Sign Out", () => {
@@ -22,23 +24,15 @@ test.describe("Sign Out", () => {
     await ensureAuthenticated();
   });
 
-  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
+  test("sign out returns to landing page", async ({ dashboardPage, landingPage }) => {
     // Navigate to dashboard via proper entry point
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
 
-    // Open user menu (click the avatar button in the header)
-    const userMenuButton = page.getByRole("button", { name: "User menu" });
-    await userMenuButton.click();
-    await page.waitForTimeout(300); // Wait for dropdown to open
+    // Sign out via user menu dropdown
+    await dashboardPage.signOutViaUserMenu();
 
-    // Click sign out in the dropdown menu
-    const signOutButton = page.getByRole("menuitem", { name: /sign out/i });
-    await signOutButton.click();
-
-    // Should return to landing page
-    await expect(page.getByRole("link", { name: /get started free/i })).toBeVisible({
-      timeout: 10000,
-    });
+    // Should return to landing page - verify Get Started button is visible
+    await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 10000 });
   });
 });

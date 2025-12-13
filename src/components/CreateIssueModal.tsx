@@ -1,13 +1,35 @@
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
+import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
-import { Input, Select, Textarea } from "./ui/form";
+import { Select } from "./ui/form";
+
+// =============================================================================
+// Schema
+// =============================================================================
+
+const issueTypes = ["task", "bug", "story", "epic", "subtask"] as const;
+const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
+
+const createIssueSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  type: z.enum(issueTypes),
+  priority: z.enum(priorities),
+  assigneeId: z.string().optional(),
+  storyPoints: z.string().optional(),
+});
+
+// =============================================================================
+// Component
+// =============================================================================
 
 interface CreateIssueModalProps {
   projectId: Id<"projects">;
@@ -22,25 +44,55 @@ export function CreateIssueModal({
   open,
   onOpenChange,
 }: CreateIssueModalProps) {
+  // Template selection (outside form - controls form reset)
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState<"task" | "bug" | "story" | "epic" | "subtask">("task");
-  const [priority, setPriority] = useState<"lowest" | "low" | "medium" | "high" | "highest">(
-    "medium",
-  );
-  const [assigneeId, setAssigneeId] = useState<Id<"users"> | "">("");
+  // Labels (array state, not simple string)
   const [selectedLabels, setSelectedLabels] = useState<Id<"labels">[]>([]);
-  const [storyPoints, setStoryPoints] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // AI state
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [showAISuggestions, setShowAISuggestions] = useState(false);
 
+  // Queries
   const project = useQuery(api.projects.get, { id: projectId });
   const templates = useQuery(api.templates.list, { projectId });
   const labels = useQuery(api.labels.list, { projectId });
+
+  // Mutations
   const createIssue = useMutation(api.issues.create);
   const generateSuggestions = useAction(api.ai.actions.generateIssueSuggestions);
+
+  // Form
+  const form = useAppForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      type: "task" as const,
+      priority: "medium" as const,
+      assigneeId: "",
+      storyPoints: "",
+    },
+    validators: { onChange: createIssueSchema },
+    onSubmit: async ({ value }) => {
+      try {
+        await createIssue({
+          projectId,
+          title: value.title.trim(),
+          description: value.description?.trim() || undefined,
+          type: value.type,
+          priority: value.priority,
+          assigneeId: (value.assigneeId || undefined) as Id<"users"> | undefined,
+          sprintId,
+          labels: selectedLabels.length > 0 ? selectedLabels : undefined,
+          storyPoints: value.storyPoints ? Number.parseFloat(value.storyPoints) : undefined,
+        });
+
+        showSuccess("Issue created successfully");
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to create issue");
+      }
+    },
+  });
 
   // Apply template when selected
   useEffect(() => {
@@ -49,14 +101,10 @@ export function CreateIssueModal({
     const template = templates.find((t) => t._id === selectedTemplate);
     if (!template) return;
 
-    setType(template.type);
-    setPriority(template.defaultPriority);
-
-    // Apply title template (simple implementation - replace {description} placeholder)
-    setTitle(template.titleTemplate);
-
-    // Apply description template
-    setDescription(template.descriptionTemplate || "");
+    form.setFieldValue("type", template.type);
+    form.setFieldValue("priority", template.defaultPriority);
+    form.setFieldValue("title", template.titleTemplate);
+    form.setFieldValue("description", template.descriptionTemplate || "");
 
     // Apply default labels if they exist
     if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
@@ -65,41 +113,17 @@ export function CreateIssueModal({
         .map((label) => label._id);
       setSelectedLabels(labelIds);
     }
-  }, [selectedTemplate, templates, labels]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      await createIssue({
-        projectId,
-        title: title.trim(),
-        description: description.trim() || undefined,
-        type,
-        priority,
-        assigneeId: assigneeId || undefined,
-        sprintId,
-        labels: selectedLabels.length > 0 ? selectedLabels : undefined,
-        storyPoints: storyPoints ? Number.parseFloat(storyPoints) : undefined,
-      });
-
-      showSuccess("Issue created successfully");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to create issue");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  }, [selectedTemplate, templates, labels, form]);
 
   const toggleLabel = (labelId: Id<"labels">) => {
     setSelectedLabels((prev) => toggleInArray(prev, labelId));
   };
 
   const handleGenerateAISuggestions = async () => {
-    if (!title.trim()) {
+    const title = form.getFieldValue("title");
+    const description = form.getFieldValue("description");
+
+    if (!title?.trim()) {
       showError(new Error("Please enter a title first"), "Title required");
       return;
     }
@@ -114,12 +138,15 @@ export function CreateIssueModal({
       });
 
       // Apply AI suggestions
-      if (suggestions.description && !description.trim()) {
-        setDescription(suggestions.description);
+      if (suggestions.description && !description?.trim()) {
+        form.setFieldValue("description", suggestions.description);
       }
 
       if (suggestions.priority) {
-        setPriority(suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest");
+        form.setFieldValue(
+          "priority",
+          suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest",
+        );
       }
 
       if (suggestions.labels && Array.isArray(suggestions.labels) && labels) {
@@ -146,8 +173,14 @@ export function CreateIssueModal({
         <DialogHeader>
           <DialogTitle>Create Issue</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Template Selector */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          {/* Template Selector (outside form state) */}
           {templates && templates.length > 0 && (
             <Select
               label="Use Template (Optional)"
@@ -163,20 +196,19 @@ export function CreateIssueModal({
             </Select>
           )}
 
-          <Input
-            label="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter issue title..."
-            required
-          />
+          {/* Title */}
+          <form.Field name="title">
+            {(field) => (
+              <FormInput field={field} label="Title" placeholder="Enter issue title..." required />
+            )}
+          </form.Field>
 
           {/* AI Suggestions Button */}
           <Flex align="center" gap="sm" className="pb-2">
             <button
               type="button"
               onClick={handleGenerateAISuggestions}
-              disabled={!title.trim() || isGeneratingAI}
+              disabled={isGeneratingAI}
               className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isGeneratingAI ? (
@@ -203,68 +235,74 @@ export function CreateIssueModal({
             )}
           </Flex>
 
-          <Textarea
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter issue description..."
-            rows={6}
-          />
+          {/* Description */}
+          <form.Field name="description">
+            {(field) => (
+              <FormTextarea
+                field={field}
+                label="Description"
+                placeholder="Enter issue description..."
+                rows={6}
+              />
+            )}
+          </form.Field>
 
+          {/* Type & Priority */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Type"
-              value={type}
-              onChange={(e) =>
-                setType(e.target.value as "task" | "bug" | "story" | "epic" | "subtask")
-              }
-            >
-              <option value="task">📋 Task</option>
-              <option value="bug">🐛 Bug</option>
-              <option value="story">📖 Story</option>
-              <option value="epic">🎯 Epic</option>
-              <option value="subtask">🔸 Sub-task</option>
-            </Select>
+            <form.Field name="type">
+              {(field) => (
+                <FormSelect field={field} label="Type">
+                  <option value="task">📋 Task</option>
+                  <option value="bug">🐛 Bug</option>
+                  <option value="story">📖 Story</option>
+                  <option value="epic">🎯 Epic</option>
+                  <option value="subtask">🔸 Sub-task</option>
+                </FormSelect>
+              )}
+            </form.Field>
 
-            <Select
-              label="Priority"
-              value={priority}
-              onChange={(e) =>
-                setPriority(e.target.value as "lowest" | "low" | "medium" | "high" | "highest")
-              }
-            >
-              <option value="lowest">⬇️ Lowest</option>
-              <option value="low">↘️ Low</option>
-              <option value="medium">➡️ Medium</option>
-              <option value="high">↗️ High</option>
-              <option value="highest">⬆️ Highest</option>
-            </Select>
+            <form.Field name="priority">
+              {(field) => (
+                <FormSelect field={field} label="Priority">
+                  <option value="lowest">⬇️ Lowest</option>
+                  <option value="low">↘️ Low</option>
+                  <option value="medium">➡️ Medium</option>
+                  <option value="high">↗️ High</option>
+                  <option value="highest">⬆️ Highest</option>
+                </FormSelect>
+              )}
+            </form.Field>
           </div>
 
-          <Select
-            label="Assignee"
-            value={assigneeId}
-            onChange={(e) => setAssigneeId(e.target.value as Id<"users"> | "")}
-          >
-            <option value="">Unassigned</option>
-            {project.members.map((member) => (
-              <option key={member._id} value={member._id}>
-                {member.name}
-              </option>
-            ))}
-          </Select>
+          {/* Assignee */}
+          <form.Field name="assigneeId">
+            {(field) => (
+              <FormSelect field={field} label="Assignee">
+                <option value="">Unassigned</option>
+                {project.members.map((member) => (
+                  <option key={member._id} value={member._id}>
+                    {member.name}
+                  </option>
+                ))}
+              </FormSelect>
+            )}
+          </form.Field>
 
-          <Input
-            label="Story Points"
-            type="number"
-            value={storyPoints}
-            onChange={(e) => setStoryPoints(e.target.value)}
-            placeholder="Enter story points (optional)"
-            min="0"
-            step="0.5"
-          />
+          {/* Story Points */}
+          <form.Field name="storyPoints">
+            {(field) => (
+              <FormInput
+                field={field}
+                label="Story Points"
+                type="number"
+                placeholder="Enter story points (optional)"
+                min="0"
+                step="0.5"
+              />
+            )}
+          </form.Field>
 
-          {/* Labels */}
+          {/* Labels (outside form - array state) */}
           {labels && labels.length > 0 && (
             <div>
               <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
@@ -289,18 +327,25 @@ export function CreateIssueModal({
             </div>
           )}
 
+          {/* Footer */}
           <DialogFooter>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Create Issue
-            </Button>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" isLoading={isSubmitting}>
+                    Create Issue
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>

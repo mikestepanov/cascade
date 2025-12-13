@@ -57,12 +57,21 @@ export class ProjectsPage extends BasePage {
   readonly analyticsTab: Locator;
   readonly settingsTab: Locator;
 
+  // ===================
+  // Locators - Issue Detail Dialog
+  // ===================
+  readonly issueDetailDialog: Locator;
+  readonly startTimerButton: Locator;
+  readonly stopTimerButton: Locator;
+  readonly timerStoppedToast: Locator;
+
   constructor(page: Page) {
     super(page);
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
     this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
+    this.addProjectButton = page.getByRole("button", { name: "Add new project" });
     this.projectList = page
       .locator("[data-project-list]")
       .or(this.sidebar.locator("ul, [role='list']").first());
@@ -127,6 +136,12 @@ export class ProjectsPage extends BasePage {
     this.settingsTab = page
       .getByRole("tab", { name: /settings/i })
       .or(page.getByRole("button", { name: /settings/i }));
+
+    // Issue detail dialog
+    this.issueDetailDialog = page.getByRole("dialog");
+    this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
+    this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: "Stop Timer" });
+    this.timerStoppedToast = page.getByText(/Timer stopped/i);
   }
 
   // ===================
@@ -188,6 +203,43 @@ export class ProjectsPage extends BasePage {
       settings: this.settingsTab,
     };
     await tabs[tab].evaluate((el: HTMLElement) => el.click());
+  }
+
+  /**
+   * Get an issue card by its title
+   */
+  getIssueCard(title: string) {
+    return this.page.getByRole("heading", { name: title, level: 4 });
+  }
+
+  /**
+   * Open an issue detail dialog by clicking its card
+   */
+  async openIssueDetail(title: string) {
+    const issueCard = this.getIssueCard(title);
+    await issueCard.waitFor({ state: "visible", timeout: 5000 });
+    await issueCard.click();
+    await expect(this.issueDetailDialog).toBeVisible({ timeout: 5000 });
+  }
+
+  /**
+   * Start timer in issue detail dialog
+   */
+  async startTimer() {
+    await expect(this.startTimerButton).toBeVisible({ timeout: 5000 });
+    await this.startTimerButton.scrollIntoViewIfNeeded();
+    await this.startTimerButton.click();
+    await expect(this.stopTimerButton).toBeVisible({ timeout: 5000 });
+  }
+
+  /**
+   * Stop timer in issue detail dialog
+   */
+  async stopTimer() {
+    await this.stopTimerButton.scrollIntoViewIfNeeded();
+    await this.stopTimerButton.click();
+    await expect(this.timerStoppedToast).toBeVisible({ timeout: 5000 });
+    await expect(this.startTimerButton).toBeVisible({ timeout: 5000 });
   }
 
   // ===================

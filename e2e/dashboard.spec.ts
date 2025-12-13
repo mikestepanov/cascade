@@ -86,16 +86,16 @@ test.describe("Dashboard Tests", () => {
 
       const html = page.locator("html");
 
-      // Switch to dark theme
-      await page.getByText("Dark").click();
+      // Switch to dark theme using page object
+      await settingsPage.setTheme("dark");
       await expect(html).toHaveClass(/dark/);
 
-      // Switch to light theme
-      await page.getByText("Light").click();
+      // Switch to light theme using page object
+      await settingsPage.setTheme("light");
       await expect(html).not.toHaveClass(/dark/);
 
-      // Switch to system theme
-      await page.getByText("System").click();
+      // Switch to system theme using page object
+      await settingsPage.setTheme("system");
     });
   });
 

@@ -12,6 +12,8 @@ import { expect, authenticatedTest as test } from "./fixtures";
  * Uses serial mode to prevent auth token rotation issues between tests.
  * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
  * Test 2 loading stale tokens from file will fail.
+ *
+ * Uses ProjectsPage page object for consistent locators.
  */
 
 test.describe("Time Tracking", () => {
@@ -36,7 +38,7 @@ test.describe("Time Tracking", () => {
     // 2. Create a Project (sidebar auto-creates with default name)
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(500);
-    await page.getByRole("button", { name: "Add new project" }).click();
+    await projectsPage.addProjectButton.click();
 
     // Wait for navigation to new project board
     await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
@@ -50,44 +52,20 @@ test.describe("Time Tracking", () => {
     // Wait for the create issue modal to close
     await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
-    // 4. Open Issue Detail Modal
-    // Wait for issue card to appear and click it
-    const issueCard = page.getByRole("heading", { name: issueTitle, level: 4 });
-    await issueCard.waitFor({ state: "visible", timeout: 5000 });
-    await issueCard.click();
-
-    // 5. Wait for dialog modal to open
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible({ timeout: 5000 });
+    // 4. Open Issue Detail Modal using page object
+    await projectsPage.openIssueDetail(issueTitle);
 
     // Wait for React to fully hydrate and Convex queries to load
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(1000);
 
-    // 6. Start Timer - find button within dialog (not header)
-    const startTimerButton = dialog.getByRole("button", { name: "Start Timer" });
-    await expect(startTimerButton).toBeVisible({ timeout: 5000 });
-    // Scroll into view and click - ensures button is clickable
-    await startTimerButton.scrollIntoViewIfNeeded();
-    await startTimerButton.click();
-
-    // Verify timer started (button changes to Stop Timer)
-    await expect(dialog.getByRole("button", { name: "Stop Timer" })).toBeVisible({ timeout: 5000 });
+    // 5. Start Timer using page object
+    await projectsPage.startTimer();
 
     // Wait a brief moment to log some duration
     await page.waitForTimeout(2000);
 
-    // 7. Stop Timer (within dialog)
-    const stopTimerButton = dialog.getByRole("button", { name: "Stop Timer" });
-    await stopTimerButton.scrollIntoViewIfNeeded();
-    await stopTimerButton.click();
-
-    // Verify success toast
-    await expect(page.getByText(/Timer stopped/i)).toBeVisible({ timeout: 5000 });
-
-    // Verify Start Timer button is back (within dialog)
-    await expect(dialog.getByRole("button", { name: "Start Timer" })).toBeVisible({
-      timeout: 5000,
-    });
+    // 6. Stop Timer using page object
+    await projectsPage.stopTimer();
   });
 });

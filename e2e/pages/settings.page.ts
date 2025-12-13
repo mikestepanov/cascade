@@ -97,10 +97,10 @@ export class SettingsPage extends BasePage {
       .or(page.getByRole("button", { name: /admin/i }));
     this.devToolsTab = page.getByRole("tab", { name: /dev tools/i });
 
-    // Theme options (in Preferences tab)
-    this.themeLightOption = page.getByText("Light", { exact: true });
-    this.themeDarkOption = page.getByText("Dark", { exact: true });
-    this.themeSystemOption = page.getByText("System", { exact: true });
+    // Theme options (in Preferences tab) - ToggleGroupItems with aria-labels
+    this.themeLightOption = page.getByRole("radio", { name: /light theme/i });
+    this.themeDarkOption = page.getByRole("radio", { name: /dark theme/i });
+    this.themeSystemOption = page.getByRole("radio", { name: /system theme/i });
 
     // Integrations
     this.githubIntegration = page
@@ -180,7 +180,8 @@ export class SettingsPage extends BasePage {
 
   async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
     // Wait for React to fully hydrate and attach event handlers
-    await this.page.waitForLoadState("networkidle");
+    // Don't use networkidle - Convex WebSocket keeps connection active
+    await this.page.waitForLoadState("domcontentloaded");
     await this.page.waitForTimeout(1000);
 
     // Use getByRole("tab") directly - Radix UI tabs have role="tab"

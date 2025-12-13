@@ -233,8 +233,8 @@ export class LandingPage extends BasePage {
     await expect(this.featuresHeadingDocs).toBeVisible();
     await expect(this.featuresHeadingRealtime).toBeVisible();
     await expect(this.featuresHeadingDashboard).toBeVisible();
-    // Should have 4 learn more links
-    await expect(this.learnMoreLinks).toHaveCount(4);
+    // Should have 3 learn more links (one per feature card)
+    await expect(this.learnMoreLinks).toHaveCount(3);
   }
 
   /**
