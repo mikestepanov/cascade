@@ -12,6 +12,7 @@ export class ProjectsPage extends BasePage {
   // ===================
   readonly sidebar: Locator;
   readonly newProjectButton: Locator;
+  readonly addProjectButton: Locator; // Alias for sidebar "Add new project" button
   readonly projectList: Locator;
   readonly projectItems: Locator;
 
@@ -133,6 +134,10 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async openCreateProjectForm() {
+    // Wait for React to hydrate before clicking
+    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForTimeout(500);
+
     await this.newProjectButton.click();
     await expect(this.createProjectForm).toBeVisible({ timeout: 5000 });
   }

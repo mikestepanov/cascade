@@ -15,6 +15,14 @@ export class SettingsPage extends BasePage {
   readonly offlineTab: Locator;
   readonly preferencesTab: Locator;
   readonly adminTab: Locator;
+  readonly devToolsTab: Locator;
+
+  // ===================
+  // Locators - Theme Options (in Preferences tab)
+  // ===================
+  readonly themeLightOption: Locator;
+  readonly themeDarkOption: Locator;
+  readonly themeSystemOption: Locator;
 
   // ===================
   // Locators - Integrations
@@ -87,6 +95,12 @@ export class SettingsPage extends BasePage {
     this.adminTab = page
       .getByRole("tab", { name: /admin/i })
       .or(page.getByRole("button", { name: /admin/i }));
+    this.devToolsTab = page.getByRole("tab", { name: /dev tools/i });
+
+    // Theme options (in Preferences tab)
+    this.themeLightOption = page.getByText("Light", { exact: true });
+    this.themeDarkOption = page.getByText("Dark", { exact: true });
+    this.themeSystemOption = page.getByText("System", { exact: true });
 
     // Integrations
     this.githubIntegration = page
@@ -261,6 +275,15 @@ export class SettingsPage extends BasePage {
       await this.page.getByRole("option", { name: new RegExp(`^${role}$`, "i") }).click();
     }
     await this.sendInviteButton.click();
+  }
+
+  async setTheme(theme: "light" | "dark" | "system") {
+    const options = {
+      light: this.themeLightOption,
+      dark: this.themeDarkOption,
+      system: this.themeSystemOption,
+    };
+    await options[theme].click();
   }
 
   // ===================

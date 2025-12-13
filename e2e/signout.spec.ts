@@ -22,27 +22,10 @@ test.describe("Sign Out", () => {
     await ensureAuthenticated();
   });
 
-  // TODO: Company context not loading - investigate auth token loading from storage state
-  test.skip("sign out returns to landing page", async ({ page, companySlug }) => {
-    // Navigate to company-scoped dashboard
-    // Use domcontentloaded - networkidle never resolves due to Convex WebSockets
-    await page.goto(`/${companySlug}/dashboard`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2000); // Allow React to hydrate and data to load
-
-    // Wait for either dashboard or onboarding to load
-    const dashboard = page.getByRole("heading", { name: /my work/i });
-    const onboarding = page.getByRole("heading", { name: /welcome to nixelo/i });
-
-    // Wait for one of them to appear
-    await expect(dashboard.or(onboarding)).toBeVisible({ timeout: 15000 });
-
-    // If we're on onboarding, skip it first to get to dashboard
-    if (await onboarding.isVisible()) {
-      const skipButton = page.getByRole("button", { name: /skip for now/i });
-      await skipButton.click();
-      await expect(dashboard).toBeVisible({ timeout: 10000 });
-    }
+  test("sign out returns to landing page", async ({ dashboardPage, page }) => {
+    // Navigate to dashboard via proper entry point
+    await dashboardPage.goto();
+    await dashboardPage.expectLoaded();
 
     // Open user menu (click the avatar button in the header)
     const userMenuButton = page.getByRole("button", { name: "User menu" });

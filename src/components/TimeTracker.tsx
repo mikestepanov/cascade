@@ -160,7 +160,7 @@ export function TimeTracker({
 
   const handleStartTimer = async () => {
     try {
-      await startTimer({ projectId, issueId });
+      await startTimer({ projectId, issueId, billable: false });
       showSuccess("Timer started");
     } catch (error) {
       showError(error, "Failed to start timer");

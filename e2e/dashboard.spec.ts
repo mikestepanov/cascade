@@ -78,8 +78,10 @@ test.describe("Dashboard Tests", () => {
   });
 
   test.describe("Theme Toggle", () => {
-    test("can switch themes via settings", async ({ settingsPage, page }) => {
-      await settingsPage.goto();
+    test("can switch themes via settings", async ({ dashboardPage, settingsPage, page }) => {
+      // Navigate through UI: dashboard -> settings sidebar link
+      await dashboardPage.goto();
+      await dashboardPage.navigateTo("settings");
       await settingsPage.switchToTab("preferences");
 
       const html = page.locator("html");

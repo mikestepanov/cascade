@@ -4,6 +4,7 @@ import { expect, test } from "./fixtures";
  * Comprehensive Authentication E2E Tests
  *
  * Tests all actionable elements in the auth forms.
+ * Uses AuthPage page object for consistent locators and actions.
  */
 
 test.describe("Sign In Form - Elements", () => {
@@ -11,9 +12,9 @@ test.describe("Sign In Form - Elements", () => {
     await authPage.goto();
   });
 
-  test("displays all sign in form elements", async ({ authPage, page }) => {
-    // Heading
-    await expect(page.getByRole("heading", { name: /welcome back/i })).toBeVisible();
+  test("displays all sign in form elements", async ({ authPage }) => {
+    // Heading - use page object locator
+    await expect(authPage.signInHeading).toBeVisible();
 
     // Form inputs
     await expect(authPage.emailInput).toBeVisible();
@@ -63,9 +64,9 @@ test.describe("Sign Up Form - Elements", () => {
     await authPage.switchToSignUp();
   });
 
-  test("displays all sign up form elements", async ({ authPage, page }) => {
-    // Heading changes to "Create an account" on sign up page
-    await expect(page.getByRole("heading", { name: /create an account/i })).toBeVisible();
+  test("displays all sign up form elements", async ({ authPage }) => {
+    // Heading - use page object locator
+    await expect(authPage.signUpHeading).toBeVisible();
 
     // Same form inputs
     await expect(authPage.emailInput).toBeVisible();
@@ -101,9 +102,9 @@ test.describe("Forgot Password Form - Elements", () => {
     await authPage.goToForgotPassword();
   });
 
-  test("displays forgot password form elements", async ({ authPage, page }) => {
-    // Heading
-    await expect(page.getByRole("heading", { name: /forgot password/i })).toBeVisible();
+  test("displays forgot password form elements", async ({ authPage }) => {
+    // Heading - use page object locator
+    await expect(authPage.forgotPasswordHeading).toBeVisible();
 
     // Email input
     await expect(authPage.emailInput).toBeVisible();
@@ -133,12 +134,12 @@ test.describe("Google OAuth - Elements", () => {
 });
 
 test.describe("Login Section - Back Navigation", () => {
-  test("back button returns to landing page", async ({ landingPage, page }) => {
+  test("back button returns to landing page", async ({ landingPage }) => {
     await landingPage.goto();
     await landingPage.clickGetStarted();
 
     // Verify we're on sign up page (Get Started navigates to signup)
-    await expect(page.getByRole("heading", { name: /create an account/i })).toBeVisible();
+    await expect(landingPage.signUpHeading).toBeVisible();
 
     // Click back
     await landingPage.goBackToHome();

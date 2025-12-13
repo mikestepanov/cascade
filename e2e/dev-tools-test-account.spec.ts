@@ -6,15 +6,12 @@ import { authenticatedTest, expect } from "./fixtures";
  */
 authenticatedTest(
   "Mailtrap account shows Dev Tools tab in Settings",
-  async ({ page, companySlug }) => {
+  async ({ dashboardPage, page }) => {
     authenticatedTest.setTimeout(60000);
 
-    console.log(`Using company slug: ${companySlug}`);
-
-    // Navigate to settings with company slug
-    await page.goto(`/${companySlug}/settings/profile`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2000);
+    // Navigate to settings via sidebar
+    await dashboardPage.goto();
+    await dashboardPage.navigateTo("settings");
 
     console.log("On settings page:", page.url());
 

@@ -228,8 +228,8 @@ export class AuthPage extends BasePage {
         }
       }
 
-      // Wait for formReady state (350ms delay after click enables required attributes)
-      await this.page.waitForTimeout(400);
+      // Wait for formReady state using data-form-ready attribute
+      await this.waitForFormReady();
     }
   }
 
@@ -285,7 +285,7 @@ export class AuthPage extends BasePage {
     // Forgot password link appears after form is expanded
     await this.expandEmailForm();
     // Wait for form to stabilize (formReady state) before clicking
-    await this.page.waitForTimeout(400);
+    await this.waitForFormReady();
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
     // Use force:true to avoid issues with element being re-rendered
     await this.forgotPasswordLink.click({ force: true });
@@ -342,9 +342,20 @@ export class AuthPage extends BasePage {
   /**
    * Wait for form to be fully ready (formReady state)
    * The form has a 350ms delay before setting formReady=true which enables required attributes
+   * Uses data-form-ready attribute instead of arbitrary timeout
    */
-  async waitForFormReady() {
-    await this.page.waitForTimeout(400);
+  async waitForFormReady(timeout = 5000): Promise<boolean> {
+    try {
+      await this.page.locator('form[data-form-ready="true"]').waitFor({
+        state: "attached",
+        timeout,
+      });
+      return true;
+    } catch {
+      // Fallback: wait the standard delay if attribute not found
+      await this.page.waitForTimeout(400);
+      return false;
+    }
   }
 
   async expectSignInForm() {

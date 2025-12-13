@@ -28,6 +28,12 @@ export class DashboardPage extends BasePage {
   readonly signOutButton: Locator;
 
   // ===================
+  // Locators - User Menu (Header Avatar Dropdown)
+  // ===================
+  readonly userMenuButton: Locator;
+  readonly userMenuSignOutItem: Locator;
+
+  // ===================
   // Locators - Theme Toggle
   // ===================
   readonly lightThemeButton: Locator;
@@ -116,6 +122,10 @@ export class DashboardPage extends BasePage {
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button
     this.signOutButton = page.getByRole("button", { name: /sign out/i });
+
+    // User menu (avatar dropdown in header)
+    this.userMenuButton = page.getByRole("button", { name: "User menu" });
+    this.userMenuSignOutItem = page.getByRole("menuitem", { name: /sign out/i });
 
     // Theme toggle buttons - using aria-labels
     this.lightThemeButton = page.getByRole("button", { name: /switch to light theme/i });
@@ -257,6 +267,12 @@ export class DashboardPage extends BasePage {
 
   async signOut() {
     await this.signOutButton.click({ force: true });
+  }
+
+  async signOutViaUserMenu() {
+    await this.userMenuButton.click();
+    await this.page.waitForTimeout(300); // Wait for dropdown to open
+    await this.userMenuSignOutItem.click();
   }
 
   async openGlobalSearch() {

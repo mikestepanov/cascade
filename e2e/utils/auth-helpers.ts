@@ -7,7 +7,15 @@
 
 import type { Page } from "@playwright/test";
 import type { TestUser } from "../config";
+import {
+  authFormLocators,
+  dashboardLocators,
+  onboardingLocators,
+  toastLocators,
+  urlPatterns,
+} from "../locators";
 import { waitForVerificationEmail } from "./mailtrap";
+import { waitForFormReady } from "./wait-helpers";
 
 /**
  * Check if we're on the dashboard
@@ -17,8 +25,7 @@ import { waitForVerificationEmail } from "./mailtrap";
  */
 export async function isOnDashboard(page: Page): Promise<boolean> {
   const url = page.url();
-  const dashboardUrlPattern = /\/[^/]+\/dashboard$/;
-  return dashboardUrlPattern.test(url) || url.endsWith("/dashboard");
+  return urlPatterns.dashboard.test(url) || url.endsWith("/dashboard");
 }
 
 /**
@@ -28,10 +35,10 @@ export async function isOnDashboard(page: Page): Promise<boolean> {
  * @returns true if content loaded, false if timed out
  */
 export async function waitForDashboardContent(page: Page, timeout = 15000): Promise<boolean> {
-  const myWorkHeading = page.getByRole("heading", { name: /my work/i });
+  const locators = dashboardLocators(page);
 
   try {
-    await myWorkHeading.waitFor({ state: "visible", timeout });
+    await locators.myWorkHeading.waitFor({ state: "visible", timeout });
     return true;
   } catch {
     return false;
@@ -42,11 +49,11 @@ export async function waitForDashboardContent(page: Page, timeout = 15000): Prom
  * Check if we're on the onboarding page
  */
 export async function isOnOnboarding(page: Page): Promise<boolean> {
-  if (page.url().includes("/onboarding")) {
+  if (urlPatterns.onboarding.test(page.url())) {
     return true;
   }
-  const welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
-  if (await welcomeHeading.isVisible().catch(() => false)) {
+  const locators = onboardingLocators(page);
+  if (await locators.welcomeHeading.isVisible().catch(() => false)) {
     return true;
   }
   return false;
@@ -57,40 +64,36 @@ export async function isOnOnboarding(page: Page): Promise<boolean> {
  * Waits specifically for the button text to change to "Sign in" or "Create account"
  */
 export async function clickContinueWithEmail(page: Page): Promise<boolean> {
-  const continueButton = page.getByRole("button", { name: /continue with email/i });
-  const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-  const createAccountButton = page.getByRole("button", { name: "Create account", exact: true });
+  const locators = authFormLocators(page);
 
   // Check if form is already expanded by looking for the submit button
-  const signInVisible = await signInButton.isVisible().catch(() => false);
-  const createAccountVisible = await createAccountButton.isVisible().catch(() => false);
+  const signInVisible = await locators.signInButton.isVisible().catch(() => false);
+  const createAccountVisible = await locators.signUpButton.isVisible().catch(() => false);
 
   if (signInVisible || createAccountVisible) {
     console.log("✓ Form already expanded (submit button visible)");
     return true;
   }
 
-  // Check if continue button exists
-  const continueVisible = await continueButton.isVisible().catch(() => false);
-  if (!continueVisible) {
+  // Check if continue button exists and is ready
+  try {
+    await locators.continueWithEmailButton.waitFor({ state: "visible", timeout: 10000 });
+  } catch {
     console.log("❌ Continue button not found");
     return false;
   }
 
-  // Wait for page to be fully loaded and React to hydrate
-  // On cold starts, React needs more time to attach click handlers
-  await page.waitForLoadState("networkidle");
-  await page.waitForTimeout(3000);
-
   // Click the button
-  await continueButton.click({ timeout: 5000 });
+  await locators.continueWithEmailButton.click({ timeout: 5000 });
 
   // Wait for form to expand
   try {
     await Promise.race([
-      signInButton.waitFor({ state: "visible", timeout: 5000 }),
-      createAccountButton.waitFor({ state: "visible", timeout: 5000 }),
+      locators.signInButton.waitFor({ state: "visible", timeout: 5000 }),
+      locators.signUpButton.waitFor({ state: "visible", timeout: 5000 }),
     ]);
+    // Wait for form to be ready (SignInForm/SignUpForm have 350ms delay before formReady=true)
+    await waitForFormReady(page);
     console.log("✓ Form expanded successfully");
     return true;
   } catch {
@@ -103,7 +106,8 @@ export async function clickContinueWithEmail(page: Page): Promise<boolean> {
  * Handle being on onboarding or dashboard after authentication
  */
 export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> {
-  await page.waitForTimeout(1000);
+  // Wait for DOM to be ready
+  await page.waitForLoadState("domcontentloaded");
 
   if (await isOnDashboard(page)) {
     console.log("✓ Already on dashboard");
@@ -113,19 +117,16 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
   if (await isOnOnboarding(page)) {
     console.log("📋 On onboarding - completing...");
 
-    // Wait for onboarding page to load (it starts in "loading" state)
-    // The "Skip for now" button only appears after queries load and step changes to "role-select"
-    const skipButton = page.getByRole("button", { name: /skip for now/i });
+    const locators = onboardingLocators(page);
 
     try {
       // Wait up to 15 seconds for the skip button to appear (queries need to load)
-      await skipButton.waitFor({ state: "visible", timeout: 15000 });
+      await locators.skipButton.waitFor({ state: "visible", timeout: 15000 });
       console.log("✓ Skip button found, clicking...");
-      await skipButton.click();
+      await locators.skipButton.click();
 
       // Wait for navigation to dashboard
-      await page.waitForURL(/\/[^/]+\/dashboard/, { timeout: 10000 }).catch(() => {});
-      await page.waitForTimeout(1000);
+      await page.waitForURL(urlPatterns.dashboard, { timeout: 10000 });
 
       if (await isOnDashboard(page)) {
         console.log("✓ Successfully skipped to dashboard");
@@ -136,16 +137,13 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
     }
 
     // Fallback: try other selectors
-    const fallbackSelectors = [
-      page.getByRole("link", { name: /skip for now/i }),
-      page.getByText(/skip for now/i),
-    ];
+    const fallbackSelectors = [locators.skipLink, locators.skipText];
 
     for (const skipElement of fallbackSelectors) {
       try {
         if (await skipElement.isVisible().catch(() => false)) {
           await skipElement.click();
-          await page.waitForTimeout(2000);
+          await page.waitForURL(urlPatterns.dashboard, { timeout: 10000 }).catch(() => {});
           if (await isOnDashboard(page)) {
             return true;
           }
@@ -167,50 +165,173 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
 export async function trySignInUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
   try {
     console.log(`  🔐 Attempting sign-in for ${user.email}...`);
-    await page.goto(`${baseURL}/signin`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(1000);
+    await page.goto(`${baseURL}/signin`, { waitUntil: "domcontentloaded" });
 
+    // Check if already authenticated (redirected to dashboard)
     if (await isOnDashboard(page)) {
       console.log("  ✓ Already on dashboard");
       return true;
     }
 
     console.log("  📋 Waiting for sign-in page...");
-    await page
-      .getByRole("heading", { name: /welcome back/i })
-      .waitFor({ state: "visible", timeout: 15000 });
+    // The "Welcome back" heading only appears after Convex determines auth state
+    // (inside <Unauthenticated> wrapper). Use longer timeout for cold starts.
+    // Don't use networkidle - Convex WebSocket keeps connection active.
+    const locators = authFormLocators(page);
+    await locators.signInHeading.waitFor({ state: "visible", timeout: 30000 });
 
-    console.log("  📧 Expanding email form...");
-    const formExpanded = await clickContinueWithEmail(page);
-    if (!formExpanded) {
-      console.log("  ❌ Failed to expand email form");
+    // Wait for Convex WebSocket to be fully connected before attempting auth
+    // On cold starts, the WebSocket needs time to establish connection
+    await page
+      .waitForFunction(
+        () => {
+          // Check if Convex client is ready by looking for React fiber on form
+          const form = document.querySelector("form");
+          if (!form) return false;
+          const keys = Object.keys(form);
+          return keys.some((k) => k.startsWith("__reactFiber"));
+        },
+        { timeout: 5000 },
+      )
+      .catch(() => {
+        console.log("  ⚠️ React hydration check timed out, continuing anyway");
+      });
+
+    // Use direct DOM manipulation to avoid React state issues
+    console.log("  📧 Filling and submitting form via JS...");
+
+    // Use evaluate to interact with the form directly
+    const submitResult = await page.evaluate(
+      async ({ email, password }) => {
+        // Helper to wait for condition with timeout
+        const waitFor = (condition: () => boolean, timeout = 5000): Promise<boolean> => {
+          return new Promise((resolve) => {
+            const start = Date.now();
+            const check = () => {
+              if (condition()) {
+                resolve(true);
+              } else if (Date.now() - start > timeout) {
+                resolve(false);
+              } else {
+                requestAnimationFrame(check);
+              }
+            };
+            check();
+          });
+        };
+
+        // Find or click "Continue with email" button to expand form
+        const buttons = Array.from(document.querySelectorAll("button"));
+        const continueBtn = buttons.find((b) => b.textContent?.includes("Continue with email"));
+        if (continueBtn) {
+          continueBtn.click();
+        }
+
+        // Wait for form to be ready (data-form-ready="true")
+        const formReady = await waitFor(() => {
+          const form = document.querySelector('form[data-form-ready="true"]');
+          return form !== null;
+        });
+
+        if (!formReady) {
+          return { success: false, error: "Form did not become ready" };
+        }
+
+        // Find and fill email input
+        const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+        const passwordInput = document.querySelector('input[type="password"]') as HTMLInputElement;
+
+        if (!(emailInput && passwordInput)) {
+          return { success: false, error: "Inputs not found" };
+        }
+
+        // Set values using native value setter to trigger React
+        const nativeEmailSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value",
+        )?.set;
+        const nativePasswordSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value",
+        )?.set;
+
+        if (nativeEmailSetter && nativePasswordSetter) {
+          nativeEmailSetter.call(emailInput, email);
+          emailInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+          nativePasswordSetter.call(passwordInput, password);
+          passwordInput.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+
+        // Verify values were set
+        if (emailInput.value !== email || passwordInput.value !== password) {
+          return {
+            success: false,
+            error: `Values not set correctly. Email: ${emailInput.value}, Password length: ${passwordInput.value.length}`,
+          };
+        }
+
+        // Find and click submit button
+        const submitBtn = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (!submitBtn) {
+          return { success: false, error: "Submit button not found" };
+        }
+
+        submitBtn.click();
+
+        // Wait for button to show "Signing in..." to confirm form is processing
+        const isSubmitting = await waitFor(() => {
+          return submitBtn.textContent?.includes("Signing in") ?? false;
+        }, 3000);
+
+        return {
+          success: true,
+          isSubmitting,
+          buttonText: submitBtn.textContent,
+        };
+      },
+      { email: user.email, password: user.password },
+    );
+
+    if (!submitResult.success) {
+      console.log(`  ❌ Form submission failed: ${submitResult.error}`);
       return false;
     }
-
-    // Wait for form to stabilize after expansion (React hydration on cold starts)
-    await page.waitForTimeout(1000);
-
-    console.log("  📝 Filling credentials...");
-    await page.getByPlaceholder("Email").fill(user.email);
-    await page.getByPlaceholder("Password").fill(user.password);
-    await page.waitForTimeout(500);
-
-    console.log("  🚀 Clicking sign-in button...");
-    const signInButton = page.getByRole("button", { name: "Sign in", exact: true });
-    await signInButton.waitFor({ state: "visible", timeout: 15000 });
-    await page.waitForTimeout(300); // Small delay for button to be clickable
-    await signInButton.click();
+    console.log(
+      `  🚀 Form submitted (submitting state: ${submitResult.isSubmitting}, button: "${submitResult.buttonText}")`,
+    );
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      await page.waitForURL(/\/(onboarding|[^/]+\/dashboard)/, {
-        timeout: 15000,
+      // Increase timeout to 30s for cold starts
+      await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
+        timeout: 30000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
     } catch {
-      console.log("  ⚠️ No redirect detected, checking current page...");
+      // Check for auth error on page
+      const errorText = await page
+        .locator('[role="alert"], .text-red-500, .error')
+        .textContent()
+        .catch(() => null);
+      if (errorText) {
+        console.log("  ❌ Page error:", errorText.slice(0, 100));
+      }
+
+      // Check for Sonner toast error notifications
+      const toasts = toastLocators(page);
+      const toastError = await toasts.error.textContent().catch(() => null);
+      if (toastError) {
+        console.log("  ❌ Toast error:", toastError.slice(0, 100));
+      }
+
+      // Check button state - use generic selector since submitButton pattern won't match "Signing in..."
+      const buttonText = await page
+        .locator('button[type="submit"]')
+        .textContent()
+        .catch(() => null);
+      console.log(`  ⚠️ No redirect detected, URL: ${page.url()}, button: "${buttonText}"`);
     }
 
     return await handleOnboardingOrDashboard(page);
@@ -224,16 +345,14 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
  * Wait for either verification screen or redirect after signup
  */
 export async function waitForSignUpResult(page: Page): Promise<"verification" | "redirect" | null> {
-  const verificationHeading = page.getByRole("heading", { name: /verify your email/i });
+  const locators = authFormLocators(page);
   const startTime = Date.now();
 
   while (Date.now() - startTime < 15000) {
-    if (await verificationHeading.isVisible().catch(() => false)) {
+    if (await locators.verifyEmailHeading.isVisible().catch(() => false)) {
       return "verification";
     }
-    const url = page.url();
-    // Check for onboarding or dashboard patterns (both old and new URL structures)
-    if (url.includes("/onboarding") || /\/[^/]+\/dashboard/.test(url)) {
+    if (urlPatterns.dashboardOrOnboarding.test(page.url())) {
       return "redirect";
     }
     await page.waitForTimeout(500);
@@ -253,14 +372,13 @@ export async function completeEmailVerification(page: Page, email: string): Prom
     });
     console.log(`  ✓ Retrieved OTP: ${otp}`);
 
-    const codeInput = page.getByPlaceholder("8-digit code");
-    await codeInput.waitFor({ state: "visible", timeout: 5000 });
-    await codeInput.fill(otp);
+    const locators = authFormLocators(page);
+    await locators.verifyCodeInput.waitFor({ state: "visible", timeout: 5000 });
+    await locators.verifyCodeInput.fill(otp);
 
-    const verifyButton = page.getByRole("button", { name: /verify email/i });
-    await verifyButton.click();
+    await locators.verifyEmailButton.click();
     // Wait for redirect to onboarding or company dashboard
-    await page.waitForURL(/\/(onboarding|[^/]+\/dashboard)/, { timeout: 15000 });
+    await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
     return true;
   } catch (verifyError) {
     console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
@@ -282,30 +400,28 @@ export async function signUpUserViaUI(
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(1000);
 
-    const currentUrl = page.url();
     // Check for onboarding or dashboard patterns (both old and new URL structures)
-    if (currentUrl.includes("/onboarding") || /\/[^/]+\/dashboard/.test(currentUrl)) {
+    if (urlPatterns.dashboardOrOnboarding.test(page.url())) {
       return await handleOnboardingOrDashboard(page);
     }
 
-    const signUpHeading = page.getByRole("heading", { name: /create an account/i });
-    await signUpHeading.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+    const locators = authFormLocators(page);
+    await locators.signUpHeading.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
 
-    if (!(await signUpHeading.isVisible().catch(() => false))) {
+    if (!(await locators.signUpHeading.isVisible().catch(() => false))) {
       return await isOnDashboard(page);
     }
 
     const formExpanded = await clickContinueWithEmail(page);
     if (!formExpanded) return false;
 
-    await page.getByPlaceholder("Email").fill(user.email);
-    await page.getByPlaceholder("Password").fill(user.password);
-    await page.waitForTimeout(400);
+    await locators.emailInput.fill(user.email);
+    await locators.passwordInput.fill(user.password);
+    await waitForFormReady(page);
 
-    const submitButton = page.getByRole("button", { name: "Create account", exact: true });
-    await submitButton.waitFor({ state: "visible", timeout: 5000 });
+    await locators.signUpButton.waitFor({ state: "visible", timeout: 5000 });
     console.log(`  📤 Submitting sign-up form for ${user.email}...`);
-    await submitButton.click();
+    await locators.signUpButton.click();
 
     const signUpResult = await waitForSignUpResult(page);
     console.log(`  📋 Sign-up result: ${signUpResult || "timeout"}`);
@@ -314,8 +430,7 @@ export async function signUpUserViaUI(
       const emailVerified = await completeEmailVerification(page, user.email);
       if (!emailVerified) return false;
     } else if (signUpResult === null) {
-      const url = page.url();
-      console.log(`  📍 Current URL after timeout: ${url}`);
+      console.log(`  📍 Current URL after timeout: ${page.url()}`);
       return false;
     }
 
