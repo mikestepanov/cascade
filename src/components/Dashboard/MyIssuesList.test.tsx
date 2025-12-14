@@ -1,8 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { MyIssuesList } from "./MyIssuesList";
+
+// Mock router
+const mockNavigate = vi.fn();
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => mockNavigate,
+}));
+
+// Mock company context
+vi.mock("@/hooks/useCompanyContext", () => ({
+  useCompany: () => ({ companySlug: "test-company" }),
+}));
 
 // Mock navigation hook
 const mockIssueNavigation = {
@@ -14,6 +25,10 @@ const mockIssueNavigation = {
 };
 
 describe("MyIssuesList", () => {
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
+
   const mockIssues = [
     {
       _id: "1" as Id<"issues">,
@@ -22,7 +37,7 @@ describe("MyIssuesList", () => {
       type: "bug",
       priority: "high",
       status: "In Progress",
-      projectId: "proj1" as Id<"projects">,
+      workspaceId: "proj1" as Id<"workspaces">,
       projectKey: "PROJ",
       projectName: "Project Alpha",
     },
@@ -33,7 +48,7 @@ describe("MyIssuesList", () => {
       type: "feature",
       priority: "medium",
       status: "To Do",
-      projectId: "proj1" as Id<"projects">,
+      workspaceId: "proj1" as Id<"workspaces">,
       projectKey: "PROJ",
       projectName: "Project Alpha",
     },
@@ -47,7 +62,7 @@ describe("MyIssuesList", () => {
       type: "task",
       priority: "low",
       status: "Done",
-      projectId: "proj2" as Id<"projects">,
+      workspaceId: "proj2" as Id<"workspaces">,
       projectKey: "BETA",
       projectName: "Project Beta",
     },
@@ -60,8 +75,6 @@ describe("MyIssuesList", () => {
     issueFilter: "assigned" as const,
     onFilterChange: vi.fn(),
     issueNavigation: mockIssueNavigation,
-    onNavigateToProject: vi.fn(),
-    onNavigateToProjects: vi.fn(),
   };
 
   it("should render card header", () => {
@@ -185,46 +198,36 @@ describe("MyIssuesList", () => {
     expect(projectNames.length).toBe(2); // Both issues from same project
   });
 
-  it("should call onNavigateToProject when clicking an issue", async () => {
-    const onNavigateToProject = vi.fn();
+  it("should navigate to workspace when clicking an issue", async () => {
     const user = userEvent.setup();
 
-    render(<MyIssuesList {...defaultProps} onNavigateToProject={onNavigateToProject} />);
+    render(<MyIssuesList {...defaultProps} />);
 
     const firstIssue = screen.getByText("Fix login bug");
     await user.click(firstIssue);
 
-    expect(onNavigateToProject).toHaveBeenCalledWith("PROJ");
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/test-company/workspaces/PROJ/board",
+    });
   });
 
-  it("should render View My Projects button in empty state", () => {
+  it("should render View My Workspaces button in empty state", () => {
     render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
 
-    expect(screen.getByText("View My Projects")).toBeInTheDocument();
+    expect(screen.getByText("View My Workspaces")).toBeInTheDocument();
   });
 
-  it("should call onNavigateToProjects when clicking View My Projects", async () => {
-    const onNavigateToProjects = vi.fn();
+  it("should navigate to workspaces when clicking View My Workspaces", async () => {
     const user = userEvent.setup();
 
-    render(
-      <MyIssuesList
-        {...defaultProps}
-        displayIssues={[]}
-        onNavigateToProjects={onNavigateToProjects}
-      />,
-    );
+    render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
 
-    const button = screen.getByText("View My Projects");
+    const button = screen.getByText("View My Workspaces");
     await user.click(button);
 
-    expect(onNavigateToProjects).toHaveBeenCalled();
-  });
-
-  it("should not render View My Projects button when onNavigateToProjects is not provided", () => {
-    render(<MyIssuesList {...defaultProps} displayIssues={[]} onNavigateToProjects={undefined} />);
-
-    expect(screen.queryByText("View My Projects")).not.toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith({
+      to: "/test-company/workspaces",
+    });
   });
 
   it("should render multiple issues with staggered animation", () => {

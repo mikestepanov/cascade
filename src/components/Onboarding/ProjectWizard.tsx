@@ -11,7 +11,7 @@ import { Progress } from "../ui/progress";
 interface ProjectWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onComplete: (projectId: string) => void;
+  onComplete: (workspaceId: string) => void;
 }
 
 export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardProps) {
@@ -26,25 +26,25 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
     { id: "done", name: "Done", category: "done" as const, order: 2 },
   ]);
 
-  const createProject = useMutation(api.projects.create);
+  const createWorkspace = useMutation(api.workspaces.create);
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
   const handleNext = () => {
     if (step === 1) {
       if (!projectName.trim()) {
-        showError("Project name is required");
+        showError("Workspace name is required");
         return;
       }
       if (!projectKey.trim()) {
-        showError("Project key is required");
+        showError("Workspace key is required");
         return;
       }
       if (projectKey.length < 2 || projectKey.length > 10) {
-        showError("Project key must be 2-10 characters");
+        showError("Workspace key must be 2-10 characters");
         return;
       }
       if (!/^[A-Z]+$/.test(projectKey)) {
-        showError("Project key must be uppercase letters only");
+        showError("Workspace key must be uppercase letters only");
         return;
       }
     }
@@ -57,7 +57,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
 
   const handleFinish = async () => {
     try {
-      const projectId = await createProject({
+      const workspaceId = await createWorkspace({
         name: projectName,
         key: projectKey,
         description: description || undefined,
@@ -73,11 +73,11 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
       });
 
       // Confetti effect (optional - would need react-confetti package)
-      showSuccess("🎉 Project created successfully!");
+      showSuccess("🎉 Workspace created successfully!");
 
-      onComplete(projectId);
+      onComplete(workspaceId);
     } catch (error) {
-      showError(error, "Failed to create project");
+      showError(error, "Failed to create workspace");
     }
   };
 
@@ -110,10 +110,10 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
           {step === 1 && (
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-                Create Your First Project
+                Create Your First Workspace
               </h2>
               <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                Let's start by giving your project a name and a unique key.
+                Let's start by giving your workspace a name and a unique key.
               </p>
 
               <div>
@@ -121,7 +121,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                   htmlFor="project-name"
                   className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
                 >
-                  Project Name <span className="text-status-error">*</span>
+                  Workspace Name <span className="text-status-error">*</span>
                 </label>
                 <input
                   id="project-name"
@@ -143,7 +143,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                   htmlFor="project-key"
                   className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
                 >
-                  Project Key <span className="text-status-error">*</span>
+                  Workspace Key <span className="text-status-error">*</span>
                 </label>
                 <input
                   id="project-key"
@@ -164,7 +164,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 label="Description (optional)"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="What is this project about?"
+                placeholder="What is this workspace about?"
                 rows={3}
               />
             </div>
@@ -305,13 +305,13 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 Ready to Create! 🎉
               </h2>
               <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                Here's a summary of your new project:
+                Here's a summary of your new workspace:
               </p>
 
               <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 space-y-3">
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    Project Name:
+                    Workspace Name:
                   </span>
                   <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {projectName}
@@ -319,7 +319,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    Project Key:
+                    Workspace Key:
                   </span>
                   <p className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {projectKey}
@@ -351,7 +351,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
               </div>
 
               <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                Click "Create Project" and we'll set everything up for you. You can start adding
+                Click "Create Workspace" and we'll set everything up for you. You can start adding
                 issues right away!
               </p>
             </div>
@@ -376,7 +376,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 </Button>
               ) : (
                 <Button onClick={handleFinish} variant="primary" className="font-medium">
-                  Create Project 🚀
+                  Create Workspace 🚀
                 </Button>
               )}
             </Flex>

@@ -11,10 +11,10 @@ import { Input, Select } from "./ui/form";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function IssueDependencies({ issueId, projectId: _projectId }: IssueDependenciesProps) {
+export function IssueDependencies({ issueId, workspaceId: _workspaceId }: IssueDependenciesProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [selectedIssueKey, setSelectedIssueKey] = useState("");
   const [linkType, setLinkType] = useState<"blocks" | "relates" | "duplicates">("blocks");

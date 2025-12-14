@@ -6,7 +6,7 @@ import {
   assertCanAccessProject,
   assertCanEditProject,
   assertIsProjectAdmin,
-} from "./projectAccess";
+} from "./workspaceAccess";
 
 // Helper: Validate number field value
 function validateNumberField(value: string): void {
@@ -52,21 +52,21 @@ function validateCustomFieldValue(field: Doc<"customFields">, value: string): vo
 // Get all custom fields for a project
 export const list = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
     try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.workspaceId, userId);
     } catch {
       return [];
     }
 
     return await ctx.db
       .query("customFields")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
   },
 });
@@ -74,7 +74,7 @@ export const list = query({
 // Create a new custom field
 export const create = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     name: v.string(),
     fieldKey: v.string(),
     fieldType: v.union(
@@ -96,13 +96,13 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     // Check if field key already exists for this project
     const existing = await ctx.db
       .query("customFields")
-      .withIndex("by_project_key", (q) =>
-        q.eq("projectId", args.projectId).eq("fieldKey", args.fieldKey),
+      .withIndex("by_workspace_key", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("fieldKey", args.fieldKey),
       )
       .first();
 
@@ -111,7 +111,7 @@ export const create = mutation({
     }
 
     return await ctx.db.insert("customFields", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       name: args.name,
       fieldKey: args.fieldKey,
       fieldType: args.fieldType,
@@ -144,7 +144,7 @@ export const update = mutation({
       throw new Error("Field not found");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.workspaceId, userId);
 
     const updates: Partial<typeof field> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -172,7 +172,7 @@ export const remove = mutation({
       throw new Error("Field not found");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.workspaceId, userId);
 
     // Delete all values for this field
     const values = await ctx.db
@@ -201,7 +201,7 @@ export const getValuesForIssue = query({
     if (!issue) return [];
 
     try {
-      await assertCanAccessProject(ctx, issue.projectId, userId);
+      await assertCanAccessProject(ctx, issue.workspaceId, userId);
     } catch {
       return [];
     }
@@ -244,7 +244,7 @@ export const setValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.workspaceId, userId);
 
     const field = await ctx.db.get(args.fieldId);
     if (!field) {
@@ -303,7 +303,7 @@ export const removeValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.workspaceId, userId);
 
     const existing = await ctx.db
       .query("customFieldValues")

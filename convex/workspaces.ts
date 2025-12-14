@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
+import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./workspaceAccess";
 
 export const create = mutation({
   args: {
@@ -26,7 +26,7 @@ export const create = mutation({
 
     // Check if project key already exists
     const existingProject = await ctx.db
-      .query("projects")
+      .query("workspaces")
       .withIndex("by_key", (q) => q.eq("key", args.key.toUpperCase()))
       .first();
 
@@ -45,7 +45,7 @@ export const create = mutation({
     // Determine ownership: if teamId provided, it's a team project; otherwise user-owned
     const ownerId = args.teamId ? undefined : args.ownerId || userId;
 
-    const projectId = await ctx.db.insert("projects", {
+    const workspaceId = await ctx.db.insert("workspaces", {
       name: args.name,
       key: args.key.toUpperCase(),
       description: args.description,
@@ -64,16 +64,16 @@ export const create = mutation({
       isPublic: args.isPublic ?? false,
     });
 
-    // Add creator as admin in projectMembers table (for individual access control)
-    await ctx.db.insert("projectMembers", {
-      projectId,
+    // Add creator as admin in workspaceMembers table (for individual access control)
+    await ctx.db.insert("workspaceMembers", {
+      workspaceId,
       userId,
       role: "admin",
       addedBy: userId,
       addedAt: now,
     });
 
-    return projectId;
+    return workspaceId;
   },
 });
 
@@ -86,7 +86,7 @@ export const list = query({
     }
 
     // Get all projects and filter using new access control
-    const allProjects = await ctx.db.query("projects").collect();
+    const allProjects = await ctx.db.query("workspaces").collect();
     const accessibleProjects = [];
 
     for (const project of allProjects) {
@@ -101,7 +101,7 @@ export const list = query({
         const creator = await ctx.db.get(project.createdBy);
         const issueCount = await ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", project._id))
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
           .collect()
           .then((issues) => issues.length);
 
@@ -120,7 +120,7 @@ export const list = query({
 });
 
 export const get = query({
-  args: { id: v.id("projects") },
+  args: { id: v.id("workspaces") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const project = await ctx.db.get(args.id);
@@ -144,14 +144,14 @@ export const get = query({
 
     const creator = await ctx.db.get(project.createdBy);
 
-    // Get members with their roles from projectMembers table
-    const projectMembers = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+    // Get members with their roles from workspaceMembers table
+    const workspaceMembers = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
 
     const members = await Promise.all(
-      projectMembers.map(async (membership) => {
+      workspaceMembers.map(async (membership) => {
         const member = await ctx.db.get(membership.userId);
         return {
           _id: membership.userId,
@@ -184,7 +184,7 @@ export const getByKey = query({
 
     // Find project by key
     const project = await ctx.db
-      .query("projects")
+      .query("workspaces")
       .withIndex("by_key", (q) => q.eq("key", args.key))
       .first();
 
@@ -207,14 +207,14 @@ export const getByKey = query({
 
     const creator = await ctx.db.get(project.createdBy);
 
-    // Get members with their roles from projectMembers table
-    const projectMembers = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+    // Get members with their roles from workspaceMembers table
+    const workspaceMembers = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
 
     const members = await Promise.all(
-      projectMembers.map(async (membership) => {
+      workspaceMembers.map(async (membership) => {
         const member = await ctx.db.get(membership.userId);
         return {
           _id: membership.userId,
@@ -241,7 +241,7 @@ export const getByKey = query({
 
 export const update = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     isPublic: v.optional(v.boolean()),
@@ -253,13 +253,13 @@ export const update = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Only project admins can update project settings
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
@@ -278,14 +278,14 @@ export const update = mutation({
       updates.isCompanyPublic = args.isCompanyPublic;
     }
 
-    await ctx.db.patch(args.projectId, updates);
-    return { projectId: args.projectId };
+    await ctx.db.patch(args.workspaceId, updates);
+    return { workspaceId: args.workspaceId };
   },
 });
 
 export const deleteProject = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -293,7 +293,7 @@ export const deleteProject = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
@@ -307,7 +307,7 @@ export const deleteProject = mutation({
     // 1. Delete all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
     for (const issue of issues) {
@@ -351,7 +351,7 @@ export const deleteProject = mutation({
     // 2. Delete all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
@@ -359,22 +359,22 @@ export const deleteProject = mutation({
 
     // 3. Delete all project members
     const members = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .query("workspaceMembers")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);
     }
 
     // 4. Delete the project itself
-    await ctx.db.delete(args.projectId);
+    await ctx.db.delete(args.workspaceId);
     return { deleted: true };
   },
 });
 
 export const updateWorkflow = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     workflowStates: v.array(
       v.object({
         id: v.string(),
@@ -390,15 +390,15 @@ export const updateWorkflow = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Only project admins can modify workflow
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
-    await ctx.db.patch(args.projectId, {
+    await ctx.db.patch(args.workspaceId, {
       workflowStates: args.workflowStates,
       updatedAt: Date.now(),
     });
@@ -407,7 +407,7 @@ export const updateWorkflow = mutation({
 
 export const addMember = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     userEmail: v.string(),
     role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
   },
@@ -417,13 +417,13 @@ export const addMember = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Only project admins can add members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     // Find user by email
     const user = await ctx.db
@@ -437,8 +437,10 @@ export const addMember = mutation({
 
     // Check if already a member
     const existingMembership = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", user._id),
+      )
       .first();
 
     if (existingMembership) {
@@ -447,9 +449,9 @@ export const addMember = mutation({
 
     const now = Date.now();
 
-    // Add to projectMembers table
-    await ctx.db.insert("projectMembers", {
-      projectId: args.projectId,
+    // Add to workspaceMembers table
+    await ctx.db.insert("workspaceMembers", {
+      workspaceId: args.workspaceId,
       userId: user._id,
       role: args.role,
       addedBy: userId,
@@ -460,7 +462,7 @@ export const addMember = mutation({
 
 export const updateMemberRole = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     memberId: v.id("users"),
     newRole: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
   },
@@ -470,13 +472,13 @@ export const updateMemberRole = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Only project admins can change roles
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     // Can't change project owner's role
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -485,9 +487,9 @@ export const updateMemberRole = mutation({
 
     // Find membership
     const membership = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId),
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", args.memberId),
       )
       .first();
 
@@ -503,7 +505,7 @@ export const updateMemberRole = mutation({
 
 export const removeMember = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     memberId: v.id("users"),
   },
   handler: async (ctx, args) => {
@@ -512,13 +514,13 @@ export const removeMember = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Only project admins can remove members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     // Can't remove the project owner
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -527,14 +529,29 @@ export const removeMember = mutation({
 
     // Find and delete membership
     const membership = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId),
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", args.memberId),
       )
       .first();
 
     if (membership) {
       await ctx.db.delete(membership._id);
     }
+  },
+});
+
+/**
+ * Get user's role in a project/workspace
+ */
+export const getUserRole = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    return await getProjectRole(ctx, args.workspaceId, userId);
   },
 });

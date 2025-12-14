@@ -34,7 +34,7 @@ const AVAILABLE_EVENTS = [
 // =============================================================================
 
 interface WebhookFormProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   webhook?: {
     _id: Id<"webhooks">;
     name: string;
@@ -46,7 +46,7 @@ interface WebhookFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookFormProps) {
+export function WebhookForm({ workspaceId, webhook, open, onOpenChange }: WebhookFormProps) {
   // Events array (kept outside form due to checkbox array pattern)
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
 
@@ -78,7 +78,7 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
           await updateWebhook({ id: webhook._id, ...webhookData });
           showSuccess("Webhook updated");
         } else {
-          await createWebhook({ projectId, ...webhookData });
+          await createWebhook({ workspaceId, ...webhookData });
           showSuccess("Webhook created");
         }
         onOpenChange(false);

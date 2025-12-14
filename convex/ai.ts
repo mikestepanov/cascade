@@ -116,7 +116,7 @@ export const storeIssueEmbedding = internalAction({
 export const chat = action({
   args: {
     chatId: v.optional(v.id("aiChats")),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     message: v.string(),
   },
   handler: async (ctx, args) => {
@@ -136,7 +136,7 @@ export const chat = action({
     if (!chatId) {
       chatId = await ctx.runMutation(internal.internal.ai.createChat, {
         userId: userId.subject,
-        projectId: args.projectId,
+        workspaceId: args.workspaceId,
         title: args.message.slice(0, 100), // First 100 chars as title
       });
     }
@@ -150,9 +150,9 @@ export const chat = action({
 
     // Get project context if available
     let context = "";
-    if (args.projectId) {
+    if (args.workspaceId) {
       context = await ctx.runQuery(internal.internal.ai.getProjectContext, {
-        projectId: args.projectId,
+        workspaceId: args.workspaceId,
       });
     }
 
@@ -195,7 +195,7 @@ Be concise, helpful, and professional.`;
     // Track usage
     await ctx.runMutation(internal.internal.ai.trackUsage, {
       userId: userId.subject,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       provider: "anthropic",
       model: CLAUDE_OPUS,
       operation: "chat",
@@ -217,7 +217,7 @@ Be concise, helpful, and professional.`;
 export const createChat = internalAction({
   args: {
     userId: v.string(),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     title: v.string(),
   },
   handler: async (ctx, args) => {
@@ -240,7 +240,7 @@ export const addMessage = internalAction({
 
 export const getProjectContext = internalAction({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
@@ -250,7 +250,7 @@ export const getProjectContext = internalAction({
 export const trackUsage = internalAction({
   args: {
     userId: v.string(),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(

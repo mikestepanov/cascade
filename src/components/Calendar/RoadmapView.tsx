@@ -7,12 +7,12 @@ import { Badge } from "../ui/Badge";
 import { Flex } from "../ui/Flex";
 
 interface RoadmapViewProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
 type TimeScale = "week" | "month" | "quarter";
 
-export function RoadmapView({ projectId }: RoadmapViewProps) {
+export function RoadmapView({ workspaceId }: RoadmapViewProps) {
   const [timeScale, setTimeScale] = useState<TimeScale>("month");
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -20,8 +20,8 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   const { startDate, endDate, columns } = getDateRange(currentDate, timeScale);
 
   // Fetch issues and sprints
-  const issues = useQuery(api.issues.listByProject, { projectId });
-  const sprints = useQuery(api.sprints.listByProject, { projectId });
+  const issues = useQuery(api.issues.listByProject, { workspaceId });
+  const sprints = useQuery(api.sprints.listByProject, { workspaceId });
 
   // Filter to items with dates
   const roadmapItems = [

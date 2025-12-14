@@ -32,14 +32,14 @@ const createIssueSchema = z.object({
 // =============================================================================
 
 interface CreateIssueModalProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export function CreateIssueModal({
-  projectId,
+  workspaceId,
   sprintId,
   open,
   onOpenChange,
@@ -53,9 +53,9 @@ export function CreateIssueModal({
   const [showAISuggestions, setShowAISuggestions] = useState(false);
 
   // Queries
-  const project = useQuery(api.projects.get, { id: projectId });
-  const templates = useQuery(api.templates.list, { projectId });
-  const labels = useQuery(api.labels.list, { projectId });
+  const project = useQuery(api.workspaces.get, { id: workspaceId });
+  const templates = useQuery(api.templates.list, { workspaceId });
+  const labels = useQuery(api.labels.list, { workspaceId });
 
   // Mutations
   const createIssue = useMutation(api.issues.create);
@@ -75,7 +75,7 @@ export function CreateIssueModal({
     onSubmit: async ({ value }) => {
       try {
         await createIssue({
-          projectId,
+          workspaceId,
           title: value.title.trim(),
           description: value.description?.trim() || undefined,
           type: value.type,
@@ -131,7 +131,7 @@ export function CreateIssueModal({
     setIsGeneratingAI(true);
     try {
       const suggestions = await generateSuggestions({
-        projectId,
+        workspaceId,
         issueTitle: title,
         issueDescription: description || undefined,
         suggestionTypes: ["description", "priority", "labels"],

@@ -15,20 +15,20 @@ import { AISuggestionsPanel } from "./AISuggestionsPanel";
 import { AI_CONFIG } from "./config";
 
 interface AIAssistantPanelProps {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPanelProps) {
+export function AIAssistantPanel({ workspaceId, isOpen, onClose }: AIAssistantPanelProps) {
   const [activeTab, setActiveTab] = useState<"chat" | "suggestions">("chat");
   const [currentChatId, setCurrentChatId] = useState<Id<"aiChats"> | undefined>();
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const chats = useQuery(api.ai.queries.getUserChats, projectId ? { projectId } : {});
+  const chats = useQuery(api.ai.queries.getUserChats, workspaceId ? { workspaceId } : {});
   const suggestions = useQuery(
     api.ai.queries.getProjectSuggestions,
-    projectId ? { projectId } : "skip",
+    workspaceId ? { workspaceId } : "skip",
   );
 
   const unreadSuggestions = suggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
@@ -56,7 +56,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
               <div>
                 <SheetTitle className="text-lg font-semibold text-white">AI Assistant</SheetTitle>
                 <SheetDescription className="text-xs text-brand-100">
-                  {projectId ? "Project-specific context" : "General chat"}
+                  {workspaceId ? "Workspace-specific context" : "General chat"}
                 </SheetDescription>
               </div>
             </Flex>
@@ -117,12 +117,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             >
               {activeTab === "chat" ? (
                 <AIChat
-                  projectId={projectId}
+                  workspaceId={workspaceId}
                   chatId={currentChatId}
                   onChatCreated={setCurrentChatId}
                 />
               ) : (
-                <AISuggestionsPanel projectId={projectId} />
+                <AISuggestionsPanel workspaceId={workspaceId} />
               )}
             </ErrorBoundary>
           </div>

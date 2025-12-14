@@ -27,7 +27,7 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
           {stats.projects}
         </div>
         <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Projects
+          Workspaces
         </div>
       </div>
       <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">

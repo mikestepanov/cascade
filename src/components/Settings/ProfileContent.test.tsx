@@ -52,8 +52,8 @@ describe("ProfileContent", () => {
 
     expect(screen.getByText("Test User")).toBeInTheDocument();
     expect(screen.getByText("test@example.com")).toBeInTheDocument();
-    expect(screen.getByText("Projects")).toBeInTheDocument();
-    expect(screen.getByText("5")).toBeInTheDocument(); // Project count
+    expect(screen.getByText("Workspaces")).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument(); // Workspace count
   });
 
   it("allows editing profile", async () => {

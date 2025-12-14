@@ -11,10 +11,10 @@ import { Button } from "./ui/Button";
 
 interface IssueCommentsProps {
   issueId: Id<"issues">;
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
+export function IssueComments({ issueId, workspaceId }: IssueCommentsProps) {
   const [newComment, setNewComment] = useState("");
   const [mentions, setMentions] = useState<Id<"users">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,7 +110,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
           Add Comment
         </h4>
         <MentionInput
-          projectId={projectId}
+          workspaceId={workspaceId}
           value={newComment}
           onChange={setNewComment}
           onMentionsChange={setMentions}

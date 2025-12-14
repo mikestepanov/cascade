@@ -12,16 +12,16 @@ import { Textarea } from "./ui/form/Textarea";
 import { SkeletonProjectCard } from "./ui/Skeleton";
 
 interface SprintManagerProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   canEdit?: boolean;
 }
 
-export function SprintManager({ projectId, canEdit = true }: SprintManagerProps) {
+export function SprintManager({ workspaceId, canEdit = true }: SprintManagerProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newSprintName, setNewSprintName] = useState("");
   const [newSprintGoal, setNewSprintGoal] = useState("");
 
-  const sprints = useQuery(api.sprints.listByProject, { projectId });
+  const sprints = useQuery(api.sprints.listByProject, { workspaceId });
   const createSprint = useMutation(api.sprints.create);
   const startSprint = useMutation(api.sprints.startSprint);
   const completeSprint = useMutation(api.sprints.completeSprint);
@@ -32,7 +32,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
     try {
       await createSprint({
-        projectId,
+        workspaceId,
         name: newSprintName.trim(),
         goal: newSprintGoal.trim() || undefined,
       });

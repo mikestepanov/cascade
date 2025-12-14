@@ -12,6 +12,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTimeEntryValidation";
 
 // =============================================================================
 // Types & Schema
@@ -99,18 +100,18 @@ function ModeToggleButton({
 interface ManualTimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   issueId?: Id<"issues">;
 }
 
 export function ManualTimeEntryModal({
   open,
   onOpenChange,
-  projectId: initialProjectId,
+  workspaceId: initialProjectId,
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.workspaces.list);
 
   // Mode and derived state (kept outside form due to complexity)
   const [entryMode, setEntryMode] = useState<EntryMode>("duration");
@@ -118,7 +119,7 @@ export function ManualTimeEntryModal({
   const [timeRangeDuration, setTimeRangeDuration] = useState(0);
 
   // Project/Issue selection (Radix Select)
-  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
+  const [workspaceId, setProjectId] = useState<Id<"workspaces"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
 
   // Tags (array state)
@@ -126,7 +127,7 @@ export function ManualTimeEntryModal({
   const [tagInput, setTagInput] = useState("");
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
+  const projectIssues = useQuery(api.issues.listByProject, workspaceId ? { workspaceId } : "skip");
 
   const form = useAppForm({
     defaultValues: {
@@ -142,47 +143,29 @@ export function ManualTimeEntryModal({
     onSubmit: async ({ value }) => {
       const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
 
-      // Validation
-      if (!value.date) {
-        showError("Please select a date");
-        return;
-      }
-      if (entryMode === "duration" && effectiveDuration <= 0) {
-        showError("Please enter a valid duration");
-        return;
-      }
-      if (entryMode === "timeRange" && !(value.startTime && value.endTime)) {
-        showError("Please fill in start time and end time");
-        return;
-      }
-      if (entryMode === "timeRange" && timeRangeDuration <= 0) {
-        showError("End time must be after start time");
+      // Validate using extracted helper
+      const validation = validateManualTimeEntry(
+        { date: value.date, startTime: value.startTime, endTime: value.endTime },
+        entryMode,
+        durationSeconds,
+        timeRangeDuration,
+      );
+
+      if (!validation.isValid) {
+        showError(validation.errorMessage);
         return;
       }
 
-      // Calculate entry data based on mode
-      let startTimeMs: number;
-      let endTimeMs: number;
-
-      if (entryMode === "duration") {
-        const dateObj = new Date(value.date);
-        const now = new Date();
-        const endDate =
-          dateObj.toDateString() === now.toDateString()
-            ? now
-            : new Date(dateObj.setHours(17, 0, 0, 0));
-        endTimeMs = endDate.getTime();
-        startTimeMs = endTimeMs - effectiveDuration * 1000;
-      } else {
-        const start = new Date(`${value.date}T${value.startTime}`);
-        const end = new Date(`${value.date}T${value.endTime}`);
-        startTimeMs = start.getTime();
-        endTimeMs = end.getTime();
-      }
+      // Calculate times using extracted helper
+      const { startTimeMs, endTimeMs } = calculateManualEntryTimes(
+        { date: value.date, startTime: value.startTime, endTime: value.endTime },
+        entryMode,
+        effectiveDuration,
+      );
 
       try {
         await createTimeEntry({
-          projectId,
+          workspaceId,
           issueId,
           startTime: startTimeMs,
           endTime: endTimeMs,
@@ -443,9 +426,9 @@ export function ManualTimeEntryModal({
               Project
             </label>
             <Select
-              value={projectId || "none"}
+              value={workspaceId || "none"}
               onValueChange={(value) => {
-                setProjectId(value === "none" ? undefined : (value as Id<"projects">));
+                setProjectId(value === "none" ? undefined : (value as Id<"workspaces">));
                 setIssueId(undefined);
               }}
             >
@@ -453,7 +436,7 @@ export function ManualTimeEntryModal({
                 <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No project</SelectItem>
+                <SelectItem value="none">No workspace</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
@@ -464,7 +447,7 @@ export function ManualTimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {projectId && projectIssues && projectIssues.length > 0 && (
+          {workspaceId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"

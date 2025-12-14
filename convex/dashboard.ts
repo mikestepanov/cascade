@@ -16,13 +16,13 @@ export const getMyIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const projectIds = [...new Set(issues.map((i) => i.projectId))];
+    const workspaceIds = [...new Set(issues.map((i) => i.workspaceId))];
     const userIds = [
       ...new Set(issues.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
 
     const [projects, users] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(workspaceIds.map((id) => ctx.db.get(id))),
       Promise.all(userIds.map((id) => ctx.db.get(id))),
     ]);
 
@@ -35,7 +35,7 @@ export const getMyIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.projectId);
+      const project = projectMap.get(issue.workspaceId);
       const reporter = issue.reporterId ? userMap.get(issue.reporterId) : null;
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
 
@@ -65,13 +65,13 @@ export const getMyCreatedIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const projectIds = [...new Set(issues.map((i) => i.projectId))];
+    const workspaceIds = [...new Set(issues.map((i) => i.workspaceId))];
     const assigneeIds = [
       ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
     ] as Id<"users">[];
 
     const [projects, assignees] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
+      Promise.all(workspaceIds.map((id) => ctx.db.get(id))),
       Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
     ]);
 
@@ -84,7 +84,7 @@ export const getMyCreatedIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.projectId);
+      const project = projectMap.get(issue.workspaceId);
       const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
 
       return {
@@ -108,19 +108,19 @@ export const getMyProjects = query({
 
     // Get projects where user is a member
     const memberships = await ctx.db
-      .query("projectMembers")
+      .query("workspaceMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
     const projects = await Promise.all(
       memberships.map(async (membership) => {
-        const project = await ctx.db.get(membership.projectId);
+        const project = await ctx.db.get(membership.workspaceId);
         if (!project) return null;
 
         // Get issue count for this project
         const issues = await ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", membership.projectId))
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", membership.workspaceId))
           .collect();
 
         // Get my issues count
@@ -128,7 +128,7 @@ export const getMyProjects = query({
 
         return {
           ...project,
-          _id: membership.projectId,
+          _id: membership.workspaceId,
           role: membership.role,
           totalIssues: issues.length,
           myIssues: myIssues.length,
@@ -151,11 +151,11 @@ export const getMyRecentActivity = query({
 
     // Get projects where user is a member
     const memberships = await ctx.db
-      .query("projectMembers")
+      .query("workspaceMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const projectIds = memberships.map((m) => m.projectId);
+    const workspaceIds = memberships.map((m) => m.workspaceId);
 
     // Get recent activity from those projects
     const allActivity = await ctx.db.query("issueActivity").order("desc").take(100); // Take more to filter
@@ -164,9 +164,9 @@ export const getMyRecentActivity = query({
     const accessibleActivity = await Promise.all(
       allActivity.map(async (activity) => {
         const issue = await ctx.db.get(activity.issueId);
-        if (!(issue && projectIds.includes(issue.projectId))) return null;
+        if (!(issue && workspaceIds.includes(issue.workspaceId))) return null;
 
-        const project = await ctx.db.get(issue.projectId);
+        const project = await ctx.db.get(issue.workspaceId);
         const user = await ctx.db.get(activity.userId);
 
         return {
@@ -207,10 +207,10 @@ export const getMyStats = query({
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
     // Get all projects to check workflow states
-    const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
-    const projects = await Promise.all(projectIds.map(async (id) => await ctx.db.get(id)));
+    const workspaceIds = [...new Set(assignedIssues.map((i) => i.workspaceId))];
+    const projects = await Promise.all(workspaceIds.map(async (id) => await ctx.db.get(id)));
 
-    // Build a map of projectId -> done workflow states
+    // Build a map of workspaceId -> done workflow states
     const doneStatesMap = new Map<string, Set<string>>();
     projects.forEach((project) => {
       if (!project) return;
@@ -221,7 +221,7 @@ export const getMyStats = query({
     });
 
     const completedThisWeek = assignedIssues.filter((issue) => {
-      const doneStates = doneStatesMap.get(issue.projectId);
+      const doneStates = doneStatesMap.get(issue.workspaceId);
       return doneStates?.has(issue.status) && issue.updatedAt >= weekAgo;
     }).length;
 

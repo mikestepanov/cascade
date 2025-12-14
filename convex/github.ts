@@ -84,7 +84,7 @@ export const disconnectGitHub = mutation({
 // Link a GitHub repository to a project
 export const linkRepository = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     repoOwner: v.string(),
     repoName: v.string(),
     repoId: v.string(),
@@ -97,13 +97,15 @@ export const linkRepository = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Verify user has access to project
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Check permission (at least editor)
     const member = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId),
+      )
       .first();
 
     if (!member && project.createdBy !== userId) {
@@ -128,7 +130,7 @@ export const linkRepository = mutation({
     const now = Date.now();
 
     return await ctx.db.insert("githubRepositories", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       repoOwner: args.repoOwner,
       repoName: args.repoName,
       repoFullName,
@@ -155,13 +157,15 @@ export const unlinkRepository = mutation({
     const repo = await ctx.db.get(args.repositoryId);
     if (!repo) throw new Error("Repository not found");
 
-    const project = await ctx.db.get(repo.projectId);
+    const project = await ctx.db.get(repo.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Check permission (admin only)
     const member = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", repo.workspaceId).eq("userId", userId),
+      )
       .first();
 
     const isAdmin = project.createdBy === userId || member?.role === "admin";
@@ -176,20 +180,22 @@ export const unlinkRepository = mutation({
 // List repositories linked to a project
 export const listRepositories = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
     // Verify access to project
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) return [];
 
     if (!project.isPublic) {
       const member = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+        .query("workspaceMembers")
+        .withIndex("by_workspace_user", (q) =>
+          q.eq("workspaceId", args.workspaceId).eq("userId", userId),
+        )
         .first();
 
       if (!member && project.createdBy !== userId) {
@@ -199,7 +205,7 @@ export const listRepositories = query({
 
     return await ctx.db
       .query("githubRepositories")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
   },
 });
@@ -234,7 +240,7 @@ export const upsertPullRequest = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", repo.workspaceId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
         .first();
 
@@ -269,7 +275,7 @@ export const upsertPullRequest = mutation({
     // Create new PR
     return await ctx.db.insert("githubPullRequests", {
       issueId,
-      projectId: repo.projectId,
+      workspaceId: repo.workspaceId,
       repositoryId: args.repositoryId,
       prNumber: args.prNumber,
       prId: args.prId,
@@ -305,7 +311,7 @@ export const linkPRToIssue = mutation({
     if (!issue) throw new Error("Issue not found");
 
     // Verify project match
-    if (pr.projectId !== issue.projectId) {
+    if (pr.workspaceId !== issue.workspaceId) {
       throw new Error("PR and issue must be in the same project");
     }
 
@@ -329,14 +335,14 @@ export const getPullRequests = query({
     if (!issue) return [];
 
     // Check access
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) return [];
 
     if (!project.isPublic) {
       const member = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) =>
-          q.eq("projectId", issue.projectId).eq("userId", userId),
+        .query("workspaceMembers")
+        .withIndex("by_workspace_user", (q) =>
+          q.eq("workspaceId", issue.workspaceId).eq("userId", userId),
         )
         .first();
 
@@ -375,7 +381,7 @@ export const upsertCommit = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", repo.workspaceId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
         .first();
 
@@ -401,7 +407,7 @@ export const upsertCommit = mutation({
     // Create new commit
     return await ctx.db.insert("githubCommits", {
       issueId,
-      projectId: repo.projectId,
+      workspaceId: repo.workspaceId,
       repositoryId: args.repositoryId,
       sha: args.sha,
       message: args.message,
@@ -427,14 +433,14 @@ export const getCommits = query({
     if (!issue) return [];
 
     // Check access
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) return [];
 
     if (!project.isPublic) {
       const member = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) =>
-          q.eq("projectId", issue.projectId).eq("userId", userId),
+        .query("workspaceMembers")
+        .withIndex("by_workspace_user", (q) =>
+          q.eq("workspaceId", issue.workspaceId).eq("userId", userId),
         )
         .first();
 

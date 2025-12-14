@@ -16,7 +16,7 @@ describe("Time Tracking", () => {
       const hourlyRate = 100;
       // Need to insert rate manually or use setUserRate?
       // setUserRate requires project admin if project ID provided, or self if not?
-      // Let's check setUserRate logic: if (!projectId && userId === currentUserId) is allowed.
+      // Let's check setUserRate logic: if (!workspaceId && userId === currentUserId) is allowed.
       await asUser.mutation(api.timeTracking.setUserRate, {
         userId,
         hourlyRate,
@@ -82,13 +82,13 @@ describe("Time Tracking", () => {
     it("should aggregate costs", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       // Set rate
       await asUser.mutation(api.timeTracking.setUserRate, {
         userId,
-        projectId,
+        workspaceId,
         hourlyRate: 50,
         currency: "USD",
         rateType: "billable",
@@ -97,20 +97,20 @@ describe("Time Tracking", () => {
       // Add 2 entries of 1 hour each
       const now = Date.now();
       await asUser.mutation(api.timeTracking.createTimeEntry, {
-        projectId,
+        workspaceId,
         startTime: now - 3600000 * 2,
         endTime: now - 3600000,
         billable: true,
       });
       await asUser.mutation(api.timeTracking.createTimeEntry, {
-        projectId,
+        workspaceId,
         startTime: now - 3600000,
         endTime: now,
         billable: true,
       });
 
       const stats = await asUser.query(api.timeTracking.getBurnRate, {
-        projectId,
+        workspaceId,
         startDate: now - 86400000,
         endDate: now + 86400000,
       });
@@ -131,23 +131,23 @@ describe("Time Tracking", () => {
 
       const now = Date.now();
       await asUser.mutation(api.timeTracking.createTimeEntry, {
-        projectId: p1,
+        workspaceId: p1,
         startTime: now - 1000,
         endTime: now,
       });
       await asUser.mutation(api.timeTracking.createTimeEntry, {
-        projectId: p2,
+        workspaceId: p2,
         startTime: now - 1000,
         endTime: now,
       });
 
       const list1 = await asUser.query(api.timeTracking.listTimeEntries, {
-        projectId: p1,
+        workspaceId: p1,
         startDate: now - 86400000, // 24 hours ago
         endDate: now + 10000,
       });
       expect(list1).toHaveLength(1);
-      expect(list1[0].projectId).toBe(p1);
+      expect(list1[0].workspaceId).toBe(p1);
     });
   });
 });

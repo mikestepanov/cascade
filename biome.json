@@ -17,7 +17,14 @@
       "assist": { "enabled": false }
     },
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx", "e2e/**"],
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "e2e/**",
+        "convex/e2e.ts"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -28,6 +35,9 @@
           },
           "correctness": {
             "noUnusedVariables": "off"
+          },
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
           }
         }
       }

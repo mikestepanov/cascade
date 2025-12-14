@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 interface ImportExportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
   status?: string;
 }
@@ -27,7 +27,7 @@ type Mode = "export" | "import";
 export function ImportExportModal({
   open,
   onOpenChange,
-  projectId,
+  workspaceId,
   sprintId,
   status,
 }: ImportExportModalProps) {
@@ -72,9 +72,9 @@ export function ImportExportModal({
 
           {/* Panel Content */}
           {mode === "export" ? (
-            <ExportPanel projectId={projectId} sprintId={sprintId} status={status} />
+            <ExportPanel workspaceId={workspaceId} sprintId={sprintId} status={status} />
           ) : (
-            <ImportPanel projectId={projectId} onImportComplete={handleImportComplete} />
+            <ImportPanel workspaceId={workspaceId} onImportComplete={handleImportComplete} />
           )}
         </div>
       </DialogContent>

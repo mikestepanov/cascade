@@ -58,7 +58,7 @@ export async function sendEmailNotification(
   }
 
   // Get project details
-  const project = await ctx.db.get(issue.projectId);
+  const project = await ctx.db.get(issue.workspaceId);
   if (!project) {
     return; // Project not found
   }

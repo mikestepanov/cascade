@@ -2,12 +2,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { assertCanAccessProject, assertCanEditProject } from "./workspaceAccess";
 
 // Create an issue template
 export const create = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     name: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
@@ -26,10 +26,10 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.workspaceId, userId);
 
     const templateId = await ctx.db.insert("issueTemplates", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       name: args.name,
       type: args.type,
       titleTemplate: args.titleTemplate,
@@ -47,7 +47,7 @@ export const create = mutation({
 // List templates for a project
 export const listByProject = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     type: v.optional(
       v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     ),
@@ -57,21 +57,21 @@ export const listByProject = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
       const templateType = args.type; // Store in variable for type narrowing
       templates = await ctx.db
         .query("issueTemplates")
-        .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", templateType),
+        .withIndex("by_workspace_type", (q) =>
+          q.eq("workspaceId", args.workspaceId).eq("type", templateType),
         )
         .collect();
     } else {
       templates = await ctx.db
         .query("issueTemplates")
-        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
         .collect();
     }
 
@@ -93,7 +93,7 @@ export const get = query({
     if (!template) return null;
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, template.projectId, userId);
+    await assertCanAccessProject(ctx, template.workspaceId, userId);
 
     return template;
   },
@@ -125,7 +125,7 @@ export const update = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, template.projectId, userId);
+    await assertCanEditProject(ctx, template.workspaceId, userId);
 
     const updates: Partial<typeof template> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -150,7 +150,7 @@ export const remove = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, template.projectId, userId);
+    await assertCanEditProject(ctx, template.workspaceId, userId);
 
     await ctx.db.delete(args.id);
   },

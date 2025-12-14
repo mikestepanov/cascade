@@ -15,7 +15,7 @@ interface ChecklistItem {
 export function OnboardingChecklist() {
   const [isExpanded, setIsExpanded] = useState(true);
   const onboarding = useQuery(api.onboarding.getOnboardingStatus);
-  const projects = useQuery(api.projects.list, {});
+  const projects = useQuery(api.workspaces.list, {});
   const issues = useQuery(api.issues.listByUser, {});
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 

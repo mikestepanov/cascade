@@ -23,7 +23,7 @@ interface Member {
 }
 
 interface ProjectSettingsProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   name: string;
   projectKey: string;
   description: string | undefined;
@@ -36,7 +36,7 @@ interface ProjectSettingsProps {
 }
 
 export function ProjectSettings({
-  projectId,
+  workspaceId,
   name,
   projectKey,
   description,
@@ -60,23 +60,23 @@ export function ProjectSettings({
         </div>
 
         <GeneralSettings
-          projectId={projectId}
+          workspaceId={workspaceId}
           name={name}
           projectKey={projectKey}
           description={description}
         />
 
         <MemberManagement
-          projectId={projectId}
+          workspaceId={workspaceId}
           members={members}
           createdBy={createdBy}
           ownerId={ownerId}
         />
 
-        <WorkflowSettings projectId={projectId} workflowStates={workflowStates} />
+        <WorkflowSettings workspaceId={workspaceId} workflowStates={workflowStates} />
 
         <DangerZone
-          projectId={projectId}
+          workspaceId={workspaceId}
           projectName={name}
           projectKey={projectKey}
           isOwner={isOwner}

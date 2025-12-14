@@ -11,13 +11,13 @@ import { components } from "../_generated/api";
 import { query } from "../_generated/server";
 
 // Define aggregates
-const issueCountByStatus = new Aggregate<{ projectId: string; status: string }, number>(
+const issueCountByStatus = new Aggregate<{ workspaceId: string; status: string }, number>(
   components.aggregate,
   {
     name: "issueCountByStatus",
     // Group by project and status
     groupBy: (doc) => ({
-      projectId: doc.projectId,
+      workspaceId: doc.workspaceId,
       status: doc.status,
     }),
     // Sum operation (count issues)
@@ -33,12 +33,12 @@ const issueCountByStatus = new Aggregate<{ projectId: string; status: string }, 
  */
 export const getIssueCountsByStatus = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     // Get all status counts for a project
     const counts = await issueCountByStatus.lookup(ctx, {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
     });
 
     // Returns: { "To Do": 10, "In Progress": 5, "Done": 20 }
@@ -51,11 +51,11 @@ export const getIssueCountsByStatus = query({
  */
 export const getTotalIssues = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     const counts = await issueCountByStatus.lookup(ctx, {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
     });
 
     return Object.values(counts).reduce((sum, count) => sum + count, 0);

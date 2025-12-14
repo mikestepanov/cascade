@@ -12,7 +12,7 @@ import { Flex } from "../ui/Flex";
 import { TimeEntryModal } from "./TimeEntryModal";
 
 interface TimeEntriesListProps {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   userId?: Id<"users">;
   startDate?: number;
   endDate?: number;
@@ -21,14 +21,14 @@ interface TimeEntriesListProps {
 }
 
 export function TimeEntriesList({
-  projectId,
+  workspaceId,
   userId,
   startDate,
   endDate,
   billingEnabled,
 }: TimeEntriesListProps) {
   const entries = useQuery(api.timeTracking.listTimeEntries, {
-    projectId,
+    workspaceId,
     userId,
     startDate,
     endDate,
@@ -278,7 +278,7 @@ export function TimeEntriesList({
       <TimeEntryModal
         open={showManualEntryModal}
         onOpenChange={setShowManualEntryModal}
-        projectId={projectId}
+        workspaceId={workspaceId}
         billingEnabled={billingEnabled}
       />
     </Flex>

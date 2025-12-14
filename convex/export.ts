@@ -2,17 +2,17 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { assertCanAccessProject, assertCanEditProject } from "./workspaceAccess";
 
 // Helper: Generate next issue key for a project
 async function generateNextIssueKey(
   ctx: MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   projectKey: string,
 ): Promise<{ key: string; order: number }> {
   const existingIssues = await ctx.db
     .query("issues")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
 
   const issueNumbers = existingIssues
@@ -47,7 +47,7 @@ function validateJSONImportData(jsonData: string): { issues: unknown[] } {
 async function processJSONIssue(
   ctx: MutationCtx,
   issue: unknown,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   projectKey: string,
   userId: Id<"users">,
   defaultStatus: string,
@@ -74,13 +74,13 @@ async function processJSONIssue(
   }
 
   // Generate next issue key
-  const { key: issueKey, order } = await generateNextIssueKey(ctx, projectId, projectKey);
+  const { key: issueKey, order } = await generateNextIssueKey(ctx, workspaceId, projectKey);
 
   // Create the issue
   await createIssueWithActivity(
     ctx,
     {
-      projectId,
+      workspaceId,
       key: issueKey,
       title: issueData.title,
       description: issueData.description || undefined,
@@ -140,13 +140,13 @@ function parseCSVHeaders(headerLine: string): {
 function parseCSVRow(
   values: string[],
   indices: ReturnType<typeof parseCSVHeaders>,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   issueKey: string,
   userId: Id<"users">,
   defaultStatus: string,
   order: number,
 ): {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   key: string;
   title: string;
   description?: string;
@@ -164,7 +164,7 @@ function parseCSVRow(
   }
 
   return {
-    projectId,
+    workspaceId,
     key: issueKey,
     title: values[indices.titleIndex],
     description: indices.descriptionIndex !== -1 ? values[indices.descriptionIndex] : undefined,
@@ -202,7 +202,7 @@ function parseCSVRow(
 async function createIssueWithActivity(
   ctx: MutationCtx,
   issueData: {
-    projectId: Id<"projects">;
+    workspaceId: Id<"workspaces">;
     key: string;
     title: string;
     description?: string;
@@ -243,7 +243,7 @@ async function createIssueWithActivity(
 // Export issues as CSV
 export const exportIssuesCSV = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
@@ -252,16 +252,16 @@ export const exportIssuesCSV = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
     // Get project to access workflow states
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Get issues
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
 
     let issues = await issuesQuery.collect();
 
@@ -344,27 +344,27 @@ export const exportIssuesCSV = query({
 
 // Export analytics data
 export const exportAnalytics = query({
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Get all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
     // Get all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
     // Calculate metrics
@@ -413,7 +413,7 @@ export const exportAnalytics = query({
 // Export issues as JSON
 export const exportIssuesJSON = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
@@ -421,15 +421,15 @@ export const exportIssuesJSON = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
 
     let issues = await issuesQuery.collect();
 
@@ -486,16 +486,16 @@ export const exportIssuesJSON = query({
 // Import issues from JSON
 export const importIssuesJSON = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     jsonData: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.workspaceId, userId);
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Validate and parse JSON data
@@ -509,7 +509,7 @@ export const importIssuesJSON = mutation({
         const issueKey = await processJSONIssue(
           ctx,
           issue,
-          args.projectId,
+          args.workspaceId,
           project.key,
           userId,
           project.workflowStates[0].id,
@@ -534,16 +534,16 @@ export const importIssuesJSON = mutation({
 // Import issues from CSV
 export const importIssuesCSV = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     csvData: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.workspaceId, userId);
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Parse CSV
@@ -565,7 +565,7 @@ export const importIssuesCSV = mutation({
         // Generate next issue key
         const { key: issueKey, order } = await generateNextIssueKey(
           ctx,
-          args.projectId,
+          args.workspaceId,
           project.key,
         );
 
@@ -573,7 +573,7 @@ export const importIssuesCSV = mutation({
         const issueData = parseCSVRow(
           values,
           indices,
-          args.projectId,
+          args.workspaceId,
           issueKey,
           userId,
           project.workflowStates[0].id,

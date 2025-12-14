@@ -81,7 +81,7 @@ export const isCompanyAdmin = query({
 
     // Fallback: Check if user has created a project (backward compatibility)
     const createdProjects = await ctx.db
-      .query("projects")
+      .query("workspaces")
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
       .first();
 
@@ -89,7 +89,7 @@ export const isCompanyAdmin = query({
 
     // Fallback: Check if user has admin role in any project (backward compatibility)
     const adminMembership = await ctx.db
-      .query("projectMembers")
+      .query("workspaceMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("role"), "admin"))
       .first();
@@ -120,8 +120,8 @@ export const getUserStats = query({
       .collect();
 
     // Get projects (as member)
-    const projectMemberships = await ctx.db
-      .query("projectMembers")
+    const workspaceMemberships = await ctx.db
+      .query("workspaceMembers")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
@@ -133,7 +133,7 @@ export const getUserStats = query({
         return i.status === "done";
       }).length,
       comments: comments.length,
-      projects: projectMemberships.length,
+      projects: workspaceMemberships.length,
     };
   },
 });

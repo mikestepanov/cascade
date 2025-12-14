@@ -11,7 +11,7 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { EmptyState } from "./ui/EmptyState";
 
 interface TemplatesManagerProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
 type IssueTemplate = {
@@ -28,11 +28,11 @@ type IssueTemplate = {
  * TemplatesManager - Orchestrates template CRUD operations
  * Form and card logic extracted to separate components
  */
-export function TemplatesManager({ projectId }: TemplatesManagerProps) {
+export function TemplatesManager({ workspaceId }: TemplatesManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<IssueTemplate | null>(null);
 
-  const templates = useQuery(api.templates.list, { projectId });
+  const templates = useQuery(api.templates.list, { workspaceId });
   const deleteTemplateMutation = useMutation(api.templates.remove);
 
   // Delete confirmation
@@ -111,7 +111,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
 
       {/* Create/Edit Form */}
       <TemplateForm
-        projectId={projectId}
+        workspaceId={workspaceId}
         template={editingTemplate}
         open={showModal}
         onOpenChange={(open) => !open && handleCloseForm()}

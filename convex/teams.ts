@@ -437,7 +437,7 @@ export const getCompanyTeams = query({
 
         // Get project count
         const projectCount = await ctx.db
-          .query("projects")
+          .query("workspaces")
           .withIndex("by_team", (q) => q.eq("teamId", team._id))
           .collect();
 
@@ -482,7 +482,7 @@ export const getUserTeams = query({
 
         // Get project count
         const projectCount = await ctx.db
-          .query("projects")
+          .query("workspaces")
           .withIndex("by_team", (q) => q.eq("teamId", membership.teamId))
           .collect();
 

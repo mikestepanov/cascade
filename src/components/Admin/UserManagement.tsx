@@ -446,13 +446,13 @@ export function UserManagement() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
                       >
-                        Projects Created
+                        Workspaces Created
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
                       >
-                        Project Memberships
+                        Workspace Memberships
                       </th>
                     </tr>
                   </thead>

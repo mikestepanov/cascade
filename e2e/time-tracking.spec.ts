@@ -40,8 +40,8 @@ test.describe("Time Tracking", () => {
     await page.waitForTimeout(500);
     await projectsPage.addProjectButton.click();
 
-    // Wait for navigation to new project board
-    await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
+    // Wait for navigation to new workspace board (routes renamed from /projects/ to /workspaces/)
+    await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
     await projectsPage.expectBoardVisible();
 
     // 3. Create an Issue

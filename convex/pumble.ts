@@ -18,7 +18,7 @@ export const addWebhook = mutation({
   args: {
     name: v.string(),
     webhookUrl: v.string(),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     events: v.array(v.string()),
     sendMentions: v.optional(v.boolean()),
     sendAssignments: v.optional(v.boolean()),
@@ -34,15 +34,17 @@ export const addWebhook = mutation({
     }
 
     // If project is specified, verify access
-    if (args.projectId) {
-      const projectId = args.projectId;
-      const project = await ctx.db.get(projectId);
+    if (args.workspaceId) {
+      const workspaceId = args.workspaceId;
+      const project = await ctx.db.get(workspaceId);
       if (!project) throw new Error("Project not found");
 
       // Check if user has access to project
       const membership = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .query("workspaceMembers")
+        .withIndex("by_workspace_user", (q) =>
+          q.eq("workspaceId", workspaceId).eq("userId", userId),
+        )
         .first();
 
       if (!membership && project.createdBy !== userId) {
@@ -52,7 +54,7 @@ export const addWebhook = mutation({
 
     const webhookId = await ctx.db.insert("pumbleWebhooks", {
       userId,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       name: args.name,
       webhookUrl: args.webhookUrl,
       events: args.events,
@@ -331,7 +333,7 @@ export const sendIssueNotification = action({
       (w: Doc<"pumbleWebhooks">) =>
         w.isActive &&
         w.events.includes(args.event) &&
-        (!w.projectId || w.projectId === issue.projectId),
+        (!w.workspaceId || w.workspaceId === issue.workspaceId),
     );
 
     // Send notification to each webhook

@@ -278,7 +278,7 @@ export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOp
  *
  * @example
  * ```typescript
- * const members = useQuery(api.projects.getMembers, { projectId });
+ * const members = useQuery(api.workspaces.getMembers, { workspaceId });
  * const { results, search, query } = useUserFuzzySearch(members);
  * ```
  */
@@ -299,7 +299,7 @@ export function useUserFuzzySearch(users: Array<{ name?: string; email?: string 
  *
  * @example
  * ```typescript
- * const projects = useQuery(api.projects.listUserProjects);
+ * const projects = useQuery(api.workspaces.listUserProjects);
  * const { results, search, query } = useProjectFuzzySearch(projects);
  * ```
  */
@@ -323,7 +323,7 @@ export function useProjectFuzzySearch(
  *
  * @example
  * ```typescript
- * const issues = useQuery(api.issues.list, { projectId });
+ * const issues = useQuery(api.issues.list, { workspaceId });
  * const { results, search, query } = useIssueFuzzySearch(issues);
  * ```
  */
@@ -347,7 +347,7 @@ export function useIssueFuzzySearch(
  *
  * @example
  * ```typescript
- * const sprints = useQuery(api.sprints.list, { projectId });
+ * const sprints = useQuery(api.sprints.list, { workspaceId });
  * const { results, search, query } = useSprintFuzzySearch(sprints);
  * ```
  */

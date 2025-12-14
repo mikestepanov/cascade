@@ -72,7 +72,7 @@ const RESERVED_SLUGS = [
   // App routes
   "dashboard",
   "documents",
-  "projects",
+  "workspaces",
   "issues",
   "settings",
   "time-tracking",
@@ -537,7 +537,7 @@ export const getUserCompanies = query({
 
         // Get project count
         const projectCount = await ctx.db
-          .query("projects")
+          .query("workspaces")
           .withIndex("by_company", (q) => q.eq("companyId", membership.companyId))
           .collect();
 

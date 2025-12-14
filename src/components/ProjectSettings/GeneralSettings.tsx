@@ -10,14 +10,14 @@ import { Input, Textarea } from "../ui/form";
 import { Typography } from "../ui/Typography";
 
 interface GeneralSettingsProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   name: string;
   projectKey: string;
   description: string | undefined;
 }
 
 export function GeneralSettings({
-  projectId,
+  workspaceId,
   name,
   projectKey,
   description,
@@ -27,7 +27,7 @@ export function GeneralSettings({
   const [editDescription, setEditDescription] = useState(description || "");
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateProject = useMutation(api.projects.update);
+  const updateProject = useMutation(api.workspaces.update);
 
   const handleEdit = () => {
     setEditName(name);
@@ -41,21 +41,21 @@ export function GeneralSettings({
 
   const handleSave = async () => {
     if (!editName.trim()) {
-      showError(new Error("Project name is required"), "Validation error");
+      showError(new Error("Workspace name is required"), "Validation error");
       return;
     }
 
     setIsSaving(true);
     try {
       await updateProject({
-        projectId,
+        workspaceId,
         name: editName.trim(),
         description: editDescription.trim() || undefined,
       });
-      showSuccess("Project settings updated");
+      showSuccess("Workspace settings updated");
       setIsEditing(false);
     } catch (error) {
-      showError(error, "Failed to update project");
+      showError(error, "Failed to update workspace");
     } finally {
       setIsSaving(false);
     }
@@ -76,14 +76,14 @@ export function GeneralSettings({
         {isEditing ? (
           <div className="space-y-4">
             <Input
-              label="Project Name"
+              label="Workspace Name"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              placeholder="Enter project name"
+              placeholder="Enter workspace name"
             />
             <div>
               <Typography variant="small" color="secondary" className="block mb-1">
-                Project Key
+                Workspace Key
               </Typography>
               <Typography
                 variant="muted"
@@ -92,14 +92,14 @@ export function GeneralSettings({
                 {projectKey}
               </Typography>
               <Typography variant="muted" className="mt-1 text-xs">
-                Project key cannot be changed after creation
+                Workspace key cannot be changed after creation
               </Typography>
             </div>
             <Textarea
               label="Description"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
-              placeholder="Enter project description"
+              placeholder="Enter workspace description"
               rows={3}
             />
             <Flex gap="sm">
@@ -115,7 +115,7 @@ export function GeneralSettings({
           <div className="space-y-4">
             <div>
               <Typography variant="small" color="secondary" className="block mb-1">
-                Project Name
+                Workspace Name
               </Typography>
               <Typography variant="p" className="mt-0">
                 {name}
@@ -123,7 +123,7 @@ export function GeneralSettings({
             </div>
             <div>
               <Typography variant="small" color="secondary" className="block mb-1">
-                Project Key
+                Workspace Key
               </Typography>
               <Typography variant="p" className="mt-0 font-mono">
                 {projectKey}

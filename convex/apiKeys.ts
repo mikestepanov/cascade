@@ -56,7 +56,7 @@ export const validateApiKey = query({
       userId: key.userId,
       keyId: key._id,
       scopes: key.scopes,
-      projectId: key.projectId,
+      workspaceId: key.workspaceId,
       rateLimit: key.rateLimit,
     };
   },
@@ -69,7 +69,7 @@ export const generate = mutation({
   args: {
     name: v.string(),
     scopes: v.array(v.string()),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     rateLimit: v.optional(v.number()),
     expiresAt: v.optional(v.number()),
   },
@@ -82,16 +82,18 @@ export const generate = mutation({
     const keyHash = await hashApiKey(apiKey);
     const keyPrefix = apiKey.substring(0, 16); // "sk_casc_AbCdEfGh"
 
-    // If projectId is specified, verify user has access
-    if (args.projectId) {
-      const projectId = args.projectId;
-      const project = await ctx.db.get(projectId);
+    // If workspaceId is specified, verify user has access
+    if (args.workspaceId) {
+      const workspaceId = args.workspaceId;
+      const project = await ctx.db.get(workspaceId);
       if (!project) throw new Error("Project not found");
 
       // Check if user is a member
       const membership = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .query("workspaceMembers")
+        .withIndex("by_workspace_user", (q) =>
+          q.eq("workspaceId", workspaceId).eq("userId", userId),
+        )
         .first();
 
       if (!membership && project.createdBy !== userId) {
@@ -126,7 +128,7 @@ export const generate = mutation({
       keyHash,
       keyPrefix,
       scopes: args.scopes,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       rateLimit: args.rateLimit ?? 100, // Default 100 req/min
       isActive: true,
       usageCount: 0,
@@ -165,7 +167,7 @@ export const list = query({
       name: key.name,
       keyPrefix: key.keyPrefix,
       scopes: key.scopes,
-      projectId: key.projectId,
+      workspaceId: key.workspaceId,
       rateLimit: key.rateLimit,
       isActive: key.isActive,
       lastUsedAt: key.lastUsedAt,
@@ -295,7 +297,7 @@ export const validate = query({
       userId: key.userId,
       keyId: key._id,
       scopes: key.scopes,
-      projectId: key.projectId,
+      workspaceId: key.workspaceId,
       rateLimit: key.rateLimit,
     };
   },

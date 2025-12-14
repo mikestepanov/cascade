@@ -12,13 +12,13 @@ describe("Automation Rules", () => {
     it("should return automation rules for a project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create automation rule
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-assign bugs",
         description: "Automatically assign bugs to lead",
         trigger: "issue_created",
@@ -27,7 +27,7 @@ describe("Automation Rules", () => {
         actionValue: JSON.stringify({ assigneeId: userId }),
       });
 
-      const rules = await asUser.query(api.automationRules.list, { projectId });
+      const rules = await asUser.query(api.automationRules.list, { workspaceId });
 
       expect(rules).toHaveLength(1);
       expect(rules[0]?._id).toBe(ruleId);
@@ -37,11 +37,11 @@ describe("Automation Rules", () => {
     it("should return empty array for project with no rules", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const rules = await asUser.query(api.automationRules.list, { projectId });
+      const rules = await asUser.query(api.automationRules.list, { workspaceId });
 
       expect(rules).toEqual([]);
     });
@@ -49,9 +49,9 @@ describe("Automation Rules", () => {
     it("should return empty array for unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
-      const rules = await t.query(api.automationRules.list, { projectId });
+      const rules = await t.query(api.automationRules.list, { workspaceId });
 
       expect(rules).toEqual([]);
     });
@@ -60,11 +60,11 @@ describe("Automation Rules", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOther = asAuthenticatedUser(t, other);
 
-      const rules = await asOther.query(api.automationRules.list, { projectId });
+      const rules = await asOther.query(api.automationRules.list, { workspaceId });
 
       expect(rules).toEqual([]);
     });
@@ -76,19 +76,19 @@ describe("Automation Rules", () => {
         name: "Member",
         email: "member@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add member
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
-        projectId,
+      await asOwner.mutation(api.workspaces.addMember, {
+        workspaceId,
         userEmail: "member@test.com",
         role: "viewer",
       });
 
       // Create rule
       await asOwner.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -97,7 +97,7 @@ describe("Automation Rules", () => {
 
       // Member views rules
       const asMember = asAuthenticatedUser(t, member);
-      const rules = await asMember.query(api.automationRules.list, { projectId });
+      const rules = await asMember.query(api.automationRules.list, { workspaceId });
 
       expect(rules).toHaveLength(1);
     });
@@ -107,12 +107,12 @@ describe("Automation Rules", () => {
     it("should create automation rule with all fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-prioritize bugs",
         description: "Set bugs to high priority",
         trigger: "issue_created",
@@ -138,12 +138,12 @@ describe("Automation Rules", () => {
     it("should create rule with minimal fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Simple Rule",
         trigger: "issue_created",
         actionType: "add_label",
@@ -166,12 +166,12 @@ describe("Automation Rules", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
-        projectId,
+      await asOwner.mutation(api.workspaces.addMember, {
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
@@ -180,7 +180,7 @@ describe("Automation Rules", () => {
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.automationRules.create, {
-          projectId,
+          workspaceId,
           name: "Rule",
           trigger: "issue_created",
           actionType: "set_priority",
@@ -192,11 +192,11 @@ describe("Automation Rules", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
         await t.mutation(api.automationRules.create, {
-          projectId,
+          workspaceId,
           name: "Rule",
           trigger: "issue_created",
           actionType: "set_priority",
@@ -210,12 +210,12 @@ describe("Automation Rules", () => {
     it("should update automation rule fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Original Name",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -241,12 +241,12 @@ describe("Automation Rules", () => {
     it("should toggle isActive status", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -279,12 +279,12 @@ describe("Automation Rules", () => {
     it("should update only specified fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Original Name",
         description: "Original Description",
         trigger: "issue_created",
@@ -313,18 +313,18 @@ describe("Automation Rules", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
-        projectId,
+      await asOwner.mutation(api.workspaces.addMember, {
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const ruleId = await asOwner.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -344,11 +344,11 @@ describe("Automation Rules", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -366,13 +366,13 @@ describe("Automation Rules", () => {
     it("should throw error for non-existent rule", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a rule to get a valid but non-existent ID
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Temp Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -395,12 +395,12 @@ describe("Automation Rules", () => {
     it("should delete automation rule", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "To Delete",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -423,18 +423,18 @@ describe("Automation Rules", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
-        projectId,
+      await asOwner.mutation(api.workspaces.addMember, {
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const ruleId = await asOwner.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -451,11 +451,11 @@ describe("Automation Rules", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -470,13 +470,13 @@ describe("Automation Rules", () => {
     it("should throw error for non-existent rule", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a rule to get a valid but non-existent ID
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Temp Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -497,13 +497,13 @@ describe("Automation Rules", () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const assignee = await createTestUser(t, { name: "Assignee" });
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule to auto-assign
       await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-assign",
         trigger: "issue_created",
         actionType: "set_assignee",
@@ -512,7 +512,7 @@ describe("Automation Rules", () => {
 
       // Create issue
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -520,7 +520,7 @@ describe("Automation Rules", () => {
 
       // Execute rules (internal mutation doesn't need auth)
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId,
         trigger: "issue_created",
       });
@@ -533,13 +533,13 @@ describe("Automation Rules", () => {
     it("should execute set_priority action", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule to set priority
       await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-prioritize",
         trigger: "issue_created",
         triggerValue: "bug",
@@ -549,7 +549,7 @@ describe("Automation Rules", () => {
 
       // Create bug issue
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Bug Issue",
         type: "bug",
         priority: "medium",
@@ -557,7 +557,7 @@ describe("Automation Rules", () => {
 
       // Execute rules (internal mutation doesn't need auth)
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId,
         trigger: "issue_created",
         triggerValue: "bug",
@@ -571,13 +571,13 @@ describe("Automation Rules", () => {
     it("should execute add_label action", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule to add label
       await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-label",
         trigger: "issue_created",
         actionType: "add_label",
@@ -586,7 +586,7 @@ describe("Automation Rules", () => {
 
       // Create issue
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -594,7 +594,7 @@ describe("Automation Rules", () => {
 
       // Execute rules (internal mutation doesn't need auth)
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId,
         trigger: "issue_created",
       });
@@ -607,13 +607,13 @@ describe("Automation Rules", () => {
     it("should execute add_comment action", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule to add comment
       await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Auto-comment",
         trigger: "issue_created",
         actionType: "add_comment",
@@ -624,7 +624,7 @@ describe("Automation Rules", () => {
 
       // Create issue
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -632,7 +632,7 @@ describe("Automation Rules", () => {
 
       // Execute rules (internal mutation doesn't need auth)
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId,
         trigger: "issue_created",
       });
@@ -651,13 +651,13 @@ describe("Automation Rules", () => {
     it("should only execute active rules", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create inactive rule
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Inactive Rule",
         trigger: "issue_created",
         actionType: "set_priority",
@@ -672,7 +672,7 @@ describe("Automation Rules", () => {
 
       // Create issue
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -680,7 +680,7 @@ describe("Automation Rules", () => {
 
       // Execute rules (internal mutation doesn't need auth)
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId,
         trigger: "issue_created",
       });
@@ -693,13 +693,13 @@ describe("Automation Rules", () => {
     it("should increment execution count", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule
       const ruleId = await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Test Rule",
         trigger: "issue_created",
         actionType: "add_label",
@@ -708,28 +708,28 @@ describe("Automation Rules", () => {
 
       // Create first issue
       const issue1Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 1",
         type: "task",
         priority: "medium",
       });
 
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId: issue1Id,
         trigger: "issue_created",
       });
 
       // Create second issue
       const issue2Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 2",
         type: "task",
         priority: "medium",
       });
 
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId: issue2Id,
         trigger: "issue_created",
       });
@@ -745,13 +745,13 @@ describe("Automation Rules", () => {
     it("should match trigger value when specified", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create rule that only triggers for bugs
       await asUser.mutation(api.automationRules.create, {
-        projectId,
+        workspaceId,
         name: "Bug Rule",
         trigger: "issue_created",
         triggerValue: "bug",
@@ -761,14 +761,14 @@ describe("Automation Rules", () => {
 
       // Create task (should NOT trigger)
       const taskId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task",
         type: "task",
         priority: "medium",
       });
 
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId: taskId,
         trigger: "issue_created",
         triggerValue: "task",
@@ -779,14 +779,14 @@ describe("Automation Rules", () => {
 
       // Create bug (should trigger)
       const bugId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Bug",
         type: "bug",
         priority: "medium",
       });
 
       await t.mutation(internal.automationRules.executeRules, {
-        projectId,
+        workspaceId,
         issueId: bugId,
         trigger: "issue_created",
         triggerValue: "bug",

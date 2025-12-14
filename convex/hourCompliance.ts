@@ -6,14 +6,14 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const createdProjects = await ctx.db
-    .query("projects")
+    .query("workspaces")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
   if (createdProjects) return true;
 
   const adminMembership = await ctx.db
-    .query("projectMembers")
+    .query("workspaceMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
     .first();

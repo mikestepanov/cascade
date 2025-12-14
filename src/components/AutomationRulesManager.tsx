@@ -12,7 +12,7 @@ import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface AutomationRulesManagerProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
 type AutomationRule = {
@@ -37,12 +37,12 @@ type AutomationRule = {
  * - Card component testable in isolation
  * - Easier to maintain and extend
  */
-export function AutomationRulesManager({ projectId }: AutomationRulesManagerProps) {
+export function AutomationRulesManager({ workspaceId }: AutomationRulesManagerProps) {
   const [showFormDialog, setShowFormDialog] = useState(false);
   const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Id<"automationRules"> | null>(null);
 
-  const rules = useQuery(api.automationRules.list, { projectId });
+  const rules = useQuery(api.automationRules.list, { workspaceId });
   const removeRule = useMutation(api.automationRules.remove);
 
   const handleCreate = () => {
@@ -110,7 +110,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
 
       {/* Form Dialog */}
       <AutomationRuleForm
-        projectId={projectId}
+        workspaceId={workspaceId}
         rule={editingRule}
         open={showFormDialog}
         onOpenChange={(open) => {

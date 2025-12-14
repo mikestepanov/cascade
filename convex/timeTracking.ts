@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
-import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+import { assertCanAccessProject, assertIsProjectAdmin } from "./workspaceAccess";
 
 /**
  * Native Time Tracking - Kimai-like Features
@@ -49,7 +49,7 @@ function calculateTimeEntryCost(
 
 export const startTimer = mutation({
   args: {
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     issueId: v.optional(v.id("issues")),
     description: v.optional(v.string()),
     activity: v.optional(v.string()),
@@ -74,19 +74,19 @@ export const startTimer = mutation({
     }
 
     // Check project permissions if specified
-    if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+    if (args.workspaceId) {
+      await assertCanAccessProject(ctx, args.workspaceId, userId);
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, userId, args.workspaceId);
 
     const now = Date.now();
     const startOfDay = new Date(now).setHours(0, 0, 0, 0);
 
     return await ctx.db.insert("timeEntries", {
       userId,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       issueId: args.issueId,
       startTime: now,
       endTime: undefined,
@@ -154,7 +154,7 @@ export const stopTimer = mutation({
 
 export const createTimeEntry = mutation({
   args: {
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     issueId: v.optional(v.id("issues")),
     startTime: v.number(),
     endTime: v.number(),
@@ -171,8 +171,8 @@ export const createTimeEntry = mutation({
     }
 
     // Check project permissions if specified
-    if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+    if (args.workspaceId) {
+      await assertCanAccessProject(ctx, args.workspaceId, userId);
     }
 
     // Validate time range
@@ -181,7 +181,7 @@ export const createTimeEntry = mutation({
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, userId, args.workspaceId);
 
     const duration = Math.floor((args.endTime - args.startTime) / 1000);
     const hours = duration / 3600;
@@ -192,7 +192,7 @@ export const createTimeEntry = mutation({
 
     return await ctx.db.insert("timeEntries", {
       userId,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       issueId: args.issueId,
       startTime: args.startTime,
       endTime: args.endTime,
@@ -318,7 +318,7 @@ export const getRunningTimer = query({
     }
 
     // Enrich with project and issue data
-    const project = runningTimer.projectId ? await ctx.db.get(runningTimer.projectId) : null;
+    const project = runningTimer.workspaceId ? await ctx.db.get(runningTimer.workspaceId) : null;
     const issue = runningTimer.issueId ? await ctx.db.get(runningTimer.issueId) : null;
 
     // Calculate current duration
@@ -351,7 +351,7 @@ export const getRunningTimer = query({
 
 export const listTimeEntries = query({
   args: {
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     issueId: v.optional(v.id("issues")),
     userId: v.optional(v.id("users")),
     startDate: v.optional(v.number()),
@@ -368,14 +368,14 @@ export const listTimeEntries = query({
 
     let entries: Doc<"timeEntries">[];
 
-    if (args.projectId && args.startDate !== undefined && args.endDate !== undefined) {
+    if (args.workspaceId && args.startDate !== undefined && args.endDate !== undefined) {
       const startDate = args.startDate;
       const endDate = args.endDate;
-      const projectId = args.projectId;
+      const workspaceId = args.workspaceId;
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_project_date", (q) =>
-          q.eq("projectId", projectId).gte("date", startDate).lte("date", endDate),
+        .withIndex("by_workspace_date", (q) =>
+          q.eq("workspaceId", workspaceId).gte("date", startDate).lte("date", endDate),
         )
         .filter((q) => q.eq(q.field("userId"), userId))
         .order("desc")
@@ -409,7 +409,7 @@ export const listTimeEntries = query({
     return await Promise.all(
       entries.map(async (entry) => {
         const user = await ctx.db.get(entry.userId);
-        const project = entry.projectId ? await ctx.db.get(entry.projectId) : null;
+        const project = entry.workspaceId ? await ctx.db.get(entry.workspaceId) : null;
         const issue = entry.issueId ? await ctx.db.get(entry.issueId) : null;
 
         return {
@@ -511,7 +511,7 @@ export const getCurrentWeekTimesheet = query({
 
 export const getBurnRate = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     startDate: v.number(),
     endDate: v.number(),
   },
@@ -522,13 +522,13 @@ export const getBurnRate = query({
     }
 
     // Check permissions
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
     // Get all time entries in date range
     const entries = await ctx.db
       .query("timeEntries")
-      .withIndex("by_project_date", (q) =>
-        q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
+      .withIndex("by_workspace_date", (q) =>
+        q.eq("workspaceId", args.workspaceId).gte("date", args.startDate).lte("date", args.endDate),
       )
       .collect();
 
@@ -591,7 +591,7 @@ export const getBurnRate = query({
 
 export const getTeamCosts = query({
   args: {
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     startDate: v.number(),
     endDate: v.number(),
   },
@@ -603,12 +603,15 @@ export const getTeamCosts = query({
 
     // Get all time entries in date range
     let entries: Doc<"timeEntries">[];
-    if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+    if (args.workspaceId) {
+      await assertCanAccessProject(ctx, args.workspaceId, userId);
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_project_date", (q) =>
-          q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
+        .withIndex("by_workspace_date", (q) =>
+          q
+            .eq("workspaceId", args.workspaceId)
+            .gte("date", args.startDate)
+            .lte("date", args.endDate),
         )
         .collect();
     } else {
@@ -676,7 +679,7 @@ export const getTeamCosts = query({
 export const setUserRate = mutation({
   args: {
     userId: v.id("users"),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     hourlyRate: v.number(),
     currency: v.string(),
     rateType: v.union(v.literal("internal"), v.literal("billable")),
@@ -689,8 +692,8 @@ export const setUserRate = mutation({
     }
 
     // Check permissions - must be admin of project or setting own rate
-    if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, currentUserId);
+    if (args.workspaceId) {
+      await assertIsProjectAdmin(ctx, args.workspaceId, currentUserId);
     } else if (args.userId !== currentUserId) {
       throw new Error("Not authorized");
     }
@@ -698,8 +701,8 @@ export const setUserRate = mutation({
     // End current rate for this user/project/type combination
     const currentRates = await ctx.db
       .query("userRates")
-      .withIndex("by_user_project", (q) =>
-        q.eq("userId", args.userId).eq("projectId", args.projectId),
+      .withIndex("by_user_workspace", (q) =>
+        q.eq("userId", args.userId).eq("workspaceId", args.workspaceId),
       )
       .collect();
 
@@ -714,7 +717,7 @@ export const setUserRate = mutation({
     // Create new rate
     return await ctx.db.insert("userRates", {
       userId: args.userId,
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       hourlyRate: args.hourlyRate,
       currency: args.currency,
       effectiveFrom: now,
@@ -731,7 +734,7 @@ export const setUserRate = mutation({
 export const getUserRate = query({
   args: {
     userId: v.id("users"),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     rateType: v.optional(v.union(v.literal("internal"), v.literal("billable"))),
   },
   handler: async (ctx, args) => {
@@ -740,13 +743,13 @@ export const getUserRate = query({
       return null;
     }
 
-    return await getUserCurrentRate(ctx, args.userId, args.projectId, args.rateType);
+    return await getUserCurrentRate(ctx, args.userId, args.workspaceId, args.rateType);
   },
 });
 
 export const listUserRates = query({
   args: {
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -755,14 +758,14 @@ export const listUserRates = query({
     }
 
     // Check permissions if project-specific
-    if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, userId);
+    if (args.workspaceId) {
+      await assertIsProjectAdmin(ctx, args.workspaceId, userId);
     }
 
-    const rates = args.projectId
+    const rates = args.workspaceId
       ? await ctx.db
           .query("userRates")
-          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
           .collect()
       : await ctx.db
@@ -792,7 +795,7 @@ export const listUserRates = query({
 // Get billing summary for a project
 export const getProjectBilling = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
@@ -809,7 +812,7 @@ export const getProjectBilling = query({
       };
     }
 
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
     // Get time entries for this project
     let entries: Doc<"timeEntries">[];
@@ -817,14 +820,14 @@ export const getProjectBilling = query({
     if (startDate !== undefined && endDate !== undefined) {
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_project_date", (q) =>
-          q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
+        .withIndex("by_workspace_date", (q) =>
+          q.eq("workspaceId", args.workspaceId).gte("date", startDate).lte("date", endDate),
         )
         .collect();
     } else {
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
         .collect();
     }
 
@@ -875,14 +878,14 @@ export const getProjectBilling = query({
 async function getUserCurrentRate(
   ctx: { db: QueryCtx["db"] },
   userId: Id<"users">,
-  projectId?: Id<"projects">,
+  workspaceId?: Id<"workspaces">,
   rateType?: "internal" | "billable",
 ) {
   // Try project-specific rate first
-  if (projectId) {
+  if (workspaceId) {
     const projectRate = await ctx.db
       .query("userRates")
-      .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", projectId))
+      .withIndex("by_user_workspace", (q) => q.eq("userId", userId).eq("workspaceId", workspaceId))
       .filter((q) => q.eq(q.field("effectiveTo"), undefined))
       .first();
 
@@ -894,7 +897,7 @@ async function getUserCurrentRate(
   // Fall back to default user rate
   const defaultRate = await ctx.db
     .query("userRates")
-    .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", undefined))
+    .withIndex("by_user_workspace", (q) => q.eq("userId", userId).eq("workspaceId", undefined))
     .filter((q) => q.eq(q.field("effectiveTo"), undefined))
     .first();
 

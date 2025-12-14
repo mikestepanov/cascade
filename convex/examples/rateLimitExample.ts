@@ -15,7 +15,7 @@ import { rateLimit } from "../rateLimits";
 export const chatWithRateLimit = action({
   args: {
     chatId: v.optional(v.id("aiChats")),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     message: v.string(),
   },
   handler: async (ctx, _args) => {

@@ -49,7 +49,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("BulkOperationsBar - Component Behavior", () => {
-  const mockProjectId = "project123" as Id<"projects">;
+  const mockProjectId = "project123" as Id<"workspaces">;
   const mockOnClearSelection = vi.fn();
   const mockWorkflowStates = [
     { id: "todo", name: "To Do" },
@@ -96,7 +96,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       const { container } = render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={emptySelection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -111,7 +111,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -128,7 +128,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -147,7 +147,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -162,7 +162,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       const { rerender } = render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -174,7 +174,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
       const newSelection = new Set(["issue1" as Id<"issues">, "issue2" as Id<"issues">]);
       rerender(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={newSelection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -192,7 +192,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -212,7 +212,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -232,7 +232,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -252,7 +252,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -280,7 +280,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -311,7 +311,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -339,7 +339,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -367,7 +367,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -397,7 +397,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -423,7 +423,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}
@@ -450,7 +450,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
       render(
         <BulkOperationsBar
-          projectId={mockProjectId}
+          workspaceId={mockProjectId}
           selectedIssueIds={selection}
           onClearSelection={mockOnClearSelection}
           workflowStates={mockWorkflowStates}

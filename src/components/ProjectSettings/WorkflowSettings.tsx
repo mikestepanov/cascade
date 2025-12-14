@@ -18,7 +18,7 @@ interface WorkflowState {
 }
 
 interface WorkflowSettingsProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   workflowStates: WorkflowState[];
 }
 
@@ -34,12 +34,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   done: "bg-status-success/20 text-status-success",
 };
 
-export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettingsProps) {
+export function WorkflowSettings({ workspaceId, workflowStates }: WorkflowSettingsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [states, setStates] = useState<WorkflowState[]>(workflowStates);
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateWorkflow = useMutation(api.projects.updateWorkflow);
+  const updateWorkflow = useMutation(api.workspaces.updateWorkflow);
 
   const handleEdit = () => {
     setStates([...workflowStates]);
@@ -73,7 +73,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
     setIsSaving(true);
     try {
       await updateWorkflow({
-        projectId,
+        workspaceId,
         workflowStates: states,
       });
       showSuccess("Workflow updated");

@@ -13,7 +13,7 @@
 
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import * as ProjectAccess from "./projectAccess";
+import * as ProjectAccess from "./workspaceAccess";
 
 export type ProjectRole = "admin" | "editor" | "viewer";
 
@@ -24,11 +24,11 @@ export type ProjectRole = "admin" | "editor" | "viewer";
  */
 export async function getUserRole(
   ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users">,
 ): Promise<ProjectRole | null> {
   // Delegate to new access control system
-  return await ProjectAccess.getProjectRole(ctx, projectId, userId);
+  return await ProjectAccess.getProjectRole(ctx, workspaceId, userId);
 }
 
 /**
@@ -54,17 +54,17 @@ export function hasMinimumRole(userRole: ProjectRole | null, requiredRole: Proje
  */
 export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users"> | null,
 ): Promise<boolean> {
   if (!userId) {
     // For unauthenticated users, check if project is public
-    const project = await ctx.db.get(projectId);
+    const project = await ctx.db.get(workspaceId);
     return project?.isPublic ?? false;
   }
 
   // Delegate to new access control system
-  return await ProjectAccess.canAccessProject(ctx, projectId, userId);
+  return await ProjectAccess.canAccessProject(ctx, workspaceId, userId);
 }
 
 /**
@@ -74,11 +74,11 @@ export async function canAccessProject(
  */
 export async function canEditProject(
   ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users">,
 ): Promise<boolean> {
   // Delegate to new access control system
-  return await ProjectAccess.canEditProject(ctx, projectId, userId);
+  return await ProjectAccess.canEditProject(ctx, workspaceId, userId);
 }
 
 /**
@@ -88,11 +88,11 @@ export async function canEditProject(
  */
 export async function canManageProject(
   ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users">,
 ): Promise<boolean> {
   // Delegate to new access control system
-  return await ProjectAccess.isProjectAdmin(ctx, projectId, userId);
+  return await ProjectAccess.isProjectAdmin(ctx, workspaceId, userId);
 }
 
 /**
@@ -102,7 +102,7 @@ export async function canManageProject(
  */
 export async function assertMinimumRole(
   ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users"> | null,
   requiredRole: ProjectRole,
 ): Promise<void> {
@@ -112,11 +112,11 @@ export async function assertMinimumRole(
 
   // Use new access control assertions
   if (requiredRole === "admin") {
-    await ProjectAccess.assertIsProjectAdmin(ctx, projectId, userId);
+    await ProjectAccess.assertIsProjectAdmin(ctx, workspaceId, userId);
   } else if (requiredRole === "editor") {
-    await ProjectAccess.assertCanEditProject(ctx, projectId, userId);
+    await ProjectAccess.assertCanEditProject(ctx, workspaceId, userId);
   } else {
     // viewer level - just check access
-    await ProjectAccess.assertCanAccessProject(ctx, projectId, userId);
+    await ProjectAccess.assertCanAccessProject(ctx, workspaceId, userId);
   }
 }

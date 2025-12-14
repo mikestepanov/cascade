@@ -11,7 +11,7 @@ import { FeatureHighlights } from "./FeatureHighlights";
 
 interface LeadOnboardingProps {
   onComplete: () => void;
-  onCreateProject: (projectId: Id<"projects">) => void;
+  onCreateProject: (workspaceId: Id<"workspaces">) => void;
   onBack: () => void;
   onWorkspaceCreated?: (slug: string) => void;
 }
@@ -63,7 +63,7 @@ export function LeadOnboarding({
   const handleCreateSample = async () => {
     setIsCreating(true);
     try {
-      const projectId = await createSampleProject();
+      const workspaceId = await createSampleProject();
       await completeOnboarding();
       showSuccess("Sample project created! Explore and customize it.");
 
@@ -71,7 +71,7 @@ export function LeadOnboarding({
       if (createdSlug && onWorkspaceCreated) {
         onWorkspaceCreated(createdSlug);
       } else {
-        onCreateProject(projectId as Id<"projects">);
+        onCreateProject(workspaceId as Id<"workspaces">);
       }
     } catch (error) {
       showError(error, "Failed to create sample project");

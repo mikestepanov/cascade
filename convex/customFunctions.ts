@@ -13,7 +13,7 @@ import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getProjectRole } from "./projectAccess";
+import { getProjectRole } from "./workspaceAccess";
 
 /**
  * Authenticated Query
@@ -58,7 +58,7 @@ export const authenticatedMutation = customMutation(mutation, {
  * Requires viewer role or higher
  */
 export const projectQuery = customQuery(query, {
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -66,19 +66,19 @@ export const projectQuery = customQuery(query, {
     }
 
     // Check if user has access to project
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check if user is member or project is public
-    const role = await getProjectRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.workspaceId, userId);
     if (!(role || project.isPublic)) {
       throw new Error("Access denied - not a project member");
     }
 
     return {
-      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, role, project },
       args: {},
     };
   },
@@ -89,25 +89,25 @@ export const projectQuery = customQuery(query, {
  * User must be at least a viewer
  */
 export const viewerMutation = customMutation(mutation, {
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Authentication required");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    const role = await getProjectRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.workspaceId, userId);
     if (!role) {
       throw new Error("Access denied - must be a project member");
     }
 
     return {
-      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, role, project },
       args: {},
     };
   },
@@ -118,19 +118,19 @@ export const viewerMutation = customMutation(mutation, {
  * User must be at least an editor
  */
 export const editorMutation = customMutation(mutation, {
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Authentication required");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    const role = await getProjectRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.workspaceId, userId);
 
     // Check minimum role
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
@@ -142,7 +142,7 @@ export const editorMutation = customMutation(mutation, {
     }
 
     return {
-      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, role, project },
       args: {},
     };
   },
@@ -153,26 +153,26 @@ export const editorMutation = customMutation(mutation, {
  * User must be an admin
  */
 export const adminMutation = customMutation(mutation, {
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Authentication required");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    const role = await getProjectRole(ctx, args.projectId, userId);
+    const role = await getProjectRole(ctx, args.workspaceId, userId);
 
     if (role !== "admin") {
       throw new Error("Access denied - admin role required");
     }
 
     return {
-      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, role, project },
       args: {},
     };
   },
@@ -195,12 +195,12 @@ export const issueMutation = customMutation(mutation, {
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    const role = await getProjectRole(ctx, issue.projectId, userId);
+    const role = await getProjectRole(ctx, issue.workspaceId, userId);
 
     // Check minimum role
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
@@ -215,7 +215,7 @@ export const issueMutation = customMutation(mutation, {
       ctx: {
         ...ctx,
         userId,
-        projectId: issue.projectId,
+        workspaceId: issue.workspaceId,
         role,
         project,
         issue,
@@ -233,10 +233,10 @@ export type AuthenticatedQueryCtx = {
 };
 
 export type ProjectQueryCtx = AuthenticatedQueryCtx & {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   role: "viewer" | "editor" | "admin" | null;
   project: {
-    _id: Id<"projects">;
+    _id: Id<"workspaces">;
     _creationTime: number;
     name: string;
     key: string;
@@ -257,7 +257,7 @@ export type IssueMutationCtx = ProjectQueryCtx & {
   issue: {
     _id: Id<"issues">;
     _creationTime: number;
-    projectId: Id<"projects">;
+    workspaceId: Id<"workspaces">;
     key: string;
     title: string;
     description?: string;
