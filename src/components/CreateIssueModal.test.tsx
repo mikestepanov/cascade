@@ -31,7 +31,7 @@ vi.mock("@/lib/array-utils", () => ({
 describe("CreateIssueModal", () => {
   const mockCreateIssue = vi.fn();
   const mockOnOpenChange = vi.fn();
-  const mockProjectId = "project-123" as Id<"projects">;
+  const mockProjectId = "project-123" as Id<"workspaces">;
   const _mockSprintId = "sprint-456" as Id<"sprints">;
 
   const mockProject = {
@@ -77,7 +77,7 @@ describe("CreateIssueModal", () => {
 
   it("should render story points input field", () => {
     render(
-      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+      <CreateIssueModal workspaceId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
     );
 
     const storyPointsInput = screen.getByPlaceholderText(/Enter story points/i);
@@ -90,7 +90,7 @@ describe("CreateIssueModal", () => {
   it("should allow user to enter story points", async () => {
     const user = userEvent.setup();
     render(
-      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+      <CreateIssueModal workspaceId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
     );
 
     const storyPointsInput = screen.getByPlaceholderText(/Enter story points/i);
@@ -112,7 +112,7 @@ describe("CreateIssueModal", () => {
     });
 
     render(
-      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+      <CreateIssueModal workspaceId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
     );
 
     const titleInput = screen.getByPlaceholderText(/Enter issue title/i);
@@ -127,7 +127,7 @@ describe("CreateIssueModal", () => {
     await waitFor(() => {
       expect(mockCreateIssue).toHaveBeenCalledWith(
         expect.objectContaining({
-          projectId: mockProjectId,
+          workspaceId: mockProjectId,
           title: "Test Issue",
           storyPoints: 8,
         }),

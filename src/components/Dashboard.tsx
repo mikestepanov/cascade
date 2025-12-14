@@ -6,7 +6,7 @@ import { useCompany } from "@/hooks/useCompanyContext";
 import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
-import { ProjectsList } from "./Dashboard/ProjectsList";
+import { WorkspacesList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
 import { Typography } from "./ui/Typography";
@@ -32,26 +32,22 @@ export function Dashboard() {
         ? myCreatedIssues
         : [...(myIssues || []), ...(myCreatedIssues || [])];
 
-  // Navigation helpers
-  const navigateToProject = (projectKey: string) => {
-    navigate({ to: ROUTES.workspaces.board(companySlug, projectKey) });
-  };
-
-  const navigateToProjects = () => {
-    navigate({ to: ROUTES.workspaces.list(companySlug) });
+  // Navigation helper for keyboard navigation callbacks
+  const navigateToWorkspace = (workspaceKey: string) => {
+    navigate({ to: ROUTES.workspaces.board(companySlug, workspaceKey) });
   };
 
   // Keyboard navigation for issue list
   const issueNavigation = useListNavigation({
     items: displayIssues || [],
-    onSelect: (issue) => navigateToProject(issue.projectKey),
+    onSelect: (issue) => navigateToWorkspace(issue.projectKey),
     enabled: !!displayIssues && displayIssues.length > 0,
   });
 
-  // Keyboard navigation for projects list
-  const projectNavigation = useListNavigation({
+  // Keyboard navigation for workspaces list
+  const workspaceNavigation = useListNavigation({
     items: myProjects || [],
-    onSelect: (project) => navigateToProject(project.key),
+    onSelect: (workspace) => navigateToWorkspace(workspace.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
 
@@ -81,20 +77,13 @@ export function Dashboard() {
               issueFilter={issueFilter}
               onFilterChange={setIssueFilter}
               issueNavigation={issueNavigation}
-              onNavigateToProject={navigateToProject}
-              onNavigateToProjects={navigateToProjects}
             />
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* My Projects */}
-            <ProjectsList
-              projects={myProjects}
-              projectNavigation={projectNavigation}
-              onNavigateToProject={navigateToProject}
-              onNavigateToProjects={navigateToProjects}
-            />
+            {/* My Workspaces */}
+            <WorkspacesList workspaces={myProjects} workspaceNavigation={workspaceNavigation} />
 
             {/* Recent Activity */}
             <RecentActivity activities={recentActivity} />

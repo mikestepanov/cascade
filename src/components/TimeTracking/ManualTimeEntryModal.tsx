@@ -100,14 +100,14 @@ function ModeToggleButton({
 interface ManualTimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   issueId?: Id<"issues">;
 }
 
 export function ManualTimeEntryModal({
   open,
   onOpenChange,
-  projectId: initialProjectId,
+  workspaceId: initialProjectId,
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
@@ -119,7 +119,7 @@ export function ManualTimeEntryModal({
   const [timeRangeDuration, setTimeRangeDuration] = useState(0);
 
   // Project/Issue selection (Radix Select)
-  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
+  const [workspaceId, setProjectId] = useState<Id<"workspaces"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
 
   // Tags (array state)
@@ -127,7 +127,7 @@ export function ManualTimeEntryModal({
   const [tagInput, setTagInput] = useState("");
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
+  const projectIssues = useQuery(api.issues.listByProject, workspaceId ? { workspaceId } : "skip");
 
   const form = useAppForm({
     defaultValues: {
@@ -165,7 +165,7 @@ export function ManualTimeEntryModal({
 
       try {
         await createTimeEntry({
-          projectId,
+          workspaceId,
           issueId,
           startTime: startTimeMs,
           endTime: endTimeMs,
@@ -426,9 +426,9 @@ export function ManualTimeEntryModal({
               Project
             </label>
             <Select
-              value={projectId || "none"}
+              value={workspaceId || "none"}
               onValueChange={(value) => {
-                setProjectId(value === "none" ? undefined : (value as Id<"projects">));
+                setProjectId(value === "none" ? undefined : (value as Id<"workspaces">));
                 setIssueId(undefined);
               }}
             >
@@ -447,7 +447,7 @@ export function ManualTimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {projectId && projectIssues && projectIssues.length > 0 && (
+          {workspaceId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"

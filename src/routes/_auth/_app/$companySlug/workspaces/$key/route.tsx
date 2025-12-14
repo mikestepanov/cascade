@@ -14,9 +14,9 @@ function WorkspaceLayout() {
   const { key } = Route.useParams();
   const { company } = useCompany();
   const companySlug = company?.slug ?? "";
-  const project = useQuery(api.workspaces.getByKey, { key });
+  const workspace = useQuery(api.workspaces.getByKey, { key });
 
-  if (project === undefined) {
+  if (workspace === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner message="Loading workspace..." />
@@ -24,7 +24,7 @@ function WorkspaceLayout() {
     );
   }
 
-  if (!project) {
+  if (!workspace) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">

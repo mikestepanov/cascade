@@ -1,3 +1,6 @@
+import { useNavigate } from "@tanstack/react-router";
+import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/hooks/useCompanyContext";
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { UseListNavigationResult } from "../../hooks/useListNavigation";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
@@ -16,7 +19,7 @@ interface Issue {
   type: string;
   priority: string;
   status: string;
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   projectKey: string;
   projectName: string;
 }
@@ -28,8 +31,6 @@ interface MyIssuesListProps {
   issueFilter: IssueFilter;
   onFilterChange: (filter: IssueFilter) => void;
   issueNavigation: UseListNavigationResult<Issue>;
-  onNavigateToProject?: (projectKey: string) => void;
-  onNavigateToProjects?: () => void;
 }
 
 /**
@@ -42,9 +43,17 @@ export function MyIssuesList({
   issueFilter,
   onFilterChange,
   issueNavigation,
-  onNavigateToProject,
-  onNavigateToProjects,
 }: MyIssuesListProps) {
+  const navigate = useNavigate();
+  const { companySlug } = useCompany();
+
+  const navigateToWorkspace = (workspaceKey: string) => {
+    navigate({ to: ROUTES.workspaces.board(companySlug, workspaceKey) });
+  };
+
+  const navigateToWorkspaces = () => {
+    navigate({ to: ROUTES.workspaces.list(companySlug) });
+  };
   return (
     <Card>
       <CardHeader title="My Issues" description="Track your assigned and created issues" />
@@ -89,14 +98,10 @@ export function MyIssuesList({
                 ? "You don't have any assigned issues. Visit a project to get started."
                 : "You haven't created any issues yet. Visit a project to create one."
             }
-            action={
-              onNavigateToProjects
-                ? {
-                    label: "View My Projects",
-                    onClick: onNavigateToProjects,
-                  }
-                : undefined
-            }
+            action={{
+              label: "View My Workspaces",
+              onClick: navigateToWorkspaces,
+            }}
           />
         ) : (
           <Flex
@@ -109,7 +114,7 @@ export function MyIssuesList({
               <button
                 key={issue._id}
                 type="button"
-                onClick={() => onNavigateToProject?.(issue.projectKey)}
+                onClick={() => navigateToWorkspace(issue.projectKey)}
                 {...issueNavigation.getItemProps(index)}
                 className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
                 style={{ animationDelay: `${index * 50}ms` }}

@@ -190,7 +190,7 @@ describe("Hybrid Search Integration", () => {
     });
 
     it("should respect Convex data boundaries", () => {
-      // Simulate project-scoped members (Convex filters by projectId)
+      // Simulate project-scoped members (Convex filters by workspaceId)
       const projectMembers = [
         { _id: "1", name: "Alice", email: "alice@example.com" },
         { _id: "2", name: "Bob", email: "bob@example.com" },

@@ -12,7 +12,7 @@ import { Input } from "../ui/form";
 import { Typography } from "../ui/Typography";
 
 interface DangerZoneProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   projectName: string;
   projectKey: string;
   isOwner: boolean;
@@ -20,7 +20,7 @@ interface DangerZoneProps {
 }
 
 export function DangerZone({
-  projectId,
+  workspaceId,
   projectName,
   projectKey,
   isOwner,
@@ -41,7 +41,7 @@ export function DangerZone({
 
     setIsDeleting(true);
     try {
-      await deleteProject({ projectId });
+      await deleteProject({ workspaceId });
       showSuccess("Workspace deleted successfully");
       navigate({ to: ROUTES.workspaces.list(companySlug) });
     } catch (error) {

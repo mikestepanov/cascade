@@ -99,7 +99,7 @@ describe("IssueDetailModal", () => {
     estimatedHours: 8,
     loggedHours: 3.5,
     storyPoints: 5,
-    projectId: "project-123" as Id<"projects">,
+    workspaceId: "project-123" as Id<"workspaces">,
   };
 
   beforeEach(() => {

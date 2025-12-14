@@ -11,18 +11,18 @@ import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Typography } from "./ui/Typography";
 
 interface RoadmapViewProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
   canEdit?: boolean;
 }
 
-export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapViewProps) {
+export function RoadmapView({ workspaceId, sprintId, canEdit = true }: RoadmapViewProps) {
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [viewMode, setViewMode] = useState<"months" | "weeks">("months");
   const [filterEpic, setFilterEpic] = useState<Id<"issues"> | "all">("all");
 
-  const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
-  const project = useQuery(api.workspaces.get, { id: projectId });
+  const issues = useQuery(api.issues.listByProject, { workspaceId, sprintId });
+  const project = useQuery(api.workspaces.get, { id: workspaceId });
 
   // Filter epics and regular issues
   const epics = issues?.filter((issue) => issue.type === "epic") || [];

@@ -10,14 +10,14 @@ import { Select } from "./ui/form/Select";
 
 interface CustomFieldValuesProps {
   issueId: Id<"issues">;
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps) {
+export function CustomFieldValues({ issueId, workspaceId }: CustomFieldValuesProps) {
   const [editingFieldId, setEditingFieldId] = useState<Id<"customFields"> | null>(null);
   const [editValue, setEditValue] = useState("");
 
-  const customFields = useQuery(api.customFields.list, { projectId });
+  const customFields = useQuery(api.customFields.list, { workspaceId });
   const fieldValues = useQuery(api.customFields.getValuesForIssue, { issueId });
   const setValue = useMutation(api.customFields.setValue);
   const removeValue = useMutation(api.customFields.removeValue);

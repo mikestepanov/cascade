@@ -7,7 +7,7 @@ import {
   assertCanEditProject,
   assertIsProjectAdmin,
   canAccessProject,
-} from "./projectAccess";
+} from "./workspaceAccess";
 
 // Helper: Validate parent issue and get inherited epic
 async function validateParentIssue(
@@ -43,10 +43,14 @@ async function validateParentIssue(
 }
 
 // Helper: Generate issue key
-async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, projectKey: string) {
+async function generateIssueKey(
+  ctx: MutationCtx,
+  workspaceId: Id<"workspaces">,
+  projectKey: string,
+) {
   const existingIssues = await ctx.db
     .query("issues")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
 
   const issueNumber = existingIssues.length + 1;
@@ -54,10 +58,14 @@ async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, pro
 }
 
 // Helper: Get max order for status column
-async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">, status: string) {
+async function getMaxOrderForStatus(
+  ctx: MutationCtx,
+  workspaceId: Id<"workspaces">,
+  status: string,
+) {
   const issuesInStatus = await ctx.db
     .query("issues")
-    .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", status))
+    .withIndex("by_workspace_status", (q) => q.eq("workspaceId", workspaceId).eq("status", status))
     .collect();
 
   return Math.max(...issuesInStatus.map((i) => i.order), -1);
@@ -65,7 +73,7 @@ async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">,
 
 export const create = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(
@@ -97,29 +105,29 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check if user can create issues (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.workspaceId, userId);
 
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
-    const issueKey = await generateIssueKey(ctx, args.projectId, project.key);
+    const issueKey = await generateIssueKey(ctx, args.workspaceId, project.key);
 
     // Get the first workflow state as default status
     const defaultStatus = project.workflowStates[0]?.id || "todo";
 
     // Get max order for the status column
-    const maxOrder = await getMaxOrderForStatus(ctx, args.projectId, defaultStatus);
+    const maxOrder = await getMaxOrderForStatus(ctx, args.workspaceId, defaultStatus);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       key: issueKey,
       title: args.title,
       description: args.description,
@@ -180,14 +188,14 @@ export const listByUser = query({
       status: issue.status,
       type: issue.type,
       priority: issue.priority,
-      projectId: issue.projectId,
+      workspaceId: issue.workspaceId,
     }));
   },
 });
 
 export const listByProject = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     sprintId: v.optional(v.id("sprints")),
   },
   handler: async (ctx, args) => {
@@ -196,20 +204,20 @@ export const listByProject = query({
       return [];
     }
 
-    const project = await ctx.db.get(args.projectId);
+    const project = await ctx.db.get(args.workspaceId);
     if (!project) {
       return [];
     }
 
     // Check access permissions
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.workspaceId, userId);
     if (!hasAccess) {
       return [];
     }
 
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
 
     const issues = await issuesQuery.collect();
 
@@ -265,14 +273,14 @@ export const get = query({
       return null;
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) {
       return null;
     }
 
     // Check access permissions
     if (userId) {
-      const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
+      const hasAccess = await canAccessProject(ctx, issue.workspaceId, userId);
       if (!hasAccess) {
         throw new Error("Not authorized to access this issue");
       }
@@ -404,7 +412,7 @@ export const listSubtasks = query({
     }
 
     // Check if user has access to the parent issue's project
-    const project = await ctx.db.get(parentIssue.projectId);
+    const project = await ctx.db.get(parentIssue.workspaceId);
     if (!project) {
       return [];
     }
@@ -461,13 +469,13 @@ export const updateStatus = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.workspaceId, userId);
 
     const oldStatus = issue.status;
     const now = Date.now();
@@ -640,7 +648,7 @@ export const update = mutation({
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.workspaceId, userId);
 
     const now = Date.now();
     const changes: Array<{
@@ -705,13 +713,13 @@ export const addComment = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.workspaceId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (any role can comment, even viewers)
-    await assertCanAccessProject(ctx, issue.projectId, userId);
+    await assertCanAccessProject(ctx, issue.workspaceId, userId);
 
     const now = Date.now();
     const mentions = args.mentions || [];
@@ -746,7 +754,7 @@ export const addComment = mutation({
           title: "You were mentioned",
           message: `${author?.name || "Someone"} mentioned you in ${issue.key}`,
           issueId: args.issueId,
-          projectId: issue.projectId,
+          workspaceId: issue.workspaceId,
           isRead: false,
           createdAt: now,
         });
@@ -770,7 +778,7 @@ export const addComment = mutation({
         title: "New comment",
         message: `${author?.name || "Someone"} commented on ${issue.key}`,
         issueId: args.issueId,
-        projectId: issue.projectId,
+        workspaceId: issue.workspaceId,
         isRead: false,
         createdAt: now,
       });
@@ -855,7 +863,7 @@ function matchesLabelsFilter(issueLabels: string[], filterLabels?: string[]): bo
 // Helper: Check if issue matches all search filters
 function matchesSearchFilters(
   issue: {
-    projectId: Id<"projects">;
+    workspaceId: Id<"workspaces">;
     assigneeId?: Id<"users">;
     reporterId: Id<"users">;
     type: string;
@@ -867,7 +875,7 @@ function matchesSearchFilters(
     createdAt: number;
   },
   filters: {
-    projectId?: Id<"projects">;
+    workspaceId?: Id<"workspaces">;
     assigneeId?: Id<"users"> | "unassigned" | "me";
     reporterId?: Id<"users">;
     type?: string[];
@@ -882,7 +890,7 @@ function matchesSearchFilters(
   userId: Id<"users">,
 ): boolean {
   // Simple ID filters
-  if (filters.projectId && issue.projectId !== filters.projectId) return false;
+  if (filters.workspaceId && issue.workspaceId !== filters.workspaceId) return false;
   if (filters.reporterId && issue.reporterId !== filters.reporterId) return false;
 
   // Complex filters using helpers
@@ -903,7 +911,7 @@ export const search = query({
     query: v.string(),
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
     reporterId: v.optional(v.id("users")),
     type: v.optional(v.array(v.string())),
@@ -930,7 +938,7 @@ export const search = query({
     for (const issue of searchResults) {
       // Check access permissions
       try {
-        await assertCanAccessProject(ctx, issue.projectId, userId);
+        await assertCanAccessProject(ctx, issue.workspaceId, userId);
       } catch {
         continue; // User doesn't have access, skip this issue
       }
@@ -957,7 +965,7 @@ export const search = query({
         const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
         const reporter = await ctx.db.get(issue.reporterId);
         const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
-        const project = await ctx.db.get(issue.projectId);
+        const project = await ctx.db.get(issue.workspaceId);
 
         return {
           ...issue,
@@ -1031,7 +1039,7 @@ export const bulkUpdateStatus = mutation({
 
       // Check permissions
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.workspaceId, userId);
       } catch {
         continue; // Skip issues user doesn't have access to
       }
@@ -1092,7 +1100,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.workspaceId, userId);
       } catch {
         continue;
       }
@@ -1144,7 +1152,7 @@ export const bulkAssign = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.workspaceId, userId);
       } catch {
         continue;
       }
@@ -1196,7 +1204,7 @@ export const bulkAddLabels = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.workspaceId, userId);
       } catch {
         continue;
       }
@@ -1249,7 +1257,7 @@ export const bulkMoveToSprint = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.workspaceId, userId);
       } catch {
         continue;
       }
@@ -1356,7 +1364,7 @@ export const bulkDelete = mutation({
       if (!issue) continue;
 
       try {
-        await assertIsProjectAdmin(ctx, issue.projectId, userId);
+        await assertIsProjectAdmin(ctx, issue.workspaceId, userId);
       } catch {
         continue; // Only admins can delete
       }

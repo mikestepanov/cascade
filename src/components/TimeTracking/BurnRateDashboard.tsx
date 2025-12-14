@@ -7,10 +7,10 @@ import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
 
 interface BurnRateDashboardProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
+export function BurnRateDashboard({ workspaceId }: BurnRateDashboardProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "quarter">("month");
 
   // Calculate date range
@@ -36,13 +36,13 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
   const { startDate, endDate } = ranges[dateRange];
 
   const burnRate = useQuery(api.timeTracking.getBurnRate, {
-    projectId,
+    workspaceId,
     startDate,
     endDate,
   });
 
   const teamCosts = useQuery(api.timeTracking.getTeamCosts, {
-    projectId,
+    workspaceId,
     startDate,
     endDate,
   });

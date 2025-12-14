@@ -11,7 +11,7 @@ import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 import type { SuggestionType } from "../config";
 
 export interface UseAISuggestionsOptions {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
 }
 
 export interface UseAISuggestionsReturn {
@@ -30,13 +30,13 @@ export interface UseAISuggestionsReturn {
   handleDismissSuggestion: (suggestionId: Id<"aiSuggestions">) => Promise<void>;
 }
 
-export function useAISuggestions({ projectId }: UseAISuggestionsOptions): UseAISuggestionsReturn {
+export function useAISuggestions({ workspaceId }: UseAISuggestionsOptions): UseAISuggestionsReturn {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedType, setSelectedType] = useState<SuggestionType | undefined>();
 
   const suggestions = useQuery(
     api.ai.queries.getProjectSuggestions,
-    projectId ? { projectId, suggestionType: selectedType } : "skip",
+    workspaceId ? { workspaceId, suggestionType: selectedType } : "skip",
   );
 
   const generateInsights = useAction(api.ai.actions.generateProjectInsights);
@@ -46,18 +46,18 @@ export function useAISuggestions({ projectId }: UseAISuggestionsOptions): UseAIS
   const unreadCount = suggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
 
   const handleGenerateInsights = useCallback(async () => {
-    if (!projectId || isGenerating) return;
+    if (!workspaceId || isGenerating) return;
 
     setIsGenerating(true);
     try {
-      await generateInsights({ projectId });
+      await generateInsights({ workspaceId });
       toast.success("AI insights generated successfully!");
     } catch {
       toast.error("Failed to generate insights. Please try again.");
     } finally {
       setIsGenerating(false);
     }
-  }, [projectId, isGenerating, generateInsights]);
+  }, [workspaceId, isGenerating, generateInsights]);
 
   const handleAcceptSuggestion = useCallback(
     async (suggestionId: Id<"aiSuggestions">) => {

@@ -9,12 +9,12 @@ import { Progress } from "../ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
 
 interface BillingReportProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function BillingReport({ projectId }: BillingReportProps) {
+export function BillingReport({ workspaceId }: BillingReportProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("month");
-  const project = useQuery(api.workspaces.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: workspaceId });
 
   // Calculate date range
   const getDateRange = () => {
@@ -32,7 +32,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
   };
 
   const billing = useQuery(api.timeTracking.getProjectBilling, {
-    projectId,
+    workspaceId,
     ...getDateRange(),
   });
 

@@ -20,7 +20,7 @@ import { type EntryMode, useTimeEntryForm } from "./useTimeEntryForm";
 interface TimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   issueId?: Id<"issues">;
   defaultMode?: "timer" | "log";
   billingEnabled?: boolean;
@@ -304,7 +304,7 @@ function TimeRangeModeFields({
 export function TimeEntryModal({
   open,
   onOpenChange,
-  projectId: initialProjectId,
+  workspaceId: initialProjectId,
   issueId: initialIssueId,
   defaultMode = "log",
   billingEnabled,
@@ -322,7 +322,7 @@ export function TimeEntryModal({
 
   const projectIssues = useQuery(
     api.issues.listByProject,
-    state.projectId ? { projectId: state.projectId } : "skip",
+    state.workspaceId ? { workspaceId: state.workspaceId } : "skip",
   );
 
   const handleStartTimer = async () => {
@@ -334,7 +334,7 @@ export function TimeEntryModal({
 
     try {
       await startTimerMutation({
-        projectId: state.projectId,
+        workspaceId: state.workspaceId,
         issueId: state.issueId,
         description: state.description || undefined,
         activity: state.activity || undefined,
@@ -367,7 +367,7 @@ export function TimeEntryModal({
 
     try {
       await createTimeEntry({
-        projectId: state.projectId,
+        workspaceId: state.workspaceId,
         issueId: state.issueId,
         startTime: entryStartTime,
         endTime: entryEndTime,
@@ -438,9 +438,9 @@ export function TimeEntryModal({
               Project
             </label>
             <Select
-              value={state.projectId || "none"}
+              value={state.workspaceId || "none"}
               onValueChange={(value) => {
-                actions.setProjectId(value === "none" ? undefined : (value as Id<"projects">));
+                actions.setProjectId(value === "none" ? undefined : (value as Id<"workspaces">));
                 actions.setIssueId(undefined);
               }}
             >
@@ -459,7 +459,7 @@ export function TimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {state.projectId && projectIssues && projectIssues.length > 0 && (
+          {state.workspaceId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"

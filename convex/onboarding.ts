@@ -31,7 +31,7 @@ export const updateOnboardingStatus = mutation({
   args: {
     onboardingCompleted: v.optional(v.boolean()),
     onboardingStep: v.optional(v.number()),
-    sampleProjectCreated: v.optional(v.boolean()),
+    sampleWorkspaceCreated: v.optional(v.boolean()),
     tourShown: v.optional(v.boolean()),
     wizardCompleted: v.optional(v.boolean()),
     checklistDismissed: v.optional(v.boolean()),
@@ -69,7 +69,7 @@ export const updateOnboardingStatus = mutation({
           userId,
           onboardingCompleted: args.onboardingCompleted ?? false,
           onboardingStep: args.onboardingStep ?? 0,
-          sampleProjectCreated: args.sampleProjectCreated ?? false,
+          sampleWorkspaceCreated: args.sampleWorkspaceCreated ?? false,
           tourShown: args.tourShown ?? false,
           wizardCompleted: args.wizardCompleted ?? false,
           checklistDismissed: args.checklistDismissed ?? false,
@@ -96,12 +96,12 @@ export const createSampleProject = mutation({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .first();
 
-    if (onboarding?.sampleProjectCreated) {
+    if (onboarding?.sampleWorkspaceCreated) {
       throw new Error("Sample project already created");
     }
 
     // Create sample project
-    const projectId = await ctx.db.insert("projects", {
+    const workspaceId = await ctx.db.insert("workspaces", {
       name: "Sample Project",
       key: "SAMPLE",
       description:
@@ -119,8 +119,8 @@ export const createSampleProject = mutation({
     });
 
     // Add user as project admin
-    await ctx.db.insert("projectMembers", {
-      projectId,
+    await ctx.db.insert("workspaceMembers", {
+      workspaceId,
       userId,
       role: "admin",
       addedBy: userId,
@@ -129,7 +129,7 @@ export const createSampleProject = mutation({
 
     // Create labels
     await ctx.db.insert("labels", {
-      projectId,
+      workspaceId,
       name: "urgent",
       color: "#EF4444", // Red
       createdBy: userId,
@@ -137,7 +137,7 @@ export const createSampleProject = mutation({
     });
 
     await ctx.db.insert("labels", {
-      projectId,
+      workspaceId,
       name: "needs-review",
       color: "#F59E0B", // Orange
       createdBy: userId,
@@ -146,7 +146,7 @@ export const createSampleProject = mutation({
 
     // Create active sprint
     const sprintId = await ctx.db.insert("sprints", {
-      projectId,
+      workspaceId,
       name: "Sprint 1",
       goal: "Learn Nixelo basics and explore features",
       startDate: Date.now(),
@@ -278,7 +278,7 @@ export const createSampleProject = mutation({
     const createdIssues: Id<"issues">[] = [];
     for (const issue of issues) {
       const issueId = await ctx.db.insert("issues", {
-        projectId,
+        workspaceId,
         key: `SAMPLE-${createdIssues.length + 1}`,
         title: issue.title,
         description: issue.description,
@@ -354,7 +354,7 @@ export const createSampleProject = mutation({
       userId,
       onboardingCompleted: false,
       onboardingStep: 1,
-      sampleProjectCreated: true,
+      sampleWorkspaceCreated: true,
       tourShown: false,
       wizardCompleted: false,
       checklistDismissed: false,
@@ -362,17 +362,17 @@ export const createSampleProject = mutation({
       updatedAt: Date.now(),
     });
 
-    return projectId;
+    return workspaceId;
   },
 });
 
 /**
  * Helper: Delete all issues and their related data for a project
  */
-async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
+async function deleteProjectIssues(ctx: MutationCtx, workspaceId: Id<"workspaces">) {
   const issues = await ctx.db
     .query("issues")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
 
   for (const issue of issues) {
@@ -399,10 +399,10 @@ async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) 
 /**
  * Helper: Delete sprints, labels, and members for a project
  */
-async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
+async function deleteProjectMetadata(ctx: MutationCtx, workspaceId: Id<"workspaces">) {
   const sprints = await ctx.db
     .query("sprints")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
   for (const sprint of sprints) {
     await ctx.db.delete(sprint._id);
@@ -410,15 +410,15 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
 
   const labels = await ctx.db
     .query("labels")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
   for (const label of labels) {
     await ctx.db.delete(label._id);
   }
 
   const members = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .query("workspaceMembers")
+    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
     .collect();
   for (const member of members) {
     await ctx.db.delete(member._id);
@@ -454,7 +454,7 @@ export const resetOnboarding = mutation({
 
     // Also delete sample project if it exists
     const project = await ctx.db
-      .query("projects")
+      .query("workspaces")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
       .first();
@@ -480,7 +480,7 @@ export const deleteSampleProject = mutation({
 
     // Find sample project
     const project = await ctx.db
-      .query("projects")
+      .query("workspaces")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
       .first();
@@ -492,7 +492,7 @@ export const deleteSampleProject = mutation({
     // Delete all related data (issues, comments, sprints, etc.)
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
 
     for (const issue of issues) {
@@ -521,7 +521,7 @@ export const deleteSampleProject = mutation({
     // Delete sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
@@ -530,7 +530,7 @@ export const deleteSampleProject = mutation({
     // Delete labels
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
     for (const label of labels) {
       await ctx.db.delete(label._id);
@@ -538,8 +538,8 @@ export const deleteSampleProject = mutation({
 
     // Delete project members
     const members = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .query("workspaceMembers")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);
@@ -556,7 +556,7 @@ export const deleteSampleProject = mutation({
 
     if (onboarding) {
       await ctx.db.patch(onboarding._id, {
-        sampleProjectCreated: false,
+        sampleWorkspaceCreated: false,
         updatedAt: Date.now(),
       });
     }
@@ -655,7 +655,7 @@ export const setOnboardingPersona = mutation({
           userId,
           onboardingCompleted: false,
           onboardingStep: 1,
-          sampleProjectCreated: false,
+          sampleWorkspaceCreated: false,
           tourShown: false,
           wizardCompleted: false,
           checklistDismissed: false,
@@ -712,7 +712,7 @@ export const completeOnboardingFlow = mutation({
           userId,
           onboardingCompleted: true,
           onboardingStep: 99,
-          sampleProjectCreated: false,
+          sampleWorkspaceCreated: false,
           tourShown: true,
           wizardCompleted: false,
           checklistDismissed: false,

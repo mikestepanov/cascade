@@ -11,7 +11,7 @@ import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface CustomFieldsManagerProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
 }
 
 type CustomField = {
@@ -34,11 +34,11 @@ type CustomField = {
  * - Card component testable in isolation
  * - Consistent with AutomationRulesManager pattern
  */
-export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
+export function CustomFieldsManager({ workspaceId }: CustomFieldsManagerProps) {
   const [showFormDialog, setShowFormDialog] = useState(false);
   const [editingField, setEditingField] = useState<CustomField | null>(null);
 
-  const customFields = useQuery(api.customFields.list, { projectId });
+  const customFields = useQuery(api.customFields.list, { workspaceId });
   const removeField = useMutation(api.customFields.remove);
 
   const handleCreate = () => {
@@ -106,7 +106,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
 
       {/* Form Dialog */}
       <CustomFieldForm
-        projectId={projectId}
+        workspaceId={workspaceId}
         field={editingField}
         open={showFormDialog}
         onOpenChange={(open) => {

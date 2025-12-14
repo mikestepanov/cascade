@@ -10,14 +10,14 @@ import { Input, Textarea } from "../ui/form";
 import { Typography } from "../ui/Typography";
 
 interface GeneralSettingsProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   name: string;
   projectKey: string;
   description: string | undefined;
 }
 
 export function GeneralSettings({
-  projectId,
+  workspaceId,
   name,
   projectKey,
   description,
@@ -48,7 +48,7 @@ export function GeneralSettings({
     setIsSaving(true);
     try {
       await updateProject({
-        projectId,
+        workspaceId,
         name: editName.trim(),
         description: editDescription.trim() || undefined,
       });

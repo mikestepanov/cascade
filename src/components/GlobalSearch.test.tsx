@@ -103,7 +103,7 @@ describe("GlobalSearch", () => {
   it("should filter by tab selection", async () => {
     const user = userEvent.setup();
     const mockIssues = [
-      { _id: "1", key: "TEST-1", title: "Test Issue", type: "task", projectId: "proj-1" },
+      { _id: "1", key: "TEST-1", title: "Test Issue", type: "task", workspaceId: "proj-1" },
     ];
     const mockDocuments = [{ _id: "2", title: "Test Doc" }];
 
@@ -205,7 +205,7 @@ describe("GlobalSearch", () => {
         title: "Fix authentication bug",
         type: "bug",
         status: "in-progress",
-        projectId: "proj-1",
+        workspaceId: "proj-1",
       },
     ];
 
@@ -308,9 +308,9 @@ describe("GlobalSearch", () => {
   it("should show result count", async () => {
     const user = userEvent.setup();
     const mockIssues = [
-      { _id: "1", key: "TEST-1", title: "Issue 1", type: "task", projectId: "proj-1" },
-      { _id: "2", key: "TEST-2", title: "Issue 2", type: "bug", projectId: "proj-1" },
-      { _id: "3", key: "TEST-3", title: "Issue 3", type: "story", projectId: "proj-1" },
+      { _id: "1", key: "TEST-1", title: "Issue 1", type: "task", workspaceId: "proj-1" },
+      { _id: "2", key: "TEST-2", title: "Issue 2", type: "bug", workspaceId: "proj-1" },
+      { _id: "3", key: "TEST-3", title: "Issue 3", type: "story", workspaceId: "proj-1" },
     ];
 
     (useQuery as vi.Mock).mockImplementation(() => {
@@ -343,7 +343,7 @@ describe("GlobalSearch", () => {
         key: "TEST-1",
         title: "Test Issue",
         type: "task",
-        projectId: "proj-1",
+        workspaceId: "proj-1",
       },
     ];
 

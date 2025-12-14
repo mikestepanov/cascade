@@ -7,7 +7,7 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   // Check if user has created any projects (project creators are admins)
   const createdProjects = await ctx.db
-    .query("projects")
+    .query("workspaces")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
@@ -15,7 +15,7 @@ async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
 
   // Check if user has admin role in any project
   const adminMembership = await ctx.db
-    .query("projectMembers")
+    .query("workspaceMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
     .first();

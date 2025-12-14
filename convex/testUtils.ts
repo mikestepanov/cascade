@@ -97,13 +97,13 @@ export async function createTestProject(
     isPublic?: boolean;
     boardType?: "kanban" | "scrum";
   },
-): Promise<Id<"projects">> {
+): Promise<Id<"workspaces">> {
   return await t.run(async (ctx) => {
     const now = Date.now();
     const name = projectData?.name || `Test Project ${now}`;
     const key = projectData?.key || `TEST${now.toString().slice(-6)}`;
 
-    return await ctx.db.insert("projects", {
+    return await ctx.db.insert("workspaces", {
       name,
       key: key.toUpperCase(),
       description: projectData?.description,
@@ -140,7 +140,7 @@ export async function createTestProject(
  * Add a member to a project with a specific role
  *
  * @param t - Convex test helper
- * @param projectId - Project ID
+ * @param workspaceId - Project ID
  * @param userId - User ID to add
  * @param role - Role to assign
  * @param addedBy - User ID of the user adding the member
@@ -148,14 +148,14 @@ export async function createTestProject(
  */
 export async function addProjectMember(
   t: TestCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   userId: Id<"users">,
   role: "admin" | "editor" | "viewer",
   addedBy: Id<"users">,
-): Promise<Id<"projectMembers">> {
+): Promise<Id<"workspaceMembers">> {
   return await t.run(async (ctx) => {
-    return await ctx.db.insert("projectMembers", {
-      projectId,
+    return await ctx.db.insert("workspaceMembers", {
+      workspaceId,
       userId,
       role,
       addedBy,
@@ -168,14 +168,14 @@ export async function addProjectMember(
  * Create a test issue
  *
  * @param t - Convex test helper
- * @param projectId - Project ID
+ * @param workspaceId - Project ID
  * @param reporterId - User ID of the reporter
  * @param issueData - Optional issue data
  * @returns Issue ID
  */
 export async function createTestIssue(
   t: TestCtx,
-  projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
   reporterId: Id<"users">,
   issueData?: {
     title?: string;
@@ -190,20 +190,20 @@ export async function createTestIssue(
     const now = Date.now();
 
     // Get project to construct issue key
-    const project = await ctx.db.get(projectId);
+    const project = await ctx.db.get(workspaceId);
     if (!project) throw new Error("Project not found");
 
     // Count existing issues to generate key
     const issueCount = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
       .collect()
       .then((issues) => issues.length);
 
     const key = `${project.key}-${issueCount + 1}`;
 
     return await ctx.db.insert("issues", {
-      projectId,
+      workspaceId,
       key,
       title: issueData?.title || `Test Issue ${now}`,
       description: issueData?.description,

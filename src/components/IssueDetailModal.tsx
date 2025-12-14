@@ -198,7 +198,7 @@ export function IssueDetailModal({
             </Typography>
             <TimeTracker
               issueId={issue._id}
-              projectId={issue.projectId}
+              workspaceId={issue.workspaceId}
               estimatedHours={issue.estimatedHours}
               billingEnabled={billingEnabled}
             />
@@ -225,17 +225,17 @@ export function IssueDetailModal({
             <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Dependencies
             </Typography>
-            <IssueDependencies issueId={issue._id} projectId={issue.projectId} />
+            <IssueDependencies issueId={issue._id} workspaceId={issue.workspaceId} />
           </div>
 
           {/* Sub-tasks (only show for non-subtasks) */}
           {issue.type !== "subtask" && (
-            <SubtasksList issueId={issue._id} projectId={issue.projectId} subtasks={subtasks} />
+            <SubtasksList issueId={issue._id} workspaceId={issue.workspaceId} subtasks={subtasks} />
           )}
 
           {/* Custom Fields */}
           <div>
-            <CustomFieldValues issueId={issue._id} projectId={issue.projectId} />
+            <CustomFieldValues issueId={issue._id} workspaceId={issue.workspaceId} />
           </div>
 
           {/* Comments */}
@@ -243,7 +243,7 @@ export function IssueDetailModal({
             <Typography variant="h3" className="text-sm font-medium mb-3 border-none">
               Comments
             </Typography>
-            <IssueComments issueId={issue._id} projectId={issue.projectId} />
+            <IssueComments issueId={issue._id} workspaceId={issue.workspaceId} />
           </div>
         </div>
       </DialogContent>

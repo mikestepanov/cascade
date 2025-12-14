@@ -14,7 +14,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const projectId = await asUser.mutation(api.workspaces.create, {
+      const workspaceId = await asUser.mutation(api.workspaces.create, {
         name: "Test Project",
         key: "TEST",
         description: "A test project",
@@ -22,10 +22,10 @@ describe("Workspaces", () => {
         boardType: "kanban",
       });
 
-      expect(projectId).toBeDefined();
+      expect(workspaceId).toBeDefined();
 
       // Verify project was created
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       expect(project).toBeDefined();
       expect(project?.name).toBe("Test Project");
       expect(project?.key).toBe("TEST");
@@ -41,14 +41,14 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const projectId = await asUser.mutation(api.workspaces.create, {
+      const workspaceId = await asUser.mutation(api.workspaces.create, {
         name: "Test Project",
         key: "test",
         isPublic: false,
         boardType: "scrum",
       });
 
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       expect(project?.key).toBe("TEST");
     });
 
@@ -57,14 +57,14 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const projectId = await asUser.mutation(api.workspaces.create, {
+      const workspaceId = await asUser.mutation(api.workspaces.create, {
         name: "Test Project",
         key: "ADMIN",
         isPublic: false,
         boardType: "kanban",
       });
 
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       expect(project?.userRole).toBe("admin");
       expect(project?.isOwner).toBe(true);
     });
@@ -111,7 +111,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t, { name: "Owner" });
       const asUser = asAuthenticatedUser(t, userId);
 
-      const projectId = await asUser.mutation(api.workspaces.create, {
+      const workspaceId = await asUser.mutation(api.workspaces.create, {
         name: "My Project",
         key: "MINE",
         description: "Owner's project",
@@ -119,7 +119,7 @@ describe("Workspaces", () => {
         boardType: "kanban",
       });
 
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       expect(project).toBeDefined();
       expect(project?.name).toBe("My Project");
       expect(project?.isOwner).toBe(true);
@@ -133,7 +133,7 @@ describe("Workspaces", () => {
 
       // Create public project as owner
       const asOwner = asAuthenticatedUser(t, owner);
-      const projectId = await asOwner.mutation(api.workspaces.create, {
+      const workspaceId = await asOwner.mutation(api.workspaces.create, {
         name: "Public Project",
         key: "PUBLIC",
         isPublic: true,
@@ -142,7 +142,7 @@ describe("Workspaces", () => {
 
       // Access as different user
       const asOther = asAuthenticatedUser(t, other);
-      const project = await asOther.query(api.workspaces.get, { id: projectId });
+      const project = await asOther.query(api.workspaces.get, { id: workspaceId });
       expect(project).toBeDefined();
       expect(project?.name).toBe("Public Project");
       expect(project?.isPublic).toBe(true);
@@ -156,7 +156,7 @@ describe("Workspaces", () => {
 
       // Create private project
       const asOwner = asAuthenticatedUser(t, owner);
-      const projectId = await asOwner.mutation(api.workspaces.create, {
+      const workspaceId = await asOwner.mutation(api.workspaces.create, {
         name: "Private Project",
         key: "PRIVATE",
         isPublic: false,
@@ -166,7 +166,7 @@ describe("Workspaces", () => {
       // Try to access as non-member
       const asNonMember = asAuthenticatedUser(t, nonMember);
       await expect(async () => {
-        await asNonMember.query(api.workspaces.get, { id: projectId });
+        await asNonMember.query(api.workspaces.get, { id: workspaceId });
       }).rejects.toThrow("Not authorized to access this project");
     });
 
@@ -176,7 +176,7 @@ describe("Workspaces", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a project to test non-existent ID behavior
-      const projectId = await asUser.mutation(api.workspaces.create, {
+      const workspaceId = await asUser.mutation(api.workspaces.create, {
         name: "To Delete",
         key: "DELETE",
         isPublic: false,
@@ -184,10 +184,10 @@ describe("Workspaces", () => {
       });
 
       await t.run(async (ctx) => {
-        await ctx.db.delete(projectId);
+        await ctx.db.delete(workspaceId);
       });
 
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       expect(project).toBeNull();
     });
   });
@@ -264,7 +264,7 @@ describe("Workspaces", () => {
       const adminId = await createTestUser(t, { name: "Admin" });
       const asAdmin = asAuthenticatedUser(t, adminId);
 
-      const projectId = await asAdmin.mutation(api.workspaces.create, {
+      const workspaceId = await asAdmin.mutation(api.workspaces.create, {
         name: "Workflow Project",
         key: "WF",
         isPublic: false,
@@ -278,11 +278,11 @@ describe("Workspaces", () => {
       ];
 
       await asAdmin.mutation(api.workspaces.updateWorkflow, {
-        projectId,
+        workspaceId,
         workflowStates: customWorkflow,
       });
 
-      const project = await asAdmin.query(api.workspaces.get, { id: projectId });
+      const project = await asAdmin.query(api.workspaces.get, { id: workspaceId });
       expect(project?.workflowStates).toHaveLength(3);
       expect(project?.workflowStates[0].name).toBe("Backlog");
       expect(project?.workflowStates[1].name).toBe("Development");
@@ -295,7 +295,7 @@ describe("Workspaces", () => {
       const editorId = await createTestUser(t, { name: "Editor", email: "editor@test.com" });
 
       const asAdmin = asAuthenticatedUser(t, adminId);
-      const projectId = await asAdmin.mutation(api.workspaces.create, {
+      const workspaceId = await asAdmin.mutation(api.workspaces.create, {
         name: "Test Project",
         key: "DENY",
         isPublic: false,
@@ -304,7 +304,7 @@ describe("Workspaces", () => {
 
       // Add editor as member
       await asAdmin.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
@@ -313,7 +313,7 @@ describe("Workspaces", () => {
       const asEditor = asAuthenticatedUser(t, editorId);
       await expect(async () => {
         await asEditor.mutation(api.workspaces.updateWorkflow, {
-          projectId,
+          workspaceId,
           workflowStates: [{ id: "todo", name: "To Do", category: "todo" as const, order: 0 }],
         });
       }).rejects.toThrow();
@@ -324,7 +324,7 @@ describe("Workspaces", () => {
       const adminId = await createTestUser(t);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
-      const projectId = await asAdmin.mutation(api.workspaces.create, {
+      const workspaceId = await asAdmin.mutation(api.workspaces.create, {
         name: "Test Project",
         key: "UNAUTH",
         isPublic: false,
@@ -334,7 +334,7 @@ describe("Workspaces", () => {
       // Try without authentication
       await expect(async () => {
         await t.mutation(api.workspaces.updateWorkflow, {
-          projectId,
+          workspaceId,
           workflowStates: [],
         });
       }).rejects.toThrow("Not authenticated");
@@ -352,7 +352,7 @@ describe("Workspaces", () => {
         });
 
         const asAdmin = asAuthenticatedUser(t, adminId);
-        const projectId = await asAdmin.mutation(api.workspaces.create, {
+        const workspaceId = await asAdmin.mutation(api.workspaces.create, {
           name: "Team Project",
           key: "TEAM",
           isPublic: false,
@@ -360,14 +360,14 @@ describe("Workspaces", () => {
         });
 
         await asAdmin.mutation(api.workspaces.addMember, {
-          projectId,
+          workspaceId,
           userEmail: "newmember@test.com",
           role: "editor",
         });
 
         // Verify member was added
         const asNewMember = asAuthenticatedUser(t, newMemberId);
-        const project = await asNewMember.query(api.workspaces.get, { id: projectId });
+        const project = await asNewMember.query(api.workspaces.get, { id: workspaceId });
         expect(project?.userRole).toBe("editor");
         expect(project?.members.some((m) => m._id === newMemberId)).toBe(true);
       });
@@ -382,7 +382,7 @@ describe("Workspaces", () => {
         await createTestUser(t, { name: "New", email: "new@test.com" });
 
         const asAdmin = asAuthenticatedUser(t, adminId);
-        const projectId = await asAdmin.mutation(api.workspaces.create, {
+        const workspaceId = await asAdmin.mutation(api.workspaces.create, {
           name: "Test Project",
           key: "NOADD",
           isPublic: false,
@@ -390,7 +390,7 @@ describe("Workspaces", () => {
         });
 
         await asAdmin.mutation(api.workspaces.addMember, {
-          projectId,
+          workspaceId,
           userEmail: "editor@test.com",
           role: "editor",
         });
@@ -399,7 +399,7 @@ describe("Workspaces", () => {
         const asEditor = asAuthenticatedUser(t, editorId);
         await expect(async () => {
           await asEditor.mutation(api.workspaces.addMember, {
-            projectId,
+            workspaceId,
             userEmail: "new@test.com",
             role: "viewer",
           });
@@ -417,7 +417,7 @@ describe("Workspaces", () => {
         });
 
         const asAdmin = asAuthenticatedUser(t, adminId);
-        const projectId = await asAdmin.mutation(api.workspaces.create, {
+        const workspaceId = await asAdmin.mutation(api.workspaces.create, {
           name: "Test Project",
           key: "ROLE",
           isPublic: false,
@@ -425,20 +425,20 @@ describe("Workspaces", () => {
         });
 
         await asAdmin.mutation(api.workspaces.addMember, {
-          projectId,
+          workspaceId,
           userEmail: "member@test.com",
           role: "viewer",
         });
 
         await asAdmin.mutation(api.workspaces.updateMemberRole, {
-          projectId,
+          workspaceId,
           memberId: memberId,
           newRole: "editor",
         });
 
         // Verify role was updated
         const asMember = asAuthenticatedUser(t, memberId);
-        const project = await asMember.query(api.workspaces.get, { id: projectId });
+        const project = await asMember.query(api.workspaces.get, { id: workspaceId });
         expect(project?.userRole).toBe("editor");
       });
     });
@@ -453,7 +453,7 @@ describe("Workspaces", () => {
         });
 
         const asAdmin = asAuthenticatedUser(t, adminId);
-        const projectId = await asAdmin.mutation(api.workspaces.create, {
+        const workspaceId = await asAdmin.mutation(api.workspaces.create, {
           name: "Test Project",
           key: "REMOVE",
           isPublic: false,
@@ -461,20 +461,20 @@ describe("Workspaces", () => {
         });
 
         await asAdmin.mutation(api.workspaces.addMember, {
-          projectId,
+          workspaceId,
           userEmail: "member@test.com",
           role: "editor",
         });
 
         await asAdmin.mutation(api.workspaces.removeMember, {
-          projectId,
+          workspaceId,
           memberId: memberId,
         });
 
         // Verify member was removed
         const asMember = asAuthenticatedUser(t, memberId);
         await expect(async () => {
-          await asMember.query(api.workspaces.get, { id: projectId });
+          await asMember.query(api.workspaces.get, { id: workspaceId });
         }).rejects.toThrow("Not authorized to access this project");
       });
 
@@ -483,7 +483,7 @@ describe("Workspaces", () => {
         const creatorId = await createTestUser(t, { name: "Creator" });
 
         const asCreator = asAuthenticatedUser(t, creatorId);
-        const projectId = await asCreator.mutation(api.workspaces.create, {
+        const workspaceId = await asCreator.mutation(api.workspaces.create, {
           name: "Test Project",
           key: "NOCREATOR",
           isPublic: false,
@@ -492,7 +492,7 @@ describe("Workspaces", () => {
 
         await expect(async () => {
           await asCreator.mutation(api.workspaces.removeMember, {
-            projectId,
+            workspaceId,
             memberId: creatorId,
           });
         }).rejects.toThrow();

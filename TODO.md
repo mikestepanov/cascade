@@ -89,6 +89,23 @@
 
 ---
 
+## Unused/Unintegrated Code
+
+### DocumentTemplatesManager Component
+**Location:** `src/components/DocumentTemplatesManager.tsx`
+
+A fully-built feature for managing document templates that was never integrated:
+- List view of all document templates
+- Create, edit, delete templates
+- Template selection callback
+
+**Action needed:**
+- [ ] Decide: integrate into app or remove
+- [ ] If integrating: add route, sidebar link, make `onSelectTemplate` required
+- [ ] Check for unused backend functions in `convex/` related to templates
+
+---
+
 ## Technical Debt
 
 ### Backend Cleanup

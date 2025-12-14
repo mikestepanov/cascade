@@ -11,7 +11,7 @@ import { Progress } from "../ui/progress";
 interface ProjectWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onComplete: (projectId: string) => void;
+  onComplete: (workspaceId: string) => void;
 }
 
 export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardProps) {
@@ -26,7 +26,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
     { id: "done", name: "Done", category: "done" as const, order: 2 },
   ]);
 
-  const createProject = useMutation(api.workspaces.create);
+  const createWorkspace = useMutation(api.workspaces.create);
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
   const handleNext = () => {
@@ -57,7 +57,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
 
   const handleFinish = async () => {
     try {
-      const projectId = await createProject({
+      const workspaceId = await createWorkspace({
         name: projectName,
         key: projectKey,
         description: description || undefined,
@@ -75,7 +75,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
       // Confetti effect (optional - would need react-confetti package)
       showSuccess("🎉 Workspace created successfully!");
 
-      onComplete(projectId);
+      onComplete(workspaceId);
     } catch (error) {
       showError(error, "Failed to create workspace");
     }

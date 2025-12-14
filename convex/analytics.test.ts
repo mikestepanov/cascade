@@ -10,10 +10,10 @@ describe("Analytics", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.query(api.analytics.getProjectAnalytics, { projectId });
+        await t.query(api.analytics.getProjectAnalytics, { workspaceId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -21,30 +21,30 @@ describe("Analytics", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOther = asAuthenticatedUser(t, other);
 
       await expect(async () => {
-        await asOther.query(api.analytics.getProjectAnalytics, { projectId });
+        await asOther.query(api.analytics.getProjectAnalytics, { workspaceId });
       }).rejects.toThrow();
     });
 
     it("should throw error for non-existent project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Delete project to make it non-existent
       await t.run(async (ctx) => {
-        await ctx.db.delete(projectId);
+        await ctx.db.delete(workspaceId);
       });
 
       await expect(async () => {
         await asUser.query(api.analytics.getProjectAnalytics, {
-          projectId,
+          workspaceId,
         });
       }).rejects.toThrow();
     });
@@ -54,7 +54,7 @@ describe("Analytics", () => {
     it("should return burndown data for a sprint", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
@@ -62,7 +62,7 @@ describe("Analytics", () => {
       const startDate = Date.now();
       const endDate = startDate + 14 * 24 * 60 * 60 * 1000; // 2 weeks
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
         startDate,
         endDate,
@@ -70,7 +70,7 @@ describe("Analytics", () => {
 
       // Create issues with story points
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 1",
         type: "task",
         priority: "medium",
@@ -78,7 +78,7 @@ describe("Analytics", () => {
         estimatedHours: 5,
       });
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 2",
         type: "task",
         priority: "medium",
@@ -102,22 +102,22 @@ describe("Analytics", () => {
     it("should calculate completed points correctly", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
       // Get done state
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create issues
       const issue1 = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 1",
         type: "task",
         priority: "medium",
@@ -125,7 +125,7 @@ describe("Analytics", () => {
         estimatedHours: 5,
       });
       const _issue2 = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 2",
         type: "task",
         priority: "medium",
@@ -156,17 +156,17 @@ describe("Analytics", () => {
     it("should handle sprint with no dates", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 1",
         type: "task",
         priority: "medium",
@@ -187,12 +187,12 @@ describe("Analytics", () => {
     it("should handle sprint with no issues", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
@@ -208,11 +208,11 @@ describe("Analytics", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
@@ -225,11 +225,11 @@ describe("Analytics", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOwner = asAuthenticatedUser(t, owner);
       const sprintId = await asOwner.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
@@ -243,13 +243,13 @@ describe("Analytics", () => {
     it("should throw error for non-existent sprint", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete sprint to get a valid but non-existent ID
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
       await t.run(async (ctx) => {
@@ -268,21 +268,21 @@ describe("Analytics", () => {
     it("should calculate team velocity from completed sprints", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Get done state
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create and complete sprint 1
       const sprint1Id = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
       const issue1 = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 1",
         type: "task",
         priority: "medium",
@@ -300,11 +300,11 @@ describe("Analytics", () => {
 
       // Create and complete sprint 2
       const sprint2Id = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 2",
       });
       const issue2 = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Task 2",
         type: "task",
         priority: "medium",
@@ -321,7 +321,7 @@ describe("Analytics", () => {
       await asUser.mutation(api.sprints.completeSprint, { sprintId: sprint2Id });
 
       const velocity = await asUser.query(api.analytics.getTeamVelocity, {
-        projectId,
+        workspaceId,
       });
 
       expect(velocity.velocityData).toHaveLength(2);
@@ -335,13 +335,13 @@ describe("Analytics", () => {
     it("should only include completed sprints", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create completed sprint
       const completedSprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Completed Sprint",
       });
       await asUser.mutation(api.sprints.completeSprint, {
@@ -350,7 +350,7 @@ describe("Analytics", () => {
 
       // Create active sprint
       const activeSprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Active Sprint",
       });
       await asUser.mutation(api.sprints.startSprint, {
@@ -361,12 +361,12 @@ describe("Analytics", () => {
 
       // Create future sprint
       await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Future Sprint",
       });
 
       const velocity = await asUser.query(api.analytics.getTeamVelocity, {
-        projectId,
+        workspaceId,
       });
 
       expect(velocity.velocityData).toHaveLength(1);
@@ -376,12 +376,12 @@ describe("Analytics", () => {
     it("should return zero velocity for project with no completed sprints", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const velocity = await asUser.query(api.analytics.getTeamVelocity, {
-        projectId,
+        workspaceId,
       });
 
       expect(velocity.velocityData).toEqual([]);
@@ -391,21 +391,21 @@ describe("Analytics", () => {
     it("should only count completed issues in velocity", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const project = await asUser.query(api.workspaces.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: workspaceId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       const sprintId = await asUser.mutation(api.sprints.create, {
-        projectId,
+        workspaceId,
         name: "Sprint 1",
       });
 
       // Create completed issue
       const completedIssue = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Completed Task",
         type: "task",
         priority: "medium",
@@ -415,7 +415,7 @@ describe("Analytics", () => {
 
       // Create incomplete issue
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Incomplete Task",
         type: "task",
         priority: "medium",
@@ -435,7 +435,7 @@ describe("Analytics", () => {
       await asUser.mutation(api.sprints.completeSprint, { sprintId });
 
       const velocity = await asUser.query(api.analytics.getTeamVelocity, {
-        projectId,
+        workspaceId,
       });
 
       expect(velocity.velocityData[0]?.points).toBe(10); // Only completed task
@@ -445,10 +445,10 @@ describe("Analytics", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.query(api.analytics.getTeamVelocity, { projectId });
+        await t.query(api.analytics.getTeamVelocity, { workspaceId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -456,30 +456,30 @@ describe("Analytics", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOther = asAuthenticatedUser(t, other);
 
       await expect(async () => {
-        await asOther.query(api.analytics.getTeamVelocity, { projectId });
+        await asOther.query(api.analytics.getTeamVelocity, { workspaceId });
       }).rejects.toThrow("Not authorized");
     });
 
     it("should throw error for non-existent project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Delete project
       await t.run(async (ctx) => {
-        await ctx.db.delete(projectId);
+        await ctx.db.delete(workspaceId);
       });
 
       await expect(async () => {
         await asUser.query(api.analytics.getTeamVelocity, {
-          projectId,
+          workspaceId,
         });
       }).rejects.toThrow();
     });
@@ -489,13 +489,13 @@ describe("Analytics", () => {
     it("should return recent activity for a project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t, { name: "Test User" });
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create issue (generates activity)
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -508,7 +508,7 @@ describe("Analytics", () => {
       });
 
       const activity = await asUser.query(api.analytics.getRecentActivity, {
-        projectId,
+        workspaceId,
         limit: 10,
       });
 
@@ -522,14 +522,14 @@ describe("Analytics", () => {
     it("should respect limit parameter", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create multiple issues to generate activity
       for (let i = 0; i < 10; i++) {
         await asUser.mutation(api.issues.create, {
-          projectId,
+          workspaceId,
           title: `Issue ${i}`,
           type: "task",
           priority: "medium",
@@ -537,7 +537,7 @@ describe("Analytics", () => {
       }
 
       const activity = await asUser.query(api.analytics.getRecentActivity, {
-        projectId,
+        workspaceId,
         limit: 5,
       });
 
@@ -547,12 +547,12 @@ describe("Analytics", () => {
     it("should use default limit when not specified", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const activity = await asUser.query(api.analytics.getRecentActivity, {
-        projectId,
+        workspaceId,
       });
 
       expect(activity).toBeDefined();
@@ -562,12 +562,12 @@ describe("Analytics", () => {
     it("should return empty array for project with no activity", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const activity = await asUser.query(api.analytics.getRecentActivity, {
-        projectId,
+        workspaceId,
       });
 
       expect(activity).toEqual([]);
@@ -576,10 +576,10 @@ describe("Analytics", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.query(api.analytics.getRecentActivity, { projectId });
+        await t.query(api.analytics.getRecentActivity, { workspaceId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -587,12 +587,12 @@ describe("Analytics", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOther = asAuthenticatedUser(t, other);
 
       await expect(async () => {
-        await asOther.query(api.analytics.getRecentActivity, { projectId });
+        await asOther.query(api.analytics.getRecentActivity, { workspaceId });
       }).rejects.toThrow("Not authorized");
     });
   });

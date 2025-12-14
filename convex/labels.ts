@@ -1,12 +1,12 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { assertCanAccessProject, assertCanEditProject } from "./workspaceAccess";
 
 // Create a new label
 export const create = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     name: v.string(),
     color: v.string(),
   },
@@ -15,12 +15,14 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.workspaceId, userId);
 
     // Check if label with same name already exists in project
     const existing = await ctx.db
       .query("labels")
-      .withIndex("by_project_name", (q) => q.eq("projectId", args.projectId).eq("name", args.name))
+      .withIndex("by_workspace_name", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("name", args.name),
+      )
       .first();
 
     if (existing) {
@@ -28,7 +30,7 @@ export const create = mutation({
     }
 
     const labelId = await ctx.db.insert("labels", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       name: args.name,
       color: args.color,
       createdBy: userId,
@@ -41,17 +43,17 @@ export const create = mutation({
 
 // List all labels for a project
 export const list = query({
-  args: { projectId: v.id("projects") },
+  args: { workspaceId: v.id("workspaces") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project (viewer or higher)
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
 
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
     return labels;
@@ -73,14 +75,16 @@ export const update = mutation({
     if (!label) throw new Error("Label not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId, userId);
+    await assertCanEditProject(ctx, label.workspaceId, userId);
 
     // If name is changing, check for duplicates
     if (args.name && args.name !== label.name) {
       const newName = args.name; // Store in variable for type narrowing
       const existing = await ctx.db
         .query("labels")
-        .withIndex("by_project_name", (q) => q.eq("projectId", label.projectId).eq("name", newName))
+        .withIndex("by_workspace_name", (q) =>
+          q.eq("workspaceId", label.workspaceId).eq("name", newName),
+        )
         .first();
 
       if (existing) {
@@ -107,12 +111,12 @@ export const remove = mutation({
     if (!label) throw new Error("Label not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId, userId);
+    await assertCanEditProject(ctx, label.workspaceId, userId);
 
     // Remove label from all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", label.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", label.workspaceId))
       .collect();
 
     for (const issue of issues) {

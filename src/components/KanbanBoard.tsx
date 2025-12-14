@@ -13,7 +13,7 @@ import { KanbanColumn } from "./Kanban/KanbanColumn";
 import { SkeletonKanbanCard, SkeletonText } from "./ui/Skeleton";
 
 interface KanbanBoardProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
 }
 
@@ -26,7 +26,7 @@ interface BoardAction {
   issueTitle: string; // For toast message
 }
 
-export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
+export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
@@ -37,8 +37,8 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [historyStack, setHistoryStack] = useState<BoardAction[]>([]);
   const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
 
-  const project = useQuery(api.workspaces.get, { id: projectId });
-  const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
+  const project = useQuery(api.workspaces.get, { id: workspaceId });
+  const issues = useQuery(api.issues.listByProject, { workspaceId, sprintId });
   const updateIssueStatus = useMutation(api.issues.updateStatus);
 
   // Undo/Redo handlers wrapped in useCallback
@@ -282,7 +282,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       </div>
 
       <CreateIssueModal
-        projectId={projectId}
+        workspaceId={workspaceId}
         sprintId={sprintId}
         open={showCreateIssue}
         onOpenChange={setShowCreateIssue}
@@ -304,7 +304,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       {/* Bulk Operations Bar */}
       {selectionMode && (
         <BulkOperationsBar
-          projectId={projectId}
+          workspaceId={workspaceId}
           selectedIssueIds={selectedIssueIds}
           onClearSelection={handleClearSelection}
           workflowStates={workflowStates}

@@ -54,7 +54,7 @@ describe("Documents", () => {
 
       const doc = await asUser.query(api.documents.get, { id: docId });
       expect(doc?.title).toBe("Document Without Project");
-      expect(doc?.projectId).toBeUndefined();
+      expect(doc?.workspaceId).toBeUndefined();
     });
 
     it("should deny unauthenticated users", async () => {

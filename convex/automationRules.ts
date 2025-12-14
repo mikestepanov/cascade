@@ -1,32 +1,32 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
-import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+import { assertCanAccessProject, assertIsProjectAdmin } from "./workspaceAccess";
 
 export const list = query({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
     try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.workspaceId, userId);
     } catch {
       return [];
     }
 
     return await ctx.db
       .query("automationRules")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
   },
 });
 
 export const create = mutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     name: v.string(),
     description: v.optional(v.string()),
     trigger: v.string(),
@@ -40,11 +40,11 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("automationRules", {
-      projectId: args.projectId,
+      workspaceId: args.workspaceId,
       name: args.name,
       description: args.description,
       isActive: true,
@@ -82,7 +82,7 @@ export const update = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.workspaceId, userId);
 
     const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
@@ -112,7 +112,7 @@ export const remove = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.workspaceId, userId);
 
     await ctx.db.delete(args.id);
   },
@@ -121,7 +121,7 @@ export const remove = mutation({
 // Internal mutation to execute automation rules
 export const executeRules = internalMutation({
   args: {
-    projectId: v.id("projects"),
+    workspaceId: v.id("workspaces"),
     issueId: v.id("issues"),
     trigger: v.string(),
     triggerValue: v.optional(v.string()),
@@ -130,7 +130,9 @@ export const executeRules = internalMutation({
     // Get active rules for this project and trigger
     const rules = await ctx.db
       .query("automationRules")
-      .withIndex("by_project_active", (q) => q.eq("projectId", args.projectId).eq("isActive", true))
+      .withIndex("by_workspace_active", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("isActive", true),
+      )
       .filter((q) => q.eq(q.field("trigger"), args.trigger))
       .collect();
 

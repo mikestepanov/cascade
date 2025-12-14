@@ -82,7 +82,7 @@ function OnboardingPage() {
     navigate({ to: ROUTES.dashboard(slug) });
   };
 
-  const handleProjectCreated = (_projectId: Id<"projects">) => {
+  const handleProjectCreated = (_workspaceId: Id<"workspaces">) => {
     // Project was created, complete onboarding
     handleComplete();
   };

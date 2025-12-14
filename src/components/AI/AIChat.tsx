@@ -14,7 +14,7 @@ import { AI_CONFIG } from "./config";
 import { useAIChat } from "./hooks";
 
 interface AIChatProps {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   chatId?: Id<"aiChats">;
   onChatCreated?: (chatId: Id<"aiChats">) => void;
 }
@@ -129,7 +129,7 @@ function MessageItem({
 }
 
 export const AIChat = React.memo(function AIChat({
-  projectId,
+  workspaceId,
   chatId: initialChatId,
   onChatCreated,
 }: AIChatProps) {
@@ -145,7 +145,7 @@ export const AIChat = React.memo(function AIChat({
     handleSendMessage,
     handleKeyPress,
     copyToClipboard,
-  } = useAIChat({ projectId, initialChatId, onChatCreated });
+  } = useAIChat({ workspaceId, initialChatId, onChatCreated });
 
   if (!chatId) {
     return (
@@ -173,7 +173,7 @@ export const AIChat = React.memo(function AIChat({
                 AI Assistant
               </h3>
               <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-                Ask me anything about your project, or use natural language commands.
+                Ask me anything about your workspace, or use natural language commands.
               </p>
               <Flex
                 direction="column"

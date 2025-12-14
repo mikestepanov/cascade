@@ -11,7 +11,7 @@ import { Typography } from "./ui/Typography";
 
 interface TimeTrackerProps {
   issueId: Id<"issues">;
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   estimatedHours?: number;
   /** Whether billing is enabled for the company */
   billingEnabled?: boolean;
@@ -132,7 +132,7 @@ function TimeEntriesList({
 
 export function TimeTracker({
   issueId,
-  projectId,
+  workspaceId,
   estimatedHours = 0,
   billingEnabled,
 }: TimeTrackerProps) {
@@ -160,7 +160,7 @@ export function TimeTracker({
 
   const handleStartTimer = async () => {
     try {
-      await startTimer({ projectId, issueId, billable: false });
+      await startTimer({ workspaceId, issueId, billable: false });
       showSuccess("Timer started");
     } catch (error) {
       showError(error, "Failed to start timer");
@@ -302,7 +302,7 @@ export function TimeTracker({
       <TimeEntryModal
         open={showLogModal}
         onOpenChange={setShowLogModal}
-        projectId={projectId}
+        workspaceId={workspaceId}
         issueId={issueId}
         billingEnabled={billingEnabled}
       />

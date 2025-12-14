@@ -13,11 +13,11 @@ import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
 
 interface AISuggestionsPanelProps {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
 }
 
 export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
-  projectId,
+  workspaceId,
 }: AISuggestionsPanelProps) {
   const {
     isGenerating,
@@ -28,9 +28,9 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
     handleGenerateInsights,
     handleAcceptSuggestion,
     handleDismissSuggestion,
-  } = useAISuggestions({ projectId });
+  } = useAISuggestions({ workspaceId });
 
-  if (!projectId) {
+  if (!workspaceId) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">

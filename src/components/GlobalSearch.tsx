@@ -20,7 +20,7 @@ type SearchResult =
       _id: Id<"issues">;
       title: string;
       key: string;
-      projectId: Id<"projects">;
+      workspaceId: Id<"workspaces">;
       description?: string;
       type: "issue";
     }
@@ -180,7 +180,7 @@ function SearchListContent({
 function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: () => void }) {
   const href =
     result.type === "issue"
-      ? `/project/${result.projectId}?issue=${result._id}`
+      ? `/project/${result.workspaceId}?issue=${result._id}`
       : `/document/${result._id}`;
 
   return (

@@ -1,5 +1,8 @@
 import type { EntryMode, TimeEntryFormState } from "./useTimeEntryForm";
 
+/** Default end of workday hour for duration-based entries (5 PM) */
+const DEFAULT_WORKDAY_END_HOUR = 17;
+
 export interface ValidationResult {
   isValid: boolean;
   errorMessage?: string;
@@ -107,8 +110,11 @@ export function calculateEntryTimes(
   if (state.entryMode === "duration") {
     const dateObj = new Date(state.date);
     const now = new Date();
+    // Create a new Date for end time to avoid mutating dateObj
     const endDate =
-      dateObj.toDateString() === now.toDateString() ? now : new Date(dateObj.setHours(17, 0, 0, 0));
+      dateObj.toDateString() === now.toDateString()
+        ? now
+        : new Date(new Date(dateObj).setHours(DEFAULT_WORKDAY_END_HOUR, 0, 0, 0));
     const entryEndTime = endDate.getTime();
     const entryStartTime = entryEndTime - effectiveDuration * 1000;
     return { startTime: entryStartTime, endTime: entryEndTime };

@@ -27,12 +27,12 @@ const templateSchema = z.object({
 });
 
 interface DocumentTemplatesManagerProps {
-  projectId?: Id<"projects">;
+  workspaceId?: Id<"workspaces">;
   onSelectTemplate?: (templateId: Id<"documentTemplates">) => void;
 }
 
 export function DocumentTemplatesManager({
-  projectId,
+  workspaceId,
   onSelectTemplate,
 }: DocumentTemplatesManagerProps) {
   // UI State
@@ -43,7 +43,7 @@ export function DocumentTemplatesManager({
 
   const templates = useQuery(api.documentTemplates.list, {
     category: selectedCategory === "all" ? undefined : selectedCategory,
-    projectId,
+    workspaceId,
   });
   const createTemplate = useMutation(api.documentTemplates.create);
   const updateTemplate = useMutation(api.documentTemplates.update);
@@ -77,7 +77,7 @@ export function DocumentTemplatesManager({
             ],
           },
           isPublic: value.isPublic,
-          projectId,
+          workspaceId,
         };
 
         if (editingId) {

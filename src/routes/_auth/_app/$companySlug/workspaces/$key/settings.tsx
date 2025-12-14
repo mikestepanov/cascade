@@ -17,7 +17,7 @@ function SettingsPage() {
   const project = useQuery(api.workspaces.getByKey, { key });
   const userRole = useQuery(
     api.workspaces.getUserRole,
-    project ? { projectId: project._id } : "skip",
+    project ? { workspaceId: project._id } : "skip",
   );
 
   if (project === undefined || userRole === undefined) {
@@ -56,5 +56,5 @@ function SettingsPage() {
     );
   }
 
-  return <ProjectSettings projectId={project._id} />;
+  return <ProjectSettings workspaceId={project._id} />;
 }

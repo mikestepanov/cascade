@@ -76,20 +76,20 @@ describe("Invites", () => {
     it("should send a project invite", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const projectId = await createTestProject(t, adminId);
+      const workspaceId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       // Creator is project admin automatically
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "collab@example.com",
         role: "user",
-        projectId,
-        projectRole: "editor",
+        workspaceId,
+        workspaceRole: "editor",
       });
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.projectId).toBe(projectId);
-      expect(invite?.projectRole).toBe("editor");
+      expect(invite?.workspaceId).toBe(workspaceId);
+      expect(invite?.workspaceRole).toBe("editor");
     });
 
     it("should prevent duplicate pending invites", async () => {
@@ -153,14 +153,14 @@ describe("Invites", () => {
     it("should add to project on acceptance", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const projectId = await createTestProject(t, adminId);
+      const workspaceId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "project@example.com",
         role: "user",
-        projectId,
-        projectRole: "viewer",
+        workspaceId,
+        workspaceRole: "viewer",
       });
 
       const newUserId = await createTestUser(t, {
@@ -173,8 +173,10 @@ describe("Invites", () => {
 
       const member = await t.run(async (ctx) =>
         ctx.db
-          .query("projectMembers")
-          .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", newUserId))
+          .query("workspaceMembers")
+          .withIndex("by_workspace_user", (q) =>
+            q.eq("workspaceId", workspaceId).eq("userId", newUserId),
+          )
           .first(),
       );
       expect(member).toBeDefined();

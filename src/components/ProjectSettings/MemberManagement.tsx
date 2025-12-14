@@ -22,7 +22,7 @@ interface Member {
 }
 
 interface MemberManagementProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   members: Member[];
   createdBy: Id<"users">;
   ownerId: Id<"users"> | undefined;
@@ -41,7 +41,7 @@ const ROLE_BADGE_VARIANTS: Record<string, "default" | "secondary" | "outline"> =
 };
 
 export function MemberManagement({
-  projectId,
+  workspaceId,
   members,
   createdBy,
   ownerId,
@@ -66,7 +66,7 @@ export function MemberManagement({
     setIsAdding(true);
     try {
       await addMember({
-        projectId,
+        workspaceId,
         userEmail: email.trim(),
         role,
       });
@@ -88,7 +88,7 @@ export function MemberManagement({
     setChangingRoleFor(memberId);
     try {
       await updateMemberRole({
-        projectId,
+        workspaceId,
         memberId,
         newRole,
       });
@@ -105,7 +105,7 @@ export function MemberManagement({
 
     try {
       await removeMember({
-        projectId,
+        workspaceId,
         memberId: memberToRemove._id,
       });
       showSuccess("Member removed");

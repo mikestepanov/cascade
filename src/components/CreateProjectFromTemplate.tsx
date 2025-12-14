@@ -11,7 +11,7 @@ import { LoadingSpinner } from "./ui/LoadingSpinner";
 interface CreateProjectFromTemplateProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onProjectCreated?: (projectId: Id<"projects">) => void;
+  onProjectCreated?: (workspaceId: Id<"workspaces">) => void;
 }
 
 export function CreateProjectFromTemplate({
@@ -25,12 +25,12 @@ export function CreateProjectFromTemplate({
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
 
-  const templates = useQuery(api.projectTemplates.list);
+  const templates = useQuery(api.workspaceTemplates.list);
   const selectedTemplate = useQuery(
-    api.projectTemplates.get,
+    api.workspaceTemplates.get,
     selectedTemplateId ? { id: selectedTemplateId } : "skip",
   );
-  const createProject = useMutation(api.projectTemplates.createFromTemplate);
+  const createProject = useMutation(api.workspaceTemplates.createFromTemplate);
 
   const handleSelectTemplate = (templateId: Id<"projectTemplates">) => {
     setSelectedTemplateId(templateId);
@@ -49,7 +49,7 @@ export function CreateProjectFromTemplate({
     }
 
     try {
-      const projectId = await createProject({
+      const workspaceId = await createProject({
         templateId: selectedTemplateId,
         projectName: projectName.trim(),
         projectKey: projectKey.trim().toUpperCase(),
@@ -57,7 +57,7 @@ export function CreateProjectFromTemplate({
       });
 
       toast.success("Workspace created successfully");
-      onProjectCreated?.(projectId);
+      onProjectCreated?.(workspaceId);
       onOpenChange(false);
       resetForm();
     } catch (error) {

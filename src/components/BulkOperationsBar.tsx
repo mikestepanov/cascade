@@ -9,14 +9,14 @@ import { Flex } from "./ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
 
 interface BulkOperationsBarProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   selectedIssueIds: Set<Id<"issues">>;
   onClearSelection: () => void;
   workflowStates: Array<{ id: string; name: string }>;
 }
 
 export function BulkOperationsBar({
-  projectId,
+  workspaceId,
   selectedIssueIds,
   onClearSelection,
   workflowStates,
@@ -24,9 +24,9 @@ export function BulkOperationsBar({
   const [showActions, setShowActions] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const _project = useQuery(api.workspaces.get, { id: projectId });
-  const sprints = useQuery(api.sprints.listByProject, { projectId });
-  const members = useQuery(api.projectMembers.list, { projectId });
+  const _project = useQuery(api.workspaces.get, { id: workspaceId });
+  const sprints = useQuery(api.sprints.listByProject, { workspaceId });
+  const members = useQuery(api.workspaceMembers.list, { workspaceId });
 
   const bulkUpdateStatus = useMutation(api.issues.bulkUpdateStatus);
   const bulkUpdatePriority = useMutation(api.issues.bulkUpdatePriority);

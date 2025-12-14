@@ -9,7 +9,7 @@ import { Select } from "../ui/form/Select";
 import { Textarea } from "../ui/form/Textarea";
 
 interface AutomationRuleFormProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   rule?: {
     _id: Id<"automationRules">;
     name: string;
@@ -28,7 +28,7 @@ interface AutomationRuleFormProps {
  * Separated from AutomationRulesManager for better reusability
  */
 export function AutomationRuleForm({
-  projectId,
+  workspaceId,
   rule,
   open,
   onOpenChange,
@@ -90,7 +90,7 @@ export function AutomationRuleForm({
         showSuccess("Rule updated");
       } else {
         await createRule({
-          projectId,
+          workspaceId,
           name: name.trim(),
           description: description.trim() || undefined,
           trigger,

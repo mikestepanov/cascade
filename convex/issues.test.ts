@@ -12,14 +12,14 @@ describe("Issues", () => {
     it("should create an issue with auto-generated key", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId, {
+      const workspaceId = await createTestProject(t, userId, {
         name: "Test Project",
         key: "ISSUE",
       });
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         description: "This is a test issue",
         type: "task",
@@ -41,19 +41,19 @@ describe("Issues", () => {
     it("should increment issue numbers per project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId, { key: "AUTO" });
+      const workspaceId = await createTestProject(t, userId, { key: "AUTO" });
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const issue1Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "First Issue",
         type: "task",
         priority: "medium",
       });
 
       const issue2Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Second Issue",
         type: "bug",
         priority: "high",
@@ -69,11 +69,11 @@ describe("Issues", () => {
     it("should set default status to first workflow state", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Status Test",
         type: "task",
         priority: "medium",
@@ -87,11 +87,11 @@ describe("Issues", () => {
       const t = convexTest(schema, modules);
       const reporterId = await createTestUser(t, { name: "Reporter" });
       const assigneeId = await createTestUser(t, { name: "Assignee" });
-      const projectId = await createTestProject(t, reporterId);
+      const workspaceId = await createTestProject(t, reporterId);
 
       const asReporter = asAuthenticatedUser(t, reporterId);
       const issueId = await asReporter.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Assigned Issue",
         type: "task",
         priority: "medium",
@@ -105,11 +105,11 @@ describe("Issues", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
         await t.mutation(api.issues.create, {
-          projectId,
+          workspaceId,
           title: "Unauthorized",
           type: "task",
           priority: "medium",
@@ -124,12 +124,12 @@ describe("Issues", () => {
         name: "Viewer",
         email: "viewer@test.com",
       });
-      const projectId = await createTestProject(t, adminId);
+      const workspaceId = await createTestProject(t, adminId);
 
       // Add viewer
       const asAdmin = asAuthenticatedUser(t, adminId);
       await asAdmin.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "viewer@test.com",
         role: "viewer",
       });
@@ -138,7 +138,7 @@ describe("Issues", () => {
       const asViewer = asAuthenticatedUser(t, viewerId);
       await expect(async () => {
         await asViewer.mutation(api.issues.create, {
-          projectId,
+          workspaceId,
           title: "Should Fail",
           type: "task",
           priority: "medium",
@@ -151,11 +151,11 @@ describe("Issues", () => {
     it("should return issue details", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Detailed Issue",
         description: "Detailed description",
         type: "story",
@@ -173,11 +173,11 @@ describe("Issues", () => {
     it("should return null for deleted issues", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "To Delete",
         type: "task",
         priority: "medium",
@@ -194,11 +194,11 @@ describe("Issues", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const outsider = await createTestUser(t, { name: "Outsider" });
-      const projectId = await createTestProject(t, owner, { isPublic: false });
+      const workspaceId = await createTestProject(t, owner, { isPublic: false });
 
       const asOwner = asAuthenticatedUser(t, owner);
       const issueId = await asOwner.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Private Issue",
         type: "task",
         priority: "medium",
@@ -216,11 +216,11 @@ describe("Issues", () => {
     it("should allow editors to update issue details", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Original Title",
         description: "Original description",
         type: "task",
@@ -247,18 +247,18 @@ describe("Issues", () => {
         name: "Viewer",
         email: "viewer@test.com",
       });
-      const projectId = await createTestProject(t, adminId);
+      const workspaceId = await createTestProject(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
       const issueId = await asAdmin.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
       });
 
       await asAdmin.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "viewer@test.com",
         role: "viewer",
       });
@@ -278,11 +278,11 @@ describe("Issues", () => {
     it("should update issue status and log activity", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Status Test",
         type: "task",
         priority: "medium",
@@ -314,11 +314,11 @@ describe("Issues", () => {
     it("should allow updating status to any value", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test",
         type: "task",
         priority: "medium",
@@ -340,29 +340,29 @@ describe("Issues", () => {
     it("should return all issues in a project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 1",
         type: "task",
         priority: "medium",
       });
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 2",
         type: "bug",
         priority: "high",
       });
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 3",
         type: "story",
         priority: "low",
       });
 
-      const issues = await asUser.query(api.issues.listByProject, { projectId });
+      const issues = await asUser.query(api.issues.listByProject, { workspaceId });
       expect(issues).toHaveLength(3);
       expect(issues.map((i) => i.title)).toContain("Issue 1");
       expect(issues.map((i) => i.title)).toContain("Issue 2");
@@ -372,10 +372,10 @@ describe("Issues", () => {
     it("should return empty array for projects with no issues", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const issues = await asUser.query(api.issues.listByProject, { projectId });
+      const issues = await asUser.query(api.issues.listByProject, { workspaceId });
       expect(issues).toEqual([]);
     });
   });
@@ -384,11 +384,11 @@ describe("Issues", () => {
     it("should add a comment to an issue", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t, { name: "Commenter" });
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test Issue",
         type: "task",
         priority: "medium",
@@ -417,11 +417,11 @@ describe("Issues", () => {
     it("should deny unauthenticated users from commenting", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issueId = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test",
         type: "task",
         priority: "medium",
@@ -441,17 +441,17 @@ describe("Issues", () => {
     it("should bulk update status for multiple issues", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issue1Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 1",
         type: "task",
         priority: "medium",
       });
       const issue2Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 2",
         type: "task",
         priority: "medium",
@@ -472,17 +472,17 @@ describe("Issues", () => {
     it("should bulk update priority", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const issue1Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 1",
         type: "task",
         priority: "low",
       });
       const issue2Id = await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 2",
         type: "task",
         priority: "medium",
@@ -504,17 +504,17 @@ describe("Issues", () => {
       const t = convexTest(schema, modules);
       const reporterId = await createTestUser(t, { name: "Reporter" });
       const assigneeId = await createTestUser(t, { name: "Assignee" });
-      const projectId = await createTestProject(t, reporterId);
+      const workspaceId = await createTestProject(t, reporterId);
 
       const asReporter = asAuthenticatedUser(t, reporterId);
       const issue1Id = await asReporter.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 1",
         type: "task",
         priority: "medium",
       });
       const issue2Id = await asReporter.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Issue 2",
         type: "task",
         priority: "medium",
@@ -539,18 +539,18 @@ describe("Issues", () => {
         name: "Viewer",
         email: "viewer@test.com",
       });
-      const projectId = await createTestProject(t, adminId);
+      const workspaceId = await createTestProject(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
       const issueId = await asAdmin.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Test",
         type: "task",
         priority: "medium",
       });
 
       await asAdmin.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "viewer@test.com",
         role: "viewer",
       });
@@ -575,23 +575,23 @@ describe("Issues", () => {
     it("should search issues by title", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Fix login bug",
         type: "bug",
         priority: "high",
       });
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Add login feature",
         type: "story",
         priority: "medium",
       });
       await asUser.mutation(api.issues.create, {
-        projectId,
+        workspaceId,
         title: "Update dashboard",
         type: "task",
         priority: "low",

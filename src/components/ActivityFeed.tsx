@@ -6,13 +6,13 @@ import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 
 interface ActivityFeedProps {
-  projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
   limit?: number;
   compact?: boolean;
 }
 
-export function ActivityFeed({ projectId, limit = 50, compact = false }: ActivityFeedProps) {
-  const activities = useQuery(api.analytics.getRecentActivity, { projectId, limit });
+export function ActivityFeed({ workspaceId, limit = 50, compact = false }: ActivityFeedProps) {
+  const activities = useQuery(api.analytics.getRecentActivity, { workspaceId, limit });
 
   const getActionIcon = (action: string) => {
     switch (action) {

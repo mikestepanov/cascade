@@ -12,12 +12,12 @@ describe("Webhooks", () => {
     it("should create a webhook with all fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Issue Webhook",
         url: "https://example.com/webhook",
         events: ["issue.created", "issue.updated"],
@@ -41,12 +41,12 @@ describe("Webhooks", () => {
     it("should create webhook without secret", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Simple Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -66,12 +66,12 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
@@ -80,7 +80,7 @@ describe("Webhooks", () => {
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.create, {
-          projectId,
+          workspaceId,
           name: "Webhook",
           url: "https://example.com/hook",
           events: ["issue.created"],
@@ -91,11 +91,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
         await t.mutation(api.webhooks.create, {
-          projectId,
+          workspaceId,
           name: "Webhook",
           url: "https://example.com/hook",
           events: ["issue.created"],
@@ -108,26 +108,26 @@ describe("Webhooks", () => {
     it("should list all webhooks for a project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create multiple webhooks
       await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook 1",
         url: "https://example.com/hook1",
         events: ["issue.created"],
       });
       await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook 2",
         url: "https://example.com/hook2",
         events: ["issue.updated"],
       });
 
       const webhooks = await asUser.query(api.webhooks.listByProject, {
-        projectId,
+        workspaceId,
       });
 
       expect(webhooks).toHaveLength(2);
@@ -138,12 +138,12 @@ describe("Webhooks", () => {
     it("should return empty array for project with no webhooks", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhooks = await asUser.query(api.webhooks.listByProject, {
-        projectId,
+        workspaceId,
       });
 
       expect(webhooks).toEqual([]);
@@ -156,12 +156,12 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
@@ -169,17 +169,17 @@ describe("Webhooks", () => {
       // Editor tries to list webhooks
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.query(api.webhooks.listByProject, { projectId });
+        await asEditor.query(api.webhooks.listByProject, { workspaceId });
       }).rejects.toThrow();
     });
 
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.query(api.webhooks.listByProject, { projectId });
+        await t.query(api.webhooks.listByProject, { workspaceId });
       }).rejects.toThrow("Not authenticated");
     });
   });
@@ -188,12 +188,12 @@ describe("Webhooks", () => {
     it("should update webhook fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Original Name",
         url: "https://example.com/original",
         events: ["issue.created"],
@@ -218,12 +218,12 @@ describe("Webhooks", () => {
     it("should toggle isActive status", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -255,12 +255,12 @@ describe("Webhooks", () => {
     it("should update only specified fields", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Original Name",
         url: "https://example.com/original",
         events: ["issue.created"],
@@ -287,18 +287,18 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const webhookId = await asOwner.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -317,11 +317,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -338,13 +338,13 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Temp",
         url: "https://example.com/temp",
         events: ["issue.created"],
@@ -366,12 +366,12 @@ describe("Webhooks", () => {
     it("should delete webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "To Delete",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -393,18 +393,18 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const webhookId = await asOwner.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -420,11 +420,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -438,13 +438,13 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Temp",
         url: "https://example.com/temp",
         events: ["issue.created"],
@@ -463,12 +463,12 @@ describe("Webhooks", () => {
     it("should list webhook executions", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -508,12 +508,12 @@ describe("Webhooks", () => {
     it("should respect limit parameter", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -549,18 +549,18 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const webhookId = await asOwner.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -576,11 +576,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -594,13 +594,13 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Temp",
         url: "https://example.com/temp",
         events: ["issue.created"],
@@ -627,12 +627,12 @@ describe("Webhooks", () => {
     it("should schedule test webhook delivery", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -653,18 +653,18 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const webhookId = await asOwner.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -680,11 +680,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -698,13 +698,13 @@ describe("Webhooks", () => {
     it("should throw error for non-existent webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Temp",
         url: "https://example.com/temp",
         events: ["issue.created"],
@@ -731,12 +731,12 @@ describe("Webhooks", () => {
     it("should schedule retry for failed execution", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Test Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -773,18 +773,18 @@ describe("Webhooks", () => {
         name: "Editor",
         email: "editor@test.com",
       });
-      const projectId = await createTestProject(t, owner);
+      const workspaceId = await createTestProject(t, owner);
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.workspaces.addMember, {
-        projectId,
+        workspaceId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
       const webhookId = await asOwner.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -811,11 +811,11 @@ describe("Webhooks", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Webhook",
         url: "https://example.com/hook",
         events: ["issue.created"],
@@ -840,12 +840,12 @@ describe("Webhooks", () => {
     it("should throw error for non-existent execution", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       const webhookId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Temp",
         url: "https://example.com/temp",
         events: ["issue.created"],
@@ -876,19 +876,19 @@ describe("Webhooks", () => {
     it("getActiveWebhooksForEvent - should return webhooks for specific event", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create webhooks for different events
       await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Issue Webhook",
         url: "https://example.com/hook1",
         events: ["issue.created", "issue.updated"],
       });
       await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Comment Webhook",
         url: "https://example.com/hook2",
         events: ["comment.created"],
@@ -896,7 +896,7 @@ describe("Webhooks", () => {
 
       // Get webhooks for issue.created event (internal query doesn't need auth)
       const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
-        projectId,
+        workspaceId,
         event: "issue.created",
       });
 
@@ -907,13 +907,13 @@ describe("Webhooks", () => {
     it("getActiveWebhooksForEvent - should only return active webhooks", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const projectId = await createTestProject(t, userId);
+      const workspaceId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create active webhook
       await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Active Webhook",
         url: "https://example.com/hook1",
         events: ["issue.created"],
@@ -921,7 +921,7 @@ describe("Webhooks", () => {
 
       // Create and deactivate webhook
       const inactiveId = await asUser.mutation(api.webhooks.create, {
-        projectId,
+        workspaceId,
         name: "Inactive Webhook",
         url: "https://example.com/hook2",
         events: ["issue.created"],
@@ -933,7 +933,7 @@ describe("Webhooks", () => {
 
       // Get webhooks (internal query doesn't need auth)
       const webhooks = await t.query(internal.webhooks.getActiveWebhooksForEvent, {
-        projectId,
+        workspaceId,
         event: "issue.created",
       });
 

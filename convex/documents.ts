@@ -165,11 +165,11 @@ function matchesDocumentFilters(
   doc: {
     isPublic: boolean;
     createdBy: Id<"users">;
-    projectId?: Id<"projects">;
+    workspaceId?: Id<"workspaces">;
     createdAt: number;
   },
   filters: {
-    projectId?: Id<"projects">;
+    workspaceId?: Id<"workspaces">;
     createdBy?: Id<"users"> | "me";
     isPublic?: boolean;
     dateFrom?: number;
@@ -178,7 +178,7 @@ function matchesDocumentFilters(
   userId: Id<"users">,
 ): boolean {
   // Apply project filter
-  if (filters.projectId && doc.projectId !== filters.projectId) {
+  if (filters.workspaceId && doc.workspaceId !== filters.workspaceId) {
     return false;
   }
 
@@ -213,7 +213,7 @@ export const search = query({
     query: v.string(),
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
-    projectId: v.optional(v.id("projects")),
+    workspaceId: v.optional(v.id("workspaces")),
     createdBy: v.optional(v.union(v.id("users"), v.literal("me"))),
     isPublic: v.optional(v.boolean()),
     dateFrom: v.optional(v.number()),
@@ -262,7 +262,7 @@ export const search = query({
     const enrichedResults = await Promise.all(
       paginatedResults.map(async (doc) => {
         const creator = await ctx.db.get(doc.createdBy);
-        const project = doc.projectId ? await ctx.db.get(doc.projectId) : null;
+        const project = doc.workspaceId ? await ctx.db.get(doc.workspaceId) : null;
 
         return {
           ...doc,

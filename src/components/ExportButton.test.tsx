@@ -6,37 +6,37 @@ import { ExportButton } from "./ExportButton";
 
 // Mock the ImportExportModal component
 vi.mock("./ImportExportModal", () => ({
-  ImportExportModal: vi.fn(({ open, onOpenChange, projectId }) => {
+  ImportExportModal: vi.fn(({ open, onOpenChange, workspaceId }) => {
     if (!open) return null;
     return (
       <div data-testid="import-export-modal">
         <button type="button" onClick={() => onOpenChange(false)}>
           Close Modal
         </button>
-        <div data-testid="modal-project-id">{projectId}</div>
+        <div data-testid="modal-project-id">{workspaceId}</div>
       </div>
     );
   }),
 }));
 
 describe("ExportButton", () => {
-  const mockProjectId = "project-123" as Id<"projects">;
+  const mockProjectId = "project-123" as Id<"workspaces">;
 
   it("should render import/export button", () => {
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     expect(screen.getByRole("button", { name: /Import \/ Export/i })).toBeInTheDocument();
   });
 
   it("should not show modal initially", () => {
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     expect(screen.queryByTestId("import-export-modal")).not.toBeInTheDocument();
   });
 
   it("should open modal when button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
     await user.click(button);
@@ -46,7 +46,7 @@ describe("ExportButton", () => {
 
   it("should close modal when onClose is called", async () => {
     const user = userEvent.setup();
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     // Open modal
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
@@ -61,9 +61,9 @@ describe("ExportButton", () => {
     expect(screen.queryByTestId("import-export-modal")).not.toBeInTheDocument();
   });
 
-  it("should pass projectId to modal", async () => {
+  it("should pass workspaceId to modal", async () => {
     const user = userEvent.setup();
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
     await user.click(button);
@@ -72,7 +72,7 @@ describe("ExportButton", () => {
   });
 
   it("should display icon", () => {
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
     const svg = button.querySelector("svg");
@@ -82,7 +82,7 @@ describe("ExportButton", () => {
   });
 
   it("should have correct styling classes", () => {
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
 
@@ -90,7 +90,7 @@ describe("ExportButton", () => {
   });
 
   it("should be type button", () => {
-    render(<ExportButton projectId={mockProjectId} />);
+    render(<ExportButton workspaceId={mockProjectId} />);
 
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
 
@@ -99,7 +99,7 @@ describe("ExportButton", () => {
 
   it("should maintain modal state between renders", async () => {
     const user = userEvent.setup();
-    const { rerender } = render(<ExportButton projectId={mockProjectId} />);
+    const { rerender } = render(<ExportButton workspaceId={mockProjectId} />);
 
     // Open modal
     const button = screen.getByRole("button", { name: /Import \/ Export/i });
@@ -108,15 +108,15 @@ describe("ExportButton", () => {
     expect(screen.getByTestId("import-export-modal")).toBeInTheDocument();
 
     // Rerender with same props
-    rerender(<ExportButton projectId={mockProjectId} />);
+    rerender(<ExportButton workspaceId={mockProjectId} />);
 
     expect(screen.getByTestId("import-export-modal")).toBeInTheDocument();
   });
 
-  it("should work with different projectIds", async () => {
+  it("should work with different workspaceIds", async () => {
     const user = userEvent.setup();
-    const differentProjectId = "project-456" as Id<"projects">;
-    const { rerender } = render(<ExportButton projectId={mockProjectId} />);
+    const differentProjectId = "project-456" as Id<"workspaces">;
+    const { rerender } = render(<ExportButton workspaceId={mockProjectId} />);
 
     // Open modal with first project
     let button = screen.getByRole("button", { name: /Import \/ Export/i });
@@ -129,7 +129,7 @@ describe("ExportButton", () => {
     await user.click(closeButton);
 
     // Rerender with different project
-    rerender(<ExportButton projectId={differentProjectId} />);
+    rerender(<ExportButton workspaceId={differentProjectId} />);
 
     // Open modal again
     button = screen.getByRole("button", { name: /Import \/ Export/i });
