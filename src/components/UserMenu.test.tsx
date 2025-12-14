@@ -34,7 +34,7 @@ vi.mock("../../convex/_generated/api", () => ({
 }));
 
 // Mock useCompany hook
-vi.mock("@/routes/_auth/_app/$companySlug/route", () => ({
+vi.mock("@/hooks/useCompanyContext", () => ({
   useCompany: () => ({
     companyId: "company123",
     companySlug: "test-company",

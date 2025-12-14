@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { useCompanyOptional } from "@/hooks/useCompanyContext";
+import { useCompany } from "@/hooks/useCompanyContext";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -38,8 +38,7 @@ export function IssueDetailModal({
   const [description, setDescription] = useState("");
 
   // Get billing setting from company context
-  const companyContext = useCompanyOptional();
-  const billingEnabled = companyContext?.billingEnabled;
+  const { billingEnabled } = useCompany();
 
   const issue = useQuery(api.issues.get, { id: issueId });
   const subtasks = useQuery(api.issues.listSubtasks, { parentId: issueId });

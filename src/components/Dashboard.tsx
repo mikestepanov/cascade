@@ -2,21 +2,20 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompanyOptional } from "@/hooks/useCompanyContext";
+import { useCompany } from "@/hooks/useCompanyContext";
 import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { ProjectsList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
-import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Typography } from "./ui/Typography";
 
 type IssueFilter = "assigned" | "created" | "all";
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const company = useCompanyOptional();
+  const { companySlug } = useCompany();
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   // All hooks must be called unconditionally
@@ -55,17 +54,6 @@ export function Dashboard() {
     onSelect: (project) => navigateToProject(project.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
-
-  // Show loading while company context loads
-  if (!company) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  const { companySlug } = company;
 
   return (
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">

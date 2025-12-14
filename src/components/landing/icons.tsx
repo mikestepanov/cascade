@@ -1,6 +1,13 @@
-export function NixeloLogo({ size = 28 }: { size?: number }) {
+export function NixeloLogo({ size = 28, className }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 50 50" fill="none" style={{ overflow: "visible" }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 50 50"
+      fill="none"
+      style={{ overflow: "visible" }}
+      className={className}
+    >
       <defs>
         <linearGradient id="nixeloGrad" x1="0%" y1="100%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#22d3ee" />

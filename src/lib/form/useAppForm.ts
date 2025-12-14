@@ -31,9 +31,9 @@ export function useAppForm<TData extends Record<string, unknown>>(options: AppFo
     validatorAdapter: zodValidator(),
     validators: validators
       ? {
-          onChange: validators.onChange ? { schema: validators.onChange } : undefined,
-          onBlur: validators.onBlur ? { schema: validators.onBlur } : undefined,
-          onSubmit: validators.onSubmit ? { schema: validators.onSubmit } : undefined,
+          onChange: validators.onChange,
+          onBlur: validators.onBlur,
+          onSubmit: validators.onSubmit,
         }
       : undefined,
   });

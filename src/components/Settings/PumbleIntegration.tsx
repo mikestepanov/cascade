@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, FormSelect, useAppForm } from "@/lib/form";
+import { FormInput, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
