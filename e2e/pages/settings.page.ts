@@ -178,7 +178,9 @@ export class SettingsPage extends BasePage {
     await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
   }
 
-  async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
+  async switchToTab(
+    tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin" | "devTools",
+  ) {
     // Wait for React to fully hydrate and attach event handlers
     // Don't use networkidle - Convex WebSocket keeps connection active
     await this.page.waitForLoadState("domcontentloaded");

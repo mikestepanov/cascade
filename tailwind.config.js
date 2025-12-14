@@ -173,11 +173,26 @@ module.exports = {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        "flow-1": {
+          "0%": { strokeDashoffset: "1000" },
+          "100%": { strokeDashoffset: "0" },
+        },
+        "flow-2": {
+          "0%": { strokeDashoffset: "1200" },
+          "100%": { strokeDashoffset: "0" },
+        },
+        "flow-3": {
+          "0%": { strokeDashoffset: "1400" },
+          "100%": { strokeDashoffset: "0" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.3s ease-out",
         "slide-up": "slide-up 0.4s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
+        "flow-1": "flow-1 8s linear infinite",
+        "flow-2": "flow-2 10s linear infinite",
+        "flow-3": "flow-3 9s linear infinite",
       },
     },
   },

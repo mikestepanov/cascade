@@ -29,7 +29,7 @@ export function NavHeader() {
               className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
             >
               {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-linear-to-r from-cyan-400 to-teal-400 transition-all group-hover:w-full opacity-0 group-hover:opacity-100" />
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-teal-400 transition-all group-hover:w-full opacity-0 group-hover:opacity-100" />
             </a>
           ))}
         </div>

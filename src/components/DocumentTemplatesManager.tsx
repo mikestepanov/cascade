@@ -145,7 +145,7 @@ export function DocumentTemplatesManager({
     }
   };
 
-  const categories = [
+  const categoryFilters = [
     { value: "all", label: "All Templates" },
     { value: "meeting", label: "Meetings" },
     { value: "planning", label: "Planning" },
@@ -193,7 +193,7 @@ export function DocumentTemplatesManager({
           {/* Category Filter */}
           <div className="mb-6">
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {categories.map((cat) => (
+              {categoryFilters.map((cat) => (
                 <button
                   key={cat.value}
                   type="button"

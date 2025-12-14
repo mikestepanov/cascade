@@ -26,7 +26,7 @@ const createEventSchema = z.object({
   allDay: z.boolean(),
   eventType: z.enum(eventTypes),
   location: z.string().optional(),
-  meetingUrl: z.string().url().optional().or(z.literal("")),
+  meetingUrl: z.union([z.string().url(), z.literal("")]).optional(),
   isRequired: z.boolean(),
 });
 

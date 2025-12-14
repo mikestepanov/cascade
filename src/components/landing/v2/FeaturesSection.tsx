@@ -95,13 +95,13 @@ function FeatureCard({
       <p className="text-ui-text-tertiary text-sm leading-relaxed mb-4">{description}</p>
 
       {/* Link */}
-      <a
-        href="#"
+      <button
+        type="button"
         className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
       >
         Learn more
         <ArrowIcon className="w-4 h-4" />
-      </a>
+      </button>
     </div>
   );
 }

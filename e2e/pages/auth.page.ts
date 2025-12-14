@@ -353,7 +353,7 @@ export class AuthPage extends BasePage {
       return true;
     } catch {
       // Fallback: wait the standard delay if attribute not found
-      await this.page.waitForTimeout(400);
+      await this.page.waitForTimeout(350);
       return false;
     }
   }

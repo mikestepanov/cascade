@@ -36,15 +36,16 @@ export function HeroSection() {
           >
             Get Started Free
           </Link>
-          <a
-            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => {
+              // TODO: Implement demo video modal
+            }}
             className="group px-8 py-3.5 bg-transparent border border-gray-600 rounded-full text-base font-medium text-ui-text-tertiary hover:border-gray-500 hover:text-white transition-all flex items-center justify-center gap-2"
           >
             Watch Demo
             <PlayIcon className="w-4 h-4" />
-          </a>
+          </button>
         </div>
       </div>
     </section>
