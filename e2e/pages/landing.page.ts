@@ -10,7 +10,11 @@ export class LandingPage extends BasePage {
   // ===================
   // Locators - Navigation
   // ===================
+  readonly nav: Locator;
   readonly navLogo: Locator;
+  readonly navFeaturesLink: Locator;
+  readonly navPricingLink: Locator;
+  readonly navResourcesLink: Locator;
   readonly navLoginButton: Locator;
   readonly navGetStartedButton: Locator;
 
@@ -18,8 +22,38 @@ export class LandingPage extends BasePage {
   // Locators - Hero Section
   // ===================
   readonly heroHeadline: Locator;
+  readonly heroSubtitle: Locator;
   readonly heroGetStartedButton: Locator;
   readonly watchDemoButton: Locator;
+
+  // ===================
+  // Locators - Features Section
+  // ===================
+  readonly featuresHeadingTools: Locator;
+  readonly featuresHeadingDocs: Locator;
+  readonly featuresHeadingRealtime: Locator;
+  readonly featuresHeadingDashboard: Locator;
+  readonly learnMoreLinks: Locator;
+
+  // ===================
+  // Locators - Stats Section
+  // ===================
+  readonly statsHeading: Locator;
+  readonly statsMeetings: Locator;
+  readonly statsTools: Locator;
+  readonly statsDaily: Locator;
+  readonly statsRecommend: Locator;
+
+  // ===================
+  // Locators - Footer
+  // ===================
+  readonly footer: Locator;
+  readonly footerProductHeading: Locator;
+  readonly footerCompanyHeading: Locator;
+  readonly footerResourcesHeading: Locator;
+  readonly footerPrivacyLink: Locator;
+  readonly footerTermsLink: Locator;
+  readonly footerCopyright: Locator;
 
   // ===================
   // Locators - Auth Pages (after navigation)
@@ -31,20 +65,48 @@ export class LandingPage extends BasePage {
     super(page);
 
     // Navigation
-    this.navLogo = page.locator("nav").getByText("nixelo");
-    this.navLoginButton = page.locator("nav").getByText("Sign in");
-    this.navGetStartedButton = page.locator("nav").getByRole("link", {
-      name: /get started/i,
-    });
+    this.nav = page.locator("nav");
+    this.navLogo = this.nav.getByText("nixelo");
+    this.navFeaturesLink = this.nav.getByText("Features");
+    this.navPricingLink = this.nav.getByText("Pricing");
+    this.navResourcesLink = this.nav.getByText("Resources");
+    this.navLoginButton = this.nav.getByText("Sign in");
+    this.navGetStartedButton = this.nav.getByRole("link", { name: /get started/i });
 
     // Hero Section
-    this.heroHeadline = page.getByRole("heading", {
-      name: /revolutionize your workflow/i,
-    });
-    this.heroGetStartedButton = page.getByRole("link", {
-      name: /get started free/i,
-    });
+    this.heroHeadline = page.getByRole("heading", { name: /revolutionize your workflow/i });
+    this.heroSubtitle = page.getByText(/experience the future of project management/i);
+    this.heroGetStartedButton = page.getByRole("link", { name: /get started free/i });
     this.watchDemoButton = page.getByRole("link", { name: /watch demo/i });
+
+    // Features Section
+    this.featuresHeadingTools = page.getByRole("heading", {
+      name: /stop juggling tools.*start shipping/i,
+    });
+    this.featuresHeadingDocs = page.getByRole("heading", {
+      name: /docs and issues.*finally together/i,
+    });
+    this.featuresHeadingRealtime = page.getByRole("heading", { name: /edit together.*real-time/i });
+    this.featuresHeadingDashboard = page.getByRole("heading", {
+      name: /see everything.*miss nothing/i,
+    });
+    this.learnMoreLinks = page.getByRole("link", { name: /learn more/i });
+
+    // Stats Section
+    this.statsHeading = page.getByRole("heading", { name: /teams actually like using it/i });
+    this.statsMeetings = page.getByText(/less time in meetings/i);
+    this.statsTools = page.getByText(/fewer tools to manage/i);
+    this.statsDaily = page.getByText(/actually use it daily/i);
+    this.statsRecommend = page.getByText(/would recommend/i);
+
+    // Footer
+    this.footer = page.locator("footer");
+    this.footerProductHeading = this.footer.getByRole("heading", { name: /product/i });
+    this.footerCompanyHeading = this.footer.getByRole("heading", { name: /company/i });
+    this.footerResourcesHeading = this.footer.getByRole("heading", { name: /resources/i });
+    this.footerPrivacyLink = this.footer.getByRole("link", { name: /privacy/i });
+    this.footerTermsLink = this.footer.getByRole("link", { name: /terms/i });
+    this.footerCopyright = page.getByText(/© 2025 nixelo/i);
 
     // Auth page headings (separate routes now)
     this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
@@ -141,5 +203,60 @@ export class LandingPage extends BasePage {
    */
   async expectSignUpSection() {
     await this.expectSignUpPage();
+  }
+
+  /**
+   * Assert navigation elements are visible
+   */
+  async expectNavigation() {
+    await expect(this.navFeaturesLink).toBeVisible();
+    await expect(this.navPricingLink).toBeVisible();
+    await expect(this.navResourcesLink).toBeVisible();
+    await expect(this.navLoginButton).toBeVisible();
+  }
+
+  /**
+   * Assert hero section is visible
+   */
+  async expectHeroSection() {
+    await expect(this.heroHeadline).toBeVisible();
+    await expect(this.heroSubtitle).toBeVisible();
+    await expect(this.heroGetStartedButton).toBeVisible();
+    await expect(this.watchDemoButton).toBeVisible();
+  }
+
+  /**
+   * Assert features section is visible
+   */
+  async expectFeaturesSection() {
+    await expect(this.featuresHeadingTools).toBeVisible();
+    await expect(this.featuresHeadingDocs).toBeVisible();
+    await expect(this.featuresHeadingRealtime).toBeVisible();
+    await expect(this.featuresHeadingDashboard).toBeVisible();
+    // Should have 3 learn more links (one per feature card)
+    await expect(this.learnMoreLinks).toHaveCount(3);
+  }
+
+  /**
+   * Assert stats section is visible
+   */
+  async expectStatsSection() {
+    await expect(this.statsHeading).toBeVisible();
+    await expect(this.statsMeetings).toBeVisible();
+    await expect(this.statsTools).toBeVisible();
+    await expect(this.statsDaily).toBeVisible();
+    await expect(this.statsRecommend).toBeVisible();
+  }
+
+  /**
+   * Assert footer is visible
+   */
+  async expectFooter() {
+    await expect(this.footerProductHeading).toBeVisible();
+    await expect(this.footerCompanyHeading).toBeVisible();
+    await expect(this.footerResourcesHeading).toBeVisible();
+    await expect(this.footerPrivacyLink).toBeVisible();
+    await expect(this.footerTermsLink).toBeVisible();
+    await expect(this.footerCopyright).toBeVisible();
   }
 }

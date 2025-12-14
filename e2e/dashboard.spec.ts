@@ -78,22 +78,24 @@ test.describe("Dashboard Tests", () => {
   });
 
   test.describe("Theme Toggle", () => {
-    test("can switch themes via settings", async ({ settingsPage, page }) => {
-      await settingsPage.goto();
+    test("can switch themes via settings", async ({ dashboardPage, settingsPage, page }) => {
+      // Navigate through UI: dashboard -> settings sidebar link
+      await dashboardPage.goto();
+      await dashboardPage.navigateTo("settings");
       await settingsPage.switchToTab("preferences");
 
       const html = page.locator("html");
 
-      // Switch to dark theme
-      await page.getByText("Dark").click();
+      // Switch to dark theme using page object
+      await settingsPage.setTheme("dark");
       await expect(html).toHaveClass(/dark/);
 
-      // Switch to light theme
-      await page.getByText("Light").click();
+      // Switch to light theme using page object
+      await settingsPage.setTheme("light");
       await expect(html).not.toHaveClass(/dark/);
 
-      // Switch to system theme
-      await page.getByText("System").click();
+      // Switch to system theme using page object
+      await settingsPage.setTheme("system");
     });
   });
 

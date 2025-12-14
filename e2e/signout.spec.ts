@@ -10,6 +10,8 @@ import { expect, authenticatedTest as test } from "./fixtures";
  * Uses serial mode to prevent auth token rotation issues between tests.
  * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
  * Test 2 loading stale tokens from file will fail.
+ *
+ * Uses DashboardPage and LandingPage page objects for consistent locators.
  */
 
 test.describe("Sign Out", () => {
@@ -22,40 +24,15 @@ test.describe("Sign Out", () => {
     await ensureAuthenticated();
   });
 
-  // TODO: Company context not loading - investigate auth token loading from storage state
-  test.skip("sign out returns to landing page", async ({ page, companySlug }) => {
-    // Navigate to company-scoped dashboard
-    // Use domcontentloaded - networkidle never resolves due to Convex WebSockets
-    await page.goto(`/${companySlug}/dashboard`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2000); // Allow React to hydrate and data to load
+  test("sign out returns to landing page", async ({ dashboardPage, landingPage }) => {
+    // Navigate to dashboard via proper entry point
+    await dashboardPage.goto();
+    await dashboardPage.expectLoaded();
 
-    // Wait for either dashboard or onboarding to load
-    const dashboard = page.getByRole("heading", { name: /my work/i });
-    const onboarding = page.getByRole("heading", { name: /welcome to nixelo/i });
+    // Sign out via user menu dropdown
+    await dashboardPage.signOutViaUserMenu();
 
-    // Wait for one of them to appear
-    await expect(dashboard.or(onboarding)).toBeVisible({ timeout: 15000 });
-
-    // If we're on onboarding, skip it first to get to dashboard
-    if (await onboarding.isVisible()) {
-      const skipButton = page.getByRole("button", { name: /skip for now/i });
-      await skipButton.click();
-      await expect(dashboard).toBeVisible({ timeout: 10000 });
-    }
-
-    // Open user menu (click the avatar button in the header)
-    const userMenuButton = page.getByRole("button", { name: "User menu" });
-    await userMenuButton.click();
-    await page.waitForTimeout(300); // Wait for dropdown to open
-
-    // Click sign out in the dropdown menu
-    const signOutButton = page.getByRole("menuitem", { name: /sign out/i });
-    await signOutButton.click();
-
-    // Should return to landing page
-    await expect(page.getByRole("link", { name: /get started free/i })).toBeVisible({
-      timeout: 10000,
-    });
+    // Should return to landing page - verify Get Started button is visible
+    await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 10000 });
   });
 });

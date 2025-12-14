@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { ACTIVITY_TYPES } from "@/lib/constants";
+import { FormTextarea, useAppForm } from "@/lib/form";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
@@ -9,84 +11,33 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+
+// =============================================================================
+// Types & Schema
+// =============================================================================
 
 type EntryMode = "duration" | "timeRange";
 
-interface ManualTimeEntryModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  projectId?: Id<"projects">;
-  issueId?: Id<"issues">;
-}
+const timeEntrySchema = z.object({
+  date: z.string().min(1, "Date is required"),
+  startTime: z.string(),
+  endTime: z.string(),
+  durationInput: z.string(),
+  description: z.string().optional(),
+  activity: z.string().optional(),
+  billable: z.boolean(),
+});
 
-interface TimeEntryData {
-  projectId?: Id<"projects">;
-  issueId?: Id<"issues">;
-  startTime: number;
-  endTime: number;
-  description: string | undefined;
-  activity: string | undefined;
-  tags: string[];
-  billable: boolean;
-}
+// =============================================================================
+// Helper Functions
+// =============================================================================
 
-/**
- * Calculate time entry data for duration mode
- */
-function calculateDurationModeEntry(
-  date: string,
-  effectiveDuration: number,
-  projectId: Id<"projects"> | undefined,
-  issueId: Id<"issues"> | undefined,
-  description: string,
-  activity: string,
-  tags: string[],
-  billable: boolean,
-): TimeEntryData {
-  const dateObj = new Date(date);
-  const now = new Date();
-  // Use current time if date is today, otherwise use end of day
-  const endDate =
-    dateObj.toDateString() === now.toDateString() ? now : new Date(dateObj.setHours(17, 0, 0, 0));
-  const endTime = endDate.getTime();
-  const startTimeMs = endTime - effectiveDuration * 1000;
-
-  return {
-    projectId,
-    issueId,
-    startTime: startTimeMs,
-    endTime: endTime,
-    description: description || undefined,
-    activity: activity || undefined,
-    tags,
-    billable,
-  };
-}
-
-/**
- * Add a tag to the list if it doesn't already exist
- */
-function addTagToList(tags: string[], newTag: string): string[] {
-  const tag = newTag.trim();
-  if (tag && !tags.includes(tag)) {
-    return [...tags, tag];
-  }
-  return tags;
-}
-
-/**
- * Parse duration input and return seconds (0 if invalid)
- */
 function parseDurationToSeconds(input: string): number {
   const parsed = parseDuration(input);
   return parsed ?? 0;
 }
 
-/**
- * Calculate duration in seconds from time range
- */
 function calculateTimeRangeDuration(date: string, startTime: string, endTime: string): number {
   if (!(date && startTime && endTime)) return 0;
   try {
@@ -99,56 +50,18 @@ function calculateTimeRangeDuration(date: string, startTime: string, endTime: st
   }
 }
 
-/**
- * Validate time entry form input
- * Returns error message if invalid, null if valid
- */
-function validateTimeEntry(
-  date: string,
-  entryMode: EntryMode,
-  effectiveDuration: number,
-  startTime: string,
-  endTime: string,
-  duration: number,
-): string | null {
-  if (!date) return "Please select a date";
-  if (entryMode === "duration" && effectiveDuration <= 0) return "Please enter a valid duration";
-  if (entryMode === "timeRange" && !(startTime && endTime))
-    return "Please fill in start time and end time";
-  if (entryMode === "timeRange" && duration <= 0) return "End time must be after start time";
-  return null;
+function addTagToList(tags: string[], newTag: string): string[] {
+  const tag = newTag.trim();
+  if (tag && !tags.includes(tag)) {
+    return [...tags, tag];
+  }
+  return tags;
 }
 
-/**
- * Calculate time entry data for time range mode
- */
-function calculateTimeRangeModeEntry(
-  date: string,
-  startTime: string,
-  endTime: string,
-  projectId: Id<"projects"> | undefined,
-  issueId: Id<"issues"> | undefined,
-  description: string,
-  activity: string,
-  tags: string[],
-  billable: boolean,
-): TimeEntryData {
-  const start = new Date(`${date}T${startTime}`);
-  const end = new Date(`${date}T${endTime}`);
+// =============================================================================
+// Sub-components
+// =============================================================================
 
-  return {
-    projectId,
-    issueId,
-    startTime: start.getTime(),
-    endTime: end.getTime(),
-    description: description || undefined,
-    activity: activity || undefined,
-    tags,
-    billable,
-  };
-}
-
-// Mode toggle button component
 function ModeToggleButton({
   mode,
   currentMode,
@@ -179,6 +92,17 @@ function ModeToggleButton({
   );
 }
 
+// =============================================================================
+// Main Component
+// =============================================================================
+
+interface ManualTimeEntryModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  projectId?: Id<"projects">;
+  issueId?: Id<"issues">;
+}
+
 export function ManualTimeEntryModal({
   open,
   onOpenChange,
@@ -187,29 +111,99 @@ export function ManualTimeEntryModal({
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const projects = useQuery(api.projects.list);
-  const _currentUser = useQuery(api.auth.loggedInUser);
 
+  // Mode and derived state (kept outside form due to complexity)
+  const [entryMode, setEntryMode] = useState<EntryMode>("duration");
+  const [durationSeconds, setDurationSeconds] = useState(0);
+  const [timeRangeDuration, setTimeRangeDuration] = useState(0);
+
+  // Project/Issue selection (Radix Select)
   const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
-  const [date, setDate] = useState(() => formatDateForInput(Date.now()));
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("17:00");
-  const [description, setDescription] = useState("");
-  const [activity, setActivity] = useState("");
+
+  // Tags (array state)
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [billable, setBillable] = useState(false);
-
-  // Entry mode toggle
-  const [entryMode, setEntryMode] = useState<EntryMode>("duration");
-  const [durationInput, setDurationInput] = useState("");
-  const [durationSeconds, setDurationSeconds] = useState(0);
 
   // Fetch issues for selected project
   const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
 
-  // Calculate duration from time range
-  const [duration, setDuration] = useState(0);
+  const form = useAppForm({
+    defaultValues: {
+      date: formatDateForInput(Date.now()),
+      startTime: "09:00",
+      endTime: "17:00",
+      durationInput: "",
+      description: "",
+      activity: "",
+      billable: false,
+    },
+    validators: { onChange: timeEntrySchema },
+    onSubmit: async ({ value }) => {
+      const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
+
+      // Validation
+      if (!value.date) {
+        showError("Please select a date");
+        return;
+      }
+      if (entryMode === "duration" && effectiveDuration <= 0) {
+        showError("Please enter a valid duration");
+        return;
+      }
+      if (entryMode === "timeRange" && !(value.startTime && value.endTime)) {
+        showError("Please fill in start time and end time");
+        return;
+      }
+      if (entryMode === "timeRange" && timeRangeDuration <= 0) {
+        showError("End time must be after start time");
+        return;
+      }
+
+      // Calculate entry data based on mode
+      let startTimeMs: number;
+      let endTimeMs: number;
+
+      if (entryMode === "duration") {
+        const dateObj = new Date(value.date);
+        const now = new Date();
+        const endDate =
+          dateObj.toDateString() === now.toDateString()
+            ? now
+            : new Date(dateObj.setHours(17, 0, 0, 0));
+        endTimeMs = endDate.getTime();
+        startTimeMs = endTimeMs - effectiveDuration * 1000;
+      } else {
+        const start = new Date(`${value.date}T${value.startTime}`);
+        const end = new Date(`${value.date}T${value.endTime}`);
+        startTimeMs = start.getTime();
+        endTimeMs = end.getTime();
+      }
+
+      try {
+        await createTimeEntry({
+          projectId,
+          issueId,
+          startTime: startTimeMs,
+          endTime: endTimeMs,
+          description: value.description || undefined,
+          activity: value.activity || undefined,
+          tags,
+          billable: value.billable,
+        });
+        showSuccess("Time entry created");
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to create time entry");
+      }
+    },
+  });
+
+  // Subscribe to form values for derived calculations
+  const date = form.useStore((state) => state.values.date);
+  const startTime = form.useStore((state) => state.values.startTime);
+  const endTime = form.useStore((state) => state.values.endTime);
+  const durationInput = form.useStore((state) => state.values.durationInput);
 
   // Parse duration input when it changes
   useEffect(() => {
@@ -220,19 +214,16 @@ export function ManualTimeEntryModal({
 
   // Calculate duration from time range
   useEffect(() => {
-    if (entryMode !== "timeRange") return;
-    setDuration(calculateTimeRangeDuration(date, startTime, endTime));
+    if (entryMode === "timeRange") {
+      setTimeRangeDuration(calculateTimeRangeDuration(date, startTime, endTime));
+    }
   }, [date, startTime, endTime, entryMode]);
 
-  // Quick increment handler for duration mode
   const handleQuickIncrement = (minutes: number) => {
     const newSeconds = durationSeconds + minutes * 60;
     setDurationSeconds(newSeconds);
-    setDurationInput(formatDurationHuman(newSeconds));
+    form.setFieldValue("durationInput", formatDurationHuman(newSeconds));
   };
-
-  // Get effective duration based on mode
-  const effectiveDuration = entryMode === "duration" ? durationSeconds : duration;
 
   const handleAddTag = () => {
     const newTags = addTagToList(tags, tagInput);
@@ -242,60 +233,7 @@ export function ManualTimeEntryModal({
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((t) => t !== tagToRemove));
-  };
-
-  const handleSubmit = async () => {
-    // Validate form input
-    const validationError = validateTimeEntry(
-      date,
-      entryMode,
-      effectiveDuration,
-      startTime,
-      endTime,
-      duration,
-    );
-    if (validationError) {
-      showError(validationError);
-      return;
-    }
-
-    // Calculate entry data based on mode
-    const entryData =
-      entryMode === "duration"
-        ? calculateDurationModeEntry(
-            date,
-            effectiveDuration,
-            projectId,
-            issueId,
-            description,
-            activity,
-            tags,
-            billable,
-          )
-        : calculateTimeRangeModeEntry(
-            date,
-            startTime,
-            endTime,
-            projectId,
-            issueId,
-            description,
-            activity,
-            tags,
-            billable,
-          );
-
-    try {
-      await createTimeEntry(entryData);
-      showSuccess("Time entry created");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to create time entry");
-    }
-  };
-
-  // Check if duration input is valid (for showing error state)
+  const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
   const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
 
   return (
@@ -307,7 +245,7 @@ export function ManualTimeEntryModal({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void handleSubmit();
+            form.handleSubmit();
           }}
           className="space-y-4"
         >
@@ -330,150 +268,166 @@ export function ManualTimeEntryModal({
           </div>
 
           {/* Date */}
-          <div>
-            <label
-              htmlFor="time-entry-date"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Date *
-            </label>
-            <input
-              id="time-entry-date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              max={formatDateForInput(Date.now())}
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-              required
-            />
-          </div>
+          <form.Field name="date">
+            {(field) => (
+              <div>
+                <label
+                  htmlFor="time-entry-date"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  Date *
+                </label>
+                <input
+                  id="time-entry-date"
+                  type="date"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  max={formatDateForInput(Date.now())}
+                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                  required
+                />
+              </div>
+            )}
+          </form.Field>
 
           {/* Duration Mode */}
           {entryMode === "duration" && (
-            <div>
-              <label
-                htmlFor="time-entry-duration"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Duration *
-              </label>
-              <input
-                id="time-entry-duration"
-                type="text"
-                value={durationInput}
-                onChange={(e) => setDurationInput(e.target.value)}
-                placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
-                  isDurationInputValid
-                    ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-                    : "border-status-error dark:border-status-error"
-                }`}
-              />
-              {!isDurationInputValid ? (
-                <p className="text-xs text-status-error mt-1">
-                  Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
-                </p>
-              ) : (
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-                  Accepts: 1:30, 1.5, 1h 30m, 90m
-                </p>
-              )}
-
-              {/* Quick Increment Buttons */}
-              <Flex gap="sm" className="mt-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleQuickIncrement(15)}
-                >
-                  +15m
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleQuickIncrement(30)}
-                >
-                  +30m
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleQuickIncrement(60)}
-                >
-                  +1h
-                </Button>
-                {durationSeconds > 0 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setDurationSeconds(0);
-                      setDurationInput("");
-                    }}
+            <form.Field name="durationInput">
+              {(field) => (
+                <div>
+                  <label
+                    htmlFor="time-entry-duration"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
                   >
-                    Clear
-                  </Button>
-                )}
-              </Flex>
+                    Duration *
+                  </label>
+                  <input
+                    id="time-entry-duration"
+                    type="text"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+                      isDurationInputValid
+                        ? "border-ui-border-primary dark:border-ui-border-primary-dark"
+                        : "border-status-error dark:border-status-error"
+                    }`}
+                  />
+                  {!isDurationInputValid ? (
+                    <p className="text-xs text-status-error mt-1">
+                      Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
+                    </p>
+                  ) : (
+                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                      Accepts: 1:30, 1.5, 1h 30m, 90m
+                    </p>
+                  )}
 
-              {/* Duration Display */}
-              {durationSeconds > 0 && (
-                <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                  <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                    Duration: {formatDurationHuman(durationSeconds)}
-                  </span>
+                  {/* Quick Increment Buttons */}
+                  <Flex gap="sm" className="mt-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleQuickIncrement(15)}
+                    >
+                      +15m
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleQuickIncrement(30)}
+                    >
+                      +30m
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleQuickIncrement(60)}
+                    >
+                      +1h
+                    </Button>
+                    {durationSeconds > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDurationSeconds(0);
+                          field.handleChange("");
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </Flex>
+
+                  {/* Duration Display */}
+                  {durationSeconds > 0 && (
+                    <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                      <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                        Duration: {formatDurationHuman(durationSeconds)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </form.Field>
           )}
 
           {/* Time Range Mode */}
           {entryMode === "timeRange" && (
             <>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="time-entry-start"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                  >
-                    Start Time *
-                  </label>
-                  <input
-                    id="time-entry-start"
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="time-entry-end"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                  >
-                    End Time *
-                  </label>
-                  <input
-                    id="time-entry-end"
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                    required
-                  />
-                </div>
+                <form.Field name="startTime">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="time-entry-start"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        Start Time *
+                      </label>
+                      <input
+                        id="time-entry-start"
+                        type="time"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                        required
+                      />
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="endTime">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="time-entry-end"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        End Time *
+                      </label>
+                      <input
+                        id="time-entry-end"
+                        type="time"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                        required
+                      />
+                    </div>
+                  )}
+                </form.Field>
               </div>
 
               {/* Duration Display */}
-              {duration > 0 && (
+              {timeRangeDuration > 0 && (
                 <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
                   <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                    Duration: {formatDurationHuman(duration)}
+                    Duration: {formatDurationHuman(timeRangeDuration)}
                   </span>
                 </div>
               )}
@@ -492,7 +446,7 @@ export function ManualTimeEntryModal({
               value={projectId || "none"}
               onValueChange={(value) => {
                 setProjectId(value === "none" ? undefined : (value as Id<"projects">));
-                setIssueId(undefined); // Reset issue when project changes
+                setIssueId(undefined);
               }}
             >
               <SelectTrigger id="time-entry-project" className="w-full">
@@ -540,39 +494,46 @@ export function ManualTimeEntryModal({
           )}
 
           {/* Description */}
-          <Textarea
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What did you work on?"
-            rows={3}
-          />
+          <form.Field name="description">
+            {(field) => (
+              <FormTextarea
+                field={field}
+                label="Description"
+                placeholder="What did you work on?"
+                rows={3}
+              />
+            )}
+          </form.Field>
 
           {/* Activity */}
-          <div>
-            <label
-              htmlFor="time-entry-activity"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Activity
-            </label>
-            <Select
-              value={activity || "none"}
-              onValueChange={(value) => setActivity(value === "none" ? "" : value)}
-            >
-              <SelectTrigger id="time-entry-activity" className="w-full">
-                <SelectValue placeholder="Select activity..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Select activity...</SelectItem>
-                {ACTIVITY_TYPES.map((activityType) => (
-                  <SelectItem key={activityType} value={activityType}>
-                    {activityType}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <form.Field name="activity">
+            {(field) => (
+              <div>
+                <label
+                  htmlFor="time-entry-activity"
+                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                >
+                  Activity
+                </label>
+                <Select
+                  value={field.state.value || "none"}
+                  onValueChange={(value) => field.handleChange(value === "none" ? "" : value)}
+                >
+                  <SelectTrigger id="time-entry-activity" className="w-full">
+                    <SelectValue placeholder="Select activity..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Select activity...</SelectItem>
+                    {ACTIVITY_TYPES.map((activityType) => (
+                      <SelectItem key={activityType} value={activityType}>
+                        {activityType}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </form.Field>
 
           {/* Tags */}
           <div>
@@ -597,7 +558,7 @@ export function ManualTimeEntryModal({
                 placeholder="Add tag..."
                 className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
               />
-              <Button onClick={handleAddTag} variant="secondary" size="sm">
+              <Button onClick={handleAddTag} variant="secondary" size="sm" type="button">
                 Add
               </Button>
             </Flex>
@@ -611,9 +572,10 @@ export function ManualTimeEntryModal({
                     >
                       {tag}
                       <Button
-                        onClick={() => handleRemoveTag(tag)}
+                        onClick={() => setTags(tags.filter((t) => t !== tag))}
                         variant="ghost"
                         size="sm"
+                        type="button"
                         className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
                         aria-label={`Remove tag ${tag}`}
                       >
@@ -627,32 +589,47 @@ export function ManualTimeEntryModal({
           </div>
 
           {/* Billable */}
-          <div>
-            <label className="cursor-pointer">
-              <Flex align="center" gap="sm">
-                <input
-                  type="checkbox"
-                  checked={billable}
-                  onChange={(e) => setBillable(e.target.checked)}
-                  className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                />
-                <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Billable time
-                </span>
-              </Flex>
-            </label>
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
-              Mark this time as billable to clients
-            </p>
-          </div>
+          <form.Field name="billable">
+            {(field) => (
+              <div>
+                <label className="cursor-pointer">
+                  <Flex align="center" gap="sm">
+                    <input
+                      type="checkbox"
+                      checked={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                      className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                    />
+                    <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      Billable time
+                    </span>
+                  </Flex>
+                </label>
+                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
+                  Mark this time as billable to clients
+                </p>
+              </div>
+            )}
+          </form.Field>
 
           <DialogFooter>
-            <Button onClick={() => onOpenChange(false)} variant="secondary">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" disabled={effectiveDuration <= 0}>
-              Create Entry
-            </Button>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <>
+                  <Button onClick={() => onOpenChange(false)} variant="secondary" type="button">
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={effectiveDuration <= 0}
+                    isLoading={isSubmitting}
+                  >
+                    Create Entry
+                  </Button>
+                </>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -17,6 +17,15 @@ vi.mock("@/lib/toast", () => ({
   showError: vi.fn(),
 }));
 
+// Mock company context
+vi.mock("@/hooks/useCompanyContext", () => ({
+  useCompany: vi.fn(() => ({
+    companySlug: "test-company",
+    companyName: "Test Company",
+    billingEnabled: false,
+  })),
+}));
+
 // Mock accessibility utilities
 vi.mock("@/lib/accessibility", () => ({
   handleKeyboardClick: vi.fn((callback) => callback),

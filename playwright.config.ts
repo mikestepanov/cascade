@@ -23,7 +23,7 @@ export default defineConfig({
   // Fail build on CI if test.only is left in code
   forbidOnly: !!process.env.CI,
 
-  // No retries locally, 2 on CI
+  // Retries: 2 on CI, 0 locally to catch flakiness during development
   retries: process.env.CI ? 2 : 0,
 
   // Single worker - sequential test execution

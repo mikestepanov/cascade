@@ -15,6 +15,14 @@ export class SettingsPage extends BasePage {
   readonly offlineTab: Locator;
   readonly preferencesTab: Locator;
   readonly adminTab: Locator;
+  readonly devToolsTab: Locator;
+
+  // ===================
+  // Locators - Theme Options (in Preferences tab)
+  // ===================
+  readonly themeLightOption: Locator;
+  readonly themeDarkOption: Locator;
+  readonly themeSystemOption: Locator;
 
   // ===================
   // Locators - Integrations
@@ -87,6 +95,12 @@ export class SettingsPage extends BasePage {
     this.adminTab = page
       .getByRole("tab", { name: /admin/i })
       .or(page.getByRole("button", { name: /admin/i }));
+    this.devToolsTab = page.getByRole("tab", { name: /dev tools/i });
+
+    // Theme options (in Preferences tab) - ToggleGroupItems with aria-labels
+    this.themeLightOption = page.getByRole("radio", { name: /light theme/i });
+    this.themeDarkOption = page.getByRole("radio", { name: /dark theme/i });
+    this.themeSystemOption = page.getByRole("radio", { name: /system theme/i });
 
     // Integrations
     this.githubIntegration = page
@@ -164,9 +178,12 @@ export class SettingsPage extends BasePage {
     await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
   }
 
-  async switchToTab(tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin") {
+  async switchToTab(
+    tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin" | "devTools",
+  ) {
     // Wait for React to fully hydrate and attach event handlers
-    await this.page.waitForLoadState("networkidle");
+    // Don't use networkidle - Convex WebSocket keeps connection active
+    await this.page.waitForLoadState("domcontentloaded");
     await this.page.waitForTimeout(1000);
 
     // Use getByRole("tab") directly - Radix UI tabs have role="tab"
@@ -261,6 +278,15 @@ export class SettingsPage extends BasePage {
       await this.page.getByRole("option", { name: new RegExp(`^${role}$`, "i") }).click();
     }
     await this.sendInviteButton.click();
+  }
+
+  async setTheme(theme: "light" | "dark" | "system") {
+    const options = {
+      light: this.themeLightOption,
+      dark: this.themeDarkOption,
+      system: this.themeSystemOption,
+    };
+    await options[theme].click();
   }
 
   // ===================

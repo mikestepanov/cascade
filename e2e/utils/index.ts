@@ -10,3 +10,5 @@ export * from "./mailtrap";
 export * from "./test-helpers";
 // Test user API service
 export * from "./test-user-service";
+// Wait helpers (semantic wait functions)
+export * from "./wait-helpers";

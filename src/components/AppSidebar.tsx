@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompanyOptional } from "@/hooks/useCompanyContext";
+import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
   ChevronDown,
@@ -29,10 +29,8 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebarState();
 
-  // Get company from URL context - use optional to handle early render
-  const company = useCompanyOptional();
-  const companySlug = company?.companySlug ?? "";
-  const companyName = company?.companyName ?? "";
+  // Get company from URL context
+  const { companySlug, companyName } = useCompany();
 
   // All hooks must be called unconditionally
   const isAdmin = useQuery(api.users.isCompanyAdmin);
@@ -49,24 +47,6 @@ export function AppSidebar() {
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createProject = useMutation(api.projects.create);
-
-  // Show loading sidebar placeholder if company context isn't ready
-  if (!company) {
-    return (
-      <aside
-        className={cn(
-          "fixed lg:relative z-50 lg:z-auto h-screen",
-          "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
-          "border-r border-ui-border-primary dark:border-ui-border-primary-dark",
-          "w-64",
-        )}
-      >
-        <div className="p-4 animate-pulse">
-          <div className="h-6 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded w-3/4" />
-        </div>
-      </aside>
-    );
-  }
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);

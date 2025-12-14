@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { z } from "zod";
+import { FormInput, FormTextarea, useAppForm } from "@/lib/form";
 import { Calendar, Clock, LinkIcon, MapPin } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
@@ -7,8 +9,30 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+
+// =============================================================================
+// Schema
+// =============================================================================
+
+const eventTypes = ["meeting", "deadline", "timeblock", "personal"] as const;
+
+const createEventSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  startDate: z.string().min(1, "Date is required"),
+  startTime: z.string(),
+  endTime: z.string(),
+  allDay: z.boolean(),
+  eventType: z.enum(eventTypes),
+  location: z.string().optional(),
+  meetingUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  isRequired: z.boolean(),
+});
+
+// =============================================================================
+// Component
+// =============================================================================
 
 interface CreateEventModalProps {
   open: boolean;
@@ -28,59 +52,61 @@ export function CreateEventModal({
   const createEvent = useMutation(api.calendarEvents.create);
   const projects = useQuery(api.projects.list, {});
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState(defaultDate.toISOString().split("T")[0]);
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("10:00");
-  const [allDay, setAllDay] = useState(false);
-  const [eventType, setEventType] = useState<"meeting" | "deadline" | "timeblock" | "personal">(
-    "meeting",
-  );
-  const [location, setLocation] = useState("");
-  const [meetingUrl, setMeetingUrl] = useState("");
+  // Project selection (uses Radix Select, kept outside form)
   const [selectedProjectId, setSelectedProjectId] = useState<Id<"projects"> | undefined>(projectId);
-  const [isRequired, setIsRequired] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const form = useAppForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      startDate: defaultDate.toISOString().split("T")[0],
+      startTime: "09:00",
+      endTime: "10:00",
+      allDay: false,
+      eventType: "meeting" as const,
+      location: "",
+      meetingUrl: "",
+      isRequired: false,
+    },
+    validators: { onChange: createEventSchema },
+    onSubmit: async ({ value }) => {
+      try {
+        // Parse start and end times
+        const [startHour, startMinute] = value.startTime.split(":").map(Number);
+        const [endHour, endMinute] = value.endTime.split(":").map(Number);
 
-    try {
-      // Parse start and end times
-      const [startHour, startMinute] = startTime.split(":").map(Number);
-      const [endHour, endMinute] = endTime.split(":").map(Number);
+        const startDateTime = new Date(value.startDate);
+        startDateTime.setHours(startHour, startMinute, 0, 0);
 
-      const startDateTime = new Date(startDate);
-      startDateTime.setHours(startHour, startMinute, 0, 0);
+        const endDateTime = new Date(value.startDate);
+        endDateTime.setHours(endHour, endMinute, 0, 0);
 
-      const endDateTime = new Date(startDate);
-      endDateTime.setHours(endHour, endMinute, 0, 0);
+        await createEvent({
+          title: value.title,
+          description: value.description || undefined,
+          startTime: startDateTime.getTime(),
+          endTime: endDateTime.getTime(),
+          allDay: value.allDay,
+          location: value.location || undefined,
+          eventType: value.eventType,
+          meetingUrl: value.meetingUrl || undefined,
+          projectId: selectedProjectId,
+          issueId,
+          attendeeIds: [],
+          isRequired: value.eventType === "meeting" ? value.isRequired : undefined,
+        });
 
-      await createEvent({
-        title,
-        description: description || undefined,
-        startTime: startDateTime.getTime(),
-        endTime: endDateTime.getTime(),
-        allDay,
-        location: location || undefined,
-        eventType,
-        meetingUrl: meetingUrl || undefined,
-        projectId: selectedProjectId,
-        issueId,
-        attendeeIds: [],
-        isRequired: eventType === "meeting" ? isRequired : undefined,
-      });
+        showSuccess("Event created successfully");
+        onOpenChange(false);
+      } catch (error) {
+        showError(error, "Failed to create event");
+      }
+    },
+  });
 
-      showSuccess("Event created successfully");
-      onOpenChange(false);
-    } catch (error) {
-      showError(error, "Failed to create event");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const eventType = form.useStore((state) => state.values.eventType);
+  const allDay = form.useStore((state) => state.values.allDay);
+  const isRequired = form.useStore((state) => state.values.isRequired);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -88,26 +114,24 @@ export function CreateEventModal({
         <DialogHeader>
           <DialogTitle>Create Event</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
           <Flex direction="column" gap="lg" className="p-6">
             {/* Title */}
-            <div>
-              <label
-                htmlFor="event-title"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Event Title *
-              </label>
-              <input
-                id="event-title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                placeholder="Team standup, Client call, etc."
-              />
-            </div>
+            <form.Field name="title">
+              {(field) => (
+                <FormInput
+                  field={field}
+                  label="Event Title *"
+                  placeholder="Team standup, Client call, etc."
+                  required
+                />
+              )}
+            </form.Field>
 
             {/* Event Type */}
             <div>
@@ -115,11 +139,11 @@ export function CreateEventModal({
                 Event Type
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {(["meeting", "deadline", "timeblock", "personal"] as const).map((type) => (
+                {eventTypes.map((type) => (
                   <button
                     key={type}
                     type="button"
-                    onClick={() => setEventType(type)}
+                    onClick={() => form.setFieldValue("eventType", type)}
                     className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
                       eventType === type
                         ? "bg-brand-600 text-white"
@@ -135,145 +159,187 @@ export function CreateEventModal({
             {/* Date and Time */}
             <div className="grid grid-cols-3 gap-4">
               <div className="col-span-3 sm:col-span-1">
-                <label
-                  htmlFor="event-date"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Date *
-                </label>
-                <input
-                  id="event-date"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                />
+                <form.Field name="startDate">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="event-date"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        <Calendar className="w-4 h-4 inline mr-1" />
+                        Date *
+                      </label>
+                      <input
+                        id="event-date"
+                        type="date"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        required
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                      />
+                    </div>
+                  )}
+                </form.Field>
               </div>
               <div>
-                <label
-                  htmlFor="event-start-time"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  Start Time
-                </label>
-                <input
-                  id="event-start-time"
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  disabled={allDay}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-                />
+                <form.Field name="startTime">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="event-start-time"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        <Clock className="w-4 h-4 inline mr-1" />
+                        Start Time
+                      </label>
+                      <input
+                        id="event-start-time"
+                        type="time"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        disabled={allDay}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                      />
+                    </div>
+                  )}
+                </form.Field>
               </div>
               <div>
-                <label
-                  htmlFor="event-end-time"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  End Time
-                </label>
-                <input
-                  id="event-end-time"
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  disabled={allDay}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-                />
+                <form.Field name="endTime">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="event-end-time"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        End Time
+                      </label>
+                      <input
+                        id="event-end-time"
+                        type="time"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        disabled={allDay}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                      />
+                    </div>
+                  )}
+                </form.Field>
               </div>
             </div>
 
             {/* All Day Toggle */}
-            <div>
-              <label>
-                <Flex gap="sm" align="center" className="cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={allDay}
-                    onChange={(e) => setAllDay(e.target.checked)}
-                    className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                  />
-                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                    All day event
-                  </span>
-                </Flex>
-              </label>
-            </div>
+            <form.Field name="allDay">
+              {(field) => (
+                <div>
+                  <label>
+                    <Flex gap="sm" align="center" className="cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.checked)}
+                        className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                      />
+                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                        All day event
+                      </span>
+                    </Flex>
+                  </label>
+                </div>
+              )}
+            </form.Field>
 
             {/* Required Attendance (only for meetings) */}
             {eventType === "meeting" && (
-              <div>
-                <label>
-                  <Flex gap="sm" align="center" className="cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isRequired}
-                      onChange={(e) => setIsRequired(e.target.checked)}
-                      className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                    />
-                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Required attendance (track who attends)
-                    </span>
-                  </Flex>
-                </label>
-                {isRequired && (
-                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
-                    Admins can mark who attended, was tardy, or missed this meeting
-                  </p>
+              <form.Field name="isRequired">
+                {(field) => (
+                  <div>
+                    <label>
+                      <Flex gap="sm" align="center" className="cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.checked)}
+                          className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                        />
+                        <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                          Required attendance (track who attends)
+                        </span>
+                      </Flex>
+                    </label>
+                    {isRequired && (
+                      <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
+                        Admins can mark who attended, was tardy, or missed this meeting
+                      </p>
+                    )}
+                  </div>
                 )}
-              </div>
+              </form.Field>
             )}
 
             {/* Description */}
-            <Textarea
-              label="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="Add notes, agenda, or details..."
-            />
+            <form.Field name="description">
+              {(field) => (
+                <FormTextarea
+                  field={field}
+                  label="Description"
+                  rows={3}
+                  placeholder="Add notes, agenda, or details..."
+                />
+              )}
+            </form.Field>
 
             {/* Location */}
-            <div>
-              <label
-                htmlFor="event-location"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                <MapPin className="w-4 h-4 inline mr-1" />
-                Location
-              </label>
-              <input
-                id="event-location"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                placeholder="Office, Zoom, Google Meet, etc."
-              />
-            </div>
+            <form.Field name="location">
+              {(field) => (
+                <div>
+                  <label
+                    htmlFor="event-location"
+                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  >
+                    <MapPin className="w-4 h-4 inline mr-1" />
+                    Location
+                  </label>
+                  <input
+                    id="event-location"
+                    type="text"
+                    value={field.state.value ?? ""}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                    placeholder="Office, Zoom, Google Meet, etc."
+                  />
+                </div>
+              )}
+            </form.Field>
 
             {/* Meeting URL */}
             {eventType === "meeting" && (
-              <div>
-                <label
-                  htmlFor="event-meeting-url"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  <LinkIcon className="w-4 h-4 inline mr-1" />
-                  Meeting Link
-                </label>
-                <input
-                  id="event-meeting-url"
-                  type="url"
-                  value={meetingUrl}
-                  onChange={(e) => setMeetingUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                  placeholder="https://zoom.us/j/..."
-                />
-              </div>
+              <form.Field name="meetingUrl">
+                {(field) => (
+                  <div>
+                    <label
+                      htmlFor="event-meeting-url"
+                      className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                    >
+                      <LinkIcon className="w-4 h-4 inline mr-1" />
+                      Meeting Link
+                    </label>
+                    <input
+                      id="event-meeting-url"
+                      type="url"
+                      value={field.state.value ?? ""}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                      className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                      placeholder="https://zoom.us/j/..."
+                    />
+                  </div>
+                )}
+              </form.Field>
             )}
 
             {/* Link to Project */}
@@ -306,12 +372,18 @@ export function CreateEventModal({
 
             {/* Actions */}
             <DialogFooter className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-              <Button onClick={() => onOpenChange(false)} variant="secondary">
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" isLoading={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Event"}
-              </Button>
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <>
+                    <Button onClick={() => onOpenChange(false)} variant="secondary">
+                      Cancel
+                    </Button>
+                    <Button type="submit" variant="primary" isLoading={isSubmitting}>
+                      {isSubmitting ? "Creating..." : "Create Event"}
+                    </Button>
+                  </>
+                )}
+              </form.Subscribe>
             </DialogFooter>
           </Flex>
         </form>

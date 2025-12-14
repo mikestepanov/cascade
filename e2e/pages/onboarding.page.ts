@@ -4,10 +4,41 @@ import { BasePage } from "./base.page";
 
 /**
  * Onboarding Page Object
- * Handles the welcome tour and onboarding flow interactions
+ * Handles both:
+ * - The new onboarding wizard (role selection, features)
+ * - The legacy Driver.js welcome tour
  */
 export class OnboardingPage extends BasePage {
-  // Driver.js tour elements
+  // ===================
+  // Onboarding Wizard Locators
+  // ===================
+  readonly welcomeHeading: Locator;
+  readonly teamLeadCard: Locator;
+  readonly teamMemberCard: Locator;
+  readonly continueButton: Locator;
+  readonly backButton: Locator;
+  readonly skipButton: Locator;
+  readonly skipText: Locator;
+
+  // Team Lead flow
+  readonly teamLeadHeading: Locator;
+  readonly setupWorkspaceButton: Locator;
+
+  // Team Member flow
+  readonly allSetHeading: Locator;
+  readonly goToDashboardButton: Locator;
+
+  // Feature highlights
+  readonly kanbanBoardsText: Locator;
+  readonly documentsText: Locator;
+  readonly sprintPlanningText: Locator;
+
+  // Dashboard (after onboarding)
+  readonly myWorkHeading: Locator;
+
+  // ===================
+  // Driver.js Tour Locators (legacy)
+  // ===================
   readonly tourOverlay: Locator;
   readonly tourPopover: Locator;
   readonly tourTitle: Locator;
@@ -19,6 +50,31 @@ export class OnboardingPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
+
+    // Onboarding wizard
+    this.welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
+    this.teamLeadCard = page.getByRole("heading", { name: /team lead/i });
+    this.teamMemberCard = page.getByRole("heading", { name: /team member/i });
+    this.continueButton = page.getByRole("button", { name: /continue/i });
+    this.backButton = page.getByRole("button", { name: /back/i });
+    this.skipButton = page.getByRole("button", { name: /skip for now/i });
+    this.skipText = page.getByText(/skip for now/i);
+
+    // Team Lead flow
+    this.teamLeadHeading = page.getByRole("heading", { name: /perfect for team leads/i });
+    this.setupWorkspaceButton = page.getByRole("button", { name: /let's set up your workspace/i });
+
+    // Team Member flow
+    this.allSetHeading = page.getByRole("heading", { name: /you're all set/i });
+    this.goToDashboardButton = page.getByRole("button", { name: /go to dashboard/i });
+
+    // Feature highlights
+    this.kanbanBoardsText = page.getByText(/kanban boards/i);
+    this.documentsText = page.getByText(/documents/i);
+    this.sprintPlanningText = page.getByText(/sprint planning/i);
+
+    // Dashboard
+    this.myWorkHeading = page.getByRole("heading", { name: /my work/i });
 
     // Driver.js uses these CSS classes
     this.tourOverlay = page.locator(".driver-overlay");
@@ -139,5 +195,117 @@ export class OnboardingPage extends BasePage {
   async expectTourClosed() {
     await expect(this.tourPopover).not.toBeVisible();
     await expect(this.tourOverlay).not.toBeVisible();
+  }
+
+  // ===================
+  // Onboarding Wizard Actions
+  // ===================
+
+  /**
+   * Wait for onboarding wizard to load
+   */
+  async waitForWizard(timeout = 15000) {
+    await expect(this.welcomeHeading).toBeVisible({ timeout });
+  }
+
+  /**
+   * Select team lead role
+   */
+  async selectTeamLead() {
+    await this.teamLeadCard.click();
+  }
+
+  /**
+   * Select team member role
+   */
+  async selectTeamMember() {
+    await this.teamMemberCard.click();
+  }
+
+  /**
+   * Click continue button
+   */
+  async clickContinue() {
+    await expect(this.continueButton).toBeEnabled({ timeout: 5000 });
+    await this.continueButton.click();
+  }
+
+  /**
+   * Click back button
+   */
+  async clickBack() {
+    await this.backButton.click();
+  }
+
+  /**
+   * Skip onboarding and go to dashboard
+   */
+  async skipOnboarding() {
+    // Try button first, then text
+    const skipVisible = await this.skipButton.isVisible().catch(() => false);
+    if (skipVisible) {
+      await this.skipButton.click();
+    } else {
+      await this.skipText.click();
+    }
+  }
+
+  /**
+   * Complete team lead flow to workspace setup
+   */
+  async goToWorkspaceSetup() {
+    await this.setupWorkspaceButton.click();
+  }
+
+  /**
+   * Complete team member flow to dashboard
+   */
+  async goToDashboard() {
+    await this.goToDashboardButton.click();
+  }
+
+  // ===================
+  // Onboarding Wizard Assertions
+  // ===================
+
+  /**
+   * Assert wizard shows role selection
+   */
+  async expectRoleSelection() {
+    await expect(this.welcomeHeading).toBeVisible({ timeout: 15000 });
+    await expect(this.teamLeadCard).toBeVisible();
+    await expect(this.teamMemberCard).toBeVisible();
+  }
+
+  /**
+   * Assert wizard shows team lead features
+   */
+  async expectTeamLeadFeatures() {
+    await expect(this.teamLeadHeading).toBeVisible({ timeout: 5000 });
+    await expect(this.setupWorkspaceButton).toBeVisible({ timeout: 5000 });
+  }
+
+  /**
+   * Assert wizard shows team member completion
+   */
+  async expectTeamMemberComplete() {
+    await expect(this.allSetHeading).toBeVisible({ timeout: 5000 });
+    await expect(this.goToDashboardButton).toBeVisible();
+  }
+
+  /**
+   * Assert feature highlights are visible
+   */
+  async expectFeatureHighlights() {
+    await expect(this.kanbanBoardsText).toBeVisible();
+    await expect(this.documentsText).toBeVisible();
+    await expect(this.sprintPlanningText).toBeVisible();
+  }
+
+  /**
+   * Assert we're on the dashboard
+   */
+  async expectDashboard(timeout = 15000) {
+    await expect(this.myWorkHeading).toBeVisible({ timeout });
   }
 }

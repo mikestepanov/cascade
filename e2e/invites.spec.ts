@@ -23,10 +23,10 @@ test.describe("User Invitations", () => {
     await ensureAuthenticated();
   });
 
-  // TODO: Company context not loading - investigate auth token loading from storage state
-  test.skip("admin can send and revoke invites", async ({ settingsPage, page }) => {
-    // 1. Navigate to Settings -> Admin (go directly via URL, no nav tab for settings)
-    await settingsPage.goto();
+  test("admin can send and revoke invites", async ({ dashboardPage, settingsPage, page }) => {
+    // 1. Navigate to Settings -> Admin via sidebar
+    await dashboardPage.goto();
+    await dashboardPage.navigateTo("settings");
     await settingsPage.switchToTab("admin");
 
     // 2. Send an invite

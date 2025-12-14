@@ -62,7 +62,7 @@ export function SignUpForm() {
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
       </div>
-      <form className="flex flex-col" onSubmit={handleSubmit}>
+      <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div
           className={`grid transition-all duration-300 ease-out ${
             showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0"

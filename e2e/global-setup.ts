@@ -79,6 +79,15 @@ async function setupTestUser(
 
   if (createResult.success) {
     console.log(`  ✓ ${userKey}: User created via API (${createResult.userId})`);
+
+    // Debug: Verify password is correctly stored
+    const debugResult = await testUserService.debugVerifyPassword(user.email, user.password);
+    if (!debugResult.passwordMatches) {
+      console.warn(`  ⚠️ ${userKey}: Password verification failed:`, JSON.stringify(debugResult));
+    } else {
+      console.log(`  ✓ ${userKey}: Password verified successfully`);
+    }
+
     success = await trySignInUser(page, baseURL, user);
     if (!success) {
       console.warn(`  ⚠️ ${userKey}: Sign-in failed after API user creation`);
