@@ -39,7 +39,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
   const [states, setStates] = useState<WorkflowState[]>(workflowStates);
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateWorkflow = useMutation(api.projects.updateWorkflow);
+  const updateWorkflow = useMutation(api.workspaces.updateWorkflow);
 
   const handleEdit = () => {
     setStates([...workflowStates]);

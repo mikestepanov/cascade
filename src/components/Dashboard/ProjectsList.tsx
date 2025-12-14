@@ -28,7 +28,7 @@ interface ProjectsListProps {
 }
 
 /**
- * Projects list for dashboard sidebar
+ * Workspaces list for dashboard sidebar
  * Extracted from Dashboard component to reduce complexity
  */
 export function ProjectsList({
@@ -38,11 +38,11 @@ export function ProjectsList({
   onNavigateToProjects,
 }: ProjectsListProps) {
   const count = projects?.length || 0;
-  const projectsLabel = count === 1 ? "project" : "projects";
+  const workspacesLabel = count === 1 ? "workspace" : "workspaces";
 
   return (
     <Card>
-      <CardHeader title="My Projects" description={`${count} ${projectsLabel}`} />
+      <CardHeader title="My Workspaces" description={`${count} ${workspacesLabel}`} />
       <CardBody>
         {!projects ? (
           /* Loading skeleton */
@@ -54,12 +54,12 @@ export function ProjectsList({
         ) : projects.length === 0 ? (
           <EmptyState
             icon="📂"
-            title="No projects"
-            description="You're not a member of any projects yet"
+            title="No workspaces"
+            description="You're not a member of any workspaces yet"
             action={
               onNavigateToProjects
                 ? {
-                    label: "Go to Projects",
+                    label: "Go to Workspaces",
                     onClick: onNavigateToProjects,
                   }
                 : undefined

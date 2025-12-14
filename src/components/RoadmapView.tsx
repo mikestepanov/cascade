@@ -22,7 +22,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const [filterEpic, setFilterEpic] = useState<Id<"issues"> | "all">("all");
 
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: projectId });
 
   // Filter epics and regular issues
   const epics = issues?.filter((issue) => issue.type === "epic") || [];

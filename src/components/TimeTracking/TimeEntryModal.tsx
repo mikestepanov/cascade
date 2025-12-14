@@ -1,8 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { Clock, Hourglass, Play } from "lucide-react";
-import { useEffect, useState } from "react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
+import { formatDateForInput, formatDurationHuman } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -11,43 +10,20 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
-
-type EntryMode = "timer" | "duration" | "timeRange";
+import {
+  calculateEntryTimes,
+  validateContext,
+  validateLogTimeSubmission,
+} from "./timeEntryValidation";
+import { type EntryMode, useTimeEntryForm } from "./useTimeEntryForm";
 
 interface TimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Pre-selected project */
   projectId?: Id<"projects">;
-  /** Pre-selected issue */
   issueId?: Id<"issues">;
-  /** Default mode when opening */
   defaultMode?: "timer" | "log";
-  /** Whether billing is enabled for the company (shows billable checkbox) */
   billingEnabled?: boolean;
-}
-
-/**
- * Parse duration input and return seconds (0 if invalid)
- */
-function parseDurationToSeconds(input: string): number {
-  const parsed = parseDuration(input);
-  return parsed ?? 0;
-}
-
-/**
- * Calculate duration in seconds from time range
- */
-function calculateTimeRangeDuration(date: string, startTime: string, endTime: string): number {
-  if (!(date && startTime && endTime)) return 0;
-  try {
-    const start = new Date(`${date}T${startTime}`);
-    const end = new Date(`${date}T${endTime}`);
-    if (end <= start) return 0;
-    return Math.floor((end.getTime() - start.getTime()) / 1000);
-  } catch {
-    return 0;
-  }
 }
 
 // Mode toggle button component
@@ -81,6 +57,244 @@ function ModeToggleButton({
   );
 }
 
+// Tags input component
+function TagsInput({
+  tags,
+  tagInput,
+  onTagInputChange,
+  onAddTag,
+  onRemoveTag,
+}: {
+  tags: string[];
+  tagInput: string;
+  onTagInputChange: (value: string) => void;
+  onAddTag: () => void;
+  onRemoveTag: (tag: string) => void;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor="time-entry-tags"
+        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+      >
+        Tags
+      </label>
+      <Flex gap="sm">
+        <input
+          id="time-entry-tags"
+          type="text"
+          value={tagInput}
+          onChange={(e) => onTagInputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onAddTag();
+            }
+          }}
+          placeholder="Add tag..."
+          className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+        />
+        <Button type="button" onClick={onAddTag} variant="secondary" size="sm">
+          Add
+        </Button>
+      </Flex>
+      {tags.length > 0 && (
+        <div className="mt-2">
+          <Flex gap="sm" className="flex-wrap">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => onRemoveTag(tag)}
+                  className="hover:text-brand-900 dark:hover:text-brand-100"
+                  aria-label={`Remove tag ${tag}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </Flex>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Duration mode fields component
+function DurationModeFields({
+  date,
+  durationInput,
+  durationSeconds,
+  isDurationInputValid,
+  onDateChange,
+  onDurationChange,
+  onQuickIncrement,
+  onClearDuration,
+}: {
+  date: string;
+  durationInput: string;
+  durationSeconds: number;
+  isDurationInputValid: boolean;
+  onDateChange: (value: string) => void;
+  onDurationChange: (value: string) => void;
+  onQuickIncrement: (minutes: number) => void;
+  onClearDuration: () => void;
+}) {
+  return (
+    <>
+      <div>
+        <label
+          htmlFor="time-entry-date"
+          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+        >
+          Date *
+        </label>
+        <input
+          id="time-entry-date"
+          type="date"
+          value={date}
+          onChange={(e) => onDateChange(e.target.value)}
+          max={formatDateForInput(Date.now())}
+          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          required
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="time-entry-duration"
+          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+        >
+          Duration *
+        </label>
+        <input
+          id="time-entry-duration"
+          type="text"
+          value={durationInput}
+          onChange={(e) => onDurationChange(e.target.value)}
+          placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+            isDurationInputValid
+              ? "border-ui-border-primary dark:border-ui-border-primary-dark"
+              : "border-status-error dark:border-status-error"
+          }`}
+        />
+        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          Accepts: 1:30, 1.5, 1h 30m, 90m
+        </p>
+        <Flex gap="sm" className="mt-2">
+          <Button type="button" variant="secondary" size="sm" onClick={() => onQuickIncrement(15)}>
+            +15m
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={() => onQuickIncrement(30)}>
+            +30m
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={() => onQuickIncrement(60)}>
+            +1h
+          </Button>
+          {durationSeconds > 0 && (
+            <Button type="button" variant="ghost" size="sm" onClick={onClearDuration}>
+              Clear
+            </Button>
+          )}
+        </Flex>
+        {durationSeconds > 0 && (
+          <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+            <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+              Duration: {formatDurationHuman(durationSeconds)}
+            </span>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// Time range mode fields component
+function TimeRangeModeFields({
+  date,
+  startTime,
+  endTime,
+  timeRangeDuration,
+  onDateChange,
+  onStartTimeChange,
+  onEndTimeChange,
+}: {
+  date: string;
+  startTime: string;
+  endTime: string;
+  timeRangeDuration: number;
+  onDateChange: (value: string) => void;
+  onStartTimeChange: (value: string) => void;
+  onEndTimeChange: (value: string) => void;
+}) {
+  return (
+    <>
+      <div>
+        <label
+          htmlFor="time-entry-date-range"
+          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+        >
+          Date *
+        </label>
+        <input
+          id="time-entry-date-range"
+          type="date"
+          value={date}
+          onChange={(e) => onDateChange(e.target.value)}
+          max={formatDateForInput(Date.now())}
+          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="time-entry-start"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
+            Start Time *
+          </label>
+          <input
+            id="time-entry-start"
+            type="time"
+            value={startTime}
+            onChange={(e) => onStartTimeChange(e.target.value)}
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="time-entry-end"
+            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          >
+            End Time *
+          </label>
+          <input
+            id="time-entry-end"
+            type="time"
+            value={endTime}
+            onChange={(e) => onEndTimeChange(e.target.value)}
+            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            required
+          />
+        </div>
+      </div>
+      {timeRangeDuration > 0 && (
+        <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+          <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+            Duration: {formatDurationHuman(timeRangeDuration)}
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
+
 /**
  * Unified Time Entry Modal
  *
@@ -96,112 +310,36 @@ export function TimeEntryModal({
   billingEnabled,
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const startTimer = useMutation(api.timeTracking.startTimer);
-  const projects = useQuery(api.projects.list);
+  const startTimerMutation = useMutation(api.timeTracking.startTimer);
+  const projects = useQuery(api.workspaces.list);
 
-  // Form state
-  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
-  const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
-  const [description, setDescription] = useState("");
-  const [activity, setActivity] = useState("");
-  const [billable, setBillable] = useState(false);
+  const { state, actions, computed } = useTimeEntryForm({
+    initialProjectId,
+    initialIssueId,
+    defaultMode,
+    open,
+  });
 
-  // Log mode state
-  const [date, setDate] = useState(() => formatDateForInput(Date.now()));
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("17:00");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-
-  // Entry mode: timer, duration, or timeRange
-  const [entryMode, setEntryMode] = useState<EntryMode>(
-    defaultMode === "timer" ? "timer" : "duration",
+  const projectIssues = useQuery(
+    api.issues.listByProject,
+    state.projectId ? { projectId: state.projectId } : "skip",
   );
-  const [durationInput, setDurationInput] = useState("");
-  const [durationSeconds, setDurationSeconds] = useState(0);
 
-  // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
-
-  // Calculate duration from time range
-  const [timeRangeDuration, setTimeRangeDuration] = useState(0);
-
-  // Reset form when modal opens with new props
-  useEffect(() => {
-    if (open) {
-      setProjectId(initialProjectId);
-      setIssueId(initialIssueId);
-      setEntryMode(defaultMode === "timer" ? "timer" : "duration");
-      // Reset other fields
-      setDescription("");
-      setActivity("");
-      setBillable(false);
-      setDate(formatDateForInput(Date.now()));
-      setStartTime("09:00");
-      setEndTime("17:00");
-      setTags([]);
-      setTagInput("");
-      setDurationInput("");
-      setDurationSeconds(0);
-    }
-  }, [open, initialProjectId, initialIssueId, defaultMode]);
-
-  // Parse duration input when it changes
-  useEffect(() => {
-    if (entryMode === "duration") {
-      setDurationSeconds(parseDurationToSeconds(durationInput));
-    }
-  }, [durationInput, entryMode]);
-
-  // Calculate duration from time range
-  useEffect(() => {
-    if (entryMode === "timeRange") {
-      setTimeRangeDuration(calculateTimeRangeDuration(date, startTime, endTime));
-    }
-  }, [date, startTime, endTime, entryMode]);
-
-  // Quick increment handler for duration mode
-  const handleQuickIncrement = (minutes: number) => {
-    const newSeconds = durationSeconds + minutes * 60;
-    setDurationSeconds(newSeconds);
-    setDurationInput(formatDurationHuman(newSeconds));
-  };
-
-  // Get effective duration based on mode
-  const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
-
-  const handleAddTag = () => {
-    const tag = tagInput.trim();
-    if (tag && !tags.includes(tag)) {
-      setTags([...tags, tag]);
-      setTagInput("");
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((t) => t !== tagToRemove));
-  };
-
-  // Validation: require either [project + issue] OR [description + activity]
-  const hasTaskContext = projectId && issueId;
-  const hasManualContext = description.trim() && activity;
-  const hasValidContext = hasTaskContext || hasManualContext;
-
-  // Handle starting a timer
   const handleStartTimer = async () => {
-    if (!hasValidContext) {
-      showError("Please select a project and issue, or fill in description and activity");
+    const contextResult = validateContext(computed.hasValidContext);
+    if (!contextResult.isValid) {
+      showError(contextResult.errorMessage);
       return;
     }
 
     try {
-      await startTimer({
-        projectId,
-        issueId,
-        description: description || undefined,
-        activity: activity || undefined,
-        billable,
-        tags: tags.length > 0 ? tags : undefined,
+      await startTimerMutation({
+        projectId: state.projectId,
+        issueId: state.issueId,
+        description: state.description || undefined,
+        activity: state.activity || undefined,
+        billable: state.billable,
+        tags: state.tags.length > 0 ? state.tags : undefined,
       });
       showSuccess("Timer started");
       onOpenChange(false);
@@ -210,58 +348,33 @@ export function TimeEntryModal({
     }
   };
 
-  // Handle logging past time
   const handleLogTime = async () => {
-    // Validate context
-    if (!hasValidContext) {
-      showError("Please select a project and issue, or fill in description and activity");
-      return;
-    }
-    if (!date) {
-      showError("Please select a date");
-      return;
-    }
-    if (entryMode === "duration" && effectiveDuration <= 0) {
-      showError("Please enter a valid duration");
-      return;
-    }
-    if (entryMode === "timeRange" && !(startTime && endTime)) {
-      showError("Please fill in start time and end time");
-      return;
-    }
-    if (entryMode === "timeRange" && timeRangeDuration <= 0) {
-      showError("End time must be after start time");
+    const validationResult = validateLogTimeSubmission(
+      state,
+      computed.hasValidContext,
+      computed.effectiveDuration,
+    );
+
+    if (!validationResult.isValid) {
+      showError(validationResult.errorMessage);
       return;
     }
 
-    // Calculate times based on mode
-    let entryStartTime: number;
-    let entryEndTime: number;
-
-    if (entryMode === "duration") {
-      const dateObj = new Date(date);
-      const now = new Date();
-      const endDate =
-        dateObj.toDateString() === now.toDateString()
-          ? now
-          : new Date(dateObj.setHours(17, 0, 0, 0));
-      entryEndTime = endDate.getTime();
-      entryStartTime = entryEndTime - effectiveDuration * 1000;
-    } else {
-      entryStartTime = new Date(`${date}T${startTime}`).getTime();
-      entryEndTime = new Date(`${date}T${endTime}`).getTime();
-    }
+    const { startTime: entryStartTime, endTime: entryEndTime } = calculateEntryTimes(
+      state,
+      computed.effectiveDuration,
+    );
 
     try {
       await createTimeEntry({
-        projectId,
-        issueId,
+        projectId: state.projectId,
+        issueId: state.issueId,
         startTime: entryStartTime,
         endTime: entryEndTime,
-        description: description || undefined,
-        activity: activity || undefined,
-        tags,
-        billable,
+        description: state.description || undefined,
+        activity: state.activity || undefined,
+        tags: state.tags,
+        billable: state.billable,
       });
       showSuccess("Time entry created");
       onOpenChange(false);
@@ -271,23 +384,18 @@ export function TimeEntryModal({
   };
 
   const handleSubmit = () => {
-    if (entryMode === "timer") {
+    if (computed.isTimerMode) {
       void handleStartTimer();
     } else {
       void handleLogTime();
     }
   };
 
-  // Check if duration input is valid
-  const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
-
-  const isTimerMode = entryMode === "timer";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{isTimerMode ? "Start Timer" : "Log Time"}</DialogTitle>
+          <DialogTitle>{computed.isTimerMode ? "Start Timer" : "Log Time"}</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -300,24 +408,24 @@ export function TimeEntryModal({
           <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
             <ModeToggleButton
               mode="timer"
-              currentMode={entryMode}
+              currentMode={state.entryMode}
               icon={Play}
               label="Start Timer"
-              onClick={() => setEntryMode("timer")}
+              onClick={() => actions.setEntryMode("timer")}
             />
             <ModeToggleButton
               mode="duration"
-              currentMode={entryMode}
+              currentMode={state.entryMode}
               icon={Hourglass}
               label="Duration"
-              onClick={() => setEntryMode("duration")}
+              onClick={() => actions.setEntryMode("duration")}
             />
             <ModeToggleButton
               mode="timeRange"
-              currentMode={entryMode}
+              currentMode={state.entryMode}
               icon={Clock}
               label="Time Range"
-              onClick={() => setEntryMode("timeRange")}
+              onClick={() => actions.setEntryMode("timeRange")}
             />
           </div>
 
@@ -330,17 +438,17 @@ export function TimeEntryModal({
               Project
             </label>
             <Select
-              value={projectId || "none"}
+              value={state.projectId || "none"}
               onValueChange={(value) => {
-                setProjectId(value === "none" ? undefined : (value as Id<"projects">));
-                setIssueId(undefined); // Reset issue when project changes
+                actions.setProjectId(value === "none" ? undefined : (value as Id<"projects">));
+                actions.setIssueId(undefined);
               }}
             >
               <SelectTrigger id="time-entry-project" className="w-full">
                 <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No project</SelectItem>
+                <SelectItem value="none">No workspace</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
@@ -351,7 +459,7 @@ export function TimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {projectId && projectIssues && projectIssues.length > 0 && (
+          {state.projectId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"
@@ -360,9 +468,9 @@ export function TimeEntryModal({
                 Issue
               </label>
               <Select
-                value={issueId || "none"}
+                value={state.issueId || "none"}
                 onValueChange={(value) =>
-                  setIssueId(value === "none" ? undefined : (value as Id<"issues">))
+                  actions.setIssueId(value === "none" ? undefined : (value as Id<"issues">))
                 }
               >
                 <SelectTrigger id="time-entry-issue" className="w-full">
@@ -383,8 +491,8 @@ export function TimeEntryModal({
           {/* Description */}
           <Textarea
             label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={state.description}
+            onChange={(e) => actions.setDescription(e.target.value)}
             placeholder="What are you working on?"
             rows={2}
           />
@@ -398,8 +506,8 @@ export function TimeEntryModal({
               Activity
             </label>
             <Select
-              value={activity || "none"}
-              onValueChange={(value) => setActivity(value === "none" ? "" : value)}
+              value={state.activity || "none"}
+              onValueChange={(value) => actions.setActivity(value === "none" ? "" : value)}
             >
               <SelectTrigger id="time-entry-activity" className="w-full">
                 <SelectValue placeholder="Select activity..." />
@@ -415,15 +523,15 @@ export function TimeEntryModal({
             </Select>
           </div>
 
-          {/* Billable - only show if billing is enabled for company */}
+          {/* Billable */}
           {billingEnabled && (
             <div>
               <label className="cursor-pointer">
                 <Flex align="center" gap="sm">
                   <input
                     type="checkbox"
-                    checked={billable}
-                    onChange={(e) => setBillable(e.target.checked)}
+                    checked={state.billable}
+                    onChange={(e) => actions.setBillable(e.target.checked)}
                     className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                   />
                   <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -434,223 +542,40 @@ export function TimeEntryModal({
             </div>
           )}
 
-          {/* Tags - common to all modes */}
-          <div>
-            <label
-              htmlFor="time-entry-tags"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
-              Tags
-            </label>
-            <Flex gap="sm">
-              <input
-                id="time-entry-tags"
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddTag();
-                  }
-                }}
-                placeholder="Add tag..."
-                className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-              />
-              <Button type="button" onClick={handleAddTag} variant="secondary" size="sm">
-                Add
-              </Button>
-            </Flex>
-            {tags.length > 0 && (
-              <div className="mt-2">
-                <Flex gap="sm" className="flex-wrap">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(tag)}
-                        className="hover:text-brand-900 dark:hover:text-brand-100"
-                        aria-label={`Remove tag ${tag}`}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </Flex>
-              </div>
-            )}
-          </div>
+          {/* Tags */}
+          <TagsInput
+            tags={state.tags}
+            tagInput={state.tagInput}
+            onTagInputChange={actions.setTagInput}
+            onAddTag={actions.handleAddTag}
+            onRemoveTag={actions.handleRemoveTag}
+          />
 
           {/* Duration Mode Fields */}
-          {entryMode === "duration" && (
-            <>
-              {/* Date */}
-              <div>
-                <label
-                  htmlFor="time-entry-date"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Date *
-                </label>
-                <input
-                  id="time-entry-date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  max={formatDateForInput(Date.now())}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  required
-                />
-              </div>
-
-              {/* Duration Input */}
-              <div>
-                <label
-                  htmlFor="time-entry-duration"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Duration *
-                </label>
-                <input
-                  id="time-entry-duration"
-                  type="text"
-                  value={durationInput}
-                  onChange={(e) => setDurationInput(e.target.value)}
-                  placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
-                    isDurationInputValid
-                      ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-                      : "border-status-error dark:border-status-error"
-                  }`}
-                />
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-                  Accepts: 1:30, 1.5, 1h 30m, 90m
-                </p>
-
-                {/* Quick Increment Buttons */}
-                <Flex gap="sm" className="mt-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleQuickIncrement(15)}
-                  >
-                    +15m
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleQuickIncrement(30)}
-                  >
-                    +30m
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleQuickIncrement(60)}
-                  >
-                    +1h
-                  </Button>
-                  {durationSeconds > 0 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setDurationSeconds(0);
-                        setDurationInput("");
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  )}
-                </Flex>
-
-                {/* Duration Display */}
-                {durationSeconds > 0 && (
-                  <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                    <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                      Duration: {formatDurationHuman(durationSeconds)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </>
+          {state.entryMode === "duration" && (
+            <DurationModeFields
+              date={state.date}
+              durationInput={state.durationInput}
+              durationSeconds={state.durationSeconds}
+              isDurationInputValid={computed.isDurationInputValid}
+              onDateChange={actions.setDate}
+              onDurationChange={actions.setDurationInput}
+              onQuickIncrement={actions.handleQuickIncrement}
+              onClearDuration={actions.clearDuration}
+            />
           )}
 
           {/* Time Range Mode Fields */}
-          {entryMode === "timeRange" && (
-            <>
-              {/* Date */}
-              <div>
-                <label
-                  htmlFor="time-entry-date-range"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                >
-                  Date *
-                </label>
-                <input
-                  id="time-entry-date-range"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  max={formatDateForInput(Date.now())}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                  required
-                />
-              </div>
-
-              {/* Time Range */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="time-entry-start"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                  >
-                    Start Time *
-                  </label>
-                  <input
-                    id="time-entry-start"
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="time-entry-end"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                  >
-                    End Time *
-                  </label>
-                  <input
-                    id="time-entry-end"
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Duration Display */}
-              {timeRangeDuration > 0 && (
-                <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                  <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
-                    Duration: {formatDurationHuman(timeRangeDuration)}
-                  </span>
-                </div>
-              )}
-            </>
+          {state.entryMode === "timeRange" && (
+            <TimeRangeModeFields
+              date={state.date}
+              startTime={state.startTime}
+              endTime={state.endTime}
+              timeRangeDuration={state.timeRangeDuration}
+              onDateChange={actions.setDate}
+              onStartTimeChange={actions.setStartTime}
+              onEndTimeChange={actions.setEndTime}
+            />
           )}
 
           {/* Footer */}
@@ -661,10 +586,10 @@ export function TimeEntryModal({
             <Button
               type="submit"
               variant="primary"
-              disabled={!isTimerMode && effectiveDuration <= 0}
-              leftIcon={isTimerMode ? <Play className="w-4 h-4" /> : undefined}
+              disabled={!computed.isTimerMode && computed.effectiveDuration <= 0}
+              leftIcon={computed.isTimerMode ? <Play className="w-4 h-4" /> : undefined}
             >
-              {isTimerMode ? "Start Timer" : "Log Time"}
+              {computed.isTimerMode ? "Start Timer" : "Log Time"}
             </Button>
           </DialogFooter>
         </form>

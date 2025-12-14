@@ -29,7 +29,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
   const { billingEnabled } = useCompany();
 
   // Only fetch projects list if no projectId is locked
-  const projects = useQuery(api.projects.list, projectId ? "skip" : undefined);
+  const projects = useQuery(api.workspaces.list, projectId ? "skip" : undefined);
 
   // Determine if user can see sensitive tabs (burn rate, hourly rates)
   const canSeeSensitiveTabs = isGlobalAdmin || userRole === "admin";

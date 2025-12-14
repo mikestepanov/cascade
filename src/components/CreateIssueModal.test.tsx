@@ -66,7 +66,7 @@ describe("CreateIssueModal", () => {
     (useMutation as vi.Mock).mockReturnValue(mockCreateIssue);
     (useAction as vi.Mock).mockReturnValue(vi.fn());
     // Mock useQuery to return values in order:
-    // 1st call: api.projects.get -> mockProject
+    // 1st call: api.workspaces.get -> mockProject
     // 2nd call: api.templates.list -> mockTemplates
     // 3rd call: api.labels.list -> mockLabels
     (useQuery as vi.Mock)

@@ -7,6 +7,8 @@ import { BasePage } from "./base.page";
  * Handles the calendar view with events and meetings
  */
 export class CalendarPage extends BasePage {
+  private companySlug: string;
+
   // ===================
   // Locators - Calendar View
   // ===================
@@ -54,8 +56,9 @@ export class CalendarPage extends BasePage {
   readonly attendeesList: Locator;
   readonly markAttendanceButton: Locator;
 
-  constructor(page: Page) {
+  constructor(page: Page, companySlug = "nixelo-e2e") {
     super(page);
+    this.companySlug = companySlug;
 
     // Calendar view
     this.calendar = page
@@ -111,6 +114,15 @@ export class CalendarPage extends BasePage {
     this.deleteEventButton = page.getByRole("button", { name: /delete/i });
     this.attendeesList = page.locator("[data-attendees]");
     this.markAttendanceButton = page.getByRole("button", { name: /mark.*attendance|attendance/i });
+  }
+
+  // ===================
+  // Navigation
+  // ===================
+
+  async goto() {
+    await this.page.goto(`/${this.companySlug}/calendar`);
+    await this.waitForLoad();
   }
 
   // ===================

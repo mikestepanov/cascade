@@ -39,8 +39,11 @@ export class DocumentsPage extends BasePage {
   readonly confirmDeleteButton: Locator;
   readonly cancelDeleteButton: Locator;
 
-  constructor(page: Page) {
+  private companySlug: string;
+
+  constructor(page: Page, companySlug = "nixelo-e2e") {
     super(page);
+    this.companySlug = companySlug;
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
@@ -76,6 +79,15 @@ export class DocumentsPage extends BasePage {
     this.deleteConfirmDialog = page.getByRole("dialog").filter({ hasText: /delete|confirm/i });
     this.confirmDeleteButton = page.getByRole("button", { name: /delete|confirm|yes/i });
     this.cancelDeleteButton = page.getByRole("button", { name: /cancel|no/i });
+  }
+
+  // ===================
+  // Navigation
+  // ===================
+
+  async goto() {
+    await this.page.goto(`/${this.companySlug}/documents`);
+    await this.waitForLoad();
   }
 
   // ===================

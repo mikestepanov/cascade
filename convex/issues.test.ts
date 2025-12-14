@@ -128,7 +128,7 @@ describe("Issues", () => {
 
       // Add viewer
       const asAdmin = asAuthenticatedUser(t, adminId);
-      await asAdmin.mutation(api.projects.addMember, {
+      await asAdmin.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "viewer@test.com",
         role: "viewer",
@@ -257,7 +257,7 @@ describe("Issues", () => {
         priority: "medium",
       });
 
-      await asAdmin.mutation(api.projects.addMember, {
+      await asAdmin.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "viewer@test.com",
         role: "viewer",
@@ -549,7 +549,7 @@ describe("Issues", () => {
         priority: "medium",
       });
 
-      await asAdmin.mutation(api.projects.addMember, {
+      await asAdmin.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "viewer@test.com",
         role: "viewer",

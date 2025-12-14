@@ -112,7 +112,7 @@ describe("Analytics", () => {
       });
 
       // Get done state
-      const project = await asUser.query(api.projects.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: projectId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create issues
@@ -273,7 +273,7 @@ describe("Analytics", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Get done state
-      const project = await asUser.query(api.projects.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: projectId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       // Create and complete sprint 1
@@ -395,7 +395,7 @@ describe("Analytics", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const project = await asUser.query(api.projects.get, { id: projectId });
+      const project = await asUser.query(api.workspaces.get, { id: projectId });
       const doneState = project?.workflowStates.find((s: { name: string }) => s.name === "Done");
 
       const sprintId = await asUser.mutation(api.sprints.create, {

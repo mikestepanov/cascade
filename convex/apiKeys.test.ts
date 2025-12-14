@@ -75,7 +75,7 @@ describe("API Keys", () => {
       const projectId = await createTestProject(t, owner);
 
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "member@example.com",
         role: "viewer",

@@ -278,7 +278,7 @@ export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOp
  *
  * @example
  * ```typescript
- * const members = useQuery(api.projects.getMembers, { projectId });
+ * const members = useQuery(api.workspaces.getMembers, { projectId });
  * const { results, search, query } = useUserFuzzySearch(members);
  * ```
  */
@@ -299,7 +299,7 @@ export function useUserFuzzySearch(users: Array<{ name?: string; email?: string 
  *
  * @example
  * ```typescript
- * const projects = useQuery(api.projects.listUserProjects);
+ * const projects = useQuery(api.workspaces.listUserProjects);
  * const { results, search, query } = useProjectFuzzySearch(projects);
  * ```
  */

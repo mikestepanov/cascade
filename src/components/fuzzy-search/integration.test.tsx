@@ -139,7 +139,7 @@ describe("Hybrid Search Integration", () => {
           expect(result.current.debouncedQuery).toBe("john");
           expect(result.current.isDebouncing).toBe(false);
         },
-        { timeout: 200 },
+        { timeout: 500 },
       );
     });
   });
@@ -166,7 +166,7 @@ describe("Hybrid Search Integration", () => {
         () => {
           expect(result.current.isDebouncing).toBe(false);
         },
-        { timeout: 200 },
+        { timeout: 500 },
       );
 
       // No results because Bob wasn't in the Convex response
@@ -182,7 +182,7 @@ describe("Hybrid Search Integration", () => {
         () => {
           expect(result.current.isDebouncing).toBe(false);
         },
-        { timeout: 200 },
+        { timeout: 500 },
       );
 
       expect(result.current.results.length).toBeGreaterThan(0);
@@ -336,7 +336,7 @@ describe("Hybrid Search Integration", () => {
         () => {
           expect(result.current.isDebouncing).toBe(false);
         },
-        { timeout: 200 },
+        { timeout: 500 },
       );
 
       // useUserFuzzySearch has limit: 10

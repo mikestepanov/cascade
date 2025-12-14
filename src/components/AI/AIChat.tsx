@@ -238,7 +238,7 @@ export const AIChat = React.memo(function AIChat({
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask me anything about your project..."
+            placeholder="Ask me anything about your workspace..."
             disabled={isSending}
             className="flex-1 resize-none rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary dark:text-ui-text-primary-dark placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}

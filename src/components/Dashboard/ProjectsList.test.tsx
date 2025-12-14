@@ -48,11 +48,11 @@ describe("ProjectsList", () => {
     onNavigateToProjects: vi.fn(),
   };
 
-  it("should render card header with project count", () => {
+  it("should render card header with workspace count", () => {
     render(<ProjectsList {...defaultProps} />);
 
-    expect(screen.getByText("My Projects")).toBeInTheDocument();
-    expect(screen.getByText(`${mockProjects.length} projects`)).toBeInTheDocument();
+    expect(screen.getByText("My Workspaces")).toBeInTheDocument();
+    expect(screen.getByText(`${mockProjects.length} workspaces`)).toBeInTheDocument();
   });
 
   it("should render loading skeleton when data is undefined", () => {
@@ -63,20 +63,20 @@ describe("ProjectsList", () => {
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
-  it("should render empty state when no projects", () => {
+  it("should render empty state when no workspaces", () => {
     render(<ProjectsList {...defaultProps} projects={[]} />);
 
-    expect(screen.getByText("No projects")).toBeInTheDocument();
-    expect(screen.getByText("You're not a member of any projects yet")).toBeInTheDocument();
+    expect(screen.getByText("No workspaces")).toBeInTheDocument();
+    expect(screen.getByText("You're not a member of any workspaces yet")).toBeInTheDocument();
   });
 
-  it("should render Go to Projects button in empty state", () => {
+  it("should render Go to Workspaces button in empty state", () => {
     render(<ProjectsList {...defaultProps} projects={[]} />);
 
-    expect(screen.getByText("Go to Projects")).toBeInTheDocument();
+    expect(screen.getByText("Go to Workspaces")).toBeInTheDocument();
   });
 
-  it("should call onNavigateToProjects when clicking Go to Projects", async () => {
+  it("should call onNavigateToProjects when clicking Go to Workspaces", async () => {
     const onNavigateToProjects = vi.fn();
     const user = userEvent.setup();
 
@@ -84,16 +84,16 @@ describe("ProjectsList", () => {
       <ProjectsList {...defaultProps} projects={[]} onNavigateToProjects={onNavigateToProjects} />,
     );
 
-    const button = screen.getByText("Go to Projects");
+    const button = screen.getByText("Go to Workspaces");
     await user.click(button);
 
     expect(onNavigateToProjects).toHaveBeenCalled();
   });
 
-  it("should not render Go to Projects button when onNavigateToProjects is not provided", () => {
+  it("should not render Go to Workspaces button when onNavigateToProjects is not provided", () => {
     render(<ProjectsList {...defaultProps} projects={[]} onNavigateToProjects={undefined} />);
 
-    expect(screen.queryByText("Go to Projects")).not.toBeInTheDocument();
+    expect(screen.queryByText("Go to Workspaces")).not.toBeInTheDocument();
   });
 
   it("should render all projects when data is present", () => {
@@ -232,24 +232,24 @@ describe("ProjectsList", () => {
     }
   });
 
-  it("should handle single project", () => {
+  it("should handle single workspace", () => {
     const singleProject = [mockProjects[0]];
 
     render(<ProjectsList {...defaultProps} projects={singleProject} />);
 
-    expect(screen.getByText("1 project")).toBeInTheDocument();
+    expect(screen.getByText("1 workspace")).toBeInTheDocument();
     expect(screen.getByText("Project Alpha")).toBeInTheDocument();
   });
 
-  it("should show 0 projects in header when array is empty", () => {
+  it("should show 0 workspaces in header when array is empty", () => {
     render(<ProjectsList {...defaultProps} projects={[]} />);
 
-    expect(screen.getByText("0 projects")).toBeInTheDocument();
+    expect(screen.getByText("0 workspaces")).toBeInTheDocument();
   });
 
-  it("should show 0 projects in header when undefined", () => {
+  it("should show 0 workspaces in header when undefined", () => {
     render(<ProjectsList {...defaultProps} projects={undefined} />);
 
-    expect(screen.getByText("0 projects")).toBeInTheDocument();
+    expect(screen.getByText("0 workspaces")).toBeInTheDocument();
   });
 });

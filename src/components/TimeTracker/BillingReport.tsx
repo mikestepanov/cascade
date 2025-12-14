@@ -14,7 +14,7 @@ interface BillingReportProps {
 
 export function BillingReport({ projectId }: BillingReportProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("month");
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: projectId });
 
   // Calculate date range
   const getDateRange = () => {

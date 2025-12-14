@@ -104,7 +104,7 @@ function TabContent({
       <div className="p-6 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-ui-text-primary dark:text-ui-text-primary-dark">
-            Project Activity
+            Workspace Activity
           </h2>
           <ActivityFeed projectId={projectId} />
         </div>
@@ -130,13 +130,13 @@ function TabContent({
     return (
       <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         <div className="max-w-5xl mx-auto space-y-8">
-          {/* Project Basics Section */}
+          {/* Workspace Basics Section */}
           <div>
             <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-              Project Basics
+              Workspace Basics
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-              Configure fundamental project settings and templates
+              Configure fundamental workspace settings and templates
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <ErrorBoundary
@@ -194,7 +194,7 @@ function TabContent({
               Advanced
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-              Customize your project with additional metadata fields
+              Customize your workspace with additional metadata fields
             </p>
             <ErrorBoundary
               fallback={<SectionErrorFallback title="Custom Fields Error" />}
@@ -216,7 +216,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<TabType>("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
 
   if (!project) {

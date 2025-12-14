@@ -367,7 +367,7 @@ export const Route = createFileRoute('/_app/projects/$key')({
 
 function ProjectLayout() {
   const { key } = Route.useParams() // Type-safe! e.g., "PROJ"
-  const project = useQuery(api.projects.getByKey, { key })
+  const project = useQuery(api.workspaces.getByKey, { key })
 
   if (!project) return <ProjectNotFound />
 

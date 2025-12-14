@@ -42,11 +42,11 @@ export function AppSidebar() {
 
   // Data
   const documents = useQuery(api.documents.list);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.workspaces.list);
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
-  const createProject = useMutation(api.projects.create);
+  const createProject = useMutation(api.workspaces.create);
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -70,16 +70,16 @@ export function AppSidebar() {
     const key = `PROJ${Date.now().toString(36).toUpperCase().slice(-4)}`;
     try {
       await createProject({
-        name: "New Project",
+        name: "New Workspace",
         key,
         isPublic: false,
         boardType: "kanban",
       });
-      navigate({ to: ROUTES.projects.board(companySlug, key) });
-      showSuccess("Project created");
+      navigate({ to: ROUTES.workspaces.board(companySlug, key) });
+      showSuccess("Workspace created");
       closeMobile();
     } catch (error) {
-      showError(error, "Failed to create project");
+      showError(error, "Failed to create workspace");
     }
   };
 
@@ -179,24 +179,24 @@ export function AppSidebar() {
               )}
             </CollapsibleSection>
 
-            {/* Projects Section */}
+            {/* Workspaces Section */}
             <CollapsibleSection
               icon={FolderKanban}
-              label="Projects"
+              label="Workspaces"
               isExpanded={projectsExpanded}
               onToggle={() => setProjectsExpanded(!projectsExpanded)}
-              isActive={isActive("/projects")}
+              isActive={isActive("/workspaces")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateProject}
-              navigateTo={ROUTES.projects.list(companySlug)}
+              navigateTo={ROUTES.workspaces.list(companySlug)}
               onClick={handleNavClick}
             >
               {projects?.slice(0, 10).map((project) => (
                 <NavSubItem
                   key={project._id}
-                  to={ROUTES.projects.board(companySlug, project.key)}
+                  to={ROUTES.workspaces.board(companySlug, project.key)}
                   label={`${project.key} - ${project.name}`}
-                  isActive={location.pathname.includes(`/projects/${project.key}`)}
+                  isActive={location.pathname.includes(`/workspaces/${project.key}`)}
                   onClick={handleNavClick}
                 />
               ))}

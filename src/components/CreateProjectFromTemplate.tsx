@@ -56,12 +56,12 @@ export function CreateProjectFromTemplate({
         description: description.trim() || undefined,
       });
 
-      toast.success("Project created successfully");
+      toast.success("Workspace created successfully");
       onProjectCreated?.(projectId);
       onOpenChange(false);
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create project");
+      toast.error(error instanceof Error ? error.message : "Failed to create workspace");
     }
   };
 
@@ -95,7 +95,9 @@ export function CreateProjectFromTemplate({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
+          <DialogTitle>
+            {step === "select" ? "Choose a Template" : "Configure Workspace"}
+          </DialogTitle>
         </DialogHeader>
 
         {step === "select" ? (
@@ -168,15 +170,15 @@ export function CreateProjectFromTemplate({
             {/* Form */}
             <div className="space-y-4">
               <Input
-                label="Project Name"
+                label="Workspace Name"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                placeholder="My Awesome Project"
+                placeholder="My Awesome Workspace"
                 required
               />
 
               <Input
-                label="Project Key"
+                label="Workspace Key"
                 value={projectKey}
                 onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
                 placeholder="MAP"
@@ -189,7 +191,7 @@ export function CreateProjectFromTemplate({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                placeholder="Project description..."
+                placeholder="Workspace description..."
               />
             </div>
 
@@ -268,7 +270,7 @@ export function CreateProjectFromTemplate({
                   disabled={!(projectName.trim() && projectKey.trim())}
                   className="flex-1 sm:flex-none"
                 >
-                  Create Project
+                  Create Workspace
                 </Button>
               </div>
             </DialogFooter>

@@ -34,11 +34,11 @@ export function Dashboard() {
 
   // Navigation helpers
   const navigateToProject = (projectKey: string) => {
-    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    navigate({ to: ROUTES.workspaces.board(companySlug, projectKey) });
   };
 
   const navigateToProjects = () => {
-    navigate({ to: ROUTES.projects.list(companySlug) });
+    navigate({ to: ROUTES.workspaces.list(companySlug) });
   };
 
   // Keyboard navigation for issue list

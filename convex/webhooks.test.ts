@@ -70,7 +70,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -160,7 +160,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -291,7 +291,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -397,7 +397,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -553,7 +553,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -657,7 +657,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -777,7 +777,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",

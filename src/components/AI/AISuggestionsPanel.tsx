@@ -34,7 +34,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          <p>Select a project to view AI suggestions</p>
+          <p>Select a workspace to view AI suggestions</p>
         </div>
       </Flex>
     );
@@ -54,7 +54,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
             {isGenerating ? (
               <>
                 <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span className="hidden sm:inline">Analyzing Project...</span>
+                <span className="hidden sm:inline">Analyzing Workspace...</span>
                 <span className="sm:hidden">Analyzing...</span>
               </>
             ) : (

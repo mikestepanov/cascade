@@ -37,7 +37,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [historyStack, setHistoryStack] = useState<BoardAction[]>([]);
   const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
 
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: projectId });
   const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
   const updateIssueStatus = useMutation(api.issues.updateStatus);
 

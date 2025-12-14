@@ -76,7 +76,7 @@ describe("Sprints", () => {
 
       // Add member to project
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "member@test.com",
         role: "editor",
@@ -353,7 +353,7 @@ describe("Sprints", () => {
 
       // Add member
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "member@test.com",
         role: "editor",
@@ -509,7 +509,7 @@ describe("Sprints", () => {
 
       // Add member
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "member@test.com",
         role: "editor",

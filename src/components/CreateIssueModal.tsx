@@ -53,7 +53,7 @@ export function CreateIssueModal({
   const [showAISuggestions, setShowAISuggestions] = useState(false);
 
   // Queries
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.workspaces.get, { id: projectId });
   const templates = useQuery(api.templates.list, { projectId });
   const labels = useQuery(api.labels.list, { projectId });
 

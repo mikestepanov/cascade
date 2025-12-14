@@ -110,7 +110,7 @@ export function ManualTimeEntryModal({
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.workspaces.list);
 
   // Mode and derived state (kept outside form due to complexity)
   const [entryMode, setEntryMode] = useState<EntryMode>("duration");
@@ -453,7 +453,7 @@ export function ManualTimeEntryModal({
                 <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No project</SelectItem>
+                <SelectItem value="none">No workspace</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}

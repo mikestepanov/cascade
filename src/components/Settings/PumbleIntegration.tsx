@@ -41,7 +41,7 @@ const AVAILABLE_EVENTS = [
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
   const webhooks = useQuery(api.pumble.listWebhooks);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.workspaces.list);
 
   return (
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark">

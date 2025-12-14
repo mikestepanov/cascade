@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.workspaces.list);
   const userRates = useQuery(api.timeTracking.listUserRates, {});
 
   const setUserRate = useMutation(api.timeTracking.setUserRate);

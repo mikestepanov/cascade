@@ -80,7 +80,7 @@ describe("Automation Rules", () => {
 
       // Add member
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "member@test.com",
         role: "viewer",
@@ -170,7 +170,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -317,7 +317,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -427,7 +427,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.workspaces.addMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",

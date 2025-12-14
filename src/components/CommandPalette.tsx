@@ -174,11 +174,11 @@ export function useCommands({
     },
     {
       id: "nav-projects",
-      label: "Go to Projects",
+      label: "Go to Workspaces",
       icon: "📋",
-      description: "View all projects",
-      keywords: ["boards", "kanban"],
-      action: () => navigate({ to: ROUTES.projects.list(companySlug) }),
+      description: "View all workspaces",
+      keywords: ["boards", "kanban", "projects"],
+      action: () => navigate({ to: ROUTES.workspaces.list(companySlug) }),
       group: "Navigation",
     },
 
@@ -213,10 +213,10 @@ export function useCommands({
       ? [
           {
             id: "create-project",
-            label: "Create Project",
+            label: "Create Workspace",
             icon: "🗂️",
-            description: "Create a new project",
-            keywords: ["new", "board"],
+            description: "Create a new workspace",
+            keywords: ["new", "board", "project"],
             action: onCreateProject,
             group: "Create",
           },
