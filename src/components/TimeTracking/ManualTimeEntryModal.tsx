@@ -12,6 +12,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTimeEntryValidation";
 
 // =============================================================================
 // Types & Schema
@@ -142,43 +143,25 @@ export function ManualTimeEntryModal({
     onSubmit: async ({ value }) => {
       const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
 
-      // Validation
-      if (!value.date) {
-        showError("Please select a date");
-        return;
-      }
-      if (entryMode === "duration" && effectiveDuration <= 0) {
-        showError("Please enter a valid duration");
-        return;
-      }
-      if (entryMode === "timeRange" && !(value.startTime && value.endTime)) {
-        showError("Please fill in start time and end time");
-        return;
-      }
-      if (entryMode === "timeRange" && timeRangeDuration <= 0) {
-        showError("End time must be after start time");
+      // Validate using extracted helper
+      const validation = validateManualTimeEntry(
+        { date: value.date, startTime: value.startTime, endTime: value.endTime },
+        entryMode,
+        durationSeconds,
+        timeRangeDuration,
+      );
+
+      if (!validation.isValid) {
+        showError(validation.errorMessage);
         return;
       }
 
-      // Calculate entry data based on mode
-      let startTimeMs: number;
-      let endTimeMs: number;
-
-      if (entryMode === "duration") {
-        const dateObj = new Date(value.date);
-        const now = new Date();
-        const endDate =
-          dateObj.toDateString() === now.toDateString()
-            ? now
-            : new Date(dateObj.setHours(17, 0, 0, 0));
-        endTimeMs = endDate.getTime();
-        startTimeMs = endTimeMs - effectiveDuration * 1000;
-      } else {
-        const start = new Date(`${value.date}T${value.startTime}`);
-        const end = new Date(`${value.date}T${value.endTime}`);
-        startTimeMs = start.getTime();
-        endTimeMs = end.getTime();
-      }
+      // Calculate times using extracted helper
+      const { startTimeMs, endTimeMs } = calculateManualEntryTimes(
+        { date: value.date, startTime: value.startTime, endTime: value.endTime },
+        entryMode,
+        effectiveDuration,
+      );
 
       try {
         await createTimeEntry({

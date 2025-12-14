@@ -538,3 +538,18 @@ export const removeMember = mutation({
     }
   },
 });
+
+/**
+ * Get user's role in a project/workspace
+ */
+export const getUserRole = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    return await getProjectRole(ctx, args.projectId, userId);
+  },
+});
