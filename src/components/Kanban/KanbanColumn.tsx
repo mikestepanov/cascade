@@ -1,8 +1,10 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { ANIMATION } from "@/lib/constants";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";
+import { LoadMoreButton } from "../ui/LoadMoreButton";
+import { PaginationInfo } from "../ui/PaginationInfo";
 
 interface WorkflowState {
   id: string;
@@ -35,6 +37,11 @@ interface KanbanColumnProps {
   onCreateIssue: (stateId: string) => void;
   onIssueClick: (issueId: Id<"issues">) => void;
   onToggleSelect: (issueId: Id<"issues">) => void;
+  // Pagination props (optional - for done columns)
+  hiddenCount?: number;
+  totalCount?: number;
+  onLoadMore?: (statusId: string) => void;
+  isLoadingMore?: boolean;
 }
 
 /**
@@ -55,10 +62,16 @@ export const KanbanColumn = memo(function KanbanColumn({
   onCreateIssue,
   onIssueClick,
   onToggleSelect,
+  // Pagination props
+  hiddenCount = 0,
+  totalCount = 0,
+  onLoadMore,
+  isLoadingMore = false,
 }: KanbanColumnProps) {
-  const stateIssues = issues
-    .filter((issue) => issue.status === state.id)
-    .sort((a, b) => a.order - b.order);
+  // Issues are now pre-filtered by status from parent - memoize sorting
+  const stateIssues = useMemo(() => {
+    return [...issues].sort((a, b) => a.order - b.order);
+  }, [issues]);
 
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
@@ -76,7 +89,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               {state.name}
             </h3>
             <Badge variant="neutral" shape="pill" className="flex-shrink-0">
-              {stateIssues.length}
+              {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>
           </div>
           {canEdit && (
@@ -127,6 +140,28 @@ export const KanbanColumn = memo(function KanbanColumn({
             />
           </div>
         ))}
+
+        {/* Load More Button for done columns with hidden items */}
+        {onLoadMore && hiddenCount > 0 && (
+          <div className="pt-2">
+            <LoadMoreButton
+              onClick={() => onLoadMore(state.id)}
+              isLoading={isLoadingMore}
+              remainingCount={hiddenCount}
+              className="w-full"
+            />
+          </div>
+        )}
+
+        {/* Pagination info when there are hidden items */}
+        {hiddenCount > 0 && (
+          <PaginationInfo
+            loaded={stateIssues.length}
+            total={totalCount}
+            itemName="issues"
+            className="text-center pt-1"
+          />
+        )}
       </div>
     </div>
   );

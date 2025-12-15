@@ -3,7 +3,12 @@ import { describe, expect, it, vi } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
+import {
+  asAuthenticatedUser,
+  createCompanyAdmin,
+  createTestProject,
+  createTestUser,
+} from "./testUtils";
 
 describe("Invites", () => {
   beforeEach(() => {
@@ -31,34 +36,10 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
 
-      // Create a project to satisfy "isCompanyAdmin" fallback check
-      await createTestProject(t, adminId);
+      // Create company admin status (proper way, not relying on fallback)
+      await createCompanyAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
-
-      // Mock email sending indirectly or expect it to fail silently/gracefully?
-      // The code uses `sendEmail` which uses `fetch` to external providers.
-      // Since we are not mocking fetch globally here, it might fail.
-      // However, the `sendEmail` implementation catches errors if ctx is missing but not if ctx is present?
-      // Wait, in `sendEmail`:
-      //   if (ctx && result.success && "scheduler" in ctx) { try recordUsage... }
-      // The actual send happens in `selected.provider.send(params)`.
-      // Mailtrap provider uses `fetch`.
-      // In `convex-test`, fetch is not mocked by default.
-      // We should expect the invite to be created in DB regardless of email failure?
-      // Actually, if `fetch` fails (network error), `send` throws?
-      // Mailtrap provider catches error and returns { success: false, error: ... }
-      // So `sendEmail` returns result.success = false. It does NOT throw.
-      // So DB insert happens before sendEmail. It should be fine.
-
-      // Debug: verify admin status
-      const member = await t.run(async (ctx) =>
-        ctx.db
-          .query("companyMembers")
-          .withIndex("by_user", (q) => q.eq("userId", adminId))
-          .first(),
-      );
-      console.log("Admin Member Record:", member);
 
       const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newuser@example.com",
@@ -97,7 +78,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin rights via company
       // Setup admin rights
-      await createTestProject(t, adminId);
+      await createCompanyAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
 
@@ -121,7 +102,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      await createTestProject(t, adminId);
+      await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
@@ -190,7 +171,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      await createTestProject(t, adminId);
+      await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {

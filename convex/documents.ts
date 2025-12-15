@@ -26,12 +26,17 @@ export const create = mutation({
 });
 
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    limit: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return { documents: [], nextCursor: null, hasMore: false };
     }
+
+    const limit = args.limit ?? 50;
 
     // Get user's private documents
     const privateDocuments = await ctx.db
@@ -41,26 +46,53 @@ export const list = query({
       .order("desc")
       .collect();
 
-    // Get all public documents
+    // Get public documents (bounded - typically fewer)
     const publicDocuments = await ctx.db
       .query("documents")
       .withIndex("by_public", (q) => q.eq("isPublic", true))
       .order("desc")
       .collect();
 
-    // Combine and add creator info
-    const allDocuments = [...privateDocuments, ...publicDocuments];
+    // Combine and deduplicate (private docs may also be in public if toggled)
+    const seenIds = new Set<string>();
+    const allDocuments = [...privateDocuments, ...publicDocuments].filter((doc) => {
+      if (seenIds.has(doc._id)) return false;
+      seenIds.add(doc._id);
+      return true;
+    });
 
-    return await Promise.all(
-      allDocuments.map(async (doc) => {
-        const creator = await ctx.db.get(doc.createdBy);
-        return {
-          ...doc,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          isOwner: doc.createdBy === userId,
-        };
-      }),
-    );
+    // Sort by updatedAt descending
+    allDocuments.sort((a, b) => b.updatedAt - a.updatedAt);
+
+    // Apply cursor-based pagination
+    let startIndex = 0;
+    if (args.cursor) {
+      const cursorIndex = allDocuments.findIndex((doc) => doc._id === args.cursor);
+      if (cursorIndex !== -1) {
+        startIndex = cursorIndex + 1;
+      }
+    }
+
+    const paginatedDocs = allDocuments.slice(startIndex, startIndex + limit);
+    const hasMore = startIndex + limit < allDocuments.length;
+    const nextCursor =
+      hasMore && paginatedDocs.length > 0 ? paginatedDocs[paginatedDocs.length - 1]._id : null;
+
+    // Batch fetch creators to avoid N+1
+    const creatorIds = [...new Set(paginatedDocs.map((doc) => doc.createdBy))];
+    const creators = await Promise.all(creatorIds.map((id) => ctx.db.get(id)));
+    const creatorMap = new Map(creatorIds.map((id, i) => [id, creators[i]]));
+
+    const documents = paginatedDocs.map((doc) => {
+      const creator = creatorMap.get(doc.createdBy);
+      return {
+        ...doc,
+        creatorName: creator?.name || creator?.email || "Unknown",
+        isOwner: doc.createdBy === userId,
+      };
+    });
+
+    return { documents, nextCursor, hasMore };
   },
 });
 

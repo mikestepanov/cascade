@@ -1,0 +1,163 @@
+/**
+ * Issue enrichment helpers for DRY operations
+ *
+ * Provides utilities for enriching issues with related data (users, epics, etc.)
+ */
+
+import type { Doc, Id } from "../_generated/dataModel";
+import type { QueryCtx } from "../_generated/server";
+
+/**
+ * Minimal user info for display
+ */
+export interface UserInfo {
+  _id: Id<"users">;
+  name: string;
+  email?: string;
+  image?: string;
+}
+
+/**
+ * Minimal epic info for display
+ */
+export interface EpicInfo {
+  _id: Id<"issues">;
+  key: string;
+  title: string;
+}
+
+/**
+ * Enriched issue with related data
+ */
+export interface EnrichedIssue extends Doc<"issues"> {
+  assignee: UserInfo | null;
+  reporter: UserInfo | null;
+  epic: EpicInfo | null;
+}
+
+/**
+ * Convert a user document to UserInfo
+ */
+function toUserInfo(user: Doc<"users"> | null): UserInfo | null {
+  if (!user) return null;
+  return {
+    _id: user._id,
+    name: user.name || user.email || "Unknown",
+    email: user.email,
+    image: user.image,
+  };
+}
+
+/**
+ * Convert an epic issue to EpicInfo
+ */
+function toEpicInfo(epic: Doc<"issues"> | null): EpicInfo | null {
+  if (!epic) return null;
+  return {
+    _id: epic._id,
+    key: epic.key,
+    title: epic.title,
+  };
+}
+
+/**
+ * Enrich a single issue with assignee, reporter, and epic info
+ */
+export async function enrichIssue(ctx: QueryCtx, issue: Doc<"issues">): Promise<EnrichedIssue> {
+  const [assignee, reporter, epic] = await Promise.all([
+    issue.assigneeId ? ctx.db.get(issue.assigneeId) : null,
+    ctx.db.get(issue.reporterId),
+    issue.epicId ? ctx.db.get(issue.epicId) : null,
+  ]);
+
+  return {
+    ...issue,
+    assignee: toUserInfo(assignee),
+    reporter: toUserInfo(reporter),
+    epic: toEpicInfo(epic),
+  };
+}
+
+/**
+ * Enrich multiple issues with assignee, reporter, and epic info
+ * Uses batching to avoid N+1 queries
+ */
+export async function enrichIssues(
+  ctx: QueryCtx,
+  issues: Doc<"issues">[],
+): Promise<EnrichedIssue[]> {
+  if (issues.length === 0) return [];
+
+  // Collect unique IDs
+  const assigneeIds = new Set<Id<"users">>();
+  const reporterIds = new Set<Id<"users">>();
+  const epicIds = new Set<Id<"issues">>();
+
+  for (const issue of issues) {
+    if (issue.assigneeId) assigneeIds.add(issue.assigneeId);
+    reporterIds.add(issue.reporterId);
+    if (issue.epicId) epicIds.add(issue.epicId);
+  }
+
+  // Batch fetch all users and epics
+  const [assignees, reporters, epics] = await Promise.all([
+    Promise.all([...assigneeIds].map((id) => ctx.db.get(id))),
+    Promise.all([...reporterIds].map((id) => ctx.db.get(id))),
+    Promise.all([...epicIds].map((id) => ctx.db.get(id))),
+  ]);
+
+  // Build lookup maps
+  const assigneeMap = new Map<string, Doc<"users">>();
+  for (const user of assignees) {
+    if (user) assigneeMap.set(user._id.toString(), user);
+  }
+
+  const reporterMap = new Map<string, Doc<"users">>();
+  for (const user of reporters) {
+    if (user) reporterMap.set(user._id.toString(), user);
+  }
+
+  const epicMap = new Map<string, Doc<"issues">>();
+  for (const epic of epics) {
+    if (epic) epicMap.set(epic._id.toString(), epic);
+  }
+
+  // Enrich issues using maps
+  return issues.map((issue) => ({
+    ...issue,
+    assignee: issue.assigneeId
+      ? toUserInfo(assigneeMap.get(issue.assigneeId.toString()) ?? null)
+      : null,
+    reporter: toUserInfo(reporterMap.get(issue.reporterId.toString()) ?? null),
+    epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
+  }));
+}
+
+/**
+ * Group issues by status
+ */
+export function groupIssuesByStatus<T extends { status: string }>(
+  issues: T[],
+): Record<string, T[]> {
+  const grouped: Record<string, T[]> = {};
+  for (const issue of issues) {
+    if (!grouped[issue.status]) {
+      grouped[issue.status] = [];
+    }
+    grouped[issue.status].push(issue);
+  }
+  return grouped;
+}
+
+/**
+ * Count issues by status
+ */
+export function countIssuesByStatus<T extends { status: string }>(
+  issues: T[],
+): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const issue of issues) {
+    counts[issue.status] = (counts[issue.status] || 0) + 1;
+  }
+  return counts;
+}

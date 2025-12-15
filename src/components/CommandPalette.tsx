@@ -149,7 +149,6 @@ export function useCommands({
   const navigate = useNavigate();
   const { companySlug } = useCompany();
   const _projects = useQuery(api.dashboard.getMyProjects);
-  const _documents = useQuery(api.documents.list);
   const myIssues = useQuery(api.dashboard.getMyIssues);
 
   const commands: CommandItem[] = [

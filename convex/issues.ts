@@ -1380,3 +1380,310 @@ export const bulkDelete = mutation({
     return { deleted: results.length };
   },
 });
+
+// ============================================================================
+// PAGINATION & SMART LOADING QUERIES
+// ============================================================================
+
+import { countIssuesByStatus, enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
+import {
+  DEFAULT_PAGE_SIZE,
+  DONE_COLUMN_DAYS,
+  decodeCursor,
+  encodeCursor,
+  getDoneColumnThreshold,
+} from "./lib/pagination";
+
+/**
+ * Smart loading for Kanban boards
+ * - todo/inprogress: Load all items
+ * - done: Load only recent items (last N days)
+ */
+export const listByWorkspaceSmart = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Build a map of status -> category
+    const statusToCategory: Record<string, string> = {};
+    for (const state of workflowStates) {
+      statusToCategory[state.id] = state.category;
+    }
+
+    // Get all issues for this workspace (optionally filtered by sprint)
+    const issuesQuery = ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
+
+    const allIssues = await issuesQuery.collect();
+
+    // Filter by sprint if provided
+    const sprintFiltered = args.sprintId
+      ? allIssues.filter((i) => i.sprintId === args.sprintId)
+      : allIssues;
+
+    // Apply smart loading: filter done items by date
+    const smartFiltered = sprintFiltered.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      if (category === "done") {
+        return issue.updatedAt >= doneThreshold;
+      }
+      return true; // Load all for todo/inprogress
+    });
+
+    // Count hidden done items
+    const hiddenDoneCount = sprintFiltered.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      return category === "done" && issue.updatedAt < doneThreshold;
+    }).length;
+
+    // Enrich with user data
+    const enriched = await enrichIssues(ctx, smartFiltered);
+
+    // Group by status
+    const byStatus = groupIssuesByStatus(enriched);
+
+    return {
+      issuesByStatus: byStatus,
+      hiddenDoneCount,
+      workflowStates,
+      totalCount: sprintFiltered.length,
+      loadedCount: smartFiltered.length,
+    };
+  },
+});
+
+/**
+ * Paginated issue list for backlog/list views
+ */
+export const listByWorkspacePaginated = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    status: v.optional(v.string()),
+    cursor: v.optional(v.string()),
+    pageSize: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const pageSize = args.pageSize ?? DEFAULT_PAGE_SIZE;
+
+    // Query issues with proper index
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .order("desc")
+      .collect();
+
+    // Apply filters
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+    if (args.status) {
+      issues = issues.filter((i) => i.status === args.status);
+    }
+
+    // Count total BEFORE cursor pagination (reuse already-fetched data)
+    const totalCount = issues.length;
+
+    // Apply cursor-based pagination with ID tiebreaking
+    if (args.cursor) {
+      const { timestamp, id } = decodeCursor(args.cursor);
+      issues = issues.filter(
+        (i) => i.updatedAt < timestamp || (i.updatedAt === timestamp && i._id.toString() < id),
+      );
+    }
+
+    // Get one extra to check if there is more
+    const pageItems = issues.slice(0, pageSize + 1);
+    const hasMore = pageItems.length > pageSize;
+    const resultItems = hasMore ? pageItems.slice(0, pageSize) : pageItems;
+
+    // Enrich with user data
+    const enriched = await enrichIssues(ctx, resultItems);
+
+    // Build next cursor with ID for tiebreaking
+    const lastItem = resultItems[resultItems.length - 1];
+    const nextCursor =
+      hasMore && lastItem ? encodeCursor(lastItem.updatedAt, lastItem._id.toString()) : null;
+
+    return {
+      items: enriched,
+      nextCursor,
+      hasMore,
+      totalCount,
+    };
+  },
+});
+
+/**
+ * Get issue counts by status for a workspace
+ * Useful for "Load X more" indicators
+ */
+export const getIssueCounts = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Build a map of status -> category
+    const statusToCategory: Record<string, string> = {};
+    for (const state of workflowStates) {
+      statusToCategory[state.id] = state.category;
+    }
+
+    // Get all issues
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .collect();
+
+    // Filter by sprint if provided
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+
+    // Count totals by status
+    const totalByStatus = countIssuesByStatus(issues);
+
+    // Count visible (after smart loading filter) by status
+    const visibleIssues = issues.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      if (category === "done") {
+        return issue.updatedAt >= doneThreshold;
+      }
+      return true;
+    });
+    const visibleByStatus = countIssuesByStatus(visibleIssues);
+
+    // Calculate hidden counts
+    const hiddenByStatus: Record<string, number> = {};
+    for (const status of Object.keys(totalByStatus)) {
+      hiddenByStatus[status] = (totalByStatus[status] || 0) - (visibleByStatus[status] || 0);
+    }
+
+    return {
+      total: issues.length,
+      visible: visibleIssues.length,
+      hidden: issues.length - visibleIssues.length,
+      byStatus: {
+        total: totalByStatus,
+        visible: visibleByStatus,
+        hidden: hiddenByStatus,
+      },
+    };
+  },
+});
+
+/**
+ * Load more done items (for expanding the done column)
+ */
+export const loadMoreDoneIssues = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    beforeTimestamp: v.optional(v.number()),
+    beforeId: v.optional(v.string()), // For tiebreaking when timestamps match
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
+
+    // Get done status IDs
+    const doneStatuses = workflowStates.filter((s) => s.category === "done").map((s) => s.id);
+
+    // Query issues
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .order("desc")
+      .collect();
+
+    // Filter to done statuses only
+    issues = issues.filter((i) => doneStatuses.includes(i.status));
+
+    // Filter by sprint if provided
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+
+    // Apply cursor with ID tiebreaking
+    if (args.beforeTimestamp) {
+      const threshold = args.beforeTimestamp;
+      const beforeId = args.beforeId;
+      issues = issues.filter((i) => {
+        if (i.updatedAt < threshold) return true;
+        if (i.updatedAt === threshold && beforeId && i._id.toString() < beforeId) return true;
+        return false;
+      });
+    }
+
+    // Get page + 1 to check hasMore
+    const pageItems = issues.slice(0, limit + 1);
+    const hasMore = pageItems.length > limit;
+    const resultItems = hasMore ? pageItems.slice(0, limit) : pageItems;
+
+    // Enrich
+    const enriched = await enrichIssues(ctx, resultItems);
+
+    const lastItem = resultItems[resultItems.length - 1];
+    return {
+      items: enriched,
+      hasMore,
+      nextTimestamp: lastItem?.updatedAt ?? null,
+      nextId: lastItem?._id.toString() ?? null,
+    };
+  },
+});

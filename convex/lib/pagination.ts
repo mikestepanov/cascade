@@ -1,0 +1,94 @@
+/**
+ * Pagination utilities for Convex queries
+ *
+ * Provides helpers for cursor-based pagination and smart loading strategies.
+ */
+
+// Default pagination settings
+export const DEFAULT_PAGE_SIZE = 50;
+export const DONE_COLUMN_DAYS = 14;
+
+/**
+ * Encode a cursor from timestamp and ID
+ * Format: base64(timestamp:id)
+ */
+export function encodeCursor(timestamp: number, id: string): string {
+  return btoa(`${timestamp}:${id}`);
+}
+
+/**
+ * Decode a cursor to timestamp and ID
+ * Includes validation and error handling
+ */
+export function decodeCursor(cursor: string): { timestamp: number; id: string } {
+  try {
+    const decoded = atob(cursor);
+    const [timestampStr, id] = decoded.split(":");
+    if (!(timestampStr && id)) {
+      throw new Error("Invalid cursor format");
+    }
+    const timestamp = Number.parseInt(timestampStr, 10);
+    if (Number.isNaN(timestamp)) {
+      throw new Error("Invalid timestamp");
+    }
+    return { timestamp, id };
+  } catch (error) {
+    throw new Error(
+      `Invalid pagination cursor: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+}
+
+/**
+ * Calculate the threshold date for "done" column items
+ * Returns timestamp for (now - days)
+ */
+export function getDoneColumnThreshold(days: number = DONE_COLUMN_DAYS): number {
+  return Date.now() - days * 24 * 60 * 60 * 1000;
+}
+
+/**
+ * Workflow state categories
+ */
+export type WorkflowCategory = "todo" | "inprogress" | "done";
+
+/**
+ * Determine loading strategy based on workflow category
+ */
+export function getLoadingStrategy(category: WorkflowCategory): "all" | "recent" {
+  return category === "done" ? "recent" : "all";
+}
+
+/**
+ * Pagination result type
+ */
+export interface PaginatedResult<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
+  totalCount?: number;
+}
+
+/**
+ * Build a paginated result from items
+ */
+export function buildPaginatedResult<
+  T extends { _id: { toString(): string }; updatedAt?: number; createdAt?: number },
+>(items: T[], pageSize: number, totalCount?: number): PaginatedResult<T> {
+  const hasMore = items.length > pageSize;
+  const resultItems = hasMore ? items.slice(0, pageSize) : items;
+
+  let nextCursor: string | null = null;
+  if (hasMore && resultItems.length > 0) {
+    const lastItem = resultItems[resultItems.length - 1];
+    const timestamp = lastItem.updatedAt ?? lastItem.createdAt ?? Date.now();
+    nextCursor = encodeCursor(timestamp, lastItem._id.toString());
+  }
+
+  return {
+    items: resultItems,
+    nextCursor,
+    hasMore,
+    totalCount,
+  };
+}

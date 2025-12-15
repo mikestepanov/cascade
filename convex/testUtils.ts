@@ -249,3 +249,56 @@ export async function expectThrowsAsync(
     );
   }
 }
+
+/**
+ * Create a company and add user as admin/owner
+ *
+ * This properly sets up company admin status by creating both
+ * the company record and the companyMembers record.
+ *
+ * @param t - Convex test helper
+ * @param userId - User ID to make admin
+ * @param companyData - Optional company data
+ * @returns Company ID
+ */
+export async function createCompanyAdmin(
+  t: TestCtx,
+  userId: Id<"users">,
+  companyData?: {
+    name?: string;
+    slug?: string;
+  },
+): Promise<Id<"companies">> {
+  return await t.run(async (ctx) => {
+    const now = Date.now();
+    const name = companyData?.name || `Test Company ${now}`;
+    const slug = companyData?.slug || `test-company-${now}`;
+
+    const companyId = await ctx.db.insert("companies", {
+      createdBy: userId,
+      timezone: "America/New_York",
+      settings: {
+        defaultMaxHoursPerWeek: 40,
+        defaultMaxHoursPerDay: 8,
+        requiresTimeApproval: false,
+        billingEnabled: false,
+      },
+      name,
+      slug,
+
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Add user as owner in companyMembers
+    await ctx.db.insert("companyMembers", {
+      companyId,
+      userId,
+      role: "owner",
+      addedBy: userId,
+      addedAt: now,
+    });
+
+    return companyId;
+  });
+}
