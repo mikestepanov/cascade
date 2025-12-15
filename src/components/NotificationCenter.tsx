@@ -1,10 +1,44 @@
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { showError } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { Typography } from "./ui/Typography";
+
+// Pure functions - no need to be inside component
+function getNotificationIcon(type: string): string {
+  switch (type) {
+    case "issue_assigned":
+      return "👤";
+    case "issue_mentioned":
+      return "💬";
+    case "issue_commented":
+      return "💭";
+    case "issue_status_changed":
+      return "🔄";
+    case "sprint_started":
+      return "🚀";
+    case "sprint_ended":
+      return "🏁";
+    default:
+      return "📬";
+  }
+}
+
+function formatTime(timestamp: number): string {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  return new Date(timestamp).toLocaleDateString();
+}
 
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,15 +49,18 @@ export function NotificationCenter() {
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
   const removeNotification = useMutation(api.notifications.remove);
 
-  const handleMarkAsRead = async (id: Id<"notifications">) => {
-    try {
-      await markAsRead({ id });
-    } catch (error) {
-      showError(error, "Failed to mark notification as read");
-    }
-  };
+  const handleMarkAsRead = useCallback(
+    async (id: Id<"notifications">) => {
+      try {
+        await markAsRead({ id });
+      } catch (error) {
+        showError(error, "Failed to mark notification as read");
+      }
+    },
+    [markAsRead],
+  );
 
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = useCallback(async () => {
     setIsLoading(true);
     try {
       await markAllAsRead({});
@@ -32,48 +69,18 @@ export function NotificationCenter() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [markAllAsRead]);
 
-  const handleDelete = async (id: Id<"notifications">) => {
-    try {
-      await removeNotification({ id });
-    } catch (error) {
-      showError(error, "Failed to delete notification");
-    }
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "issue_assigned":
-        return "👤";
-      case "issue_mentioned":
-        return "💬";
-      case "issue_commented":
-        return "💭";
-      case "issue_status_changed":
-        return "🔄";
-      case "sprint_started":
-        return "🚀";
-      case "sprint_ended":
-        return "🏁";
-      default:
-        return "📬";
-    }
-  };
-
-  const formatTime = (timestamp: number) => {
-    const now = Date.now();
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return new Date(timestamp).toLocaleDateString();
-  };
+  const handleDelete = useCallback(
+    async (id: Id<"notifications">) => {
+      try {
+        await removeNotification({ id });
+      } catch (error) {
+        showError(error, "Failed to delete notification");
+      }
+    },
+    [removeNotification],
+  );
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>

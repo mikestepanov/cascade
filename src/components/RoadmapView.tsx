@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
@@ -9,6 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Skeleton } from "./ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Typography } from "./ui/Typography";
+
+// Pure function - no need to be inside component
+function getRoadmapPriorityColor(priority: string): string {
+  const colorMap: Record<string, string> = {
+    highest: "bg-status-error",
+    high: "bg-status-warning",
+    medium: "bg-accent-500",
+    low: "bg-brand-500",
+    lowest: "bg-ui-text-secondary dark:bg-ui-text-secondary-dark",
+  };
+  return colorMap[priority] || "bg-ui-text-secondary dark:bg-ui-text-secondary-dark";
+}
 
 interface RoadmapViewProps {
   workspaceId: Id<"workspaces">;
@@ -41,6 +53,35 @@ export function RoadmapView({ workspaceId, sprintId, canEdit = true }: RoadmapVi
     return filtered;
   }, [issues, filterEpic]);
 
+  // Memoize date range calculations - only recalculate when component mounts
+  const { startOfMonth, endDate, timelineMonths } = useMemo(() => {
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    const end = new Date(today.getFullYear(), today.getMonth() + 6, 0); // 6 months ahead
+
+    // Generate timeline columns
+    const months: Date[] = [];
+    for (let i = 0; i < 6; i++) {
+      months.push(new Date(today.getFullYear(), today.getMonth() + i, 1));
+    }
+
+    return { startOfMonth: start, endDate: end, timelineMonths: months };
+  }, []);
+
+  const getPositionOnTimeline = useCallback(
+    (date: number) => {
+      const issueDate = new Date(date);
+      const totalDays = Math.floor(
+        (endDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      const daysSinceStart = Math.floor(
+        (issueDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      return (daysSinceStart / totalDays) * 100;
+    },
+    [startOfMonth, endDate],
+  );
+
   if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-auto p-6">
@@ -60,62 +101,6 @@ export function RoadmapView({ workspaceId, sprintId, canEdit = true }: RoadmapVi
       </div>
     );
   }
-
-  // Calculate date range
-  const today = new Date();
-  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const endDate = new Date(today.getFullYear(), today.getMonth() + 6, 0); // 6 months ahead
-
-  // Generate timeline columns
-  const timelineMonths: Date[] = [];
-  for (let i = 0; i < 6; i++) {
-    timelineMonths.push(new Date(today.getFullYear(), today.getMonth() + i, 1));
-  }
-
-  const getPositionOnTimeline = (date: number) => {
-    const issueDate = new Date(date);
-    const totalDays = Math.floor(
-      (endDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    const daysSinceStart = Math.floor(
-      (issueDate.getTime() - startOfMonth.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    return (daysSinceStart / totalDays) * 100;
-  };
-
-  const _getDuration = (startDate?: number, endDate?: number) => {
-    if (!(startDate && endDate)) return 5; // Default width
-    const totalDays = Math.floor(
-      (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24),
-    );
-    const timelineTotal = Math.floor((endDate - startOfMonth.getTime()) / (1000 * 60 * 60 * 24));
-    return Math.max((totalDays / timelineTotal) * 100, 2); // Minimum 2%
-  };
-
-  const getRoadmapPriorityColor = (priority: string) => {
-    // Map priority to full background colors for roadmap bars
-    const colorMap: Record<string, string> = {
-      highest: "bg-status-error",
-      high: "bg-status-warning",
-      medium: "bg-accent-500",
-      low: "bg-brand-500",
-      lowest: "bg-ui-text-secondary dark:bg-ui-text-secondary-dark",
-    };
-    return colorMap[priority] || "bg-ui-text-secondary dark:bg-ui-text-secondary-dark";
-  };
-
-  const _getTypeIcon = (type: string) => {
-    switch (type) {
-      case "bug":
-        return "🐛";
-      case "story":
-        return "📖";
-      case "epic":
-        return "⚡";
-      default:
-        return "✓";
-    }
-  };
 
   return (
     <div className="flex-1 overflow-auto p-6">

@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { ANIMATION } from "@/lib/constants";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
@@ -73,13 +73,20 @@ export const KanbanColumn = memo(function KanbanColumn({
     return [...issues].sort((a, b) => a.order - b.order);
   }, [issues]);
 
+  // Memoize handlers that use state.id to preserve memo() benefits
+  const handleDrop = useCallback((e: React.DragEvent) => onDrop(e, state.id), [onDrop, state.id]);
+
+  const handleCreateIssue = useCallback(() => onCreateIssue(state.id), [onCreateIssue, state.id]);
+
+  const handleLoadMore = useCallback(() => onLoadMore?.(state.id), [onLoadMore, state.id]);
+
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
     <div
       className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}
-      onDrop={(e) => onDrop(e, state.id)}
+      onDrop={handleDrop}
     >
       {/* Column Header */}
       <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
@@ -95,7 +102,7 @@ export const KanbanColumn = memo(function KanbanColumn({
           {canEdit && (
             <button
               type="button"
-              onClick={() => onCreateIssue(state.id)}
+              onClick={handleCreateIssue}
               className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
               aria-label={`Add issue to ${state.name}`}
               {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
@@ -145,7 +152,7 @@ export const KanbanColumn = memo(function KanbanColumn({
         {onLoadMore && hiddenCount > 0 && (
           <div className="pt-2">
             <LoadMoreButton
-              onClick={() => onLoadMore(state.id)}
+              onClick={handleLoadMore}
               isLoading={isLoadingMore}
               remainingCount={hiddenCount}
               className="w-full"

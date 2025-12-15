@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -52,27 +52,33 @@ export function AdvancedSearchModal({
   const total = searchResult?.total ?? 0;
   const hasMore = searchResult?.hasMore ?? false;
 
-  const handleSelectIssue = (issueId: Id<"issues">) => {
-    onSelectIssue(issueId);
-    onOpenChange(false);
-    setSearchQuery("");
-    setSelectedType([]);
-    setSelectedPriority([]);
-    setSelectedStatus([]);
-    setOffset(0);
-  };
+  const handleSelectIssue = useCallback(
+    (issueId: Id<"issues">) => {
+      onSelectIssue(issueId);
+      onOpenChange(false);
+      setSearchQuery("");
+      setSelectedType([]);
+      setSelectedPriority([]);
+      setSelectedStatus([]);
+      setOffset(0);
+    },
+    [onSelectIssue, onOpenChange],
+  );
 
-  const handleLoadMore = () => {
-    setOffset(offset + LIMIT);
-  };
+  const handleLoadMore = useCallback(() => {
+    setOffset((prev) => prev + LIMIT);
+  }, []);
 
-  const toggleFilter = (value: string, array: string[], setter: (arr: string[]) => void) => {
-    if (array.includes(value)) {
-      setter(array.filter((v) => v !== value));
-    } else {
-      setter([...array, value]);
-    }
-  };
+  const toggleFilter = useCallback(
+    (value: string, array: string[], setter: (arr: string[]) => void) => {
+      if (array.includes(value)) {
+        setter(array.filter((v) => v !== value));
+      } else {
+        setter([...array, value]);
+      }
+    },
+    [],
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
