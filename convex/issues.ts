@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -226,40 +227,8 @@ export const listByProject = query({
       ? issues.filter((issue) => issue.sprintId === args.sprintId)
       : issues.filter((issue) => !issue.sprintId); // Backlog items
 
-    return await Promise.all(
-      filteredIssues.map(async (issue) => {
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-        const reporter = await ctx.db.get(issue.reporterId);
-        const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
-
-        return {
-          ...issue,
-          assignee: assignee
-            ? {
-                _id: assignee._id,
-                name: assignee.name || assignee.email || "Unknown",
-                email: assignee.email,
-                image: assignee.image,
-              }
-            : null,
-          reporter: reporter
-            ? {
-                _id: reporter._id,
-                name: reporter.name || reporter.email || "Unknown",
-                email: reporter.email,
-                image: reporter.image,
-              }
-            : null,
-          epic: epic
-            ? {
-                _id: epic._id,
-                key: epic.key,
-                title: epic.title,
-              }
-            : null,
-        };
-      }),
-    );
+    // Use batch enrichment to avoid N+1 queries
+    return await enrichIssues(ctx, filteredIssues);
   },
 });
 
@@ -295,53 +264,56 @@ export const get = query({
     const reporter = await ctx.db.get(issue.reporterId);
     const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
 
-    // Get comments
-    const comments = await ctx.db
-      .query("issueComments")
-      .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-      .order("asc")
-      .collect();
+    // Get comments and activity in parallel
+    const [comments, activities] = await Promise.all([
+      ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("asc")
+        .collect(),
+      ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("desc")
+        .take(20),
+    ]);
 
-    const commentsWithAuthors = await Promise.all(
-      comments.map(async (comment) => {
-        const author = await ctx.db.get(comment.authorId);
-        return {
-          ...comment,
-          author: author
-            ? {
-                _id: author._id,
-                name: author.name || author.email || "Unknown",
-                email: author.email,
-                image: author.image,
-              }
-            : null,
-        };
-      }),
-    );
+    // Batch fetch all users for comments and activities (avoid N+1!)
+    const commentAuthorIds = comments.map((c) => c.authorId);
+    const activityUserIds = activities.map((a) => a.userId);
+    const allUserIds = [...commentAuthorIds, ...activityUserIds];
+    const userMap = await batchFetchUsers(ctx, allUserIds);
 
-    // Get activity
-    const activity = await ctx.db
-      .query("issueActivity")
-      .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-      .order("desc")
-      .take(20)
-      .then((activities) =>
-        Promise.all(
-          activities.map(async (act) => {
-            const user = await ctx.db.get(act.userId);
-            return {
-              ...act,
-              user: user
-                ? {
-                    _id: user._id,
-                    name: user.name || user.email || "Unknown",
-                    image: user.image,
-                  }
-                : null,
-            };
-          }),
-        ),
-      );
+    // Enrich comments with pre-fetched data (no N+1)
+    const commentsWithAuthors = comments.map((comment) => {
+      const author = userMap.get(comment.authorId);
+      return {
+        ...comment,
+        author: author
+          ? {
+              _id: author._id,
+              name: author.name || author.email || "Unknown",
+              email: author.email,
+              image: author.image,
+            }
+          : null,
+      };
+    });
+
+    // Enrich activity with pre-fetched data (no N+1)
+    const activity = activities.map((act) => {
+      const user = userMap.get(act.userId);
+      return {
+        ...act,
+        user: user
+          ? {
+              _id: user._id,
+              name: user.name || user.email || "Unknown",
+              image: user.image,
+            }
+          : null,
+      };
+    });
 
     return {
       ...issue,
@@ -1511,10 +1483,14 @@ export const listByWorkspacePaginated = query({
 
     // Apply cursor-based pagination with ID tiebreaking
     if (args.cursor) {
-      const { timestamp, id } = decodeCursor(args.cursor);
-      issues = issues.filter(
-        (i) => i.updatedAt < timestamp || (i.updatedAt === timestamp && i._id.toString() < id),
-      );
+      try {
+        const { timestamp, id } = decodeCursor(args.cursor);
+        issues = issues.filter(
+          (i) => i.updatedAt < timestamp || (i.updatedAt === timestamp && i._id.toString() < id),
+        );
+      } catch {
+        // Invalid cursor - ignore and start from beginning
+      }
     }
 
     // Get one extra to check if there is more

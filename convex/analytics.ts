@@ -14,7 +14,42 @@ import {
   issueCountByStatus,
   issueCountByType,
 } from "./aggregates";
+import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { canAccessProject } from "./workspaceAccess";
+
+// Helper: Build issues by status from workflow states and counts
+function buildIssuesByStatus(
+  workflowStates: { id: string }[],
+  statusCounts: Record<string, number>,
+): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const state of workflowStates) {
+    result[state.id] = statusCounts[state.id] || 0;
+  }
+  return result;
+}
+
+// Helper: Build issues by type with defaults
+function buildIssuesByType(typeCounts: Record<string, number>) {
+  return {
+    task: typeCounts.task || 0,
+    bug: typeCounts.bug || 0,
+    story: typeCounts.story || 0,
+    epic: typeCounts.epic || 0,
+    subtask: typeCounts.subtask || 0,
+  };
+}
+
+// Helper: Build issues by priority with defaults
+function buildIssuesByPriority(priorityCounts: Record<string, number>) {
+  return {
+    lowest: priorityCounts.lowest || 0,
+    low: priorityCounts.low || 0,
+    medium: priorityCounts.medium || 0,
+    high: priorityCounts.high || 0,
+    highest: priorityCounts.highest || 0,
+  };
+}
 
 /**
  * Get project analytics overview
@@ -23,76 +58,44 @@ export const getProjectAnalytics = query({
   args: { workspaceId: v.id("workspaces") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw new Error("Not authenticated");
 
     const project = await ctx.db.get(args.workspaceId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw new Error("Project not found");
 
-    // Check access
     if (!(await canAccessProject(ctx, args.workspaceId, userId))) {
       throw new Error("Not authorized to access this project");
     }
 
     // Use aggregates for fast O(log n) counting instead of O(n)
-    const statusCounts = await issueCountByStatus.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const typeCounts = await issueCountByType.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const priorityCounts = await issueCountByPriority.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const assigneeCounts = await issueCountByAssignee.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
+    const [statusCounts, typeCounts, priorityCounts, assigneeCounts] = await Promise.all([
+      issueCountByStatus.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByType.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByPriority.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByAssignee.lookup(ctx, { workspaceId: args.workspaceId }),
+    ]);
 
-    // Initialize with zeros for all workflow states
-    const issuesByStatus: Record<string, number> = {};
-    project.workflowStates.forEach((state) => {
-      issuesByStatus[state.id] = statusCounts[state.id] || 0;
-    });
-
-    // Ensure all types are present
-    const issuesByType = {
-      task: typeCounts.task || 0,
-      bug: typeCounts.bug || 0,
-      story: typeCounts.story || 0,
-      epic: typeCounts.epic || 0,
-      subtask: typeCounts.subtask || 0,
-    };
-
-    // Ensure all priorities are present
-    const issuesByPriority = {
-      lowest: priorityCounts.lowest || 0,
-      low: priorityCounts.low || 0,
-      medium: priorityCounts.medium || 0,
-      high: priorityCounts.high || 0,
-      highest: priorityCounts.highest || 0,
-    };
-
-    // Get unassigned count
+    // Build structured data using helpers
+    const issuesByStatus = buildIssuesByStatus(project.workflowStates, statusCounts);
+    const issuesByType = buildIssuesByType(typeCounts);
+    const issuesByPriority = buildIssuesByPriority(priorityCounts);
     const unassignedCount = assigneeCounts.unassigned || 0;
 
-    // Enrich assignee data with user info
-    const issuesByAssignee: Record<string, { count: number; name: string }> = {};
-    await Promise.all(
-      Object.entries(assigneeCounts)
-        .filter(([assigneeId]) => assigneeId !== "unassigned")
-        .map(async ([assigneeId, count]) => {
-          const user = await ctx.db.get(assigneeId as Id<"users">);
-          issuesByAssignee[assigneeId] = {
-            count,
-            name: user?.name || user?.email || "Unknown",
-          };
-        }),
-    );
+    // Batch fetch assignee users and build assignee map
+    const assigneeIds = Object.keys(assigneeCounts)
+      .filter((id) => id !== "unassigned")
+      .map((id) => id as Id<"users">);
+    const userMap = await batchFetchUsers(ctx, assigneeIds);
 
-    // Calculate total issues
+    const issuesByAssignee: Record<string, { count: number; name: string }> = {};
+    for (const [assigneeId, count] of Object.entries(assigneeCounts)) {
+      if (assigneeId === "unassigned") continue;
+      issuesByAssignee[assigneeId] = {
+        count,
+        name: getUserName(userMap.get(assigneeId as Id<"users">)),
+      };
+    }
+
     const totalIssues = Object.values(typeCounts).reduce((sum, count) => sum + count, 0);
 
     return {
@@ -293,20 +296,27 @@ export const getRecentActivity = query({
       .filter((a) => issueIds.includes(a.issueId))
       .slice(0, args.limit || 20);
 
-    // Enrich with user and issue info
-    return await Promise.all(
-      projectActivities.map(async (activity) => {
-        const user = await ctx.db.get(activity.userId);
-        const issue = await ctx.db.get(activity.issueId);
+    // Batch fetch all users and issues (avoid N+1!)
+    const userIds = projectActivities.map((a) => a.userId);
+    const issueIdsToFetch = projectActivities.map((a) => a.issueId);
 
-        return {
-          ...activity,
-          userName: user?.name || user?.email || "Unknown",
-          userImage: user?.image,
-          issueKey: issue?.key || "Unknown",
-          issueTitle: issue?.title || "Unknown",
-        };
-      }),
-    );
+    const [userMap, issueMap] = await Promise.all([
+      batchFetchUsers(ctx, userIds),
+      batchFetchIssues(ctx, issueIdsToFetch),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    return projectActivities.map((activity) => {
+      const user = userMap.get(activity.userId);
+      const issue = issueMap.get(activity.issueId);
+
+      return {
+        ...activity,
+        userName: getUserName(user),
+        userImage: user?.image,
+        issueKey: issue?.key || "Unknown",
+        issueTitle: issue?.title || "Unknown",
+      };
+    });
   },
 });

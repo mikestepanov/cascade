@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
 
 // Get notifications for current user
 export const list = query({
@@ -27,17 +28,18 @@ export const list = query({
 
     const notifications = await notificationsQuery.order("desc").take(limit);
 
-    // Enrich with actor information
-    return await Promise.all(
-      notifications.map(async (notification) => {
-        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
+    // Batch fetch all actors (avoid N+1!)
+    const actorIds = notifications.map((n) => n.actorId);
+    const actorMap = await batchFetchUsers(ctx, actorIds);
 
-        return {
-          ...notification,
-          actorName: actor?.name,
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    return notifications.map((notification) => {
+      const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
+      return {
+        ...notification,
+        actorName: actor?.name,
+      };
+    });
   },
 });
 
@@ -196,18 +198,25 @@ export const listForDigest = internalQuery({
       .order("desc")
       .collect();
 
-    // Enrich with actor information and issue details
-    return await Promise.all(
-      notifications.map(async (notification) => {
-        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
-        const issue = notification.issueId ? await ctx.db.get(notification.issueId) : null;
+    // Batch fetch all actors and issues (avoid N+1!)
+    const actorIds = notifications.map((n) => n.actorId);
+    const issueIds = notifications.map((n) => n.issueId);
 
-        return {
-          ...notification,
-          actorName: actor?.name,
-          issueKey: issue?.key,
-        };
-      }),
-    );
+    const [actorMap, issueMap] = await Promise.all([
+      batchFetchUsers(ctx, actorIds),
+      batchFetchIssues(ctx, issueIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    return notifications.map((notification) => {
+      const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
+      const issue = notification.issueId ? issueMap.get(notification.issueId) : null;
+
+      return {
+        ...notification,
+        actorName: actor?.name,
+        issueKey: issue?.key,
+      };
+    });
   },
 });

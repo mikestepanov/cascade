@@ -99,8 +99,10 @@ export function useSmartBoardData({
   );
 
   // When more done issues arrive, merge them
+  // Note: We check moreDoneData directly, not loadingRef, to avoid race conditions
+  // where the effect runs before the ref is set
   useEffect(() => {
-    if (moreDoneData && loadingRef.current) {
+    if (moreDoneData) {
       setAdditionalDoneIssues((prev) => [...prev, ...(moreDoneData.items as EnrichedIssue[])]);
       setIsLoadingMore(false);
       loadingRef.current = false;

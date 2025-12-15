@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./workspaceAccess";
 
 export const create = mutation({
@@ -85,37 +86,58 @@ export const list = query({
       return [];
     }
 
-    // Get all projects and filter using new access control
-    const allProjects = await ctx.db.query("workspaces").collect();
-    const accessibleProjects = [];
+    // Query memberships directly via index (NOT loading all workspaces!)
+    const memberships = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
 
-    for (const project of allProjects) {
-      const hasAccess = await canAccessProject(ctx, project._id, userId);
-      if (hasAccess) {
-        accessibleProjects.push(project);
+    if (memberships.length === 0) {
+      return [];
+    }
+
+    // Batch fetch all workspaces user is a member of
+    const workspaceIds = memberships.map((m) => m.workspaceId);
+    const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
+
+    // Build role map from memberships
+    const roleMap = new Map(memberships.map((m) => [m.workspaceId.toString(), m.role]));
+
+    // Batch fetch creators
+    const creatorIds = [...workspaceMap.values()].map((w) => w.createdBy);
+    const creatorMap = await batchFetchUsers(ctx, creatorIds);
+
+    // Get issue counts efficiently (single query, filter in memory)
+    const allIssues = await ctx.db.query("issues").collect();
+    const workspaceIdSet = new Set(workspaceIds.map((id) => id.toString()));
+    const issueCountByWorkspace = new Map<string, number>();
+    for (const issue of allIssues) {
+      const wsId = issue.workspaceId.toString();
+      if (workspaceIdSet.has(wsId)) {
+        issueCountByWorkspace.set(wsId, (issueCountByWorkspace.get(wsId) ?? 0) + 1);
       }
     }
 
-    return await Promise.all(
-      accessibleProjects.map(async (project) => {
-        const creator = await ctx.db.get(project.createdBy);
-        const issueCount = await ctx.db
-          .query("issues")
-          .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
-          .collect()
-          .then((issues) => issues.length);
+    // Build result using pre-fetched data (no N+1!)
+    const result = memberships
+      .map((membership) => {
+        const project = workspaceMap.get(membership.workspaceId);
+        if (!project) return null;
 
-        const userRole = await getProjectRole(ctx, project._id, userId);
+        const creator = creatorMap.get(project.createdBy);
+        const wsId = membership.workspaceId.toString();
 
         return {
           ...project,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          issueCount,
+          creatorName: getUserName(creator),
+          issueCount: issueCountByWorkspace.get(wsId) ?? 0,
           isOwner: project.ownerId === userId || project.createdBy === userId,
-          userRole,
+          userRole: roleMap.get(wsId) ?? null,
         };
-      }),
-    );
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null);
+
+    return result;
   },
 });
 

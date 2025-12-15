@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
 
 export const create = mutation({
   args: {
@@ -290,26 +291,33 @@ export const search = query({
     const paginatedResults = filtered.slice(offset, offset + limit);
     const hasMore = offset + limit < total;
 
-    // Enrich with creator and project data
-    const enrichedResults = await Promise.all(
-      paginatedResults.map(async (doc) => {
-        const creator = await ctx.db.get(doc.createdBy);
-        const project = doc.workspaceId ? await ctx.db.get(doc.workspaceId) : null;
+    // Batch fetch all creators and workspaces (avoid N+1!)
+    const creatorIds = paginatedResults.map((doc) => doc.createdBy);
+    const workspaceIds = paginatedResults.map((doc) => doc.workspaceId);
 
-        return {
-          ...doc,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          isOwner: doc.createdBy === userId,
-          project: project
-            ? {
-                _id: project._id,
-                name: project.name,
-                key: project.key,
-              }
-            : null,
-        };
-      }),
-    );
+    const [creatorMap, workspaceMap] = await Promise.all([
+      batchFetchUsers(ctx, creatorIds),
+      batchFetchWorkspaces(ctx, workspaceIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedResults = paginatedResults.map((doc) => {
+      const creator = creatorMap.get(doc.createdBy);
+      const project = doc.workspaceId ? workspaceMap.get(doc.workspaceId) : null;
+
+      return {
+        ...doc,
+        creatorName: getUserName(creator),
+        isOwner: doc.createdBy === userId,
+        project: project
+          ? {
+              _id: project._id,
+              name: project.name,
+              key: project.key,
+            }
+          : null,
+      };
+    });
 
     return {
       results: enrichedResults,

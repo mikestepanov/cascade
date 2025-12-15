@@ -5,6 +5,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { type QueryCtx, query } from "../_generated/server";
+import { batchFetchUsers, getUserName } from "../lib/batchHelpers";
 import type { AIProvider } from "./config";
 
 type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
@@ -123,16 +124,15 @@ export const getProjectContext = query({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
-    const members = await Promise.all(
-      memberRecords.map(async (m) => {
-        const user = await ctx.db.get(m.userId);
-        return {
-          id: m.userId,
-          name: user?.name || "Unknown",
-          role: m.role,
-        };
-      }),
-    );
+    // Batch fetch users to avoid N+1 queries
+    const userIds = memberRecords.map((m) => m.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    const members = memberRecords.map((m) => ({
+      id: m.userId,
+      name: getUserName(userMap.get(m.userId)),
+      role: m.role,
+    }));
 
     // Get labels
     const labels = await ctx.db

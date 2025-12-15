@@ -2,6 +2,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+import {
+  batchFetchIssues,
+  batchFetchUsers,
+  batchFetchWorkspaces,
+  getUserName,
+} from "./lib/batchHelpers";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({
@@ -61,7 +67,7 @@ export const getMyCreatedIssues = query({
 
     const issues = await ctx.db
       .query("issues")
-      .filter((q) => q.eq(q.field("reporterId"), userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
@@ -112,31 +118,47 @@ export const getMyProjects = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const projects = await Promise.all(
-      memberships.map(async (membership) => {
-        const project = await ctx.db.get(membership.workspaceId);
+    if (memberships.length === 0) return [];
+
+    // Batch fetch all workspaces
+    const workspaceIds = memberships.map((m) => m.workspaceId);
+    const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
+
+    // Batch fetch all issues for these workspaces (single query, not N queries)
+    const allIssues = await ctx.db.query("issues").collect();
+    const workspaceIdSet = new Set(workspaceIds.map((id) => id.toString()));
+    const relevantIssues = allIssues.filter((i) => workspaceIdSet.has(i.workspaceId.toString()));
+
+    // Build counts per workspace
+    const totalIssuesByWorkspace = new Map<string, number>();
+    const myIssuesByWorkspace = new Map<string, number>();
+
+    for (const issue of relevantIssues) {
+      const wsId = issue.workspaceId.toString();
+      totalIssuesByWorkspace.set(wsId, (totalIssuesByWorkspace.get(wsId) ?? 0) + 1);
+      if (issue.assigneeId === userId) {
+        myIssuesByWorkspace.set(wsId, (myIssuesByWorkspace.get(wsId) ?? 0) + 1);
+      }
+    }
+
+    // Enrich memberships with project data and counts
+    const projects = memberships
+      .map((membership) => {
+        const project = workspaceMap.get(membership.workspaceId);
         if (!project) return null;
 
-        // Get issue count for this project
-        const issues = await ctx.db
-          .query("issues")
-          .withIndex("by_workspace", (q) => q.eq("workspaceId", membership.workspaceId))
-          .collect();
-
-        // Get my issues count
-        const myIssues = issues.filter((i) => i.assigneeId === userId);
-
+        const wsId = membership.workspaceId.toString();
         return {
           ...project,
           _id: membership.workspaceId,
           role: membership.role,
-          totalIssues: issues.length,
-          myIssues: myIssues.length,
+          totalIssues: totalIssuesByWorkspace.get(wsId) ?? 0,
+          myIssues: myIssuesByWorkspace.get(wsId) ?? 0,
         };
-      }),
-    );
+      })
+      .filter((p) => p !== null);
 
-    return projects.filter((p) => p !== null);
+    return projects;
   },
 });
 
@@ -155,31 +177,49 @@ export const getMyRecentActivity = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const workspaceIds = memberships.map((m) => m.workspaceId);
+    const workspaceIdSet = new Set(memberships.map((m) => m.workspaceId.toString()));
 
-    // Get recent activity from those projects
-    const allActivity = await ctx.db.query("issueActivity").order("desc").take(100); // Take more to filter
+    // Get recent activity
+    const allActivity = await ctx.db.query("issueActivity").order("desc").take(100);
 
-    // Filter to only projects the user has access to
-    const accessibleActivity = await Promise.all(
-      allActivity.map(async (activity) => {
-        const issue = await ctx.db.get(activity.issueId);
-        if (!(issue && workspaceIds.includes(issue.workspaceId))) return null;
+    // Batch fetch all issues referenced by activity
+    const issueIds = allActivity.map((a) => a.issueId);
+    const issueMap = await batchFetchIssues(ctx, issueIds);
 
-        const project = await ctx.db.get(issue.workspaceId);
-        const user = await ctx.db.get(activity.userId);
+    // Filter to only activities for accessible issues
+    const accessibleActivity = allActivity.filter((activity) => {
+      const issue = issueMap.get(activity.issueId);
+      return issue && workspaceIdSet.has(issue.workspaceId.toString());
+    });
+
+    // Batch fetch workspaces and users for accessible activities
+    const workspaceIdsToFetch = accessibleActivity.map((a) => issueMap.get(a.issueId)?.workspaceId);
+    const userIds = accessibleActivity.map((a) => a.userId);
+
+    const [workspaceMap, userMap] = await Promise.all([
+      batchFetchWorkspaces(ctx, workspaceIdsToFetch),
+      batchFetchUsers(ctx, userIds),
+    ]);
+
+    // Enrich activities
+    const enrichedActivity = accessibleActivity
+      .map((activity) => {
+        const issue = issueMap.get(activity.issueId);
+        if (!issue) return null;
+        const project = workspaceMap.get(issue.workspaceId);
+        const user = userMap.get(activity.userId);
 
         return {
           ...activity,
           issueKey: issue.key,
           issueTitle: issue.title,
           projectName: project?.name || "Unknown",
-          userName: user?.name || "Unknown",
+          userName: getUserName(user),
         };
-      }),
-    );
+      })
+      .filter((a): a is NonNullable<typeof a> => a !== null);
 
-    return accessibleActivity.filter((a) => a !== null).slice(0, limit);
+    return enrichedActivity.slice(0, limit);
   },
 });
 
