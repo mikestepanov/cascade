@@ -59,35 +59,37 @@ export const listByProject = query({
       return [];
     }
 
+    // Sprints per workspace are typically few (10-50), add reasonable limit
+    const MAX_SPRINTS = 100;
     const sprints = await ctx.db
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .order("desc")
-      .collect();
+      .take(MAX_SPRINTS);
 
     if (sprints.length === 0) {
       return [];
     }
 
-    // Batch fetch all issues for this workspace to count per sprint
-    // This is more efficient than N separate queries
-    const allIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .collect();
+    // Fetch issues per sprint using index (more efficient than loading all issues)
+    const sprintIds = sprints.map((s) => s._id);
+    const issueCountsPromises = sprintIds.map(async (sprintId) => {
+      const issues = await ctx.db
+        .query("issues")
+        .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
+        .collect();
+      return { sprintId, count: issues.length };
+    });
+    const issueCounts = await Promise.all(issueCountsPromises);
 
-    // Build count map by sprint ID
-    const issueCountBySprint = new Map<string, number>();
-    for (const issue of allIssues) {
-      if (issue.sprintId) {
-        const count = issueCountBySprint.get(issue.sprintId) ?? 0;
-        issueCountBySprint.set(issue.sprintId, count + 1);
-      }
-    }
+    // Build count map from results
+    const issueCountBySprint = new Map(
+      issueCounts.map(({ sprintId, count }) => [sprintId.toString(), count]),
+    );
 
     return sprints.map((sprint) => ({
       ...sprint,
-      issueCount: issueCountBySprint.get(sprint._id) ?? 0,
+      issueCount: issueCountBySprint.get(sprint._id.toString()) ?? 0,
     }));
   },
 });

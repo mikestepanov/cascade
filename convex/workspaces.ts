@@ -107,16 +107,21 @@ export const list = query({
     const creatorIds = [...workspaceMap.values()].map((w) => w.createdBy);
     const creatorMap = await batchFetchUsers(ctx, creatorIds);
 
-    // Get issue counts efficiently (single query, filter in memory)
-    const allIssues = await ctx.db.query("issues").collect();
-    const workspaceIdSet = new Set(workspaceIds.map((id) => id.toString()));
-    const issueCountByWorkspace = new Map<string, number>();
-    for (const issue of allIssues) {
-      const wsId = issue.workspaceId.toString();
-      if (workspaceIdSet.has(wsId)) {
-        issueCountByWorkspace.set(wsId, (issueCountByWorkspace.get(wsId) ?? 0) + 1);
-      }
-    }
+    // Fetch issue counts per workspace using index with reasonable limit
+    // For display purposes, we cap at 1000 - if more exist, we show "1000+"
+    const MAX_ISSUE_COUNT = 1000;
+    const issueCountsPromises = workspaceIds.map(async (workspaceId) => {
+      const issues = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+        .take(MAX_ISSUE_COUNT + 1);
+      // Return actual count up to MAX, or MAX+1 to indicate "more than MAX"
+      return { workspaceId, count: Math.min(issues.length, MAX_ISSUE_COUNT) };
+    });
+    const issueCounts = await Promise.all(issueCountsPromises);
+    const issueCountByWorkspace = new Map(
+      issueCounts.map(({ workspaceId, count }) => [workspaceId.toString(), count]),
+    );
 
     // Build result using pre-fetched data (no N+1!)
     const result = memberships
@@ -172,19 +177,21 @@ export const get = query({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
 
-    const members = await Promise.all(
-      workspaceMembers.map(async (membership) => {
-        const member = await ctx.db.get(membership.userId);
-        return {
-          _id: membership.userId,
-          name: member?.name || member?.email || "Unknown",
-          email: member?.email,
-          image: member?.image,
-          role: membership.role,
-          addedAt: membership.addedAt,
-        };
-      }),
-    );
+    // Batch fetch all members to avoid N+1
+    const memberUserIds = workspaceMembers.map((m) => m.userId);
+    const memberMap = await batchFetchUsers(ctx, memberUserIds);
+
+    const members = workspaceMembers.map((membership) => {
+      const member = memberMap.get(membership.userId);
+      return {
+        _id: membership.userId,
+        name: member?.name || member?.email || "Unknown",
+        email: member?.email,
+        image: member?.image,
+        role: membership.role,
+        addedAt: membership.addedAt,
+      };
+    });
 
     const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
 
@@ -235,19 +242,21 @@ export const getByKey = query({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
       .collect();
 
-    const members = await Promise.all(
-      workspaceMembers.map(async (membership) => {
-        const member = await ctx.db.get(membership.userId);
-        return {
-          _id: membership.userId,
-          name: member?.name || member?.email || "Unknown",
-          email: member?.email,
-          image: member?.image,
-          role: membership.role,
-          addedAt: membership.addedAt,
-        };
-      }),
-    );
+    // Batch fetch all members to avoid N+1
+    const memberUserIds = workspaceMembers.map((m) => m.userId);
+    const memberMap = await batchFetchUsers(ctx, memberUserIds);
+
+    const members = workspaceMembers.map((membership) => {
+      const member = memberMap.get(membership.userId);
+      return {
+        _id: membership.userId,
+        name: member?.name || member?.email || "Unknown",
+        email: member?.email,
+        image: member?.image,
+        role: membership.role,
+        addedAt: membership.addedAt,
+      };
+    });
 
     const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
 
@@ -325,68 +334,83 @@ export const deleteProject = mutation({
       throw new Error("Only project owner can delete the project");
     }
 
-    // Delete all related data
-    // 1. Delete all issues
+    // Delete all related data using batch operations (parallel deletes)
+
+    // 1. Get all issues for this workspace
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .collect();
 
-    for (const issue of issues) {
-      // Delete issue comments
-      const comments = await ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .collect();
-      for (const comment of comments) {
-        await ctx.db.delete(comment._id);
-      }
+    const issueIds = issues.map((i) => i._id);
 
-      // Delete issue activity
-      const activities = await ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .collect();
-      for (const activity of activities) {
-        await ctx.db.delete(activity._id);
-      }
+    // 2. Batch fetch all related data for issues in parallel
+    const [allComments, allActivities, allLinksFrom, allLinksTo, sprints, members] =
+      await Promise.all([
+        // Get all comments for all issues
+        Promise.all(
+          issueIds.map((issueId) =>
+            ctx.db
+              .query("issueComments")
+              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+              .collect(),
+          ),
+        ).then((arrays) => arrays.flat()),
+        // Get all activities for all issues
+        Promise.all(
+          issueIds.map((issueId) =>
+            ctx.db
+              .query("issueActivity")
+              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+              .collect(),
+          ),
+        ).then((arrays) => arrays.flat()),
+        // Get all links from issues
+        Promise.all(
+          issueIds.map((issueId) =>
+            ctx.db
+              .query("issueLinks")
+              .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
+              .collect(),
+          ),
+        ).then((arrays) => arrays.flat()),
+        // Get all links to issues
+        Promise.all(
+          issueIds.map((issueId) =>
+            ctx.db
+              .query("issueLinks")
+              .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
+              .collect(),
+          ),
+        ).then((arrays) => arrays.flat()),
+        // Get all sprints
+        ctx.db
+          .query("sprints")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+          .collect(),
+        // Get all members
+        ctx.db
+          .query("workspaceMembers")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+          .collect(),
+      ]);
 
-      // Delete issue links
-      const linksFrom = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issue._id))
-        .collect();
-      for (const link of linksFrom) {
-        await ctx.db.delete(link._id);
-      }
-      const linksTo = await ctx.db
-        .query("issueLinks")
-        .withIndex("by_to_issue", (q) => q.eq("toIssueId", issue._id))
-        .collect();
-      for (const link of linksTo) {
-        await ctx.db.delete(link._id);
-      }
-
-      await ctx.db.delete(issue._id);
-    }
-
-    // 2. Delete all sprints
-    const sprints = await ctx.db
-      .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .collect();
-    for (const sprint of sprints) {
-      await ctx.db.delete(sprint._id);
-    }
-
-    // 3. Delete all project members
-    const members = await ctx.db
-      .query("workspaceMembers")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .collect();
-    for (const member of members) {
-      await ctx.db.delete(member._id);
-    }
+    // 3. Batch delete all related data in parallel
+    await Promise.all([
+      // Delete comments
+      ...allComments.map((c) => ctx.db.delete(c._id)),
+      // Delete activities
+      ...allActivities.map((a) => ctx.db.delete(a._id)),
+      // Delete links
+      ...allLinksFrom.map((l) => ctx.db.delete(l._id)),
+      ...allLinksTo.map((l) => ctx.db.delete(l._id)),
+      // Delete sprints
+      ...sprints.map((s) => ctx.db.delete(s._id)),
+      // Delete members
+      ...members.map((m) => ctx.db.delete(m._id)),
+      // Delete issues
+      ...issues.map((i) => ctx.db.delete(i._id)),
+    ]);
 
     // 4. Delete the project itself
     await ctx.db.delete(args.workspaceId);

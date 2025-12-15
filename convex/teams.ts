@@ -426,39 +426,49 @@ export const getCompanyTeams = query({
 
     const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
 
-    // Batch fetch all team members and workspaces at once (avoid N+1!)
+    // Fetch team members and workspaces per team using indexes (NOT loading all!)
     const teamIds = teams.map((t) => t._id);
-    const teamIdSet = new Set(teamIds.map((id) => id.toString()));
 
-    const [allTeamMembers, allWorkspaces] = await Promise.all([
-      ctx.db.query("teamMembers").collect(),
-      ctx.db.query("workspaces").collect(),
+    const [teamMembersArrays, workspacesArrays] = await Promise.all([
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
     ]);
 
     // Build count maps
     const memberCountByTeam = new Map<string, number>();
     const userRoleByTeam = new Map<string, "lead" | "member">();
 
-    for (const member of allTeamMembers) {
-      const teamIdStr = member.teamId.toString();
-      if (!teamIdSet.has(teamIdStr)) continue;
-
-      memberCountByTeam.set(teamIdStr, (memberCountByTeam.get(teamIdStr) ?? 0) + 1);
+    teamIds.forEach((teamId, index) => {
+      const members = teamMembersArrays[index];
+      const teamIdStr = teamId.toString();
+      memberCountByTeam.set(teamIdStr, members.length);
 
       // Track current user's role
-      if (member.userId === userId) {
-        userRoleByTeam.set(teamIdStr, member.role);
+      const userMembership = members.find((m) => m.userId === userId);
+      if (userMembership) {
+        userRoleByTeam.set(teamIdStr, userMembership.role);
       }
-    }
+    });
 
     const projectCountByTeam = new Map<string, number>();
-    for (const workspace of allWorkspaces) {
-      if (!workspace.teamId) continue;
-      const teamIdStr = workspace.teamId.toString();
-      if (!teamIdSet.has(teamIdStr)) continue;
-
-      projectCountByTeam.set(teamIdStr, (projectCountByTeam.get(teamIdStr) ?? 0) + 1);
-    }
+    teamIds.forEach((teamId, index) => {
+      const workspaces = workspacesArrays[index];
+      projectCountByTeam.set(teamId.toString(), workspaces.length);
+    });
 
     // Enrich teams with pre-computed data (no N+1)
     const teamsWithInfo = teams.map((team) => {
@@ -495,29 +505,37 @@ export const getUserTeams = query({
     // Batch fetch all teams (avoid N+1!)
     const teamIds = memberships.map((m) => m.teamId);
     const teamMap = await batchFetchTeams(ctx, teamIds);
-    const teamIdSet = new Set(teamIds.map((id) => id.toString()));
 
-    // Batch fetch all team members and workspaces for count calculations
-    const [allTeamMembers, allWorkspaces] = await Promise.all([
-      ctx.db.query("teamMembers").collect(),
-      ctx.db.query("workspaces").collect(),
+    // Fetch team members and workspaces per team using indexes (NOT loading all!)
+    const [teamMembersArrays, workspacesArrays] = await Promise.all([
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
     ]);
 
     // Build count maps
     const memberCountByTeam = new Map<string, number>();
-    for (const member of allTeamMembers) {
-      const teamIdStr = member.teamId.toString();
-      if (!teamIdSet.has(teamIdStr)) continue;
-      memberCountByTeam.set(teamIdStr, (memberCountByTeam.get(teamIdStr) ?? 0) + 1);
-    }
+    teamIds.forEach((teamId, index) => {
+      memberCountByTeam.set(teamId.toString(), teamMembersArrays[index].length);
+    });
 
     const projectCountByTeam = new Map<string, number>();
-    for (const workspace of allWorkspaces) {
-      if (!workspace.teamId) continue;
-      const teamIdStr = workspace.teamId.toString();
-      if (!teamIdSet.has(teamIdStr)) continue;
-      projectCountByTeam.set(teamIdStr, (projectCountByTeam.get(teamIdStr) ?? 0) + 1);
-    }
+    teamIds.forEach((teamId, index) => {
+      projectCountByTeam.set(teamId.toString(), workspacesArrays[index].length);
+    });
 
     // Enrich with pre-fetched data (no N+1)
     const teams = memberships

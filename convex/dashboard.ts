@@ -8,6 +8,7 @@ import {
   batchFetchWorkspaces,
   getUserName,
 } from "./lib/batchHelpers";
+import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({
@@ -124,22 +125,26 @@ export const getMyProjects = query({
     const workspaceIds = memberships.map((m) => m.workspaceId);
     const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
 
-    // Batch fetch all issues for these workspaces (single query, not N queries)
-    const allIssues = await ctx.db.query("issues").collect();
-    const workspaceIdSet = new Set(workspaceIds.map((id) => id.toString()));
-    const relevantIssues = allIssues.filter((i) => workspaceIdSet.has(i.workspaceId.toString()));
+    // Fetch issues per workspace using index (NOT loading all issues!)
+    const issuesByWorkspace = await Promise.all(
+      workspaceIds.map((workspaceId) =>
+        ctx.db
+          .query("issues")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+          .collect(),
+      ),
+    );
 
     // Build counts per workspace
     const totalIssuesByWorkspace = new Map<string, number>();
     const myIssuesByWorkspace = new Map<string, number>();
 
-    for (const issue of relevantIssues) {
-      const wsId = issue.workspaceId.toString();
-      totalIssuesByWorkspace.set(wsId, (totalIssuesByWorkspace.get(wsId) ?? 0) + 1);
-      if (issue.assigneeId === userId) {
-        myIssuesByWorkspace.set(wsId, (myIssuesByWorkspace.get(wsId) ?? 0) + 1);
-      }
-    }
+    workspaceIds.forEach((workspaceId, index) => {
+      const issues = issuesByWorkspace[index];
+      const wsId = workspaceId.toString();
+      totalIssuesByWorkspace.set(wsId, issues.length);
+      myIssuesByWorkspace.set(wsId, issues.filter((i) => i.assigneeId === userId).length);
+    });
 
     // Enrich memberships with project data and counts
     const projects = memberships
@@ -169,7 +174,7 @@ export const getMyRecentActivity = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const limit = args.limit || 20;
+    const limit = args.limit || DEFAULT_SEARCH_PAGE_SIZE;
 
     // Get projects where user is a member
     const memberships = await ctx.db
@@ -180,7 +185,7 @@ export const getMyRecentActivity = query({
     const workspaceIdSet = new Set(memberships.map((m) => m.workspaceId.toString()));
 
     // Get recent activity
-    const allActivity = await ctx.db.query("issueActivity").order("desc").take(100);
+    const allActivity = await ctx.db.query("issueActivity").order("desc").take(MAX_ACTIVITY_ITEMS);
 
     // Batch fetch all issues referenced by activity
     const issueIds = allActivity.map((a) => a.issueId);
@@ -269,10 +274,10 @@ export const getMyStats = query({
       (i) => i.priority === "high" || i.priority === "highest",
     ).length;
 
-    // Created by me
+    // Created by me - using index instead of filter (avoids full table scan)
     const createdByMe = await ctx.db
       .query("issues")
-      .filter((q) => q.eq(q.field("reporterId"), userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
       .collect();
 
     return {

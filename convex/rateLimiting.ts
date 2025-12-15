@@ -35,10 +35,37 @@ interface RateLimitConfig {
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 /**
+ * Counter for periodic cleanup
+ */
+let checkCounter = 0;
+const CLEANUP_INTERVAL = 100; // Clean up every 100 checks
+const MAX_STORE_SIZE = 10000; // Force cleanup if store exceeds this size
+
+/**
+ * Clean up expired entries from the rate limit store
+ */
+function cleanupExpiredBuckets(): void {
+  const now = Date.now();
+  for (const [key, bucket] of rateLimitStore.entries()) {
+    if (now > bucket.resetAt) {
+      rateLimitStore.delete(key);
+    }
+  }
+}
+
+/**
  * Check if rate limit is exceeded
  */
 function checkRateLimit(key: string, config: RateLimitConfig): boolean {
   const now = Date.now();
+
+  // Periodic cleanup to prevent memory leak
+  checkCounter++;
+  if (checkCounter >= CLEANUP_INTERVAL || rateLimitStore.size > MAX_STORE_SIZE) {
+    cleanupExpiredBuckets();
+    checkCounter = 0;
+  }
+
   const bucket = rateLimitStore.get(key);
 
   // No existing bucket or expired

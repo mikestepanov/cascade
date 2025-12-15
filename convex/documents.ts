@@ -3,6 +3,13 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SEARCH_PAGE_SIZE,
+  FETCH_BUFFER_MULTIPLIER,
+  MAX_OFFSET,
+  MAX_PAGE_SIZE,
+} from "./lib/queryLimits";
 
 export const create = mutation({
   args: {
@@ -37,24 +44,30 @@ export const list = query({
       return { documents: [], nextCursor: null, hasMore: false };
     }
 
-    const limit = args.limit ?? 50;
+    // Cap limit to prevent abuse
+    const requestedLimit = args.limit ?? DEFAULT_PAGE_SIZE;
+    const limit = Math.min(requestedLimit, MAX_PAGE_SIZE);
 
-    // Get user's private documents
+    // Fetch buffer: get more than needed to handle deduplication between private/public
+    // Buffer size scales with limit to ensure we have enough results
+    const fetchBuffer = limit * FETCH_BUFFER_MULTIPLIER;
+
+    // Get user's private documents (their own non-public docs)
     const privateDocuments = await ctx.db
       .query("documents")
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
-      .collect();
+      .take(fetchBuffer);
 
-    // Get public documents (bounded - typically fewer)
+    // Get public documents (any user's public docs)
     const publicDocuments = await ctx.db
       .query("documents")
       .withIndex("by_public", (q) => q.eq("isPublic", true))
       .order("desc")
-      .collect();
+      .take(fetchBuffer);
 
-    // Combine and deduplicate (private docs may also be in public if toggled)
+    // Combine and deduplicate (user's public docs appear in both queries)
     const seenIds = new Set<string>();
     const allDocuments = [...privateDocuments, ...publicDocuments].filter((doc) => {
       if (seenIds.has(doc._id)) return false;
@@ -81,8 +94,7 @@ export const list = query({
 
     // Batch fetch creators to avoid N+1
     const creatorIds = [...new Set(paginatedDocs.map((doc) => doc.createdBy))];
-    const creators = await Promise.all(creatorIds.map((id) => ctx.db.get(id)));
-    const creatorMap = new Map(creatorIds.map((id, i) => [id, creators[i]]));
+    const creatorMap = await batchFetchUsers(ctx, creatorIds);
 
     const documents = paginatedDocs.map((doc) => {
       const creator = creatorMap.get(doc.createdBy);
@@ -262,10 +274,18 @@ export const search = query({
       return { results: [], total: 0, hasMore: false };
     }
 
+    // Cap pagination params to prevent abuse
+    const offset = Math.min(args.offset ?? 0, MAX_OFFSET);
+    const limit = Math.min(args.limit ?? DEFAULT_SEARCH_PAGE_SIZE, MAX_PAGE_SIZE);
+
+    // Fetch buffer: account for filtering (permissions, filters may remove ~50% of results)
+    // Fetch enough to satisfy offset + limit after filtering
+    const fetchLimit = (offset + limit) * FETCH_BUFFER_MULTIPLIER;
+
     const results = await ctx.db
       .query("documents")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .collect();
+      .take(fetchLimit);
 
     // Filter results based on access permissions and advanced filters
     const filtered = [];
@@ -281,15 +301,18 @@ export const search = query({
       }
 
       filtered.push(doc);
+
+      // Early exit: stop once we have enough results for this page
+      if (filtered.length >= offset + limit + 1) {
+        break;
+      }
     }
 
     const total = filtered.length;
-    const offset = args.offset ?? 0;
-    const limit = args.limit ?? 20;
 
     // Apply pagination
     const paginatedResults = filtered.slice(offset, offset + limit);
-    const hasMore = offset + limit < total;
+    const hasMore = filtered.length > offset + limit;
 
     // Batch fetch all creators and workspaces (avoid N+1!)
     const creatorIds = paginatedResults.map((doc) => doc.createdBy);
@@ -321,7 +344,7 @@ export const search = query({
 
     return {
       results: enrichedResults,
-      total,
+      total: Math.min(total, offset + limit + (hasMore ? 1 : 0)), // Approximate total for this fetch
       hasMore,
       offset,
       limit,

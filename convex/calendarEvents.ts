@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -194,17 +195,19 @@ export const listByDateRange = query({
       ? visibleEvents.filter((event) => event.workspaceId === args.workspaceId)
       : visibleEvents;
 
+    // Batch fetch organizers to avoid N+1
+    const organizerIds = [...new Set(filteredEvents.map((e) => e.organizerId))];
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
+
     // Enrich with organizer details
-    const enrichedEvents = await Promise.all(
-      filteredEvents.map(async (event) => {
-        const organizer = await ctx.db.get(event.organizerId);
-        return {
-          ...event,
-          organizerName: organizer?.name,
-          organizerEmail: organizer?.email,
-        };
-      }),
-    );
+    const enrichedEvents = filteredEvents.map((event) => {
+      const organizer = organizerMap.get(event.organizerId);
+      return {
+        ...event,
+        organizerName: organizer?.name,
+        organizerEmail: organizer?.email,
+      };
+    });
 
     return enrichedEvents.sort((a, b) => a.startTime - b.startTime);
   },
@@ -263,8 +266,7 @@ export const listMine = query({
 
     // Batch fetch organizers to avoid N+1
     const organizerIds = [...new Set(filteredEvents.map((e) => e.organizerId))];
-    const organizers = await Promise.all(organizerIds.map((id) => ctx.db.get(id)));
-    const organizerMap = new Map(organizerIds.map((id, i) => [id, organizers[i]]));
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
 
     // Enrich with organizer details
     const enrichedEvents = filteredEvents.map((event) => {
@@ -386,17 +388,19 @@ export const getUpcoming = query({
     // Limit results
     const limitedEvents = args.limit ? visibleEvents.slice(0, args.limit) : visibleEvents;
 
+    // Batch fetch organizers to avoid N+1
+    const organizerIds = [...new Set(limitedEvents.map((e) => e.organizerId))];
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
+
     // Enrich with organizer details
-    const enrichedEvents = await Promise.all(
-      limitedEvents.map(async (event) => {
-        const organizer = await ctx.db.get(event.organizerId);
-        return {
-          ...event,
-          organizerName: organizer?.name,
-          organizerEmail: organizer?.email,
-        };
-      }),
-    );
+    const enrichedEvents = limitedEvents.map((event) => {
+      const organizer = organizerMap.get(event.organizerId);
+      return {
+        ...event,
+        organizerName: organizer?.name,
+        organizerEmail: organizer?.email,
+      };
+    });
 
     return enrichedEvents.sort((a, b) => a.startTime - b.startTime);
   },

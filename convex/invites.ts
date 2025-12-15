@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { sendEmail } from "./email/index";
+import { batchFetchUsers, batchFetchWorkspaces } from "./lib/batchHelpers";
 import { getSiteUrl } from "./lib/env";
 
 // Helper: Check if user is a company admin
@@ -515,43 +516,49 @@ export const listInvites = query({
     }
 
     // Filter by status if provided
+    // Query invites with limit (admin function but still bounded)
+    const MAX_INVITES = 500;
     let invites: Doc<"invites">[];
     if (args.status !== undefined) {
-      const status = args.status; // Extract to const for type narrowing
+      const status = args.status;
       invites = await ctx.db
         .query("invites")
         .withIndex("by_status", (q) => q.eq("status", status))
-        .collect();
+        .order("desc")
+        .take(MAX_INVITES);
     } else {
-      invites = await ctx.db.query("invites").collect();
+      invites = await ctx.db.query("invites").order("desc").take(MAX_INVITES);
     }
 
-    // Get inviter names and project names
-    const invitesWithNames = await Promise.all(
-      invites.map(async (invite) => {
-        const inviter = (await ctx.db.get(invite.invitedBy)) as Doc<"users"> | null;
-        let acceptedByName: string | undefined;
-        if (invite.acceptedBy) {
-          const acceptedUser = (await ctx.db.get(invite.acceptedBy)) as Doc<"users"> | null;
-          acceptedByName = acceptedUser?.name || acceptedUser?.email || "Unknown";
-        }
-        // Get project name if project invite
-        let projectName: string | undefined;
-        if (invite.workspaceId) {
-          const project = await ctx.db.get(invite.workspaceId);
-          projectName = project?.name;
-        }
-        return {
-          ...invite,
-          inviterName: inviter?.name || inviter?.email || "Unknown",
-          acceptedByName,
-          projectName,
-        };
-      }),
-    );
+    // Batch fetch all related data to avoid N+1
+    const inviterIds = invites.map((i) => i.invitedBy);
+    const acceptedByIds = invites.map((i) => i.acceptedBy).filter(Boolean) as Id<"users">[];
+    const workspaceIds = invites.map((i) => i.workspaceId).filter(Boolean) as Id<"workspaces">[];
 
-    // Sort by created date (newest first)
-    return invitesWithNames.sort((a, b) => b.createdAt - a.createdAt);
+    const [inviterMap, acceptedByMap, workspaceMap] = await Promise.all([
+      batchFetchUsers(ctx, inviterIds),
+      batchFetchUsers(ctx, acceptedByIds),
+      batchFetchWorkspaces(ctx, workspaceIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    const invitesWithNames = invites.map((invite) => {
+      const inviter = inviterMap.get(invite.invitedBy);
+      const acceptedUser = invite.acceptedBy ? acceptedByMap.get(invite.acceptedBy) : null;
+      const project = invite.workspaceId ? workspaceMap.get(invite.workspaceId) : null;
+
+      return {
+        ...invite,
+        inviterName: inviter?.name || inviter?.email || "Unknown",
+        acceptedByName: acceptedUser
+          ? acceptedUser.name || acceptedUser.email || "Unknown"
+          : undefined,
+        projectName: project?.name,
+      };
+    });
+
+    // Already ordered by desc, just return
+    return invitesWithNames;
   },
 });
 

@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
+import { DEFAULT_PAGE_SIZE } from "./lib/queryLimits";
 
 // Get notifications for current user
 export const list = query({
@@ -13,7 +14,7 @@ export const list = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const limit = args.limit ?? 50;
+    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
     const onlyUnread = args.onlyUnread ?? false;
 
     let notificationsQuery = ctx.db
@@ -43,17 +44,19 @@ export const list = query({
   },
 });
 
-// Get unread count
+// Get unread count (capped at 99+ for display)
 export const getUnreadCount = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return 0;
 
+    // Cap at 100 - UI typically shows "99+" anyway
+    const MAX_UNREAD_COUNT = 100;
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
-      .collect();
+      .take(MAX_UNREAD_COUNT);
 
     return unread.length;
   },
@@ -77,21 +80,25 @@ export const markAsRead = mutation({
   },
 });
 
-// Mark all as read
+// Mark all as read (with reasonable limit per call)
 export const markAllAsRead = mutation({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // Limit per mutation call - can be called multiple times if needed
+    const MAX_TO_MARK = 500;
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
-      .collect();
+      .take(MAX_TO_MARK);
 
-    for (const notification of unread) {
-      await ctx.db.patch(notification._id, { isRead: true });
-    }
+    // Batch update all notifications in parallel
+    await Promise.all(unread.map((n) => ctx.db.patch(n._id, { isRead: true })));
+
+    // Return count so client knows if more remain
+    return { marked: unread.length, hasMore: unread.length === MAX_TO_MARK };
   },
 });
 
@@ -190,13 +197,15 @@ export const listForDigest = internalQuery({
     startTime: v.number(),
   },
   handler: async (ctx, args) => {
+    // Limit for digest - most recent notifications since startTime
+    const MAX_DIGEST_NOTIFICATIONS = 100;
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_user_created", (q) =>
         q.eq("userId", args.userId).gte("createdAt", args.startTime),
       )
       .order("desc")
-      .collect();
+      .take(MAX_DIGEST_NOTIFICATIONS);
 
     // Batch fetch all actors and issues (avoid N+1!)
     const actorIds = notifications.map((n) => n.actorId);

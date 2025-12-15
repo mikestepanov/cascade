@@ -15,6 +15,7 @@ import {
   issueCountByType,
 } from "./aggregates";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
 import { canAccessProject } from "./workspaceAccess";
 
 // Helper: Build issues by status from workflow states and counts
@@ -226,7 +227,7 @@ export const getTeamVelocity = query({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
-      .take(10); // Last 10 sprints
+      .take(MAX_VELOCITY_SPRINTS);
 
     // Get done states
     const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
@@ -280,30 +281,27 @@ export const getRecentActivity = query({
       throw new Error("Not authorized to access this project");
     }
 
-    // Get all project issues
-    const projectIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .collect();
+    // Get recent activity (global, limited)
+    const activities = await ctx.db
+      .query("issueActivity")
+      .order("desc")
+      .take(MAX_ACTIVITY_FOR_ANALYTICS);
 
-    const issueIds = projectIssues.map((i) => i._id);
+    // Batch fetch all referenced issues (NOT all project issues!)
+    const activityIssueIds = activities.map((a) => a.issueId);
+    const issueMap = await batchFetchIssues(ctx, activityIssueIds);
 
-    // Get recent activity across all project issues
-    const activities = await ctx.db.query("issueActivity").order("desc").take(1000); // Get a large sample
-
-    // Filter to only this project's issues
+    // Filter to only activities for this project's issues
     const projectActivities = activities
-      .filter((a) => issueIds.includes(a.issueId))
+      .filter((a) => {
+        const issue = issueMap.get(a.issueId);
+        return issue && issue.workspaceId === args.workspaceId;
+      })
       .slice(0, args.limit || 20);
 
-    // Batch fetch all users and issues (avoid N+1!)
+    // Batch fetch users for filtered activities
     const userIds = projectActivities.map((a) => a.userId);
-    const issueIdsToFetch = projectActivities.map((a) => a.issueId);
-
-    const [userMap, issueMap] = await Promise.all([
-      batchFetchUsers(ctx, userIds),
-      batchFetchIssues(ctx, issueIdsToFetch),
-    ]);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
     // Enrich with pre-fetched data (no N+1)
     return projectActivities.map((activity) => {

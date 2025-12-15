@@ -150,6 +150,7 @@ const applicationTables = {
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
   })
     .index("by_workspace", ["workspaceId"])
+    .index("by_key", ["key"])
     .index("by_assignee", ["assigneeId"])
     .index("by_reporter", ["reporterId"])
     .index("by_status", ["status"])
