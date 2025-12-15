@@ -577,35 +577,52 @@ export const listUsers = query({
       return [];
     }
 
-    const users = await ctx.db.query("users").collect();
+    // Bounded query - admin function but still needs reasonable limits
+    const MAX_USERS = 500;
+    const users = await ctx.db.query("users").take(MAX_USERS);
 
-    // Get additional info for each user
-    const usersWithInfo = await Promise.all(
-      users.map(async (user) => {
-        // Count projects created
-        const projectsCreated = await ctx.db
-          .query("workspaces")
-          .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
-          .collect();
+    // Batch fetch all workspace creations and memberships to avoid N+1 queries
+    const userIds = users.map((u) => u._id);
 
-        // Count project memberships
-        const workspaceMemberships = await ctx.db
-          .query("workspaceMembers")
-          .withIndex("by_user", (q) => q.eq("userId", user._id))
-          .collect();
+    // Parallel queries for all users at once
+    const [allWorkspaceCreations, allMemberships] = await Promise.all([
+      Promise.all(
+        userIds.map((uid) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_creator", (q) => q.eq("createdBy", uid))
+            .collect(),
+        ),
+      ),
+      Promise.all(
+        userIds.map((uid) =>
+          ctx.db
+            .query("workspaceMembers")
+            .withIndex("by_user", (q) => q.eq("userId", uid))
+            .collect(),
+        ),
+      ),
+    ]);
 
-        return {
-          _id: user._id,
-          name: user.name ?? user.email ?? "Unknown User",
-          email: user.email,
-          image: user.image,
-          emailVerificationTime: user.emailVerificationTime,
-          isAnonymous: user.isAnonymous,
-          projectsCreated: projectsCreated.length,
-          workspaceMemberships: workspaceMemberships.length,
-        };
-      }),
+    // Build count maps
+    const createdCountMap = new Map(
+      userIds.map((id, i) => [id.toString(), allWorkspaceCreations[i].length]),
     );
+    const membershipCountMap = new Map(
+      userIds.map((id, i) => [id.toString(), allMemberships[i].length]),
+    );
+
+    // Enrich with pre-fetched data (no N+1 - all fetches are parallel)
+    const usersWithInfo = users.map((user) => ({
+      _id: user._id,
+      name: user.name ?? user.email ?? "Unknown User",
+      email: user.email,
+      image: user.image,
+      emailVerificationTime: user.emailVerificationTime,
+      isAnonymous: user.isAnonymous,
+      projectsCreated: createdCountMap.get(user._id.toString()) ?? 0,
+      workspaceMemberships: membershipCountMap.get(user._id.toString()) ?? 0,
+    }));
 
     return usersWithInfo;
   },

@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchCustomFields } from "./lib/batchHelpers";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -211,16 +212,15 @@ export const getValuesForIssue = query({
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .collect();
 
-    // Enrich with field definitions
-    const enrichedValues = await Promise.all(
-      values.map(async (value) => {
-        const field = await ctx.db.get(value.fieldId);
-        return {
-          ...value,
-          field,
-        };
-      }),
-    );
+    // Batch fetch field definitions to avoid N+1 queries
+    const fieldIds = values.map((v) => v.fieldId);
+    const fieldMap = await batchFetchCustomFields(ctx, fieldIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedValues = values.map((value) => ({
+      ...value,
+      field: fieldMap.get(value.fieldId) ?? null,
+    }));
 
     return enrichedValues.filter((v) => v.field !== null);
   },

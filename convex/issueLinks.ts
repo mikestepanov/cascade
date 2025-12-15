@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { batchFetchIssues } from "./lib/batchHelpers";
 import { assertCanEditProject } from "./workspaceAccess";
 
 export const create = mutation({
@@ -118,46 +119,41 @@ export const getForIssue = query({
       .withIndex("by_to_issue", (q) => q.eq("toIssueId", args.issueId))
       .collect();
 
-    // Enrich with issue data
-    const outgoing = await Promise.all(
-      outgoingLinks.map(async (link) => {
-        const issue = await ctx.db.get(link.toIssueId);
-        return {
-          _id: link._id,
-          linkType: link.linkType,
-          issue: issue
-            ? {
-                _id: issue._id,
-                key: issue.key,
-                title: issue.title,
-                status: issue.status,
-                type: issue.type,
-                priority: issue.priority,
-              }
-            : null,
-        };
-      }),
-    );
+    // Batch fetch all linked issues to avoid N+1 queries
+    const allIssueIds = [
+      ...outgoingLinks.map((l) => l.toIssueId),
+      ...incomingLinks.map((l) => l.fromIssueId),
+    ];
+    const issueMap = await batchFetchIssues(ctx, allIssueIds);
 
-    const incoming = await Promise.all(
-      incomingLinks.map(async (link) => {
-        const issue = await ctx.db.get(link.fromIssueId);
-        return {
-          _id: link._id,
-          linkType: link.linkType,
-          issue: issue
-            ? {
-                _id: issue._id,
-                key: issue.key,
-                title: issue.title,
-                status: issue.status,
-                type: issue.type,
-                priority: issue.priority,
-              }
-            : null,
-        };
-      }),
-    );
+    // Helper to format issue
+    const formatIssue = (issue: NonNullable<ReturnType<typeof issueMap.get>>) => ({
+      _id: issue._id,
+      key: issue.key,
+      title: issue.title,
+      status: issue.status,
+      type: issue.type,
+      priority: issue.priority,
+    });
+
+    // Enrich with pre-fetched data (no N+1)
+    const outgoing = outgoingLinks.map((link) => {
+      const issue = issueMap.get(link.toIssueId);
+      return {
+        _id: link._id,
+        linkType: link.linkType,
+        issue: issue ? formatIssue(issue) : null,
+      };
+    });
+
+    const incoming = incomingLinks.map((link) => {
+      const issue = issueMap.get(link.fromIssueId);
+      return {
+        _id: link._id,
+        linkType: link.linkType,
+        issue: issue ? formatIssue(issue) : null,
+      };
+    });
 
     return { outgoing, incoming };
   },

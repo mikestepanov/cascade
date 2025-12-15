@@ -232,25 +232,37 @@ export const getTeamVelocity = query({
     // Get done states
     const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
 
-    const velocityData = await Promise.all(
-      completedSprints.map(async (sprint) => {
-        const sprintIssues = await ctx.db
+    // Batch fetch issues for all sprints in parallel (not sequential)
+    const sprintIds = completedSprints.map((s) => s._id);
+    const sprintIssuesArrays = await Promise.all(
+      sprintIds.map((sprintId) =>
+        ctx.db
           .query("issues")
-          .withIndex("by_sprint", (q) => q.eq("sprintId", sprint._id))
-          .collect();
-
-        const completedPoints = sprintIssues
-          .filter((issue) => doneStates.includes(issue.status))
-          .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
-
-        return {
-          sprintName: sprint.name,
-          sprintId: sprint._id,
-          points: completedPoints,
-          issuesCompleted: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
-        };
-      }),
+          .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
+          .collect(),
+      ),
     );
+
+    // Build sprint issues map
+    const sprintIssuesMap = new Map(
+      sprintIds.map((id, i) => [id.toString(), sprintIssuesArrays[i]]),
+    );
+
+    // Calculate velocity data using pre-fetched issues (no N+1)
+    const velocityData = completedSprints.map((sprint) => {
+      const sprintIssues = sprintIssuesMap.get(sprint._id.toString()) || [];
+
+      const completedPoints = sprintIssues
+        .filter((issue) => doneStates.includes(issue.status))
+        .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
+
+      return {
+        sprintName: sprint.name,
+        sprintId: sprint._id,
+        points: completedPoints,
+        issuesCompleted: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
+      };
+    });
 
     // Calculate average velocity
     const avgVelocity =

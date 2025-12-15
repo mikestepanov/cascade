@@ -251,18 +251,17 @@ export const getMyStats = query({
     // Filter for different stats
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-    // Get all projects to check workflow states
+    // Batch fetch all projects to check workflow states (avoid N+1)
     const workspaceIds = [...new Set(assignedIssues.map((i) => i.workspaceId))];
-    const projects = await Promise.all(workspaceIds.map(async (id) => await ctx.db.get(id)));
+    const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
 
     // Build a map of workspaceId -> done workflow states
     const doneStatesMap = new Map<string, Set<string>>();
-    projects.forEach((project) => {
-      if (!project) return;
+    workspaceMap.forEach((project, projectId) => {
       const doneStates = new Set(
         project.workflowStates.filter((s) => s.category === "done").map((s) => s.id),
       );
-      doneStatesMap.set(project._id, doneStates);
+      doneStatesMap.set(projectId, doneStates);
     });
 
     const completedThisWeek = assignedIssues.filter((issue) => {

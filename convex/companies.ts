@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import { batchFetchCompanies, batchFetchUsers } from "./lib/batchHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -524,33 +525,58 @@ export const getUserCompanies = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const companies = await Promise.all(
-      memberships.map(async (membership) => {
-        const company = await ctx.db.get(membership.companyId);
-        if (!company) return null;
+    // Batch fetch all companies
+    const companyIds = memberships.map((m) => m.companyId);
+    const companyMap = await batchFetchCompanies(ctx, companyIds);
 
-        // Get member count
-        const memberCount = await ctx.db
-          .query("companyMembers")
-          .withIndex("by_company", (q) => q.eq("companyId", membership.companyId))
-          .collect();
+    // Batch fetch member and project counts per company (parallel queries)
+    const [memberCountsArrays, projectCountsArrays] = await Promise.all([
+      Promise.all(
+        companyIds.map((companyId) =>
+          ctx.db
+            .query("companyMembers")
+            .withIndex("by_company", (q) => q.eq("companyId", companyId))
+            .take(1000),
+        ),
+      ),
+      Promise.all(
+        companyIds.map((companyId) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_company", (q) => q.eq("companyId", companyId))
+            .take(1000),
+        ),
+      ),
+    ]);
 
-        // Get project count
-        const projectCount = await ctx.db
-          .query("workspaces")
-          .withIndex("by_company", (q) => q.eq("companyId", membership.companyId))
-          .collect();
-
-        return {
-          ...company,
-          userRole: membership.role,
-          memberCount: memberCount.length,
-          projectCount: projectCount.length,
-        };
-      }),
+    // Build count maps
+    const memberCountMap = new Map(
+      companyIds.map((id, i) => [id.toString(), memberCountsArrays[i].length]),
+    );
+    const projectCountMap = new Map(
+      companyIds.map((id, i) => [id.toString(), projectCountsArrays[i].length]),
     );
 
-    return companies.filter((c): c is NonNullable<typeof c> => c !== null);
+    // Build role map from memberships
+    const roleMap = new Map(memberships.map((m) => [m.companyId.toString(), m.role]));
+
+    // Enrich with pre-fetched data (no N+1)
+    const companies = memberships
+      .map((membership) => {
+        const company = companyMap.get(membership.companyId);
+        if (!company) return null;
+
+        const companyIdStr = membership.companyId.toString();
+        return {
+          ...company,
+          userRole: roleMap.get(companyIdStr),
+          memberCount: memberCountMap.get(companyIdStr) ?? 0,
+          projectCount: projectCountMap.get(companyIdStr) ?? 0,
+        };
+      })
+      .filter((c): c is NonNullable<typeof c> => c !== null);
+
+    return companies;
   },
 });
 
@@ -573,18 +599,21 @@ export const getCompanyMembers = query({
       .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
       .collect();
 
-    const members = await Promise.all(
-      memberships.map(async (membership) => {
-        const user = await ctx.db.get(membership.userId);
-        const addedBy = await ctx.db.get(membership.addedBy);
+    // Batch fetch all users (members + addedBy)
+    const userIds = [...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)];
+    const userMap = await batchFetchUsers(ctx, userIds);
 
-        return {
-          ...membership,
-          user,
-          addedByName: addedBy?.name || addedBy?.email || "Unknown",
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    const members = memberships.map((membership) => {
+      const user = userMap.get(membership.userId);
+      const addedBy = userMap.get(membership.addedBy);
+
+      return {
+        ...membership,
+        user,
+        addedByName: addedBy?.name || addedBy?.email || "Unknown",
+      };
+    });
 
     return members;
   },

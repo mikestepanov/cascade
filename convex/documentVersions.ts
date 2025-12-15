@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 // List all versions for a document
 export const listVersions = query({
@@ -28,16 +29,18 @@ export const listVersions = query({
       .order("desc")
       .collect();
 
-    // Enrich with user information
-    return await Promise.all(
-      versions.map(async (version) => {
-        const user = await ctx.db.get(version.createdBy);
-        return {
-          ...version,
-          createdByName: user?.name || user?.email || "Unknown",
-        };
-      }),
-    );
+    // Batch fetch users to avoid N+1 queries
+    const userIds = versions.map((v) => v.createdBy);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    return versions.map((version) => {
+      const user = userMap.get(version.createdBy);
+      return {
+        ...version,
+        createdByName: user?.name || user?.email || "Unknown",
+      };
+    });
   },
 });
 

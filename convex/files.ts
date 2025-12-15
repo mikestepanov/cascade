@@ -38,12 +38,13 @@ export const addAttachment = mutation({
       attachments: [...currentAttachments, args.storageId],
     });
 
-    // Log activity
+    // Log activity (store storageId in oldValue for reliable lookup)
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
       userId,
       action: "attached",
       field: "attachment",
+      oldValue: args.storageId, // Store storageId for direct lookup
       newValue: args.filename,
       createdAt: Date.now(),
     });
@@ -118,30 +119,35 @@ export const getIssueAttachments = query({
       return [];
     }
 
-    // Get metadata for each attachment from activity log
-    const attachmentDetails = await Promise.all(
-      issue.attachments.map(async (storageId) => {
-        const url = await ctx.storage.getUrl(storageId);
+    // Query activity log ONCE to avoid N+1 queries
+    const attachActivities = await ctx.db
+      .query("issueActivity")
+      .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+      .filter((q) => q.eq(q.field("action"), "attached"))
+      .collect();
 
-        // Find the activity log entry where this was attached
-        const activity = await ctx.db
-          .query("issueActivity")
-          .filter((q) =>
-            q.and(q.eq(q.field("issueId"), args.issueId), q.eq(q.field("action"), "attached")),
-          )
-          .collect();
-
-        const attachActivity = activity.find((a) => a.newValue);
-
-        return {
-          storageId,
-          url,
-          filename: attachActivity?.newValue || "Unknown",
-          uploadedAt: attachActivity?.createdAt || Date.now(),
-          uploadedBy: attachActivity?.userId,
-        };
-      }),
+    // Build lookup map by storageId (stored in oldValue)
+    const activityByStorageId = new Map(
+      attachActivities.filter((a) => a.oldValue).map((a) => [a.oldValue, a]),
     );
+
+    // Get all attachment URLs in parallel
+    const urls = await Promise.all(
+      issue.attachments.map((storageId) => ctx.storage.getUrl(storageId)),
+    );
+
+    // Build attachment details with direct lookup by storageId
+    const attachmentDetails = issue.attachments.map((storageId, index) => {
+      const activity = activityByStorageId.get(storageId);
+
+      return {
+        storageId,
+        url: urls[index],
+        filename: activity?.newValue ?? "Unknown",
+        uploadedAt: activity?.createdAt ?? issue._creationTime,
+        uploadedBy: activity?.userId,
+      };
+    });
 
     return attachmentDetails;
   },

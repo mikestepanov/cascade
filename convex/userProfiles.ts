@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 // Check if user is admin (has admin role in any project they created)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -349,21 +350,22 @@ export const listUserProfiles = query({
         .withIndex("by_active", (q) => q.eq("isActive", isActive))
         .collect();
     } else {
-      profiles = await ctx.db.query("userProfiles").collect();
+      // Bounded query when no filters provided
+      profiles = await ctx.db.query("userProfiles").take(500);
     }
 
-    // Fetch user details for each profile
-    const profilesWithUsers = await Promise.all(
-      profiles.map(async (profile) => {
-        const user = await ctx.db.get(profile.userId);
-        const manager = profile.managerId ? await ctx.db.get(profile.managerId) : null;
-        return {
-          ...profile,
-          user,
-          manager,
-        };
-      }),
-    );
+    // Batch fetch users and managers to avoid N+1 queries
+    const userIds = profiles.map((p) => p.userId);
+    const managerIds = profiles.map((p) => p.managerId).filter(Boolean) as Id<"users">[];
+    const allUserIds = [...userIds, ...managerIds];
+    const userMap = await batchFetchUsers(ctx, allUserIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    const profilesWithUsers = profiles.map((profile) => ({
+      ...profile,
+      user: userMap.get(profile.userId) ?? null,
+      manager: profile.managerId ? (userMap.get(profile.managerId) ?? null) : null,
+    }));
 
     return profilesWithUsers;
   },
@@ -381,11 +383,13 @@ export const getUsersWithoutProfiles = query({
       return [];
     }
 
-    // Get all users
-    const allUsers = await ctx.db.query("users").collect();
+    // Bounded queries for admin function
+    const MAX_USERS = 500;
+    const [allUsers, allProfiles] = await Promise.all([
+      ctx.db.query("users").take(MAX_USERS),
+      ctx.db.query("userProfiles").take(MAX_USERS),
+    ]);
 
-    // Get all profiles
-    const allProfiles = await ctx.db.query("userProfiles").collect();
     const profileUserIds = new Set(allProfiles.map((p) => p.userId));
 
     // Filter users without profiles

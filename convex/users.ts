@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalQuery, mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 export const get = query({
   args: { id: v.id("users") },
@@ -147,17 +148,20 @@ export const listWithDigestPreference = internalQuery({
     frequency: v.union(v.literal("daily"), v.literal("weekly")),
   },
   handler: async (ctx, args) => {
-    // Get all notification preferences where digest matches frequency and email is enabled
-    const prefs = await ctx.db.query("notificationPreferences").collect();
+    // Bounded query for notification preferences
+    const prefs = await ctx.db.query("notificationPreferences").take(1000);
 
     const filtered = prefs.filter(
       (pref) => pref.emailEnabled && pref.emailDigest === args.frequency,
     );
 
-    // Get user details for each preference
-    const users = await Promise.all(filtered.map((pref) => ctx.db.get(pref.userId)));
+    // Batch fetch users to avoid N+1 queries
+    const userIds = filtered.map((pref) => pref.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
-    // Filter out null users (in case user was deleted)
-    return users.filter((user): user is NonNullable<typeof user> => user !== null);
+    // Return users that exist (filter out deleted users)
+    return filtered
+      .map((pref) => userMap.get(pref.userId))
+      .filter((user): user is NonNullable<typeof user> => user !== null);
   },
 });

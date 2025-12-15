@@ -101,6 +101,92 @@ export async function batchFetchTeams(
   return new Map(teams.filter((t): t is Doc<"teams"> => t !== null).map((t) => [t._id, t]));
 }
 
+/**
+ * Batch fetch companies by ID
+ */
+export async function batchFetchCompanies(
+  ctx: QueryCtx,
+  companyIds: (Id<"companies"> | undefined)[],
+): Promise<Map<Id<"companies">, Doc<"companies">>> {
+  const uniqueIds = [...new Set(companyIds.filter((id): id is Id<"companies"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const companies = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(companies.filter((c): c is Doc<"companies"> => c !== null).map((c) => [c._id, c]));
+}
+
+/**
+ * Batch fetch sprints by ID
+ */
+export async function batchFetchSprints(
+  ctx: QueryCtx,
+  sprintIds: (Id<"sprints"> | undefined)[],
+): Promise<Map<Id<"sprints">, Doc<"sprints">>> {
+  const uniqueIds = [...new Set(sprintIds.filter((id): id is Id<"sprints"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const sprints = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(sprints.filter((s): s is Doc<"sprints"> => s !== null).map((s) => [s._id, s]));
+}
+
+/**
+ * Batch fetch booking pages by ID
+ */
+export async function batchFetchBookingPages(
+  ctx: QueryCtx,
+  pageIds: (Id<"bookingPages"> | undefined)[],
+): Promise<Map<Id<"bookingPages">, Doc<"bookingPages">>> {
+  const uniqueIds = [...new Set(pageIds.filter((id): id is Id<"bookingPages"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const pages = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(pages.filter((p): p is Doc<"bookingPages"> => p !== null).map((p) => [p._id, p]));
+}
+
+/**
+ * Batch fetch documents by ID
+ */
+export async function batchFetchDocuments(
+  ctx: QueryCtx,
+  docIds: (Id<"documents"> | undefined)[],
+): Promise<Map<Id<"documents">, Doc<"documents">>> {
+  const uniqueIds = [...new Set(docIds.filter((id): id is Id<"documents"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const docs = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(docs.filter((d): d is Doc<"documents"> => d !== null).map((d) => [d._id, d]));
+}
+
+/**
+ * Batch fetch custom fields by ID
+ */
+export async function batchFetchCustomFields(
+  ctx: QueryCtx,
+  fieldIds: (Id<"customFields"> | undefined)[],
+): Promise<Map<Id<"customFields">, Doc<"customFields">>> {
+  const uniqueIds = [...new Set(fieldIds.filter((id): id is Id<"customFields"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const fields = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(fields.filter((f): f is Doc<"customFields"> => f !== null).map((f) => [f._id, f]));
+}
+
+/**
+ * Batch fetch recordings by ID
+ */
+export async function batchFetchRecordings(
+  ctx: QueryCtx,
+  recordingIds: (Id<"meetingRecordings"> | undefined)[],
+): Promise<Map<Id<"meetingRecordings">, Doc<"meetingRecordings">>> {
+  const uniqueIds = [...new Set(recordingIds.filter((id): id is Id<"meetingRecordings"> => !!id))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const recordings = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  return new Map(
+    recordings.filter((r): r is Doc<"meetingRecordings"> => r !== null).map((r) => [r._id, r]),
+  );
+}
+
 // ============================================================================
 // FORMATTING HELPERS
 // ============================================================================
