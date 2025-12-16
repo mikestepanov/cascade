@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -194,65 +195,88 @@ export const listByDateRange = query({
       ? visibleEvents.filter((event) => event.workspaceId === args.workspaceId)
       : visibleEvents;
 
+    // Batch fetch organizers to avoid N+1
+    const organizerIds = [...new Set(filteredEvents.map((e) => e.organizerId))];
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
+
     // Enrich with organizer details
-    const enrichedEvents = await Promise.all(
-      filteredEvents.map(async (event) => {
-        const organizer = await ctx.db.get(event.organizerId);
-        return {
-          ...event,
-          organizerName: organizer?.name,
-          organizerEmail: organizer?.email,
-        };
-      }),
-    );
+    const enrichedEvents = filteredEvents.map((event) => {
+      const organizer = organizerMap.get(event.organizerId);
+      return {
+        ...event,
+        organizerName: organizer?.name,
+        organizerEmail: organizer?.email,
+      };
+    });
 
     return enrichedEvents.sort((a, b) => a.startTime - b.startTime);
   },
 });
 
-// List all events for current user
+// List all events for current user (optimized with date bounds)
 export const listMine = query({
   args: {
     includeCompleted: v.optional(v.boolean()),
+    // Date range bounds - defaults to past 30 days through next 90 days
+    startDate: v.optional(v.number()),
+    endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    // Get events where user is organizer
+    // Default date range: past 30 days through next 90 days
+    const now = Date.now();
+    const defaultStart = now - 30 * 24 * 60 * 60 * 1000; // 30 days ago
+    const defaultEnd = now + 90 * 24 * 60 * 60 * 1000; // 90 days from now
+    const startDate = args.startDate ?? defaultStart;
+    const endDate = args.endDate ?? defaultEnd;
+
+    // Get events where user is organizer (indexed query)
     const organizedEvents = await ctx.db
       .query("calendarEvents")
       .withIndex("by_organizer", (q) => q.eq("organizerId", userId))
+      .filter((q) =>
+        q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
+      )
       .collect();
 
-    // Get all events to filter for attendee
-    const allEvents = await ctx.db.query("calendarEvents").collect();
-    const attendingEvents = allEvents.filter((event) => event.attendeeIds.includes(userId));
+    // Get events in date range and filter for user as attendee
+    // This is bounded by date range, not loading all events
+    const eventsInRange = await ctx.db
+      .query("calendarEvents")
+      .withIndex("by_start_time")
+      .filter((q) =>
+        q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
+      )
+      .collect();
 
-    // Combine and deduplicate
-    const eventIds = new Set();
-    const combinedEvents = [...organizedEvents, ...attendingEvents].filter((event) => {
-      if (eventIds.has(event._id)) return false;
-      eventIds.add(event._id);
-      return true;
-    });
+    // Filter for events where user is attendee (not organizer - already got those)
+    const attendingEvents = eventsInRange.filter(
+      (event) => event.organizerId !== userId && event.attendeeIds.includes(userId),
+    );
 
-    // Filter out cancelled if requested
+    // Combine (no duplicates since we excluded organizer events above)
+    const combinedEvents = [...organizedEvents, ...attendingEvents];
+
+    // Filter by status if requested
     const filteredEvents = args.includeCompleted
       ? combinedEvents
       : combinedEvents.filter((event) => event.status !== "cancelled");
 
+    // Batch fetch organizers to avoid N+1
+    const organizerIds = [...new Set(filteredEvents.map((e) => e.organizerId))];
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
+
     // Enrich with organizer details
-    const enrichedEvents = await Promise.all(
-      filteredEvents.map(async (event) => {
-        const organizer = await ctx.db.get(event.organizerId);
-        return {
-          ...event,
-          organizerName: organizer?.name,
-          organizerEmail: organizer?.email,
-        };
-      }),
-    );
+    const enrichedEvents = filteredEvents.map((event) => {
+      const organizer = organizerMap.get(event.organizerId);
+      return {
+        ...event,
+        organizerName: organizer?.name,
+        organizerEmail: organizer?.email,
+      };
+    });
 
     return enrichedEvents.sort((a, b) => a.startTime - b.startTime);
   },
@@ -364,17 +388,19 @@ export const getUpcoming = query({
     // Limit results
     const limitedEvents = args.limit ? visibleEvents.slice(0, args.limit) : visibleEvents;
 
+    // Batch fetch organizers to avoid N+1
+    const organizerIds = [...new Set(limitedEvents.map((e) => e.organizerId))];
+    const organizerMap = await batchFetchUsers(ctx, organizerIds);
+
     // Enrich with organizer details
-    const enrichedEvents = await Promise.all(
-      limitedEvents.map(async (event) => {
-        const organizer = await ctx.db.get(event.organizerId);
-        return {
-          ...event,
-          organizerName: organizer?.name,
-          organizerEmail: organizer?.email,
-        };
-      }),
-    );
+    const enrichedEvents = limitedEvents.map((event) => {
+      const organizer = organizerMap.get(event.organizerId);
+      return {
+        ...event,
+        organizerName: organizer?.name,
+        organizerEmail: organizer?.email,
+      };
+    });
 
     return enrichedEvents.sort((a, b) => a.startTime - b.startTime);
   },

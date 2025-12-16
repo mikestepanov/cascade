@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { assertCanAccessProject } from "./workspaceAccess";
 
 const filtersValidator = v.object({
@@ -85,18 +86,17 @@ export const list = query({
       .filter((q) => q.neq(q.field("userId"), userId))
       .collect();
 
-    // Combine and add user info
+    // Combine and batch fetch creators to avoid N+1 queries
     const all = [...myFilters, ...publicFilters];
-    return await Promise.all(
-      all.map(async (filter) => {
-        const creator = await ctx.db.get(filter.userId);
-        return {
-          ...filter,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          isOwner: filter.userId === userId,
-        };
-      }),
-    );
+    const creatorIds = all.map((f) => f.userId);
+    const creatorMap = await batchFetchUsers(ctx, creatorIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    return all.map((filter) => ({
+      ...filter,
+      creatorName: getUserName(creatorMap.get(filter.userId)),
+      isOwner: filter.userId === userId,
+    }));
   },
 });
 

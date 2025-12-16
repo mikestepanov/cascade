@@ -113,19 +113,22 @@ export const remove = mutation({
     // Check if user can edit project
     await assertCanEditProject(ctx, label.workspaceId, userId);
 
-    // Remove label from all issues
+    // Remove label from all issues (with reasonable limit)
+    const MAX_ISSUES_TO_UPDATE = 5000;
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", label.workspaceId))
-      .collect();
+      .take(MAX_ISSUES_TO_UPDATE);
 
-    for (const issue of issues) {
-      if (issue.labels.includes(label.name)) {
-        await ctx.db.patch(issue._id, {
+    // Filter to issues that have this label, then batch update in parallel
+    const issuesToUpdate = issues.filter((issue) => issue.labels.includes(label.name));
+    await Promise.all(
+      issuesToUpdate.map((issue) =>
+        ctx.db.patch(issue._id, {
           labels: issue.labels.filter((l) => l !== label.name),
-        });
-      }
-    }
+        }),
+      ),
+    );
 
     await ctx.db.delete(args.id);
   },

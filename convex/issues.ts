@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { batchFetchIssues, batchFetchUsers, batchFetchWorkspaces } from "./lib/batchHelpers";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -48,12 +49,23 @@ async function generateIssueKey(
   workspaceId: Id<"workspaces">,
   projectKey: string,
 ) {
-  const existingIssues = await ctx.db
+  // Get the most recent issue to determine the next number
+  // Order by _creationTime desc to get the latest issue
+  const latestIssue = await ctx.db
     .query("issues")
     .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
-    .collect();
+    .order("desc")
+    .first();
 
-  const issueNumber = existingIssues.length + 1;
+  let issueNumber = 1;
+  if (latestIssue) {
+    // Parse the number from the key (e.g., "PROJ-123" -> 123)
+    const match = latestIssue.key.match(/-(\d+)$/);
+    if (match) {
+      issueNumber = parseInt(match[1], 10) + 1;
+    }
+  }
+
   return `${projectKey}-${issueNumber}`;
 }
 
@@ -63,10 +75,12 @@ async function getMaxOrderForStatus(
   workspaceId: Id<"workspaces">,
   status: string,
 ) {
+  // Limit to 1000 issues per status - reasonable cap for any Kanban column
+  const MAX_ISSUES_PER_STATUS = 1000;
   const issuesInStatus = await ctx.db
     .query("issues")
     .withIndex("by_workspace_status", (q) => q.eq("workspaceId", workspaceId).eq("status", status))
-    .collect();
+    .take(MAX_ISSUES_PER_STATUS);
 
   return Math.max(...issuesInStatus.map((i) => i.order), -1);
 }
@@ -174,12 +188,25 @@ export const listByUser = query({
       return [];
     }
 
-    // Get all issues where user is assignee or reporter
-    const allIssues = await ctx.db.query("issues").collect();
+    // Query issues by assignee and reporter using indexes (NOT loading all issues!)
+    const [assignedIssues, reportedIssues] = await Promise.all([
+      ctx.db
+        .query("issues")
+        .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+        .collect(),
+      ctx.db
+        .query("issues")
+        .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+        .collect(),
+    ]);
 
-    const userIssues = allIssues.filter(
-      (issue) => issue.assigneeId === userId || issue.reporterId === userId,
-    );
+    // Combine and deduplicate (user might be both assignee and reporter)
+    const seenIds = new Set<string>();
+    const userIssues = [...assignedIssues, ...reportedIssues].filter((issue) => {
+      if (seenIds.has(issue._id)) return false;
+      seenIds.add(issue._id);
+      return true;
+    });
 
     return userIssues.map((issue) => ({
       _id: issue._id,
@@ -226,40 +253,8 @@ export const listByProject = query({
       ? issues.filter((issue) => issue.sprintId === args.sprintId)
       : issues.filter((issue) => !issue.sprintId); // Backlog items
 
-    return await Promise.all(
-      filteredIssues.map(async (issue) => {
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-        const reporter = await ctx.db.get(issue.reporterId);
-        const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
-
-        return {
-          ...issue,
-          assignee: assignee
-            ? {
-                _id: assignee._id,
-                name: assignee.name || assignee.email || "Unknown",
-                email: assignee.email,
-                image: assignee.image,
-              }
-            : null,
-          reporter: reporter
-            ? {
-                _id: reporter._id,
-                name: reporter.name || reporter.email || "Unknown",
-                email: reporter.email,
-                image: reporter.image,
-              }
-            : null,
-          epic: epic
-            ? {
-                _id: epic._id,
-                key: epic.key,
-                title: epic.title,
-              }
-            : null,
-        };
-      }),
-    );
+    // Use batch enrichment to avoid N+1 queries
+    return await enrichIssues(ctx, filteredIssues);
   },
 });
 
@@ -295,53 +290,56 @@ export const get = query({
     const reporter = await ctx.db.get(issue.reporterId);
     const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
 
-    // Get comments
-    const comments = await ctx.db
-      .query("issueComments")
-      .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-      .order("asc")
-      .collect();
+    // Get comments and activity in parallel
+    const [comments, activities] = await Promise.all([
+      ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("asc")
+        .collect(),
+      ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("desc")
+        .take(20),
+    ]);
 
-    const commentsWithAuthors = await Promise.all(
-      comments.map(async (comment) => {
-        const author = await ctx.db.get(comment.authorId);
-        return {
-          ...comment,
-          author: author
-            ? {
-                _id: author._id,
-                name: author.name || author.email || "Unknown",
-                email: author.email,
-                image: author.image,
-              }
-            : null,
-        };
-      }),
-    );
+    // Batch fetch all users for comments and activities (avoid N+1!)
+    const commentAuthorIds = comments.map((c) => c.authorId);
+    const activityUserIds = activities.map((a) => a.userId);
+    const allUserIds = [...commentAuthorIds, ...activityUserIds];
+    const userMap = await batchFetchUsers(ctx, allUserIds);
 
-    // Get activity
-    const activity = await ctx.db
-      .query("issueActivity")
-      .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-      .order("desc")
-      .take(20)
-      .then((activities) =>
-        Promise.all(
-          activities.map(async (act) => {
-            const user = await ctx.db.get(act.userId);
-            return {
-              ...act,
-              user: user
-                ? {
-                    _id: user._id,
-                    name: user.name || user.email || "Unknown",
-                    image: user.image,
-                  }
-                : null,
-            };
-          }),
-        ),
-      );
+    // Enrich comments with pre-fetched data (no N+1)
+    const commentsWithAuthors = comments.map((comment) => {
+      const author = userMap.get(comment.authorId);
+      return {
+        ...comment,
+        author: author
+          ? {
+              _id: author._id,
+              name: author.name || author.email || "Unknown",
+              email: author.email,
+              image: author.image,
+            }
+          : null,
+      };
+    });
+
+    // Enrich activity with pre-fetched data (no N+1)
+    const activity = activities.map((act) => {
+      const user = userMap.get(act.userId);
+      return {
+        ...act,
+        user: user
+          ? {
+              _id: user._id,
+              name: user.name || user.email || "Unknown",
+              image: user.image,
+            }
+          : null,
+      };
+    });
 
     return {
       ...issue,
@@ -382,18 +380,10 @@ export const get = query({
 export const getByKey = query({
   args: { key: v.string() },
   handler: async (ctx, args) => {
-    // Find issue by key
-    const issues = await ctx.db.query("issues").collect();
-    const issue = issues.find((i) => i.key === args.key);
-
-    if (!issue) {
-      return null;
-    }
-
-    // Use the existing get query to return full issue data
-    return ctx.db
+    // Find issue by key using index (NOT loading all issues!)
+    return await ctx.db
       .query("issues")
-      .filter((q) => q.eq(q.field("_id"), issue._id))
+      .withIndex("by_key", (q) => q.eq("key", args.key))
       .first();
   },
 });
@@ -423,30 +413,39 @@ export const listSubtasks = query({
       .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
       .collect();
 
-    // Enrich with assignee and reporter info
-    const enrichedSubtasks = await Promise.all(
-      subtasks.map(async (subtask) => {
-        const assignee = subtask.assigneeId ? await ctx.db.get(subtask.assigneeId) : null;
-        const reporter = subtask.reporterId ? await ctx.db.get(subtask.reporterId) : null;
+    if (subtasks.length === 0) {
+      return [];
+    }
 
-        return {
-          ...subtask,
-          assignee: assignee
-            ? {
-                _id: assignee._id,
-                name: assignee.name || assignee.email || "Unknown",
-                image: assignee.image,
-              }
-            : null,
-          reporter: reporter
-            ? {
-                _id: reporter._id,
-                name: reporter.name || reporter.email || "Unknown",
-              }
-            : null,
-        };
-      }),
-    );
+    // Batch fetch all users to avoid N+1 queries
+    const userIds = [
+      ...subtasks.map((s) => s.assigneeId).filter(Boolean),
+      ...subtasks.map((s) => s.reporterId),
+    ] as Id<"users">[];
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched user data (no N+1)
+    const enrichedSubtasks = subtasks.map((subtask) => {
+      const assignee = subtask.assigneeId ? userMap.get(subtask.assigneeId) : null;
+      const reporter = userMap.get(subtask.reporterId);
+
+      return {
+        ...subtask,
+        assignee: assignee
+          ? {
+              _id: assignee._id,
+              name: assignee.name || assignee.email || "Unknown",
+              image: assignee.image,
+            }
+          : null,
+        reporter: reporter
+          ? {
+              _id: reporter._id,
+              name: reporter.name || reporter.email || "Unknown",
+            }
+          : null,
+      };
+    });
 
     return enrichedSubtasks;
   },
@@ -959,49 +958,61 @@ export const search = query({
     const paginatedResults = filtered.slice(offset, offset + limit);
     const hasMore = offset + limit < total;
 
-    // Enrich with user and project data
-    const enrichedResults = await Promise.all(
-      paginatedResults.map(async (issue) => {
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-        const reporter = await ctx.db.get(issue.reporterId);
-        const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
-        const project = await ctx.db.get(issue.workspaceId);
+    // Batch fetch all related data to avoid N+1 queries
+    const userIds = [
+      ...paginatedResults.map((i) => i.assigneeId).filter(Boolean),
+      ...paginatedResults.map((i) => i.reporterId),
+    ] as Id<"users">[];
+    const epicIds = paginatedResults.map((i) => i.epicId).filter(Boolean) as Id<"issues">[];
+    const workspaceIds = [...new Set(paginatedResults.map((i) => i.workspaceId))];
 
-        return {
-          ...issue,
-          assignee: assignee
-            ? {
-                _id: assignee._id,
-                name: assignee.name || assignee.email || "Unknown",
-                email: assignee.email,
-                image: assignee.image,
-              }
-            : null,
-          reporter: reporter
-            ? {
-                _id: reporter._id,
-                name: reporter.name || reporter.email || "Unknown",
-                email: reporter.email,
-                image: reporter.image,
-              }
-            : null,
-          epic: epic
-            ? {
-                _id: epic._id,
-                key: epic.key,
-                title: epic.title,
-              }
-            : null,
-          project: project
-            ? {
-                _id: project._id,
-                name: project.name,
-                key: project.key,
-              }
-            : null,
-        };
-      }),
-    );
+    const [userMap, epicMap, workspaceMap] = await Promise.all([
+      batchFetchUsers(ctx, userIds),
+      batchFetchIssues(ctx, epicIds),
+      batchFetchWorkspaces(ctx, workspaceIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedResults = paginatedResults.map((issue) => {
+      const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
+      const reporter = userMap.get(issue.reporterId);
+      const epic = issue.epicId ? epicMap.get(issue.epicId) : null;
+      const project = workspaceMap.get(issue.workspaceId);
+
+      return {
+        ...issue,
+        assignee: assignee
+          ? {
+              _id: assignee._id,
+              name: assignee.name || assignee.email || "Unknown",
+              email: assignee.email,
+              image: assignee.image,
+            }
+          : null,
+        reporter: reporter
+          ? {
+              _id: reporter._id,
+              name: reporter.name || reporter.email || "Unknown",
+              email: reporter.email,
+              image: reporter.image,
+            }
+          : null,
+        epic: epic
+          ? {
+              _id: epic._id,
+              key: epic.key,
+              title: epic.title,
+            }
+          : null,
+        project: project
+          ? {
+              _id: project._id,
+              name: project.name,
+              key: project.key,
+            }
+          : null,
+      };
+    });
 
     return {
       results: enrichedResults,
@@ -1378,5 +1389,316 @@ export const bulkDelete = mutation({
     }
 
     return { deleted: results.length };
+  },
+});
+
+// ============================================================================
+// PAGINATION & SMART LOADING QUERIES
+// ============================================================================
+
+import { countIssuesByStatus, enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
+import {
+  DEFAULT_PAGE_SIZE,
+  DONE_COLUMN_DAYS,
+  decodeCursor,
+  encodeCursor,
+  getDoneColumnThreshold,
+} from "./lib/pagination";
+
+/**
+ * Smart loading for Kanban boards
+ * - todo/inprogress: Load all items
+ * - done: Load only recent items (last N days)
+ */
+export const listByWorkspaceSmart = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Build a map of status -> category
+    const statusToCategory: Record<string, string> = {};
+    for (const state of workflowStates) {
+      statusToCategory[state.id] = state.category;
+    }
+
+    // Get all issues for this workspace (optionally filtered by sprint)
+    const issuesQuery = ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
+
+    const allIssues = await issuesQuery.collect();
+
+    // Filter by sprint if provided
+    const sprintFiltered = args.sprintId
+      ? allIssues.filter((i) => i.sprintId === args.sprintId)
+      : allIssues;
+
+    // Apply smart loading: filter done items by date
+    const smartFiltered = sprintFiltered.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      if (category === "done") {
+        return issue.updatedAt >= doneThreshold;
+      }
+      return true; // Load all for todo/inprogress
+    });
+
+    // Count hidden done items
+    const hiddenDoneCount = sprintFiltered.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      return category === "done" && issue.updatedAt < doneThreshold;
+    }).length;
+
+    // Enrich with user data
+    const enriched = await enrichIssues(ctx, smartFiltered);
+
+    // Group by status
+    const byStatus = groupIssuesByStatus(enriched);
+
+    return {
+      issuesByStatus: byStatus,
+      hiddenDoneCount,
+      workflowStates,
+      totalCount: sprintFiltered.length,
+      loadedCount: smartFiltered.length,
+    };
+  },
+});
+
+/**
+ * Paginated issue list for backlog/list views
+ */
+export const listByWorkspacePaginated = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    status: v.optional(v.string()),
+    cursor: v.optional(v.string()),
+    pageSize: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const pageSize = args.pageSize ?? DEFAULT_PAGE_SIZE;
+
+    // Query issues with proper index
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .order("desc")
+      .collect();
+
+    // Apply filters
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+    if (args.status) {
+      issues = issues.filter((i) => i.status === args.status);
+    }
+
+    // Count total BEFORE cursor pagination (reuse already-fetched data)
+    const totalCount = issues.length;
+
+    // Apply cursor-based pagination with ID tiebreaking
+    if (args.cursor) {
+      try {
+        const { timestamp, id } = decodeCursor(args.cursor);
+        issues = issues.filter(
+          (i) => i.updatedAt < timestamp || (i.updatedAt === timestamp && i._id.toString() < id),
+        );
+      } catch {
+        // Invalid cursor - ignore and start from beginning
+      }
+    }
+
+    // Get one extra to check if there is more
+    const pageItems = issues.slice(0, pageSize + 1);
+    const hasMore = pageItems.length > pageSize;
+    const resultItems = hasMore ? pageItems.slice(0, pageSize) : pageItems;
+
+    // Enrich with user data
+    const enriched = await enrichIssues(ctx, resultItems);
+
+    // Build next cursor with ID for tiebreaking
+    const lastItem = resultItems[resultItems.length - 1];
+    const nextCursor =
+      hasMore && lastItem ? encodeCursor(lastItem.updatedAt, lastItem._id.toString()) : null;
+
+    return {
+      items: enriched,
+      nextCursor,
+      hasMore,
+      totalCount,
+    };
+  },
+});
+
+/**
+ * Get issue counts by status for a workspace
+ * Useful for "Load X more" indicators
+ */
+export const getIssueCounts = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Build a map of status -> category
+    const statusToCategory: Record<string, string> = {};
+    for (const state of workflowStates) {
+      statusToCategory[state.id] = state.category;
+    }
+
+    // Get all issues
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .collect();
+
+    // Filter by sprint if provided
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+
+    // Count totals by status
+    const totalByStatus = countIssuesByStatus(issues);
+
+    // Count visible (after smart loading filter) by status
+    const visibleIssues = issues.filter((issue) => {
+      const category = statusToCategory[issue.status] || "todo";
+      if (category === "done") {
+        return issue.updatedAt >= doneThreshold;
+      }
+      return true;
+    });
+    const visibleByStatus = countIssuesByStatus(visibleIssues);
+
+    // Calculate hidden counts
+    const hiddenByStatus: Record<string, number> = {};
+    for (const status of Object.keys(totalByStatus)) {
+      hiddenByStatus[status] = (totalByStatus[status] || 0) - (visibleByStatus[status] || 0);
+    }
+
+    return {
+      total: issues.length,
+      visible: visibleIssues.length,
+      hidden: issues.length - visibleIssues.length,
+      byStatus: {
+        total: totalByStatus,
+        visible: visibleByStatus,
+        hidden: hiddenByStatus,
+      },
+    };
+  },
+});
+
+/**
+ * Load more done items (for expanding the done column)
+ */
+export const loadMoreDoneIssues = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    sprintId: v.optional(v.id("sprints")),
+    beforeTimestamp: v.optional(v.number()),
+    beforeId: v.optional(v.string()), // For tiebreaking when timestamps match
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    await assertCanAccessProject(ctx, args.workspaceId, userId);
+
+    const project = await ctx.db.get(args.workspaceId);
+    if (!project) {
+      throw new Error("Workspace not found");
+    }
+
+    const workflowStates = project.workflowStates || [];
+    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
+
+    // Get done status IDs
+    const doneStatuses = workflowStates.filter((s) => s.category === "done").map((s) => s.id);
+
+    // Query issues
+    let issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .order("desc")
+      .collect();
+
+    // Filter to done statuses only
+    issues = issues.filter((i) => doneStatuses.includes(i.status));
+
+    // Filter by sprint if provided
+    if (args.sprintId) {
+      issues = issues.filter((i) => i.sprintId === args.sprintId);
+    }
+
+    // Apply cursor with ID tiebreaking
+    if (args.beforeTimestamp) {
+      const threshold = args.beforeTimestamp;
+      const beforeId = args.beforeId;
+      issues = issues.filter((i) => {
+        if (i.updatedAt < threshold) return true;
+        if (i.updatedAt === threshold && beforeId && i._id.toString() < beforeId) return true;
+        return false;
+      });
+    }
+
+    // Get page + 1 to check hasMore
+    const pageItems = issues.slice(0, limit + 1);
+    const hasMore = pageItems.length > limit;
+    const resultItems = hasMore ? pageItems.slice(0, limit) : pageItems;
+
+    // Enrich
+    const enriched = await enrichIssues(ctx, resultItems);
+
+    const lastItem = resultItems[resultItems.length - 1];
+    return {
+      items: enriched,
+      hasMore,
+      nextTimestamp: lastItem?.updatedAt ?? null,
+      nextId: lastItem?._id.toString() ?? null,
+    };
   },
 });

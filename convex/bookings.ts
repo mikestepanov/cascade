@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { batchFetchBookingPages } from "./lib/batchHelpers";
 
 /**
  * Bookings - Handle meeting bookings via booking pages
@@ -236,17 +237,19 @@ export const listMyBookings = query({
           .withIndex("by_host", (q) => q.eq("hostId", userId))
           .collect();
 
-    // Enrich with booking page details
-    const enrichedBookings = await Promise.all(
-      bookings.map(async (booking) => {
-        const page = await ctx.db.get(booking.bookingPageId);
-        return {
-          ...booking,
-          pageTitle: page?.title,
-          pageSlug: page?.slug,
-        };
-      }),
-    );
+    // Batch fetch booking pages to avoid N+1 queries
+    const pageIds = bookings.map((b) => b.bookingPageId);
+    const pageMap = await batchFetchBookingPages(ctx, pageIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedBookings = bookings.map((booking) => {
+      const page = pageMap.get(booking.bookingPageId);
+      return {
+        ...booking,
+        pageTitle: page?.title,
+        pageSlug: page?.slug,
+      };
+    });
 
     return enrichedBookings.sort((a, b) => a.startTime - b.startTime);
   },

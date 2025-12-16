@@ -2,6 +2,14 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SEARCH_PAGE_SIZE,
+  FETCH_BUFFER_MULTIPLIER,
+  MAX_OFFSET,
+  MAX_PAGE_SIZE,
+} from "./lib/queryLimits";
 
 export const create = mutation({
   args: {
@@ -26,41 +34,78 @@ export const create = mutation({
 });
 
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    limit: v.optional(v.number()),
+    cursor: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return { documents: [], nextCursor: null, hasMore: false };
     }
 
-    // Get user's private documents
+    // Cap limit to prevent abuse
+    const requestedLimit = args.limit ?? DEFAULT_PAGE_SIZE;
+    const limit = Math.min(requestedLimit, MAX_PAGE_SIZE);
+
+    // Fetch buffer: get more than needed to handle deduplication between private/public
+    // Buffer size scales with limit to ensure we have enough results
+    const fetchBuffer = limit * FETCH_BUFFER_MULTIPLIER;
+
+    // Get user's private documents (their own non-public docs)
     const privateDocuments = await ctx.db
       .query("documents")
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
-      .collect();
+      .take(fetchBuffer);
 
-    // Get all public documents
+    // Get public documents (any user's public docs)
     const publicDocuments = await ctx.db
       .query("documents")
       .withIndex("by_public", (q) => q.eq("isPublic", true))
       .order("desc")
-      .collect();
+      .take(fetchBuffer);
 
-    // Combine and add creator info
-    const allDocuments = [...privateDocuments, ...publicDocuments];
+    // Combine and deduplicate (user's public docs appear in both queries)
+    const seenIds = new Set<string>();
+    const allDocuments = [...privateDocuments, ...publicDocuments].filter((doc) => {
+      if (seenIds.has(doc._id)) return false;
+      seenIds.add(doc._id);
+      return true;
+    });
 
-    return await Promise.all(
-      allDocuments.map(async (doc) => {
-        const creator = await ctx.db.get(doc.createdBy);
-        return {
-          ...doc,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          isOwner: doc.createdBy === userId,
-        };
-      }),
-    );
+    // Sort by updatedAt descending
+    allDocuments.sort((a, b) => b.updatedAt - a.updatedAt);
+
+    // Apply cursor-based pagination
+    let startIndex = 0;
+    if (args.cursor) {
+      const cursorIndex = allDocuments.findIndex((doc) => doc._id === args.cursor);
+      if (cursorIndex !== -1) {
+        startIndex = cursorIndex + 1;
+      }
+    }
+
+    const paginatedDocs = allDocuments.slice(startIndex, startIndex + limit);
+    const hasMore = startIndex + limit < allDocuments.length;
+    const nextCursor =
+      hasMore && paginatedDocs.length > 0 ? paginatedDocs[paginatedDocs.length - 1]._id : null;
+
+    // Batch fetch creators to avoid N+1
+    const creatorIds = [...new Set(paginatedDocs.map((doc) => doc.createdBy))];
+    const creatorMap = await batchFetchUsers(ctx, creatorIds);
+
+    const documents = paginatedDocs.map((doc) => {
+      const creator = creatorMap.get(doc.createdBy);
+      return {
+        ...doc,
+        creatorName: creator?.name || creator?.email || "Unknown",
+        isOwner: doc.createdBy === userId,
+      };
+    });
+
+    return { documents, nextCursor, hasMore };
   },
 });
 
@@ -229,10 +274,18 @@ export const search = query({
       return { results: [], total: 0, hasMore: false };
     }
 
+    // Cap pagination params to prevent abuse
+    const offset = Math.min(args.offset ?? 0, MAX_OFFSET);
+    const limit = Math.min(args.limit ?? DEFAULT_SEARCH_PAGE_SIZE, MAX_PAGE_SIZE);
+
+    // Fetch buffer: account for filtering (permissions, filters may remove ~50% of results)
+    // Fetch enough to satisfy offset + limit after filtering
+    const fetchLimit = (offset + limit) * FETCH_BUFFER_MULTIPLIER;
+
     const results = await ctx.db
       .query("documents")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .collect();
+      .take(fetchLimit);
 
     // Filter results based on access permissions and advanced filters
     const filtered = [];
@@ -248,40 +301,53 @@ export const search = query({
       }
 
       filtered.push(doc);
+
+      // Early exit: stop once we have enough results for this page
+      if (filtered.length >= offset + limit + 1) {
+        break;
+      }
     }
 
     const total = filtered.length;
-    const offset = args.offset ?? 0;
-    const limit = args.limit ?? 20;
 
     // Apply pagination
     const paginatedResults = filtered.slice(offset, offset + limit);
-    const hasMore = offset + limit < total;
+    const hasMore = filtered.length > offset + limit;
 
-    // Enrich with creator and project data
-    const enrichedResults = await Promise.all(
-      paginatedResults.map(async (doc) => {
-        const creator = await ctx.db.get(doc.createdBy);
-        const project = doc.workspaceId ? await ctx.db.get(doc.workspaceId) : null;
+    // Batch fetch all creators and workspaces (avoid N+1!)
+    const creatorIds = paginatedResults.map((doc) => doc.createdBy);
+    const workspaceIds = paginatedResults.map((doc) => doc.workspaceId);
 
-        return {
-          ...doc,
-          creatorName: creator?.name || creator?.email || "Unknown",
-          isOwner: doc.createdBy === userId,
-          project: project
-            ? {
-                _id: project._id,
-                name: project.name,
-                key: project.key,
-              }
-            : null,
-        };
-      }),
-    );
+    const [creatorMap, workspaceMap] = await Promise.all([
+      batchFetchUsers(ctx, creatorIds),
+      batchFetchWorkspaces(ctx, workspaceIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedResults = paginatedResults.map((doc) => {
+      const creator = creatorMap.get(doc.createdBy);
+      const project = doc.workspaceId ? workspaceMap.get(doc.workspaceId) : null;
+
+      return {
+        ...doc,
+        creatorName: getUserName(creator),
+        isOwner: doc.createdBy === userId,
+        project: project
+          ? {
+              _id: project._id,
+              name: project.name,
+              key: project.key,
+            }
+          : null,
+      };
+    });
 
     return {
       results: enrichedResults,
+      // Note: total is approximate when hasMore=true due to early exit optimization
+      // The actual total could be higher than this count
       total,
+      totalIsApproximate: hasMore,
       hasMore,
       offset,
       limit,

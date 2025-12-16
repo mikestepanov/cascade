@@ -1006,6 +1006,7 @@ The project includes Chef (Convex's development platform) integration:
 - [AI Overview](./docs/ai/README.md) - AI features overview
 - [Text AI](./docs/ai/text/README.md) - Chat, search, suggestions
 - [Voice AI](./docs/ai/voice/README.md) - Meeting bot, transcription
+- [Pagination Patterns](./docs/PAGINATION_PATTERNS.md) - Cursor-based pagination & smart loading patterns
 
 ### External Documentation
 - [Convex Documentation](https://docs.convex.dev/)

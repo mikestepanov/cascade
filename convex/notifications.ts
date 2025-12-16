@@ -1,6 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
+import { DEFAULT_PAGE_SIZE } from "./lib/queryLimits";
 
 // Get notifications for current user
 export const list = query({
@@ -12,7 +14,7 @@ export const list = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const limit = args.limit ?? 50;
+    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
     const onlyUnread = args.onlyUnread ?? false;
 
     let notificationsQuery = ctx.db
@@ -27,31 +29,34 @@ export const list = query({
 
     const notifications = await notificationsQuery.order("desc").take(limit);
 
-    // Enrich with actor information
-    return await Promise.all(
-      notifications.map(async (notification) => {
-        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
+    // Batch fetch all actors (avoid N+1!)
+    const actorIds = notifications.map((n) => n.actorId);
+    const actorMap = await batchFetchUsers(ctx, actorIds);
 
-        return {
-          ...notification,
-          actorName: actor?.name,
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    return notifications.map((notification) => {
+      const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
+      return {
+        ...notification,
+        actorName: actor?.name,
+      };
+    });
   },
 });
 
-// Get unread count
+// Get unread count (capped at 99+ for display)
 export const getUnreadCount = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return 0;
 
+    // Cap at 100 - UI typically shows "99+" anyway
+    const MAX_UNREAD_COUNT = 100;
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
-      .collect();
+      .take(MAX_UNREAD_COUNT);
 
     return unread.length;
   },
@@ -75,21 +80,26 @@ export const markAsRead = mutation({
   },
 });
 
-// Mark all as read
+// Mark all as read (with reasonable limit per call)
 export const markAllAsRead = mutation({
   args: {},
+  returns: v.object({ marked: v.number(), hasMore: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
+    // Limit per mutation call - can be called multiple times if needed
+    const MAX_TO_MARK = 500;
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
-      .collect();
+      .take(MAX_TO_MARK);
 
-    for (const notification of unread) {
-      await ctx.db.patch(notification._id, { isRead: true });
-    }
+    // Batch update all notifications in parallel
+    await Promise.all(unread.map((n) => ctx.db.patch(n._id, { isRead: true })));
+
+    // Return count so client knows if more remain
+    return { marked: unread.length, hasMore: unread.length === MAX_TO_MARK };
   },
 });
 
@@ -188,26 +198,35 @@ export const listForDigest = internalQuery({
     startTime: v.number(),
   },
   handler: async (ctx, args) => {
+    // Limit for digest - most recent notifications since startTime
+    const MAX_DIGEST_NOTIFICATIONS = 100;
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_user_created", (q) =>
         q.eq("userId", args.userId).gte("createdAt", args.startTime),
       )
       .order("desc")
-      .collect();
+      .take(MAX_DIGEST_NOTIFICATIONS);
 
-    // Enrich with actor information and issue details
-    return await Promise.all(
-      notifications.map(async (notification) => {
-        const actor = notification.actorId ? await ctx.db.get(notification.actorId) : null;
-        const issue = notification.issueId ? await ctx.db.get(notification.issueId) : null;
+    // Batch fetch all actors and issues (avoid N+1!)
+    const actorIds = notifications.map((n) => n.actorId);
+    const issueIds = notifications.map((n) => n.issueId);
 
-        return {
-          ...notification,
-          actorName: actor?.name,
-          issueKey: issue?.key,
-        };
-      }),
-    );
+    const [actorMap, issueMap] = await Promise.all([
+      batchFetchUsers(ctx, actorIds),
+      batchFetchIssues(ctx, issueIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    return notifications.map((notification) => {
+      const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
+      const issue = notification.issueId ? issueMap.get(notification.issueId) : null;
+
+      return {
+        ...notification,
+        actorName: actor?.name,
+        issueKey: issue?.key,
+      };
+    });
   },
 });

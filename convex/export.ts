@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
 import { assertCanAccessProject, assertCanEditProject } from "./workspaceAccess";
 
 // Helper: Generate next issue key for a project
@@ -275,33 +276,43 @@ export const exportIssuesCSV = query({
       issues = issues.filter((i) => i.status === args.status);
     }
 
-    // Enrich with user and sprint data
-    const enrichedIssues = await Promise.all(
-      issues.map(async (issue) => {
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-        const reporter = await ctx.db.get(issue.reporterId);
-        const sprint = issue.sprintId ? await ctx.db.get(issue.sprintId) : null;
+    // Batch fetch all users and sprints to avoid N+1 queries
+    const userIds = [
+      ...issues.map((i) => i.assigneeId).filter(Boolean),
+      ...issues.map((i) => i.reporterId),
+    ] as Id<"users">[];
+    const sprintIds = issues.map((i) => i.sprintId).filter(Boolean) as Id<"sprints">[];
 
-        // Get status name from workflow
-        const statusState = project.workflowStates.find((s) => s.id === issue.status);
+    const [userMap, sprintMap] = await Promise.all([
+      batchFetchUsers(ctx, userIds),
+      batchFetchSprints(ctx, sprintIds),
+    ]);
 
-        return {
-          key: issue.key,
-          title: issue.title,
-          type: issue.type,
-          status: statusState?.name ?? issue.status,
-          priority: issue.priority,
-          assignee: assignee?.name ?? "Unassigned",
-          reporter: reporter?.name ?? "Unknown",
-          sprint: sprint?.name ?? "No Sprint",
-          estimatedHours: issue.estimatedHours ?? 0,
-          loggedHours: issue.loggedHours ?? 0,
-          labels: issue.labels.join(", "),
-          dueDate: issue.dueDate ? new Date(issue.dueDate).toISOString().split("T")[0] : "",
-          createdAt: new Date(issue.createdAt).toISOString().split("T")[0],
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedIssues = issues.map((issue) => {
+      const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
+      const reporter = userMap.get(issue.reporterId);
+      const sprint = issue.sprintId ? sprintMap.get(issue.sprintId) : null;
+
+      // Get status name from workflow
+      const statusState = project.workflowStates.find((s) => s.id === issue.status);
+
+      return {
+        key: issue.key,
+        title: issue.title,
+        type: issue.type,
+        status: statusState?.name ?? issue.status,
+        priority: issue.priority,
+        assignee: assignee?.name ?? "Unassigned",
+        reporter: reporter?.name ?? "Unknown",
+        sprint: sprint?.name ?? "No Sprint",
+        estimatedHours: issue.estimatedHours ?? 0,
+        loggedHours: issue.loggedHours ?? 0,
+        labels: issue.labels.join(", "),
+        dueDate: issue.dueDate ? new Date(issue.dueDate).toISOString().split("T")[0] : "",
+        createdAt: new Date(issue.createdAt).toISOString().split("T")[0],
+      };
+    });
 
     // Convert to CSV
     const headers = [
@@ -441,30 +452,48 @@ export const exportIssuesJSON = query({
       issues = issues.filter((i) => i.status === args.status);
     }
 
-    // Enrich with related data
-    const enrichedIssues = await Promise.all(
-      issues.map(async (issue) => {
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-        const reporter = await ctx.db.get(issue.reporterId);
-        const sprint = issue.sprintId ? await ctx.db.get(issue.sprintId) : null;
-        const statusState = project.workflowStates.find((s) => s.id === issue.status);
+    // Batch fetch all users, sprints, and comment counts to avoid N+1 queries
+    const userIds = [
+      ...issues.map((i) => i.assigneeId).filter(Boolean),
+      ...issues.map((i) => i.reporterId),
+    ] as Id<"users">[];
+    const sprintIds = issues.map((i) => i.sprintId).filter(Boolean) as Id<"sprints">[];
+    const issueIds = issues.map((i) => i._id);
 
-        // Get comments
-        const comments = await ctx.db
-          .query("issueComments")
-          .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-          .collect();
+    const [userMap, sprintMap, commentCountsArrays] = await Promise.all([
+      batchFetchUsers(ctx, userIds),
+      batchFetchSprints(ctx, sprintIds),
+      Promise.all(
+        issueIds.map((issueId) =>
+          ctx.db
+            .query("issueComments")
+            .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+            .collect(),
+        ),
+      ),
+    ]);
 
-        return {
-          ...issue,
-          statusName: statusState?.name ?? issue.status,
-          assigneeName: assignee?.name,
-          reporterName: reporter?.name,
-          sprintName: sprint?.name,
-          comments: comments.length,
-        };
-      }),
+    // Build comment count map
+    const commentCountMap = new Map(
+      issueIds.map((id, i) => [id.toString(), commentCountsArrays[i].length]),
     );
+
+    // Enrich with pre-fetched data (no N+1)
+    const enrichedIssues = issues.map((issue) => {
+      const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
+      const reporter = userMap.get(issue.reporterId);
+      const sprint = issue.sprintId ? sprintMap.get(issue.sprintId) : null;
+      const statusState = project.workflowStates.find((s) => s.id === issue.status);
+
+      return {
+        ...issue,
+        statusName: statusState?.name ?? issue.status,
+        assigneeName: assignee?.name,
+        reporterName: reporter?.name,
+        sprintName: sprint?.name,
+        comments: commentCountMap.get(issue._id.toString()) ?? 0,
+      };
+    });
 
     return JSON.stringify(
       {

@@ -389,8 +389,8 @@ export function useLabelFuzzySearch(labels: string[] | undefined) {
  *
  * @example
  * ```typescript
- * const documents = useQuery(api.documents.list);
- * const { results, search, query } = useDocumentFuzzySearch(documents);
+ * const documentsResult = useQuery(api.documents.list);
+ * const { results, search, query } = useDocumentFuzzySearch(documentsResult?.documents);
  * ```
  */
 export function useDocumentFuzzySearch(

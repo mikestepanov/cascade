@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
 
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -290,25 +291,36 @@ async function sendComplianceNotifications(
     maxHours,
   );
 
-  // Create notifications for admins and manager
-  const adminUsers = await ctx.db.query("users").collect();
+  // Get admin user IDs efficiently (NOT loading all users!)
+  // 1. Get workspace creators (they are admins)
+  const workspaceCreators = await ctx.db.query("workspaces").take(500);
+  const creatorIds = new Set(workspaceCreators.map((w) => w.createdBy));
+
+  // 2. Get workspace members with admin role
+  const adminMembers = await ctx.db
+    .query("workspaceMembers")
+    .filter((q) => q.eq(q.field("role"), "admin"))
+    .take(500);
+  const adminMemberIds = new Set(adminMembers.map((m) => m.userId));
+
+  // 3. Combine and add manager if present
+  const adminUserIds = new Set([...creatorIds, ...adminMemberIds]);
+  if (managerId) {
+    adminUserIds.add(managerId);
+  }
+
+  // Create notifications only for actual admins/managers
   const notifications: Id<"notifications">[] = [];
-
-  for (const admin of adminUsers) {
-    const isAdminUser = await isAdmin(ctx, admin._id);
-    const isManager = managerId === admin._id;
-
-    if (isAdminUser || isManager) {
-      const notificationId = await ctx.db.insert("notifications", {
-        userId: admin._id,
-        type: "hour_compliance",
-        title,
-        message,
-        isRead: false,
-        createdAt: now,
-      });
-      notifications.push(notificationId);
-    }
+  for (const adminId of adminUserIds) {
+    const notificationId = await ctx.db.insert("notifications", {
+      userId: adminId,
+      type: "hour_compliance",
+      title,
+      message,
+      isRead: false,
+      createdAt: now,
+    });
+    notifications.push(notificationId);
   }
 
   // Update record with notification info
@@ -450,16 +462,15 @@ export const listComplianceRecords = query({
       });
     }
 
-    // Fetch user details
-    const recordsWithUsers = await Promise.all(
-      records.map(async (record) => {
-        const user = await ctx.db.get(record.userId);
-        return {
-          ...record,
-          user,
-        };
-      }),
-    );
+    // Batch fetch user details to avoid N+1 queries
+    const userIds = records.map((r) => r.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    const recordsWithUsers = records.map((record) => ({
+      ...record,
+      user: userMap.get(record.userId) ?? null,
+    }));
 
     return recordsWithUsers;
   },

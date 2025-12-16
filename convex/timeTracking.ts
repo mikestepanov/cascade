@@ -2,6 +2,12 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
+import {
+  batchFetchIssues,
+  batchFetchUsers,
+  batchFetchWorkspaces,
+  getUserName,
+} from "./lib/batchHelpers";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./workspaceAccess";
 
 /**
@@ -405,40 +411,49 @@ export const listTimeEntries = query({
         .take(args.limit || 100);
     }
 
-    // Enrich with user, project, and issue data
-    return await Promise.all(
-      entries.map(async (entry) => {
-        const user = await ctx.db.get(entry.userId);
-        const project = entry.workspaceId ? await ctx.db.get(entry.workspaceId) : null;
-        const issue = entry.issueId ? await ctx.db.get(entry.issueId) : null;
+    // Batch fetch all related data (avoid N+1!)
+    const userIds = entries.map((e) => e.userId);
+    const workspaceIds = entries.map((e) => e.workspaceId);
+    const issueIds = entries.map((e) => e.issueId);
 
-        return {
-          ...entry,
-          user: user
-            ? {
-                _id: user._id,
-                name: user.name || user.email || "Unknown",
-                email: user.email,
-                image: user.image,
-              }
-            : null,
-          project: project
-            ? {
-                _id: project._id,
-                name: project.name,
-                key: project.key,
-              }
-            : null,
-          issue: issue
-            ? {
-                _id: issue._id,
-                key: issue.key,
-                title: issue.title,
-              }
-            : null,
-        };
-      }),
-    );
+    const [userMap, workspaceMap, issueMap] = await Promise.all([
+      batchFetchUsers(ctx, userIds),
+      batchFetchWorkspaces(ctx, workspaceIds),
+      batchFetchIssues(ctx, issueIds),
+    ]);
+
+    // Enrich with pre-fetched data (no N+1)
+    return entries.map((entry) => {
+      const user = userMap.get(entry.userId);
+      const project = entry.workspaceId ? workspaceMap.get(entry.workspaceId) : null;
+      const issue = entry.issueId ? issueMap.get(entry.issueId) : null;
+
+      return {
+        ...entry,
+        user: user
+          ? {
+              _id: user._id,
+              name: user.name || user.email || "Unknown",
+              email: user.email,
+              image: user.image,
+            }
+          : null,
+        project: project
+          ? {
+              _id: project._id,
+              name: project.name,
+              key: project.key,
+            }
+          : null,
+        issue: issue
+          ? {
+              _id: issue._id,
+              key: issue.key,
+              title: issue.title,
+            }
+          : null,
+      };
+    });
   },
 });
 
@@ -532,6 +547,10 @@ export const getBurnRate = query({
       )
       .collect();
 
+    // Batch fetch all users upfront (avoid N+1!)
+    const userIds = [...new Set(entries.map((e) => e.userId))];
+    const userMap = await batchFetchUsers(ctx, userIds);
+
     // Calculate totals
     let totalCost = 0;
     let totalHours = 0;
@@ -552,14 +571,14 @@ export const getBurnRate = query({
         billableCost += cost;
       }
 
-      // Track per-user costs
+      // Track per-user costs (using pre-fetched data)
       const userIdStr = entry.userId;
       if (!userCosts[userIdStr]) {
-        const user = await ctx.db.get(entry.userId);
+        const user = userMap.get(entry.userId);
         userCosts[userIdStr] = {
           hours: 0,
           cost: 0,
-          name: user?.name || user?.email || "Unknown",
+          name: getUserName(user),
         };
       }
       userCosts[userIdStr].hours += hours;
@@ -621,7 +640,11 @@ export const getTeamCosts = query({
         .collect();
     }
 
-    // Group by user
+    // Batch fetch all users upfront (avoid N+1!)
+    const userIds = [...new Set(entries.map((e) => e.userId))];
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Group by user (using pre-fetched data)
     const userCosts: Record<
       string,
       {
@@ -641,7 +664,7 @@ export const getTeamCosts = query({
     for (const entry of entries) {
       const userIdStr = entry.userId;
       if (!userCosts[userIdStr]) {
-        const user = await ctx.db.get(entry.userId);
+        const user = userMap.get(entry.userId);
         userCosts[userIdStr] = {
           hours: 0,
           cost: 0,
@@ -773,22 +796,24 @@ export const listUserRates = query({
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
           .collect();
 
-    // Enrich with user data
-    return await Promise.all(
-      rates.map(async (rate) => {
-        const user = await ctx.db.get(rate.userId);
-        return {
-          ...rate,
-          user: user
-            ? {
-                _id: user._id,
-                name: user.name || user.email || "Unknown",
-                email: user.email,
-              }
-            : null,
-        };
-      }),
-    );
+    // Batch fetch all users (avoid N+1!)
+    const userIds = rates.map((r) => r.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched user data
+    return rates.map((rate) => {
+      const user = userMap.get(rate.userId);
+      return {
+        ...rate,
+        user: user
+          ? {
+              _id: user._id,
+              name: user.name || user.email || "Unknown",
+              email: user.email,
+            }
+          : null,
+      };
+    });
   },
 });
 
@@ -831,12 +856,20 @@ export const getProjectBilling = query({
         .collect();
     }
 
+    // Batch fetch all users upfront (avoid N+1!)
+    const userIds = [...new Set(entries.map((e) => e.userId))];
+    const userMap = await batchFetchUsers(ctx, userIds);
+
     // Aggregate stats
     let totalHours = 0;
     let billableHours = 0;
     let totalRevenue = 0;
 
-    const byUser: Record<string, { hours: number; billableHours: number; revenue: number }> = {};
+    // FIX: Group by userId (not userName) to avoid merging different users with same name
+    const byUserData: Record<
+      string,
+      { userId: string; userName: string; hours: number; billableHours: number; revenue: number }
+    > = {};
 
     for (const entry of entries) {
       const hours = entry.duration / 3600;
@@ -847,19 +880,35 @@ export const getProjectBilling = query({
         totalRevenue += entry.totalCost || 0;
       }
 
-      // Get user name for grouping
-      const user = await ctx.db.get(entry.userId);
-      const userName = user?.name || user?.email || "Unknown";
-
-      if (!byUser[userName]) {
-        byUser[userName] = { hours: 0, billableHours: 0, revenue: 0 };
+      // Group by userId (using pre-fetched data)
+      const userIdStr = entry.userId.toString();
+      if (!byUserData[userIdStr]) {
+        const user = userMap.get(entry.userId);
+        byUserData[userIdStr] = {
+          userId: userIdStr,
+          userName: getUserName(user),
+          hours: 0,
+          billableHours: 0,
+          revenue: 0,
+        };
       }
 
-      byUser[userName].hours += hours;
+      byUserData[userIdStr].hours += hours;
       if (entry.billable) {
-        byUser[userName].billableHours += hours;
-        byUser[userName].revenue += entry.totalCost || 0;
+        byUserData[userIdStr].billableHours += hours;
+        byUserData[userIdStr].revenue += entry.totalCost || 0;
       }
+    }
+
+    // Convert to byUser format keyed by userName (for backward compatibility)
+    // but now it's correctly aggregated by userId first
+    const byUser: Record<string, { hours: number; billableHours: number; revenue: number }> = {};
+    for (const data of Object.values(byUserData)) {
+      byUser[data.userName] = {
+        hours: data.hours,
+        billableHours: data.billableHours,
+        revenue: data.revenue,
+      };
     }
 
     return {

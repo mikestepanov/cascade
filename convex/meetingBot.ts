@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
+import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
 
 // ===========================================
@@ -129,29 +130,46 @@ export const listRecordings = query({
         .take(limit);
     }
 
-    // Enrich with calendar event data
-    return Promise.all(
-      recordings.map(async (recording) => {
-        const calendarEvent = recording.calendarEventId
-          ? await ctx.db.get(recording.calendarEventId)
-          : null;
-        const transcript = await ctx.db
-          .query("meetingTranscripts")
-          .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
-          .first();
-        const summary = await ctx.db
-          .query("meetingSummaries")
-          .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
-          .first();
+    // Batch fetch all related data to avoid N+1 queries
+    const calendarEventIds = recordings
+      .map((r) => r.calendarEventId)
+      .filter((id): id is Id<"calendarEvents"> => !!id);
+    const recordingIds = recordings.map((r) => r._id);
 
-        return {
-          ...recording,
-          calendarEvent,
-          hasTranscript: !!transcript,
-          hasSummary: !!summary,
-        };
-      }),
-    );
+    // Parallel fetch: calendar events, transcripts, summaries
+    const [calendarEventMap, allTranscripts, allSummaries] = await Promise.all([
+      batchFetchCalendarEvents(ctx, calendarEventIds),
+      Promise.all(
+        recordingIds.map((recordingId) =>
+          ctx.db
+            .query("meetingTranscripts")
+            .withIndex("by_recording", (q) => q.eq("recordingId", recordingId))
+            .first(),
+        ),
+      ),
+      Promise.all(
+        recordingIds.map((recordingId) =>
+          ctx.db
+            .query("meetingSummaries")
+            .withIndex("by_recording", (q) => q.eq("recordingId", recordingId))
+            .first(),
+        ),
+      ),
+    ]);
+
+    // Build lookup maps
+    const transcriptMap = new Map(recordingIds.map((id, i) => [id.toString(), allTranscripts[i]]));
+    const summaryMap = new Map(recordingIds.map((id, i) => [id.toString(), allSummaries[i]]));
+
+    // Enrich with pre-fetched data (no N+1 - all fetches are parallel)
+    return recordings.map((recording) => ({
+      ...recording,
+      calendarEvent: recording.calendarEventId
+        ? (calendarEventMap.get(recording.calendarEventId) ?? null)
+        : null,
+      hasTranscript: !!transcriptMap.get(recording._id.toString()),
+      hasSummary: !!summaryMap.get(recording._id.toString()),
+    }));
   },
 });
 
@@ -306,13 +324,15 @@ export const getPendingJobs = query({
     // Filter to jobs that should start soon
     const readyJobs = jobs.filter((job) => job.scheduledTime <= now + 5 * 60 * 1000);
 
-    // Enrich with recording data
-    return Promise.all(
-      readyJobs.map(async (job) => {
-        const recording = await ctx.db.get(job.recordingId);
-        return { ...job, recording };
-      }),
-    );
+    // Batch fetch recordings to avoid N+1 queries
+    const recordingIds = readyJobs.map((job) => job.recordingId);
+    const recordingMap = await batchFetchRecordings(ctx, recordingIds);
+
+    // Enrich with pre-fetched recording data (no N+1)
+    return readyJobs.map((job) => ({
+      ...job,
+      recording: recordingMap.get(job.recordingId) ?? null,
+    }));
   },
 });
 

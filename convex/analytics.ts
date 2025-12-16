@@ -14,7 +14,43 @@ import {
   issueCountByStatus,
   issueCountByType,
 } from "./aggregates";
+import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
 import { canAccessProject } from "./workspaceAccess";
+
+// Helper: Build issues by status from workflow states and counts
+function buildIssuesByStatus(
+  workflowStates: { id: string }[],
+  statusCounts: Record<string, number>,
+): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const state of workflowStates) {
+    result[state.id] = statusCounts[state.id] || 0;
+  }
+  return result;
+}
+
+// Helper: Build issues by type with defaults
+function buildIssuesByType(typeCounts: Record<string, number>) {
+  return {
+    task: typeCounts.task || 0,
+    bug: typeCounts.bug || 0,
+    story: typeCounts.story || 0,
+    epic: typeCounts.epic || 0,
+    subtask: typeCounts.subtask || 0,
+  };
+}
+
+// Helper: Build issues by priority with defaults
+function buildIssuesByPriority(priorityCounts: Record<string, number>) {
+  return {
+    lowest: priorityCounts.lowest || 0,
+    low: priorityCounts.low || 0,
+    medium: priorityCounts.medium || 0,
+    high: priorityCounts.high || 0,
+    highest: priorityCounts.highest || 0,
+  };
+}
 
 /**
  * Get project analytics overview
@@ -23,76 +59,44 @@ export const getProjectAnalytics = query({
   args: { workspaceId: v.id("workspaces") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw new Error("Not authenticated");
 
     const project = await ctx.db.get(args.workspaceId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw new Error("Project not found");
 
-    // Check access
     if (!(await canAccessProject(ctx, args.workspaceId, userId))) {
       throw new Error("Not authorized to access this project");
     }
 
     // Use aggregates for fast O(log n) counting instead of O(n)
-    const statusCounts = await issueCountByStatus.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const typeCounts = await issueCountByType.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const priorityCounts = await issueCountByPriority.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
-    const assigneeCounts = await issueCountByAssignee.lookup(ctx, {
-      workspaceId: args.workspaceId,
-    });
+    const [statusCounts, typeCounts, priorityCounts, assigneeCounts] = await Promise.all([
+      issueCountByStatus.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByType.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByPriority.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByAssignee.lookup(ctx, { workspaceId: args.workspaceId }),
+    ]);
 
-    // Initialize with zeros for all workflow states
-    const issuesByStatus: Record<string, number> = {};
-    project.workflowStates.forEach((state) => {
-      issuesByStatus[state.id] = statusCounts[state.id] || 0;
-    });
-
-    // Ensure all types are present
-    const issuesByType = {
-      task: typeCounts.task || 0,
-      bug: typeCounts.bug || 0,
-      story: typeCounts.story || 0,
-      epic: typeCounts.epic || 0,
-      subtask: typeCounts.subtask || 0,
-    };
-
-    // Ensure all priorities are present
-    const issuesByPriority = {
-      lowest: priorityCounts.lowest || 0,
-      low: priorityCounts.low || 0,
-      medium: priorityCounts.medium || 0,
-      high: priorityCounts.high || 0,
-      highest: priorityCounts.highest || 0,
-    };
-
-    // Get unassigned count
+    // Build structured data using helpers
+    const issuesByStatus = buildIssuesByStatus(project.workflowStates, statusCounts);
+    const issuesByType = buildIssuesByType(typeCounts);
+    const issuesByPriority = buildIssuesByPriority(priorityCounts);
     const unassignedCount = assigneeCounts.unassigned || 0;
 
-    // Enrich assignee data with user info
-    const issuesByAssignee: Record<string, { count: number; name: string }> = {};
-    await Promise.all(
-      Object.entries(assigneeCounts)
-        .filter(([assigneeId]) => assigneeId !== "unassigned")
-        .map(async ([assigneeId, count]) => {
-          const user = await ctx.db.get(assigneeId as Id<"users">);
-          issuesByAssignee[assigneeId] = {
-            count,
-            name: user?.name || user?.email || "Unknown",
-          };
-        }),
-    );
+    // Batch fetch assignee users and build assignee map
+    const assigneeIds = Object.keys(assigneeCounts)
+      .filter((id) => id !== "unassigned")
+      .map((id) => id as Id<"users">);
+    const userMap = await batchFetchUsers(ctx, assigneeIds);
 
-    // Calculate total issues
+    const issuesByAssignee: Record<string, { count: number; name: string }> = {};
+    for (const [assigneeId, count] of Object.entries(assigneeCounts)) {
+      if (assigneeId === "unassigned") continue;
+      issuesByAssignee[assigneeId] = {
+        count,
+        name: getUserName(userMap.get(assigneeId as Id<"users">)),
+      };
+    }
+
     const totalIssues = Object.values(typeCounts).reduce((sum, count) => sum + count, 0);
 
     return {
@@ -223,30 +227,42 @@ export const getTeamVelocity = query({
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
-      .take(10); // Last 10 sprints
+      .take(MAX_VELOCITY_SPRINTS);
 
     // Get done states
     const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
 
-    const velocityData = await Promise.all(
-      completedSprints.map(async (sprint) => {
-        const sprintIssues = await ctx.db
+    // Batch fetch issues for all sprints in parallel (not sequential)
+    const sprintIds = completedSprints.map((s) => s._id);
+    const sprintIssuesArrays = await Promise.all(
+      sprintIds.map((sprintId) =>
+        ctx.db
           .query("issues")
-          .withIndex("by_sprint", (q) => q.eq("sprintId", sprint._id))
-          .collect();
-
-        const completedPoints = sprintIssues
-          .filter((issue) => doneStates.includes(issue.status))
-          .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
-
-        return {
-          sprintName: sprint.name,
-          sprintId: sprint._id,
-          points: completedPoints,
-          issuesCompleted: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
-        };
-      }),
+          .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
+          .collect(),
+      ),
     );
+
+    // Build sprint issues map
+    const sprintIssuesMap = new Map(
+      sprintIds.map((id, i) => [id.toString(), sprintIssuesArrays[i]]),
+    );
+
+    // Calculate velocity data using pre-fetched issues (no N+1)
+    const velocityData = completedSprints.map((sprint) => {
+      const sprintIssues = sprintIssuesMap.get(sprint._id.toString()) || [];
+
+      const completedPoints = sprintIssues
+        .filter((issue) => doneStates.includes(issue.status))
+        .reduce((sum, issue) => sum + (issue.storyPoints || issue.estimatedHours || 0), 0);
+
+      return {
+        sprintName: sprint.name,
+        sprintId: sprint._id,
+        points: completedPoints,
+        issuesCompleted: sprintIssues.filter((i) => doneStates.includes(i.status)).length,
+      };
+    });
 
     // Calculate average velocity
     const avgVelocity =
@@ -277,36 +293,40 @@ export const getRecentActivity = query({
       throw new Error("Not authorized to access this project");
     }
 
-    // Get all project issues
-    const projectIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .collect();
+    // Get recent activity (global, limited)
+    const activities = await ctx.db
+      .query("issueActivity")
+      .order("desc")
+      .take(MAX_ACTIVITY_FOR_ANALYTICS);
 
-    const issueIds = projectIssues.map((i) => i._id);
+    // Batch fetch all referenced issues (NOT all project issues!)
+    const activityIssueIds = activities.map((a) => a.issueId);
+    const issueMap = await batchFetchIssues(ctx, activityIssueIds);
 
-    // Get recent activity across all project issues
-    const activities = await ctx.db.query("issueActivity").order("desc").take(1000); // Get a large sample
-
-    // Filter to only this project's issues
+    // Filter to only activities for this project's issues
     const projectActivities = activities
-      .filter((a) => issueIds.includes(a.issueId))
+      .filter((a) => {
+        const issue = issueMap.get(a.issueId);
+        return issue && issue.workspaceId === args.workspaceId;
+      })
       .slice(0, args.limit || 20);
 
-    // Enrich with user and issue info
-    return await Promise.all(
-      projectActivities.map(async (activity) => {
-        const user = await ctx.db.get(activity.userId);
-        const issue = await ctx.db.get(activity.issueId);
+    // Batch fetch users for filtered activities
+    const userIds = projectActivities.map((a) => a.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
-        return {
-          ...activity,
-          userName: user?.name || user?.email || "Unknown",
-          userImage: user?.image,
-          issueKey: issue?.key || "Unknown",
-          issueTitle: issue?.title || "Unknown",
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    return projectActivities.map((activity) => {
+      const user = userMap.get(activity.userId);
+      const issue = issueMap.get(activity.issueId);
+
+      return {
+        ...activity,
+        userName: getUserName(user),
+        userImage: user?.image,
+        issueKey: issue?.key || "Unknown",
+        issueTitle: issue?.title || "Unknown",
+      };
+    });
   },
 });

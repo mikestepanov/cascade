@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useSmartBoardData } from "@/hooks/useSmartBoardData";
 import { DISPLAY_LIMITS } from "@/lib/constants";
 import { showError, showSuccess } from "@/lib/toast";
 import { api } from "../../convex/_generated/api";
@@ -38,8 +39,21 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
   const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
 
   const project = useQuery(api.workspaces.get, { id: workspaceId });
-  const issues = useQuery(api.issues.listByProject, { workspaceId, sprintId });
   const updateIssueStatus = useMutation(api.issues.updateStatus);
+
+  // Use smart board data with pagination for done columns
+  const {
+    issuesByStatus,
+    statusCounts,
+    isLoading: isLoadingIssues,
+    loadMoreDone,
+    isLoadingMore,
+  } = useSmartBoardData({ workspaceId, sprintId });
+
+  // Flatten issues for drag/drop operations
+  const allIssues = useMemo(() => {
+    return Object.values(issuesByStatus).flat();
+  }, [issuesByStatus]);
 
   // Undo/Redo handlers wrapped in useCallback
   const handleUndo = useCallback(async () => {
@@ -138,10 +152,10 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
     async (e: React.DragEvent, newStatus: string) => {
       e.preventDefault();
 
-      if (!(draggedIssue && issues)) return;
+      if (!(draggedIssue && allIssues.length > 0)) return;
 
       // Find the dragged issue to get its current state
-      const issue = issues.find((i) => i._id === draggedIssue);
+      const issue = allIssues.find((i) => i._id === draggedIssue);
       if (!issue) return;
 
       // If dropping in same column, do nothing
@@ -150,7 +164,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
         return;
       }
 
-      const issuesInNewStatus = issues.filter((issue) => issue.status === newStatus);
+      const issuesInNewStatus = issuesByStatus[newStatus] || [];
       const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
 
       // Save to history before making the change
@@ -179,7 +193,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
 
       setDraggedIssue(null);
     },
-    [draggedIssue, issues, updateIssueStatus],
+    [draggedIssue, allIssues, issuesByStatus, updateIssueStatus],
   );
 
   const handleCreateIssue = useCallback((_status: string) => {
@@ -198,7 +212,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
     });
   }, []);
 
-  if (!(project && issues)) {
+  if (!project || isLoadingIssues) {
     return (
       <div className="flex-1 overflow-x-auto">
         {/* Header skeleton */}
@@ -262,23 +276,31 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
       />
 
       <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
-        {workflowStates.map((state, columnIndex) => (
-          <KanbanColumn
-            key={state.id}
-            state={state}
-            issues={issues}
-            columnIndex={columnIndex}
-            selectionMode={selectionMode}
-            selectedIssueIds={selectedIssueIds}
-            canEdit={canEdit}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragStart={handleDragStart}
-            onCreateIssue={handleCreateIssue}
-            onIssueClick={setSelectedIssue}
-            onToggleSelect={handleToggleSelect}
-          />
-        ))}
+        {workflowStates.map((state, columnIndex) => {
+          const counts = statusCounts[state.id] || { total: 0, loaded: 0, hidden: 0 };
+          return (
+            <KanbanColumn
+              key={state.id}
+              state={state}
+              issues={issuesByStatus[state.id] || []}
+              columnIndex={columnIndex}
+              selectionMode={selectionMode}
+              selectedIssueIds={selectedIssueIds}
+              canEdit={canEdit}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragStart={handleDragStart}
+              onCreateIssue={handleCreateIssue}
+              onIssueClick={setSelectedIssue}
+              onToggleSelect={handleToggleSelect}
+              // Pagination props for done columns
+              hiddenCount={counts.hidden}
+              totalCount={counts.total}
+              onLoadMore={loadMoreDone}
+              isLoadingMore={isLoadingMore}
+            />
+          );
+        })}
       </div>
 
       <CreateIssueModal

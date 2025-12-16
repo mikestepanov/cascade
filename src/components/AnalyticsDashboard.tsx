@@ -1,4 +1,5 @@
 import { useQuery } from "convex/react";
+import { useMemo } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { BarChart } from "./Analytics/BarChart";
@@ -19,6 +20,67 @@ export function AnalyticsDashboard({ workspaceId }: Props) {
     workspaceId,
     limit: 10,
   });
+
+  // Memoize chart data to avoid recalculation on every render
+  const statusChartData = useMemo(
+    () =>
+      analytics
+        ? Object.entries(analytics.issuesByStatus).map(([status, count]) => ({
+            label: status,
+            value: count,
+          }))
+        : [],
+    [analytics],
+  );
+
+  const typeChartData = useMemo(
+    () =>
+      analytics
+        ? [
+            { label: "Task", value: analytics.issuesByType.task },
+            { label: "Bug", value: analytics.issuesByType.bug },
+            { label: "Story", value: analytics.issuesByType.story },
+            { label: "Epic", value: analytics.issuesByType.epic },
+          ]
+        : [],
+    [analytics],
+  );
+
+  const priorityChartData = useMemo(
+    () =>
+      analytics
+        ? [
+            { label: "Highest", value: analytics.issuesByPriority.highest },
+            { label: "High", value: analytics.issuesByPriority.high },
+            { label: "Medium", value: analytics.issuesByPriority.medium },
+            { label: "Low", value: analytics.issuesByPriority.low },
+            { label: "Lowest", value: analytics.issuesByPriority.lowest },
+          ]
+        : [],
+    [analytics],
+  );
+
+  const velocityChartData = useMemo(
+    () =>
+      velocity
+        ? velocity.velocityData.map((v) => ({
+            label: v.sprintName,
+            value: v.points,
+          }))
+        : [],
+    [velocity],
+  );
+
+  const assigneeChartData = useMemo(
+    () =>
+      analytics
+        ? Object.values(analytics.issuesByAssignee).map((a) => ({
+            label: a.name,
+            value: a.count,
+          }))
+        : [],
+    [analytics],
+  );
 
   if (!(analytics && velocity)) {
     return (
@@ -97,55 +159,23 @@ export function AnalyticsDashboard({ workspaceId }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Issues by Status */}
           <ChartCard title="Issues by Status">
-            <BarChart
-              data={Object.entries(analytics.issuesByStatus).map(([status, count]) => ({
-                label: status,
-                value: count,
-              }))}
-              color="bg-status-info dark:bg-status-info"
-            />
+            <BarChart data={statusChartData} color="bg-status-info dark:bg-status-info" />
           </ChartCard>
 
           {/* Issues by Type */}
           <ChartCard title="Issues by Type">
-            <BarChart
-              data={[
-                { label: "Task", value: analytics.issuesByType.task },
-                { label: "Bug", value: analytics.issuesByType.bug },
-                { label: "Story", value: analytics.issuesByType.story },
-                { label: "Epic", value: analytics.issuesByType.epic },
-              ]}
-              color="bg-status-success dark:bg-status-success"
-            />
+            <BarChart data={typeChartData} color="bg-status-success dark:bg-status-success" />
           </ChartCard>
 
           {/* Issues by Priority */}
           <ChartCard title="Issues by Priority">
-            <BarChart
-              data={[
-                {
-                  label: "Highest",
-                  value: analytics.issuesByPriority.highest,
-                },
-                { label: "High", value: analytics.issuesByPriority.high },
-                { label: "Medium", value: analytics.issuesByPriority.medium },
-                { label: "Low", value: analytics.issuesByPriority.low },
-                { label: "Lowest", value: analytics.issuesByPriority.lowest },
-              ]}
-              color="bg-status-warning dark:bg-status-warning"
-            />
+            <BarChart data={priorityChartData} color="bg-status-warning dark:bg-status-warning" />
           </ChartCard>
 
           {/* Team Velocity */}
           <ChartCard title="Team Velocity (Last 10 Sprints)">
-            {velocity.velocityData.length > 0 ? (
-              <BarChart
-                data={velocity.velocityData.map((v) => ({
-                  label: v.sprintName,
-                  value: v.points,
-                }))}
-                color="bg-accent-600 dark:bg-accent-500"
-              />
+            {velocityChartData.length > 0 ? (
+              <BarChart data={velocityChartData} color="bg-accent-600 dark:bg-accent-500" />
             ) : (
               <div className="flex items-center justify-center h-full text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 <p>No completed sprints yet</p>
@@ -155,15 +185,9 @@ export function AnalyticsDashboard({ workspaceId }: Props) {
         </div>
 
         {/* Issues by Assignee */}
-        {Object.keys(analytics.issuesByAssignee).length > 0 && (
+        {assigneeChartData.length > 0 && (
           <ChartCard title="Issues by Assignee">
-            <BarChart
-              data={Object.values(analytics.issuesByAssignee).map((a) => ({
-                label: a.name,
-                value: a.count,
-              }))}
-              color="bg-brand-600 dark:bg-brand-500"
-            />
+            <BarChart data={assigneeChartData} color="bg-brand-600 dark:bg-brand-500" />
           </ChartCard>
         )}
 

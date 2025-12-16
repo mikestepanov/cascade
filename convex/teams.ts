@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
+import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -425,31 +426,61 @@ export const getCompanyTeams = query({
 
     const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
 
-    const teamsWithInfo = await Promise.all(
-      teams.map(async (team) => {
-        const role = await getTeamRole(ctx, team._id, userId);
+    // Fetch team members and workspaces per team using indexes (NOT loading all!)
+    const teamIds = teams.map((t) => t._id);
 
-        // Get member count
-        const memberCount = await ctx.db
-          .query("teamMembers")
-          .withIndex("by_team", (q) => q.eq("teamId", team._id))
-          .collect();
+    const [teamMembersArrays, workspacesArrays] = await Promise.all([
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+    ]);
 
-        // Get project count
-        const projectCount = await ctx.db
-          .query("workspaces")
-          .withIndex("by_team", (q) => q.eq("teamId", team._id))
-          .collect();
+    // Build count maps
+    const memberCountByTeam = new Map<string, number>();
+    const userRoleByTeam = new Map<string, "lead" | "member">();
 
-        return {
-          ...team,
-          userRole: role,
-          isAdmin,
-          memberCount: memberCount.length,
-          projectCount: projectCount.length,
-        };
-      }),
-    );
+    teamIds.forEach((teamId, index) => {
+      const members = teamMembersArrays[index];
+      const teamIdStr = teamId.toString();
+      memberCountByTeam.set(teamIdStr, members.length);
+
+      // Track current user's role
+      const userMembership = members.find((m) => m.userId === userId);
+      if (userMembership) {
+        userRoleByTeam.set(teamIdStr, userMembership.role);
+      }
+    });
+
+    const projectCountByTeam = new Map<string, number>();
+    teamIds.forEach((teamId, index) => {
+      const workspaces = workspacesArrays[index];
+      projectCountByTeam.set(teamId.toString(), workspaces.length);
+    });
+
+    // Enrich teams with pre-computed data (no N+1)
+    const teamsWithInfo = teams.map((team) => {
+      const teamIdStr = team._id.toString();
+      return {
+        ...team,
+        userRole: userRoleByTeam.get(teamIdStr) ?? null,
+        isAdmin,
+        memberCount: memberCountByTeam.get(teamIdStr) ?? 0,
+        projectCount: projectCountByTeam.get(teamIdStr) ?? 0,
+      };
+    });
 
     return teamsWithInfo;
   },
@@ -469,33 +500,60 @@ export const getUserTeams = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const teams = await Promise.all(
-      memberships.map(async (membership) => {
-        const team = await ctx.db.get(membership.teamId);
+    if (memberships.length === 0) return [];
+
+    // Batch fetch all teams (avoid N+1!)
+    const teamIds = memberships.map((m) => m.teamId);
+    const teamMap = await batchFetchTeams(ctx, teamIds);
+
+    // Fetch team members and workspaces per team using indexes (NOT loading all!)
+    const [teamMembersArrays, workspacesArrays] = await Promise.all([
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+      Promise.all(
+        teamIds.map((teamId) =>
+          ctx.db
+            .query("workspaces")
+            .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .collect(),
+        ),
+      ),
+    ]);
+
+    // Build count maps
+    const memberCountByTeam = new Map<string, number>();
+    teamIds.forEach((teamId, index) => {
+      memberCountByTeam.set(teamId.toString(), teamMembersArrays[index].length);
+    });
+
+    const projectCountByTeam = new Map<string, number>();
+    teamIds.forEach((teamId, index) => {
+      projectCountByTeam.set(teamId.toString(), workspacesArrays[index].length);
+    });
+
+    // Enrich with pre-fetched data (no N+1)
+    const teams = memberships
+      .map((membership) => {
+        const team = teamMap.get(membership.teamId);
         if (!team) return null;
 
-        // Get member count
-        const memberCount = await ctx.db
-          .query("teamMembers")
-          .withIndex("by_team", (q) => q.eq("teamId", membership.teamId))
-          .collect();
-
-        // Get project count
-        const projectCount = await ctx.db
-          .query("workspaces")
-          .withIndex("by_team", (q) => q.eq("teamId", membership.teamId))
-          .collect();
-
+        const teamIdStr = membership.teamId.toString();
         return {
           ...team,
           userRole: membership.role,
-          memberCount: memberCount.length,
-          projectCount: projectCount.length,
+          memberCount: memberCountByTeam.get(teamIdStr) ?? 0,
+          projectCount: projectCountByTeam.get(teamIdStr) ?? 0,
         };
-      }),
-    );
+      })
+      .filter((t): t is NonNullable<typeof t> => t !== null);
 
-    return teams.filter((t): t is NonNullable<typeof t> => t !== null);
+    return teams;
   },
 });
 
@@ -527,18 +585,24 @@ export const getTeamMembers = query({
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
       .collect();
 
-    const members = await Promise.all(
-      memberships.map(async (membership) => {
-        const user = await ctx.db.get(membership.userId);
-        const addedBy = await ctx.db.get(membership.addedBy);
+    // Batch fetch all users (both members and addedBy) (avoid N+1!)
+    // Deduplicate to avoid redundant fetches
+    const allUserIds = [
+      ...new Set([...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)]),
+    ];
+    const userMap = await batchFetchUsers(ctx, allUserIds);
 
-        return {
-          ...membership,
-          user,
-          addedByName: addedBy?.name || addedBy?.email || "Unknown",
-        };
-      }),
-    );
+    // Enrich with pre-fetched data (no N+1)
+    const members = memberships.map((membership) => {
+      const user = userMap.get(membership.userId);
+      const addedBy = userMap.get(membership.addedBy);
+
+      return {
+        ...membership,
+        user,
+        addedByName: getUserName(addedBy),
+      };
+    });
 
     return members;
   },

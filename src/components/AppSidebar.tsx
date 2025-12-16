@@ -41,7 +41,8 @@ export function AppSidebar() {
   const [projectsExpanded, setProjectsExpanded] = useState(true);
 
   // Data
-  const documents = useQuery(api.documents.list);
+  const documentsResult = useQuery(api.documents.list, { limit: 11 });
+  const documents = documentsResult?.documents;
   const projects = useQuery(api.workspaces.list);
 
   // Mutations

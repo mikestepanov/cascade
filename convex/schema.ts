@@ -15,6 +15,7 @@ const applicationTables = {
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
     .index("by_workspace", ["workspaceId"])
+    .index("by_creator_updated", ["createdBy", "updatedAt"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["isPublic", "createdBy", "workspaceId"],
@@ -149,6 +150,7 @@ const applicationTables = {
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
   })
     .index("by_workspace", ["workspaceId"])
+    .index("by_key", ["key"])
     .index("by_assignee", ["assigneeId"])
     .index("by_reporter", ["reporterId"])
     .index("by_status", ["status"])
@@ -156,6 +158,9 @@ const applicationTables = {
     .index("by_epic", ["epicId"])
     .index("by_parent", ["parentId"])
     .index("by_workspace_status", ["workspaceId", "status"])
+    .index("by_workspace_status_updated", ["workspaceId", "status", "updatedAt"])
+    .index("by_workspace_sprint_created", ["workspaceId", "sprintId", "createdAt"])
+    .index("by_workspace_updated", ["workspaceId", "updatedAt"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["workspaceId", "type", "status", "priority"],

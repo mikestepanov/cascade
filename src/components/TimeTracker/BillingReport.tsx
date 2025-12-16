@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Clock, DollarSign, Download, TrendingUp, Users } from "@/lib/icons";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -7,6 +7,18 @@ import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+
+// Pure functions - no need to be inside component
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+}
+
+function formatHours(hours: number): string {
+  return hours.toFixed(2);
+}
 
 interface BillingReportProps {
   workspaceId: Id<"workspaces">;
@@ -16,8 +28,8 @@ export function BillingReport({ workspaceId }: BillingReportProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("month");
   const project = useQuery(api.workspaces.get, { id: workspaceId });
 
-  // Calculate date range
-  const getDateRange = () => {
+  // Memoize date range calculation to prevent query key changes
+  const dateRangeParams = useMemo(() => {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
 
@@ -29,12 +41,30 @@ export function BillingReport({ workspaceId }: BillingReportProps) {
       default:
         return {};
     }
-  };
+  }, [dateRange]);
 
   const billing = useQuery(api.timeTracking.getProjectBilling, {
     workspaceId,
-    ...getDateRange(),
+    ...dateRangeParams,
   });
+
+  // Memoize derived calculations
+  const { utilizationRate, averageRate, sortedUsers } = useMemo(() => {
+    if (!billing) {
+      return {
+        utilizationRate: 0,
+        averageRate: 0,
+        sortedUsers: [] as [string, { hours: number; billableHours: number; revenue: number }][],
+      };
+    }
+
+    const utilRate =
+      billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
+    const avgRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
+    const sorted = Object.entries(billing.byUser).sort(([, a], [, b]) => b.revenue - a.revenue);
+
+    return { utilizationRate: utilRate, averageRate: avgRate, sortedUsers: sorted };
+  }, [billing]);
 
   if (!(billing && project)) {
     return (
@@ -43,24 +73,6 @@ export function BillingReport({ workspaceId }: BillingReportProps) {
       </Flex>
     );
   }
-
-  const utilizationRate =
-    billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
-
-  const formatHours = (hours: number) => {
-    return hours.toFixed(2);
-  };
-
-  const averageRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
-
-  const sortedUsers = Object.entries(billing.byUser).sort(([, a], [, b]) => b.revenue - a.revenue);
 
   return (
     <div className="p-6">

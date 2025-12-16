@@ -5,6 +5,7 @@ import { v } from "convex/values";
 import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 // Type assertion for component - unavoidable without running dev server
 // Two-step cast ensures type safety: unknown → ConstructorParameters<typeof Presence>[0]
@@ -39,21 +40,21 @@ export const list = query({
   args: { roomToken: v.string() },
   handler: async (ctx, { roomToken }) => {
     const presenceList = await presence.list(ctx, roomToken);
-    const listWithUserInfo = await Promise.all(
-      presenceList.map(async (entry) => {
-        const user = await ctx.db.get(entry.userId as Id<"users">);
-        if (!user) {
-          return entry;
-        }
-        return {
-          ...entry,
-          name: user?.name,
-          image: user?.image,
-          email: user?.email,
-        };
-      }),
-    );
-    return listWithUserInfo;
+
+    // Batch fetch users to avoid N+1 queries
+    const userIds = presenceList.map((entry) => entry.userId as Id<"users">);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched data (no N+1)
+    return presenceList.map((entry) => {
+      const user = userMap.get(entry.userId as Id<"users">);
+      return {
+        ...entry,
+        name: user?.name,
+        image: user?.image,
+        email: user?.email,
+      };
+    });
   },
 });
 
