@@ -586,9 +586,10 @@ export const getTeamMembers = query({
       .collect();
 
     // Batch fetch all users (both members and addedBy) (avoid N+1!)
-    const userIds = memberships.map((m) => m.userId);
-    const addedByIds = memberships.map((m) => m.addedBy);
-    const allUserIds = [...userIds, ...addedByIds];
+    // Deduplicate to avoid redundant fetches
+    const allUserIds = [
+      ...new Set([...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)]),
+    ];
     const userMap = await batchFetchUsers(ctx, allUserIds);
 
     // Enrich with pre-fetched data (no N+1)

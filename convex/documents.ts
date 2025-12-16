@@ -344,7 +344,10 @@ export const search = query({
 
     return {
       results: enrichedResults,
-      total: Math.min(total, offset + limit + (hasMore ? 1 : 0)), // Approximate total for this fetch
+      // Note: total is approximate when hasMore=true due to early exit optimization
+      // The actual total could be higher than this count
+      total,
+      totalIsApproximate: hasMore,
       hasMore,
       offset,
       limit,

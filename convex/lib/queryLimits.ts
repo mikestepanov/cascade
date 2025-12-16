@@ -75,20 +75,24 @@ export const MAX_COMPLIANCE_RECORDS = 1000;
 // HELPER FUNCTIONS
 // =============================================================================
 
-/** Clamp a limit to valid range */
+/** Clamp a limit to valid range (ensures non-negative integer) */
 export function clampLimit(
   requested: number | undefined,
   defaultLimit = DEFAULT_PAGE_SIZE,
 ): number {
-  return Math.min(requested ?? defaultLimit, MAX_PAGE_SIZE);
+  const value = requested ?? defaultLimit;
+  return Math.min(Math.max(0, Math.floor(value)), MAX_PAGE_SIZE);
 }
 
-/** Clamp an offset to valid range */
+/** Clamp an offset to valid range (ensures non-negative integer) */
 export function clampOffset(requested: number | undefined): number {
-  return Math.min(requested ?? 0, MAX_OFFSET);
+  const value = requested ?? 0;
+  return Math.min(Math.max(0, Math.floor(value)), MAX_OFFSET);
 }
 
-/** Calculate fetch buffer for queries that need filtering */
+/** Calculate fetch buffer for queries that need filtering (ensures non-negative inputs) */
 export function calculateFetchBuffer(limit: number, offset = 0): number {
-  return (offset + limit) * FETCH_BUFFER_MULTIPLIER;
+  const safeLimit = Math.max(0, Math.floor(limit));
+  const safeOffset = Math.max(0, Math.floor(offset));
+  return (safeOffset + safeLimit) * FETCH_BUFFER_MULTIPLIER;
 }

@@ -5,7 +5,7 @@
  * Perfect for Kanban columns with 50+ cards.
  */
 
-import { forwardRef, useCallback, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useRef } from "react";
 import { FixedSizeList, type ListChildComponentProps } from "react-window";
 import { cn } from "@/lib/utils";
 
@@ -78,10 +78,13 @@ function VirtualListInner<T>(
   const prevItemCountRef = useRef(items.length);
 
   // Reset the endReachedCalled flag when items change (new data loaded)
-  if (items.length !== prevItemCountRef.current) {
-    endReachedCalledRef.current = false;
-    prevItemCountRef.current = items.length;
-  }
+  // Using useEffect to avoid direct ref mutation during render
+  useEffect(() => {
+    if (items.length !== prevItemCountRef.current) {
+      endReachedCalledRef.current = false;
+      prevItemCountRef.current = items.length;
+    }
+  }, [items.length]);
 
   const handleScroll = useCallback(
     ({ scrollOffset }: { scrollOffset: number }) => {

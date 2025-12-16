@@ -83,6 +83,7 @@ export const markAsRead = mutation({
 // Mark all as read (with reasonable limit per call)
 export const markAllAsRead = mutation({
   args: {},
+  returns: v.object({ marked: v.number(), hasMore: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");

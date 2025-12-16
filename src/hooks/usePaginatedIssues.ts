@@ -10,6 +10,22 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { EnrichedIssue } from "../../convex/lib/issueHelpers";
 
+/** Type guard to validate EnrichedIssue array structure */
+function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
+  if (!Array.isArray(data)) return false;
+  if (data.length > 0) {
+    const first = data[0];
+    return (
+      typeof first === "object" &&
+      first !== null &&
+      "_id" in first &&
+      "status" in first &&
+      "updatedAt" in first
+    );
+  }
+  return true;
+}
+
 export interface UsePaginatedIssuesOptions {
   workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
@@ -61,6 +77,7 @@ export function usePaginatedIssues({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadingRef = useRef(false);
   const prevCursorRef = useRef<string | undefined>(undefined);
+  const initialPageSavedRef = useRef(false);
 
   // Fetch paginated issues
   const paginatedData = useQuery(api.issues.listByWorkspacePaginated, {
@@ -79,19 +96,22 @@ export function usePaginatedIssues({
     setIsLoadingMore(false);
     loadingRef.current = false;
     prevCursorRef.current = undefined;
+    initialPageSavedRef.current = false;
   }, [workspaceId, sprintId, status, pageSize]);
 
   // When data arrives after a loadMore, accumulate it
   useEffect(() => {
     if (paginatedData && cursor !== undefined && cursor !== prevCursorRef.current) {
-      // New page arrived
-      setAccumulatedIssues((prev) => {
-        const newItems = paginatedData.items as EnrichedIssue[];
-        // Deduplicate by _id
-        const existingIds = new Set(prev.map((i) => i._id));
-        const uniqueNewItems = newItems.filter((i) => !existingIds.has(i._id));
-        return [...prev, ...uniqueNewItems];
-      });
+      // New page arrived - validate and accumulate
+      if (isEnrichedIssueArray(paginatedData.items)) {
+        setAccumulatedIssues((prev) => {
+          const newItems = paginatedData.items;
+          // Deduplicate by _id
+          const existingIds = new Set(prev.map((i) => i._id));
+          const uniqueNewItems = newItems.filter((i) => !existingIds.has(i._id));
+          return [...prev, ...uniqueNewItems];
+        });
+      }
       setIsLoadingMore(false);
       loadingRef.current = false;
       prevCursorRef.current = cursor;
@@ -101,8 +121,11 @@ export function usePaginatedIssues({
   // Build the full issues list
   const issues = useMemo(() => {
     if (cursor === undefined) {
-      // First page - use data directly
-      return (paginatedData?.items as EnrichedIssue[]) ?? [];
+      // First page - use data directly with validation
+      if (paginatedData?.items && isEnrichedIssueArray(paginatedData.items)) {
+        return paginatedData.items;
+      }
+      return [];
     }
     // Subsequent pages - use accumulated issues
     return accumulatedIssues;
@@ -117,9 +140,12 @@ export function usePaginatedIssues({
     loadingRef.current = true;
     setIsLoadingMore(true);
 
-    // Save current issues before changing cursor
-    if (cursor === undefined) {
-      setAccumulatedIssues((paginatedData.items as EnrichedIssue[]) ?? []);
+    // Save current issues before changing cursor (use ref to prevent race condition)
+    if (cursor === undefined && !initialPageSavedRef.current) {
+      initialPageSavedRef.current = true;
+      if (isEnrichedIssueArray(paginatedData.items)) {
+        setAccumulatedIssues(paginatedData.items);
+      }
     }
 
     setCursor(paginatedData.nextCursor);
@@ -132,6 +158,7 @@ export function usePaginatedIssues({
     setIsLoadingMore(false);
     loadingRef.current = false;
     prevCursorRef.current = undefined;
+    initialPageSavedRef.current = false;
   }, []);
 
   return {

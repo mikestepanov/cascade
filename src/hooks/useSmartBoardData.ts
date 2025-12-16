@@ -12,6 +12,23 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import type { EnrichedIssue } from "../../convex/lib/issueHelpers";
 
+/** Type guard to validate EnrichedIssue array structure */
+function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
+  if (!Array.isArray(data)) return false;
+  // Validate first item has required fields (lightweight check)
+  if (data.length > 0) {
+    const first = data[0];
+    return (
+      typeof first === "object" &&
+      first !== null &&
+      "_id" in first &&
+      "status" in first &&
+      "updatedAt" in first
+    );
+  }
+  return true; // Empty array is valid
+}
+
 export interface UseSmartBoardDataOptions {
   workspaceId: Id<"workspaces">;
   sprintId?: Id<"sprints">;
@@ -102,8 +119,8 @@ export function useSmartBoardData({
   // Note: We check moreDoneData directly, not loadingRef, to avoid race conditions
   // where the effect runs before the ref is set
   useEffect(() => {
-    if (moreDoneData) {
-      setAdditionalDoneIssues((prev) => [...prev, ...(moreDoneData.items as EnrichedIssue[])]);
+    if (moreDoneData && isEnrichedIssueArray(moreDoneData.items)) {
+      setAdditionalDoneIssues((prev) => [...prev, ...moreDoneData.items]);
       setIsLoadingMore(false);
       loadingRef.current = false;
     }
@@ -122,7 +139,9 @@ export function useSmartBoardData({
 
     if (smartData?.issuesByStatus) {
       for (const [status, issues] of Object.entries(smartData.issuesByStatus)) {
-        result[status] = [...(issues as EnrichedIssue[])];
+        if (isEnrichedIssueArray(issues)) {
+          result[status] = [...issues];
+        }
       }
     }
 
@@ -192,7 +211,9 @@ export function useSmartBoardData({
     const issues: EnrichedIssue[] = [...additionalDoneIssues];
     if (smartData?.issuesByStatus) {
       for (const statusIssues of Object.values(smartData.issuesByStatus)) {
-        issues.push(...(statusIssues as EnrichedIssue[]));
+        if (isEnrichedIssueArray(statusIssues)) {
+          issues.push(...statusIssues);
+        }
       }
     }
     return issues;

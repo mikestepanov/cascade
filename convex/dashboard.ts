@@ -198,7 +198,10 @@ export const getMyRecentActivity = query({
     });
 
     // Batch fetch workspaces and users for accessible activities
-    const workspaceIdsToFetch = accessibleActivity.map((a) => issueMap.get(a.issueId)?.workspaceId);
+    // Filter out undefined workspaceIds to prevent batch fetch failures
+    const workspaceIdsToFetch = accessibleActivity
+      .map((a) => issueMap.get(a.issueId)?.workspaceId)
+      .filter((id): id is Id<"workspaces"> => id !== undefined);
     const userIds = accessibleActivity.map((a) => a.userId);
 
     const [workspaceMap, userMap] = await Promise.all([

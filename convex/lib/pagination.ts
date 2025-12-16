@@ -23,7 +23,12 @@ export function encodeCursor(timestamp: number, id: string): string {
 export function decodeCursor(cursor: string): { timestamp: number; id: string } {
   try {
     const decoded = atob(cursor);
-    const [timestampStr, id] = decoded.split(":");
+    const colonIndex = decoded.indexOf(":");
+    if (colonIndex === -1) {
+      throw new Error("Invalid cursor format");
+    }
+    const timestampStr = decoded.slice(0, colonIndex);
+    const id = decoded.slice(colonIndex + 1);
     if (!(timestampStr && id)) {
       throw new Error("Invalid cursor format");
     }
@@ -81,7 +86,10 @@ export function buildPaginatedResult<
   let nextCursor: string | null = null;
   if (hasMore && resultItems.length > 0) {
     const lastItem = resultItems[resultItems.length - 1];
-    const timestamp = lastItem.updatedAt ?? lastItem.createdAt ?? Date.now();
+    const timestamp = lastItem.updatedAt ?? lastItem.createdAt;
+    if (timestamp === undefined) {
+      throw new Error("Cannot build pagination cursor: item missing both updatedAt and createdAt");
+    }
     nextCursor = encodeCursor(timestamp, lastItem._id.toString());
   }
 

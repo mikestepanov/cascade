@@ -108,15 +108,17 @@ export const list = query({
     const creatorMap = await batchFetchUsers(ctx, creatorIds);
 
     // Fetch issue counts per workspace using index with reasonable limit
-    // For display purposes, we cap at 1000 - if more exist, we show "1000+"
+    // Cap at 1000 for performance - UI can show "1000+" if needed
     const MAX_ISSUE_COUNT = 1000;
     const issueCountsPromises = workspaceIds.map(async (workspaceId) => {
       const issues = await ctx.db
         .query("issues")
         .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
         .take(MAX_ISSUE_COUNT + 1);
-      // Return actual count up to MAX, or MAX+1 to indicate "more than MAX"
-      return { workspaceId, count: Math.min(issues.length, MAX_ISSUE_COUNT) };
+      return {
+        workspaceId,
+        count: Math.min(issues.length, MAX_ISSUE_COUNT),
+      };
     });
     const issueCounts = await Promise.all(issueCountsPromises);
     const issueCountByWorkspace = new Map(
