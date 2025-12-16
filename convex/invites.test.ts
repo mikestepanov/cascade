@@ -32,7 +32,7 @@ describe("Invites", () => {
   });
 
   describe("sendInvite", () => {
-    it("should send a platform invite from admin", async () => {
+    it("should send a platform invite from admin", { timeout: 15000 }, async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
 

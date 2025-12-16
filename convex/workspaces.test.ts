@@ -193,12 +193,12 @@ describe("Workspaces", () => {
   });
 
   describe("list", () => {
-    it("should return all accessible projects for user", async () => {
+    it("should return only projects user is a member of", async () => {
       const t = convexTest(schema, modules);
       const user1 = await createTestUser(t, { name: "User 1" });
       const user2 = await createTestUser(t, { name: "User 2" });
 
-      // User 1 creates two projects
+      // User 1 creates two projects (one private, one with isPublic flag - legacy)
       const asUser1 = asAuthenticatedUser(t, user1);
       await asUser1.mutation(api.workspaces.create, {
         name: "User 1 Project",
@@ -207,9 +207,9 @@ describe("Workspaces", () => {
         boardType: "kanban",
       });
       await asUser1.mutation(api.workspaces.create, {
-        name: "Public Project",
-        key: "PUB",
-        isPublic: true,
+        name: "User 1 Other Project",
+        key: "U1B",
+        isPublic: true, // Legacy flag - doesn't grant access to non-members
         boardType: "scrum",
       });
 
@@ -222,13 +222,13 @@ describe("Workspaces", () => {
         boardType: "kanban",
       });
 
-      // User 2 should see: their own project + the public project
+      // User 2 should only see their own project (membership-based access)
       const user2Projects = await asUser2.query(api.workspaces.list, {});
-      expect(user2Projects).toHaveLength(2);
+      expect(user2Projects).toHaveLength(1);
       const projectNames = user2Projects.map((p) => p.name);
       expect(projectNames).toContain("User 2 Project");
-      expect(projectNames).toContain("Public Project");
       expect(projectNames).not.toContain("User 1 Project");
+      expect(projectNames).not.toContain("User 1 Other Project");
     });
 
     it("should return empty array for unauthenticated users", async () => {

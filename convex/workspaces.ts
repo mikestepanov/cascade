@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
-import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./workspaceAccess";
+import { assertIsWorkspaceAdmin, canAccessWorkspace, getWorkspaceRole } from "./workspaceAccess";
 
 export const create = mutation({
   args: {
@@ -10,10 +10,10 @@ export const create = mutation({
     key: v.string(),
     description: v.optional(v.string()),
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
-    // New ownership fields
-    companyId: v.optional(v.id("companies")), // Company this project belongs to
+    // Ownership fields
+    companyId: v.optional(v.id("companies")), // Company this workspace belongs to
     teamId: v.optional(v.id("teams")), // Team owner (optional)
-    ownerId: v.optional(v.id("users")), // User owner (optional, defaults to creator if not team project)
+    ownerId: v.optional(v.id("users")), // User owner (optional, defaults to creator if not team-owned)
     isCompanyPublic: v.optional(v.boolean()), // Share with company
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
     // Legacy field for backward compatibility
@@ -25,14 +25,14 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    // Check if project key already exists
-    const existingProject = await ctx.db
+    // Check if workspace key already exists
+    const existingWorkspace = await ctx.db
       .query("workspaces")
       .withIndex("by_key", (q) => q.eq("key", args.key.toUpperCase()))
       .first();
 
-    if (existingProject) {
-      throw new Error("Project key already exists");
+    if (existingWorkspace) {
+      throw new Error("Workspace key already exists");
     }
 
     const now = Date.now();
@@ -43,7 +43,7 @@ export const create = mutation({
       { id: "done", name: "Done", category: "done" as const, order: 3 },
     ];
 
-    // Determine ownership: if teamId provided, it's a team project; otherwise user-owned
+    // Determine ownership: if teamId provided, it's team-owned; otherwise user-owned
     const ownerId = args.teamId ? undefined : args.ownerId || userId;
 
     const workspaceId = await ctx.db.insert("workspaces", {
@@ -128,21 +128,21 @@ export const list = query({
     // Build result using pre-fetched data (no N+1!)
     const result = memberships
       .map((membership) => {
-        const project = workspaceMap.get(membership.workspaceId);
-        if (!project) return null;
+        const workspace = workspaceMap.get(membership.workspaceId);
+        if (!workspace) return null;
 
-        const creator = creatorMap.get(project.createdBy);
+        const creator = creatorMap.get(workspace.createdBy);
         const wsId = membership.workspaceId.toString();
 
         return {
-          ...project,
+          ...workspace,
           creatorName: getUserName(creator),
           issueCount: issueCountByWorkspace.get(wsId) ?? 0,
-          isOwner: project.ownerId === userId || project.createdBy === userId,
+          isOwner: workspace.ownerId === userId || workspace.createdBy === userId,
           userRole: roleMap.get(wsId) ?? null,
         };
       })
-      .filter((p): p is NonNullable<typeof p> => p !== null);
+      .filter((w): w is NonNullable<typeof w> => w !== null);
 
     return result;
   },
