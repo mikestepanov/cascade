@@ -61,14 +61,14 @@ const applicationTables = {
     name: v.string(),
     key: v.string(), // Workspace key like "PROJ"
     description: v.optional(v.string()),
-    // New multi-tenancy fields
-    companyId: v.optional(v.id("companies")), // Company this workspace belongs to (optional for backward compat)
-    teamId: v.optional(v.id("teams")), // Team that owns this workspace
-    ownerId: v.optional(v.id("users")), // User that owns this workspace (personal workspace)
-    isCompanyPublic: v.optional(v.boolean()), // Visible to all company members
+    // Ownership (required)
+    companyId: v.id("companies"), // Company this workspace belongs to
+    ownerId: v.id("users"), // User that owns this workspace
+    // Optional team ownership
+    teamId: v.optional(v.id("teams")), // Team that owns this workspace (if team-owned)
+    // Sharing settings
+    isPublic: v.optional(v.boolean()), // Visible to all company members (company-public)
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
-    // Legacy field (deprecated, use isCompanyPublic instead)
-    isPublic: v.optional(v.boolean()), // Legacy: workspace visibility
     // Audit
     createdBy: v.id("users"), // Who created it (for audit trail)
     createdAt: v.number(),
@@ -94,10 +94,10 @@ const applicationTables = {
     .index("by_company", ["companyId"])
     .index("by_team", ["teamId"])
     .index("by_owner", ["ownerId"])
-    .index("by_company_public", ["companyId", "isCompanyPublic"])
+    .index("by_company_public", ["companyId", "isPublic"])
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["isPublic", "createdBy", "companyId", "isCompanyPublic"],
+      filterFields: ["isPublic", "createdBy", "companyId"],
     }),
 
   workspaceMembers: defineTable({
@@ -1166,7 +1166,8 @@ const applicationTables = {
       v.literal("member"), // Regular member (can use company resources)
     ),
     addedBy: v.id("users"), // Who added this member
-    addedAt: v.number(),
+    addedAt: v.number(), // When the membership was created/invited
+    joinedAt: v.optional(v.number()), // When the user actually joined (accepted invite)
   })
     .index("by_company", ["companyId"])
     .index("by_user", ["userId"])

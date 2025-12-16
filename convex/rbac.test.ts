@@ -7,7 +7,12 @@ import type { ProjectRole } from "./rbac";
 import { hasMinimumRole } from "./rbac";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { addProjectMember, createTestProject, createTestUser } from "./testUtils";
+import {
+  addProjectMember,
+  createCompanyAdmin,
+  createTestProject,
+  createTestUser,
+} from "./testUtils";
 
 describe("RBAC Utilities", () => {
   describe("hasMinimumRole", () => {
@@ -119,18 +124,44 @@ describe("RBAC Utilities", () => {
   });
 
   describe("canAccessProject (workspaceAccess)", () => {
-    it("should allow access to public projects for everyone", async () => {
+    it("should allow access to company-visible workspaces for company members", async () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
-      const otherId = await createTestUser(t, { name: "Other" });
-      const workspaceId = await createTestProject(t, creatorId, {
-        isPublic: true,
+      const companyMemberId = await createTestUser(t, { name: "Company Member" });
+      const companyId = await createCompanyAdmin(t, creatorId);
+
+      // Add company member (not workspace member)
+      const now = Date.now();
+      await t.run(async (ctx) => {
+        await ctx.db.insert("companyMembers", {
+          companyId,
+          userId: companyMemberId,
+          role: "member",
+          addedBy: creatorId,
+          addedAt: now,
+        });
+      });
+
+      // Create company-visible workspace
+      const workspaceId = await t.run(async (ctx) => {
+        return ctx.db.insert("workspaces", {
+          name: "Company Visible Workspace",
+          key: "COMPVIS",
+          companyId,
+          ownerId: creatorId,
+          createdBy: creatorId,
+          createdAt: now,
+          updatedAt: now,
+          isPublic: true, // company-visible
+          boardType: "kanban",
+          workflowStates: [],
+        });
       });
 
       const canAccess = await t.run(async (ctx) => {
         const { canAccessProject } = await import("./workspaceAccess");
-        return await canAccessProject(ctx, workspaceId, otherId);
+        return await canAccessProject(ctx, workspaceId, companyMemberId);
       });
 
       expect(canAccess).toBe(true);
@@ -283,7 +314,7 @@ describe("RBAC Utilities", () => {
           const { assertCanEditProject } = await import("./workspaceAccess");
           await assertCanEditProject(ctx, workspaceId, viewerId);
         });
-      }).rejects.toThrow("You don't have permission to edit this project");
+      }).rejects.toThrow("You don't have permission to edit this workspace");
     });
 
     it("should pass for sufficient permissions", async () => {

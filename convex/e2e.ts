@@ -825,6 +825,7 @@ export const setupRbacProjectInternal = internalMutation({
         key: args.projectKey,
         description: "E2E test project for RBAC permission testing",
         companyId: company._id,
+        ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,
         updatedAt: now,

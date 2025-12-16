@@ -85,8 +85,10 @@ export const updateOnboardingStatus = mutation({
  * Create a sample project with demo data for new users
  */
 export const createSampleProject = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    companyId: v.optional(v.id("companies")), // Optional: use existing company
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -100,15 +102,42 @@ export const createSampleProject = mutation({
       throw new Error("Sample project already created");
     }
 
+    // Get or find the user's company
+    let companyId = args.companyId;
+    if (!companyId) {
+      // Try to find user's default company or any company they belong to
+      const user = await ctx.db.get(userId);
+      if (user?.defaultCompanyId) {
+        companyId = user.defaultCompanyId;
+      } else {
+        // Find any company the user belongs to
+        const membership = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_user", (q) => q.eq("userId", userId))
+          .first();
+        if (membership) {
+          companyId = membership.companyId;
+        }
+      }
+    }
+
+    if (!companyId) {
+      throw new Error("No company found. Please complete onboarding first.");
+    }
+
+    const now = Date.now();
+
     // Create sample project
     const workspaceId = await ctx.db.insert("workspaces", {
       name: "Sample Project",
       key: "SAMPLE",
       description:
         "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
+      companyId,
+      ownerId: userId,
       createdBy: userId,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: now,
+      updatedAt: now,
       isPublic: false,
       boardType: "kanban",
       workflowStates: [

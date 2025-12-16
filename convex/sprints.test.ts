@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
+import {
+  asAuthenticatedUser,
+  createCompanyAdmin,
+  createTestProject,
+  createTestUser,
+} from "./testUtils";
 
 describe("Sprints", () => {
   describe("create", () => {
@@ -220,24 +225,52 @@ describe("Sprints", () => {
       expect(sprints).toEqual([]);
     });
 
-    it("should return sprints for public projects to all users", async () => {
+    it("should return sprints for company-visible workspaces to company members", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
-      const viewer = await createTestUser(t, { name: "Viewer" });
-      const workspaceId = await createTestProject(t, owner, { isPublic: true });
+      const companyMember = await createTestUser(t, { name: "Company Member" });
+      const companyId = await createCompanyAdmin(t, owner);
+
+      // Add company member (not workspace member)
+      const now = Date.now();
+      await t.run(async (ctx) => {
+        await ctx.db.insert("companyMembers", {
+          companyId,
+          userId: companyMember,
+          role: "member",
+          addedBy: owner,
+          addedAt: now,
+        });
+      });
+
+      // Create company-visible workspace
+      const workspaceId = await t.run(async (ctx) => {
+        return ctx.db.insert("workspaces", {
+          name: "Company Visible Workspace",
+          key: "COMPVIS",
+          companyId,
+          ownerId: owner,
+          createdBy: owner,
+          createdAt: now,
+          updatedAt: now,
+          isPublic: true, // company-visible
+          boardType: "kanban",
+          workflowStates: [],
+        });
+      });
 
       const asOwner = asAuthenticatedUser(t, owner);
       await asOwner.mutation(api.sprints.create, {
         workspaceId,
-        name: "Public Sprint",
+        name: "Company Sprint",
       });
 
-      // Viewer can see public project sprints
-      const asViewer = asAuthenticatedUser(t, viewer);
-      const sprints = await asViewer.query(api.sprints.listByProject, { workspaceId });
+      // Company member can see company-visible workspace sprints
+      const asCompanyMember = asAuthenticatedUser(t, companyMember);
+      const sprints = await asCompanyMember.query(api.sprints.listByProject, { workspaceId });
 
       expect(sprints).toHaveLength(1);
-      expect(sprints[0]?.name).toBe("Public Sprint");
+      expect(sprints[0]?.name).toBe("Company Sprint");
     });
 
     it("should return empty array for unauthenticated users", async () => {

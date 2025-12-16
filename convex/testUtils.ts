@@ -80,17 +80,19 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
 }
 
 /**
- * Create a test project
+ * Create a test workspace
  *
  * @param t - Convex test helper
- * @param creatorId - User ID of the project creator
- * @param projectData - Optional project data
- * @returns Project ID
+ * @param creatorId - User ID of the workspace creator (also becomes owner)
+ * @param companyId - Company ID the workspace belongs to
+ * @param workspaceData - Optional workspace data
+ * @returns Workspace ID
  */
-export async function createTestProject(
+export async function createTestWorkspace(
   t: TestCtx,
   creatorId: Id<"users">,
-  projectData?: {
+  companyId: Id<"companies">,
+  workspaceData?: {
     name?: string;
     key?: string;
     description?: string;
@@ -100,18 +102,20 @@ export async function createTestProject(
 ): Promise<Id<"workspaces">> {
   return await t.run(async (ctx) => {
     const now = Date.now();
-    const name = projectData?.name || `Test Project ${now}`;
-    const key = projectData?.key || `TEST${now.toString().slice(-6)}`;
+    const name = workspaceData?.name || `Test Workspace ${now}`;
+    const key = workspaceData?.key || `TEST${now.toString().slice(-6)}`;
 
-    return await ctx.db.insert("workspaces", {
+    const workspaceId = await ctx.db.insert("workspaces", {
       name,
       key: key.toUpperCase(),
-      description: projectData?.description,
+      description: workspaceData?.description,
+      companyId,
+      ownerId: creatorId,
       createdBy: creatorId,
       createdAt: now,
       updatedAt: now,
-      isPublic: projectData?.isPublic ?? false,
-      boardType: projectData?.boardType || "kanban",
+      isPublic: workspaceData?.isPublic ?? false,
+      boardType: workspaceData?.boardType || "kanban",
       workflowStates: [
         {
           id: "todo",
@@ -133,7 +137,37 @@ export async function createTestProject(
         },
       ],
     });
+
+    // Add creator as admin member
+    await ctx.db.insert("workspaceMembers", {
+      workspaceId,
+      userId: creatorId,
+      role: "admin",
+      addedBy: creatorId,
+      addedAt: now,
+    });
+
+    return workspaceId;
   });
+}
+
+/**
+ * @deprecated Use createTestWorkspace instead
+ */
+export async function createTestProject(
+  t: TestCtx,
+  creatorId: Id<"users">,
+  workspaceData?: {
+    name?: string;
+    key?: string;
+    description?: string;
+    isPublic?: boolean;
+    boardType?: "kanban" | "scrum";
+  },
+): Promise<Id<"workspaces">> {
+  // Create a company first for backward compatibility
+  const companyId = await createCompanyAdmin(t, creatorId);
+  return createTestWorkspace(t, creatorId, companyId, workspaceData);
 }
 
 /**

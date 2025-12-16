@@ -27,6 +27,7 @@ export const createFromTemplate = mutation({
     projectName: v.string(),
     projectKey: v.string(),
     description: v.optional(v.string()),
+    companyId: v.id("companies"), // Required: company this workspace belongs to
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -39,6 +40,16 @@ export const createFromTemplate = mutation({
       throw new Error("Template not found");
     }
 
+    // Verify user is a member of the company
+    const companyMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_company_user", (q) => q.eq("companyId", args.companyId).eq("userId", userId))
+      .first();
+
+    if (!companyMembership) {
+      throw new Error("You must be a member of this company to create workspaces");
+    }
+
     // Check if project key already exists
     const existing = await ctx.db
       .query("workspaces")
@@ -46,7 +57,7 @@ export const createFromTemplate = mutation({
       .first();
 
     if (existing) {
-      throw new Error("Project key already exists");
+      throw new Error("Workspace key already exists");
     }
 
     const now = Date.now();
@@ -56,6 +67,8 @@ export const createFromTemplate = mutation({
       name: args.projectName,
       key: args.projectKey,
       description: args.description,
+      companyId: args.companyId,
+      ownerId: userId,
       createdBy: userId,
       createdAt: now,
       updatedAt: now,
