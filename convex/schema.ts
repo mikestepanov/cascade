@@ -57,15 +57,41 @@ const applicationTables = {
       filterFields: ["category", "isPublic", "isBuiltIn"],
     }),
 
+  // NEW: Department-level workspaces (Engineering, Marketing, Product, etc.)
+  workspaces: defineTable({
+    name: v.string(), // "Engineering", "Marketing", "Product"
+    slug: v.string(), // "engineering", "marketing", "product"
+    description: v.optional(v.string()),
+    icon: v.optional(v.string()), // Emoji like 🏗️, 📱, 🎨
+    companyId: v.id("companies"),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    // Settings
+    settings: v.optional(
+      v.object({
+        defaultProjectVisibility: v.optional(v.boolean()),
+        allowExternalSharing: v.optional(v.boolean()),
+      })
+    ),
+  })
+    .index("by_company", ["companyId"])
+    .index("by_company_slug", ["companyId", "slug"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["companyId"],
+    }),
+
   projects: defineTable({
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
-    // Ownership (required)
+    // NEW: Hierarchy
+    workspaceId: v.optional(v.id("workspaces")), // Project belongs to workspace (department)
+    teamId: v.optional(v.id("teams")), // Project belongs to team (optional)
+    // Ownership
     companyId: v.optional(v.id("companies")), // Company this project belongs to (optional for old data)
     ownerId: v.optional(v.id("users")), // User that owns this project (optional for old data)
-    // Optional team ownership
-    teamId: v.optional(v.id("teams")), // Team that owns this project (if team-owned)
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all company members (company-public)
     isCompanyPublic: v.optional(v.boolean()), // Legacy field (kept for migration)
@@ -93,12 +119,13 @@ const applicationTables = {
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
     .index("by_company", ["companyId"])
+    .index("by_workspace", ["workspaceId"]) // NEW
     .index("by_team", ["teamId"])
     .index("by_owner", ["ownerId"])
     .index("by_company_public", ["companyId", "isPublic"])
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["isPublic", "createdBy", "companyId"],
+      filterFields: ["isPublic", "createdBy", "companyId", "workspaceId"], // Added workspaceId
     }),
 
   projectMembers: defineTable({
@@ -1180,22 +1207,35 @@ const applicationTables = {
   // Teams (within a company - for data isolation and grouping)
   teams: defineTable({
     companyId: v.id("companies"), // Company this team belongs to
+    workspaceId: v.optional(v.id("workspaces")), // NEW: Team belongs to workspace (optional for migration)
     name: v.string(), // Team name: "Product Team", "Dev Team", "Design Team"
     slug: v.string(), // URL-friendly slug: "product-team", "dev-team"
     description: v.optional(v.string()),
+    icon: v.optional(v.string()), // NEW: Team icon/emoji
+    leadId: v.optional(v.id("users")), // NEW: Team lead
     // Team settings
     isPrivate: v.boolean(), // If true, team projects are private by default
+    settings: v.optional( // NEW: Team settings
+      v.object({
+        defaultIssueType: v.optional(v.string()),
+        cycleLength: v.optional(v.number()),
+        cycleDayOfWeek: v.optional(v.number()),
+        defaultEstimate: v.optional(v.number()),
+      })
+    ),
     // Metadata
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_company", ["companyId"])
+    .index("by_workspace", ["workspaceId"]) // NEW
     .index("by_company_slug", ["companyId", "slug"])
     .index("by_creator", ["createdBy"])
+    .index("by_lead", ["leadId"]) // NEW
     .searchIndex("search_name", {
       searchField: "name",
-      filterFields: ["companyId"],
+      filterFields: ["companyId", "workspaceId"], // Added workspaceId
     }),
 
   // Team Members (User-Team relationships)

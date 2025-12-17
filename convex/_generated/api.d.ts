@@ -101,6 +101,7 @@ import type * as userProfiles from "../userProfiles.js";
 import type * as users from "../users.js";
 import type * as watchers from "../watchers.js";
 import type * as webhooks from "../webhooks.js";
+import type * as workspaces from "../workspaces.js";
 
 import type {
   ApiFromModules,
@@ -202,6 +203,7 @@ declare const fullApi: ApiFromModules<{
   users: typeof users;
   watchers: typeof watchers;
   webhooks: typeof webhooks;
+  workspaces: typeof workspaces;
 }>;
 
 /**
