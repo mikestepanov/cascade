@@ -27,7 +27,7 @@ function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
 }
 
 export interface UsePaginatedIssuesOptions {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   status?: string;
   pageSize?: number;
@@ -61,13 +61,13 @@ export interface PaginatedIssuesResult {
  *   loadMore,
  *   isLoading,
  * } = usePaginatedIssues({
- *   workspaceId,
+ *   projectId,
  *   status: "In Progress",
  *   pageSize: 25,
  * });
  */
 export function usePaginatedIssues({
-  workspaceId,
+  projectId,
   sprintId,
   status,
   pageSize = 50,
@@ -81,7 +81,7 @@ export function usePaginatedIssues({
 
   // Fetch paginated issues
   const paginatedData = useQuery(api.issues.listByWorkspacePaginated, {
-    workspaceId,
+    projectId,
     sprintId,
     status,
     cursor,
@@ -97,7 +97,7 @@ export function usePaginatedIssues({
     loadingRef.current = false;
     prevCursorRef.current = undefined;
     initialPageSavedRef.current = false;
-  }, [workspaceId, sprintId, status, pageSize]);
+  }, [projectId, sprintId, status, pageSize]);
 
   // When data arrives after a loadMore, accumulate it
   useEffect(() => {

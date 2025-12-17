@@ -16,7 +16,7 @@ import {
 } from "./aggregates";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
-import { canAccessProject } from "./workspaceAccess";
+import { canAccessProject } from "./projectAccess";
 
 // Helper: Build issues by status from workflow states and counts
 function buildIssuesByStatus(
@@ -56,24 +56,24 @@ function buildIssuesByPriority(priorityCounts: Record<string, number>) {
  * Get project analytics overview
  */
 export const getProjectAnalytics = query({
-  args: { workspaceId: v.id("workspaces") },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
-    if (!(await canAccessProject(ctx, args.workspaceId, userId))) {
+    if (!(await canAccessProject(ctx, args.projectId, userId))) {
       throw new Error("Not authorized to access this project");
     }
 
     // Use aggregates for fast O(log n) counting instead of O(n)
     const [statusCounts, typeCounts, priorityCounts, assigneeCounts] = await Promise.all([
-      issueCountByStatus.lookup(ctx, { workspaceId: args.workspaceId }),
-      issueCountByType.lookup(ctx, { workspaceId: args.workspaceId }),
-      issueCountByPriority.lookup(ctx, { workspaceId: args.workspaceId }),
-      issueCountByAssignee.lookup(ctx, { workspaceId: args.workspaceId }),
+      issueCountByStatus.lookup(ctx, { projectId: args.projectId }),
+      issueCountByType.lookup(ctx, { projectId: args.projectId }),
+      issueCountByPriority.lookup(ctx, { projectId: args.projectId }),
+      issueCountByAssignee.lookup(ctx, { projectId: args.projectId }),
     ]);
 
     // Build structured data using helpers
@@ -127,7 +127,7 @@ export const getSprintBurndown = query({
     }
 
     // Check access to project
-    if (!(await canAccessProject(ctx, sprint.workspaceId, userId))) {
+    if (!(await canAccessProject(ctx, sprint.projectId, userId))) {
       throw new Error("Not authorized to access this sprint");
     }
 
@@ -137,7 +137,7 @@ export const getSprintBurndown = query({
       .withIndex("by_sprint", (q) => q.eq("sprintId", args.sprintId))
       .collect();
 
-    const project = await ctx.db.get(sprint.workspaceId);
+    const project = await ctx.db.get(sprint.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
@@ -204,7 +204,7 @@ export const getSprintBurndown = query({
  * Get team velocity (completed points per sprint)
  */
 export const getTeamVelocity = query({
-  args: { workspaceId: v.id("workspaces") },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -212,11 +212,11 @@ export const getTeamVelocity = query({
     }
 
     // Check access
-    if (!(await canAccessProject(ctx, args.workspaceId, userId))) {
+    if (!(await canAccessProject(ctx, args.projectId, userId))) {
       throw new Error("Not authorized to access this project");
     }
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
@@ -224,7 +224,7 @@ export const getTeamVelocity = query({
     // Get completed sprints
     const completedSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
       .take(MAX_VELOCITY_SPRINTS);
@@ -281,7 +281,7 @@ export const getTeamVelocity = query({
  * Get recent activity for project
  */
 export const getRecentActivity = query({
-  args: { workspaceId: v.id("workspaces"), limit: v.optional(v.number()) },
+  args: { projectId: v.id("projects"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -289,7 +289,7 @@ export const getRecentActivity = query({
     }
 
     // Check access
-    if (!(await canAccessProject(ctx, args.workspaceId, userId))) {
+    if (!(await canAccessProject(ctx, args.projectId, userId))) {
       throw new Error("Not authorized to access this project");
     }
 
@@ -307,7 +307,7 @@ export const getRecentActivity = query({
     const projectActivities = activities
       .filter((a) => {
         const issue = issueMap.get(a.issueId);
-        return issue && issue.workspaceId === args.workspaceId;
+        return issue && issue.projectId === args.projectId;
       })
       .slice(0, args.limit || 20);
 

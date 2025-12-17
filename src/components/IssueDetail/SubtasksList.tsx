@@ -18,7 +18,7 @@ interface Subtask {
 
 interface SubtasksListProps {
   issueId: Id<"issues">;
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   subtasks: Subtask[] | undefined;
 }
 
@@ -27,7 +27,7 @@ interface SubtasksListProps {
  * Includes progress tracking, creation form, and list
  * Extracted from IssueDetailModal for better organization
  */
-export function SubtasksList({ issueId, workspaceId, subtasks }: SubtasksListProps) {
+export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps) {
   const [isCreatingSubtask, setIsCreatingSubtask] = useState(false);
   const [subtaskTitle, setSubtaskTitle] = useState("");
 
@@ -38,7 +38,7 @@ export function SubtasksList({ issueId, workspaceId, subtasks }: SubtasksListPro
 
     try {
       await createIssue({
-        workspaceId,
+        projectId,
         title: subtaskTitle.trim(),
         type: "subtask",
         priority: "medium",

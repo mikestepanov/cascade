@@ -3,12 +3,12 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { ImportExportModal } from "./ImportExportModal";
 
 interface ExportButtonProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   status?: string;
 }
 
-export function ExportButton({ workspaceId, sprintId, status }: ExportButtonProps) {
+export function ExportButton({ projectId, sprintId, status }: ExportButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -38,7 +38,7 @@ export function ExportButton({ workspaceId, sprintId, status }: ExportButtonProp
       <ImportExportModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        workspaceId={workspaceId}
+        projectId={projectId}
         sprintId={sprintId}
         status={status}
       />

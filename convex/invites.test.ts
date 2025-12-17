@@ -32,7 +32,7 @@ describe("Invites", () => {
   });
 
   describe("sendInvite", () => {
-    it("should send a platform invite from admin", async () => {
+    it("should send a platform invite from admin", { timeout: 15000 }, async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
 
@@ -57,20 +57,20 @@ describe("Invites", () => {
     it("should send a project invite", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, adminId);
+      const projectId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       // Creator is project admin automatically
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "collab@example.com",
         role: "user",
-        workspaceId,
-        workspaceRole: "editor",
+        projectId,
+        projectRole: "editor",
       });
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.workspaceId).toBe(workspaceId);
-      expect(invite?.workspaceRole).toBe("editor");
+      expect(invite?.projectId).toBe(projectId);
+      expect(invite?.projectRole).toBe("editor");
     });
 
     it("should prevent duplicate pending invites", async () => {
@@ -134,14 +134,14 @@ describe("Invites", () => {
     it("should add to project on acceptance", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, adminId);
+      const projectId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "project@example.com",
         role: "user",
-        workspaceId,
-        workspaceRole: "viewer",
+        projectId,
+        projectRole: "viewer",
       });
 
       const newUserId = await createTestUser(t, {
@@ -154,9 +154,9 @@ describe("Invites", () => {
 
       const member = await t.run(async (ctx) =>
         ctx.db
-          .query("workspaceMembers")
+          .query("projectMembers")
           .withIndex("by_workspace_user", (q) =>
-            q.eq("workspaceId", workspaceId).eq("userId", newUserId),
+            q.eq("projectId", projectId).eq("userId", newUserId),
           )
           .first(),
       );

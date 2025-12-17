@@ -20,7 +20,7 @@ import { type EntryMode, useTimeEntryForm } from "./useTimeEntryForm";
 interface TimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   issueId?: Id<"issues">;
   defaultMode?: "timer" | "log";
   billingEnabled?: boolean;
@@ -304,14 +304,14 @@ function TimeRangeModeFields({
 export function TimeEntryModal({
   open,
   onOpenChange,
-  workspaceId: initialProjectId,
+  projectId: initialProjectId,
   issueId: initialIssueId,
   defaultMode = "log",
   billingEnabled,
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const startTimerMutation = useMutation(api.timeTracking.startTimer);
-  const projects = useQuery(api.workspaces.list);
+  const projects = useQuery(api.projects.list);
 
   const { state, actions, computed } = useTimeEntryForm({
     initialProjectId,
@@ -322,7 +322,7 @@ export function TimeEntryModal({
 
   const projectIssues = useQuery(
     api.issues.listByProject,
-    state.workspaceId ? { workspaceId: state.workspaceId } : "skip",
+    state.projectId ? { projectId: state.projectId } : "skip",
   );
 
   const handleStartTimer = async () => {
@@ -334,7 +334,7 @@ export function TimeEntryModal({
 
     try {
       await startTimerMutation({
-        workspaceId: state.workspaceId,
+        projectId: state.projectId,
         issueId: state.issueId,
         description: state.description || undefined,
         activity: state.activity || undefined,
@@ -367,7 +367,7 @@ export function TimeEntryModal({
 
     try {
       await createTimeEntry({
-        workspaceId: state.workspaceId,
+        projectId: state.projectId,
         issueId: state.issueId,
         startTime: entryStartTime,
         endTime: entryEndTime,
@@ -438,9 +438,9 @@ export function TimeEntryModal({
               Project
             </label>
             <Select
-              value={state.workspaceId || "none"}
+              value={state.projectId || "none"}
               onValueChange={(value) => {
-                actions.setProjectId(value === "none" ? undefined : (value as Id<"workspaces">));
+                actions.setProjectId(value === "none" ? undefined : (value as Id<"projects">));
                 actions.setIssueId(undefined);
               }}
             >
@@ -448,7 +448,7 @@ export function TimeEntryModal({
                 <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No workspace</SelectItem>
+                <SelectItem value="none">No project</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
@@ -459,7 +459,7 @@ export function TimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {state.workspaceId && projectIssues && projectIssues.length > 0 && (
+          {state.projectId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"

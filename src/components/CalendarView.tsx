@@ -7,16 +7,16 @@ import { IssueDetailModal } from "./IssueDetailModal";
 import { Typography } from "./ui/Typography";
 
 interface CalendarViewProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   canEdit?: boolean;
 }
 
-export function CalendarView({ workspaceId, sprintId, canEdit = true }: CalendarViewProps) {
+export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
-  const issues = useQuery(api.issues.listByProject, { workspaceId, sprintId });
+  const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
 
   // Get calendar data
   const { daysInMonth, firstDayOfMonth, issuesByDate } = useMemo(() => {

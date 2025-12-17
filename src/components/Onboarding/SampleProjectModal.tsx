@@ -9,7 +9,7 @@ import { Flex } from "../ui/Flex";
 interface SampleProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateSampleProject: (workspaceId: Id<"workspaces">) => void;
+  onCreateSampleProject: (projectId: Id<"projects">) => void;
   onStartFromScratch: () => void;
 }
 
@@ -23,9 +23,9 @@ export function SampleProjectModal({
 
   const handleCreateSample = async () => {
     try {
-      const workspaceId = await createSampleProject();
+      const projectId = await createSampleProject();
       showSuccess("Sample project created! Let's take a quick tour.");
-      onCreateSampleProject(workspaceId as Id<"workspaces">);
+      onCreateSampleProject(projectId as Id<"projects">);
     } catch (error) {
       showError(error, "Failed to create sample project");
     }

@@ -99,8 +99,8 @@ export class DashboardPage extends BasePage {
       .or(page.getByRole("link", { name: /^documents$/i }));
     // Workspaces tab (previously Projects) - matches new UI label
     this.projectsTab = page
-      .locator("[data-tour='nav-workspaces']")
-      .or(page.getByRole("link", { name: /^workspaces$/i }));
+      .locator("[data-tour='nav-projects']")
+      .or(page.getByRole("link", { name: /^projects$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
       .or(page.getByRole("link", { name: /timesheet/i }));
@@ -344,11 +344,11 @@ export class DashboardPage extends BasePage {
     tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
   ) {
     // Check URL contains the tab path segment
-    // Note: "projects" tab now uses /workspaces/ URL path
+    // Note: "projects" tab now uses /projects/ URL path
     const tabPaths = {
       dashboard: /\/dashboard/,
       documents: /\/documents/,
-      projects: /\/workspaces/,
+      projects: /\/projects/,
       timesheet: /\/timesheet/,
       calendar: /\/calendar/,
       settings: /\/settings/,

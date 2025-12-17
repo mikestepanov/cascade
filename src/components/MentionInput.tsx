@@ -5,7 +5,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { Avatar } from "./ui/Avatar";
 
 interface MentionInputProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   value: string;
   onChange: (value: string) => void;
   onMentionsChange: (mentions: Id<"users">[]) => void;
@@ -14,7 +14,7 @@ interface MentionInputProps {
 }
 
 export function MentionInput({
-  workspaceId,
+  projectId,
   value,
   onChange,
   onMentionsChange,
@@ -27,7 +27,7 @@ export function MentionInput({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const members = useQuery(api.workspaceMembers.list, { workspaceId });
+  const members = useQuery(api.projectMembers.list, { projectId });
 
   // Filter members based on mention search
   const filteredMembers =

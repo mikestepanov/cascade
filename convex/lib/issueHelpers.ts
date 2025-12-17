@@ -2,10 +2,30 @@
  * Issue enrichment helpers for DRY operations
  *
  * Provides utilities for enriching issues with related data (users, epics, etc.)
+ * and migration-safe issue retrieval
  */
 
 import type { Doc, Id } from "../_generated/dataModel";
-import type { QueryCtx } from "../_generated/server";
+import type { QueryCtx, MutationCtx } from "../_generated/server";
+
+/**
+ * Get an issue and validate it has a projectId (for migration safety)
+ */
+export async function getIssueWithWorkspace(
+  ctx: QueryCtx | MutationCtx,
+  issueId: Id<"issues">,
+): Promise<Doc<"issues"> & { projectId: Id<"projects"> }> {
+  const issue = await ctx.db.get(issueId);
+  if (!issue) {
+    throw new Error("Issue not found");
+  }
+  if (!issue.projectId) {
+    throw new Error(
+      "Issue missing projectId - please run migration: pnpm convex run migrations/migrateProjectToWorkspace:migrate",
+    );
+  }
+  return issue as Doc<"issues"> & { projectId: Id<"projects"> };
+}
 
 /**
  * Minimal user info for display

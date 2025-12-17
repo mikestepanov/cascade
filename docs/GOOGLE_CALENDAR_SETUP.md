@@ -45,7 +45,7 @@ The Google Calendar integration allows you to:
 1. Go to **APIs & Services** → **Credentials**
 2. Click **"+ Create Credentials"** → **"OAuth client ID"**
 3. If prompted, configure OAuth consent screen first:
-   - User Type: **External** (unless you have Google Workspace)
+   - User Type: **External** (unless you have Google Project)
    - App name: `Nixelo`
    - User support email: Your email
    - Developer contact: Your email

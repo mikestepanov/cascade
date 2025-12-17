@@ -22,7 +22,7 @@ interface Member {
 }
 
 interface MemberManagementProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   members: Member[];
   createdBy: Id<"users">;
   ownerId: Id<"users"> | undefined;
@@ -41,7 +41,7 @@ const ROLE_BADGE_VARIANTS: Record<string, "default" | "secondary" | "outline"> =
 };
 
 export function MemberManagement({
-  workspaceId,
+  projectId,
   members,
   createdBy,
   ownerId,
@@ -53,9 +53,9 @@ export function MemberManagement({
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [changingRoleFor, setChangingRoleFor] = useState<Id<"users"> | null>(null);
 
-  const addMember = useMutation(api.workspaces.addMember);
-  const updateMemberRole = useMutation(api.workspaces.updateMemberRole);
-  const removeMember = useMutation(api.workspaces.removeMember);
+  const addMember = useMutation(api.projects.addMember);
+  const updateMemberRole = useMutation(api.projects.updateMemberRole);
+  const removeMember = useMutation(api.projects.removeMember);
 
   const handleAddMember = async () => {
     if (!email.trim()) {
@@ -66,7 +66,7 @@ export function MemberManagement({
     setIsAdding(true);
     try {
       await addMember({
-        workspaceId,
+        projectId,
         userEmail: email.trim(),
         role,
       });
@@ -88,7 +88,7 @@ export function MemberManagement({
     setChangingRoleFor(memberId);
     try {
       await updateMemberRole({
-        workspaceId,
+        projectId,
         memberId,
         newRole,
       });
@@ -105,7 +105,7 @@ export function MemberManagement({
 
     try {
       await removeMember({
-        workspaceId,
+        projectId,
         memberId: memberToRemove._id,
       });
       showSuccess("Member removed");

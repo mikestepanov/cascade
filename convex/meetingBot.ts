@@ -61,7 +61,7 @@ async function requireBotApiKey(
 // Get all recordings for a user
 export const listRecordings = query({
   args: {
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     limit: v.optional(v.number()),
   },
   returns: v.array(
@@ -100,7 +100,7 @@ export const listRecordings = query({
       botLeftAt: v.optional(v.number()),
       botName: v.string(),
       createdBy: v.id("users"),
-      workspaceId: v.optional(v.id("workspaces")),
+      projectId: v.optional(v.id("projects")),
       isPublic: v.boolean(),
       createdAt: v.number(),
       updatedAt: v.number(),
@@ -116,10 +116,10 @@ export const listRecordings = query({
     const limit = args.limit ?? 20;
 
     let recordings: Doc<"meetingRecordings">[];
-    if (args.workspaceId) {
+    if (args.projectId) {
       recordings = await ctx.db
         .query("meetingRecordings")
-        .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
         .order("desc")
         .take(limit);
     } else {
@@ -353,7 +353,7 @@ export const scheduleRecording = mutation({
       v.literal("other"),
     ),
     scheduledStartTime: v.number(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     isPublic: v.optional(v.boolean()),
   },
   returns: v.id("meetingRecordings"),
@@ -373,7 +373,7 @@ export const scheduleRecording = mutation({
       scheduledStartTime: args.scheduledStartTime,
       botName: "Nixelo Notetaker",
       createdBy: userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       isPublic: args.isPublic ?? false,
       createdAt: now,
       updatedAt: now,
@@ -413,7 +413,7 @@ export const startRecordingNow = mutation({
       v.literal("teams"),
       v.literal("other"),
     ),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   returns: v.id("meetingRecordings"),
   handler: async (ctx, args) => {
@@ -430,7 +430,7 @@ export const startRecordingNow = mutation({
       scheduledStartTime: now,
       botName: "Nixelo Notetaker",
       createdBy: userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       isPublic: false,
       createdAt: now,
       updatedAt: now,
@@ -746,7 +746,7 @@ export const createIssueFromActionItem = mutation({
   args: {
     summaryId: v.id("meetingSummaries"),
     actionItemIndex: v.number(),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -759,13 +759,13 @@ export const createIssueFromActionItem = mutation({
     if (!actionItem) throw new Error("Action item not found");
 
     // Get project for issue key
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
     // Get next issue number
     const existingIssues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
     const nextNumber = existingIssues.length + 1;
 
@@ -773,7 +773,7 @@ export const createIssueFromActionItem = mutation({
 
     // Create the issue
     const issueId = await ctx.db.insert("issues", {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       key: `${project.key}-${nextNumber}`,
       title: actionItem.description,
       description: `Created from meeting action item`,

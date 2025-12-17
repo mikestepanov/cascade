@@ -41,7 +41,7 @@ const AVAILABLE_EVENTS = [
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
   const webhooks = useQuery(api.pumble.listWebhooks);
-  const workspaces = useQuery(api.workspaces.list);
+  const projects = useQuery(api.projects.list);
 
   return (
     <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark">
@@ -99,7 +99,7 @@ export function PumbleIntegration() {
         ) : (
           <Flex direction="column" gap="lg">
             {webhooks.map((webhook) => (
-              <WebhookCard key={webhook._id} webhook={webhook} projects={workspaces || []} />
+              <WebhookCard key={webhook._id} webhook={webhook} projects={projects || []} />
             ))}
           </Flex>
         )}
@@ -137,7 +137,7 @@ export function PumbleIntegration() {
       <AddWebhookModal
         open={showAddModal}
         onOpenChange={setShowAddModal}
-        projects={workspaces || []}
+        projects={projects || []}
       />
     </div>
   );
@@ -183,7 +183,7 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
 
 interface WebhookCardProps {
   webhook: Doc<"pumbleWebhooks">;
-  projects: Doc<"workspaces">[];
+  projects: Doc<"projects">[];
 }
 
 function WebhookCard({ webhook, projects }: WebhookCardProps) {
@@ -192,7 +192,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const deleteWebhook = useMutation(api.pumble.deleteWebhook);
   const updateWebhook = useMutation(api.pumble.updateWebhook);
 
-  const project = webhook.workspaceId ? projects.find((p) => p._id === webhook.workspaceId) : null;
+  const project = webhook.projectId ? projects.find((p) => p._id === webhook.projectId) : null;
 
   const handleTest = async () => {
     try {
@@ -370,12 +370,12 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 interface AddWebhookModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projects: Doc<"workspaces">[];
+  projects: Doc<"projects">[];
 }
 
 function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps) {
   // Events kept outside form due to checkbox array pattern
-  const [workspaceId, setProjectId] = useState<Id<"workspaces"> | undefined>(undefined);
+  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(undefined);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([
     "issue.created",
     "issue.updated",
@@ -403,7 +403,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
         await addWebhook({
           name: value.name.trim(),
           webhookUrl: value.webhookUrl.trim(),
-          workspaceId,
+          projectId,
           events: selectedEvents,
           sendMentions: value.sendMentions,
           sendAssignments: value.sendAssignments,
@@ -466,7 +466,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
                 field={field}
                 label="Webhook URL"
                 type="url"
-                placeholder="https://api.pumble.com/workspaces/.../..."
+                placeholder="https://api.pumble.com/projects/.../..."
                 className="font-mono text-sm"
                 helperText="Get this from Pumble: Channel Settings → Integrations → Incoming Webhooks"
                 required
@@ -484,9 +484,9 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
             </label>
             <select
               id="project-select"
-              value={workspaceId || ""}
+              value={projectId || ""}
               onChange={(e) =>
-                setProjectId(e.target.value ? (e.target.value as Id<"workspaces">) : undefined)
+                setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
               }
               className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
@@ -583,7 +583,7 @@ interface EditWebhookModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   webhook: Doc<"pumbleWebhooks">;
-  projects: Doc<"workspaces">[];
+  projects: Doc<"projects">[];
 }
 
 function EditWebhookModal({

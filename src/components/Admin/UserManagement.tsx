@@ -452,7 +452,7 @@ export function UserManagement() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
                       >
-                        Workspace Memberships
+                        Project Memberships
                       </th>
                     </tr>
                   </thead>

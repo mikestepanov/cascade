@@ -12,17 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 type FilterValues = Record<string, unknown>;
 
 interface FilterBarProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   onFilterChange: (filters: FilterValues) => void;
 }
 
-export function FilterBar({ workspaceId, onFilterChange }: FilterBarProps) {
+export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterValues>({});
 
-  const savedFilters = useQuery(api.savedFilters.list, { workspaceId });
+  const savedFilters = useQuery(api.savedFilters.list, { projectId });
   const createFilter = useMutation(api.savedFilters.create);
   const removeFilter = useMutation(api.savedFilters.remove);
 
@@ -34,7 +34,7 @@ export function FilterBar({ workspaceId, onFilterChange }: FilterBarProps) {
 
     try {
       await createFilter({
-        workspaceId,
+        projectId,
         name: filterName,
         filters: activeFilters,
         isPublic,

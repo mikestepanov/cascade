@@ -54,7 +54,7 @@ describe("Documents", () => {
 
       const doc = await asUser.query(api.documents.get, { id: docId });
       expect(doc?.title).toBe("Document Without Project");
-      expect(doc?.workspaceId).toBeUndefined();
+      expect(doc?.projectId).toBeUndefined();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -205,18 +205,18 @@ describe("Documents", () => {
       });
 
       // User 2 should see: their own doc + the public doc
-      const docs = await asUser2.query(api.documents.list, {});
-      expect(docs).toHaveLength(2);
-      const titles = docs.map((d) => d.title);
+      const result = await asUser2.query(api.documents.list, {});
+      expect(result.documents).toHaveLength(2);
+      const titles = result.documents.map((d) => d.title);
       expect(titles).toContain("User 2 Private");
       expect(titles).toContain("Public Doc");
       expect(titles).not.toContain("User 1 Private");
     });
 
-    it("should return empty array for unauthenticated users", async () => {
+    it("should return empty result for unauthenticated users", async () => {
       const t = convexTest(schema, modules);
-      const docs = await t.query(api.documents.list, {});
-      expect(docs).toEqual([]);
+      const result = await t.query(api.documents.list, {});
+      expect(result.documents).toEqual([]);
     });
 
     it("should include creator information", async () => {
@@ -229,9 +229,9 @@ describe("Documents", () => {
         isPublic: false,
       });
 
-      const docs = await asUser.query(api.documents.list, {});
-      expect(docs).toHaveLength(1);
-      expect(docs[0]).toHaveProperty("creatorName");
+      const result = await asUser.query(api.documents.list, {});
+      expect(result.documents).toHaveLength(1);
+      expect(result.documents[0]).toHaveProperty("creatorName");
     });
   });
 

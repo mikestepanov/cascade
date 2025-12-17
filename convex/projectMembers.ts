@@ -1,21 +1,21 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
-import { assertCanAccessProject } from "./workspaceAccess";
+import { assertCanAccessProject } from "./projectAccess";
 
 // List all members of a project with user details
 export const list = query({
-  args: { workspaceId: v.id("workspaces") },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const members = await ctx.db
-      .query("workspaceMembers")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .query("projectMembers")
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Fetch user details for each member, filter out members with deleted users

@@ -38,7 +38,7 @@ interface CreateEventModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultDate?: Date;
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   issueId?: Id<"issues">;
 }
 
@@ -46,15 +46,15 @@ export function CreateEventModal({
   open,
   onOpenChange,
   defaultDate = new Date(),
-  workspaceId,
+  projectId,
   issueId,
 }: CreateEventModalProps) {
   const createEvent = useMutation(api.calendarEvents.create);
-  const workspaces = useQuery(api.workspaces.list, {});
+  const projects = useQuery(api.projects.list, {});
 
-  // Workspace selection (uses Radix Select, kept outside form)
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"workspaces"> | undefined>(
-    workspaceId,
+  // Project selection (uses Radix Select, kept outside form)
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"projects"> | undefined>(
+    projectId,
   );
 
   const form = useAppForm({
@@ -92,7 +92,7 @@ export function CreateEventModal({
           location: value.location || undefined,
           eventType: value.eventType,
           meetingUrl: value.meetingUrl || undefined,
-          workspaceId: selectedWorkspaceId,
+          projectId: selectedWorkspaceId,
           issueId,
           attendeeIds: [],
           isRequired: value.eventType === "meeting" ? value.isRequired : undefined,
@@ -350,22 +350,22 @@ export function CreateEventModal({
                 htmlFor="event-project"
                 className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
               >
-                Link to Workspace (optional)
+                Link to Project (optional)
               </label>
               <Select
                 value={selectedWorkspaceId || "none"}
                 onValueChange={(value) =>
-                  setSelectedWorkspaceId(value === "none" ? undefined : (value as Id<"workspaces">))
+                  setSelectedWorkspaceId(value === "none" ? undefined : (value as Id<"projects">))
                 }
               >
                 <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
-                  <SelectValue placeholder="No workspace" />
+                  <SelectValue placeholder="No project" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No workspace</SelectItem>
-                  {workspaces?.map((workspace) => (
-                    <SelectItem key={workspace._id} value={workspace._id}>
-                      {workspace.name} ({workspace.key})
+                  <SelectItem value="none">No project</SelectItem>
+                  {projects?.map((project) => (
+                    <SelectItem key={project._id} value={project._id}>
+                      {project.name} ({project.key})
                     </SelectItem>
                   ))}
                 </SelectContent>

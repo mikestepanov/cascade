@@ -11,12 +11,12 @@ import { FeatureHighlights } from "./FeatureHighlights";
 
 interface LeadOnboardingProps {
   onComplete: () => void;
-  onCreateProject: (workspaceId: Id<"workspaces">) => void;
+  onCreateProject: (projectId: Id<"projects">) => void;
   onBack: () => void;
   onWorkspaceCreated?: (slug: string) => void;
 }
 
-type LeadStep = "features" | "workspace" | "project-choice" | "creating";
+type LeadStep = "features" | "project" | "project-choice" | "creating";
 
 export function LeadOnboarding({
   onComplete,
@@ -26,8 +26,8 @@ export function LeadOnboarding({
 }: LeadOnboardingProps) {
   const [step, setStep] = useState<LeadStep>("features");
   const [isCreating, setIsCreating] = useState(false);
-  const [workspaceName, setWorkspaceName] = useState("");
-  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [projectName, setWorkspaceName] = useState("");
+  const [projectError, setWorkspaceError] = useState<string | null>(null);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const createSampleProject = useMutation(api.onboarding.createSampleProject);
@@ -35,8 +35,8 @@ export function LeadOnboarding({
   const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
 
   const handleCreateWorkspace = async () => {
-    if (!workspaceName.trim()) {
-      setWorkspaceError("Please enter a workspace name");
+    if (!projectName.trim()) {
+      setWorkspaceError("Please enter a project name");
       return;
     }
 
@@ -45,16 +45,16 @@ export function LeadOnboarding({
 
     try {
       const result = await createCompany({
-        name: workspaceName.trim(),
+        name: projectName.trim(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       setCreatedSlug(result.slug);
-      showSuccess("Workspace created!");
+      showSuccess("Project created!");
       setStep("project-choice");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create workspace";
+      const message = error instanceof Error ? error.message : "Failed to create project";
       setWorkspaceError(message);
-      showError(error, "Failed to create workspace");
+      showError(error, "Failed to create project");
     } finally {
       setIsCreating(false);
     }
@@ -63,15 +63,15 @@ export function LeadOnboarding({
   const handleCreateSample = async () => {
     setIsCreating(true);
     try {
-      const workspaceId = await createSampleProject();
+      const projectId = await createSampleProject();
       await completeOnboarding();
       showSuccess("Sample project created! Explore and customize it.");
 
-      // Navigate to the new workspace
+      // Navigate to the new project
       if (createdSlug && onWorkspaceCreated) {
         onWorkspaceCreated(createdSlug);
       } else {
-        onCreateProject(workspaceId as Id<"workspaces">);
+        onCreateProject(projectId as Id<"projects">);
       }
     } catch (error) {
       showError(error, "Failed to create sample project");
@@ -137,15 +137,15 @@ export function LeadOnboarding({
 
         {/* Continue */}
         <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={() => setStep("workspace")}>
-            Let's set up your workspace
+          <Button variant="primary" size="lg" onClick={() => setStep("project")}>
+            Let's set up your project
           </Button>
         </div>
       </div>
     );
   }
 
-  if (step === "workspace") {
+  if (step === "project") {
     return (
       <div className="space-y-8">
         {/* Back button */}
@@ -164,20 +164,20 @@ export function LeadOnboarding({
             <Building2 className="w-8 h-8 text-primary-600" />
           </div>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
-            Name Your Workspace
+            Name Your Project
           </Typography>
           <Typography variant="p" color="secondary" className="text-lg">
             This is where your team will collaborate
           </Typography>
         </div>
 
-        {/* Workspace Name Input */}
+        {/* Project Name Input */}
         <div className="max-w-md mx-auto space-y-4">
           <div>
             <Input
               type="text"
               placeholder="e.g., Acme Corp, My Startup, Design Team"
-              value={workspaceName}
+              value={projectName}
               onChange={(e) => {
                 setWorkspaceName(e.target.value);
                 setWorkspaceError(null);
@@ -190,9 +190,9 @@ export function LeadOnboarding({
               className="text-center text-lg"
               autoFocus
             />
-            {workspaceError && (
+            {projectError && (
               <Typography variant="p" className="text-red-500 text-sm mt-2 text-center">
-                {workspaceError}
+                {projectError}
               </Typography>
             )}
           </div>
@@ -201,10 +201,10 @@ export function LeadOnboarding({
             variant="primary"
             size="lg"
             onClick={handleCreateWorkspace}
-            disabled={isCreating || !workspaceName.trim()}
+            disabled={isCreating || !projectName.trim()}
             className="w-full"
           >
-            {isCreating ? "Creating..." : "Create Workspace"}
+            {isCreating ? "Creating..." : "Create Project"}
           </Button>
         </div>
       </div>
@@ -217,7 +217,7 @@ export function LeadOnboarding({
         {/* Back button */}
         <button
           type="button"
-          onClick={() => setStep("workspace")}
+          onClick={() => setStep("project")}
           className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

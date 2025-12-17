@@ -31,12 +31,12 @@ describe("Users", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
 
       // Create an issue
       const issueId = await t.run(async (ctx) => {
         return await ctx.db.insert("issues", {
-          workspaceId,
+          projectId,
           key: "P-1",
           title: "Task 1",
           status: "todo",

@@ -7,17 +7,17 @@ import { Typography } from "@/components/ui/Typography";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { api } from "../../../../../../convex/_generated/api";
 
-export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$key/settings")({
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
   const { key } = Route.useParams();
   const { user } = useCurrentUser();
-  const project = useQuery(api.workspaces.getByKey, { key });
+  const project = useQuery(api.projects.getByKey, { key });
   const userRole = useQuery(
-    api.workspaces.getUserRole,
-    project ? { workspaceId: project._id } : "skip",
+    api.projects.getUserRole,
+    project ? { projectId: project._id } : "skip",
   );
 
   if (project === undefined || userRole === undefined) {
@@ -32,7 +32,7 @@ function SettingsPage() {
     return (
       <Flex align="center" justify="center" className="h-full">
         <Typography variant="p" color="secondary">
-          Workspace not found
+          Project not found
         </Typography>
       </Flex>
     );
@@ -49,12 +49,12 @@ function SettingsPage() {
             Access Denied
           </Typography>
           <Typography variant="p" color="secondary">
-            You need admin permissions to access workspace settings.
+            You need admin permissions to access project settings.
           </Typography>
         </div>
       </Flex>
     );
   }
 
-  return <ProjectSettings workspaceId={project._id} />;
+  return <ProjectSettings projectId={project._id} />;
 }

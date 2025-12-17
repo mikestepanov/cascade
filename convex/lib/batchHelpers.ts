@@ -56,18 +56,18 @@ export async function batchFetchIssues(
 }
 
 /**
- * Batch fetch workspaces by ID
+ * Batch fetch projects by ID
  */
 export async function batchFetchWorkspaces(
   ctx: QueryCtx,
-  workspaceIds: (Id<"workspaces"> | undefined)[],
-): Promise<Map<Id<"workspaces">, Doc<"workspaces">>> {
-  const uniqueIds = [...new Set(workspaceIds.filter((id): id is Id<"workspaces"> => !!id))];
+  projectIds: (Id<"projects"> | undefined)[],
+): Promise<Map<Id<"projects">, Doc<"projects">>> {
+  const uniqueIds = [...new Set(projectIds.filter((id): id is Id<"projects"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const workspaces = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
+  const projects = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
   return new Map(
-    workspaces.filter((w): w is Doc<"workspaces"> => w !== null).map((w) => [w._id, w]),
+    projects.filter((w): w is Doc<"projects"> => w !== null).map((w) => [w._id, w]),
   );
 }
 
@@ -212,14 +212,14 @@ export function getUserName(user: Doc<"users"> | undefined | null): string {
 }
 
 /**
- * Format workspace/project for API response
+ * Format project/project for API response
  */
-export function formatWorkspace(workspace: Doc<"workspaces"> | undefined | null) {
-  if (!workspace) return null;
+export function formatWorkspace(project: Doc<"projects"> | undefined | null) {
+  if (!project) return null;
   return {
-    _id: workspace._id,
-    name: workspace.name,
-    key: workspace.key,
+    _id: project._id,
+    name: project.name,
+    key: project.key,
   };
 }
 

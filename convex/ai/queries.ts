@@ -15,7 +15,7 @@ type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
  */
 export const getUserChats = query({
   args: {
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -26,8 +26,8 @@ export const getUserChats = query({
     const chats = await chatsQuery.collect();
 
     // Filter by project if specified
-    const filtered = args.workspaceId
-      ? chats.filter((chat) => chat.workspaceId === args.workspaceId)
+    const filtered = args.projectId
+      ? chats.filter((chat) => chat.projectId === args.projectId)
       : chats;
 
     // Sort by most recent
@@ -66,21 +66,21 @@ export const getChatMessages = query({
  */
 export const getProjectContext = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx: QueryCtx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Get project
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) throw new Error("Project not found");
 
     // Check access
     const member = await ctx.db
-      .query("workspaceMembers")
+      .query("projectMembers")
       .withIndex("by_workspace_user", (q) =>
-        q.eq("workspaceId", args.workspaceId).eq("userId", userId),
+        q.eq("projectId", args.projectId).eq("userId", userId),
       )
       .first();
 
@@ -91,14 +91,14 @@ export const getProjectContext = query({
     // Get active sprint
     const activeSprint = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
     // Get issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Calculate stats
@@ -120,8 +120,8 @@ export const getProjectContext = query({
 
     // Get project members with details
     const memberRecords = await ctx.db
-      .query("workspaceMembers")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .query("projectMembers")
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Batch fetch users to avoid N+1 queries
@@ -137,7 +137,7 @@ export const getProjectContext = query({
     // Get labels
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     return {
@@ -175,7 +175,7 @@ export const getProjectContext = query({
  */
 export const getProjectSuggestions = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     suggestionType: v.optional(
       v.union(
         v.literal("issue_description"),
@@ -195,7 +195,7 @@ export const getProjectSuggestions = query({
 
     const query = ctx.db
       .query("aiSuggestions")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
 
     const suggestions = await query.collect();
 
@@ -219,7 +219,7 @@ export const getProjectSuggestions = query({
  */
 export const getUsageStats = query({
   args: {
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
@@ -234,8 +234,8 @@ export const getUsageStats = query({
 
     // Filter by project and date range
     let filtered = usage;
-    if (args.workspaceId) {
-      filtered = filtered.filter((u) => u.workspaceId === args.workspaceId);
+    if (args.projectId) {
+      filtered = filtered.filter((u) => u.projectId === args.projectId);
     }
     if (args.startDate !== undefined) {
       const startDate = args.startDate;

@@ -14,7 +14,7 @@ import {
  * REST API for Issues
  *
  * This is a simplified implementation - expand based on needs.
- * GET /api/issues?workspaceId=xxx - List issues
+ * GET /api/issues?projectId=xxx - List issues
  * GET /api/issues/:key - Get single issue
  * POST /api/issues - Create issue
  * PATCH /api/issues/:key - Update issue
@@ -53,17 +53,17 @@ async function handleList(ctx: ActionCtx, request: Request, auth: ApiAuthContext
   }
 
   const url = new URL(request.url);
-  const workspaceId = url.searchParams.get("workspaceId") as Id<"workspaces"> | null;
+  const projectId = url.searchParams.get("projectId") as Id<"projects"> | null;
 
-  if (!workspaceId) {
-    return createErrorResponse(400, "workspaceId required");
+  if (!projectId) {
+    return createErrorResponse(400, "projectId required");
   }
 
-  if (!verifyProjectAccess(auth, workspaceId)) {
+  if (!verifyProjectAccess(auth, projectId)) {
     return createErrorResponse(403, "Not authorized for this project");
   }
 
-  const issues = await ctx.runQuery(api.issues.listByProject, { workspaceId });
+  const issues = await ctx.runQuery(api.issues.listByProject, { projectId });
 
   return createSuccessResponse({ data: issues });
 }

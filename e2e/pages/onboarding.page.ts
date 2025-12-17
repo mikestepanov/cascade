@@ -62,7 +62,7 @@ export class OnboardingPage extends BasePage {
 
     // Team Lead flow
     this.teamLeadHeading = page.getByRole("heading", { name: /perfect for team leads/i });
-    this.setupWorkspaceButton = page.getByRole("button", { name: /let's set up your workspace/i });
+    this.setupWorkspaceButton = page.getByRole("button", { name: /let's set up your project/i });
 
     // Team Member flow
     this.allSetHeading = page.getByRole("heading", { name: /you're all set/i });
@@ -251,7 +251,7 @@ export class OnboardingPage extends BasePage {
   }
 
   /**
-   * Complete team lead flow to workspace setup
+   * Complete team lead flow to project setup
    */
   async goToWorkspaceSetup() {
     await this.setupWorkspaceButton.click();

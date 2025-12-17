@@ -75,9 +75,9 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
         {
           element: "[data-tour='create-project']",
           popover: {
-            title: "Create Your First Workspace",
+            title: "Create Your First Project",
             description:
-              "Workspaces organize your work into teams, issues, and documents. Click here to create your first workspace, or explore our sample workspace first!",
+              "Workspaces organize your work into teams, issues, and documents. Click here to create your first project, or explore our sample project first!",
             side: "bottom",
             align: "start",
           },
@@ -87,7 +87,7 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
           popover: {
             title: "Your Dashboard",
             description:
-              "This is your home base. See all your workspaces, recent issues, and activity at a glance. The dashboard updates in real-time as your team works.",
+              "This is your home base. See all your projects, recent issues, and activity at a glance. The dashboard updates in real-time as your team works.",
             side: "left",
             align: "start",
           },

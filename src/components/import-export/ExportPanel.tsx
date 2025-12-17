@@ -9,7 +9,7 @@ import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ExportPanelProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   status?: string;
 }
@@ -20,18 +20,18 @@ type ExportFormat = "csv" | "json";
  * Extracted export panel from ImportExportModal
  * Handles all export logic and UI
  */
-export function ExportPanel({ workspaceId, sprintId, status }: ExportPanelProps) {
+export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [isExporting, setIsExporting] = useState(false);
 
   const csvData = useQuery(
     api.export.exportIssuesCSV,
-    isExporting && exportFormat === "csv" ? { workspaceId, sprintId, status } : "skip",
+    isExporting && exportFormat === "csv" ? { projectId, sprintId, status } : "skip",
   );
 
   const jsonData = useQuery(
     api.export.exportIssuesJSON,
-    isExporting && exportFormat === "json" ? { workspaceId, sprintId, status } : "skip",
+    isExporting && exportFormat === "json" ? { projectId, sprintId, status } : "skip",
   );
 
   const handleExport = () => {

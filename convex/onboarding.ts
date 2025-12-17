@@ -85,8 +85,10 @@ export const updateOnboardingStatus = mutation({
  * Create a sample project with demo data for new users
  */
 export const createSampleProject = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    companyId: v.optional(v.id("companies")), // Optional: use existing company
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
@@ -100,15 +102,42 @@ export const createSampleProject = mutation({
       throw new Error("Sample project already created");
     }
 
+    // Get or find the user's company
+    let companyId = args.companyId;
+    if (!companyId) {
+      // Try to find user's default company or any company they belong to
+      const user = await ctx.db.get(userId);
+      if (user?.defaultCompanyId) {
+        companyId = user.defaultCompanyId;
+      } else {
+        // Find any company the user belongs to
+        const membership = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_user", (q) => q.eq("userId", userId))
+          .first();
+        if (membership) {
+          companyId = membership.companyId;
+        }
+      }
+    }
+
+    if (!companyId) {
+      throw new Error("No company found. Please complete onboarding first.");
+    }
+
+    const now = Date.now();
+
     // Create sample project
-    const workspaceId = await ctx.db.insert("workspaces", {
+    const projectId = await ctx.db.insert("projects", {
       name: "Sample Project",
       key: "SAMPLE",
       description:
         "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
+      companyId,
+      ownerId: userId,
       createdBy: userId,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: now,
+      updatedAt: now,
       isPublic: false,
       boardType: "kanban",
       workflowStates: [
@@ -119,8 +148,8 @@ export const createSampleProject = mutation({
     });
 
     // Add user as project admin
-    await ctx.db.insert("workspaceMembers", {
-      workspaceId,
+    await ctx.db.insert("projectMembers", {
+      projectId,
       userId,
       role: "admin",
       addedBy: userId,
@@ -129,7 +158,7 @@ export const createSampleProject = mutation({
 
     // Create labels
     await ctx.db.insert("labels", {
-      workspaceId,
+      projectId,
       name: "urgent",
       color: "#EF4444", // Red
       createdBy: userId,
@@ -137,7 +166,7 @@ export const createSampleProject = mutation({
     });
 
     await ctx.db.insert("labels", {
-      workspaceId,
+      projectId,
       name: "needs-review",
       color: "#F59E0B", // Orange
       createdBy: userId,
@@ -146,7 +175,7 @@ export const createSampleProject = mutation({
 
     // Create active sprint
     const sprintId = await ctx.db.insert("sprints", {
-      workspaceId,
+      projectId,
       name: "Sprint 1",
       goal: "Learn Nixelo basics and explore features",
       startDate: Date.now(),
@@ -278,7 +307,7 @@ export const createSampleProject = mutation({
     const createdIssues: Id<"issues">[] = [];
     for (const issue of issues) {
       const issueId = await ctx.db.insert("issues", {
-        workspaceId,
+        projectId,
         key: `SAMPLE-${createdIssues.length + 1}`,
         title: issue.title,
         description: issue.description,
@@ -362,17 +391,17 @@ export const createSampleProject = mutation({
       updatedAt: Date.now(),
     });
 
-    return workspaceId;
+    return projectId;
   },
 });
 
 /**
  * Helper: Delete all issues and their related data for a project
  */
-async function deleteProjectIssues(ctx: MutationCtx, workspaceId: Id<"workspaces">) {
+async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
   const issues = await ctx.db
     .query("issues")
-    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .collect();
 
   for (const issue of issues) {
@@ -399,10 +428,10 @@ async function deleteProjectIssues(ctx: MutationCtx, workspaceId: Id<"workspaces
 /**
  * Helper: Delete sprints, labels, and members for a project
  */
-async function deleteProjectMetadata(ctx: MutationCtx, workspaceId: Id<"workspaces">) {
+async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
   const sprints = await ctx.db
     .query("sprints")
-    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .collect();
   for (const sprint of sprints) {
     await ctx.db.delete(sprint._id);
@@ -410,15 +439,15 @@ async function deleteProjectMetadata(ctx: MutationCtx, workspaceId: Id<"workspac
 
   const labels = await ctx.db
     .query("labels")
-    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .collect();
   for (const label of labels) {
     await ctx.db.delete(label._id);
   }
 
   const members = await ctx.db
-    .query("workspaceMembers")
-    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+    .query("projectMembers")
+    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .collect();
   for (const member of members) {
     await ctx.db.delete(member._id);
@@ -454,7 +483,7 @@ export const resetOnboarding = mutation({
 
     // Also delete sample project if it exists
     const project = await ctx.db
-      .query("workspaces")
+      .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
       .first();
@@ -480,7 +509,7 @@ export const deleteSampleProject = mutation({
 
     // Find sample project
     const project = await ctx.db
-      .query("workspaces")
+      .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
       .first();
@@ -492,7 +521,7 @@ export const deleteSampleProject = mutation({
     // Delete all related data (issues, comments, sprints, etc.)
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
       .collect();
 
     for (const issue of issues) {
@@ -521,7 +550,7 @@ export const deleteSampleProject = mutation({
     // Delete sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
       .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
@@ -530,7 +559,7 @@ export const deleteSampleProject = mutation({
     // Delete labels
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
+      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
       .collect();
     for (const label of labels) {
       await ctx.db.delete(label._id);
@@ -538,8 +567,8 @@ export const deleteSampleProject = mutation({
 
     // Delete project members
     const members = await ctx.db
-      .query("workspaceMembers")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", project._id))
+      .query("projectMembers")
+      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
       .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);

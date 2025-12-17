@@ -14,7 +14,7 @@ import { KanbanColumn } from "./Kanban/KanbanColumn";
 import { SkeletonKanbanCard, SkeletonText } from "./ui/Skeleton";
 
 interface KanbanBoardProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
 }
 
@@ -27,7 +27,7 @@ interface BoardAction {
   issueTitle: string; // For toast message
 }
 
-export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
+export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
@@ -38,7 +38,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
   const [historyStack, setHistoryStack] = useState<BoardAction[]>([]);
   const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
 
-  const project = useQuery(api.workspaces.get, { id: workspaceId });
+  const project = useQuery(api.projects.get, { id: projectId });
   const updateIssueStatus = useMutation(api.issues.updateStatus);
 
   // Use smart board data with pagination for done columns
@@ -48,7 +48,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
     isLoading: isLoadingIssues,
     loadMoreDone,
     isLoadingMore,
-  } = useSmartBoardData({ workspaceId, sprintId });
+  } = useSmartBoardData({ projectId, sprintId });
 
   // Flatten issues for drag/drop operations
   const allIssues = useMemo(() => {
@@ -304,7 +304,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
       </div>
 
       <CreateIssueModal
-        workspaceId={workspaceId}
+        projectId={projectId}
         sprintId={sprintId}
         open={showCreateIssue}
         onOpenChange={setShowCreateIssue}
@@ -326,7 +326,7 @@ export function KanbanBoard({ workspaceId, sprintId }: KanbanBoardProps) {
       {/* Bulk Operations Bar */}
       {selectionMode && (
         <BulkOperationsBar
-          workspaceId={workspaceId}
+          projectId={projectId}
           selectedIssueIds={selectedIssueIds}
           onClearSelection={handleClearSelection}
           workflowStates={workflowStates}

@@ -19,7 +19,7 @@ research/
 ├── competitors/          # Detailed competitor analyses
 │   ├── jira.md          # Atlassian Jira (market leader)
 │   ├── linear.md        # Linear (modern, fast)
-│   ├── notion.md        # Notion (workspace + docs)
+│   ├── notion.md        # Notion (project + docs)
 │   ├── asana.md         # Asana (team collaboration)
 │   ├── monday.md        # Monday.com (visual workflows)
 │   ├── clickup.md       # ClickUp (all-in-one)
@@ -46,11 +46,11 @@ research/
 | **GitHub Projects** | Developer | Dev teams | Free-$21/user | ❌ No |
 | **ClickUp** | All-in-one | Everyone | $7-12/user | ❌ No |
 
-### 📄 Indirect Competitors (Workspace/Docs)
+### 📄 Indirect Competitors (Project/Docs)
 
 | Tool | Type | Target | Price | Open Source |
 |------|------|--------|-------|-------------|
-| **Notion** | Workspace | Knowledge work | $8-15/user | ❌ No |
+| **Notion** | Project | Knowledge work | $8-15/user | ❌ No |
 | **Coda** | Docs + Apps | Teams | $10-30/user | ❌ No |
 | **Confluence** | Wiki | Enterprise | $6-12/user | ❌ No |
 
@@ -181,7 +181,7 @@ research/
 **Pain Points:**
 - Notion's PM is basic (databases, not issues)
 - No Agile features (sprints, burndown)
-- Performance issues with large workspaces
+- Performance issues with large projects
 - Expensive ($8-15/user)
 
 **Nixelo's Pitch:**

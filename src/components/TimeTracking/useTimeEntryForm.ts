@@ -5,7 +5,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 export type EntryMode = "timer" | "duration" | "timeRange";
 
 export interface TimeEntryFormState {
-  workspaceId: Id<"workspaces"> | undefined;
+  projectId: Id<"projects"> | undefined;
   issueId: Id<"issues"> | undefined;
   description: string;
   activity: string;
@@ -22,7 +22,7 @@ export interface TimeEntryFormState {
 }
 
 export interface TimeEntryFormActions {
-  setProjectId: (id: Id<"workspaces"> | undefined) => void;
+  setProjectId: (id: Id<"projects"> | undefined) => void;
   setIssueId: (id: Id<"issues"> | undefined) => void;
   setDescription: (value: string) => void;
   setActivity: (value: string) => void;
@@ -40,7 +40,7 @@ export interface TimeEntryFormActions {
 }
 
 export interface TimeEntryFormProps {
-  initialProjectId?: Id<"workspaces">;
+  initialProjectId?: Id<"projects">;
   initialIssueId?: Id<"issues">;
   defaultMode?: "timer" | "log";
   open: boolean;
@@ -91,7 +91,7 @@ export function useTimeEntryForm({
   };
 } {
   // Form state
-  const [workspaceId, setProjectId] = useState<Id<"workspaces"> | undefined>(initialProjectId);
+  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
   const [description, setDescription] = useState("");
   const [activity, setActivity] = useState("");
@@ -175,7 +175,7 @@ export function useTimeEntryForm({
   // Note: effectiveDuration is only used for "log time" modes (duration/timeRange).
   // In timer mode, duration is tracked by the timer component separately.
   const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
-  const hasTaskContext = Boolean(workspaceId && issueId);
+  const hasTaskContext = Boolean(projectId && issueId);
   const hasManualContext = Boolean(description.trim() && activity);
   const hasValidContext = hasTaskContext || hasManualContext;
   const isDurationInputValid = durationInput.trim() === "" || durationSeconds > 0;
@@ -183,7 +183,7 @@ export function useTimeEntryForm({
 
   return {
     state: {
-      workspaceId,
+      projectId,
       issueId,
       description,
       activity,

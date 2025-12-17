@@ -12,7 +12,7 @@ export const create = mutation({
     icon: v.string(),
     content: v.any(), // BlockNote/ProseMirror content structure
     isPublic: v.boolean(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -27,7 +27,7 @@ export const create = mutation({
       isBuiltIn: false,
       isPublic: args.isPublic,
       createdBy: userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -40,7 +40,7 @@ export const create = mutation({
 export const list = query({
   args: {
     category: v.optional(v.string()),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -62,12 +62,12 @@ export const list = query({
     // 1. Built-in templates
     // 2. Public templates
     // 3. User's own templates
-    // 4. Project-specific templates (if workspaceId provided)
+    // 4. Project-specific templates (if projectId provided)
     const filtered = templates.filter((t) => {
       if (t.isBuiltIn) return true;
       if (t.isPublic) return true;
       if (t.createdBy === userId) return true;
-      if (args.workspaceId && t.workspaceId === args.workspaceId) return true;
+      if (args.projectId && t.projectId === args.projectId) return true;
       return false;
     });
 
@@ -89,7 +89,7 @@ export const get = query({
     if (
       !(template.isBuiltIn || template.isPublic) &&
       template.createdBy !== userId &&
-      !template.workspaceId
+      !template.projectId
     ) {
       throw new Error("No access to this template");
     }
@@ -165,7 +165,7 @@ export const createDocumentFromTemplate = mutation({
   args: {
     templateId: v.id("documentTemplates"),
     title: v.string(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -179,7 +179,7 @@ export const createDocumentFromTemplate = mutation({
     if (
       !(template.isBuiltIn || template.isPublic) &&
       template.createdBy !== userId &&
-      !template.workspaceId
+      !template.projectId
     ) {
       throw new Error("No access to this template");
     }
@@ -189,7 +189,7 @@ export const createDocumentFromTemplate = mutation({
       title: args.title,
       isPublic: args.isPublic,
       createdBy: userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -729,7 +729,7 @@ export const initializeBuiltInTemplates = mutation({
       await ctx.db.insert("documentTemplates", {
         ...template,
         createdBy: undefined,
-        workspaceId: undefined,
+        projectId: undefined,
       });
     }
 

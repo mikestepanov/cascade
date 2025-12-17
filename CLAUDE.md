@@ -76,15 +76,15 @@ nixelo/
 │   │       ├── documents/       # Document routes
 │   │       │   ├── index.tsx    # Documents list (/documents)
 │   │       │   └── $id.tsx      # Document editor (/documents/:id)
-│   │       ├── workspaces/      # Workspace routes
-│   │       │   ├── index.tsx    # Workspaces list (/workspaces)
-│   │       │   └── $key/        # Workspace detail (/workspaces/:key)
-│   │       │       ├── route.tsx    # Workspace layout with tabs
+│   │       ├── projects/      # Project routes
+│   │       │   ├── index.tsx    # Workspaces list (/projects)
+│   │       │   └── $key/        # Project detail (/projects/:key)
+│   │       │       ├── route.tsx    # Project layout with tabs
 │   │       │       ├── index.tsx    # Redirects to board
 │   │       │       ├── board.tsx    # Kanban board
-│   │       │       ├── calendar.tsx # Workspace calendar
+│   │       │       ├── calendar.tsx # Project calendar
 │   │       │       ├── timesheet.tsx # Time tracking
-│   │       │       └── settings.tsx # Workspace settings
+│   │       │       └── settings.tsx # Project settings
 │   │       ├── issues/
 │   │       │   └── $key.tsx     # Issue detail (/issues/PROJ-123)
 │   │       └── settings/        # User settings
@@ -116,7 +116,7 @@ nixelo/
 │   ├── schema.ts                # Database schema definition
 │   ├── auth.ts                  # Authentication configuration
 │   ├── documents.ts             # Document CRUD operations
-│   ├── projects.ts              # Project management functions
+│   ├── projects.ts            # Project management functions
 │   ├── issues.ts                # Issue tracking operations
 │   ├── sprints.ts               # Sprint management
 │   ├── presence.ts              # User presence tracking
@@ -278,11 +278,11 @@ ROUTES.invite(token)                      // "/invite/:token"
 ROUTES.dashboard(slug)                    // "/:slug/dashboard"
 ROUTES.documents.list(slug)               // "/:slug/documents"
 ROUTES.documents.detail(slug, id)         // "/:slug/documents/:id"
-ROUTES.workspaces.list(slug)              // "/:slug/workspaces"
-ROUTES.workspaces.board(slug, key)        // "/:slug/workspaces/:key/board"
-ROUTES.workspaces.calendar(slug, key)     // "/:slug/workspaces/:key/calendar"
-ROUTES.workspaces.timesheet(slug, key)    // "/:slug/workspaces/:key/timesheet"
-ROUTES.workspaces.settings(slug, key)     // "/:slug/workspaces/:key/settings"
+ROUTES.projects.list(slug)              // "/:slug/projects"
+ROUTES.projects.board(slug, key)        // "/:slug/projects/:key/board"
+ROUTES.projects.calendar(slug, key)     // "/:slug/projects/:key/calendar"
+ROUTES.projects.timesheet(slug, key)    // "/:slug/projects/:key/timesheet"
+ROUTES.projects.settings(slug, key)     // "/:slug/projects/:key/settings"
 ROUTES.issues.detail(slug, key)           // "/:slug/issues/:key"
 ROUTES.settings.profile(slug)             // "/:slug/settings/profile"
 ROUTES.timeTracking(slug)                 // "/:slug/time-tracking"
@@ -294,7 +294,7 @@ ROUTES.timeTracking(slug)                 // "/:slug/time-tracking"
 |----------|--------------|------------------|----------|
 | **Public** | No | No | `/`, `/signin`, `/signup`, `/forgot-password`, `/invite/:token` |
 | **Auth** | Yes | No | `/onboarding` |
-| **App** | Yes | Yes | `/:slug/dashboard`, `/:slug/workspaces`, etc. |
+| **App** | Yes | Yes | `/:slug/dashboard`, `/:slug/projects`, etc. |
 
 #### Usage Examples
 
@@ -304,7 +304,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 
 // With <Link> component
 <Link to={ROUTES.dashboard(companySlug)}>Dashboard</Link>
-<Link to={ROUTES.workspaces.board(companySlug, workspaceKey)}>Board</Link>
+<Link to={ROUTES.projects.board(companySlug, projectKey)}>Board</Link>
 
 // With navigate function
 const navigate = useNavigate();
@@ -313,7 +313,7 @@ navigate({ to: ROUTES.dashboard(slug), replace: true });
 
 // In components with company context
 const { companySlug } = useCompany(); // from CompanyContext
-<Link to={ROUTES.workspaces.list(companySlug)}>Workspaces</Link>
+<Link to={ROUTES.projects.list(companySlug)}>Workspaces</Link>
 ```
 
 #### Post-Auth Redirect Flow
@@ -338,7 +338,7 @@ import { Authenticated } from "convex/react";
 
 #### Guidelines
 
-1. **Always use `ROUTES.*` constants** - never hardcode paths like `"/dashboard"` or `"/${slug}/workspaces"`
+1. **Always use `ROUTES.*` constants** - never hardcode paths like `"/dashboard"` or `"/${slug}/projects"`
 2. **Import from `@/config/routes`** - centralized location for all routes
 3. **Use `PostAuthRedirect`** - for post-authentication navigation instead of static redirects
 4. **Company-scoped routes** - always pass `companySlug` from context or route params
@@ -709,12 +709,12 @@ npx convex deploy --cmd 'pnpm run build'
 
    **RBAC Utilities:**
    ```typescript
-   import { assertMinimumRole, getUserRole, canEditProject } from "./rbac";
+   import { assertMinimumRole, getUserRole, canEditWorkspace } from "./rbac";
 
    // In a mutation/query
    await assertMinimumRole(ctx, projectId, userId, "editor"); // Throws if insufficient
    const role = await getUserRole(ctx, projectId, userId); // Returns role or null
-   const canEdit = await canEditProject(ctx, projectId, userId); // Boolean
+   const canEdit = await canEditWorkspace(ctx, projectId, userId); // Boolean
    ```
 
    **Role Permissions:**

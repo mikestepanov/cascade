@@ -17,7 +17,7 @@ interface AssigneeSearchDropdownProps {
   /**
    * Project ID to get members from
    */
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 
   /**
    * Currently selected assignee (optional)
@@ -41,14 +41,14 @@ interface AssigneeSearchDropdownProps {
 }
 
 export function AssigneeSearchDropdown({
-  workspaceId,
+  projectId,
   value,
   onChange,
   placeholder = "Search assignee...",
   className = "",
 }: AssigneeSearchDropdownProps) {
   // Step 1: Load members from Convex (permission-filtered)
-  const members = useQuery(api.workspaceMembers.list, { workspaceId });
+  const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
   const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);
@@ -145,14 +145,14 @@ export function AssigneeSearchDropdown({
  * Usage Example:
  *
  * ```tsx
- * function CreateIssueModal({ workspaceId }) {
+ * function CreateIssueModal({ projectId }) {
  *   const [assigneeId, setAssigneeId] = useState<Id<"users"> | null>(null);
  *
  *   return (
  *     <div>
  *       <label>Assignee</label>
  *       <AssigneeSearchDropdown
- *         workspaceId={workspaceId}
+ *         projectId={projectId}
  *         value={assigneeId}
  *         onChange={setAssigneeId}
  *       />

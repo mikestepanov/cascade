@@ -34,7 +34,7 @@ function buildEventUpdateObject(args: {
   eventType?: "meeting" | "deadline" | "timeblock" | "personal";
   attendeeIds?: Id<"users">[];
   externalAttendees?: string[];
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   issueId?: Id<"issues">;
   status?: "confirmed" | "tentative" | "cancelled";
   isRecurring?: boolean;
@@ -57,7 +57,7 @@ function buildEventUpdateObject(args: {
   addFieldIfDefined(updates, "allDay", args.allDay);
   addFieldIfDefined(updates, "location", args.location);
   addFieldIfDefined(updates, "externalAttendees", args.externalAttendees);
-  addFieldIfDefined(updates, "workspaceId", args.workspaceId);
+  addFieldIfDefined(updates, "projectId", args.projectId);
   addFieldIfDefined(updates, "issueId", args.issueId);
   addFieldIfDefined(updates, "isRecurring", args.isRecurring);
   addFieldIfDefined(updates, "recurrenceRule", args.recurrenceRule);
@@ -84,7 +84,7 @@ export const create = mutation({
     ),
     attendeeIds: v.optional(v.array(v.id("users"))),
     externalAttendees: v.optional(v.array(v.string())),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
     status: v.optional(
       v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
@@ -117,7 +117,7 @@ export const create = mutation({
       organizerId: userId,
       attendeeIds: args.attendeeIds || [],
       externalAttendees: args.externalAttendees,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       issueId: args.issueId,
       status: args.status || "confirmed",
       isRecurring: args.isRecurring ?? false,
@@ -167,7 +167,7 @@ export const listByDateRange = query({
   args: {
     startDate: v.number(), // Unix timestamp
     endDate: v.number(), // Unix timestamp
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -191,8 +191,8 @@ export const listByDateRange = query({
     );
 
     // Filter by project if specified
-    const filteredEvents = args.workspaceId
-      ? visibleEvents.filter((event) => event.workspaceId === args.workspaceId)
+    const filteredEvents = args.projectId
+      ? visibleEvents.filter((event) => event.projectId === args.projectId)
       : visibleEvents;
 
     // Batch fetch organizers to avoid N+1
@@ -302,7 +302,7 @@ export const update = mutation({
     ),
     attendeeIds: v.optional(v.array(v.id("users"))),
     externalAttendees: v.optional(v.array(v.string())),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
     status: v.optional(
       v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),

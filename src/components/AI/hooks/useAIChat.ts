@@ -9,7 +9,7 @@ import { api } from "../../../../convex/_generated/api";
 import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 export interface UseAIChatOptions {
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   initialChatId?: Id<"aiChats">;
   onChatCreated?: (chatId: Id<"aiChats">) => void;
 }
@@ -36,7 +36,7 @@ export interface UseAIChatReturn {
 }
 
 export function useAIChat({
-  workspaceId,
+  projectId,
   initialChatId,
   onChatCreated,
 }: UseAIChatOptions): UseAIChatReturn {
@@ -62,7 +62,7 @@ export function useAIChat({
   // Create chat on mount if no chatId provided
   useEffect(() => {
     if (!chatId) {
-      createChat({ workspaceId, title: "New Chat" })
+      createChat({ projectId, title: "New Chat" })
         .then((newChatId) => {
           setChatId(newChatId);
           onChatCreated?.(newChatId);
@@ -71,7 +71,7 @@ export function useAIChat({
           // Chat creation errors are handled by the mutation
         });
     }
-  }, [chatId, createChat, onChatCreated, workspaceId]); // Empty deps - only run once on mount
+  }, [chatId, createChat, onChatCreated, projectId]); // Empty deps - only run once on mount
 
   // Auto-resize textarea
   useEffect(() => {
@@ -103,7 +103,7 @@ export function useAIChat({
       await sendMessage({
         chatId,
         message,
-        workspaceId,
+        projectId,
       });
     } catch (_error) {
       // Restore message on error
@@ -111,7 +111,7 @@ export function useAIChat({
     } finally {
       setIsSending(false);
     }
-  }, [inputMessage, chatId, isSending, sendMessage, workspaceId]);
+  }, [inputMessage, chatId, isSending, sendMessage, projectId]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

@@ -36,7 +36,7 @@ vi.mock("./ui/ShadcnSelect", () => ({
 }));
 
 const mockProject = {
-  _id: "project1" as Id<"workspaces">,
+  _id: "project1" as Id<"projects">,
   name: "Test Project",
   key: "TEST",
   description: "A test project",
@@ -59,7 +59,7 @@ const mockProject = {
 const mockSprints = [
   {
     _id: "sprint1" as Id<"sprints">,
-    workspaceId: "project1" as Id<"workspaces">,
+    projectId: "project1" as Id<"projects">,
     name: "Sprint 1",
     status: "active" as const,
     createdBy: "user1" as Id<"users">,
@@ -68,7 +68,7 @@ const mockSprints = [
   },
   {
     _id: "sprint2" as Id<"sprints">,
-    workspaceId: "project1" as Id<"workspaces">,
+    projectId: "project1" as Id<"projects">,
     name: "Sprint 2",
     status: "future" as const,
     createdBy: "user1" as Id<"users">,
@@ -84,22 +84,22 @@ const { mockUseQuery } = vi.hoisted(() => ({
 
 // Mock child components
 vi.mock("./KanbanBoard", () => ({
-  KanbanBoard: ({ workspaceId, sprintId }: any) => (
+  KanbanBoard: ({ projectId, sprintId }: any) => (
     <div data-testid="kanban-board">
-      KanbanBoard: {workspaceId} {sprintId && `Sprint: ${sprintId}`}
+      KanbanBoard: {projectId} {sprintId && `Sprint: ${sprintId}`}
     </div>
   ),
 }));
 
 vi.mock("./SprintManager", () => ({
-  SprintManager: ({ workspaceId }: any) => (
-    <div data-testid="sprint-manager">SprintManager: {workspaceId}</div>
+  SprintManager: ({ projectId }: any) => (
+    <div data-testid="sprint-manager">SprintManager: {projectId}</div>
   ),
 }));
 
 vi.mock("./AnalyticsDashboard", () => ({
-  AnalyticsDashboard: ({ workspaceId }: any) => (
-    <div data-testid="analytics-dashboard">AnalyticsDashboard: {workspaceId}</div>
+  AnalyticsDashboard: ({ projectId }: any) => (
+    <div data-testid="analytics-dashboard">AnalyticsDashboard: {projectId}</div>
   ),
 }));
 
@@ -127,7 +127,7 @@ describe("ProjectBoard", () => {
     vi.clearAllMocks();
     mockUseQuery.mockReturnValue(undefined);
 
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     // Should render skeleton placeholders while loading
     const skeleton = document.querySelector(".animate-pulse");
@@ -135,7 +135,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should render project header with name and details", () => {
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Test Project")).toBeInTheDocument();
     expect(screen.getByText("A test project")).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should render all tabs for scrum board", () => {
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe("ProjectBoard", () => {
       return queryCallIndex % 2 === 1 ? { ...mockProject, boardType: "kanban" } : mockSprints;
     });
 
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByText("Board")).toBeInTheDocument();
     expect(screen.getByText("Backlog")).toBeInTheDocument();
@@ -171,7 +171,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should show KanbanBoard by default", () => {
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     expect(screen.getByTestId("kanban-board")).toBeInTheDocument();
     expect(screen.queryByTestId("sprint-manager")).not.toBeInTheDocument();
@@ -180,7 +180,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to backlog when clicking Backlog tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const backlogTab = screen.getByText("Backlog");
     await user.click(backlogTab);
@@ -191,7 +191,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to sprints view when clicking Sprints tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintsTab = screen.getByText("Sprints");
     await user.click(sprintsTab);
@@ -202,7 +202,7 @@ describe("ProjectBoard", () => {
 
   it("should switch to analytics view when clicking Analytics tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const analyticsTab = screen.getByRole("button", { name: "Analytics view" });
     await user.click(analyticsTab);
@@ -214,7 +214,7 @@ describe("ProjectBoard", () => {
 
   it("should highlight active tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const boardTab = screen.getByRole("button", { name: "Board view" });
     expect(boardTab).toHaveClass("border-brand-600", "text-brand-600");
@@ -227,7 +227,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should show sprint selector for scrum board on Board tab", () => {
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintSelector = screen.getByTestId("sprint-select");
     expect(sprintSelector).toBeInTheDocument();
@@ -244,7 +244,7 @@ describe("ProjectBoard", () => {
 
   it("should not show sprint selector on backlog tab", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     // Initially on board tab, sprint selector should be visible
     expect(screen.getByTestId("sprint-select")).toBeInTheDocument();
@@ -257,7 +257,7 @@ describe("ProjectBoard", () => {
   });
 
   it("should pass active sprint to KanbanBoard by default", () => {
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const kanbanBoard = screen.getByTestId("kanban-board");
     expect(kanbanBoard).toHaveTextContent("Sprint: sprint1");
@@ -265,7 +265,7 @@ describe("ProjectBoard", () => {
 
   it("should change sprint when selecting from dropdown", async () => {
     const user = userEvent.setup();
-    render(<ProjectBoard workspaceId={"project1" as Id<"workspaces">} />);
+    render(<ProjectBoard projectId={"project1" as Id<"projects">} />);
 
     const sprintSelector = screen.getByTestId("sprint-select");
     await user.selectOptions(sprintSelector, "sprint2");

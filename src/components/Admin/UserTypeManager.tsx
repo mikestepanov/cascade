@@ -644,7 +644,7 @@ export function UserTypeManager() {
                       onChange={(e) => setConfigCanManageProjects(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm">Can manage workspaces</span>
+                    <span className="text-sm">Can manage projects</span>
                   </Flex>
                 </label>
               </Flex>

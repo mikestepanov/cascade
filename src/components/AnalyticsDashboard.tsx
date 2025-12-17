@@ -10,14 +10,14 @@ import { Skeleton, SkeletonStatCard } from "./ui/Skeleton";
 import { Typography } from "./ui/Typography";
 
 interface Props {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 }
 
-export function AnalyticsDashboard({ workspaceId }: Props) {
-  const analytics = useQuery(api.analytics.getProjectAnalytics, { workspaceId });
-  const velocity = useQuery(api.analytics.getTeamVelocity, { workspaceId });
+export function AnalyticsDashboard({ projectId }: Props) {
+  const analytics = useQuery(api.analytics.getProjectAnalytics, { projectId });
+  const velocity = useQuery(api.analytics.getTeamVelocity, { projectId });
   const recentActivity = useQuery(api.analytics.getRecentActivity, {
-    workspaceId,
+    projectId,
     limit: 10,
   });
 

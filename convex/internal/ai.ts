@@ -85,7 +85,7 @@ export const storeIssueEmbedding = internalMutation({
 export const createChat = internalMutation({
   args: {
     userId: v.string(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     title: v.string(),
   },
   handler: async (ctx, args) => {
@@ -101,7 +101,7 @@ export const createChat = internalMutation({
 
     return await ctx.db.insert("aiChats", {
       userId: user._id as Id<"users">,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       title: args.title,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -142,23 +142,23 @@ export const addMessage = internalMutation({
  */
 export const getProjectContext = internalQuery({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) return "";
 
     // Get active sprint
     const activeSprint = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
     // Get issues summary
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .take(100); // Limit for context
 
     const issuesByStatus = issues.reduce(
@@ -187,7 +187,7 @@ Issues by Status: ${Object.entries(issuesByStatus)
 export const trackUsage = internalMutation({
   args: {
     userId: v.string(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
@@ -215,7 +215,7 @@ export const trackUsage = internalMutation({
 
     await ctx.db.insert("aiUsage", {
       userId: user._id as Id<"users">,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: args.provider,
       model: args.model,
       operation: args.operation,

@@ -30,7 +30,7 @@ function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
 }
 
 export interface UseSmartBoardDataOptions {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   doneColumnDays?: number;
 }
@@ -70,12 +70,12 @@ export interface SmartBoardData {
  *   loadMoreDone,
  *   hiddenDoneCount,
  * } = useSmartBoardData({
- *   workspaceId,
+ *   projectId,
  *   sprintId: activeSprint?._id,
  * });
  */
 export function useSmartBoardData({
-  workspaceId,
+  projectId,
   sprintId,
   doneColumnDays = 14,
 }: UseSmartBoardDataOptions): SmartBoardData {
@@ -89,14 +89,14 @@ export function useSmartBoardData({
 
   // Fetch smart-loaded issues (done column filtered by date)
   const smartData = useQuery(api.issues.listByWorkspaceSmart, {
-    workspaceId,
+    projectId,
     sprintId,
     doneColumnDays,
   });
 
   // Fetch counts to know how many are hidden
   const countsData = useQuery(api.issues.getIssueCounts, {
-    workspaceId,
+    projectId,
     sprintId,
     doneColumnDays,
   });
@@ -106,7 +106,7 @@ export function useSmartBoardData({
     api.issues.loadMoreDoneIssues,
     loadMoreCursor !== undefined
       ? {
-          workspaceId,
+          projectId,
           sprintId,
           beforeTimestamp: loadMoreCursor.timestamp,
           beforeId: loadMoreCursor.id,
@@ -126,12 +126,12 @@ export function useSmartBoardData({
     }
   }, [moreDoneData]);
 
-  // Reset additional issues when workspace/sprint changes
+  // Reset additional issues when project/sprint changes
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset on filter change
   useEffect(() => {
     setAdditionalDoneIssues([]);
     setLoadMoreCursor(undefined);
-  }, [workspaceId, sprintId]);
+  }, [projectId, sprintId]);
 
   // Build issues by status, merging additional done issues
   const issuesByStatus = useMemo(() => {

@@ -51,7 +51,7 @@ async function waitForFileInput(_container: HTMLElement): Promise<HTMLInputEleme
 }
 
 describe("ImportExportModal - Component Behavior", () => {
-  const mockProjectId = "project123" as Id<"workspaces">;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockOnOpenChange = vi.fn();
   const mockImportCSV = vi.fn();
   const mockImportJSON = vi.fn();
@@ -90,7 +90,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -104,7 +104,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -121,7 +121,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -139,7 +139,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -172,7 +172,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -196,7 +196,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -221,7 +221,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -262,7 +262,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -279,7 +279,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -296,7 +296,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -316,7 +316,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -335,7 +335,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -354,7 +354,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -382,7 +382,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -408,7 +408,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -438,7 +438,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -475,7 +475,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -514,7 +514,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -549,7 +549,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -588,7 +588,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -623,7 +623,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -659,7 +659,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -698,7 +698,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -733,7 +733,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -769,7 +769,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -804,7 +804,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -838,7 +838,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 
@@ -855,7 +855,7 @@ describe("ImportExportModal - Component Behavior", () => {
         <ImportExportModal
           open={true}
           onOpenChange={mockOnOpenChange}
-          workspaceId={mockProjectId}
+          projectId={mockProjectId}
         />,
       );
 

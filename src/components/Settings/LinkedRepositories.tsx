@@ -13,11 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
  * Extracted from Settings/GitHubIntegration for better organization
  */
 export function LinkedRepositories() {
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Id<"workspaces"> | null>(null);
-  const workspaces = useQuery(api.workspaces.list, {});
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Id<"projects"> | null>(null);
+  const projects = useQuery(api.projects.list, {});
   const repositories = useQuery(
     api.github.listRepositories,
-    selectedWorkspace ? { workspaceId: selectedWorkspace } : "skip",
+    selectedWorkspace ? { projectId: selectedWorkspace } : "skip",
   );
   const unlinkRepo = useMutation(api.github.unlinkRepository);
 
@@ -46,20 +46,20 @@ export function LinkedRepositories() {
           htmlFor="project-selector"
           className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
         >
-          Select Workspace
+          Select Project
         </label>
         <Select
           value={selectedWorkspace || ""}
-          onValueChange={(value) => setSelectedWorkspace(value as Id<"workspaces">)}
+          onValueChange={(value) => setSelectedWorkspace(value as Id<"projects">)}
         >
           <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
-            <SelectValue placeholder="-- Select a workspace --" />
+            <SelectValue placeholder="-- Select a project --" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">-- Select a workspace --</SelectItem>
-            {workspaces?.map((workspace) => (
-              <SelectItem key={workspace._id} value={workspace._id}>
-                {workspace.name} ({workspace.key})
+            <SelectItem value="">-- Select a project --</SelectItem>
+            {projects?.map((project) => (
+              <SelectItem key={project._id} value={project._id}>
+                {project.name} ({project.key})
               </SelectItem>
             ))}
           </SelectContent>
@@ -71,7 +71,7 @@ export function LinkedRepositories() {
         <Flex direction="column" gap="sm">
           {repositories && repositories.length === 0 && (
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
-              No repositories linked to this workspace yet.
+              No repositories linked to this project yet.
             </p>
           )}
           {repositories?.map((repo) => (

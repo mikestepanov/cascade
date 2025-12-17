@@ -100,18 +100,18 @@ function ModeToggleButton({
 interface ManualTimeEntryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   issueId?: Id<"issues">;
 }
 
 export function ManualTimeEntryModal({
   open,
   onOpenChange,
-  workspaceId: initialProjectId,
+  projectId: initialProjectId,
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const projects = useQuery(api.workspaces.list);
+  const projects = useQuery(api.projects.list);
 
   // Mode and derived state (kept outside form due to complexity)
   const [entryMode, setEntryMode] = useState<EntryMode>("duration");
@@ -119,7 +119,7 @@ export function ManualTimeEntryModal({
   const [timeRangeDuration, setTimeRangeDuration] = useState(0);
 
   // Project/Issue selection (Radix Select)
-  const [workspaceId, setProjectId] = useState<Id<"workspaces"> | undefined>(initialProjectId);
+  const [projectId, setProjectId] = useState<Id<"projects"> | undefined>(initialProjectId);
   const [issueId, setIssueId] = useState<Id<"issues"> | undefined>(initialIssueId);
 
   // Tags (array state)
@@ -127,7 +127,7 @@ export function ManualTimeEntryModal({
   const [tagInput, setTagInput] = useState("");
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.listByProject, workspaceId ? { workspaceId } : "skip");
+  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
 
   const form = useAppForm({
     defaultValues: {
@@ -165,7 +165,7 @@ export function ManualTimeEntryModal({
 
       try {
         await createTimeEntry({
-          workspaceId,
+          projectId,
           issueId,
           startTime: startTimeMs,
           endTime: endTimeMs,
@@ -426,9 +426,9 @@ export function ManualTimeEntryModal({
               Project
             </label>
             <Select
-              value={workspaceId || "none"}
+              value={projectId || "none"}
               onValueChange={(value) => {
-                setProjectId(value === "none" ? undefined : (value as Id<"workspaces">));
+                setProjectId(value === "none" ? undefined : (value as Id<"projects">));
                 setIssueId(undefined);
               }}
             >
@@ -436,7 +436,7 @@ export function ManualTimeEntryModal({
                 <SelectValue placeholder="Select project..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No workspace</SelectItem>
+                <SelectItem value="none">No project</SelectItem>
                 {projects?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
@@ -447,7 +447,7 @@ export function ManualTimeEntryModal({
           </div>
 
           {/* Issue Selection */}
-          {workspaceId && projectIssues && projectIssues.length > 0 && (
+          {projectId && projectIssues && projectIssues.length > 0 && (
             <div>
               <label
                 htmlFor="time-entry-issue"

@@ -19,7 +19,7 @@ vi.mock("@/lib/toast", () => ({
 }));
 
 describe("CustomFieldsManager - Component Behavior", () => {
-  const mockProjectId = "project123" as Id<"workspaces">;
+  const mockProjectId = "project123" as Id<"projects">;
   const _mockCreateField = vi.fn();
   const mockUpdateField = vi.fn();
   const mockRemoveField = vi.fn();
@@ -44,7 +44,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show loading spinner when fields are undefined", () => {
       (useQuery as vi.Mock).mockReturnValue(undefined);
 
-      const { container } = render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      const { container } = render(<CustomFieldsManager projectId={mockProjectId} />);
 
       // Check for LoadingSpinner component (uses animate-spin class)
       const spinner = container.querySelector(".animate-spin");
@@ -54,7 +54,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show empty state with emoji when no fields exist", () => {
       (useQuery as vi.Mock).mockReturnValue([]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("📋")).toBeInTheDocument();
       expect(screen.getByText(/No custom fields yet/i)).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show 'Add Field' button when not creating", () => {
       (useQuery as vi.Mock).mockReturnValue([]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByRole("button", { name: /Add Field/i })).toBeInTheDocument();
     });
@@ -71,7 +71,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
   describe("Form Display & State Management", () => {
     it("should hide form initially", () => {
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.queryByText("Create Custom Field")).not.toBeInTheDocument();
     });
@@ -79,7 +79,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show form when 'Add Field' button is clicked", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
@@ -89,7 +89,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should open dialog when 'Add Field' button is clicked", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
@@ -101,7 +101,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should reset and hide form when Cancel is clicked", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test Field");
@@ -114,7 +114,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show field key input in create mode", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
@@ -124,7 +124,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should default field type to 'text'", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
@@ -137,7 +137,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show error when trying to save with empty name", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.click(screen.getByRole("button", { name: /Save/i }));
@@ -149,7 +149,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show error when trying to save with empty field key", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Valid Name");
@@ -163,7 +163,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should accept whitespace-only name as invalid", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "   ");
@@ -179,7 +179,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -199,7 +199,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -219,7 +219,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -243,7 +243,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should not show options field for text type", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
 
@@ -253,7 +253,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show options field when select type is chosen", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "select");
@@ -264,7 +264,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should show options field when multiselect type is chosen", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "multiselect");
@@ -275,7 +275,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
     it("should hide options field when switching from select to text", async () => {
       const user = userEvent.setup();
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.selectOptions(screen.getByRole("combobox"), "select");
@@ -293,7 +293,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Priority");
@@ -318,7 +318,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -343,7 +343,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -368,7 +368,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -401,7 +401,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue([existingField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -416,7 +416,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue([existingField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -427,7 +427,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue([existingField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -439,7 +439,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue([existingField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -451,7 +451,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       (useQuery as vi.Mock).mockReturnValue([existingField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -467,7 +467,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([selectField]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -480,7 +480,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       (useQuery as vi.Mock).mockReturnValue([existingField]);
       mockUpdateField.mockResolvedValue({});
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -509,7 +509,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("Customer ID")).toBeInTheDocument();
       expect(screen.getByText("customer_id")).toBeInTheDocument();
@@ -525,7 +525,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("Required")).toBeInTheDocument();
     });
@@ -540,7 +540,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.queryByText("Required")).not.toBeInTheDocument();
     });
@@ -556,7 +556,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("This is a helpful description")).toBeInTheDocument();
     });
@@ -571,7 +571,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       // Only field name and key should be visible
       expect(screen.getByText("Test")).toBeInTheDocument();
@@ -589,7 +589,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("Low")).toBeInTheDocument();
       expect(screen.getByText("Medium")).toBeInTheDocument();
@@ -606,7 +606,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("📝")).toBeInTheDocument();
     });
@@ -621,7 +621,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("🔢")).toBeInTheDocument();
     });
@@ -636,7 +636,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       expect(screen.getByText("✅")).toBeInTheDocument();
     });
@@ -657,7 +657,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
@@ -680,7 +680,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
@@ -702,7 +702,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
@@ -717,7 +717,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockResolvedValue({ _id: "field1" });
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -742,7 +742,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       (useQuery as vi.Mock).mockReturnValue([field]);
       mockUpdateField.mockResolvedValue({});
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
       await user.click(screen.getByRole("button", { name: /Save/i }));
@@ -767,7 +767,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       };
       (useQuery as vi.Mock).mockReturnValue([field]);
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Delete/i }));
 
@@ -780,7 +780,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       const user = userEvent.setup();
       mockUpdateField.mockRejectedValue(new Error("Duplicate field key"));
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");
@@ -797,7 +797,7 @@ describe("CustomFieldsManager - Component Behavior", () => {
       // Reject with a non-Error object to trigger the fallback message
       mockUpdateField.mockRejectedValue({});
 
-      render(<CustomFieldsManager workspaceId={mockProjectId} />);
+      render(<CustomFieldsManager projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Add Field/i }));
       await user.type(screen.getByPlaceholderText(/e.g., Sprint Points/i), "Test");

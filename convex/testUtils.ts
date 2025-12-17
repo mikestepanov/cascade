@@ -83,13 +83,15 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
  * Create a test project
  *
  * @param t - Convex test helper
- * @param creatorId - User ID of the project creator
+ * @param creatorId - User ID of the project creator (also becomes owner)
+ * @param companyId - Company ID the project belongs to
  * @param projectData - Optional project data
  * @returns Project ID
  */
-export async function createTestProject(
+export async function createTestWorkspace(
   t: TestCtx,
   creatorId: Id<"users">,
+  companyId: Id<"companies">,
   projectData?: {
     name?: string;
     key?: string;
@@ -97,16 +99,18 @@ export async function createTestProject(
     isPublic?: boolean;
     boardType?: "kanban" | "scrum";
   },
-): Promise<Id<"workspaces">> {
+): Promise<Id<"projects">> {
   return await t.run(async (ctx) => {
     const now = Date.now();
     const name = projectData?.name || `Test Project ${now}`;
     const key = projectData?.key || `TEST${now.toString().slice(-6)}`;
 
-    return await ctx.db.insert("workspaces", {
+    const projectId = await ctx.db.insert("projects", {
       name,
       key: key.toUpperCase(),
       description: projectData?.description,
+      companyId,
+      ownerId: creatorId,
       createdBy: creatorId,
       createdAt: now,
       updatedAt: now,
@@ -133,14 +137,44 @@ export async function createTestProject(
         },
       ],
     });
+
+    // Add creator as admin member
+    await ctx.db.insert("projectMembers", {
+      projectId,
+      userId: creatorId,
+      role: "admin",
+      addedBy: creatorId,
+      addedAt: now,
+    });
+
+    return projectId;
   });
+}
+
+/**
+ * @deprecated Use createTestWorkspace instead
+ */
+export async function createTestProject(
+  t: TestCtx,
+  creatorId: Id<"users">,
+  projectData?: {
+    name?: string;
+    key?: string;
+    description?: string;
+    isPublic?: boolean;
+    boardType?: "kanban" | "scrum";
+  },
+): Promise<Id<"projects">> {
+  // Create a company first for backward compatibility
+  const companyId = await createCompanyAdmin(t, creatorId);
+  return createTestWorkspace(t, creatorId, companyId, projectData);
 }
 
 /**
  * Add a member to a project with a specific role
  *
  * @param t - Convex test helper
- * @param workspaceId - Project ID
+ * @param projectId - Project ID
  * @param userId - User ID to add
  * @param role - Role to assign
  * @param addedBy - User ID of the user adding the member
@@ -148,14 +182,14 @@ export async function createTestProject(
  */
 export async function addProjectMember(
   t: TestCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   userId: Id<"users">,
   role: "admin" | "editor" | "viewer",
   addedBy: Id<"users">,
-): Promise<Id<"workspaceMembers">> {
+): Promise<Id<"projectMembers">> {
   return await t.run(async (ctx) => {
-    return await ctx.db.insert("workspaceMembers", {
-      workspaceId,
+    return await ctx.db.insert("projectMembers", {
+      projectId,
       userId,
       role,
       addedBy,
@@ -168,14 +202,14 @@ export async function addProjectMember(
  * Create a test issue
  *
  * @param t - Convex test helper
- * @param workspaceId - Project ID
+ * @param projectId - Project ID
  * @param reporterId - User ID of the reporter
  * @param issueData - Optional issue data
  * @returns Issue ID
  */
 export async function createTestIssue(
   t: TestCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   reporterId: Id<"users">,
   issueData?: {
     title?: string;
@@ -190,20 +224,20 @@ export async function createTestIssue(
     const now = Date.now();
 
     // Get project to construct issue key
-    const project = await ctx.db.get(workspaceId);
+    const project = await ctx.db.get(projectId);
     if (!project) throw new Error("Project not found");
 
     // Count existing issues to generate key
     const issueCount = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
       .collect()
       .then((issues) => issues.length);
 
     const key = `${project.key}-${issueCount + 1}`;
 
     return await ctx.db.insert("issues", {
-      workspaceId,
+      projectId,
       key,
       title: issueData?.title || `Test Issue ${now}`,
       description: issueData?.description,

@@ -19,7 +19,7 @@ export const sendChatMessage = action({
   args: {
     chatId: v.id("aiChats"),
     message: v.string(),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -32,12 +32,12 @@ export const sendChatMessage = action({
       chatId: args.chatId,
     });
 
-    // Build context from project data if workspaceId provided
+    // Build context from project data if projectId provided
     let systemContext = "You are a helpful AI assistant for Nixelo, a project management platform.";
 
-    if (args.workspaceId) {
+    if (args.projectId) {
       const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
-        workspaceId: args.workspaceId,
+        projectId: args.projectId,
       });
 
       systemContext += `\n\nCurrent Project Context:
@@ -85,7 +85,7 @@ export const sendChatMessage = action({
     // Track usage
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: config.provider,
       model: config.model,
       operation: "chat",
@@ -108,7 +108,7 @@ export const sendChatMessage = action({
  */
 export const generateIssueSuggestions = action({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     issueTitle: v.string(),
     issueDescription: v.optional(v.string()),
     suggestionTypes: v.array(
@@ -128,7 +128,7 @@ export const generateIssueSuggestions = action({
 
     // Get project context
     const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     // Build prompt for AI
@@ -180,7 +180,7 @@ Format your response as JSON with keys: description, priority, priorityReason, l
     // Track usage
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: config.provider,
       model: config.model,
       operation: "suggestion",
@@ -200,7 +200,7 @@ Format your response as JSON with keys: description, priority, priorityReason, l
  */
 export const generateProjectInsights = action({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -210,15 +210,15 @@ export const generateProjectInsights = action({
 
     // Get comprehensive project analytics
     const analytics = await ctx.runQuery(api.analytics.getProjectAnalytics, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     const velocity = await ctx.runQuery(api.analytics.getTeamVelocity, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     const recentActivity = await ctx.runQuery(api.analytics.getRecentActivity, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       limit: 20,
     });
 
@@ -284,7 +284,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
       for (const risk of insights.risks) {
         await ctx.runMutation(api.ai.mutations.createSuggestion, {
           userId,
-          workspaceId: args.workspaceId,
+          projectId: args.projectId,
           suggestionType: "risk_detection",
           suggestion: risk,
           modelUsed: config.model,
@@ -295,7 +295,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     // Track usage
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: config.provider,
       model: config.model,
       operation: "analysis",
@@ -315,7 +315,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
  */
 export const answerQuestion = action({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     question: v.string(),
   },
   handler: async (ctx: ActionCtx, args) => {
@@ -326,11 +326,11 @@ export const answerQuestion = action({
 
     // Get project context
     const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     const analytics = await ctx.runQuery(api.analytics.getProjectAnalytics, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     // Build context
@@ -365,7 +365,7 @@ Team: ${projectData.members.map((m: { name?: string }) => m.name).join(", ")}`;
     // Track usage
     await ctx.runMutation(api.ai.mutations.trackUsage, {
       userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: config.provider,
       model: config.model,
       operation: "chat",
