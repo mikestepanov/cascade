@@ -101,8 +101,16 @@ describe("Internal AI", () => {
 
       // Add issues
       await t.run(async (ctx) => {
+        const project = await ctx.db.get(projectId);
+        if (!project) throw new Error("Project not found");
+        if (!(project.workspaceId && project.teamId)) {
+          throw new Error("Project missing workspace or team");
+        }
+
         await ctx.db.insert("issues", {
           projectId,
+          workspaceId: project.workspaceId,
+          teamId: project.teamId,
           key: "CTX-1",
           title: "Task 1",
           status: "todo",
@@ -118,6 +126,8 @@ describe("Internal AI", () => {
         });
         await ctx.db.insert("issues", {
           projectId,
+          workspaceId: project.workspaceId,
+          teamId: project.teamId,
           key: "CTX-2",
           title: "Task 2",
           status: "done",

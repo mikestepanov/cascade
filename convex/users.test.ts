@@ -35,8 +35,16 @@ describe("Users", () => {
 
       // Create an issue
       const issueId = await t.run(async (ctx) => {
+        const project = await ctx.db.get(projectId);
+        if (!project) throw new Error("Project not found");
+        if (!(project.workspaceId && project.teamId)) {
+          throw new Error("Project missing workspace or team");
+        }
+
         return await ctx.db.insert("issues", {
           projectId,
+          workspaceId: project.workspaceId,
+          teamId: project.teamId,
           key: "P-1",
           title: "Task 1",
           status: "todo",
