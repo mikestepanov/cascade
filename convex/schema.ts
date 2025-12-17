@@ -140,9 +140,9 @@ const applicationTables = {
     .index("by_workspace_user", ["projectId", "userId"]),
 
   issues: defineTable({
-    projectId: v.optional(v.id("projects")), // Optional temporarily for migration
-    workspaceId: v.optional(v.id("workspaces")), // NEW: Issue belongs to workspace
-    teamId: v.optional(v.id("teams")), // NEW: Issue belongs to team
+    projectId: v.id("projects"), // Issue belongs to project
+    workspaceId: v.id("workspaces"), // Issue belongs to workspace
+    teamId: v.id("teams"), // Issue belongs to team
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),

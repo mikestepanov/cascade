@@ -30,7 +30,7 @@ export function AppSidebar() {
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebarState();
 
   // Get company from URL context
-  const { companySlug, companyName } = useCompany();
+  const { companySlug, companyName, companyId } = useCompany();
 
   // All hooks must be called unconditionally
   const isAdmin = useQuery(api.users.isCompanyAdmin);
@@ -79,6 +79,7 @@ export function AppSidebar() {
       await createWorkspace({
         name: "New Workspace",
         slug,
+        companyId,
       });
       navigate({ to: ROUTES.workspaces.detail(companySlug, slug) });
       showSuccess("Workspace created");
