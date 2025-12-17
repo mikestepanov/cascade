@@ -1,6 +1,6 @@
+import { api } from "@convex/_generated/api";
 import FacePile from "@convex-dev/presence/facepile";
 import usePresence from "@convex-dev/presence/react";
-import { api } from "../../convex/_generated/api";
 
 interface PresenceIndicatorProps {
   roomId: string;

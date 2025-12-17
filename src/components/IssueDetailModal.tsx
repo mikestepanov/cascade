@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldValues } from "./CustomFieldValues";
 import { FileAttachments } from "./FileAttachments";
 import { IssueComments } from "./IssueComments";

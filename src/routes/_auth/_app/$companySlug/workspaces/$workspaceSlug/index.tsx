@@ -1,13 +1,11 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
-import { useCompany } from "@/contexts/CompanyContext";
-import { ROUTES } from "@/config/routes";
 import { useEffect } from "react";
+import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/contexts/CompanyContext";
 
-export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/"
-)({
+export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/")({
   component: WorkspaceHome,
 });
 
@@ -15,7 +13,7 @@ function WorkspaceHome() {
   const { company } = useCompany();
   const { workspaceSlug } = Route.useParams();
   const navigate = useNavigate();
-  
+
   const workspace = useQuery(api.workspaces.getBySlug, {
     companyId: company._id,
     slug: workspaceSlug,

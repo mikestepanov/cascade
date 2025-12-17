@@ -1,3 +1,4 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { ProjectSettings } from "@/components/ProjectSettings";
@@ -5,10 +6,9 @@ import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { api } from "../../../../../../../../../../convex/_generated/api";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/settings"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/settings",
 )({
   component: SettingsPage,
 });

@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
-import { api } from "../../convex/_generated/api";
 import { Avatar } from "./ui/Avatar";
 import {
   DropdownMenu,

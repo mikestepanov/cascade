@@ -79,9 +79,7 @@ export const getProjectContext = query({
     // Check access
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", userId),
-      )
+      .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
       .first();
 
     if (!member && project.createdBy !== userId && !project.isPublic) {

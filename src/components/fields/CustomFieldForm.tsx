@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { FormDialog } from "../ui/FormDialog";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";

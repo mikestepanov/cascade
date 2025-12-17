@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertCanEditProject } from "./projectAccess";
 import { getIssueWithWorkspace } from "./lib/issueHelpers";
+import { assertCanEditProject } from "./projectAccess";
 
 // Generate upload URL for file attachment
 export const generateUploadUrl = mutation(async (ctx) => {

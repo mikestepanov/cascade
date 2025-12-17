@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
@@ -71,8 +71,8 @@ export function DangerZone({
                 Delete this project
               </Typography>
               <Typography variant="small" color="secondary" className="mt-1">
-                Once you delete a project, there is no going back. This will permanently delete
-                the project "{projectName}" and all its issues, sprints, and data.
+                Once you delete a project, there is no going back. This will permanently delete the
+                project "{projectName}" and all its issues, sprints, and data.
               </Typography>
             </div>
             {!showConfirm && (

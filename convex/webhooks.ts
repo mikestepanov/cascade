@@ -194,9 +194,7 @@ export const getActiveWebhooksForEvent = internalQuery({
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .collect();
 
-    return webhooks.filter(
-      (w) => w.projectId === args.projectId && w.events.includes(args.event),
-    );
+    return webhooks.filter((w) => w.projectId === args.projectId && w.events.includes(args.event));
   },
 });
 

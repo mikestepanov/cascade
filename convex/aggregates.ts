@@ -51,17 +51,17 @@ export const issueCountByType = new Aggregate<{ projectId: string; type: string 
  * Usage: issueCountByPriority.lookup(ctx, { projectId })
  * Returns: { lowest: 2, low: 5, medium: 10, high: 8, highest: 3 }
  */
-export const issueCountByPriority = new Aggregate<
-  { projectId: string; priority: string },
-  number
->(components.aggregate, {
-  name: "issueCountByPriority",
-  groupBy: (doc) => ({
-    projectId: doc.projectId,
-    priority: doc.priority,
-  }),
-  sum: () => 1,
-});
+export const issueCountByPriority = new Aggregate<{ projectId: string; priority: string }, number>(
+  components.aggregate,
+  {
+    name: "issueCountByPriority",
+    groupBy: (doc) => ({
+      projectId: doc.projectId,
+      priority: doc.priority,
+    }),
+    sum: () => 1,
+  },
+);
 
 /**
  * Issue count by assignee and project

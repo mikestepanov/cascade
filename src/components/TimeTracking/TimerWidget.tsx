@@ -1,9 +1,9 @@
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { formatDuration, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { TimeEntryModal } from "./TimeEntryModal";

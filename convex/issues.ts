@@ -44,11 +44,7 @@ async function validateParentIssue(
 }
 
 // Helper: Generate issue key
-async function generateIssueKey(
-  ctx: MutationCtx,
-  projectId: Id<"projects">,
-  projectKey: string,
-) {
+async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, projectKey: string) {
   // Get the most recent issue to determine the next number
   // Order by _creationTime desc to get the latest issue
   const latestIssue = await ctx.db
@@ -70,11 +66,7 @@ async function generateIssueKey(
 }
 
 // Helper: Get max order for status column
-async function getMaxOrderForStatus(
-  ctx: MutationCtx,
-  projectId: Id<"projects">,
-  status: string,
-) {
+async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">, status: string) {
   // Limit to 1000 issues per status - reasonable cap for any Kanban column
   const MAX_ISSUES_PER_STATUS = 1000;
   const issuesInStatus = await ctx.db
@@ -142,6 +134,8 @@ export const create = mutation({
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
+      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">), // Required field
+      teamId: project.teamId ?? ("" as Id<"teams">), // Required field
       key: issueKey,
       title: args.title,
       description: args.description,
@@ -161,6 +155,7 @@ export const create = mutation({
       estimatedHours: args.estimatedHours,
       dueDate: args.dueDate,
       storyPoints: args.storyPoints,
+      loggedHours: 0,
       order: maxOrder + 1,
     });
 

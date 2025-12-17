@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Typography } from "../ui/Typography";
 

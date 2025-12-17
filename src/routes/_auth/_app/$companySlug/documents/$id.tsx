@@ -1,7 +1,7 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import type { Id } from "../../../../../convex/_generated/dataModel";
 
 // Lazy load DocumentEditor (heavy - includes BlockNote)
 const DocumentEditor = lazy(() =>

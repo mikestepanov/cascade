@@ -66,9 +66,7 @@ export async function batchFetchWorkspaces(
   if (uniqueIds.length === 0) return new Map();
 
   const projects = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    projects.filter((w): w is Doc<"projects"> => w !== null).map((w) => [w._id, w]),
-  );
+  return new Map(projects.filter((w): w is Doc<"projects"> => w !== null).map((w) => [w._id, w]));
 }
 
 /**

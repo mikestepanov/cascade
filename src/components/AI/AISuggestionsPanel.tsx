@@ -2,8 +2,8 @@
  * AISuggestionsPanel - Refactored with useAISuggestions hook
  */
 
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import React from "react";
-import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";

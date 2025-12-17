@@ -1,9 +1,9 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Id } from "../../convex/_generated/dataModel";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 
 // Mock Radix Select to use native select for testability

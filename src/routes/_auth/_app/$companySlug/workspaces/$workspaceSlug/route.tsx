@@ -1,23 +1,20 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { api } from "@convex/_generated/api";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
-import { useCompany } from "@/contexts/CompanyContext";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Flex } from "@/components/ui/Flex";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/contexts/CompanyContext";
 
-export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug"
-)({
+export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug")({
   component: WorkspaceLayout,
 });
 
 function WorkspaceLayout() {
   const { company } = useCompany();
   const { workspaceSlug } = Route.useParams();
-  
+
   const workspace = useQuery(api.workspaces.getBySlug, {
     companyId: company._id,
     slug: workspaceSlug,
@@ -43,10 +40,7 @@ function WorkspaceLayout() {
     <div className="container mx-auto p-6">
       {/* Breadcrumb */}
       <div className="mb-6 text-sm">
-        <Link
-          to={ROUTES.workspaces.list(company.slug)}
-          className="text-blue-600 hover:underline"
-        >
+        <Link to={ROUTES.workspaces.list(company.slug)} className="text-blue-600 hover:underline">
           Workspaces
         </Link>
         <span className="mx-2">/</span>

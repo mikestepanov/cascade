@@ -1,5 +1,5 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
-import type { Id } from "../../convex/_generated/dataModel";
 
 /**
  * Reusable hook for managing entity forms (create/edit pattern)

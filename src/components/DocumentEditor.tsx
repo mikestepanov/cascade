@@ -1,12 +1,12 @@
 import type { BlockNoteEditor } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useBlockNoteSync } from "@convex-dev/prosemirror-sync/blocknote";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { handleMarkdownExport, importFromMarkdown, readMarkdownForPreview } from "@/lib/markdown";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { DocumentHeader } from "./DocumentHeader";
 import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";

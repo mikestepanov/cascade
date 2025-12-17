@@ -1,5 +1,5 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 
 interface SearchResult {

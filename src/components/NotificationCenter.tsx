@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { showError } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { Typography } from "./ui/Typography";
 

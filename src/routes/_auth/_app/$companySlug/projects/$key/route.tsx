@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/contexts/CompanyContext";
-import { api } from "../../../../../../convex/_generated/api";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
   component: ProjectLayout,

@@ -1,10 +1,10 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
-import type { Id } from "../../convex/_generated/dataModel";
 import { ImportExportModal } from "./ImportExportModal";
 
 // Mock dependencies
@@ -87,11 +87,7 @@ describe("ImportExportModal - Component Behavior", () => {
   describe("Mode Switching Logic", () => {
     it("should default to export mode", () => {
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       expect(screen.getByText("Select Export Format")).toBeInTheDocument();
@@ -101,11 +97,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -118,11 +110,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -136,11 +124,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       // Set export to JSON
@@ -169,11 +153,7 @@ describe("ImportExportModal - Component Behavior", () => {
       });
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
@@ -193,11 +173,7 @@ describe("ImportExportModal - Component Behavior", () => {
       });
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
@@ -218,11 +194,7 @@ describe("ImportExportModal - Component Behavior", () => {
       });
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       // Setup mocks AFTER render to avoid interfering with React
@@ -259,11 +231,7 @@ describe("ImportExportModal - Component Behavior", () => {
       (useQuery as vi.Mock).mockReturnValue(undefined); // Keep loading
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByRole("button", { name: /Export as CSV/i }));
@@ -276,11 +244,7 @@ describe("ImportExportModal - Component Behavior", () => {
       (useQuery as vi.Mock).mockReturnValue(undefined);
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       const exportButton = screen.getByRole("button", { name: /Export as CSV/i });
@@ -293,11 +257,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       expect(screen.getByRole("button", { name: /Export as CSV/i })).toBeInTheDocument();
@@ -313,11 +273,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -332,11 +288,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -351,11 +303,7 @@ describe("ImportExportModal - Component Behavior", () => {
       global.FileReader = createMockFileReader("title\nTest Issue") as unknown as typeof FileReader;
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -379,11 +327,7 @@ describe("ImportExportModal - Component Behavior", () => {
       global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -405,11 +349,7 @@ describe("ImportExportModal - Component Behavior", () => {
       global.FileReader = createMockFileReader("data") as unknown as typeof FileReader;
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -435,11 +375,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 1, failed: 0, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -472,11 +408,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 5, failed: 0, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -511,11 +443,7 @@ describe("ImportExportModal - Component Behavior", () => {
       });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -546,11 +474,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 10, failed: 0, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -585,11 +509,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 5, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -620,11 +540,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockRejectedValue(new Error("Invalid CSV format"));
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -656,11 +572,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockRejectedValue("Unknown error");
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -695,11 +607,7 @@ describe("ImportExportModal - Component Behavior", () => {
       );
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -730,11 +638,7 @@ describe("ImportExportModal - Component Behavior", () => {
       );
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -766,11 +670,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 3, failed: 0, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -801,11 +701,7 @@ describe("ImportExportModal - Component Behavior", () => {
       mockImportCSV.mockResolvedValue({ imported: 0, failed: 2, errors: [] });
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -835,11 +731,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));
@@ -852,11 +744,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       const { container } = render(
-        <ImportExportModal
-          open={true}
-          onOpenChange={mockOnOpenChange}
-          projectId={mockProjectId}
-        />,
+        <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
       );
 
       await user.click(screen.getByText("📥 Import"));

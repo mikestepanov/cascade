@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "@/lib/icons";
-import { api } from "../../../convex/_generated/api";
-import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";

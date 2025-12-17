@@ -1,3 +1,5 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -15,8 +17,6 @@ import {
   XCircle,
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";

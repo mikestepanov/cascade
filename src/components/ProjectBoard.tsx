@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { ActivityFeed } from "./ActivityFeed";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { AutomationRulesManager } from "./AutomationRulesManager";

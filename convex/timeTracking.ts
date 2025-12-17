@@ -627,10 +627,7 @@ export const getTeamCosts = query({
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_workspace_date", (q) =>
-          q
-            .eq("projectId", args.projectId)
-            .gte("date", args.startDate)
-            .lte("date", args.endDate),
+          q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
         )
         .collect();
     } else {

@@ -1,18 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { api } from "@convex/_generated/api";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../../../../../../../convex/_generated/api";
-import { useCompany } from "@/contexts/CompanyContext";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Flex } from "@/components/ui/Flex";
-import { Typography } from "@/components/ui/Typography";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Link } from "@tanstack/react-router";
+import { Flex } from "@/components/ui/Flex";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/contexts/CompanyContext";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/",
 )({
   component: ProjectsList,
 });
@@ -20,12 +19,12 @@ export const Route = createFileRoute(
 function ProjectsList() {
   const { company } = useCompany();
   const { workspaceSlug, teamSlug } = Route.useParams();
-  
+
   const team = useQuery(api.teams.getBySlug, {
     companyId: company._id,
     slug: teamSlug,
   });
-  
+
   // For now, get all company projects, but we'll filter by team later
   const allProjects = useQuery(api.projects.list, { companyId: company._id });
 
@@ -69,7 +68,7 @@ function ProjectsList() {
                 company.slug,
                 workspaceSlug,
                 teamSlug,
-                project.key
+                project.key,
               )}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">

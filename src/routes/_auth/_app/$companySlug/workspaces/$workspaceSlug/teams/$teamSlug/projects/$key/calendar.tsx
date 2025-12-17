@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ProjectCalendar } from "@/components/Calendar/ProjectCalendar";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/calendar"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/calendar",
 )({
   component: CalendarPage,
 });

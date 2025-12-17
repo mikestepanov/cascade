@@ -1,5 +1,5 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
-import type { Id } from "../../convex/_generated/dataModel";
 import { ExportPanel } from "./import-export/ExportPanel";
 import { ImportPanel } from "./import-export/ImportPanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";

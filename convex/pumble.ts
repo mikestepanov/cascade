@@ -42,9 +42,7 @@ export const addWebhook = mutation({
       // Check if user has access to project
       const membership = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", projectId).eq("userId", userId),
-        )
+        .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
         .first();
 
       if (!membership && project.createdBy !== userId) {

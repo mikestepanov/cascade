@@ -1,6 +1,6 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { memo } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Typography } from "./ui/Typography";
 

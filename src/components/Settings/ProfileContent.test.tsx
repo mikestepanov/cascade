@@ -35,7 +35,7 @@ vi.mock("convex/react", () => ({
 }));
 
 // Mock API
-vi.mock("../../../convex/_generated/api", () => ({
+vi.mock("@convex/_generated/api", () => ({
   api: {
     users: {
       getCurrent: "api.users.getCurrent",

@@ -1,11 +1,11 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useAsyncMutation } from "@/hooks/useAsyncMutation";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { useEntityForm } from "@/hooks/useEntityForm";
 import { useModal } from "@/hooks/useModal";
 import { showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ColorPicker } from "./ui/ColorPicker";

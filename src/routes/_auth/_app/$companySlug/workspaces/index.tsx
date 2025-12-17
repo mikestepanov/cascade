@@ -1,15 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { api } from "@convex/_generated/api";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
-import { useCompany } from "@/contexts/CompanyContext";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Flex } from "@/components/ui/Flex";
-import { Typography } from "@/components/ui/Typography";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Link } from "@tanstack/react-router";
+import { Flex } from "@/components/ui/Flex";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/contexts/CompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
   component: WorkspacesList,
@@ -48,32 +47,25 @@ function WorkspacesList() {
           <EmptyState
             title="No workspaces yet"
             description="Create your first workspace to organize teams and projects"
-            action={
-              <Button variant="primary">+ Create Workspace</Button>
-            }
+            action={<Button variant="primary">+ Create Workspace</Button>}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workspaces.map((workspace) => (
-              <Link
-                key={workspace._id}
-                to={ROUTES.workspaces.detail(company.slug, workspace.slug)}
-              >
+              <Link key={workspace._id} to={ROUTES.workspaces.detail(company.slug, workspace.slug)}>
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <Flex direction="column" gap="md">
                     <Flex align="center" gap="sm">
-                      {workspace.icon && (
-                        <span className="text-3xl">{workspace.icon}</span>
-                      )}
+                      {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}
                       <Typography variant="h3">{workspace.name}</Typography>
                     </Flex>
-                    
+
                     {workspace.description && (
                       <Typography variant="p" color="secondary">
                         {workspace.description}
                       </Typography>
                     )}
-                    
+
                     <Flex gap="md" className="text-sm text-gray-500">
                       <span>0 teams</span>
                       <span>•</span>

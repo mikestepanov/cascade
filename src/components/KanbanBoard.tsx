@@ -1,11 +1,11 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
 import { DISPLAY_LIMITS } from "@/lib/constants";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
 import { IssueDetailModal } from "./IssueDetailModal";

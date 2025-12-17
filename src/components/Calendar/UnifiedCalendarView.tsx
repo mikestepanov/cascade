@@ -1,5 +1,5 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 import { CalendarView } from "./CalendarView";

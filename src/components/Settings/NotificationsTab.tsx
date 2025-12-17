@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { api } from "../../../convex/_generated/api";
 import { Card } from "../ui/Card";
 import { Switch } from "../ui/Switch";
 import { Typography } from "../ui/Typography";

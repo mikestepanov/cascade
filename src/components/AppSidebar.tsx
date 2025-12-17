@@ -1,3 +1,4 @@
+import { api } from "@convex/_generated/api";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
@@ -18,7 +19,6 @@ import {
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/Tooltip";
@@ -52,8 +52,8 @@ export function AppSidebar() {
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createWorkspace = useMutation(api.workspaces.create);
-  const createTeam = useMutation(api.teams.create);
-  const createProject = useMutation(api.projects.create);
+  // const createTeam = useMutation(api.teams.create); // TODO: Add team creation UI
+  // const createProject = useMutation(api.projects.create); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -252,8 +252,7 @@ export function AppSidebar() {
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
                       workspaceTeams.map((team) => {
-                        const teamProjects =
-                          projects?.filter((p) => p.teamId === team._id) || [];
+                        const teamProjects = projects?.filter((p) => p.teamId === team._id) || [];
                         const isTeamExpanded = expandedTeams.has(team.slug);
 
                         return (
@@ -276,7 +275,7 @@ export function AppSidebar() {
                                 to={ROUTES.workspaces.teams.detail(
                                   companySlug,
                                   workspace.slug,
-                                  team.slug
+                                  team.slug,
                                 )}
                                 label={team.name}
                                 isActive={location.pathname.includes(`/teams/${team.slug}`)}
@@ -293,11 +292,11 @@ export function AppSidebar() {
                                       companySlug,
                                       workspace.slug,
                                       team.slug,
-                                      project.key
+                                      project.key,
                                     )}
                                     label={`${project.key} - ${project.name}`}
                                     isActive={location.pathname.includes(
-                                      `/projects/${project.key}`
+                                      `/projects/${project.key}`,
                                     )}
                                     onClick={handleNavClick}
                                   />

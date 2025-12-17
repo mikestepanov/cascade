@@ -238,6 +238,8 @@ export async function createTestIssue(
 
     return await ctx.db.insert("issues", {
       projectId,
+      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">),
+      teamId: project.teamId ?? ("" as Id<"teams">),
       key,
       title: issueData?.title || `Test Issue ${now}`,
       description: issueData?.description,
@@ -251,6 +253,7 @@ export async function createTestIssue(
       labels: [],
       linkedDocuments: [],
       attachments: [],
+      loggedHours: 0,
       order: issueCount,
     });
   });

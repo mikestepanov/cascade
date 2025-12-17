@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { useSearch } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../convex/_generated/api";
 import { CompanySettings } from "./Admin/CompanySettings";
 import { HourComplianceDashboard } from "./Admin/HourComplianceDashboard";
 import { UserManagement } from "./Admin/UserManagement";

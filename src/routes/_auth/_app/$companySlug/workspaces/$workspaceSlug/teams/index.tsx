@@ -1,31 +1,28 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { api } from "@convex/_generated/api";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { api } from "../../../../../../../convex/_generated/api";
-import { useCompany } from "@/contexts/CompanyContext";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Flex } from "@/components/ui/Flex";
-import { Typography } from "@/components/ui/Typography";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Link } from "@tanstack/react-router";
+import { Flex } from "@/components/ui/Flex";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
+import { useCompany } from "@/contexts/CompanyContext";
 
-export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/"
-)({
+export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/")({
   component: TeamsList,
 });
 
 function TeamsList() {
   const { company } = useCompany();
   const { workspaceSlug } = Route.useParams();
-  
+
   const workspace = useQuery(api.workspaces.getBySlug, {
     companyId: company._id,
     slug: workspaceSlug,
   });
-  
+
   // For now, teams are company-wide, but we'll filter by workspace later
   const allTeams = useQuery(api.teams.list, { companyId: company._id });
 
@@ -65,11 +62,7 @@ function TeamsList() {
           {teams.map((team) => (
             <Link
               key={team._id}
-              to={ROUTES.workspaces.teams.detail(
-                company.slug,
-                workspaceSlug,
-                team.slug
-              )}
+              to={ROUTES.workspaces.teams.detail(company.slug, workspaceSlug, team.slug)}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">

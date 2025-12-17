@@ -5,10 +5,10 @@
  * for a real-world use case.
  */
 
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Avatar } from "../ui/Avatar";
 import { Flex } from "../ui/Flex";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";

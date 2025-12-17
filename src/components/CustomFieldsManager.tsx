@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldCard } from "./fields/CustomFieldCard";
 import { CustomFieldForm } from "./fields/CustomFieldForm";
 import { Button } from "./ui/Button";

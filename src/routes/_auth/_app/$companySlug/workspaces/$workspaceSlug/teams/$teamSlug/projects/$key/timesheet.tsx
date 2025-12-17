@@ -6,7 +6,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 const ProjectTimesheet = React.lazy(() => import("@/components/TimeTracking/ProjectTimesheet"));
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/timesheet"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/timesheet",
 )({
   component: TimesheetPage,
 });

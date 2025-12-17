@@ -401,6 +401,53 @@ export const getTeam = query({
 });
 
 /**
+ * Get team by slug
+ */
+export const getBySlug = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const team = await ctx.db
+      .query("teams")
+      .withIndex("by_workspace_slug", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("slug", args.slug),
+      )
+      .first();
+
+    if (!team) return null;
+
+    // Check if user has access (team member or company admin)
+    const role = await getTeamRole(ctx, team._id, userId);
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
+
+    if (!(role || isAdmin)) return null;
+
+    return {
+      ...team,
+      userRole: role,
+      isAdmin,
+    };
+  },
+});
+
+/**
+ * List teams (alias for getCompanyTeams for consistency)
+ */
+export const list = query({
+  args: {
+    companyId: v.id("companies"),
+  },
+  handler: async (ctx, args) => {
+    return await getCompanyTeams.handler(ctx, args);
+  },
+});
+
+/**
  * Get all teams in a company
  */
 export const getCompanyTeams = query({

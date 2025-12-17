@@ -103,9 +103,7 @@ export const linkRepository = mutation({
     // Check permission (at least editor)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", userId),
-      )
+      .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
       .first();
 
     if (!member && project.createdBy !== userId) {
@@ -163,9 +161,7 @@ export const unlinkRepository = mutation({
     // Check permission (admin only)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
-        q.eq("projectId", repo.projectId).eq("userId", userId),
-      )
+      .withIndex("by_workspace_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
       .first();
 
     const isAdmin = project.createdBy === userId || member?.role === "admin";

@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { formatDate } from "@/lib/dates";
 import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";

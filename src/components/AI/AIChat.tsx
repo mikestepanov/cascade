@@ -2,10 +2,10 @@
  * AIChat - Refactored with useAIChat hook
  */
 
+import type { Id } from "@convex/_generated/dataModel";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";

@@ -3,7 +3,7 @@ import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/contexts/CompanyContext";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/",
 )({
   component: ProjectIndexPage,
 });

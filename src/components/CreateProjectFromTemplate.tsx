@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { useCompany } from "../hooks/useCompanyContext";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
@@ -22,9 +22,7 @@ export function CreateProjectFromTemplate({
 }: CreateProjectFromTemplateProps) {
   const { companyId } = useCompany();
   const [step, setStep] = useState<"select" | "configure">("select");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"projectTemplates"> | null>(
-    null,
-  );
+  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"projectTemplates"> | null>(null);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
@@ -100,9 +98,7 @@ export function CreateProjectFromTemplate({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>
-            {step === "select" ? "Choose a Template" : "Configure Project"}
-          </DialogTitle>
+          <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
         </DialogHeader>
 
         {step === "select" ? (

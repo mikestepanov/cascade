@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/settings"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/settings",
 )({
   component: TeamSettings,
 });

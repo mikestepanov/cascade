@@ -1,9 +1,9 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
-import type { Id } from "../../convex/_generated/dataModel";
 import { CustomFieldsManager } from "./CustomFieldsManager";
 
 // Mock dependencies

@@ -2,10 +2,10 @@
  * AIAssistantPanel - Main panel with tabs for chat and suggestions
  */
 
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { Flex } from "../ui/Flex";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";

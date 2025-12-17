@@ -1,9 +1,9 @@
+import { api } from "@convex/_generated/api";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
-import { api } from "../../convex/_generated/api";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { WorkspacesList } from "./Dashboard/ProjectsList";

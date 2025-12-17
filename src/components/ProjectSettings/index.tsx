@@ -1,4 +1,4 @@
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { DangerZone } from "./DangerZone";

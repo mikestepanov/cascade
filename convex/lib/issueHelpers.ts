@@ -6,7 +6,7 @@
  */
 
 import type { Doc, Id } from "../_generated/dataModel";
-import type { QueryCtx, MutationCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 
 /**
  * Get an issue and validate it has a projectId (for migration safety)

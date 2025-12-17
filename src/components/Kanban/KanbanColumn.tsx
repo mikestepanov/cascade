@@ -1,6 +1,6 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { memo, useCallback, useMemo } from "react";
 import { ANIMATION } from "@/lib/constants";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";
 import { LoadMoreButton } from "../ui/LoadMoreButton";

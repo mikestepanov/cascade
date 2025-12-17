@@ -1,13 +1,13 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/contexts/CompanyContext";
-import { api } from "../../../../../../../../../../convex/_generated/api";
 
 export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key"
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key",
 )({
   component: ProjectLayout,
 });
@@ -62,10 +62,7 @@ function ProjectLayout() {
     <div className="h-full flex flex-col">
       {/* Breadcrumb */}
       <div className="px-4 py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-sm">
-        <Link
-          to={ROUTES.workspaces.list(companySlug)}
-          className="text-blue-600 hover:underline"
-        >
+        <Link to={ROUTES.workspaces.list(companySlug)} className="text-blue-600 hover:underline">
           Workspaces
         </Link>
         <span className="mx-2 text-ui-text-tertiary">/</span>
