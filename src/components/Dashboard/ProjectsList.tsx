@@ -41,7 +41,7 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
   };
 
   const navigateToWorkspaces = () => {
-    navigate({ to: ROUTES.projects.list(companySlug) });
+    navigate({ to: ROUTES.workspaces.list(companySlug) });
   };
   const count = projects?.length || 0;
   const workspacesLabel = count === 1 ? "project" : "projects";
