@@ -10,6 +10,7 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     workspaceId: v.optional(v.id("workspaces")), // Link documents to workspaces
+    projectId: v.optional(v.string()), // Deprecated, kept for migration - stored as string to avoid table mismatch
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
@@ -112,7 +113,8 @@ const applicationTables = {
     .index("by_workspace_user", ["workspaceId", "userId"]),
 
   issues: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration - stored as string to avoid table mismatch
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
@@ -193,7 +195,8 @@ const applicationTables = {
     .index("by_to_issue", ["toIssueId"]),
 
   sprints: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
@@ -228,7 +231,8 @@ const applicationTables = {
     .index("by_issue_user", ["issueId", "userId"]),
 
   labels: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     color: v.string(), // Hex color code like "#3B82F6"
     createdBy: v.id("users"),
@@ -238,7 +242,8 @@ const applicationTables = {
     .index("by_workspace_name", ["workspaceId", "name"]),
 
   issueTemplates: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
@@ -258,7 +263,8 @@ const applicationTables = {
     .index("by_workspace_type", ["workspaceId", "type"]),
 
   webhooks: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
@@ -288,7 +294,8 @@ const applicationTables = {
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
@@ -350,7 +357,8 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"]),
 
   automationRules: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     description: v.optional(v.string()),
     isActive: v.boolean(),
@@ -368,7 +376,8 @@ const applicationTables = {
     .index("by_workspace_active", ["workspaceId", "isActive"]),
 
   customFields: defineTable({
-    workspaceId: v.id("workspaces"),
+    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     name: v.string(),
     fieldKey: v.string(), // Unique key like "customer_id"
     fieldType: v.union(
@@ -446,7 +455,8 @@ const applicationTables = {
     userId: v.id("users"),
     onboardingCompleted: v.boolean(),
     onboardingStep: v.optional(v.number()), // Current step (0-5)
-    sampleWorkspaceCreated: v.boolean(), // Whether sample workspace was generated
+    sampleWorkspaceCreated: v.optional(v.boolean()), // Whether sample workspace was generated (migration-safe)
+    sampleProjectCreated: v.optional(v.boolean()), // Deprecated field name (migration-safe)
     tourShown: v.boolean(), // Whether welcome tour was shown
     wizardCompleted: v.boolean(), // Whether workspace wizard was completed
     checklistDismissed: v.boolean(), // Whether checklist was dismissed
@@ -931,6 +941,7 @@ const applicationTables = {
   timeEntries: defineTable({
     userId: v.id("users"), // Who logged the time
     workspaceId: v.optional(v.id("workspaces")), // Workspace
+    projectId: v.optional(v.string()), // Deprecated, kept for migration
     issueId: v.optional(v.id("issues")), // Issue (optional)
     // Time data
     startTime: v.number(), // Unix timestamp

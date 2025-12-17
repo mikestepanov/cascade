@@ -66,18 +66,19 @@ import type * as issues from "../issues.js";
 import type * as labels from "../labels.js";
 import type * as lib_aiHelpers from "../lib/aiHelpers.js";
 import type * as lib_apiAuth from "../lib/apiAuth.js";
+import type * as lib_batchHelpers from "../lib/batchHelpers.js";
 import type * as lib_env from "../lib/env.js";
+import type * as lib_issueHelpers from "../lib/issueHelpers.js";
+import type * as lib_pagination from "../lib/pagination.js";
+import type * as lib_queryLimits from "../lib/queryLimits.js";
 import type * as lib_vectorSearchHelpers from "../lib/vectorSearchHelpers.js";
 import type * as meetingBot from "../meetingBot.js";
+import type * as migrations_migrateProjectToWorkspace from "../migrations/migrateProjectToWorkspace.js";
 import type * as notificationPreferences from "../notificationPreferences.js";
 import type * as notifications from "../notifications.js";
 import type * as offlineSync from "../offlineSync.js";
 import type * as onboarding from "../onboarding.js";
 import type * as presence from "../presence.js";
-import type * as projectAccess from "../projectAccess.js";
-import type * as projectMembers from "../projectMembers.js";
-import type * as projectTemplates from "../projectTemplates.js";
-import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
 import type * as pumble from "../pumble.js";
 import type * as rateLimiting from "../rateLimiting.js";
@@ -96,6 +97,10 @@ import type * as userProfiles from "../userProfiles.js";
 import type * as users from "../users.js";
 import type * as watchers from "../watchers.js";
 import type * as webhooks from "../webhooks.js";
+import type * as workspaceAccess from "../workspaceAccess.js";
+import type * as workspaceMembers from "../workspaceMembers.js";
+import type * as workspaceTemplates from "../workspaceTemplates.js";
+import type * as workspaces from "../workspaces.js";
 
 import type {
   ApiFromModules,
@@ -162,18 +167,19 @@ declare const fullApi: ApiFromModules<{
   labels: typeof labels;
   "lib/aiHelpers": typeof lib_aiHelpers;
   "lib/apiAuth": typeof lib_apiAuth;
+  "lib/batchHelpers": typeof lib_batchHelpers;
   "lib/env": typeof lib_env;
+  "lib/issueHelpers": typeof lib_issueHelpers;
+  "lib/pagination": typeof lib_pagination;
+  "lib/queryLimits": typeof lib_queryLimits;
   "lib/vectorSearchHelpers": typeof lib_vectorSearchHelpers;
   meetingBot: typeof meetingBot;
+  "migrations/migrateProjectToWorkspace": typeof migrations_migrateProjectToWorkspace;
   notificationPreferences: typeof notificationPreferences;
   notifications: typeof notifications;
   offlineSync: typeof offlineSync;
   onboarding: typeof onboarding;
   presence: typeof presence;
-  projectAccess: typeof projectAccess;
-  projectMembers: typeof projectMembers;
-  projectTemplates: typeof projectTemplates;
-  projects: typeof projects;
   prosemirror: typeof prosemirror;
   pumble: typeof pumble;
   rateLimiting: typeof rateLimiting;
@@ -192,6 +198,10 @@ declare const fullApi: ApiFromModules<{
   users: typeof users;
   watchers: typeof watchers;
   webhooks: typeof webhooks;
+  workspaceAccess: typeof workspaceAccess;
+  workspaceMembers: typeof workspaceMembers;
+  workspaceTemplates: typeof workspaceTemplates;
+  workspaces: typeof workspaces;
 }>;
 
 /**

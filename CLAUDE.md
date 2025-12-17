@@ -4,7 +4,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 
 ## Project Overview
 
-**Nixelo** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
+**Nixelo** is a collaborative workspace management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
 
 **Key Features:**
 - Real-time collaborative document editing with BlockNote
@@ -12,7 +12,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 - Sprint planning and tracking
 - Custom workflow states
 - Activity logging and comments
-- Document-to-project linking
+- Document-to-workspace linking
 - Full-text search capabilities
 - Live presence indicators
 - Analytics dashboard with charts and metrics
@@ -94,7 +94,7 @@ nixelo/
 │   │   ├── AppSidebar.tsx       # Unified app navigation sidebar
 │   │   ├── AppHeader.tsx        # Top header with actions
 │   │   ├── DocumentEditor.tsx   # Collaborative document editor
-│   │   ├── ProjectBoard.tsx     # Project kanban board container
+│   │   ├── ProjectBoard.tsx     # Workspace kanban board container
 │   │   ├── KanbanBoard.tsx      # Drag-and-drop kanban board
 │   │   ├── IssueCard.tsx        # Individual issue card
 │   │   ├── CreateIssueModal.tsx # Issue creation modal
@@ -116,7 +116,7 @@ nixelo/
 │   ├── schema.ts                # Database schema definition
 │   ├── auth.ts                  # Authentication configuration
 │   ├── documents.ts             # Document CRUD operations
-│   ├── projects.ts              # Project management functions
+│   ├── workspaces.ts            # Workspace management functions
 │   ├── issues.ts                # Issue tracking operations
 │   ├── sprints.ts               # Sprint management
 │   ├── presence.ts              # User presence tracking
@@ -704,34 +704,34 @@ npx convex deploy --cmd 'pnpm run build'
 2. **Authorization & RBAC (Role-Based Access Control):**
    - **Roles:** admin, editor, viewer
    - **Hierarchy:** viewer < editor < admin
-   - **Project creator:** Always has admin role
+   - **Workspace creator:** Always has admin role
    - **Permission checks:** Use RBAC utilities from `convex/rbac.ts`
 
    **RBAC Utilities:**
    ```typescript
-   import { assertMinimumRole, getUserRole, canEditProject } from "./rbac";
+   import { assertMinimumRole, getUserRole, canEditWorkspace } from "./rbac";
 
    // In a mutation/query
-   await assertMinimumRole(ctx, projectId, userId, "editor"); // Throws if insufficient
-   const role = await getUserRole(ctx, projectId, userId); // Returns role or null
-   const canEdit = await canEditProject(ctx, projectId, userId); // Boolean
+   await assertMinimumRole(ctx, workspaceId, userId, "editor"); // Throws if insufficient
+   const role = await getUserRole(ctx, workspaceId, userId); // Returns role or null
+   const canEdit = await canEditWorkspace(ctx, workspaceId, userId); // Boolean
    ```
 
    **Role Permissions:**
    - **Viewer:** Read-only access, can comment
    - **Editor:** Can create/edit/delete issues, sprints, documents
-   - **Admin:** Full control - manage settings, members, workflow, delete project
+   - **Admin:** Full control - manage settings, members, workflow, delete workspace
 
    **Database Tables:**
-   - `projectMembers`: Maps users to projects with roles
-   - Fields: projectId, userId, role, addedBy, addedAt
-   - Indexed by project, user, and project+user combination
+   - `workspaceMembers`: Maps users to workspaces with roles
+   - Fields: workspaceId, userId, role, addedBy, addedAt
+   - Indexed by workspace, user, and workspace+user combination
 
    **Member Management:**
    - Use `addMember` mutation with role parameter
    - Use `updateMemberRole` to change roles (admin only)
    - Use `removeMember` to remove members (admin only)
-   - Project creator's role cannot be changed
+   - Workspace creator's role cannot be changed
 
 3. **Data Validation:**
    - Use Convex validators (`v.string()`, `v.id()`, etc.)

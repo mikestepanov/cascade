@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useCompany } from "../hooks/useCompanyContext";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Textarea } from "./ui/form";
@@ -19,8 +20,11 @@ export function CreateProjectFromTemplate({
   onOpenChange,
   onProjectCreated,
 }: CreateProjectFromTemplateProps) {
+  const { companyId } = useCompany();
   const [step, setStep] = useState<"select" | "configure">("select");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"projectTemplates"> | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"workspaceTemplates"> | null>(
+    null,
+  );
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +36,7 @@ export function CreateProjectFromTemplate({
   );
   const createProject = useMutation(api.workspaceTemplates.createFromTemplate);
 
-  const handleSelectTemplate = (templateId: Id<"projectTemplates">) => {
+  const handleSelectTemplate = (templateId: Id<"workspaceTemplates">) => {
     setSelectedTemplateId(templateId);
     setStep("configure");
   };
@@ -54,6 +58,7 @@ export function CreateProjectFromTemplate({
         projectName: projectName.trim(),
         projectKey: projectKey.trim().toUpperCase(),
         description: description.trim() || undefined,
+        companyId,
       });
 
       toast.success("Workspace created successfully");

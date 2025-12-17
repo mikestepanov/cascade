@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { assertCanEditProject } from "./workspaceAccess";
+import { getIssueWithWorkspace } from "./lib/issueHelpers";
 
 // Generate upload URL for file attachment
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -26,6 +27,7 @@ export const attachToIssue = mutation({
 
     const issue = await ctx.db.get(args.issueId);
     if (!issue) throw new Error("Issue not found");
+    if (!issue.workspaceId) throw new Error("Issue missing workspaceId - run migration");
 
     // Check if user has access to the project
     await assertCanEditProject(ctx, issue.workspaceId, userId);
@@ -60,8 +62,7 @@ export const removeAttachment = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) throw new Error("Issue not found");
+    const issue = await getIssueWithWorkspace(ctx, args.issueId);
 
     // Check if user has access to the project
     await assertCanEditProject(ctx, issue.workspaceId, userId);
