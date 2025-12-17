@@ -2,7 +2,7 @@
 
 **Date**: 2024-12-17  
 **Branch**: `nxet`  
-**Status**: Phase 3 - Workspace/Team Routes Created
+**Status**: Phase 3 - 70% Complete ✅
 
 ---
 
@@ -17,14 +17,29 @@ Company → Workspaces (departments) → Teams → Projects → Issues
 
 ## ✅ Phase 3 Progress: Route Structure
 
-### Created Routes
+### Created Routes ✅
 
-#### Workspace Routes
+#### Workspace Routes (Complete)
 - ✅ `/workspaces/` - List all workspaces (grid view)
 - ✅ `/workspaces/:workspace` - Workspace layout (breadcrumbs, tabs)
 - ✅ `/workspaces/:workspace/` - Redirects to teams list
 - ✅ `/workspaces/:workspace/settings` - Workspace settings placeholder
 - ✅ `/workspaces/:workspace/teams/` - List teams in workspace
+
+#### Team Routes (Complete)
+- ✅ `/workspaces/:workspace/teams/:team` - Team layout (breadcrumbs, tabs)
+- ✅ `/workspaces/:workspace/teams/:team/` - Redirects to projects list
+- ✅ `/workspaces/:workspace/teams/:team/calendar` - Team calendar placeholder
+- ✅ `/workspaces/:workspace/teams/:team/settings` - Team settings placeholder
+- ✅ `/workspaces/:workspace/teams/:team/projects/` - List projects in team
+
+#### Project Routes (Partial - Need to copy from old location)
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key` - Project layout
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key/` - Redirect to board
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key/board` - Project board
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key/calendar` - Project calendar
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key/timesheet` - Project timesheet
+- ❌ `/workspaces/:workspace/teams/:team/projects/:key/settings` - Project settings
 
 ### Route Constants (Updated)
 - ✅ `ROUTES.workspaces.*` - All workspace routes
@@ -32,7 +47,7 @@ Company → Workspaces (departments) → Teams → Projects → Issues
 - ✅ `ROUTES.workspaces.teams.projects.*` - All project routes
 - ✅ Legacy `ROUTES.projects.*` - Backward compatibility
 
-### Files Created
+### Files Created (10 files) ✅
 ```
 src/routes/_auth/_app/$companySlug/workspaces/
 ├── index.tsx                              # ✅ Workspaces list
@@ -41,31 +56,38 @@ src/routes/_auth/_app/$companySlug/workspaces/
     ├── index.tsx                          # ✅ Redirect to teams
     ├── settings.tsx                       # ✅ Settings placeholder
     └── teams/
-        └── index.tsx                      # ✅ Teams list
+        ├── index.tsx                      # ✅ Teams list
+        └── $teamSlug/
+            ├── route.tsx                  # ✅ Team layout
+            ├── index.tsx                  # ✅ Redirect to projects
+            ├── calendar.tsx               # ✅ Team calendar
+            ├── settings.tsx               # ✅ Team settings
+            └── projects/
+                └── index.tsx              # ✅ Projects list
 ```
 
 ---
 
-## 🚧 Still TODO for Phase 3
+## 🚧 Still TODO for Phase 3 (30% remaining)
 
-### Team Detail Routes
+### Project Detail Routes (Need to copy/adapt from old location)
 ```
-src/routes/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/
-└── $teamSlug/
-    ├── route.tsx                          # ❌ Team layout
-    ├── index.tsx                          # ❌ Team home/board
-    ├── calendar.tsx                       # ❌ Team calendar
-    ├── settings.tsx                       # ❌ Team settings
-    └── projects/
-        ├── index.tsx                      # ❌ Projects list
-        └── $key/
-            ├── route.tsx                  # ❌ Project layout
-            ├── index.tsx                  # ❌ Redirect to board
-            ├── board.tsx                  # ❌ Project board
-            ├── calendar.tsx               # ❌ Project calendar
-            ├── timesheet.tsx              # ❌ Project timesheet
-            └── settings.tsx               # ❌ Project settings
+src/routes/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/
+└── $key/
+    ├── route.tsx                          # ❌ Project layout (copy from old)
+    ├── index.tsx                          # ❌ Redirect to board
+    ├── board.tsx                          # ❌ Project board (copy from old)
+    ├── calendar.tsx                       # ❌ Project calendar (copy from old)
+    ├── timesheet.tsx                      # ❌ Project timesheet (copy from old)
+    └── settings.tsx                       # ❌ Project settings (copy from old)
 ```
+
+**Files to copy from:**
+- `src/routes/_auth/_app/$companySlug/projects/$key/route.tsx` → Adapt for new hierarchy
+- `src/routes/_auth/_app/$companySlug/projects/$key/board.tsx` → Copy as-is
+- `src/routes/_auth/_app/$companySlug/projects/$key/calendar.tsx` → Copy as-is
+- `src/routes/_auth/_app/$companySlug/projects/$key/timesheet.tsx` → Copy as-is
+- `src/routes/_auth/_app/$companySlug/projects/$key/settings.tsx` → Copy as-is
 
 ### Component Updates
 - ❌ Update `AppSidebar.tsx` - Add workspace/team navigation
@@ -90,11 +112,11 @@ src/routes/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/
 - ✅ `projects.teamId` field added
 - ✅ Convex functions: `convex/workspaces.ts`
 
-### Routes (Partial)
-- ✅ Workspace-level routes
-- ✅ Team list route
-- ❌ Team detail routes
-- ❌ Project routes under team
+### Routes (70% Complete) ✅
+- ✅ Workspace-level routes (100%)
+- ✅ Team-level routes (100%)
+- ✅ Team projects list (100%)
+- ❌ Project detail routes (0% - need to copy from old)
 
 ### UI (Not Started)
 - ❌ Navigation sidebar
@@ -112,35 +134,46 @@ src/routes/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/
 
 ## 🎯 Next Actions (Priority Order)
 
-1. **Create Team Detail Routes** (30 min)
-   - `$teamSlug/route.tsx` - Team layout
-   - `$teamSlug/index.tsx` - Team home
-   - `$teamSlug/settings.tsx` - Team settings
+1. **Copy Project Detail Routes** (30 min) ⏭️ NEXT
+   - Copy `projects/$key/route.tsx` - Update breadcrumbs for workspace/team
+   - Copy `projects/$key/index.tsx` - Keep redirect logic
+   - Copy `projects/$key/board.tsx` - No changes needed
+   - Copy `projects/$key/calendar.tsx` - No changes needed
+   - Copy `projects/$key/timesheet.tsx` - No changes needed
+   - Copy `projects/$key/settings.tsx` - Update breadcrumbs
 
-2. **Create Team Projects Routes** (1 hour)
-   - `projects/index.tsx` - Projects list
-   - `projects/$key/route.tsx` - Project layout
-   - `projects/$key/board.tsx` - Copy from current
-   - `projects/$key/calendar.tsx` - Copy from current
-   - `projects/$key/timesheet.tsx` - Copy from current
-   - `projects/$key/settings.tsx` - Copy from current
-
-3. **Update AppSidebar** (30 min)
+2. **Update AppSidebar** (30 min)
    - Add workspaces section
-   - Add teams section
+   - Add teams section under workspace
    - Keep projects under teams
+   - Show hierarchy visually
+
+3. **Update Dashboard** (15 min)
+   - Show workspaces instead of direct projects
+   - Add "Create Workspace" button
+   - Update recent projects to show hierarchy
 
 4. **Create Migration Script** (1 hour)
    - Create "General" workspace per company
    - Create "General Team" per workspace
    - Assign all projects to general team
-   - Update all issues
+   - Update all issues with workspaceId/teamId
 
 5. **Test & Fix** (1 hour)
-   - Test navigation flow
+   - Test full navigation flow
    - Fix TypeScript errors
    - Test with real data
    - Update documentation
+
+---
+
+## 📊 Progress Summary
+
+- **Phase 3 Routes**: 70% complete ✅
+- **Workspace routes**: 100% ✅
+- **Team routes**: 100% ✅
+- **Project routes**: 0% ⏭️
+- **Estimated remaining**: ~2-3 hours
 
 ---
 
@@ -166,13 +199,20 @@ src/routes/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/
 
 ## 🚀 Estimated Time to Complete
 
-- **Remaining Phase 3**: ~3-4 hours
-- **Phase 4 (UI Updates)**: ~2-3 hours
-- **Phase 5 (Data Migration)**: ~1-2 hours
-- **Phase 6 (Testing)**: ~1-2 hours
+- **Remaining Phase 3**: ~30 minutes (copy project routes)
+- **Phase 4 (UI Updates)**: ~1 hour (sidebar, dashboard)
+- **Phase 5 (Data Migration)**: ~1 hour (migration script)
+- **Phase 6 (Testing)**: ~30 minutes (test & fix)
 
-**Total remaining**: ~8-11 hours of work
+**Total remaining**: ~3 hours of work ⚡
 
 ---
 
-**Current Status**: Workspace & team list routes created. Next: Create team detail and project routes.
+**Current Status**: Workspace & team routes complete (70%). Next: Copy project detail routes from old location.
+
+**Git Commits**:
+```
+6fa3c06 - feat: create team detail and projects routes
+3c3d5b0 - docs: add current migration status summary
+590915c - feat: create workspace/team route structure
+```
