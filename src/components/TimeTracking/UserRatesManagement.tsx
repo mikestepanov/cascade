@@ -11,14 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
-  const projects = useQuery(api.workspaces.list);
+  const projects = useQuery(api.projects.list);
   const userRates = useQuery(api.timeTracking.listUserRates, {});
 
   const setUserRate = useMutation(api.timeTracking.setUserRate);
 
   const [showAddRate, setShowAddRate] = useState(false);
   const [editingUserId, setEditingUserId] = useState<Id<"users"> | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Id<"workspaces"> | "default">("default");
+  const [selectedProject, setSelectedProject] = useState<Id<"projects"> | "default">("default");
   const [hourlyRate, setHourlyRate] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [rateType, setRateType] = useState<"internal" | "billable">("internal");
@@ -45,7 +45,7 @@ export function UserRatesManagement() {
     try {
       await setUserRate({
         userId,
-        workspaceId: selectedProject === "default" ? undefined : selectedProject,
+        projectId: selectedProject === "default" ? undefined : selectedProject,
         hourlyRate: rate,
         currency,
         rateType,
@@ -112,7 +112,7 @@ export function UserRatesManagement() {
                     </span>
                   </Flex>
                   <div className="mt-2 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    {rate.workspaceId ? (
+                    {rate.projectId ? (
                       <span>Project-specific rate</span>
                     ) : (
                       <span>Default rate (applies to all projects)</span>
@@ -183,7 +183,7 @@ export function UserRatesManagement() {
               <Select
                 value={selectedProject}
                 onValueChange={(value) =>
-                  setSelectedProject(value === "default" ? "default" : (value as Id<"workspaces">))
+                  setSelectedProject(value === "default" ? "default" : (value as Id<"projects">))
                 }
               >
                 <SelectTrigger id="rate-apply-to" className="w-full">

@@ -9,7 +9,7 @@ import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface ImportPanelProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   onImportComplete?: () => void;
 }
 
@@ -19,7 +19,7 @@ type ImportFormat = "csv" | "json";
  * Extracted import panel from ImportExportModal
  * Handles all import logic and UI
  */
-export function ImportPanel({ workspaceId, onImportComplete }: ImportPanelProps) {
+export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   const [importFormat, setImportFormat] = useState<ImportFormat>("csv");
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importData, setImportData] = useState<string>("");
@@ -52,9 +52,9 @@ export function ImportPanel({ workspaceId, onImportComplete }: ImportPanelProps)
       let result: { imported: number; failed: number; errors?: string[] };
 
       if (importFormat === "csv") {
-        result = await importCSV({ workspaceId, csvData: importData });
+        result = await importCSV({ projectId, csvData: importData });
       } else {
-        result = await importJSON({ workspaceId, jsonData: importData });
+        result = await importJSON({ projectId, jsonData: importData });
       }
 
       if (result.imported > 0) {

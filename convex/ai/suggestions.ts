@@ -86,7 +86,7 @@ export const suggestIssueDescription = action({
   args: {
     title: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
@@ -103,7 +103,7 @@ export const suggestIssueDescription = action({
 
     // Get project context
     const project = await ctx.runQuery(internal.ai.getProjectContext, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     const prompt = `Generate a clear, concise issue description for the following ${args.type}:
@@ -132,7 +132,7 @@ Description:`;
     // Store suggestion
     await ctx.runMutation(internal.ai.storeSuggestion, {
       userId: userId.subject,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       suggestionType: "issue_description",
       targetId: args.title,
       suggestion,
@@ -151,7 +151,7 @@ export const suggestPriority = action({
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
@@ -199,7 +199,7 @@ Priority:`;
     // Store suggestion
     await ctx.runMutation(internal.ai.storeSuggestion, {
       userId: userId.subject,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       suggestionType: "issue_priority",
       targetId: args.title,
       suggestion: suggestedPriority,
@@ -218,7 +218,7 @@ export const suggestLabels = action({
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
@@ -235,7 +235,7 @@ export const suggestLabels = action({
 
     // Get existing project labels
     const existingLabels = await ctx.runQuery(internal.ai.getProjectLabels, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
 
     const prompt = `Suggest 2-4 relevant labels for this issue:
@@ -273,7 +273,7 @@ Labels:`;
     // Store suggestion
     await ctx.runMutation(internal.ai.storeSuggestion, {
       userId: userId.subject,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       suggestionType: "issue_labels",
       targetId: args.title,
       suggestion: suggestedLabels.join(", "),
@@ -289,12 +289,12 @@ Labels:`;
  */
 export const getProjectLabels = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     return labels.map((label) => label.name);
@@ -307,7 +307,7 @@ export const getProjectLabels = query({
 export const storeSuggestion = mutation({
   args: {
     userId: v.string(),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     suggestionType: v.union(
       v.literal("issue_description"),
       v.literal("issue_priority"),
@@ -335,7 +335,7 @@ export const storeSuggestion = mutation({
 
     await ctx.db.insert("aiSuggestions", {
       userId: user._id as Id<"users">,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       suggestionType: args.suggestionType,
       targetId: args.targetId,
       suggestion: args.suggestion,

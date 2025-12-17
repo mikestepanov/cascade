@@ -78,7 +78,7 @@
 - [ ] Pricing page
 
 ### SSO/SAML
-- [ ] Google Workspace SSO
+- [ ] Google Project SSO
 - [ ] Microsoft Entra ID
 - [ ] Okta
 

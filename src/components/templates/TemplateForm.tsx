@@ -29,7 +29,7 @@ const templateSchema = z.object({
 // =============================================================================
 
 interface TemplateFormProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   template?: {
     _id: Id<"issueTemplates">;
     name: string;
@@ -43,7 +43,7 @@ interface TemplateFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function TemplateForm({ workspaceId, template, open, onOpenChange }: TemplateFormProps) {
+export function TemplateForm({ projectId, template, open, onOpenChange }: TemplateFormProps) {
   const createTemplate = useMutation(api.templates.create);
   const updateTemplate = useMutation(api.templates.update);
 
@@ -76,7 +76,7 @@ export function TemplateForm({ workspaceId, template, open, onOpenChange }: Temp
           await updateTemplate({ id: template._id, ...templateData });
           showSuccess("Template updated");
         } else {
-          await createTemplate({ workspaceId, ...templateData });
+          await createTemplate({ projectId, ...templateData });
           showSuccess("Template created");
         }
         onOpenChange(false);

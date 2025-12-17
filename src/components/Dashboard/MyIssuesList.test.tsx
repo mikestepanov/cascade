@@ -37,7 +37,7 @@ describe("MyIssuesList", () => {
       type: "bug",
       priority: "high",
       status: "In Progress",
-      workspaceId: "proj1" as Id<"workspaces">,
+      projectId: "proj1" as Id<"projects">,
       projectKey: "PROJ",
       projectName: "Project Alpha",
     },
@@ -48,7 +48,7 @@ describe("MyIssuesList", () => {
       type: "feature",
       priority: "medium",
       status: "To Do",
-      workspaceId: "proj1" as Id<"workspaces">,
+      projectId: "proj1" as Id<"projects">,
       projectKey: "PROJ",
       projectName: "Project Alpha",
     },
@@ -62,7 +62,7 @@ describe("MyIssuesList", () => {
       type: "task",
       priority: "low",
       status: "Done",
-      workspaceId: "proj2" as Id<"workspaces">,
+      projectId: "proj2" as Id<"projects">,
       projectKey: "BETA",
       projectName: "Project Beta",
     },
@@ -198,7 +198,7 @@ describe("MyIssuesList", () => {
     expect(projectNames.length).toBe(2); // Both issues from same project
   });
 
-  it("should navigate to workspace when clicking an issue", async () => {
+  it("should navigate to project when clicking an issue", async () => {
     const user = userEvent.setup();
 
     render(<MyIssuesList {...defaultProps} />);
@@ -207,7 +207,7 @@ describe("MyIssuesList", () => {
     await user.click(firstIssue);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/workspaces/PROJ/board",
+      to: "/test-company/projects/PROJ/board",
     });
   });
 
@@ -217,7 +217,7 @@ describe("MyIssuesList", () => {
     expect(screen.getByText("View My Workspaces")).toBeInTheDocument();
   });
 
-  it("should navigate to workspaces when clicking View My Workspaces", async () => {
+  it("should navigate to projects when clicking View My Workspaces", async () => {
     const user = userEvent.setup();
 
     render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
@@ -226,7 +226,7 @@ describe("MyIssuesList", () => {
     await user.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/workspaces",
+      to: "/test-company/projects",
     });
   });
 

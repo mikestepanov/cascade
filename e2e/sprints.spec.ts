@@ -22,7 +22,7 @@ test.describe("Sprints", () => {
   });
 
   test.describe("Sprint Navigation", () => {
-    test("can navigate to sprints tab in workspace", async ({
+    test("can navigate to sprints tab in project", async ({
       dashboardPage,
       projectsPage,
       page,
@@ -31,11 +31,11 @@ test.describe("Sprints", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Navigate to sprints tab
       await projectsPage.switchToTab("sprints");
@@ -51,11 +51,11 @@ test.describe("Sprints", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Navigate to sprints tab
       await projectsPage.switchToTab("sprints");
@@ -67,7 +67,7 @@ test.describe("Sprints", () => {
   });
 
   test.describe("Backlog Navigation", () => {
-    test("can navigate to backlog tab in workspace", async ({
+    test("can navigate to backlog tab in project", async ({
       dashboardPage,
       projectsPage,
       page,
@@ -76,11 +76,11 @@ test.describe("Sprints", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Navigate to backlog tab
       await projectsPage.switchToTab("backlog");

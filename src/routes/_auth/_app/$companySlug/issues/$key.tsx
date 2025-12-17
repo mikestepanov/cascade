@@ -51,7 +51,7 @@ function IssuePage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-4">
         <Link
-          to={ROUTES.workspaces.board(companySlug, projectKey)}
+          to={ROUTES.projects.board(companySlug, projectKey)}
           className="text-sm text-primary-600 hover:text-primary-700"
         >
           ← Back to {projectKey} board

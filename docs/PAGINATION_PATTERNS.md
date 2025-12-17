@@ -40,13 +40,13 @@ import { enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
 
 export const listByWorkspaceSmart = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     // 1. Get workflow states to know which statuses are "done"
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     const workflowStates = project.workflowStates || [];
 
     // 2. Build status -> category map
@@ -61,7 +61,7 @@ export const listByWorkspaceSmart = query({
     // 4. Fetch all issues
     const allIssues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // 5. Apply smart filtering
@@ -96,9 +96,9 @@ export const listByWorkspaceSmart = query({
 
 ```typescript
 // src/hooks/useSmartBoardData.ts
-export function useSmartBoardData({ workspaceId, sprintId }) {
+export function useSmartBoardData({ projectId, sprintId }) {
   const smartData = useQuery(api.issues.listByWorkspaceSmart, {
-    workspaceId,
+    projectId,
     sprintId,
   });
 
@@ -149,7 +149,7 @@ import { decodeCursor, encodeCursor, DEFAULT_PAGE_SIZE } from "./lib/pagination"
 
 export const listByWorkspacePaginated = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     cursor: v.optional(v.string()),
     pageSize: v.optional(v.number()),
   },
@@ -160,7 +160,7 @@ export const listByWorkspacePaginated = query({
     let issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace_updated", (q) =>
-        q.eq("workspaceId", args.workspaceId)
+        q.eq("projectId", args.projectId)
       )
       .order("desc")
       .collect();
@@ -205,12 +205,12 @@ export const listByWorkspacePaginated = query({
 
 ```typescript
 // Using the paginated query
-function IssueList({ workspaceId }) {
+function IssueList({ projectId }) {
   const [cursor, setCursor] = useState<string | undefined>();
   const [allItems, setAllItems] = useState([]);
 
   const data = useQuery(api.issues.listByWorkspacePaginated, {
-    workspaceId,
+    projectId,
     cursor,
   });
 
@@ -249,7 +249,7 @@ function IssueList({ workspaceId }) {
 const issues = await ctx.db
   .query("issues")
   .withIndex("by_workspace_updated", (q) =>
-    q.eq("workspaceId", args.workspaceId)
+    q.eq("projectId", args.projectId)
   )
   .order("desc")
   .collect();
@@ -257,7 +257,7 @@ const issues = await ctx.db
 // ❌ BAD: Full table scan
 const issues = await ctx.db
   .query("issues")
-  .filter((q) => q.eq(q.field("workspaceId"), args.workspaceId))
+  .filter((q) => q.eq(q.field("projectId"), args.projectId))
   .collect();
 ```
 
@@ -408,9 +408,9 @@ For pagination to be performant, ensure these indexes exist in `convex/schema.ts
 
 ```typescript
 issues: defineTable({...})
-  .index("by_workspace", ["workspaceId"])
-  .index("by_workspace_updated", ["workspaceId", "updatedAt"])
-  .index("by_workspace_status", ["workspaceId", "status"])
+  .index("by_workspace", ["projectId"])
+  .index("by_workspace_updated", ["projectId", "updatedAt"])
+  .index("by_workspace_status", ["projectId", "status"])
 
 documents: defineTable({...})
   .index("by_creator", ["createdBy"])

@@ -383,7 +383,7 @@
 - Simple, fast, focused
 - **Key Learning:** Timer UX is critical - must be 1-click start
 
-**Notion (All-in-one Workspace):**
+**Notion (All-in-one Project):**
 - Started with individuals, moved upmarket
 - Template marketplace for different use cases
 - **Key Learning:** Templates = fast onboarding

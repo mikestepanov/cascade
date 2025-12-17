@@ -28,11 +28,11 @@ test.describe("Issues", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
       await projectsPage.expectBoardVisible();
 
       // Create an issue
@@ -55,11 +55,11 @@ test.describe("Issues", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Create an issue
       const uniqueId = Date.now();
@@ -79,11 +79,11 @@ test.describe("Issues", () => {
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace first
+      // Create a project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Create an issue
       const uniqueId = Date.now();

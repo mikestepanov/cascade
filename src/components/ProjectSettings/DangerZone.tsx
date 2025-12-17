@@ -12,7 +12,7 @@ import { Input } from "../ui/form";
 import { Typography } from "../ui/Typography";
 
 interface DangerZoneProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   projectName: string;
   projectKey: string;
   isOwner: boolean;
@@ -20,7 +20,7 @@ interface DangerZoneProps {
 }
 
 export function DangerZone({
-  workspaceId,
+  projectId,
   projectName,
   projectKey,
   isOwner,
@@ -31,21 +31,21 @@ export function DangerZone({
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
-  const deleteProject = useMutation(api.workspaces.deleteWorkspace);
+  const deleteProject = useMutation(api.projects.deleteWorkspace);
 
   const handleDelete = async () => {
     if (confirmText !== projectKey) {
-      showError(new Error("Please type the workspace key to confirm"), "Confirmation required");
+      showError(new Error("Please type the project key to confirm"), "Confirmation required");
       return;
     }
 
     setIsDeleting(true);
     try {
-      await deleteProject({ workspaceId });
-      showSuccess("Workspace deleted successfully");
-      navigate({ to: ROUTES.workspaces.list(companySlug) });
+      await deleteProject({ projectId });
+      showSuccess("Project deleted successfully");
+      navigate({ to: ROUTES.projects.list(companySlug) });
     } catch (error) {
-      showError(error, "Failed to delete workspace");
+      showError(error, "Failed to delete project");
       setIsDeleting(false);
     }
   };
@@ -61,23 +61,23 @@ export function DangerZone({
           Danger Zone
         </Typography>
         <Typography variant="small" color="secondary" className="mb-4">
-          Irreversible actions that affect the entire workspace
+          Irreversible actions that affect the entire project
         </Typography>
 
         <div className="p-4 bg-status-error/5 border border-status-error/20 rounded-lg">
           <Flex justify="between" align="start">
             <div className="flex-1">
               <Typography variant="small" className="font-medium">
-                Delete this workspace
+                Delete this project
               </Typography>
               <Typography variant="small" color="secondary" className="mt-1">
-                Once you delete a workspace, there is no going back. This will permanently delete
-                the workspace "{projectName}" and all its issues, sprints, and data.
+                Once you delete a project, there is no going back. This will permanently delete
+                the project "{projectName}" and all its issues, sprints, and data.
               </Typography>
             </div>
             {!showConfirm && (
               <Button variant="danger" size="sm" onClick={() => setShowConfirm(true)}>
-                Delete Workspace
+                Delete Project
               </Button>
             )}
           </Flex>
@@ -99,7 +99,7 @@ export function DangerZone({
                   onClick={handleDelete}
                   disabled={confirmText !== projectKey || isDeleting}
                 >
-                  {isDeleting ? "Deleting..." : "I understand, delete this workspace"}
+                  {isDeleting ? "Deleting..." : "I understand, delete this project"}
                 </Button>
                 <Button
                   variant="secondary"

@@ -23,7 +23,7 @@ import { rateLimit } from "../rateLimits";
 export const searchSimilarIssues = action({
   args: {
     query: v.string(),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -47,7 +47,7 @@ export const searchSimilarIssues = action({
     const results = await ctx.vectorSearch("issues", "by_embedding", {
       vector: queryEmbedding,
       limit: args.limit || 10,
-      filter: (q) => q.eq("workspaceId", args.workspaceId),
+      filter: (q) => q.eq("projectId", args.projectId),
     });
 
     // Convert vector search results to typed format
@@ -92,7 +92,7 @@ export const getRelatedIssues = action({
     const rawResults = await ctx.vectorSearch("issues", "by_embedding", {
       vector: issue.embedding,
       limit: (args.limit || 5) + 1, // +1 to exclude self
-      filter: (q) => q.eq("workspaceId", issue.workspaceId),
+      filter: (q) => q.eq("projectId", issue.projectId),
     });
 
     // Convert to typed results
@@ -125,7 +125,7 @@ export const findPotentialDuplicates = action({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     threshold: v.optional(v.number()), // Similarity threshold (0-1)
   },
   handler: async (ctx, args) => {
@@ -141,7 +141,7 @@ export const findPotentialDuplicates = action({
     const rawResults = await ctx.vectorSearch("issues", "by_embedding", {
       vector: embedding,
       limit: 10,
-      filter: (q) => q.eq("workspaceId", args.workspaceId),
+      filter: (q) => q.eq("projectId", args.projectId),
     });
 
     // Convert to typed results

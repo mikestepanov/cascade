@@ -60,34 +60,34 @@ describe("RBAC Utilities", () => {
     });
   });
 
-  describe("getProjectRole (workspaceAccess)", () => {
+  describe("getProjectRole (projectAccess)", () => {
     it("should return 'admin' for project creator", async () => {
       const t = convexTest(schema, modules);
 
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
 
       const role = await t.run(async (ctx) => {
-        const { getProjectRole } = await import("./workspaceAccess");
-        return await getProjectRole(ctx, workspaceId, userId);
+        const { getProjectRole } = await import("./projectAccess");
+        return await getProjectRole(ctx, projectId, userId);
       });
 
       expect(role).toBe("admin");
     });
 
-    it("should return correct role from workspaceMembers table", async () => {
+    it("should return correct role from projectMembers table", async () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const memberId = await createTestUser(t, { name: "Member" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
       // Add member as editor
-      await addProjectMember(t, workspaceId, memberId, "editor", creatorId);
+      await addProjectMember(t, projectId, memberId, "editor", creatorId);
 
       const role = await t.run(async (ctx) => {
-        const { getProjectRole } = await import("./workspaceAccess");
-        return await getProjectRole(ctx, workspaceId, memberId);
+        const { getProjectRole } = await import("./projectAccess");
+        return await getProjectRole(ctx, projectId, memberId);
       });
 
       expect(role).toBe("editor");
@@ -98,11 +98,11 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const nonMemberId = await createTestUser(t, { name: "Non-Member" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
       const role = await t.run(async (ctx) => {
-        const { getProjectRole } = await import("./workspaceAccess");
-        return await getProjectRole(ctx, workspaceId, nonMemberId);
+        const { getProjectRole } = await import("./projectAccess");
+        return await getProjectRole(ctx, projectId, nonMemberId);
       });
 
       expect(role).toBeNull();
@@ -112,10 +112,10 @@ describe("RBAC Utilities", () => {
       const t = convexTest(schema, modules);
 
       const userId = await createTestUser(t);
-      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"workspaces">;
+      const fakeProjectId = "jh71bgkqr4n1pfdx9e1pge7e717mah8k" as Id<"projects">;
 
       const role = await t.run(async (ctx) => {
-        const { getProjectRole } = await import("./workspaceAccess");
+        const { getProjectRole } = await import("./projectAccess");
         return await getProjectRole(ctx, fakeProjectId, userId);
       });
 
@@ -123,15 +123,15 @@ describe("RBAC Utilities", () => {
     });
   });
 
-  describe("canAccessProject (workspaceAccess)", () => {
-    it("should allow access to company-visible workspaces for company members", async () => {
+  describe("canAccessProject (projectAccess)", () => {
+    it("should allow access to company-visible projects for company members", async () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const companyMemberId = await createTestUser(t, { name: "Company Member" });
       const companyId = await createCompanyAdmin(t, creatorId);
 
-      // Add company member (not workspace member)
+      // Add company member (not project member)
       const now = Date.now();
       await t.run(async (ctx) => {
         await ctx.db.insert("companyMembers", {
@@ -143,10 +143,10 @@ describe("RBAC Utilities", () => {
         });
       });
 
-      // Create company-visible workspace
-      const workspaceId = await t.run(async (ctx) => {
-        return ctx.db.insert("workspaces", {
-          name: "Company Visible Workspace",
+      // Create company-visible project
+      const projectId = await t.run(async (ctx) => {
+        return ctx.db.insert("projects", {
+          name: "Company Visible Project",
           key: "COMPVIS",
           companyId,
           ownerId: creatorId,
@@ -160,8 +160,8 @@ describe("RBAC Utilities", () => {
       });
 
       const canAccess = await t.run(async (ctx) => {
-        const { canAccessProject } = await import("./workspaceAccess");
-        return await canAccessProject(ctx, workspaceId, companyMemberId);
+        const { canAccessProject } = await import("./projectAccess");
+        return await canAccessProject(ctx, projectId, companyMemberId);
       });
 
       expect(canAccess).toBe(true);
@@ -173,48 +173,48 @@ describe("RBAC Utilities", () => {
       const creatorId = await createTestUser(t, { name: "Creator" });
       const memberId = await createTestUser(t, { name: "Member" });
       const nonMemberId = await createTestUser(t, { name: "Non-Member" });
-      const workspaceId = await createTestProject(t, creatorId, {
+      const projectId = await createTestProject(t, creatorId, {
         isPublic: false,
       });
 
-      await addProjectMember(t, workspaceId, memberId, "viewer", creatorId);
+      await addProjectMember(t, projectId, memberId, "viewer", creatorId);
 
       // Creator can access
       const creatorCanAccess = await t.run(async (ctx) => {
-        const { canAccessProject } = await import("./workspaceAccess");
-        return await canAccessProject(ctx, workspaceId, creatorId);
+        const { canAccessProject } = await import("./projectAccess");
+        return await canAccessProject(ctx, projectId, creatorId);
       });
       expect(creatorCanAccess).toBe(true);
 
       // Member can access
       const memberCanAccess = await t.run(async (ctx) => {
-        const { canAccessProject } = await import("./workspaceAccess");
-        return await canAccessProject(ctx, workspaceId, memberId);
+        const { canAccessProject } = await import("./projectAccess");
+        return await canAccessProject(ctx, projectId, memberId);
       });
       expect(memberCanAccess).toBe(true);
 
       // Non-member cannot access
       const nonMemberCanAccess = await t.run(async (ctx) => {
-        const { canAccessProject } = await import("./workspaceAccess");
-        return await canAccessProject(ctx, workspaceId, nonMemberId);
+        const { canAccessProject } = await import("./projectAccess");
+        return await canAccessProject(ctx, projectId, nonMemberId);
       });
       expect(nonMemberCanAccess).toBe(false);
     });
   });
 
-  describe("canEditProject (workspaceAccess)", () => {
+  describe("canEditProject (projectAccess)", () => {
     it("should allow editors to edit", async () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const editorId = await createTestUser(t, { name: "Editor" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, editorId, "editor", creatorId);
+      await addProjectMember(t, projectId, editorId, "editor", creatorId);
 
       const canEdit = await t.run(async (ctx) => {
-        const { canEditProject } = await import("./workspaceAccess");
-        return await canEditProject(ctx, workspaceId, editorId);
+        const { canEditProject } = await import("./projectAccess");
+        return await canEditProject(ctx, projectId, editorId);
       });
 
       expect(canEdit).toBe(true);
@@ -225,13 +225,13 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const adminId = await createTestUser(t, { name: "Admin" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, adminId, "admin", creatorId);
+      await addProjectMember(t, projectId, adminId, "admin", creatorId);
 
       const canEdit = await t.run(async (ctx) => {
-        const { canEditProject } = await import("./workspaceAccess");
-        return await canEditProject(ctx, workspaceId, adminId);
+        const { canEditProject } = await import("./projectAccess");
+        return await canEditProject(ctx, projectId, adminId);
       });
 
       expect(canEdit).toBe(true);
@@ -242,20 +242,20 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const viewerId = await createTestUser(t, { name: "Viewer" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, viewerId, "viewer", creatorId);
+      await addProjectMember(t, projectId, viewerId, "viewer", creatorId);
 
       const canEdit = await t.run(async (ctx) => {
-        const { canEditProject } = await import("./workspaceAccess");
-        return await canEditProject(ctx, workspaceId, viewerId);
+        const { canEditProject } = await import("./projectAccess");
+        return await canEditProject(ctx, projectId, viewerId);
       });
 
       expect(canEdit).toBe(false);
     });
   });
 
-  describe("isProjectAdmin (workspaceAccess)", () => {
+  describe("isProjectAdmin (projectAccess)", () => {
     it("should allow only admins to manage", async () => {
       const t = convexTest(schema, modules);
 
@@ -263,58 +263,58 @@ describe("RBAC Utilities", () => {
       const adminId = await createTestUser(t, { name: "Admin" });
       const editorId = await createTestUser(t, { name: "Editor" });
       const viewerId = await createTestUser(t, { name: "Viewer" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, adminId, "admin", creatorId);
-      await addProjectMember(t, workspaceId, editorId, "editor", creatorId);
-      await addProjectMember(t, workspaceId, viewerId, "viewer", creatorId);
+      await addProjectMember(t, projectId, adminId, "admin", creatorId);
+      await addProjectMember(t, projectId, editorId, "editor", creatorId);
+      await addProjectMember(t, projectId, viewerId, "viewer", creatorId);
 
       // Creator (admin) can manage
       const creatorCanManage = await t.run(async (ctx) => {
-        const { isProjectAdmin } = await import("./workspaceAccess");
-        return await isProjectAdmin(ctx, workspaceId, creatorId);
+        const { isProjectAdmin } = await import("./projectAccess");
+        return await isProjectAdmin(ctx, projectId, creatorId);
       });
       expect(creatorCanManage).toBe(true);
 
       // Admin can manage
       const adminCanManage = await t.run(async (ctx) => {
-        const { isProjectAdmin } = await import("./workspaceAccess");
-        return await isProjectAdmin(ctx, workspaceId, adminId);
+        const { isProjectAdmin } = await import("./projectAccess");
+        return await isProjectAdmin(ctx, projectId, adminId);
       });
       expect(adminCanManage).toBe(true);
 
       // Editor cannot manage
       const editorCanManage = await t.run(async (ctx) => {
-        const { isProjectAdmin } = await import("./workspaceAccess");
-        return await isProjectAdmin(ctx, workspaceId, editorId);
+        const { isProjectAdmin } = await import("./projectAccess");
+        return await isProjectAdmin(ctx, projectId, editorId);
       });
       expect(editorCanManage).toBe(false);
 
       // Viewer cannot manage
       const viewerCanManage = await t.run(async (ctx) => {
-        const { isProjectAdmin } = await import("./workspaceAccess");
-        return await isProjectAdmin(ctx, workspaceId, viewerId);
+        const { isProjectAdmin } = await import("./projectAccess");
+        return await isProjectAdmin(ctx, projectId, viewerId);
       });
       expect(viewerCanManage).toBe(false);
     });
   });
 
-  describe("assertCanEditProject (workspaceAccess)", () => {
+  describe("assertCanEditProject (projectAccess)", () => {
     it("should throw for insufficient permissions", async () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const viewerId = await createTestUser(t, { name: "Viewer" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, viewerId, "viewer", creatorId);
+      await addProjectMember(t, projectId, viewerId, "viewer", creatorId);
 
       await expect(async () => {
         await t.run(async (ctx) => {
-          const { assertCanEditProject } = await import("./workspaceAccess");
-          await assertCanEditProject(ctx, workspaceId, viewerId);
+          const { assertCanEditProject } = await import("./projectAccess");
+          await assertCanEditProject(ctx, projectId, viewerId);
         });
-      }).rejects.toThrow("You don't have permission to edit this workspace");
+      }).rejects.toThrow("You don't have permission to edit this project");
     });
 
     it("should pass for sufficient permissions", async () => {
@@ -322,14 +322,14 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const editorId = await createTestUser(t, { name: "Editor" });
-      const workspaceId = await createTestProject(t, creatorId);
+      const projectId = await createTestProject(t, creatorId);
 
-      await addProjectMember(t, workspaceId, editorId, "editor", creatorId);
+      await addProjectMember(t, projectId, editorId, "editor", creatorId);
 
       // Should not throw
       await t.run(async (ctx) => {
-        const { assertCanEditProject } = await import("./workspaceAccess");
-        await assertCanEditProject(ctx, workspaceId, editorId);
+        const { assertCanEditProject } = await import("./projectAccess");
+        await assertCanEditProject(ctx, projectId, editorId);
       });
     });
   });

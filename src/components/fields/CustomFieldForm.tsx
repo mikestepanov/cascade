@@ -25,7 +25,7 @@ function parseFieldOptions(fieldType: FieldType, options: string): string[] | un
 }
 
 interface CustomFieldFormProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   field?: {
     _id: Id<"customFields">;
     name: string;
@@ -43,7 +43,7 @@ interface CustomFieldFormProps {
  * Extracted form component for creating/editing custom fields
  * Separated from CustomFieldsManager for better reusability
  */
-export function CustomFieldForm({ workspaceId, field, open, onOpenChange }: CustomFieldFormProps) {
+export function CustomFieldForm({ projectId, field, open, onOpenChange }: CustomFieldFormProps) {
   const [name, setName] = useState("");
   const [fieldKey, setFieldKey] = useState("");
   const [fieldType, setFieldType] = useState<FieldType>("text");
@@ -96,7 +96,7 @@ export function CustomFieldForm({ workspaceId, field, open, onOpenChange }: Cust
         showSuccess("Field updated");
       } else {
         await createField({
-          workspaceId,
+          projectId,
           name,
           fieldKey: fieldKey.toLowerCase().replace(/\s+/g, "_"),
           fieldType,

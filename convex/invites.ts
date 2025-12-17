@@ -19,7 +19,7 @@ async function isCompanyAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) 
 
   // Fallback: Check if user has created a project (backward compatibility)
   const createdProjects = await ctx.db
-    .query("workspaces")
+    .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
@@ -27,7 +27,7 @@ async function isCompanyAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) 
 
   // Fallback: Check if user has admin role in any project (backward compatibility)
   const adminMembership = await ctx.db
-    .query("workspaceMembers")
+    .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
     .first();
@@ -46,10 +46,10 @@ function generateInviteToken(): string {
 // Helper: Check if user is a project admin
 async function isProjectAdmin(
   ctx: MutationCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const project = await ctx.db.get(workspaceId);
+  const project = await ctx.db.get(projectId);
   if (!project) return false;
 
   // Creator is always admin
@@ -57,8 +57,8 @@ async function isProjectAdmin(
 
   // Check project membership
   const membership = await ctx.db
-    .query("workspaceMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("workspaceId", workspaceId).eq("userId", userId))
+    .query("projectMembers")
+    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .first();
 
   return membership?.role === "admin";
@@ -73,16 +73,16 @@ function isValidEmail(email: string): boolean {
 // Helper: Add existing user to project directly
 async function addExistingUserToProject(
   ctx: MutationCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   existingUserId: Id<"users">,
   role: "admin" | "editor" | "viewer",
   addedBy: Id<"users">,
 ): Promise<{ success: boolean; addedDirectly: true; userId: Id<"users"> }> {
   // Check if already a member
   const existingMember = await ctx.db
-    .query("workspaceMembers")
+    .query("projectMembers")
     .withIndex("by_workspace_user", (q) =>
-      q.eq("workspaceId", workspaceId).eq("userId", existingUserId),
+      q.eq("projectId", projectId).eq("userId", existingUserId),
     )
     .first();
 
@@ -91,8 +91,8 @@ async function addExistingUserToProject(
   }
 
   // Add them directly to the project
-  await ctx.db.insert("workspaceMembers", {
-    workspaceId,
+  await ctx.db.insert("projectMembers", {
+    projectId,
     userId: existingUserId,
     role,
     addedBy,
@@ -106,7 +106,7 @@ async function addExistingUserToProject(
 async function checkDuplicatePendingInvite(
   ctx: MutationCtx,
   email: string,
-  workspaceId: Id<"workspaces"> | undefined,
+  projectId: Id<"projects"> | undefined,
 ): Promise<void> {
   const existingInvite = await ctx.db
     .query("invites")
@@ -116,8 +116,8 @@ async function checkDuplicatePendingInvite(
   if (!existingInvite) return;
 
   const sameProject =
-    workspaceId && existingInvite.workspaceId?.toString() === workspaceId.toString();
-  const bothPlatform = !(workspaceId || existingInvite.workspaceId);
+    projectId && existingInvite.projectId?.toString() === projectId.toString();
+  const bothPlatform = !(projectId || existingInvite.projectId);
 
   if (sameProject) {
     throw new Error("An invitation has already been sent to this email for this project");
@@ -132,7 +132,7 @@ function buildInviteEmail(
   inviteLink: string,
   isProjectInvite: boolean,
   projectName: string | undefined,
-  workspaceRole: string | undefined,
+  projectRole: string | undefined,
   platformRole: string,
 ): { subject: string; html: string; text: string } {
   if (isProjectInvite && projectName) {
@@ -141,13 +141,13 @@ function buildInviteEmail(
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>You're invited to join ${projectName}</h2>
-          <p>You have been invited to collaborate on the project <strong>${projectName}</strong> as a <strong>${workspaceRole}</strong>.</p>
+          <p>You have been invited to collaborate on the project <strong>${projectName}</strong> as a <strong>${projectRole}</strong>.</p>
           <p>Click the button below to accept your invitation:</p>
           <a href="${inviteLink}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
           <p style="color: #666; font-size: 14px;">This link will expire in 7 days.</p>
         </div>
       `,
-      text: `You have been invited to collaborate on ${projectName} as a ${workspaceRole}. Accept your invitation here: ${inviteLink}`,
+      text: `You have been invited to collaborate on ${projectName} as a ${projectRole}. Accept your invitation here: ${inviteLink}`,
     };
   }
 
@@ -176,8 +176,8 @@ export const sendInvite = mutation({
     email: v.string(),
     role: v.union(v.literal("user"), v.literal("superAdmin")),
     // Optional project-level invite fields
-    workspaceId: v.optional(v.id("workspaces")),
-    workspaceRole: v.optional(
+    projectId: v.optional(v.id("projects")),
+    projectRole: v.optional(
       v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
     ),
   },
@@ -193,15 +193,15 @@ export const sendInvite = mutation({
     // Check permissions and get project info
     const isPlatAdmin = await isCompanyAdmin(ctx, userId);
     let projectName: string | undefined;
-    const effectiveProjectRole = args.workspaceRole || "editor";
+    const effectiveProjectRole = args.projectRole || "editor";
 
-    if (args.workspaceId) {
-      const project = await ctx.db.get(args.workspaceId);
+    if (args.projectId) {
+      const project = await ctx.db.get(args.projectId);
       if (!project) throw new Error("Project not found");
       projectName = project.name;
 
       // Allow if platform admin OR project admin
-      const hasProjectAdmin = await isProjectAdmin(ctx, args.workspaceId, userId);
+      const hasProjectAdmin = await isProjectAdmin(ctx, args.projectId, userId);
       if (!(isPlatAdmin || hasProjectAdmin)) {
         throw new Error("Only project admins can invite to projects");
       }
@@ -216,10 +216,10 @@ export const sendInvite = mutation({
       .first();
 
     // For project invites, add existing users directly
-    if (existingUser && args.workspaceId) {
+    if (existingUser && args.projectId) {
       return addExistingUserToProject(
         ctx,
-        args.workspaceId,
+        args.projectId,
         existingUser._id,
         effectiveProjectRole,
         userId,
@@ -230,7 +230,7 @@ export const sendInvite = mutation({
     }
 
     // Check for duplicate pending invites
-    await checkDuplicatePendingInvite(ctx, args.email, args.workspaceId);
+    await checkDuplicatePendingInvite(ctx, args.email, args.projectId);
 
     // Create the invite
     const now = Date.now();
@@ -239,8 +239,8 @@ export const sendInvite = mutation({
     const inviteId = await ctx.db.insert("invites", {
       email: args.email,
       role: args.role,
-      workspaceId: args.workspaceId,
-      workspaceRole: args.workspaceId ? effectiveProjectRole : undefined,
+      projectId: args.projectId,
+      projectRole: args.projectId ? effectiveProjectRole : undefined,
       invitedBy: userId,
       token,
       expiresAt: now + 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -253,7 +253,7 @@ export const sendInvite = mutation({
     const inviteLink = `${getSiteUrl()}/invite/${token}`;
     const emailContent = buildInviteEmail(
       inviteLink,
-      !!args.workspaceId,
+      !!args.projectId,
       projectName,
       effectiveProjectRole,
       args.role,
@@ -345,8 +345,8 @@ export const resendInvite = mutation({
 
     // Get project name if project invite
     let projectName: string | undefined;
-    if (invite.workspaceId) {
-      const project = await ctx.db.get(invite.workspaceId);
+    if (invite.projectId) {
+      const project = await ctx.db.get(invite.projectId);
       projectName = project?.name;
     }
 
@@ -354,9 +354,9 @@ export const resendInvite = mutation({
     const inviteLink = `${getSiteUrl()}/invite/${invite.token}`;
     const emailContent = buildInviteEmail(
       inviteLink,
-      !!invite.workspaceId,
+      !!invite.projectId,
       projectName,
-      invite.workspaceRole,
+      invite.projectRole,
       invite.role,
     );
 
@@ -396,8 +396,8 @@ export const getInviteByToken = query({
 
     // Get project name if project invite
     let projectName: string | undefined;
-    if (invite.workspaceId) {
-      const project = await ctx.db.get(invite.workspaceId);
+    if (invite.projectId) {
+      const project = await ctx.db.get(invite.projectId);
       projectName = project?.name;
     }
 
@@ -464,30 +464,30 @@ export const acceptInvite = mutation({
     });
 
     // If this is a project invite, add user to the project
-    let workspaceId: Id<"workspaces"> | undefined;
-    if (invite.workspaceId) {
-      const inviteProjectId = invite.workspaceId; // Store in local for type narrowing
+    let projectId: Id<"projects"> | undefined;
+    if (invite.projectId) {
+      const inviteProjectId = invite.projectId; // Store in local for type narrowing
       // Check if user is not already a member (edge case: manually added after invite sent)
       const existingMember = await ctx.db
-        .query("workspaceMembers")
+        .query("projectMembers")
         .withIndex("by_workspace_user", (q) =>
-          q.eq("workspaceId", inviteProjectId).eq("userId", userId),
+          q.eq("projectId", inviteProjectId).eq("userId", userId),
         )
         .first();
 
       if (!existingMember) {
-        await ctx.db.insert("workspaceMembers", {
-          workspaceId: inviteProjectId,
+        await ctx.db.insert("projectMembers", {
+          projectId: inviteProjectId,
           userId,
-          role: invite.workspaceRole || "editor",
+          role: invite.projectRole || "editor",
           addedBy: invite.invitedBy,
           addedAt: Date.now(),
         });
       }
-      workspaceId = inviteProjectId;
+      projectId = inviteProjectId;
     }
 
-    return { success: true, role: invite.role, workspaceId, workspaceRole: invite.workspaceRole };
+    return { success: true, role: invite.role, projectId, projectRole: invite.projectRole };
   },
 });
 
@@ -533,19 +533,19 @@ export const listInvites = query({
     // Batch fetch all related data to avoid N+1
     const inviterIds = invites.map((i) => i.invitedBy);
     const acceptedByIds = invites.map((i) => i.acceptedBy).filter(Boolean) as Id<"users">[];
-    const workspaceIds = invites.map((i) => i.workspaceId).filter(Boolean) as Id<"workspaces">[];
+    const projectIds = invites.map((i) => i.projectId).filter(Boolean) as Id<"projects">[];
 
-    const [inviterMap, acceptedByMap, workspaceMap] = await Promise.all([
+    const [inviterMap, acceptedByMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, inviterIds),
       batchFetchUsers(ctx, acceptedByIds),
-      batchFetchWorkspaces(ctx, workspaceIds),
+      batchFetchWorkspaces(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
     const invitesWithNames = invites.map((invite) => {
       const inviter = inviterMap.get(invite.invitedBy);
       const acceptedUser = invite.acceptedBy ? acceptedByMap.get(invite.acceptedBy) : null;
-      const project = invite.workspaceId ? workspaceMap.get(invite.workspaceId) : null;
+      const project = invite.projectId ? projectMap.get(invite.projectId) : null;
 
       return {
         ...invite,
@@ -581,7 +581,7 @@ export const listUsers = query({
     const MAX_USERS = 500;
     const users = await ctx.db.query("users").take(MAX_USERS);
 
-    // Batch fetch all workspace creations and memberships to avoid N+1 queries
+    // Batch fetch all project creations and memberships to avoid N+1 queries
     const userIds = users.map((u) => u._id);
 
     // Parallel queries for all users at once
@@ -589,7 +589,7 @@ export const listUsers = query({
       Promise.all(
         userIds.map((uid) =>
           ctx.db
-            .query("workspaces")
+            .query("projects")
             .withIndex("by_creator", (q) => q.eq("createdBy", uid))
             .collect(),
         ),
@@ -597,7 +597,7 @@ export const listUsers = query({
       Promise.all(
         userIds.map((uid) =>
           ctx.db
-            .query("workspaceMembers")
+            .query("projectMembers")
             .withIndex("by_user", (q) => q.eq("userId", uid))
             .collect(),
         ),
@@ -621,7 +621,7 @@ export const listUsers = query({
       emailVerificationTime: user.emailVerificationTime,
       isAnonymous: user.isAnonymous,
       projectsCreated: createdCountMap.get(user._id.toString()) ?? 0,
-      workspaceMemberships: membershipCountMap.get(user._id.toString()) ?? 0,
+      projectMemberships: membershipCountMap.get(user._id.toString()) ?? 0,
     }));
 
     return usersWithInfo;

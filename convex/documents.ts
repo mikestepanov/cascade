@@ -210,11 +210,11 @@ function matchesDocumentFilters(
   doc: {
     isPublic: boolean;
     createdBy: Id<"users">;
-    workspaceId?: Id<"workspaces">;
+    projectId?: Id<"projects">;
     createdAt: number;
   },
   filters: {
-    workspaceId?: Id<"workspaces">;
+    projectId?: Id<"projects">;
     createdBy?: Id<"users"> | "me";
     isPublic?: boolean;
     dateFrom?: number;
@@ -223,7 +223,7 @@ function matchesDocumentFilters(
   userId: Id<"users">,
 ): boolean {
   // Apply project filter
-  if (filters.workspaceId && doc.workspaceId !== filters.workspaceId) {
+  if (filters.projectId && doc.projectId !== filters.projectId) {
     return false;
   }
 
@@ -258,7 +258,7 @@ export const search = query({
     query: v.string(),
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     createdBy: v.optional(v.union(v.id("users"), v.literal("me"))),
     isPublic: v.optional(v.boolean()),
     dateFrom: v.optional(v.number()),
@@ -314,19 +314,19 @@ export const search = query({
     const paginatedResults = filtered.slice(offset, offset + limit);
     const hasMore = filtered.length > offset + limit;
 
-    // Batch fetch all creators and workspaces (avoid N+1!)
+    // Batch fetch all creators and projects (avoid N+1!)
     const creatorIds = paginatedResults.map((doc) => doc.createdBy);
-    const workspaceIds = paginatedResults.map((doc) => doc.workspaceId);
+    const projectIds = paginatedResults.map((doc) => doc.projectId);
 
-    const [creatorMap, workspaceMap] = await Promise.all([
+    const [creatorMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, creatorIds),
-      batchFetchWorkspaces(ctx, workspaceIds),
+      batchFetchWorkspaces(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
     const enrichedResults = paginatedResults.map((doc) => {
       const creator = creatorMap.get(doc.createdBy);
-      const project = doc.workspaceId ? workspaceMap.get(doc.workspaceId) : null;
+      const project = doc.projectId ? projectMap.get(doc.projectId) : null;
 
       return {
         ...doc,

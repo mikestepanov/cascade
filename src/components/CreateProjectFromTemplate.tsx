@@ -12,7 +12,7 @@ import { LoadingSpinner } from "./ui/LoadingSpinner";
 interface CreateProjectFromTemplateProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onProjectCreated?: (workspaceId: Id<"workspaces">) => void;
+  onProjectCreated?: (projectId: Id<"projects">) => void;
 }
 
 export function CreateProjectFromTemplate({
@@ -22,21 +22,21 @@ export function CreateProjectFromTemplate({
 }: CreateProjectFromTemplateProps) {
   const { companyId } = useCompany();
   const [step, setStep] = useState<"select" | "configure">("select");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"workspaceTemplates"> | null>(
+  const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"projectTemplates"> | null>(
     null,
   );
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
 
-  const templates = useQuery(api.workspaceTemplates.list);
+  const templates = useQuery(api.projectTemplates.list);
   const selectedTemplate = useQuery(
-    api.workspaceTemplates.get,
+    api.projectTemplates.get,
     selectedTemplateId ? { id: selectedTemplateId } : "skip",
   );
-  const createProject = useMutation(api.workspaceTemplates.createFromTemplate);
+  const createProject = useMutation(api.projectTemplates.createFromTemplate);
 
-  const handleSelectTemplate = (templateId: Id<"workspaceTemplates">) => {
+  const handleSelectTemplate = (templateId: Id<"projectTemplates">) => {
     setSelectedTemplateId(templateId);
     setStep("configure");
   };
@@ -53,7 +53,7 @@ export function CreateProjectFromTemplate({
     }
 
     try {
-      const workspaceId = await createProject({
+      const projectId = await createProject({
         templateId: selectedTemplateId,
         projectName: projectName.trim(),
         projectKey: projectKey.trim().toUpperCase(),
@@ -61,12 +61,12 @@ export function CreateProjectFromTemplate({
         companyId,
       });
 
-      toast.success("Workspace created successfully");
-      onProjectCreated?.(workspaceId);
+      toast.success("Project created successfully");
+      onProjectCreated?.(projectId);
       onOpenChange(false);
       resetForm();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create workspace");
+      toast.error(error instanceof Error ? error.message : "Failed to create project");
     }
   };
 
@@ -101,7 +101,7 @@ export function CreateProjectFromTemplate({
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>
-            {step === "select" ? "Choose a Template" : "Configure Workspace"}
+            {step === "select" ? "Choose a Template" : "Configure Project"}
           </DialogTitle>
         </DialogHeader>
 
@@ -175,15 +175,15 @@ export function CreateProjectFromTemplate({
             {/* Form */}
             <div className="space-y-4">
               <Input
-                label="Workspace Name"
+                label="Project Name"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                placeholder="My Awesome Workspace"
+                placeholder="My Awesome Project"
                 required
               />
 
               <Input
-                label="Workspace Key"
+                label="Project Key"
                 value={projectKey}
                 onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
                 placeholder="MAP"
@@ -196,7 +196,7 @@ export function CreateProjectFromTemplate({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                placeholder="Workspace description..."
+                placeholder="Project description..."
               />
             </div>
 
@@ -275,7 +275,7 @@ export function CreateProjectFromTemplate({
                   disabled={!(projectName.trim() && projectKey.trim())}
                   className="flex-1 sm:flex-none"
                 >
-                  Create Workspace
+                  Create Project
                 </Button>
               </div>
             </DialogFooter>

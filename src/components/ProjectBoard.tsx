@@ -22,7 +22,7 @@ import { SkeletonText } from "./ui/Skeleton";
 import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 }
 
 type TabType =
@@ -71,13 +71,13 @@ function TabButton({
 // Component to render active tab content
 function TabContent({
   activeTab,
-  workspaceId,
+  projectId,
   selectedSprintId,
   activeSprint,
   canEdit,
 }: {
   activeTab: TabType;
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   selectedSprintId?: Id<"sprints">;
   activeSprint?: Id<"sprints">;
   canEdit: boolean;
@@ -85,28 +85,28 @@ function TabContent({
   const sprintId = selectedSprintId || activeSprint;
 
   if (activeTab === "board") {
-    return <KanbanBoard workspaceId={workspaceId} sprintId={sprintId} />;
+    return <KanbanBoard projectId={projectId} sprintId={sprintId} />;
   }
   if (activeTab === "backlog") {
-    return <KanbanBoard workspaceId={workspaceId} />;
+    return <KanbanBoard projectId={projectId} />;
   }
   if (activeTab === "sprints") {
-    return <SprintManager workspaceId={workspaceId} canEdit={canEdit} />;
+    return <SprintManager projectId={projectId} canEdit={canEdit} />;
   }
   if (activeTab === "roadmap") {
-    return <RoadmapView workspaceId={workspaceId} sprintId={sprintId} canEdit={canEdit} />;
+    return <RoadmapView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "calendar") {
-    return <CalendarView workspaceId={workspaceId} sprintId={sprintId} canEdit={canEdit} />;
+    return <CalendarView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "activity") {
     return (
       <div className="p-6 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-ui-text-primary dark:text-ui-text-primary-dark">
-            Workspace Activity
+            Project Activity
           </h2>
-          <ActivityFeed workspaceId={workspaceId} />
+          <ActivityFeed projectId={projectId} />
         </div>
       </div>
     );
@@ -119,24 +119,24 @@ function TabContent({
           // Error is shown in fallback UI
         }}
       >
-        <AnalyticsDashboard workspaceId={workspaceId} />
+        <AnalyticsDashboard projectId={projectId} />
       </ErrorBoundary>
     );
   }
   if (activeTab === "billing") {
-    return <BillingReport workspaceId={workspaceId} />;
+    return <BillingReport projectId={projectId} />;
   }
   if (activeTab === "settings") {
     return (
       <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
         <div className="max-w-5xl mx-auto space-y-8">
-          {/* Workspace Basics Section */}
+          {/* Project Basics Section */}
           <div>
             <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-              Workspace Basics
+              Project Basics
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-              Configure fundamental workspace settings and templates
+              Configure fundamental project settings and templates
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <ErrorBoundary
@@ -145,7 +145,7 @@ function TabContent({
                   // Error is shown in fallback UI
                 }}
               >
-                <LabelsManager workspaceId={workspaceId} />
+                <LabelsManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
@@ -154,7 +154,7 @@ function TabContent({
                   // Error is shown in fallback UI
                 }}
               >
-                <TemplatesManager workspaceId={workspaceId} />
+                <TemplatesManager projectId={projectId} />
               </ErrorBoundary>
             </div>
           </div>
@@ -174,7 +174,7 @@ function TabContent({
                   // Error is shown in fallback UI
                 }}
               >
-                <WebhooksManager workspaceId={workspaceId} />
+                <WebhooksManager projectId={projectId} />
               </ErrorBoundary>
 
               <ErrorBoundary
@@ -183,7 +183,7 @@ function TabContent({
                   // Error is shown in fallback UI
                 }}
               >
-                <AutomationRulesManager workspaceId={workspaceId} />
+                <AutomationRulesManager projectId={projectId} />
               </ErrorBoundary>
             </div>
           </div>
@@ -194,7 +194,7 @@ function TabContent({
               Advanced
             </h3>
             <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-              Customize your workspace with additional metadata fields
+              Customize your project with additional metadata fields
             </p>
             <ErrorBoundary
               fallback={<SectionErrorFallback title="Custom Fields Error" />}
@@ -202,7 +202,7 @@ function TabContent({
                 // Error is shown in fallback UI
               }}
             >
-              <CustomFieldsManager workspaceId={workspaceId} />
+              <CustomFieldsManager projectId={projectId} />
             </ErrorBoundary>
           </div>
         </div>
@@ -212,12 +212,12 @@ function TabContent({
   return null;
 }
 
-export function ProjectBoard({ workspaceId }: ProjectBoardProps) {
+export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<TabType>("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
-  const project = useQuery(api.workspaces.get, { id: workspaceId });
-  const sprints = useQuery(api.sprints.listByProject, { workspaceId });
+  const project = useQuery(api.projects.get, { id: projectId });
+  const sprints = useQuery(api.sprints.listByProject, { projectId });
 
   if (!project) {
     return (
@@ -256,7 +256,7 @@ export function ProjectBoard({ workspaceId }: ProjectBoardProps) {
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <ExportButton
-              workspaceId={workspaceId}
+              projectId={projectId}
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -383,7 +383,7 @@ export function ProjectBoard({ workspaceId }: ProjectBoardProps) {
       <div className="flex-1 overflow-hidden">
         <TabContent
           activeTab={activeTab}
-          workspaceId={workspaceId}
+          projectId={projectId}
           selectedSprintId={selectedSprintId}
           activeSprint={activeSprint?._id}
           canEdit={project.userRole !== "viewer"}

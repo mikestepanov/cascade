@@ -14,15 +14,15 @@ import { components } from "./_generated/api";
 
 /**
  * Issue count by status and project
- * Usage: issueCountByStatus.lookup(ctx, { workspaceId })
+ * Usage: issueCountByStatus.lookup(ctx, { projectId })
  * Returns: { "status-id-1": 10, "status-id-2": 5, ... }
  */
-export const issueCountByStatus = new Aggregate<{ workspaceId: string; status: string }, number>(
+export const issueCountByStatus = new Aggregate<{ projectId: string; status: string }, number>(
   components.aggregate,
   {
     name: "issueCountByStatus",
     groupBy: (doc) => ({
-      workspaceId: doc.workspaceId,
+      projectId: doc.projectId,
       status: doc.status,
     }),
     sum: () => 1, // Count each issue as 1
@@ -31,15 +31,15 @@ export const issueCountByStatus = new Aggregate<{ workspaceId: string; status: s
 
 /**
  * Issue count by type and project
- * Usage: issueCountByType.lookup(ctx, { workspaceId })
+ * Usage: issueCountByType.lookup(ctx, { projectId })
  * Returns: { task: 10, bug: 5, story: 3, epic: 2 }
  */
-export const issueCountByType = new Aggregate<{ workspaceId: string; type: string }, number>(
+export const issueCountByType = new Aggregate<{ projectId: string; type: string }, number>(
   components.aggregate,
   {
     name: "issueCountByType",
     groupBy: (doc) => ({
-      workspaceId: doc.workspaceId,
+      projectId: doc.projectId,
       type: doc.type,
     }),
     sum: () => 1,
@@ -48,16 +48,16 @@ export const issueCountByType = new Aggregate<{ workspaceId: string; type: strin
 
 /**
  * Issue count by priority and project
- * Usage: issueCountByPriority.lookup(ctx, { workspaceId })
+ * Usage: issueCountByPriority.lookup(ctx, { projectId })
  * Returns: { lowest: 2, low: 5, medium: 10, high: 8, highest: 3 }
  */
 export const issueCountByPriority = new Aggregate<
-  { workspaceId: string; priority: string },
+  { projectId: string; priority: string },
   number
 >(components.aggregate, {
   name: "issueCountByPriority",
   groupBy: (doc) => ({
-    workspaceId: doc.workspaceId,
+    projectId: doc.projectId,
     priority: doc.priority,
   }),
   sum: () => 1,
@@ -65,16 +65,16 @@ export const issueCountByPriority = new Aggregate<
 
 /**
  * Issue count by assignee and project
- * Usage: issueCountByAssignee.lookup(ctx, { workspaceId })
+ * Usage: issueCountByAssignee.lookup(ctx, { projectId })
  * Returns: { "user-id-1": 5, "user-id-2": 3, ... }
  */
 export const issueCountByAssignee = new Aggregate<
-  { workspaceId: string; assigneeId: string },
+  { projectId: string; assigneeId: string },
   number
 >(components.aggregate, {
   name: "issueCountByAssignee",
   groupBy: (doc) => ({
-    workspaceId: doc.workspaceId,
+    projectId: doc.projectId,
     assigneeId: doc.assigneeId || "unassigned",
   }),
   sum: () => 1,

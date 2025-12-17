@@ -11,7 +11,7 @@ import { WebhookCard } from "./webhooks/WebhookCard";
 import { WebhookForm } from "./webhooks/WebhookForm";
 
 interface WebhooksManagerProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 }
 
 type Webhook = {
@@ -28,11 +28,11 @@ type Webhook = {
  * WebhooksManager - Orchestrates webhook CRUD operations
  * Form and card logic extracted to separate components
  */
-export function WebhooksManager({ workspaceId }: WebhooksManagerProps) {
+export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingWebhook, setEditingWebhook] = useState<Webhook | null>(null);
 
-  const webhooks = useQuery(api.webhooks.listByProject, { workspaceId });
+  const webhooks = useQuery(api.webhooks.listByProject, { projectId });
   const deleteWebhookMutation = useMutation(api.webhooks.remove);
 
   // Delete confirmation
@@ -106,7 +106,7 @@ export function WebhooksManager({ workspaceId }: WebhooksManagerProps) {
 
       {/* Create/Edit Form */}
       <WebhookForm
-        workspaceId={workspaceId}
+        projectId={projectId}
         webhook={editingWebhook}
         open={showModal}
         onOpenChange={setShowModal}

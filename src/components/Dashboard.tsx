@@ -33,8 +33,8 @@ export function Dashboard() {
         : [...(myIssues || []), ...(myCreatedIssues || [])];
 
   // Navigation helper for keyboard navigation callbacks
-  const navigateToWorkspace = (workspaceKey: string) => {
-    navigate({ to: ROUTES.workspaces.board(companySlug, workspaceKey) });
+  const navigateToWorkspace = (projectKey: string) => {
+    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
   // Keyboard navigation for issue list
@@ -44,10 +44,10 @@ export function Dashboard() {
     enabled: !!displayIssues && displayIssues.length > 0,
   });
 
-  // Keyboard navigation for workspaces list
-  const workspaceNavigation = useListNavigation({
+  // Keyboard navigation for projects list
+  const projectNavigation = useListNavigation({
     items: myProjects || [],
-    onSelect: (workspace) => navigateToWorkspace(workspace.key),
+    onSelect: (project) => navigateToWorkspace(project.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
 
@@ -83,7 +83,7 @@ export function Dashboard() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* My Workspaces */}
-            <WorkspacesList workspaces={myProjects} workspaceNavigation={workspaceNavigation} />
+            <WorkspacesList projects={myProjects} projectNavigation={projectNavigation} />
 
             {/* Recent Activity */}
             <RecentActivity activities={recentActivity} />

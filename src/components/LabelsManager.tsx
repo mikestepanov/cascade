@@ -16,7 +16,7 @@ import { Flex } from "./ui/Flex";
 import { Input } from "./ui/form";
 
 interface LabelsManagerProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 }
 
 interface LabelFormData {
@@ -32,9 +32,9 @@ const DEFAULT_FORM: LabelFormData = {
   color: DEFAULT_LABEL_COLOR,
 };
 
-export function LabelsManager({ workspaceId }: LabelsManagerProps) {
+export function LabelsManager({ projectId }: LabelsManagerProps) {
   // Data
-  const labels = useQuery(api.labels.list, { workspaceId });
+  const labels = useQuery(api.labels.list, { projectId });
 
   // Form state
   const modal = useModal();
@@ -58,7 +58,7 @@ export function LabelsManager({ workspaceId }: LabelsManagerProps) {
         showSuccess("Label updated");
       } else {
         await createLabel({
-          workspaceId,
+          projectId,
           name: form.formData.name.trim(),
           color: form.formData.color,
         });

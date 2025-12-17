@@ -19,7 +19,7 @@ interface Issue {
   type: string;
   priority: string;
   status: string;
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
   projectKey: string;
   projectName: string;
 }
@@ -47,12 +47,12 @@ export function MyIssuesList({
   const navigate = useNavigate();
   const { companySlug } = useCompany();
 
-  const navigateToWorkspace = (workspaceKey: string) => {
-    navigate({ to: ROUTES.workspaces.board(companySlug, workspaceKey) });
+  const navigateToWorkspace = (projectKey: string) => {
+    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
   const navigateToWorkspaces = () => {
-    navigate({ to: ROUTES.workspaces.list(companySlug) });
+    navigate({ to: ROUTES.projects.list(companySlug) });
   };
   return (
     <Card>

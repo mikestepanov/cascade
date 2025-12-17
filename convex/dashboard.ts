@@ -23,13 +23,13 @@ export const getMyIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const workspaceIds = [...new Set(issues.map((i) => i.workspaceId))];
+    const projectIds = [...new Set(issues.map((i) => i.projectId))];
     const userIds = [
       ...new Set(issues.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
 
     const [projects, users] = await Promise.all([
-      Promise.all(workspaceIds.map((id) => ctx.db.get(id))),
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
       Promise.all(userIds.map((id) => ctx.db.get(id))),
     ]);
 
@@ -42,7 +42,7 @@ export const getMyIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.workspaceId);
+      const project = projectMap.get(issue.projectId);
       const reporter = issue.reporterId ? userMap.get(issue.reporterId) : null;
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
 
@@ -72,13 +72,13 @@ export const getMyCreatedIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const workspaceIds = [...new Set(issues.map((i) => i.workspaceId))];
+    const projectIds = [...new Set(issues.map((i) => i.projectId))];
     const assigneeIds = [
       ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
     ] as Id<"users">[];
 
     const [projects, assignees] = await Promise.all([
-      Promise.all(workspaceIds.map((id) => ctx.db.get(id))),
+      Promise.all(projectIds.map((id) => ctx.db.get(id))),
       Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
     ]);
 
@@ -91,7 +91,7 @@ export const getMyCreatedIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.workspaceId);
+      const project = projectMap.get(issue.projectId);
       const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
 
       return {
@@ -115,33 +115,33 @@ export const getMyProjects = query({
 
     // Get projects where user is a member
     const memberships = await ctx.db
-      .query("workspaceMembers")
+      .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
     if (memberships.length === 0) return [];
 
-    // Batch fetch all workspaces
-    const workspaceIds = memberships.map((m) => m.workspaceId);
-    const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
+    // Batch fetch all projects
+    const projectIds = memberships.map((m) => m.projectId);
+    const projectMap = await batchFetchWorkspaces(ctx, projectIds);
 
-    // Fetch issues per workspace using index (NOT loading all issues!)
+    // Fetch issues per project using index (NOT loading all issues!)
     const issuesByWorkspace = await Promise.all(
-      workspaceIds.map((workspaceId) =>
+      projectIds.map((projectId) =>
         ctx.db
           .query("issues")
-          .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+          .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
           .collect(),
       ),
     );
 
-    // Build counts per workspace
+    // Build counts per project
     const totalIssuesByWorkspace = new Map<string, number>();
     const myIssuesByWorkspace = new Map<string, number>();
 
-    workspaceIds.forEach((workspaceId, index) => {
+    projectIds.forEach((projectId, index) => {
       const issues = issuesByWorkspace[index];
-      const wsId = workspaceId.toString();
+      const wsId = projectId.toString();
       totalIssuesByWorkspace.set(wsId, issues.length);
       myIssuesByWorkspace.set(wsId, issues.filter((i) => i.assigneeId === userId).length);
     });
@@ -149,13 +149,13 @@ export const getMyProjects = query({
     // Enrich memberships with project data and counts
     const projects = memberships
       .map((membership) => {
-        const project = workspaceMap.get(membership.workspaceId);
+        const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
-        const wsId = membership.workspaceId.toString();
+        const wsId = membership.projectId.toString();
         return {
           ...project,
-          _id: membership.workspaceId,
+          _id: membership.projectId,
           role: membership.role,
           totalIssues: totalIssuesByWorkspace.get(wsId) ?? 0,
           myIssues: myIssuesByWorkspace.get(wsId) ?? 0,
@@ -178,11 +178,11 @@ export const getMyRecentActivity = query({
 
     // Get projects where user is a member
     const memberships = await ctx.db
-      .query("workspaceMembers")
+      .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    const workspaceIdSet = new Set(memberships.map((m) => m.workspaceId.toString()));
+    const projectIdSet = new Set(memberships.map((m) => m.projectId.toString()));
 
     // Get recent activity
     const allActivity = await ctx.db.query("issueActivity").order("desc").take(MAX_ACTIVITY_ITEMS);
@@ -194,18 +194,18 @@ export const getMyRecentActivity = query({
     // Filter to only activities for accessible issues
     const accessibleActivity = allActivity.filter((activity) => {
       const issue = issueMap.get(activity.issueId);
-      return issue && workspaceIdSet.has(issue.workspaceId.toString());
+      return issue && projectIdSet.has(issue.projectId.toString());
     });
 
-    // Batch fetch workspaces and users for accessible activities
-    // Filter out undefined workspaceIds to prevent batch fetch failures
-    const workspaceIdsToFetch = accessibleActivity
-      .map((a) => issueMap.get(a.issueId)?.workspaceId)
-      .filter((id): id is Id<"workspaces"> => id !== undefined);
+    // Batch fetch projects and users for accessible activities
+    // Filter out undefined projectIds to prevent batch fetch failures
+    const projectIdsToFetch = accessibleActivity
+      .map((a) => issueMap.get(a.issueId)?.projectId)
+      .filter((id): id is Id<"projects"> => id !== undefined);
     const userIds = accessibleActivity.map((a) => a.userId);
 
-    const [workspaceMap, userMap] = await Promise.all([
-      batchFetchWorkspaces(ctx, workspaceIdsToFetch),
+    const [projectMap, userMap] = await Promise.all([
+      batchFetchWorkspaces(ctx, projectIdsToFetch),
       batchFetchUsers(ctx, userIds),
     ]);
 
@@ -214,7 +214,7 @@ export const getMyRecentActivity = query({
       .map((activity) => {
         const issue = issueMap.get(activity.issueId);
         if (!issue) return null;
-        const project = workspaceMap.get(issue.workspaceId);
+        const project = projectMap.get(issue.projectId);
         const user = userMap.get(activity.userId);
 
         return {
@@ -255,12 +255,12 @@ export const getMyStats = query({
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
     // Batch fetch all projects to check workflow states (avoid N+1)
-    const workspaceIds = [...new Set(assignedIssues.map((i) => i.workspaceId))];
-    const workspaceMap = await batchFetchWorkspaces(ctx, workspaceIds);
+    const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
+    const projectMap = await batchFetchWorkspaces(ctx, projectIds);
 
-    // Build a map of workspaceId -> done workflow states
+    // Build a map of projectId -> done workflow states
     const doneStatesMap = new Map<string, Set<string>>();
-    workspaceMap.forEach((project, projectId) => {
+    projectMap.forEach((project, projectId) => {
       const doneStates = new Set(
         project.workflowStates.filter((s) => s.category === "done").map((s) => s.id),
       );
@@ -268,7 +268,7 @@ export const getMyStats = query({
     });
 
     const completedThisWeek = assignedIssues.filter((issue) => {
-      const doneStates = doneStatesMap.get(issue.workspaceId);
+      const doneStates = doneStatesMap.get(issue.projectId);
       return doneStates?.has(issue.status) && issue.updatedAt >= weekAgo;
     }).length;
 

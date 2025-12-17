@@ -3,9 +3,9 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Workspaces E2E Tests
  *
- * Tests the workspace (project) management functionality:
- * - Workspace creation
- * - Workspace navigation
+ * Tests the project (project) management functionality:
+ * - Project creation
+ * - Project navigation
  * - Board view
  * - Tabs navigation
  *
@@ -23,17 +23,17 @@ test.describe("Workspaces", () => {
     await ensureAuthenticated();
   });
 
-  test.describe("Workspace Navigation", () => {
-    test("can navigate to workspaces page", async ({ dashboardPage }) => {
+  test.describe("Project Navigation", () => {
+    test("can navigate to projects page", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects"); // Note: "projects" in code maps to /workspaces/ URL
+      await dashboardPage.navigateTo("projects"); // Note: "projects" in code maps to /projects/ URL
       await dashboardPage.expectActiveTab("projects");
     });
   });
 
-  test.describe("Workspace Creation", () => {
-    test("can create a new workspace via sidebar button", async ({
+  test.describe("Project Creation", () => {
+    test("can create a new project via sidebar button", async ({
       dashboardPage,
       projectsPage,
       page,
@@ -46,44 +46,44 @@ test.describe("Workspaces", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
 
-      // Click add new workspace button in sidebar
+      // Click add new project button in sidebar
       await projectsPage.addProjectButton.click();
 
-      // Should navigate to new workspace board
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      // Should navigate to new project board
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
       await projectsPage.expectBoardVisible();
     });
   });
 
-  test.describe("Workspace Board", () => {
+  test.describe("Project Board", () => {
     test("displays kanban board with columns", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a new workspace first
+      // Create a new project first
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
 
       // Wait for board to load
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
       await projectsPage.expectBoardVisible();
 
       // Board should have columns
       await expect(projectsPage.boardColumns.first()).toBeVisible({ timeout: 10000 });
     });
 
-    test("can switch between workspace tabs", async ({ dashboardPage, projectsPage, page }) => {
+    test("can switch between project tabs", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects");
 
-      // Create a workspace to have access to tabs
+      // Create a project to have access to tabs
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
       await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Test tab navigation
       await projectsPage.switchToTab("backlog");

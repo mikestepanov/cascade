@@ -4,8 +4,8 @@ import { BasePage } from "./base.page";
 
 /**
  * Projects/Workspaces Page Object
- * Handles the workspaces view with sidebar and kanban board
- * Note: UI uses "Workspaces" terminology, URLs use /workspaces/ path
+ * Handles the projects view with sidebar and kanban board
+ * Note: UI uses "Workspaces" terminology, URLs use /projects/ path
  */
 export class ProjectsPage extends BasePage {
   private companySlug: string;
@@ -73,9 +73,9 @@ export class ProjectsPage extends BasePage {
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
-    // Updated to match "Workspace" terminology in UI
-    this.newProjectButton = page.getByRole("button", { name: /new.*workspace|\+ new/i });
-    this.addProjectButton = page.getByRole("button", { name: "Add new workspace" });
+    // Updated to match "Project" terminology in UI
+    this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
+    this.addProjectButton = page.getByRole("button", { name: "Add new project" });
     this.projectList = page
       .locator("[data-project-list]")
       .or(this.sidebar.locator("ul, [role='list']").first());
@@ -83,14 +83,14 @@ export class ProjectsPage extends BasePage {
       .locator("[data-project-item]")
       .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
-    // Create workspace form - look for form containing workspace inputs
+    // Create project form - look for form containing project inputs
     this.createProjectForm = page
       .locator("[data-create-project-form]")
-      .or(page.locator("form").filter({ has: page.getByPlaceholder(/workspace name/i) }));
+      .or(page.locator("form").filter({ has: page.getByPlaceholder(/project name/i) }));
     this.projectNameInput = page
-      .getByPlaceholder(/workspace name/i)
-      .or(page.getByLabel(/workspace name/i));
-    this.projectKeyInput = page.getByPlaceholder(/workspace key/i);
+      .getByPlaceholder(/project name/i)
+      .or(page.getByLabel(/project name/i));
+    this.projectKeyInput = page.getByPlaceholder(/project key/i);
     this.projectDescriptionInput = page
       .getByPlaceholder(/description/i)
       .or(page.getByLabel(/description/i));
@@ -153,7 +153,7 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async goto() {
-    await this.page.goto(`/${this.companySlug}/workspaces`);
+    await this.page.goto(`/${this.companySlug}/projects`);
     await this.waitForLoad();
   }
 

@@ -21,12 +21,12 @@ function formatHours(hours: number): string {
 }
 
 interface BillingReportProps {
-  workspaceId: Id<"workspaces">;
+  projectId: Id<"projects">;
 }
 
-export function BillingReport({ workspaceId }: BillingReportProps) {
+export function BillingReport({ projectId }: BillingReportProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("month");
-  const project = useQuery(api.workspaces.get, { id: workspaceId });
+  const project = useQuery(api.projects.get, { id: projectId });
 
   // Memoize date range calculation to prevent query key changes
   const dateRangeParams = useMemo(() => {
@@ -44,7 +44,7 @@ export function BillingReport({ workspaceId }: BillingReportProps) {
   }, [dateRange]);
 
   const billing = useQuery(api.timeTracking.getProjectBilling, {
-    workspaceId,
+    projectId,
     ...dateRangeParams,
   });
 

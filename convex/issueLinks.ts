@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchIssues } from "./lib/batchHelpers";
-import { assertCanEditProject } from "./workspaceAccess";
+import { assertCanEditProject } from "./projectAccess";
 
 export const create = mutation({
   args: {
@@ -21,7 +21,7 @@ export const create = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, fromIssue.workspaceId, userId);
+    await assertCanEditProject(ctx, fromIssue.projectId, userId);
 
     // Check if link already exists
     const existing = await ctx.db
@@ -80,7 +80,7 @@ export const remove = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.workspaceId, userId);
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     await ctx.db.delete(args.linkId);
 

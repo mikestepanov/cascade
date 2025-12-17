@@ -43,7 +43,7 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
           <Hr style={hr} />
           <Section style={footer}>
             <Text style={footerText}>
-              You're receiving this because you're part of a Nixelo workspace.
+              You're receiving this because you're part of a Nixelo project.
               <br />
               <Link href="{{unsubscribeUrl}}" style={link}>
                 Manage notification preferences

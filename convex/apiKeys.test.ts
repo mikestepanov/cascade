@@ -56,14 +56,14 @@ describe("API Keys", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
-      const workspaceId = await createTestProject(t, owner);
+      const projectId = await createTestProject(t, owner);
 
       const asOther = asAuthenticatedUser(t, other);
       await expect(async () => {
         await asOther.mutation(api.apiKeys.generate, {
           name: "Test Key",
           scopes: ["issues:read"],
-          workspaceId,
+          projectId,
         });
       }).rejects.toThrow("You don't have access to this project");
     });
@@ -72,11 +72,11 @@ describe("API Keys", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const member = await createTestUser(t, { email: "member@example.com" });
-      const workspaceId = await createTestProject(t, owner);
+      const projectId = await createTestProject(t, owner);
 
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.workspaces.addMember, {
-        workspaceId,
+      await asOwner.mutation(api.projects.addMember, {
+        projectId,
         userEmail: "member@example.com",
         role: "viewer",
       });
@@ -85,7 +85,7 @@ describe("API Keys", () => {
       const result = await asMember.mutation(api.apiKeys.generate, {
         name: "Member Key",
         scopes: ["issues:read"],
-        workspaceId,
+        projectId,
       });
 
       expect(result.apiKey).toBeDefined();

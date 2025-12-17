@@ -1,6 +1,6 @@
 # AppFlowy - Comprehensive Analysis
 
-> **Project Type:** AI Collaborative Workspace / Notion Alternative
+> **Project Type:** AI Collaborative Project / Notion Alternative
 > **License:** AGPLv3 (app), Open Core (cloud)
 > **GitHub:** https://github.com/AppFlowy-IO/AppFlowy
 > **Company:** AppFlowy.IO
@@ -13,7 +13,7 @@
 
 ## 📋 What is AppFlowy?
 
-AppFlowy is an **AI collaborative workspace** that brings projects, wikis, and teams together while giving you full control of your data. It's an open-source alternative to Notion, built with Flutter and Rust for cross-platform performance and maintainability.
+AppFlowy is an **AI collaborative project** that brings projects, wikis, and teams together while giving you full control of your data. It's an open-source alternative to Notion, built with Flutter and Rust for cross-platform performance and maintainability.
 
 **Tagline:** "The leading open source Notion alternative"
 
@@ -104,7 +104,7 @@ AppFlowy is an **AI collaborative workspace** that brings projects, wikis, and t
 - **Plugins** (Planned) - Extend functionality
 
 ### Import & Export
-- **Import from Notion** - Migrate Notion workspaces
+- **Import from Notion** - Migrate Notion projects
 - **Markdown Import** - Import .md files
 - **CSV Import** - Import spreadsheet data
 - **Export to Markdown** - Export as .md files
@@ -289,7 +289,7 @@ AppFlowy/
 ├── frontend/
 │   ├── appflowy_flutter/     # Flutter app
 │   │   ├── lib/
-│   │   │   ├── workspace/    # Workspace features
+│   │   │   ├── project/    # Project features
 │   │   │   ├── plugins/      # Page type plugins
 │   │   │   │   ├── document/ # Document editor
 │   │   │   │   ├── database/ # Database views
@@ -424,7 +424,7 @@ AppFlowy uses **CRDT** for real-time collaboration:
 ### Security Features
 - **End-to-end encryption** - Optional E2E encryption
 - **Authentication:** Email/password, OAuth (Google, GitHub)
-- **Access Control:** Workspace permissions
+- **Access Control:** Project permissions
 - **Data Encryption at Rest** - Database encryption
 - **HTTPS/TLS** - Encrypted data in transit
 

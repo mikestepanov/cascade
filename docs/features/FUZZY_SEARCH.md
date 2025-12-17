@@ -52,7 +52,7 @@ const { results, search, query } = useUserFuzzySearch(projectMembers);
 
 ```typescript
 // Step 1: Load data from Convex (with permissions)
-const projectMembers = useQuery(api.workspaces.getMembers, { projectId });
+const projectMembers = useQuery(api.projects.getMembers, { projectId });
 
 // Step 2: Use fuzzy search on loaded data for interactive filtering
 const { results, search, query } = useUserFuzzySearch(projectMembers);
@@ -123,7 +123,7 @@ const { results, search } = useLabelFuzzySearch(availableLabels);
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 
 function AssigneeSelect({ projectId, value, onChange }) {
-  const members = useQuery(api.workspaces.getMembers, { projectId });
+  const members = useQuery(api.projects.getMembers, { projectId });
   const { results, search, query, clear } = useUserFuzzySearch(members);
 
   return (
@@ -159,7 +159,7 @@ function AssigneeSelect({ projectId, value, onChange }) {
 import { useProjectFuzzySearch } from "@/hooks/useFuzzySearch";
 
 function ProjectSwitcher() {
-  const projects = useQuery(api.workspaces.listUserProjects);
+  const projects = useQuery(api.projects.listUserProjects);
   const { results, search, query } = useProjectFuzzySearch(projects);
 
   return (

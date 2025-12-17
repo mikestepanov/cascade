@@ -4,7 +4,7 @@
  * Usage:
  *   import { ROUTES } from "@/config/routes";
  *   navigate({ to: ROUTES.dashboard(companySlug) });
- *   <Link to={ROUTES.workspaces.board(companySlug, workspaceKey)}>Board</Link>
+ *   <Link to={ROUTES.projects.board(companySlug, projectKey)}>Board</Link>
  */
 
 export const ROUTES = {
@@ -48,17 +48,17 @@ export const ROUTES = {
     detail: (slug: string, id: string) => `/${slug}/documents/${id}` as const,
   },
 
-  workspaces: {
-    /** Workspaces list: /:slug/workspaces */
-    list: (slug: string) => `/${slug}/workspaces` as const,
-    /** Workspace board: /:slug/workspaces/:key/board */
-    board: (slug: string, key: string) => `/${slug}/workspaces/${key}/board` as const,
-    /** Workspace calendar: /:slug/workspaces/:key/calendar */
-    calendar: (slug: string, key: string) => `/${slug}/workspaces/${key}/calendar` as const,
-    /** Workspace timesheet: /:slug/workspaces/:key/timesheet */
-    timesheet: (slug: string, key: string) => `/${slug}/workspaces/${key}/timesheet` as const,
-    /** Workspace settings: /:slug/workspaces/:key/settings */
-    settings: (slug: string, key: string) => `/${slug}/workspaces/${key}/settings` as const,
+  projects: {
+    /** Workspaces list: /:slug/projects */
+    list: (slug: string) => `/${slug}/projects` as const,
+    /** Project board: /:slug/projects/:key/board */
+    board: (slug: string, key: string) => `/${slug}/projects/${key}/board` as const,
+    /** Project calendar: /:slug/projects/:key/calendar */
+    calendar: (slug: string, key: string) => `/${slug}/projects/${key}/calendar` as const,
+    /** Project timesheet: /:slug/projects/:key/timesheet */
+    timesheet: (slug: string, key: string) => `/${slug}/projects/${key}/timesheet` as const,
+    /** Project settings: /:slug/projects/:key/settings */
+    settings: (slug: string, key: string) => `/${slug}/projects/${key}/settings` as const,
   },
 
   issues: {
@@ -86,13 +86,13 @@ export const ROUTE_PATTERNS = {
     list: "/_auth/_app/$companySlug/documents/" as const,
     detail: "/_auth/_app/$companySlug/documents/$id" as const,
   },
-  workspaces: {
-    list: "/_auth/_app/$companySlug/workspaces/" as const,
-    layout: "/_auth/_app/$companySlug/workspaces/$key" as const,
-    board: "/_auth/_app/$companySlug/workspaces/$key/board" as const,
-    calendar: "/_auth/_app/$companySlug/workspaces/$key/calendar" as const,
-    timesheet: "/_auth/_app/$companySlug/workspaces/$key/timesheet" as const,
-    settings: "/_auth/_app/$companySlug/workspaces/$key/settings" as const,
+  projects: {
+    list: "/_auth/_app/$companySlug/projects/" as const,
+    layout: "/_auth/_app/$companySlug/projects/$key" as const,
+    board: "/_auth/_app/$companySlug/projects/$key/board" as const,
+    calendar: "/_auth/_app/$companySlug/projects/$key/calendar" as const,
+    timesheet: "/_auth/_app/$companySlug/projects/$key/timesheet" as const,
+    settings: "/_auth/_app/$companySlug/projects/$key/settings" as const,
   },
   issues: {
     detail: "/_auth/_app/$companySlug/issues/$key" as const,

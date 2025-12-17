@@ -59,7 +59,7 @@ vi.mock("sonner", () => ({
 }));
 
 describe("FilterBar", () => {
-  const mockProjectId = "proj1" as Id<"workspaces">;
+  const mockProjectId = "proj1" as Id<"projects">;
   const mockOnFilterChange = vi.fn();
 
   const mockSavedFilters = [
@@ -108,14 +108,14 @@ describe("FilterBar", () => {
 
   describe("Rendering", () => {
     it("should render saved filters dropdown", () => {
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       expect(screen.getByLabelText("Saved Filters:")).toBeInTheDocument();
       expect(screen.getByText("Select a filter...")).toBeInTheDocument();
     });
 
     it("should display all saved filters in dropdown options", () => {
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const select = screen.getByTestId("filter-select");
       expect(select).toBeInTheDocument();
@@ -133,7 +133,7 @@ describe("FilterBar", () => {
     it("should render empty state when no saved filters", () => {
       (useQuery as vi.Mock).mockReturnValue([]);
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const select = screen.getByTestId("filter-select");
       const options = select.querySelectorAll("option");
@@ -146,7 +146,7 @@ describe("FilterBar", () => {
     it("should render loading state when data is undefined", () => {
       (useQuery as vi.Mock).mockReturnValue(undefined);
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const select = screen.getByTestId("filter-select");
       expect(select).toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("FilterBar", () => {
   describe("Filter Selection", () => {
     it("should load filter when selecting from dropdown", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const select = screen.getByTestId("filter-select");
       await user.selectOptions(select, "filter1");
@@ -167,7 +167,7 @@ describe("FilterBar", () => {
 
     it("should load filter when clicking quick filter button", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Find quick filter buttons (in the bottom section)
       const quickFilterButton = screen
@@ -186,7 +186,7 @@ describe("FilterBar", () => {
 
   describe("Active Filters UI", () => {
     it("should not show save/clear buttons when no active filters", () => {
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       expect(screen.queryByText("💾 Save Filter")).not.toBeInTheDocument();
       expect(screen.queryByText("✕ Clear")).not.toBeInTheDocument();
@@ -195,7 +195,7 @@ describe("FilterBar", () => {
 
     it("should show save/clear buttons and count when filters are active", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Load a filter to set active filters
       const select = screen.getByTestId("filter-select");
@@ -208,7 +208,7 @@ describe("FilterBar", () => {
 
     it("should display correct active filter count", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Load filter with 1 property
       const select = screen.getByTestId("filter-select");
@@ -222,7 +222,7 @@ describe("FilterBar", () => {
 
     it("should clear filters when clicking Clear button", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Load a filter first
       const select = screen.getByTestId("filter-select");
@@ -241,7 +241,7 @@ describe("FilterBar", () => {
   describe("Save Filter Dialog", () => {
     it("should open save dialog when clicking Save Filter button", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Load a filter first
       const select = screen.getByTestId("filter-select");
@@ -259,7 +259,7 @@ describe("FilterBar", () => {
 
     it("should close save dialog when clicking Cancel", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Open dialog
       const select = screen.getByTestId("filter-select");
@@ -280,7 +280,7 @@ describe("FilterBar", () => {
 
     it("should validate filter name before saving", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Open dialog
       const select = screen.getByTestId("filter-select");
@@ -308,7 +308,7 @@ describe("FilterBar", () => {
       const user = userEvent.setup();
       mockCreateFilter.mockResolvedValueOnce({});
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Open dialog
       const select = screen.getByTestId("filter-select");
@@ -338,7 +338,7 @@ describe("FilterBar", () => {
 
       await waitFor(() => {
         expect(mockCreateFilter).toHaveBeenCalledWith({
-          workspaceId: mockProjectId,
+          projectId: mockProjectId,
           name: "My Custom Filter",
           filters: { priority: "high" },
           isPublic: true,
@@ -352,7 +352,7 @@ describe("FilterBar", () => {
       const user = userEvent.setup();
       mockCreateFilter.mockRejectedValueOnce(new Error("Save failed"));
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const select = screen.getByTestId("filter-select");
       await user.selectOptions(select, "filter1");
@@ -380,7 +380,7 @@ describe("FilterBar", () => {
 
     it("should reset form fields when save dialog is closed", async () => {
       const user = userEvent.setup();
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Open dialog
       const select = screen.getByTestId("filter-select");
@@ -421,7 +421,7 @@ describe("FilterBar", () => {
 
   describe("Quick Filters", () => {
     it("should display quick filter buttons for saved filters", () => {
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // All 3 filters should show as buttons
       const filterButtons = screen.getAllByRole("button").filter((btn) => {
@@ -433,7 +433,7 @@ describe("FilterBar", () => {
     });
 
     it("should show delete button only for owned filters", () => {
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Get all delete buttons
       const deleteButtons = screen
@@ -448,7 +448,7 @@ describe("FilterBar", () => {
       const user = userEvent.setup();
       mockRemoveFilter.mockResolvedValue({});
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       // Find delete button for first filter
       const deleteButtons = screen.getAllByLabelText("Delete filter");
@@ -465,7 +465,7 @@ describe("FilterBar", () => {
       const user = userEvent.setup();
       mockRemoveFilter.mockRejectedValue(new Error("Delete failed"));
 
-      render(<FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />);
+      render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
       const deleteButtons = screen.getAllByLabelText("Delete filter");
       await user.click(deleteButtons[0]);
@@ -489,7 +489,7 @@ describe("FilterBar", () => {
       (useQuery as vi.Mock).mockReturnValue(manyFilters);
 
       const { container } = render(
-        <FilterBar workspaceId={mockProjectId} onFilterChange={mockOnFilterChange} />,
+        <FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />,
       );
 
       // Quick filter section should only show 5 filters

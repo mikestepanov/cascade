@@ -7,14 +7,14 @@ import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const createdProjects = await ctx.db
-    .query("workspaces")
+    .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .first();
 
   if (createdProjects) return true;
 
   const adminMembership = await ctx.db
-    .query("workspaceMembers")
+    .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
     .first();
@@ -292,13 +292,13 @@ async function sendComplianceNotifications(
   );
 
   // Get admin user IDs efficiently (NOT loading all users!)
-  // 1. Get workspace creators (they are admins)
-  const workspaceCreators = await ctx.db.query("workspaces").take(500);
-  const creatorIds = new Set(workspaceCreators.map((w) => w.createdBy));
+  // 1. Get project creators (they are admins)
+  const projectCreators = await ctx.db.query("projects").take(500);
+  const creatorIds = new Set(projectCreators.map((w) => w.createdBy));
 
-  // 2. Get workspace members with admin role
+  // 2. Get project members with admin role
   const adminMembers = await ctx.db
-    .query("workspaceMembers")
+    .query("projectMembers")
     .filter((q) => q.eq(q.field("role"), "admin"))
     .take(500);
   const adminMemberIds = new Set(adminMembers.map((m) => m.userId));

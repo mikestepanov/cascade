@@ -15,7 +15,7 @@ interface ChecklistItem {
 export function OnboardingChecklist() {
   const [isExpanded, setIsExpanded] = useState(true);
   const onboarding = useQuery(api.onboarding.getOnboardingStatus);
-  const projects = useQuery(api.workspaces.list, {});
+  const projects = useQuery(api.projects.list, {});
   const issues = useQuery(api.issues.listByUser, {});
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
@@ -44,7 +44,7 @@ export function OnboardingChecklist() {
     {
       id: "project",
       title: "Create a project",
-      description: "Set up your first project or workspace",
+      description: "Set up your first project or project",
       completed: hasProjects || onboarding.wizardCompleted,
     },
     {

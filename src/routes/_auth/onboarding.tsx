@@ -77,12 +77,12 @@ function OnboardingPage() {
     navigateToCompany();
   };
 
-  // Called when workspace is created during lead/member flow
+  // Called when project is created during lead/member flow
   const handleWorkspaceCreated = (slug: string) => {
     navigate({ to: ROUTES.dashboard(slug) });
   };
 
-  const handleProjectCreated = (_workspaceId: Id<"workspaces">) => {
+  const handleProjectCreated = (_workspaceId: Id<"projects">) => {
     // Project was created, complete onboarding
     handleComplete();
   };

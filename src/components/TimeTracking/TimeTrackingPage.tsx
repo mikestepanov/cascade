@@ -11,25 +11,25 @@ import { UserRatesManagement } from "./UserRatesManagement";
 
 interface TimeTrackingPageProps {
   /** Pre-selected project ID (locks to this project) */
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   /** User's role in the project - controls tab visibility */
   userRole?: "admin" | "editor" | "viewer" | null;
   /** If true, show all tabs regardless of role (for platform admins) */
   isGlobalAdmin?: boolean;
 }
 
-export function TimeTrackingPage({ workspaceId, userRole, isGlobalAdmin }: TimeTrackingPageProps) {
+export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTrackingPageProps) {
   const [activeTab, setActiveTab] = useState<"entries" | "burn-rate" | "rates">("entries");
-  const [selectedProject, setSelectedProject] = useState<Id<"workspaces"> | "all">(
-    workspaceId ?? "all",
+  const [selectedProject, setSelectedProject] = useState<Id<"projects"> | "all">(
+    projectId ?? "all",
   );
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("week");
 
   // Get billing setting from company context
   const { billingEnabled } = useCompany();
 
-  // Only fetch projects list if no workspaceId is locked
-  const projects = useQuery(api.workspaces.list, workspaceId ? "skip" : undefined);
+  // Only fetch projects list if no projectId is locked
+  const projects = useQuery(api.projects.list, projectId ? "skip" : undefined);
 
   // Determine if user can see sensitive tabs (burn rate, hourly rates)
   const canSeeSensitiveTabs = isGlobalAdmin || userRole === "admin";
@@ -111,7 +111,7 @@ export function TimeTrackingPage({ workspaceId, userRole, isGlobalAdmin }: TimeT
       {/* Filters */}
       <Flex align="center" gap="lg" className="flex-wrap">
         {/* Project filter - only show if not locked to a specific project */}
-        {!workspaceId && (
+        {!projectId && (
           <div>
             <label
               htmlFor="tracking-project-filter"
@@ -122,7 +122,7 @@ export function TimeTrackingPage({ workspaceId, userRole, isGlobalAdmin }: TimeT
             <Select
               value={selectedProject}
               onValueChange={(value) =>
-                setSelectedProject(value === "all" ? "all" : (value as Id<"workspaces">))
+                setSelectedProject(value === "all" ? "all" : (value as Id<"projects">))
               }
             >
               <SelectTrigger id="tracking-project-filter" className="px-3 py-2 text-sm">
@@ -170,7 +170,7 @@ export function TimeTrackingPage({ workspaceId, userRole, isGlobalAdmin }: TimeT
       <div>
         {activeTab === "entries" && (
           <TimeEntriesList
-            workspaceId={selectedProject === "all" ? undefined : selectedProject}
+            projectId={selectedProject === "all" ? undefined : selectedProject}
             startDate={startDate}
             endDate={endDate}
             billingEnabled={billingEnabled}
@@ -179,7 +179,7 @@ export function TimeTrackingPage({ workspaceId, userRole, isGlobalAdmin }: TimeT
 
         {/* Sensitive tabs - only render if user has permission */}
         {canSeeSensitiveTabs && activeTab === "burn-rate" && selectedProject !== "all" && (
-          <BurnRateDashboard workspaceId={selectedProject} />
+          <BurnRateDashboard projectId={selectedProject} />
         )}
 
         {canSeeSensitiveTabs && activeTab === "burn-rate" && selectedProject === "all" && (

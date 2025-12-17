@@ -9,22 +9,22 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx, MutationCtx } from "../_generated/server";
 
 /**
- * Get an issue and validate it has a workspaceId (for migration safety)
+ * Get an issue and validate it has a projectId (for migration safety)
  */
 export async function getIssueWithWorkspace(
   ctx: QueryCtx | MutationCtx,
   issueId: Id<"issues">,
-): Promise<Doc<"issues"> & { workspaceId: Id<"workspaces"> }> {
+): Promise<Doc<"issues"> & { projectId: Id<"projects"> }> {
   const issue = await ctx.db.get(issueId);
   if (!issue) {
     throw new Error("Issue not found");
   }
-  if (!issue.workspaceId) {
+  if (!issue.projectId) {
     throw new Error(
-      "Issue missing workspaceId - please run migration: pnpm convex run migrations/migrateProjectToWorkspace:migrate",
+      "Issue missing projectId - please run migration: pnpm convex run migrations/migrateProjectToWorkspace:migrate",
     );
   }
-  return issue as Doc<"issues"> & { workspaceId: Id<"workspaces"> };
+  return issue as Doc<"issues"> & { projectId: Id<"projects"> };
 }
 
 /**

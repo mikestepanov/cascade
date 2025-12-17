@@ -10,18 +10,18 @@ describe("Internal AI", () => {
     it("should create a new chat for a user", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
 
       const chatId = await t.mutation(internal.internal.ai.createChat, {
         userId,
-        workspaceId,
+        projectId,
         title: "Test Chat",
       });
 
       const chat = await t.run(async (ctx) => ctx.db.get(chatId));
       expect(chat?.title).toBe("Test Chat");
       expect(chat?.userId).toBe(userId);
-      expect(chat?.workspaceId).toBe(workspaceId);
+      expect(chat?.projectId).toBe(projectId);
     });
 
     it("should throw if user not found", async () => {
@@ -77,7 +77,7 @@ describe("Internal AI", () => {
     it("should generate context string", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId, {
+      const projectId = await createTestProject(t, userId, {
         name: "Context Project",
         key: "CTX",
       });
@@ -90,7 +90,7 @@ describe("Internal AI", () => {
       // Add an active sprint
       const sprintId = await t.run(async (ctx) => {
         return await ctx.db.insert("sprints", {
-          workspaceId,
+          projectId,
           name: "Active Sprint",
           status: "active",
           createdBy: userId,
@@ -102,7 +102,7 @@ describe("Internal AI", () => {
       // Add issues
       await t.run(async (ctx) => {
         await ctx.db.insert("issues", {
-          workspaceId,
+          projectId,
           key: "CTX-1",
           title: "Task 1",
           status: "todo",
@@ -117,7 +117,7 @@ describe("Internal AI", () => {
           order: 1,
         });
         await ctx.db.insert("issues", {
-          workspaceId,
+          projectId,
           key: "CTX-2",
           title: "Task 2",
           status: "done",
@@ -133,7 +133,7 @@ describe("Internal AI", () => {
         });
       });
 
-      const context = await t.query(internal.internal.ai.getProjectContext, { workspaceId });
+      const context = await t.query(internal.internal.ai.getProjectContext, { projectId });
 
       expect(context).toContain("Project: Context Project (CTX)");
       expect(context).toContain("Active Sprint: Active Sprint");
@@ -145,9 +145,9 @@ describe("Internal AI", () => {
     it("should handle empty project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
 
-      const context = await t.query(internal.internal.ai.getProjectContext, { workspaceId });
+      const context = await t.query(internal.internal.ai.getProjectContext, { projectId });
       expect(context).toContain("Active Sprint: None");
       expect(context).toContain("Total Issues: 0");
     });

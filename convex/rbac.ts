@@ -1,7 +1,7 @@
 /**
  * RBAC (Role-Based Access Control) utilities for Nixelo
  *
- * Most access control functions are now in workspaceAccess.ts.
+ * Most access control functions are now in projectAccess.ts.
  * This file contains utility functions for role hierarchy checks.
  *
  * Roles hierarchy: viewer < editor < admin

@@ -43,11 +43,11 @@ export function AppSidebar() {
   // Data
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
-  const projects = useQuery(api.workspaces.list);
+  const projects = useQuery(api.projects.list);
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
-  const createProject = useMutation(api.workspaces.create);
+  const createProject = useMutation(api.projects.create);
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -71,16 +71,16 @@ export function AppSidebar() {
     const key = `PROJ${Date.now().toString(36).toUpperCase().slice(-4)}`;
     try {
       await createProject({
-        name: "New Workspace",
+        name: "New Project",
         key,
         isPublic: false,
         boardType: "kanban",
       });
-      navigate({ to: ROUTES.workspaces.board(companySlug, key) });
-      showSuccess("Workspace created");
+      navigate({ to: ROUTES.projects.board(companySlug, key) });
+      showSuccess("Project created");
       closeMobile();
     } catch (error) {
-      showError(error, "Failed to create workspace");
+      showError(error, "Failed to create project");
     }
   };
 
@@ -186,18 +186,18 @@ export function AppSidebar() {
               label="Workspaces"
               isExpanded={projectsExpanded}
               onToggle={() => setProjectsExpanded(!projectsExpanded)}
-              isActive={isActive("/workspaces")}
+              isActive={isActive("/projects")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateProject}
-              navigateTo={ROUTES.workspaces.list(companySlug)}
+              navigateTo={ROUTES.projects.list(companySlug)}
               onClick={handleNavClick}
             >
               {projects?.slice(0, 10).map((project) => (
                 <NavSubItem
                   key={project._id}
-                  to={ROUTES.workspaces.board(companySlug, project.key)}
+                  to={ROUTES.projects.board(companySlug, project.key)}
                   label={`${project.key} - ${project.name}`}
-                  isActive={location.pathname.includes(`/workspaces/${project.key}`)}
+                  isActive={location.pathname.includes(`/projects/${project.key}`)}
                   onClick={handleNavClick}
                 />
               ))}

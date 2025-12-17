@@ -426,7 +426,7 @@ export const getCompanyTeams = query({
 
     const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
 
-    // Fetch team members and workspaces per team using indexes (NOT loading all!)
+    // Fetch team members and projects per team using indexes (NOT loading all!)
     const teamIds = teams.map((t) => t._id);
 
     const [teamMembersArrays, workspacesArrays] = await Promise.all([
@@ -441,7 +441,7 @@ export const getCompanyTeams = query({
       Promise.all(
         teamIds.map((teamId) =>
           ctx.db
-            .query("workspaces")
+            .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
             .collect(),
         ),
@@ -466,8 +466,8 @@ export const getCompanyTeams = query({
 
     const projectCountByTeam = new Map<string, number>();
     teamIds.forEach((teamId, index) => {
-      const workspaces = workspacesArrays[index];
-      projectCountByTeam.set(teamId.toString(), workspaces.length);
+      const projects = workspacesArrays[index];
+      projectCountByTeam.set(teamId.toString(), projects.length);
     });
 
     // Enrich teams with pre-computed data (no N+1)
@@ -506,7 +506,7 @@ export const getUserTeams = query({
     const teamIds = memberships.map((m) => m.teamId);
     const teamMap = await batchFetchTeams(ctx, teamIds);
 
-    // Fetch team members and workspaces per team using indexes (NOT loading all!)
+    // Fetch team members and projects per team using indexes (NOT loading all!)
     const [teamMembersArrays, workspacesArrays] = await Promise.all([
       Promise.all(
         teamIds.map((teamId) =>
@@ -519,7 +519,7 @@ export const getUserTeams = query({
       Promise.all(
         teamIds.map((teamId) =>
           ctx.db
-            .query("workspaces")
+            .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
             .collect(),
         ),

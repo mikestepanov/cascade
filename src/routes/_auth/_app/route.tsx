@@ -123,7 +123,7 @@ function InitializeCompany() {
       <div className="text-center">
         <LoadingSpinner size="lg" />
         <Typography variant="p" color="secondary" className="mt-4">
-          Setting up your workspace...
+          Setting up your project...
         </Typography>
       </div>
     </div>

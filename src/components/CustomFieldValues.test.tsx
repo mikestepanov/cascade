@@ -20,7 +20,7 @@ vi.mock("sonner", () => ({
 
 describe("CustomFieldValues - Component Behavior", () => {
   const mockIssueId = "issue123" as Id<"issues">;
-  const mockProjectId = "project123" as Id<"workspaces">;
+  const mockProjectId = "project123" as Id<"projects">;
   const mockSetValue = vi.fn();
   const mockRemoveValue = vi.fn();
 
@@ -54,7 +54,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries([], []);
 
       const { container } = render(
-        <CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />,
+        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
       );
 
       expect(container.firstChild).toBeNull();
@@ -64,7 +64,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(undefined, []);
 
       const { container } = render(
-        <CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />,
+        <CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />,
       );
 
       expect(container.firstChild).toBeNull();
@@ -81,7 +81,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByText("Custom Fields")).toBeInTheDocument();
       expect(screen.getByText("Customer ID")).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "  value with spaces  ");
@@ -130,7 +130,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockRemoveValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "     ");
@@ -158,7 +158,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockRemoveValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       // Don't type anything, just save
@@ -183,7 +183,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByRole("button", { name: /Set/i })).toBeInTheDocument();
     });
@@ -205,7 +205,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByRole("button", { name: /Edit/i })).toBeInTheDocument();
     });
@@ -222,7 +222,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
 
@@ -243,7 +243,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
 
@@ -268,7 +268,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -287,7 +287,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "Some value");
@@ -310,7 +310,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "New value");
@@ -336,7 +336,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.click(screen.getByRole("checkbox"));
@@ -364,7 +364,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       // Check then uncheck
@@ -399,7 +399,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -425,7 +425,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -449,7 +449,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.click(screen.getByLabelText("Frontend"));
@@ -478,7 +478,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.click(screen.getByLabelText("Frontend"));
@@ -508,7 +508,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockResolvedValue({});
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.click(screen.getByLabelText("Frontend"));
@@ -545,7 +545,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Edit/i }));
 
@@ -571,7 +571,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByText("Not set")).toBeInTheDocument();
     });
@@ -593,7 +593,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByText("✓ Yes")).toBeInTheDocument();
     });
@@ -615,7 +615,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByText("✗ No")).toBeInTheDocument();
     });
@@ -637,7 +637,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       const link = screen.getByRole("link") as HTMLAnchorElement;
       expect(link.href).toBe("https://example.com/");
@@ -663,7 +663,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       const formattedDate = new Date(testDate).toLocaleDateString();
       expect(screen.getByText(formattedDate)).toBeInTheDocument();
@@ -687,7 +687,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       // Both values should be displayed
       expect(screen.getByText("Frontend")).toBeInTheDocument();
@@ -712,7 +712,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, mockValues);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       // Should display trimmed values
       expect(screen.getByText("Frontend")).toBeInTheDocument();
@@ -732,7 +732,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.getByText("*")).toBeInTheDocument();
     });
@@ -748,7 +748,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       ];
       setupQueries(mockFields, []);
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       expect(screen.queryByText("*")).not.toBeInTheDocument();
     });
@@ -768,7 +768,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       setupQueries(mockFields, []);
       mockSetValue.mockRejectedValue(new Error("Network error"));
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "Test value");
@@ -793,7 +793,7 @@ describe("CustomFieldValues - Component Behavior", () => {
       // Reject with a non-Error to trigger the fallback message
       mockSetValue.mockRejectedValue("Unknown error");
 
-      render(<CustomFieldValues issueId={mockIssueId} workspaceId={mockProjectId} />);
+      render(<CustomFieldValues issueId={mockIssueId} projectId={mockProjectId} />);
 
       await user.click(screen.getByRole("button", { name: /Set/i }));
       await user.type(screen.getByRole("textbox"), "Test value");

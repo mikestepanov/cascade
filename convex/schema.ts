@@ -9,17 +9,16 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
-    workspaceId: v.optional(v.id("workspaces")), // Link documents to workspaces
-    projectId: v.optional(v.string()), // Deprecated, kept for migration - stored as string to avoid table mismatch
+    projectId: v.optional(v.id("projects")), // Link documents to projects - stored as string to avoid table mismatch
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
     .searchIndex("search_title", {
       searchField: "title",
-      filterFields: ["isPublic", "createdBy", "workspaceId"],
+      filterFields: ["isPublic", "createdBy", "projectId"],
     }),
 
   documentVersions: defineTable({
@@ -36,7 +35,7 @@ const applicationTables = {
     .index("by_document_created", ["documentId", "createdAt"]),
 
   documentTemplates: defineTable({
-    name: v.string(), // Template name: "Meeting Notes", "RFC", "Workspace Brief"
+    name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
     description: v.optional(v.string()),
     category: v.string(), // "meeting", "planning", "design", "engineering", etc.
     icon: v.string(), // Emoji or icon identifier
@@ -44,7 +43,7 @@ const applicationTables = {
     isBuiltIn: v.boolean(), // Built-in templates vs user-created
     isPublic: v.boolean(), // Public templates visible to all users
     createdBy: v.optional(v.id("users")), // Creator (null for built-in)
-    workspaceId: v.optional(v.id("workspaces")), // Workspace-specific template (optional)
+    projectId: v.optional(v.id("projects")), // Project-specific template (optional)
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -52,23 +51,24 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"])
     .index("by_public", ["isPublic"])
     .index("by_creator", ["createdBy"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["category", "isPublic", "isBuiltIn"],
     }),
 
-  workspaces: defineTable({
+  projects: defineTable({
     name: v.string(),
-    key: v.string(), // Workspace key like "PROJ"
+    key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
     // Ownership (required)
-    companyId: v.id("companies"), // Company this workspace belongs to
-    ownerId: v.id("users"), // User that owns this workspace
+    companyId: v.optional(v.id("companies")), // Company this project belongs to (optional for old data)
+    ownerId: v.optional(v.id("users")), // User that owns this project (optional for old data)
     // Optional team ownership
-    teamId: v.optional(v.id("teams")), // Team that owns this workspace (if team-owned)
+    teamId: v.optional(v.id("teams")), // Team that owns this project (if team-owned)
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all company members (company-public)
+    isCompanyPublic: v.optional(v.boolean()), // Legacy field (kept for migration)
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
     // Audit
     createdBy: v.id("users"), // Who created it (for audit trail)
@@ -85,9 +85,9 @@ const applicationTables = {
       }),
     ),
     // Agency features
-    defaultHourlyRate: v.optional(v.number()), // Default billing rate for this workspace
+    defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
     clientName: v.optional(v.string()), // Client name for agency work
-    budget: v.optional(v.number()), // Workspace budget in currency
+    budget: v.optional(v.number()), // Project budget in currency
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -101,20 +101,19 @@ const applicationTables = {
       filterFields: ["isPublic", "createdBy", "companyId"],
     }),
 
-  workspaceMembers: defineTable({
-    workspaceId: v.id("workspaces"),
+  projectMembers: defineTable({
+    projectId: v.id("projects"),
     userId: v.id("users"),
     role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
     addedBy: v.id("users"),
     addedAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_user", ["workspaceId", "userId"]),
+    .index("by_workspace_user", ["projectId", "userId"]),
 
   issues: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration - stored as string to avoid table mismatch
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
@@ -151,7 +150,7 @@ const applicationTables = {
     // AI/Semantic Search
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_key", ["key"])
     .index("by_assignee", ["assigneeId"])
     .index("by_reporter", ["reporterId"])
@@ -159,18 +158,18 @@ const applicationTables = {
     .index("by_sprint", ["sprintId"])
     .index("by_epic", ["epicId"])
     .index("by_parent", ["parentId"])
-    .index("by_workspace_status", ["workspaceId", "status"])
-    .index("by_workspace_status_updated", ["workspaceId", "status", "updatedAt"])
-    .index("by_workspace_sprint_created", ["workspaceId", "sprintId", "createdAt"])
-    .index("by_workspace_updated", ["workspaceId", "updatedAt"])
+    .index("by_workspace_status", ["projectId", "status"])
+    .index("by_workspace_status_updated", ["projectId", "status", "updatedAt"])
+    .index("by_workspace_sprint_created", ["projectId", "sprintId", "createdAt"])
+    .index("by_workspace_updated", ["projectId", "updatedAt"])
     .searchIndex("search_title", {
       searchField: "title",
-      filterFields: ["workspaceId", "type", "status", "priority"],
+      filterFields: ["projectId", "type", "status", "priority"],
     })
     .vectorIndex("by_embedding", {
       vectorField: "embedding",
       dimensions: 512, // Voyage AI voyage-3-lite embedding dimension
-      filterFields: ["workspaceId"],
+      filterFields: ["projectId"],
     }),
 
   issueComments: defineTable({
@@ -195,8 +194,7 @@ const applicationTables = {
     .index("by_to_issue", ["toIssueId"]),
 
   sprints: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
@@ -206,7 +204,7 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_status", ["status"]),
 
   issueActivity: defineTable({
@@ -231,19 +229,17 @@ const applicationTables = {
     .index("by_issue_user", ["issueId", "userId"]),
 
   labels: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     color: v.string(), // Hex color code like "#3B82F6"
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
-    .index("by_workspace_name", ["workspaceId", "name"]),
+    .index("by_workspace", ["projectId"])
+    .index("by_workspace_name", ["projectId", "name"]),
 
   issueTemplates: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
@@ -259,12 +255,11 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
-    .index("by_workspace_type", ["workspaceId", "type"]),
+    .index("by_workspace", ["projectId"])
+    .index("by_workspace_type", ["projectId", "type"]),
 
   webhooks: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
@@ -274,7 +269,7 @@ const applicationTables = {
     createdAt: v.number(),
     lastTriggered: v.optional(v.number()),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_active", ["isActive"]),
 
   webhookExecutions: defineTable({
@@ -294,8 +289,7 @@ const applicationTables = {
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
@@ -325,11 +319,11 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_public", ["workspaceId", "isPublic"]),
+    .index("by_workspace_public", ["projectId", "isPublic"]),
 
-  workspaceTemplates: defineTable({
+  projectTemplates: defineTable({
     name: v.string(),
     description: v.string(),
     category: v.string(), // "software", "marketing", "design", etc.
@@ -357,8 +351,7 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"]),
 
   automationRules: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     description: v.optional(v.string()),
     isActive: v.boolean(),
@@ -371,13 +364,12 @@ const applicationTables = {
     updatedAt: v.number(),
     executionCount: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_active", ["isActive"])
-    .index("by_workspace_active", ["workspaceId", "isActive"]),
+    .index("by_workspace_active", ["projectId", "isActive"]),
 
   customFields: defineTable({
-    workspaceId: v.optional(v.id("workspaces")), // Optional temporarily for migration from projectId
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Optional temporarily for migration from projectId
     name: v.string(),
     fieldKey: v.string(), // Unique key like "customer_id"
     fieldType: v.union(
@@ -395,8 +387,8 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
-    .index("by_workspace_key", ["workspaceId", "fieldKey"]),
+    .index("by_workspace", ["projectId"])
+    .index("by_workspace_key", ["projectId", "fieldKey"]),
 
   customFieldValues: defineTable({
     issueId: v.id("issues"),
@@ -414,7 +406,7 @@ const applicationTables = {
     title: v.string(),
     message: v.string(),
     issueId: v.optional(v.id("issues")),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     documentId: v.optional(v.id("documents")),
     actorId: v.optional(v.id("users")), // Who triggered the notification
     isRead: v.boolean(),
@@ -455,10 +447,10 @@ const applicationTables = {
     userId: v.id("users"),
     onboardingCompleted: v.boolean(),
     onboardingStep: v.optional(v.number()), // Current step (0-5)
-    sampleWorkspaceCreated: v.optional(v.boolean()), // Whether sample workspace was generated (migration-safe)
+    sampleWorkspaceCreated: v.optional(v.boolean()), // Whether sample project was generated (migration-safe)
     sampleProjectCreated: v.optional(v.boolean()), // Deprecated field name (migration-safe)
     tourShown: v.boolean(), // Whether welcome tour was shown
-    wizardCompleted: v.boolean(), // Whether workspace wizard was completed
+    wizardCompleted: v.boolean(), // Whether project wizard was completed
     checklistDismissed: v.boolean(), // Whether checklist was dismissed
     // Persona-based onboarding fields
     onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))), // User's self-selected persona
@@ -478,7 +470,7 @@ const applicationTables = {
     location: v.optional(v.string()),
     eventType: v.union(
       v.literal("meeting"), // Team or client meetings
-      v.literal("deadline"), // Workspace deadlines
+      v.literal("deadline"), // Project deadlines
       v.literal("timeblock"), // Focus time blocks
       v.literal("personal"), // Personal events
     ),
@@ -487,7 +479,7 @@ const applicationTables = {
     attendeeIds: v.array(v.id("users")), // Internal team members
     externalAttendees: v.optional(v.array(v.string())), // External emails
     // Links
-    workspaceId: v.optional(v.id("workspaces")), // Link to workspace
+    projectId: v.optional(v.id("projects")), // Link to project
     issueId: v.optional(v.id("issues")), // Link to issue
     // Status
     status: v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
@@ -504,14 +496,14 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_issue", ["issueId"])
     .index("by_start_time", ["startTime"])
     .index("by_status", ["status"])
     .index("by_required", ["isRequired"])
     .searchIndex("search_title", {
       searchField: "title",
-      filterFields: ["organizerId", "workspaceId", "status"],
+      filterFields: ["organizerId", "projectId", "status"],
     }),
 
   // Meeting Attendance Tracking (for required meetings)
@@ -678,7 +670,7 @@ const applicationTables = {
     .index("by_github_user", ["githubUserId"]),
 
   githubRepositories: defineTable({
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     repoOwner: v.string(), // Repository owner (org or user)
     repoName: v.string(), // Repository name
     repoFullName: v.string(), // "owner/repo"
@@ -692,13 +684,13 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_repo_id", ["repoId"])
     .index("by_repo_full_name", ["repoFullName"]),
 
   githubPullRequests: defineTable({
     issueId: v.optional(v.id("issues")), // Linked Nixelo issue
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     repositoryId: v.id("githubRepositories"),
     // GitHub PR data
     prNumber: v.number(),
@@ -722,14 +714,14 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_issue", ["issueId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_repository", ["repositoryId"])
     .index("by_pr_id", ["prId"])
     .index("by_repository_pr_number", ["repositoryId", "prNumber"]),
 
   githubCommits: defineTable({
     issueId: v.optional(v.id("issues")), // Auto-linked via commit message
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     repositoryId: v.id("githubRepositories"),
     // GitHub commit data
     sha: v.string(), // Commit SHA
@@ -742,7 +734,7 @@ const applicationTables = {
     createdAt: v.number(),
   })
     .index("by_issue", ["issueId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_repository", ["repositoryId"])
     .index("by_sha", ["sha"]),
 
@@ -771,13 +763,13 @@ const applicationTables = {
   // AI Integration
   aiChats: defineTable({
     userId: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")), // Link chat to specific workspace for context
+    projectId: v.optional(v.id("projects")), // Link chat to specific project for context
     title: v.string(), // Auto-generated from first message or user-provided
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_user_created", ["userId", "createdAt"]),
 
   aiMessages: defineTable({
@@ -803,14 +795,14 @@ const applicationTables = {
 
   aiSuggestions: defineTable({
     userId: v.id("users"),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     suggestionType: v.union(
       v.literal("issue_description"), // AI-generated issue description
       v.literal("issue_priority"), // AI-suggested priority
       v.literal("issue_labels"), // AI-suggested labels
       v.literal("issue_assignee"), // AI-suggested assignee
       v.literal("sprint_planning"), // AI sprint planning suggestions
-      v.literal("risk_detection"), // AI-detected workspace risks
+      v.literal("risk_detection"), // AI-detected project risks
       v.literal("insight"), // General AI insights
     ),
     targetId: v.optional(v.string()), // ID of issue/sprint being suggested for
@@ -826,14 +818,14 @@ const applicationTables = {
     respondedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_type", ["suggestionType"])
-    .index("by_workspace_type", ["workspaceId", "suggestionType"])
+    .index("by_workspace_type", ["projectId", "suggestionType"])
     .index("by_target", ["targetId"]),
 
   aiUsage: defineTable({
     userId: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
@@ -856,7 +848,7 @@ const applicationTables = {
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_provider", ["provider"])
     .index("by_operation", ["operation"])
     .index("by_created_at", ["createdAt"])
@@ -869,9 +861,9 @@ const applicationTables = {
     keyHash: v.string(), // SHA-256 hash of the API key
     keyPrefix: v.string(), // First 8 chars for display: "sk_casc_AbCdEfGh..."
     // Permissions & Scopes
-    scopes: v.array(v.string()), // e.g., ["issues:read", "issues:write", "workspaces:read"]
-    // Optional workspace restriction
-    workspaceId: v.optional(v.id("workspaces")), // If set, key only works for this workspace
+    scopes: v.array(v.string()), // e.g., ["issues:read", "issues:write", "projects:read"]
+    // Optional project restriction
+    projectId: v.optional(v.id("projects")), // If set, key only works for this project
     // Rate limiting
     rateLimit: v.number(), // Requests per minute (default: 100)
     // Status
@@ -914,7 +906,7 @@ const applicationTables = {
   // Pumble Integration (Team Chat)
   pumbleWebhooks: defineTable({
     userId: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")), // Optional: link to specific workspace
+    projectId: v.optional(v.id("projects")), // Optional: link to specific project
     name: v.string(), // User-friendly name: "Team Notifications", "Bug Reports Channel"
     webhookUrl: v.string(), // Pumble incoming webhook URL
     // Event subscriptions
@@ -933,15 +925,14 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_active", ["isActive"])
     .index("by_user_active", ["userId", "isActive"]),
 
   // Time Tracking (Native - Kimai-like features)
   timeEntries: defineTable({
     userId: v.id("users"), // Who logged the time
-    workspaceId: v.optional(v.id("workspaces")), // Workspace
-    projectId: v.optional(v.string()), // Deprecated, kept for migration
+    projectId: v.optional(v.id("projects")), // Project
     issueId: v.optional(v.id("issues")), // Issue (optional)
     // Time data
     startTime: v.number(), // Unix timestamp
@@ -972,20 +963,20 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_issue", ["issueId"])
     .index("by_date", ["date"])
     .index("by_user_date", ["userId", "date"])
-    .index("by_workspace_date", ["workspaceId", "date"])
+    .index("by_workspace_date", ["projectId", "date"])
     .index("by_billable", ["billable"])
     .index("by_billed", ["billed"])
-    .index("by_user_workspace", ["userId", "workspaceId"])
+    .index("by_user_workspace", ["userId", "projectId"])
     .index("by_equity", ["isEquityHour"]),
 
   // User Hourly Rates (for cost calculation)
   userRates: defineTable({
     userId: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")), // Workspace-specific rate (overrides default)
+    projectId: v.optional(v.id("projects")), // Project-specific rate (overrides default)
     hourlyRate: v.number(), // Rate per hour
     currency: v.string(), // Currency code: "USD", "EUR", etc.
     // Effective period
@@ -1003,8 +994,8 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["workspaceId"])
-    .index("by_user_workspace", ["userId", "workspaceId"])
+    .index("by_workspace", ["projectId"])
+    .index("by_user_workspace", ["userId", "projectId"])
     .index("by_effective_from", ["effectiveFrom"])
     .index("by_rate_type", ["rateType"]),
 
@@ -1116,10 +1107,10 @@ const applicationTables = {
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("superAdmin")), // Platform role: superAdmin = full system access
     companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
-    workspaceId: v.optional(v.id("workspaces")), // Workspace to add user to (optional, for workspace-level invites)
-    workspaceRole: v.optional(
+    projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
+    projectRole: v.optional(
       v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-    ), // Role in workspace if workspaceId is set
+    ), // Role in project if projectId is set
     invitedBy: v.id("users"), // Admin who sent the invite
     token: v.string(), // Unique invitation token
     expiresAt: v.number(), // Expiration timestamp
@@ -1142,7 +1133,7 @@ const applicationTables = {
     .index("by_invited_by", ["invitedBy"])
     .index("by_email_status", ["email", "status"])
     .index("by_company", ["companyId"])
-    .index("by_workspace", ["workspaceId"]),
+    .index("by_workspace", ["projectId"]),
 
   // Companies/Organizations (Multi-tenant support)
   companies: defineTable({
@@ -1267,15 +1258,15 @@ const applicationTables = {
     botLeftAt: v.optional(v.number()),
     // Permissions
     createdBy: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")), // Link to workspace for context
-    isPublic: v.boolean(), // Can all workspace members see this?
+    projectId: v.optional(v.id("projects")), // Link to project for context
+    isPublic: v.boolean(), // Can all project members see this?
     // Metadata
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_calendar_event", ["calendarEventId"])
     .index("by_creator", ["createdBy"])
-    .index("by_workspace", ["workspaceId"])
+    .index("by_workspace", ["projectId"])
     .index("by_status", ["status"])
     .index("by_scheduled_time", ["scheduledStartTime"])
     .index("by_platform", ["meetingPlatform"]),

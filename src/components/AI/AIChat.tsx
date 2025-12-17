@@ -14,7 +14,7 @@ import { AI_CONFIG } from "./config";
 import { useAIChat } from "./hooks";
 
 interface AIChatProps {
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   chatId?: Id<"aiChats">;
   onChatCreated?: (chatId: Id<"aiChats">) => void;
 }
@@ -129,7 +129,7 @@ function MessageItem({
 }
 
 export const AIChat = React.memo(function AIChat({
-  workspaceId,
+  projectId,
   chatId: initialChatId,
   onChatCreated,
 }: AIChatProps) {
@@ -145,7 +145,7 @@ export const AIChat = React.memo(function AIChat({
     handleSendMessage,
     handleKeyPress,
     copyToClipboard,
-  } = useAIChat({ workspaceId, initialChatId, onChatCreated });
+  } = useAIChat({ projectId, initialChatId, onChatCreated });
 
   if (!chatId) {
     return (
@@ -173,7 +173,7 @@ export const AIChat = React.memo(function AIChat({
                 AI Assistant
               </h3>
               <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
-                Ask me anything about your workspace, or use natural language commands.
+                Ask me anything about your project, or use natural language commands.
               </p>
               <Flex
                 direction="column"
@@ -238,7 +238,7 @@ export const AIChat = React.memo(function AIChat({
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask me anything about your workspace..."
+            placeholder="Ask me anything about your project..."
             disabled={isSending}
             className="flex-1 resize-none rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary dark:text-ui-text-primary-dark placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}

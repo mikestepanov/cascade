@@ -1,12 +1,12 @@
 /**
- * Migration script: Project → Workspace
+ * Migration script: Project → Project
  * 
  * CRITICAL: This migration handles the fact that:
  * 1. Old data has projectId fields pointing to "projects" table
- * 2. The "projects" table was renamed to "workspaces" in schema
+ * 2. The "projects" table was renamed to "projects" in schema
  * 3. But Convex database still has IDs from the old table name
  * 
- * Solution: Just remove projectId fields - don't try to copy them to workspaceId
+ * Solution: Just remove projectId fields - don't try to copy them to projectId
  * since the table name mismatch will cause errors.
  * 
  * Run with: pnpm convex run migrations/migrateProjectToWorkspace:migrate
@@ -45,7 +45,7 @@ export const checkStatus = query({
   },
 });
 
-// Migrate all tables - just remove projectId fields (don't copy to workspaceId)
+// Migrate all tables - just remove projectId fields (don't copy to projectId)
 export const migrate = internalMutation({
   args: {},
   handler: async (ctx) => {
@@ -74,7 +74,7 @@ export const migrate = internalMutation({
     return {
       ...migrationResults,
       totalMigrated,
-      message: `Migration complete: Removed projectId from ${totalMigrated} documents. Now update schema to make workspaceId required.`,
+      message: `Migration complete: Removed projectId from ${totalMigrated} documents. Now update schema to make projectId required.`,
     };
   },
 });

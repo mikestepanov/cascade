@@ -8,7 +8,7 @@ import {
   assertCanEditProject,
   assertIsProjectAdmin,
   canAccessProject,
-} from "./workspaceAccess";
+} from "./projectAccess";
 
 // Helper: Validate parent issue and get inherited epic
 async function validateParentIssue(
@@ -46,14 +46,14 @@ async function validateParentIssue(
 // Helper: Generate issue key
 async function generateIssueKey(
   ctx: MutationCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   projectKey: string,
 ) {
   // Get the most recent issue to determine the next number
   // Order by _creationTime desc to get the latest issue
   const latestIssue = await ctx.db
     .query("issues")
-    .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .order("desc")
     .first();
 
@@ -72,14 +72,14 @@ async function generateIssueKey(
 // Helper: Get max order for status column
 async function getMaxOrderForStatus(
   ctx: MutationCtx,
-  workspaceId: Id<"workspaces">,
+  projectId: Id<"projects">,
   status: string,
 ) {
   // Limit to 1000 issues per status - reasonable cap for any Kanban column
   const MAX_ISSUES_PER_STATUS = 1000;
   const issuesInStatus = await ctx.db
     .query("issues")
-    .withIndex("by_workspace_status", (q) => q.eq("workspaceId", workspaceId).eq("status", status))
+    .withIndex("by_workspace_status", (q) => q.eq("projectId", projectId).eq("status", status))
     .take(MAX_ISSUES_PER_STATUS);
 
   return Math.max(...issuesInStatus.map((i) => i.order), -1);
@@ -87,7 +87,7 @@ async function getMaxOrderForStatus(
 
 export const create = mutation({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(
@@ -119,29 +119,29 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check if user can create issues (requires editor role or higher)
-    await assertCanEditProject(ctx, args.workspaceId, userId);
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
-    const issueKey = await generateIssueKey(ctx, args.workspaceId, project.key);
+    const issueKey = await generateIssueKey(ctx, args.projectId, project.key);
 
     // Get the first workflow state as default status
     const defaultStatus = project.workflowStates[0]?.id || "todo";
 
     // Get max order for the status column
-    const maxOrder = await getMaxOrderForStatus(ctx, args.workspaceId, defaultStatus);
+    const maxOrder = await getMaxOrderForStatus(ctx, args.projectId, defaultStatus);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       key: issueKey,
       title: args.title,
       description: args.description,
@@ -215,14 +215,14 @@ export const listByUser = query({
       status: issue.status,
       type: issue.type,
       priority: issue.priority,
-      workspaceId: issue.workspaceId,
+      projectId: issue.projectId,
     }));
   },
 });
 
 export const listByProject = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
   },
   handler: async (ctx, args) => {
@@ -231,20 +231,20 @@ export const listByProject = query({
       return [];
     }
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
       return [];
     }
 
     // Check access permissions
-    const hasAccess = await canAccessProject(ctx, args.workspaceId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
     if (!hasAccess) {
       return [];
     }
 
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
 
     const issues = await issuesQuery.collect();
 
@@ -268,14 +268,14 @@ export const get = query({
       return null;
     }
 
-    const project = await ctx.db.get(issue.workspaceId);
+    const project = await ctx.db.get(issue.projectId);
     if (!project) {
       return null;
     }
 
     // Check access permissions
     if (userId) {
-      const hasAccess = await canAccessProject(ctx, issue.workspaceId, userId);
+      const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
       if (!hasAccess) {
         throw new Error("Not authorized to access this issue");
       }
@@ -402,7 +402,7 @@ export const listSubtasks = query({
     }
 
     // Check if user has access to the parent issue's project
-    const project = await ctx.db.get(parentIssue.workspaceId);
+    const project = await ctx.db.get(parentIssue.projectId);
     if (!project) {
       return [];
     }
@@ -468,13 +468,13 @@ export const updateStatus = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.workspaceId);
+    const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.workspaceId, userId);
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const oldStatus = issue.status;
     const now = Date.now();
@@ -647,7 +647,7 @@ export const update = mutation({
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.workspaceId, userId);
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     const now = Date.now();
     const changes: Array<{
@@ -712,13 +712,13 @@ export const addComment = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.workspaceId);
+    const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (any role can comment, even viewers)
-    await assertCanAccessProject(ctx, issue.workspaceId, userId);
+    await assertCanAccessProject(ctx, issue.projectId, userId);
 
     const now = Date.now();
     const mentions = args.mentions || [];
@@ -753,7 +753,7 @@ export const addComment = mutation({
           title: "You were mentioned",
           message: `${author?.name || "Someone"} mentioned you in ${issue.key}`,
           issueId: args.issueId,
-          workspaceId: issue.workspaceId,
+          projectId: issue.projectId,
           isRead: false,
           createdAt: now,
         });
@@ -777,7 +777,7 @@ export const addComment = mutation({
         title: "New comment",
         message: `${author?.name || "Someone"} commented on ${issue.key}`,
         issueId: args.issueId,
-        workspaceId: issue.workspaceId,
+        projectId: issue.projectId,
         isRead: false,
         createdAt: now,
       });
@@ -862,7 +862,7 @@ function matchesLabelsFilter(issueLabels: string[], filterLabels?: string[]): bo
 // Helper: Check if issue matches all search filters
 function matchesSearchFilters(
   issue: {
-    workspaceId: Id<"workspaces">;
+    projectId: Id<"projects">;
     assigneeId?: Id<"users">;
     reporterId: Id<"users">;
     type: string;
@@ -874,7 +874,7 @@ function matchesSearchFilters(
     createdAt: number;
   },
   filters: {
-    workspaceId?: Id<"workspaces">;
+    projectId?: Id<"projects">;
     assigneeId?: Id<"users"> | "unassigned" | "me";
     reporterId?: Id<"users">;
     type?: string[];
@@ -889,7 +889,7 @@ function matchesSearchFilters(
   userId: Id<"users">,
 ): boolean {
   // Simple ID filters
-  if (filters.workspaceId && issue.workspaceId !== filters.workspaceId) return false;
+  if (filters.projectId && issue.projectId !== filters.projectId) return false;
   if (filters.reporterId && issue.reporterId !== filters.reporterId) return false;
 
   // Complex filters using helpers
@@ -910,7 +910,7 @@ export const search = query({
     query: v.string(),
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
     reporterId: v.optional(v.id("users")),
     type: v.optional(v.array(v.string())),
@@ -937,7 +937,7 @@ export const search = query({
     for (const issue of searchResults) {
       // Check access permissions
       try {
-        await assertCanAccessProject(ctx, issue.workspaceId, userId);
+        await assertCanAccessProject(ctx, issue.projectId, userId);
       } catch {
         continue; // User doesn't have access, skip this issue
       }
@@ -964,12 +964,12 @@ export const search = query({
       ...paginatedResults.map((i) => i.reporterId),
     ] as Id<"users">[];
     const epicIds = paginatedResults.map((i) => i.epicId).filter(Boolean) as Id<"issues">[];
-    const workspaceIds = [...new Set(paginatedResults.map((i) => i.workspaceId))];
+    const projectIds = [...new Set(paginatedResults.map((i) => i.projectId))];
 
-    const [userMap, epicMap, workspaceMap] = await Promise.all([
+    const [userMap, epicMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, userIds),
       batchFetchIssues(ctx, epicIds),
-      batchFetchWorkspaces(ctx, workspaceIds),
+      batchFetchWorkspaces(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
@@ -977,7 +977,7 @@ export const search = query({
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
       const reporter = userMap.get(issue.reporterId);
       const epic = issue.epicId ? epicMap.get(issue.epicId) : null;
-      const project = workspaceMap.get(issue.workspaceId);
+      const project = projectMap.get(issue.projectId);
 
       return {
         ...issue,
@@ -1050,7 +1050,7 @@ export const bulkUpdateStatus = mutation({
 
       // Check permissions
       try {
-        await assertCanEditProject(ctx, issue.workspaceId, userId);
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue; // Skip issues user doesn't have access to
       }
@@ -1111,7 +1111,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.workspaceId, userId);
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1163,7 +1163,7 @@ export const bulkAssign = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.workspaceId, userId);
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1215,7 +1215,7 @@ export const bulkAddLabels = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.workspaceId, userId);
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1268,7 +1268,7 @@ export const bulkMoveToSprint = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.workspaceId, userId);
+        await assertCanEditProject(ctx, issue.projectId, userId);
       } catch {
         continue;
       }
@@ -1375,7 +1375,7 @@ export const bulkDelete = mutation({
       if (!issue) continue;
 
       try {
-        await assertIsProjectAdmin(ctx, issue.workspaceId, userId);
+        await assertIsProjectAdmin(ctx, issue.projectId, userId);
       } catch {
         continue; // Only admins can delete
       }
@@ -1412,7 +1412,7 @@ import {
  */
 export const listByWorkspaceSmart = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
@@ -1422,11 +1422,11 @@ export const listByWorkspaceSmart = query({
       throw new Error("Not authenticated");
     }
 
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Workspace not found");
+      throw new Error("Project not found");
     }
 
     const workflowStates = project.workflowStates || [];
@@ -1438,10 +1438,10 @@ export const listByWorkspaceSmart = query({
       statusToCategory[state.id] = state.category;
     }
 
-    // Get all issues for this workspace (optionally filtered by sprint)
+    // Get all issues for this project (optionally filtered by sprint)
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId));
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
 
     const allIssues = await issuesQuery.collect();
 
@@ -1486,7 +1486,7 @@ export const listByWorkspaceSmart = query({
  */
 export const listByWorkspacePaginated = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
     cursor: v.optional(v.string()),
@@ -1498,14 +1498,14 @@ export const listByWorkspacePaginated = query({
       throw new Error("Not authenticated");
     }
 
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const pageSize = args.pageSize ?? DEFAULT_PAGE_SIZE;
 
     // Query issues with proper index
     let issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace_updated", (q) => q.eq("projectId", args.projectId))
       .order("desc")
       .collect();
 
@@ -1555,12 +1555,12 @@ export const listByWorkspacePaginated = query({
 });
 
 /**
- * Get issue counts by status for a workspace
+ * Get issue counts by status for a project
  * Useful for "Load X more" indicators
  */
 export const getIssueCounts = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
@@ -1570,11 +1570,11 @@ export const getIssueCounts = query({
       throw new Error("Not authenticated");
     }
 
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Workspace not found");
+      throw new Error("Project not found");
     }
 
     const workflowStates = project.workflowStates || [];
@@ -1589,7 +1589,7 @@ export const getIssueCounts = query({
     // Get all issues
     let issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Filter by sprint if provided
@@ -1634,7 +1634,7 @@ export const getIssueCounts = query({
  */
 export const loadMoreDoneIssues = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     beforeTimestamp: v.optional(v.number()),
     beforeId: v.optional(v.string()), // For tiebreaking when timestamps match
@@ -1646,11 +1646,11 @@ export const loadMoreDoneIssues = query({
       throw new Error("Not authenticated");
     }
 
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Workspace not found");
+      throw new Error("Project not found");
     }
 
     const workflowStates = project.workflowStates || [];
@@ -1662,7 +1662,7 @@ export const loadMoreDoneIssues = query({
     // Query issues
     let issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace_updated", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace_updated", (q) => q.eq("projectId", args.projectId))
       .order("desc")
       .collect();
 

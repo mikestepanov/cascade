@@ -6,7 +6,7 @@ export const list = query({
   handler: async (ctx) => {
     // Get all built-in templates
     const templates = await ctx.db
-      .query("workspaceTemplates")
+      .query("projectTemplates")
       .withIndex("by_built_in", (q) => q.eq("isBuiltIn", true))
       .collect();
 
@@ -15,7 +15,7 @@ export const list = query({
 });
 
 export const get = query({
-  args: { id: v.id("workspaceTemplates") },
+  args: { id: v.id("projectTemplates") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -23,11 +23,11 @@ export const get = query({
 
 export const createFromTemplate = mutation({
   args: {
-    templateId: v.id("workspaceTemplates"),
+    templateId: v.id("projectTemplates"),
     projectName: v.string(),
     projectKey: v.string(),
     description: v.optional(v.string()),
-    companyId: v.id("companies"), // Required: company this workspace belongs to
+    companyId: v.id("companies"), // Required: company this project belongs to
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -47,23 +47,23 @@ export const createFromTemplate = mutation({
       .first();
 
     if (!companyMembership) {
-      throw new Error("You must be a member of this company to create workspaces");
+      throw new Error("You must be a member of this company to create projects");
     }
 
     // Check if project key already exists
     const existing = await ctx.db
-      .query("workspaces")
+      .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
       .first();
 
     if (existing) {
-      throw new Error("Workspace key already exists");
+      throw new Error("Project key already exists");
     }
 
     const now = Date.now();
 
     // Create project with template settings
-    const workspaceId = await ctx.db.insert("workspaces", {
+    const projectId = await ctx.db.insert("projects", {
       name: args.projectName,
       key: args.projectKey,
       description: args.description,
@@ -78,8 +78,8 @@ export const createFromTemplate = mutation({
     });
 
     // Add creator as admin member
-    await ctx.db.insert("workspaceMembers", {
-      workspaceId,
+    await ctx.db.insert("projectMembers", {
+      projectId,
       userId,
       role: "admin",
       addedBy: userId,
@@ -89,7 +89,7 @@ export const createFromTemplate = mutation({
     // Create default labels from template
     for (const labelTemplate of template.defaultLabels) {
       await ctx.db.insert("labels", {
-        workspaceId,
+        projectId,
         name: labelTemplate.name,
         color: labelTemplate.color,
         createdBy: userId,
@@ -97,7 +97,7 @@ export const createFromTemplate = mutation({
       });
     }
 
-    return workspaceId;
+    return projectId;
   },
 });
 
@@ -108,7 +108,7 @@ export const initializeBuiltInTemplates = mutation({
 
     // Check if templates already exist
     const existing = await ctx.db
-      .query("workspaceTemplates")
+      .query("projectTemplates")
       .withIndex("by_built_in", (q) => q.eq("isBuiltIn", true))
       .first();
 
@@ -117,7 +117,7 @@ export const initializeBuiltInTemplates = mutation({
     }
 
     // Software Development Template
-    await ctx.db.insert("workspaceTemplates", {
+    await ctx.db.insert("projectTemplates", {
       name: "Software Development",
       description: "For agile software development teams with sprints and scrum practices",
       category: "software",
@@ -143,7 +143,7 @@ export const initializeBuiltInTemplates = mutation({
     });
 
     // Kanban Template
-    await ctx.db.insert("workspaceTemplates", {
+    await ctx.db.insert("projectTemplates", {
       name: "Simple Kanban",
       description: "Basic kanban board for continuous workflow",
       category: "general",
@@ -164,7 +164,7 @@ export const initializeBuiltInTemplates = mutation({
     });
 
     // Marketing Campaign Template
-    await ctx.db.insert("workspaceTemplates", {
+    await ctx.db.insert("projectTemplates", {
       name: "Marketing Campaign",
       description: "For planning and executing marketing campaigns",
       category: "marketing",
@@ -188,7 +188,7 @@ export const initializeBuiltInTemplates = mutation({
     });
 
     // Design Project Template
-    await ctx.db.insert("workspaceTemplates", {
+    await ctx.db.insert("projectTemplates", {
       name: "Design Project",
       description: "For design teams working on creative projects",
       category: "design",

@@ -53,11 +53,11 @@ describe("GitHub Integration", () => {
     it("should link repository for admins", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const repoId = await asUser.mutation(api.github.linkRepository, {
-        workspaceId,
+        projectId,
         repoOwner: "owner",
         repoName: "repo",
         repoId: "123",
@@ -65,7 +65,7 @@ describe("GitHub Integration", () => {
 
       expect(repoId).toBeDefined();
 
-      const repos = await asUser.query(api.github.listRepositories, { workspaceId });
+      const repos = await asUser.query(api.github.listRepositories, { projectId });
       expect(repos).toHaveLength(1);
       expect(repos[0].repoName).toBe("repo");
     });
@@ -73,11 +73,11 @@ describe("GitHub Integration", () => {
     it("should unlink repository", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const repoId = await asUser.mutation(api.github.linkRepository, {
-        workspaceId,
+        projectId,
         repoOwner: "owner",
         repoName: "repo",
         repoId: "123",
@@ -85,18 +85,18 @@ describe("GitHub Integration", () => {
 
       await asUser.mutation(api.github.unlinkRepository, { repositoryId: repoId });
 
-      const repos = await asUser.query(api.github.listRepositories, { workspaceId });
+      const repos = await asUser.query(api.github.listRepositories, { projectId });
       expect(repos).toHaveLength(0);
     });
 
     it("should prevent duplicate links", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       await asUser.mutation(api.github.linkRepository, {
-        workspaceId,
+        projectId,
         repoOwner: "owner",
         repoName: "repo",
         repoId: "123",
@@ -104,7 +104,7 @@ describe("GitHub Integration", () => {
 
       await expect(async () => {
         await asUser.mutation(api.github.linkRepository, {
-          workspaceId,
+          projectId,
           repoOwner: "owner",
           repoName: "repo",
           repoId: "123",
@@ -117,11 +117,11 @@ describe("GitHub Integration", () => {
     it("should upsert PR", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId);
+      const projectId = await createTestProject(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const repositoryId = await asUser.mutation(api.github.linkRepository, {
-        workspaceId,
+        projectId,
         repoOwner: "owner",
         repoName: "repo",
         repoId: "123",
@@ -159,11 +159,11 @@ describe("GitHub Integration", () => {
     it("should upsert commit and link to issue", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const workspaceId = await createTestProject(t, userId, { key: "PROJ" });
+      const projectId = await createTestProject(t, userId, { key: "PROJ" });
       const asUser = asAuthenticatedUser(t, userId);
 
       const repositoryId = await asUser.mutation(api.github.linkRepository, {
-        workspaceId,
+        projectId,
         repoOwner: "owner",
         repoName: "repo",
         repoId: "123",
@@ -172,7 +172,7 @@ describe("GitHub Integration", () => {
       // Create issue
       const issueId = await t.run(async (ctx) => {
         return await ctx.db.insert("issues", {
-          workspaceId,
+          projectId,
           key: "PROJ-1",
           title: "Task 1",
           status: "todo",

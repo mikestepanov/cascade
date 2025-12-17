@@ -12,7 +12,7 @@ import { type MutationCtx, mutation } from "../_generated/server";
 export const createChat = mutation({
   args: {
     title: v.optional(v.string()),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx: MutationCtx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -22,7 +22,7 @@ export const createChat = mutation({
 
     const chatId = await ctx.db.insert("aiChats", {
       userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       title: args.title || "New Chat",
       createdAt: now,
       updatedAt: now,
@@ -142,7 +142,7 @@ export const addMessage = mutation({
 export const createSuggestion = mutation({
   args: {
     userId: v.id("users"),
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     suggestionType: v.union(
       v.literal("issue_description"),
       v.literal("issue_priority"),
@@ -161,7 +161,7 @@ export const createSuggestion = mutation({
   handler: async (ctx: MutationCtx, args) => {
     const suggestionId = await ctx.db.insert("aiSuggestions", {
       userId: args.userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       suggestionType: args.suggestionType,
       targetId: args.targetId,
       suggestion: args.suggestion,
@@ -225,7 +225,7 @@ export const dismissSuggestion = mutation({
 export const trackUsage = mutation({
   args: {
     userId: v.id("users"),
-    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),
     operation: v.union(
@@ -245,7 +245,7 @@ export const trackUsage = mutation({
   handler: async (ctx: MutationCtx, args) => {
     const usageId = await ctx.db.insert("aiUsage", {
       userId: args.userId,
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       provider: args.provider,
       model: args.model,
       operation: args.operation,

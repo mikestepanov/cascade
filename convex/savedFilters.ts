@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { assertCanAccessProject } from "./workspaceAccess";
+import { assertCanAccessProject } from "./projectAccess";
 
 const filtersValidator = v.object({
   type: v.optional(
@@ -28,7 +28,7 @@ const filtersValidator = v.object({
 
 export const create = mutation({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     name: v.string(),
     filters: filtersValidator,
     isPublic: v.boolean(),
@@ -39,11 +39,11 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    await assertCanAccessProject(ctx, args.workspaceId, userId);
+    await assertCanAccessProject(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("savedFilters", {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       userId,
       name: args.name,
       filters: args.filters,
@@ -56,7 +56,7 @@ export const create = mutation({
 
 export const list = query({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -65,7 +65,7 @@ export const list = query({
     }
 
     try {
-      await assertCanAccessProject(ctx, args.workspaceId, userId);
+      await assertCanAccessProject(ctx, args.projectId, userId);
     } catch {
       return [];
     }
@@ -74,14 +74,14 @@ export const list = query({
     const myFilters = await ctx.db
       .query("savedFilters")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("workspaceId"), args.workspaceId))
+      .filter((q) => q.eq(q.field("projectId"), args.projectId))
       .collect();
 
     // Get public filters from other users
     const publicFilters = await ctx.db
       .query("savedFilters")
       .withIndex("by_workspace_public", (q) =>
-        q.eq("workspaceId", args.workspaceId).eq("isPublic", true),
+        q.eq("projectId", args.projectId).eq("isPublic", true),
       )
       .filter((q) => q.neq(q.field("userId"), userId))
       .collect();

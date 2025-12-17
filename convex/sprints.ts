@@ -1,11 +1,11 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { assertCanEditProject, canAccessProject } from "./workspaceAccess";
+import { assertCanEditProject, canAccessProject } from "./projectAccess";
 
 export const create = mutation({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
@@ -17,17 +17,17 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions - requires editor role to create sprints
-    await assertCanEditProject(ctx, args.workspaceId, userId);
+    await assertCanEditProject(ctx, args.projectId, userId);
 
     const now = Date.now();
     return await ctx.db.insert("sprints", {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       name: args.name,
       goal: args.goal,
       startDate: args.startDate,
@@ -41,29 +41,29 @@ export const create = mutation({
 });
 
 export const listByProject = query({
-  args: { workspaceId: v.id("workspaces") },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       return [];
     }
 
-    const project = await ctx.db.get(args.workspaceId);
+    const project = await ctx.db.get(args.projectId);
     if (!project) {
       return [];
     }
 
     // Check permissions - requires at least viewer role or public project
-    const hasAccess = await canAccessProject(ctx, args.workspaceId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
     if (!hasAccess) {
       return [];
     }
 
-    // Sprints per workspace are typically few (10-50), add reasonable limit
+    // Sprints per project are typically few (10-50), add reasonable limit
     const MAX_SPRINTS = 100;
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .order("desc")
       .take(MAX_SPRINTS);
 
@@ -111,18 +111,18 @@ export const startSprint = mutation({
       throw new Error("Sprint not found");
     }
 
-    const project = await ctx.db.get(sprint.workspaceId);
+    const project = await ctx.db.get(sprint.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions - requires editor role to start sprints
-    await assertCanEditProject(ctx, sprint.workspaceId, userId);
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     // End any currently active sprint
     const activeSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", sprint.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", sprint.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .collect();
 
@@ -155,13 +155,13 @@ export const completeSprint = mutation({
       throw new Error("Sprint not found");
     }
 
-    const project = await ctx.db.get(sprint.workspaceId);
+    const project = await ctx.db.get(sprint.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions - requires editor role to complete sprints
-    await assertCanEditProject(ctx, sprint.workspaceId, userId);
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     await ctx.db.patch(args.sprintId, {
       status: "completed",

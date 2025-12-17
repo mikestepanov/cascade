@@ -13,7 +13,7 @@
 | **GitHub Stars** | ~New | 5,000+ | 36,000+ | 58,000+ | 3,500+ |
 | **Contributors** | ~New | 415+ | 772+ | 400+ | 100+ |
 | **Tech Stack** | Convex/React | Rails/React | Next.js/tRPC | Flutter/Rust | Symfony/PHP |
-| **Primary Use** | Project Mgmt | LMS | Scheduling | Workspace | Time Tracking |
+| **Primary Use** | Project Mgmt | LMS | Scheduling | Project | Time Tracking |
 | **License** | TBD | AGPLv3 | AGPLv3 + Comm | AGPLv3 + Core | AGPL-3.0 |
 | **Market Maturity** | Pre-launch | Mature | Growing Fast | Growing | Established |
 | **Target Market** | Teams/Projects | Education | Everyone | Knowledge Work | Agencies/Time |
@@ -27,7 +27,7 @@
 
 ### Nixelo's Position
 **Category:** Collaborative Project Management (Confluence + Jira hybrid)
-**Closest Competitor in Study:** AppFlowy (workspace/collaboration)
+**Closest Competitor in Study:** AppFlowy (project/collaboration)
 **Market Niche:** Real-time team collaboration with documents + issues
 
 ### How Projects Differ in Purpose
@@ -286,7 +286,7 @@
 |-----|-------------------|-------------------|
 | Open-source project management | Taiga, Plane | Better real-time, modern stack |
 | Real-time Jira alternative | None | Instant updates, live presence |
-| Self-hosted team workspace | Outline, BookStack | Issues + documents together |
+| Self-hosted team project | Outline, BookStack | Issues + documents together |
 | Developer-friendly PM tool | Linear (paid) | Open-source, API-first |
 
 ---

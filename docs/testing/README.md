@@ -89,7 +89,7 @@ nixelo/
 │
 ├── playwright.config.ts            # Playwright config
 ├── vitest.config.ts                # Vitest config
-└── vitest.workspace.ts             # Workspace config
+└── vitest.project.ts             # Project config
 ```
 
 ## Selector Strategy

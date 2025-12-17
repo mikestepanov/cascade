@@ -73,7 +73,7 @@ const RESERVED_SLUGS = [
   // App routes
   "dashboard",
   "documents",
-  "workspaces",
+  "projects",
   "issues",
   "settings",
   "time-tracking",
@@ -542,7 +542,7 @@ export const getUserCompanies = query({
       Promise.all(
         companyIds.map((companyId) =>
           ctx.db
-            .query("workspaces")
+            .query("projects")
             .withIndex("by_company", (q) => q.eq("companyId", companyId))
             .take(1000),
         ),
@@ -640,7 +640,7 @@ export const getUserRole = query({
 
 /**
  * Initialize default company for a user
- * Creates a personal workspace named after the user
+ * Creates a personal project named after the user
  */
 export const initializeDefaultCompany = mutation({
   args: {
@@ -672,15 +672,15 @@ export const initializeDefaultCompany = mutation({
     const userName = user?.name || user?.email?.split("@")[0] || "user";
 
     const now = Date.now();
-    const companyName = args.companyName || `${userName}'s Workspace`;
+    const companyName = args.companyName || `${userName}'s Project`;
     const timezone = args.timezone || "America/New_York";
 
     // Generate slug from company name
     let baseSlug = generateSlug(companyName);
 
-    // If generated slug is reserved, append "workspace"
+    // If generated slug is reserved, append "project"
     if (isReservedSlug(baseSlug)) {
-      baseSlug = `${baseSlug}-workspace`;
+      baseSlug = `${baseSlug}-project`;
     }
 
     // Ensure slug is unique

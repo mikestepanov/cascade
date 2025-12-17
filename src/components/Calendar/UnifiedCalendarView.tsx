@@ -6,12 +6,12 @@ import { CalendarView } from "./CalendarView";
 import { RoadmapView } from "./RoadmapView";
 
 interface UnifiedCalendarViewProps {
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
 }
 
 type ViewType = "calendar" | "roadmap";
 
-export function UnifiedCalendarView({ workspaceId }: UnifiedCalendarViewProps) {
+export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
   const [viewType, setViewType] = useState<ViewType>("calendar");
 
   return (
@@ -30,14 +30,14 @@ export function UnifiedCalendarView({ workspaceId }: UnifiedCalendarViewProps) {
           </ToggleGroupItem>
           <ToggleGroupItem
             value="roadmap"
-            disabled={!workspaceId}
-            title={!workspaceId ? "Select a project to view roadmap" : ""}
+            disabled={!projectId}
+            title={!projectId ? "Select a project to view roadmap" : ""}
           >
             <span className="sm:hidden">🗺️ Roadmap</span>
             <span className="hidden sm:inline">🗺️ Roadmap (Issues)</span>
           </ToggleGroupItem>
         </ToggleGroup>
-        {!workspaceId && viewType === "roadmap" && (
+        {!projectId && viewType === "roadmap" && (
           <p className="text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
             Select a project from the sidebar to view the roadmap
           </p>
@@ -48,8 +48,8 @@ export function UnifiedCalendarView({ workspaceId }: UnifiedCalendarViewProps) {
       <div className="flex-1 overflow-hidden">
         {viewType === "calendar" ? (
           <CalendarView />
-        ) : workspaceId ? (
-          <RoadmapView workspaceId={workspaceId} />
+        ) : projectId ? (
+          <RoadmapView projectId={projectId} />
         ) : (
           <Flex
             justify="center"

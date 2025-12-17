@@ -20,7 +20,7 @@ export interface ApiAuthContext {
   userId: Id<"users">;
   keyId: Id<"apiKeys">;
   scopes: string[];
-  workspaceId?: Id<"workspaces">;
+  projectId?: Id<"projects">;
   rateLimit: number;
 }
 
@@ -68,7 +68,7 @@ export async function validateApiKey(
     userId: key.userId,
     keyId: key._id,
     scopes: key.scopes,
-    workspaceId: key.workspaceId,
+    projectId: key.projectId,
     rateLimit: key.rateLimit,
   };
 }
@@ -95,13 +95,13 @@ export function hasScope(auth: ApiAuthContext, requiredScope: string): boolean {
  */
 export function verifyProjectAccess(
   auth: ApiAuthContext,
-  requestedProjectId?: Id<"workspaces">,
+  requestedProjectId?: Id<"projects">,
 ): boolean {
   // If key is not project-scoped, allow any project
-  if (!auth.workspaceId) return true;
+  if (!auth.projectId) return true;
 
   // If key is project-scoped, only allow that project
-  return auth.workspaceId === requestedProjectId;
+  return auth.projectId === requestedProjectId;
 }
 
 /**

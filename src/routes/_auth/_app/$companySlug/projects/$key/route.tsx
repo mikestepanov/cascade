@@ -6,31 +6,31 @@ import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/contexts/CompanyContext";
 import { api } from "../../../../../../convex/_generated/api";
 
-export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$key")({
-  component: WorkspaceLayout,
+export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
+  component: ProjectLayout,
 });
 
-function WorkspaceLayout() {
+function ProjectLayout() {
   const { key } = Route.useParams();
   const { company } = useCompany();
   const companySlug = company?.slug ?? "";
-  const workspace = useQuery(api.workspaces.getByKey, { key });
+  const project = useQuery(api.projects.getByKey, { key });
 
-  if (workspace === undefined) {
+  if (project === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
-        <LoadingSpinner message="Loading workspace..." />
+        <LoadingSpinner message="Loading project..." />
       </Flex>
     );
   }
 
-  if (!workspace) {
+  if (!project) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Workspace Not Found</h2>
+          <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
           <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            The workspace "{key}" doesn't exist or you don't have access to it.
+            The project "{key}" doesn't exist or you don't have access to it.
           </p>
         </div>
       </Flex>
@@ -38,10 +38,10 @@ function WorkspaceLayout() {
   }
 
   const tabs = [
-    { name: "Board", href: ROUTES.workspaces.board(companySlug, key) },
-    { name: "Calendar", href: ROUTES.workspaces.calendar(companySlug, key) },
-    { name: "Timesheet", href: ROUTES.workspaces.timesheet(companySlug, key) },
-    { name: "Settings", href: ROUTES.workspaces.settings(companySlug, key) },
+    { name: "Board", href: ROUTES.projects.board(companySlug, key) },
+    { name: "Calendar", href: ROUTES.projects.calendar(companySlug, key) },
+    { name: "Timesheet", href: ROUTES.projects.timesheet(companySlug, key) },
+    { name: "Settings", href: ROUTES.projects.settings(companySlug, key) },
   ];
 
   return (

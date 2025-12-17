@@ -34,7 +34,7 @@ function InviteRoute() {
     setAcceptError(null);
     try {
       const result = await acceptInvite({ token });
-      const successMessage = result.workspaceId
+      const successMessage = result.projectId
         ? "Welcome! You've joined the project."
         : "Welcome! You've joined the team.";
       showSuccess(successMessage);
@@ -160,7 +160,7 @@ function InviteRoute() {
   }
 
   // Determine if this is a project invite
-  const isProjectInvite = !!invite.workspaceId;
+  const isProjectInvite = !!invite.projectId;
 
   // Valid pending invite - show different UI based on auth state
   return (

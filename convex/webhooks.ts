@@ -8,12 +8,12 @@ import {
   mutation,
   query,
 } from "./_generated/server";
-import { assertIsProjectAdmin } from "./workspaceAccess";
+import { assertIsProjectAdmin } from "./projectAccess";
 
 // Create a webhook
 export const create = mutation({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()),
@@ -24,10 +24,10 @@ export const create = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     // Only admins can create webhooks
-    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const webhookId = await ctx.db.insert("webhooks", {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       name: args.name,
       url: args.url,
       events: args.events,
@@ -43,17 +43,17 @@ export const create = mutation({
 
 // List webhooks for a project
 export const listByProject = query({
-  args: { workspaceId: v.id("workspaces") },
+  args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Only admins can view webhooks
-    await assertIsProjectAdmin(ctx, args.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const webhooks = await ctx.db
       .query("webhooks")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Don't expose secrets to the client - only show if secret is configured
@@ -83,7 +83,7 @@ export const update = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can update webhooks
-    await assertIsProjectAdmin(ctx, webhook.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -107,7 +107,7 @@ export const remove = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can delete webhooks
-    await assertIsProjectAdmin(ctx, webhook.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     await ctx.db.delete(args.id);
   },
@@ -116,14 +116,14 @@ export const remove = mutation({
 // Internal action to trigger webhooks
 export const trigger = internalAction({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     event: v.string(),
     payload: v.any(),
   },
   handler: async (ctx, args) => {
     // Get all active webhooks for this project that listen to this event directly via database
     const webhooks = await ctx.runQuery(internal.webhooks.getActiveWebhooksForEvent, {
-      workspaceId: args.workspaceId,
+      projectId: args.projectId,
       event: args.event,
     });
 
@@ -185,7 +185,7 @@ export const trigger = internalAction({
 // Internal query to get active webhooks for an event
 export const getActiveWebhooksForEvent = internalQuery({
   args: {
-    workspaceId: v.id("workspaces"),
+    projectId: v.id("projects"),
     event: v.string(),
   },
   handler: async (ctx, args) => {
@@ -195,7 +195,7 @@ export const getActiveWebhooksForEvent = internalQuery({
       .collect();
 
     return webhooks.filter(
-      (w) => w.workspaceId === args.workspaceId && w.events.includes(args.event),
+      (w) => w.projectId === args.projectId && w.events.includes(args.event),
     );
   },
 });
@@ -224,7 +224,7 @@ export const listExecutions = query({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can view webhook logs
-    await assertIsProjectAdmin(ctx, webhook.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const executions = await ctx.db
       .query("webhookExecutions")
@@ -247,7 +247,7 @@ export const test = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can test webhooks
-    await assertIsProjectAdmin(ctx, webhook.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the test webhook delivery
     await ctx.scheduler.runAfter(0, internal.webhooks.deliverTestWebhook, {
@@ -374,7 +374,7 @@ export const retryExecution = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
-    await assertIsProjectAdmin(ctx, webhook.workspaceId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the retry
     await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {

@@ -79,6 +79,10 @@ import type * as notifications from "../notifications.js";
 import type * as offlineSync from "../offlineSync.js";
 import type * as onboarding from "../onboarding.js";
 import type * as presence from "../presence.js";
+import type * as projectAccess from "../projectAccess.js";
+import type * as projectMembers from "../projectMembers.js";
+import type * as projectTemplates from "../projectTemplates.js";
+import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
 import type * as pumble from "../pumble.js";
 import type * as rateLimiting from "../rateLimiting.js";
@@ -97,10 +101,6 @@ import type * as userProfiles from "../userProfiles.js";
 import type * as users from "../users.js";
 import type * as watchers from "../watchers.js";
 import type * as webhooks from "../webhooks.js";
-import type * as workspaceAccess from "../workspaceAccess.js";
-import type * as workspaceMembers from "../workspaceMembers.js";
-import type * as workspaceTemplates from "../workspaceTemplates.js";
-import type * as workspaces from "../workspaces.js";
 
 import type {
   ApiFromModules,
@@ -180,6 +180,10 @@ declare const fullApi: ApiFromModules<{
   offlineSync: typeof offlineSync;
   onboarding: typeof onboarding;
   presence: typeof presence;
+  projectAccess: typeof projectAccess;
+  projectMembers: typeof projectMembers;
+  projectTemplates: typeof projectTemplates;
+  projects: typeof projects;
   prosemirror: typeof prosemirror;
   pumble: typeof pumble;
   rateLimiting: typeof rateLimiting;
@@ -198,10 +202,6 @@ declare const fullApi: ApiFromModules<{
   users: typeof users;
   watchers: typeof watchers;
   webhooks: typeof webhooks;
-  workspaceAccess: typeof workspaceAccess;
-  workspaceMembers: typeof workspaceMembers;
-  workspaceTemplates: typeof workspaceTemplates;
-  workspaces: typeof workspaces;
 }>;
 
 /**
