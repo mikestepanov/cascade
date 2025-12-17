@@ -307,7 +307,7 @@ export const linkPRToIssue = mutation({
     if (!issue) throw new Error("Issue not found");
 
     // Verify project match
-    if (pr.projectId !== issue.projectId) {
+    if (pr.projectId !== issue.projectId!) {
       throw new Error("PR and issue must be in the same project");
     }
 
@@ -331,14 +331,14 @@ export const getPullRequests = query({
     if (!issue) return [];
 
     // Check access
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.projectId!);
     if (!project) return [];
 
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
         .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", issue.projectId).eq("userId", userId),
+          q.eq("projectId", issue.projectId!).eq("userId", userId),
         )
         .first();
 
@@ -429,14 +429,14 @@ export const getCommits = query({
     if (!issue) return [];
 
     // Check access
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.projectId!);
     if (!project) return [];
 
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
         .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", issue.projectId).eq("userId", userId),
+          q.eq("projectId", issue.projectId!).eq("userId", userId),
         )
         .first();
 

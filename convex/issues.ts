@@ -210,7 +210,7 @@ export const listByUser = query({
       status: issue.status,
       type: issue.type,
       priority: issue.priority,
-      projectId: issue.projectId,
+      projectId: issue.projectId!,
     }));
   },
 });
@@ -263,14 +263,14 @@ export const get = query({
       return null;
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.projectId!);
     if (!project) {
       return null;
     }
 
     // Check access permissions
     if (userId) {
-      const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
+      const hasAccess = await canAccessProject(ctx, issue.projectId!, userId);
       if (!hasAccess) {
         throw new Error("Not authorized to access this issue");
       }
@@ -397,7 +397,7 @@ export const listSubtasks = query({
     }
 
     // Check if user has access to the parent issue's project
-    const project = await ctx.db.get(parentIssue.projectId);
+    const project = await ctx.db.get(parentIssue.projectId!);
     if (!project) {
       return [];
     }
@@ -463,13 +463,13 @@ export const updateStatus = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.projectId!);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId!, userId);
 
     const oldStatus = issue.status;
     const now = Date.now();
@@ -642,7 +642,7 @@ export const update = mutation({
     }
 
     // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId!, userId);
 
     const now = Date.now();
     const changes: Array<{
@@ -707,13 +707,13 @@ export const addComment = mutation({
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId);
+    const project = await ctx.db.get(issue.projectId!);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions (any role can comment, even viewers)
-    await assertCanAccessProject(ctx, issue.projectId, userId);
+    await assertCanAccessProject(ctx, issue.projectId!, userId);
 
     const now = Date.now();
     const mentions = args.mentions || [];
@@ -748,7 +748,7 @@ export const addComment = mutation({
           title: "You were mentioned",
           message: `${author?.name || "Someone"} mentioned you in ${issue.key}`,
           issueId: args.issueId,
-          projectId: issue.projectId,
+          projectId: issue.projectId!,
           isRead: false,
           createdAt: now,
         });
@@ -772,7 +772,7 @@ export const addComment = mutation({
         title: "New comment",
         message: `${author?.name || "Someone"} commented on ${issue.key}`,
         issueId: args.issueId,
-        projectId: issue.projectId,
+        projectId: issue.projectId!,
         isRead: false,
         createdAt: now,
       });
@@ -884,7 +884,7 @@ function matchesSearchFilters(
   userId: Id<"users">,
 ): boolean {
   // Simple ID filters
-  if (filters.projectId && issue.projectId !== filters.projectId) return false;
+  if (filters.projectId && issue.projectId! !== filters.projectId) return false;
   if (filters.reporterId && issue.reporterId !== filters.reporterId) return false;
 
   // Complex filters using helpers
@@ -932,13 +932,15 @@ export const search = query({
     for (const issue of searchResults) {
       // Check access permissions
       try {
-        await assertCanAccessProject(ctx, issue.projectId, userId);
+        await assertCanAccessProject(ctx, issue.projectId!, userId);
       } catch {
         continue; // User doesn't have access, skip this issue
       }
 
       // Apply all search filters
-      if (!matchesSearchFilters(issue, args, userId)) {
+      if (
+        !matchesSearchFilters(issue as typeof issue & { projectId: Id<"projects"> }, args, userId)
+      ) {
         continue;
       }
 
@@ -972,7 +974,7 @@ export const search = query({
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
       const reporter = userMap.get(issue.reporterId);
       const epic = issue.epicId ? epicMap.get(issue.epicId) : null;
-      const project = projectMap.get(issue.projectId);
+      const project = projectMap.get(issue.projectId!);
 
       return {
         ...issue,
@@ -1045,7 +1047,7 @@ export const bulkUpdateStatus = mutation({
 
       // Check permissions
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.projectId!, userId);
       } catch {
         continue; // Skip issues user doesn't have access to
       }
@@ -1106,7 +1108,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.projectId!, userId);
       } catch {
         continue;
       }
@@ -1158,7 +1160,7 @@ export const bulkAssign = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.projectId!, userId);
       } catch {
         continue;
       }
@@ -1210,7 +1212,7 @@ export const bulkAddLabels = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.projectId!, userId);
       } catch {
         continue;
       }
@@ -1263,7 +1265,7 @@ export const bulkMoveToSprint = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId, userId);
+        await assertCanEditProject(ctx, issue.projectId!, userId);
       } catch {
         continue;
       }
@@ -1370,7 +1372,7 @@ export const bulkDelete = mutation({
       if (!issue) continue;
 
       try {
-        await assertIsProjectAdmin(ctx, issue.projectId, userId);
+        await assertIsProjectAdmin(ctx, issue.projectId!, userId);
       } catch {
         continue; // Only admins can delete
       }

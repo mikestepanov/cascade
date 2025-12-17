@@ -5,7 +5,7 @@ import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/contexts/CompanyContext";
+import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
   "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug",

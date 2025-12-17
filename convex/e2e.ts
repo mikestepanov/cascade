@@ -727,6 +727,13 @@ export const setupRbacProjectInternal = internalMutation({
     projectKey: v.optional(v.string()),
     companyId: v.optional(v.id("companies")),
     companySlug: v.optional(v.string()),
+    // New hierarchy fields
+    workspaceId: v.optional(v.id("workspaces")),
+    teamId: v.optional(v.id("teams")),
+    workspaceProjectId: v.optional(v.id("projects")),
+    workspaceProjectKey: v.optional(v.string()),
+    teamProjectId: v.optional(v.id("projects")),
+    teamProjectKey: v.optional(v.string()),
     error: v.optional(v.string()),
     users: v.optional(
       v.object({
@@ -811,20 +818,114 @@ export const setupRbacProjectInternal = internalMutation({
     }
 
     // =========================================================================
-    // Step 3: Create/ensure RBAC test project (associated with company)
+    // Step 3: Create workspace and team for hierarchical testing
     // =========================================================================
+
+    // Create a workspace (department) for the company
+    const workspaceId = await ctx.db.insert("workspaces", {
+      name: "E2E Testing Workspace",
+      slug: "e2e-testing",
+      description: "Workspace for E2E RBAC testing",
+      icon: "🧪",
+      companyId: company._id,
+      createdBy: adminUser._id,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create a team within the workspace
+    const teamId = await ctx.db.insert("teams", {
+      name: "E2E Test Team",
+      slug: "e2e-test-team",
+      description: "Team for E2E RBAC testing",
+      workspaceId,
+      companyId: company._id,
+      createdBy: adminUser._id,
+      createdAt: now,
+      updatedAt: now,
+      isPrivate: false, // Public team for testing
+    });
+
+    // Add all users to the team with appropriate roles
+    await ctx.db.insert("teamMembers", {
+      teamId,
+      userId: adminUser._id,
+      role: "lead",
+      addedBy: adminUser._id,
+      addedAt: now,
+    });
+    await ctx.db.insert("teamMembers", {
+      teamId,
+      userId: editorUser._id,
+      role: "member",
+      addedBy: adminUser._id,
+      addedAt: now,
+    });
+    await ctx.db.insert("teamMembers", {
+      teamId,
+      userId: viewerUser._id,
+      role: "member",
+      addedBy: adminUser._id,
+      addedAt: now,
+    });
+
+    // =========================================================================
+    // Step 4: Create RBAC test projects at different hierarchy levels
+    // =========================================================================
+
+    // 4a. Company-level project (legacy style - no workspace/team)
     let project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
       .first();
 
     if (!project) {
-      // Create the project with admin as creator, associated with company
       const projectId = await ctx.db.insert("projects", {
         name: `RBAC Test Project (${args.projectKey})`,
         key: args.projectKey,
-        description: "E2E test project for RBAC permission testing",
+        description: "E2E test project for RBAC permission testing - Company level",
         companyId: company._id,
+        ownerId: adminUser._id,
+        createdBy: adminUser._id,
+        createdAt: now,
+        updatedAt: now,
+        boardType: "kanban",
+        workflowStates: [
+          { id: "backlog", name: "Backlog", category: "todo", order: 0 },
+          { id: "todo", name: "To Do", category: "todo", order: 1 },
+          { id: "in-progress", name: "In Progress", category: "inprogress", order: 2 },
+          { id: "review", name: "Review", category: "inprogress", order: 3 },
+          { id: "done", name: "Done", category: "done", order: 4 },
+        ],
+        // Explicitly undefined for company-level project
+        workspaceId: undefined,
+        teamId: undefined,
+      });
+
+      project = await ctx.db.get(projectId);
+    } else if (!project.companyId) {
+      await ctx.db.patch(project._id, { companyId: company._id });
+    }
+
+    if (!project) {
+      return { success: false, error: "Failed to create company-level project" };
+    }
+
+    // 4b. Workspace-level project
+    const workspaceProjectKey = `${args.projectKey}-WS`;
+    let workspaceProject = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", workspaceProjectKey))
+      .first();
+
+    if (!workspaceProject) {
+      const wsProjectId = await ctx.db.insert("projects", {
+        name: `RBAC Workspace Project (${workspaceProjectKey})`,
+        key: workspaceProjectKey,
+        description: "E2E test project for RBAC - Workspace level",
+        companyId: company._id,
+        workspaceId,
+        teamId: undefined, // Workspace level, no specific team
         ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,
@@ -839,51 +940,80 @@ export const setupRbacProjectInternal = internalMutation({
         ],
       });
 
-      project = await ctx.db.get(projectId);
-    } else if (!project.companyId) {
-      // Update existing project to associate with company
-      await ctx.db.patch(project._id, { companyId: company._id });
+      workspaceProject = await ctx.db.get(wsProjectId);
     }
 
-    if (!project) {
-      return { success: false, error: "Failed to create project" };
+    // 4c. Team-level project
+    const teamProjectKey = `${args.projectKey}-TM`;
+    let teamProject = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", teamProjectKey))
+      .first();
+
+    if (!teamProject) {
+      const tmProjectId = await ctx.db.insert("projects", {
+        name: `RBAC Team Project (${teamProjectKey})`,
+        key: teamProjectKey,
+        description: "E2E test project for RBAC - Team level",
+        companyId: company._id,
+        workspaceId,
+        teamId,
+        ownerId: adminUser._id,
+        createdBy: adminUser._id,
+        createdAt: now,
+        updatedAt: now,
+        boardType: "kanban",
+        workflowStates: [
+          { id: "backlog", name: "Backlog", category: "todo", order: 0 },
+          { id: "todo", name: "To Do", category: "todo", order: 1 },
+          { id: "in-progress", name: "In Progress", category: "inprogress", order: 2 },
+          { id: "review", name: "Review", category: "inprogress", order: 3 },
+          { id: "done", name: "Done", category: "done", order: 4 },
+        ],
+      });
+
+      teamProject = await ctx.db.get(tmProjectId);
     }
 
-    // Store project ID to avoid non-null assertions in callbacks
+    // =========================================================================
+    // Step 5: Add/update project members with roles for all projects
+    // =========================================================================
     const projectId = project._id;
-
-    // =========================================================================
-    // Step 4: Add/update project members with roles
-    // =========================================================================
     const memberConfigs = [
       { userId: adminUser._id, role: "admin" as const },
       { userId: editorUser._id, role: "editor" as const },
       { userId: viewerUser._id, role: "viewer" as const },
     ];
 
-    for (const config of memberConfigs) {
-      // Check if member already exists
-      const existingMember = await ctx.db
-        .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", projectId).eq("userId", config.userId),
-        )
-        .first();
+    // Add members to all three projects
+    const allProjects = [project, workspaceProject, teamProject].filter(
+      (p): p is NonNullable<typeof p> => p !== null && p !== undefined,
+    );
 
-      if (existingMember) {
-        // Update role if different
-        if (existingMember.role !== config.role) {
-          await ctx.db.patch(existingMember._id, { role: config.role });
+    for (const proj of allProjects) {
+      for (const config of memberConfigs) {
+        const existingMember = await ctx.db
+          .query("projectMembers")
+          .withIndex("by_workspace_user", (q) =>
+            q.eq("projectId", proj._id).eq("userId", config.userId),
+          )
+          .first();
+
+        if (existingMember) {
+          // Update role if different
+          if (existingMember.role !== config.role) {
+            await ctx.db.patch(existingMember._id, { role: config.role });
+          }
+        } else {
+          // Add new member
+          await ctx.db.insert("projectMembers", {
+            projectId: proj._id,
+            userId: config.userId,
+            role: config.role,
+            addedBy: adminUser._id,
+            addedAt: now,
+          });
         }
-      } else {
-        // Add new member
-        await ctx.db.insert("projectMembers", {
-          projectId: project._id,
-          userId: config.userId,
-          role: config.role,
-          addedBy: adminUser._id,
-          addedAt: now,
-        });
       }
     }
 
@@ -893,6 +1023,13 @@ export const setupRbacProjectInternal = internalMutation({
       projectKey: project.key,
       companyId: company._id,
       companySlug: company.slug,
+      // Return all project info for comprehensive testing
+      workspaceId,
+      teamId,
+      workspaceProjectId: workspaceProject?._id,
+      workspaceProjectKey: workspaceProject?.key,
+      teamProjectId: teamProject?._id,
+      teamProjectKey: teamProject?.key,
       users: {
         admin: adminUser._id,
         editor: editorUser._id,

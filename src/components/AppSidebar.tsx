@@ -45,8 +45,8 @@ export function AppSidebar() {
   // Data
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
-  const workspaces = useQuery(api.workspaces.list);
-  const teams = useQuery(api.teams.list);
+  const workspaces = useQuery(api.workspaces.list, { companyId });
+  const teams = useQuery(api.teams.list, { companyId });
   const projects = useQuery(api.projects.list);
 
   // Mutations

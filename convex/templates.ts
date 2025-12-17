@@ -93,7 +93,7 @@ export const get = query({
     if (!template) return null;
 
     // Check if user has access to project
-    await assertCanAccessProject(ctx, template.projectId, userId);
+    await assertCanAccessProject(ctx, template.projectId!, userId);
 
     return template;
   },
@@ -125,7 +125,7 @@ export const update = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, template.projectId, userId);
+    await assertCanEditProject(ctx, template.projectId!, userId);
 
     const updates: Partial<typeof template> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -150,7 +150,7 @@ export const remove = mutation({
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, template.projectId, userId);
+    await assertCanEditProject(ctx, template.projectId!, userId);
 
     await ctx.db.delete(args.id);
   },

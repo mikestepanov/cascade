@@ -140,9 +140,9 @@ const applicationTables = {
     .index("by_workspace_user", ["projectId", "userId"]),
 
   issues: defineTable({
-    projectId: v.id("projects"), // Issue belongs to project
-    workspaceId: v.id("workspaces"), // Issue belongs to workspace
-    teamId: v.id("teams"), // Issue belongs to team
+    projectId: v.optional(v.id("projects")), // Issue belongs to project (optional during migration)
+    workspaceId: v.optional(v.id("workspaces")), // Issue belongs to workspace (optional during migration)
+    teamId: v.optional(v.id("teams")), // Issue belongs to team (optional during migration)
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
@@ -227,7 +227,7 @@ const applicationTables = {
     .index("by_to_issue", ["toIssueId"]),
 
   sprints: defineTable({
-    projectId: v.id("projects"), // Sprint belongs to project
+    projectId: v.optional(v.id("projects")), // Sprint belongs to project (optional during migration)
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
@@ -262,7 +262,7 @@ const applicationTables = {
     .index("by_issue_user", ["issueId", "userId"]),
 
   labels: defineTable({
-    projectId: v.id("projects"), // Label belongs to project
+    projectId: v.optional(v.id("projects")), // Label belongs to project (optional during migration)
     name: v.string(),
     color: v.string(), // Hex color code like "#3B82F6"
     createdBy: v.id("users"),
@@ -272,7 +272,7 @@ const applicationTables = {
     .index("by_workspace_name", ["projectId", "name"]),
 
   issueTemplates: defineTable({
-    projectId: v.id("projects"), // Template belongs to project
+    projectId: v.optional(v.id("projects")), // Template belongs to project (optional during migration)
     name: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
@@ -292,7 +292,7 @@ const applicationTables = {
     .index("by_workspace_type", ["projectId", "type"]),
 
   webhooks: defineTable({
-    projectId: v.id("projects"), // Webhook belongs to project
+    projectId: v.optional(v.id("projects")), // Webhook belongs to project (optional during migration)
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
@@ -322,7 +322,7 @@ const applicationTables = {
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
-    projectId: v.id("projects"), // Filter belongs to project
+    projectId: v.optional(v.id("projects")), // Filter belongs to project (optional during migration)
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
@@ -384,7 +384,7 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"]),
 
   automationRules: defineTable({
-    projectId: v.id("projects"), // Automation rule belongs to project
+    projectId: v.optional(v.id("projects")), // Automation rule belongs to project (optional during migration)
     name: v.string(),
     description: v.optional(v.string()),
     isActive: v.boolean(),
@@ -402,7 +402,7 @@ const applicationTables = {
     .index("by_workspace_active", ["projectId", "isActive"]),
 
   customFields: defineTable({
-    projectId: v.id("projects"), // Custom field belongs to project
+    projectId: v.optional(v.id("projects")), // Custom field belongs to project (optional during migration)
     name: v.string(),
     fieldKey: v.string(), // Unique key like "customer_id"
     fieldType: v.union(
@@ -1235,6 +1235,7 @@ const applicationTables = {
   })
     .index("by_company", ["companyId"])
     .index("by_workspace", ["workspaceId"]) // NEW
+    .index("by_workspace_slug", ["workspaceId", "slug"]) // NEW - for looking up teams by workspace and slug
     .index("by_company_slug", ["companyId", "slug"])
     .index("by_creator", ["createdBy"])
     .index("by_lead", ["leadId"]) // NEW

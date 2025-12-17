@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/contexts/CompanyContext";
+import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
   "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/",

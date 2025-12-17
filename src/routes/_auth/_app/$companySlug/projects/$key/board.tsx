@@ -1,5 +1,9 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import { ProjectBoard } from "@/components/ProjectBoard";
+import { Flex } from "@/components/ui/Flex";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/board")({
   component: BoardPage,
@@ -8,5 +12,29 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/boa
 function BoardPage() {
   const { key } = Route.useParams();
 
-  return <ProjectBoard projectKey={key} />;
+  // Query project by key to get the ID
+  const project = useQuery(api.projects.getByKey, { key });
+
+  if (project === undefined) {
+    return (
+      <Flex align="center" justify="center" className="h-full">
+        <LoadingSpinner message="Loading project..." />
+      </Flex>
+    );
+  }
+
+  if (!project) {
+    return (
+      <Flex align="center" justify="center" className="h-full">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
+          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            The project "{key}" doesn't exist or you don't have access to it.
+          </p>
+        </div>
+      </Flex>
+    );
+  }
+
+  return <ProjectBoard projectId={project._id} />;
 }

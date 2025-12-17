@@ -145,7 +145,7 @@ export const update = mutation({
       throw new Error("Field not found");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.projectId!, userId);
 
     const updates: Partial<typeof field> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -173,7 +173,7 @@ export const remove = mutation({
       throw new Error("Field not found");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.projectId!, userId);
 
     // Delete all values for this field
     const values = await ctx.db
@@ -202,7 +202,7 @@ export const getValuesForIssue = query({
     if (!issue) return [];
 
     try {
-      await assertCanAccessProject(ctx, issue.projectId, userId);
+      await assertCanAccessProject(ctx, issue.projectId!, userId);
     } catch {
       return [];
     }
@@ -244,7 +244,7 @@ export const setValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId!, userId);
 
     const field = await ctx.db.get(args.fieldId);
     if (!field) {
@@ -303,7 +303,7 @@ export const removeValue = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId!, userId);
 
     const existing = await ctx.db
       .query("customFieldValues")
