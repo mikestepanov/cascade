@@ -144,11 +144,29 @@ async function globalSetup(config: FullConfig): Promise<void> {
     try {
       let result = await setupTestUser(context, page, baseURL, key, user, authPath);
 
-      // If first user (teamLead) fails, retry once (cold start issue)
+      // If first user (teamLead) fails, retry once with fresh context
       if (!result.success && key === "teamLead") {
-        console.log(`  🔄 Retrying ${key} sign-in (cold start issue)...`);
-        await page.waitForTimeout(3000); // Give backend time to warm up
-        result = await setupTestUser(context, page, baseURL, key, user, authPath);
+        console.log(`  🔄 Retrying ${key} sign-in with fresh browser context...`);
+
+        // Close old context to clear stale auth tokens
+        await context.close();
+
+        // Wait for backend to stabilize
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Create fresh context and page
+        const retryContext = await browser.newContext();
+        const retryPage = await retryContext.newPage();
+
+        try {
+          result = await setupTestUser(retryContext, retryPage, baseURL, key, user, authPath);
+          userConfigs[key] = { companySlug: result.companySlug };
+        } finally {
+          await retryContext.close();
+        }
+
+        // Skip the normal cleanup since we already closed contexts
+        continue;
       }
 
       userConfigs[key] = { companySlug: result.companySlug };

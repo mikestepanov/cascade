@@ -31,7 +31,6 @@ import type * as bookingPages from "../bookingPages.js";
 import type * as bookings from "../bookings.js";
 import type * as calendarEvents from "../calendarEvents.js";
 import type * as calendarEventsAttendance from "../calendarEventsAttendance.js";
-import type * as clearOldData from "../clearOldData.js";
 import type * as companies from "../companies.js";
 import type * as crons from "../crons.js";
 import type * as customFields from "../customFields.js";
@@ -133,7 +132,6 @@ declare const fullApi: ApiFromModules<{
   bookings: typeof bookings;
   calendarEvents: typeof calendarEvents;
   calendarEventsAttendance: typeof calendarEventsAttendance;
-  clearOldData: typeof clearOldData;
   companies: typeof companies;
   crons: typeof crons;
   customFields: typeof customFields;
