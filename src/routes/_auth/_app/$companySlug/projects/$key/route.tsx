@@ -5,6 +5,7 @@ import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
   component: ProjectLayout,
@@ -14,9 +15,14 @@ function ProjectLayout() {
   const { key } = Route.useParams();
   const { company } = useCompany();
   const companySlug = company?.slug ?? "";
+  const { user } = useCurrentUser();
   const project = useQuery(api.projects.getByKey, { key });
+  const userRole = useQuery(
+    api.projects.getUserRole,
+    project ? { projectId: project._id } : "skip",
+  );
 
-  if (project === undefined) {
+  if (project === undefined || userRole === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner message="Loading project..." />
@@ -37,11 +43,15 @@ function ProjectLayout() {
     );
   }
 
+  // Check if user is admin
+  const isAdmin = userRole === "admin" || project.createdBy === user?._id;
+
   const tabs = [
     { name: "Board", href: ROUTES.projects.board(companySlug, key) },
     { name: "Calendar", href: ROUTES.projects.calendar(companySlug, key) },
     { name: "Timesheet", href: ROUTES.projects.timesheet(companySlug, key) },
-    { name: "Settings", href: ROUTES.projects.settings(companySlug, key) },
+    // Only show Settings tab to admins
+    ...(isAdmin ? [{ name: "Settings", href: ROUTES.projects.settings(companySlug, key) }] : []),
   ];
 
   return (
