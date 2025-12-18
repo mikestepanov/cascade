@@ -43,8 +43,8 @@ function ProjectLayout() {
     );
   }
 
-  // Check if user is admin
-  const isAdmin = userRole === "admin" || project.createdBy === user?._id;
+  // Check if user is admin (via role OR ownership)
+  const isAdmin = userRole === "admin" || project.ownerId === user?._id;
 
   const tabs = [
     { name: "Board", href: ROUTES.projects.board(companySlug, key) },
