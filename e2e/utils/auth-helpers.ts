@@ -386,16 +386,36 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
           .catch(() => 0);
         if (hasAuth > 0) {
           console.log("  ✓ User appears to be authenticated, checking URL...");
+
+          // Check for browser console errors
+          const errors: string[] = [];
+          page.on("console", (msg) => {
+            if (msg.type() === "error") errors.push(msg.text());
+          });
+          page.on("pageerror", (err) => errors.push(err.message));
+
           // PostAuthRedirect queries getUserCompanies and getOnboardingStatus
-          // Give it more time to complete queries and redirect (up to 10s)
-          for (let i = 0; i < 10; i++) {
+          // Give it more time to complete queries and redirect (up to 20s with URL logging)
+          for (let i = 0; i < 20; i++) {
             await page.waitForTimeout(1000);
+            const currentUrl = page.url();
+            if (i % 5 === 0) {
+              console.log(`  ⏱️ ${i + 1}s: URL = ${currentUrl}`);
+              if (errors.length > 0) {
+                console.log(`  ❌ Browser errors: ${errors.slice(-3).join(", ")}`);
+              }
+            }
             if (await isOnDashboard(page)) {
               console.log(`  ✓ Now on dashboard after ${i + 1}s`);
               return true;
             }
           }
-          console.log("  ⚠️ Still not on dashboard after 10s wait");
+          console.log("  ⚠️ Still not on dashboard after 20s wait");
+          if (errors.length > 0) {
+            console.log(
+              `  ❌ Total browser errors: ${errors.length}, last: ${errors[errors.length - 1]}`,
+            );
+          }
         }
       }
 

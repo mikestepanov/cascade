@@ -142,7 +142,15 @@ async function globalSetup(config: FullConfig): Promise<void> {
     const page = await context.newPage();
 
     try {
-      const result = await setupTestUser(context, page, baseURL, key, user, authPath);
+      let result = await setupTestUser(context, page, baseURL, key, user, authPath);
+
+      // If first user (teamLead) fails, retry once (cold start issue)
+      if (!result.success && key === "teamLead") {
+        console.log(`  🔄 Retrying ${key} sign-in (cold start issue)...`);
+        await page.waitForTimeout(3000); // Give backend time to warm up
+        result = await setupTestUser(context, page, baseURL, key, user, authPath);
+      }
+
       userConfigs[key] = { companySlug: result.companySlug };
     } catch (error) {
       console.error(`  ❌ ${key}: Setup error:`, error);

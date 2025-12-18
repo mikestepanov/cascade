@@ -1,0 +1,99 @@
+
+> nixelo@0.0.0 e2e C:\Users\mikes\Desktop\cascade
+> playwright test "rbac.spec.ts" "--project=chromium" "--workers=1" "--retries=0" "--grep" "admin has full"
+
+[dotenv@17.2.3] injecting env (25) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+≡ƒôº Clearing Mailtrap inbox...
+
+≡ƒæÑ Setting up 3 test user(s)...
+
+  ≡ƒùæ∩╕Å teamLead: Deleted stale auth state
+  ≡ƒöº teamLead: Setting up auth for e2e-teamlead@inbox.mailtrap.io...
+  ≡ƒùæ∩╕Å teamLead: Deleting existing user to ensure fresh state...
+  Γ£ô teamLead: User created via API (s570bbama8gsqcr8j5pe3dhrx97xhgv4)
+  Γ£ô teamLead: Password verified successfully
+  ≡ƒöÉ Attempting sign-in for e2e-teamlead@inbox.mailtrap.io...
+  ≡ƒôï Waiting for sign-in page...
+  Γ£ô Sign-in page loaded
+  ≡ƒôº Filling and submitting form via JS...
+  ≡ƒÜÇ Form submitted (submitting state: true, button: "Signing in...")
+
+[1A[2K[WebServer] Sourcemap for "C:/Users/mikes/Desktop/cascade/node_modules/.pnpm/posthog-js@1.301.0/node_modules/posthog-js/react/dist/esm/index.js" points to missing source files
+  ΓÜá∩╕Å Submit button disappeared - form may have unmounted
+  ≡ƒôä Page content: Back to HomeWelcome backSign in to your account to continueSign in with GoogleorContinue with emailDon't have an account? Sign up;
+import registerDevSW from '/@vite-plugin-pwa/pwa-entry-point-loaded';
+registerDevSW();
+;import('/@id/virtual:tanstack-start-client-entry')
+  Γ£ô User appears to be authenticated, checking URL...
+  ΓÅ▒∩╕Å 1s: URL = http://localhost:5555/signin
+  ΓÅ▒∩╕Å 6s: URL = http://localhost:5555/signin
+  ΓÅ▒∩╕Å 11s: URL = http://localhost:5555/signin
+  ΓÅ▒∩╕Å 16s: URL = http://localhost:5555/signin
+  ΓÜá∩╕Å Still not on dashboard after 20s wait
+  ΓÜá∩╕Å No redirect detected, URL: http://localhost:5555/signin, button: "null"
+  ΓÜá∩╕Å teamLead: Sign-in failed after API user creation
+  ΓÜá∩╕Å teamLead: Failed to create auth state
+  ≡ƒùæ∩╕Å teamMember: Deleted stale auth state
+  ≡ƒöº teamMember: Setting up auth for e2e-member@inbox.mailtrap.io...
+  ≡ƒùæ∩╕Å teamMember: Deleting existing user to ensure fresh state...
+  Γ£ô teamMember: User created via API (s572sq3jb0vhvce49nfseet6n97xghw7)
+  Γ£ô teamMember: Password verified successfully
+  ≡ƒöÉ Attempting sign-in for e2e-member@inbox.mailtrap.io...
+  ≡ƒôï Waiting for sign-in page...
+  Γ£ô Sign-in page loaded
+  ≡ƒôº Filling and submitting form via JS...
+  ≡ƒÜÇ Form submitted (submitting state: true, button: "Signing in...")
+  Γ£ô Redirected to: http://localhost:5555/nixelo-e2e/dashboard
+Γ£ô Already on dashboard
+  Γ£ô teamMember: Auth state saved
+  ≡ƒùæ∩╕Å viewer: Deleted stale auth state
+  ≡ƒöº viewer: Setting up auth for e2e-viewer@inbox.mailtrap.io...
+  ≡ƒùæ∩╕Å viewer: Deleting existing user to ensure fresh state...
+  Γ£ô viewer: User created via API (s5793a4vbvr94r7pmwzbk6hnr57xgxhk)
+  Γ£ô viewer: Password verified successfully
+  ≡ƒöÉ Attempting sign-in for e2e-viewer@inbox.mailtrap.io...
+  ≡ƒôï Waiting for sign-in page...
+  Γ£ô Sign-in page loaded
+  ≡ƒôº Filling and submitting form via JS...
+  ≡ƒÜÇ Form submitted (submitting state: true, button: "Signing in...")
+  Γ£ô Redirected to: http://localhost:5555/nixelo-e2e/dashboard
+Γ£ô Already on dashboard
+  Γ£ô viewer: Auth state saved
+
+≡ƒöÉ Setting up RBAC test project...
+
+  Γ£ô RBAC project created: RBAC
+    - Company slug: nixelo-e2e
+    - Admin: e2e-teamlead@inbox.mailtrap.io
+    - Editor: e2e-member@inbox.mailtrap.io
+    - Viewer: e2e-viewer@inbox.mailtrap.io
+  Γ£ô RBAC config saved to .auth/rbac-config.json
+
+Γ£à Global setup complete
+
+
+Running 1 test using 1 worker
+
+[1A[2K[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+[1A[2K[1/1] [chromium] ΓÇ║ e2e\rbac.spec.ts:27:1 ΓÇ║ admin has full project access
+[1A[2K  1) [chromium] ΓÇ║ e2e\rbac.spec.ts:27:1 ΓÇ║ admin has full project access ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error: Admin auth state not found. Run global setup first.
+
+       at fixtures\rbac.fixture.ts:138
+
+      136 |   adminContext: async ({ browser }, use) => {
+      137 |     if (!isAuthStateValid("admin")) {
+    > 138 |       throw new Error("Admin auth state not found. Run global setup first.");
+          |             ^
+      139 |     }
+      140 |     const context = await browser.newContext({
+      141 |       storageState: getAuthPath("admin"),
+        at Object.adminContext (C:\Users\mikes\Desktop\cascade\e2e\fixtures\rbac.fixture.ts:138:13)
+
+
+[1A[2K  1 failed
+    [chromium] ΓÇ║ e2e\rbac.spec.ts:27:1 ΓÇ║ admin has full project access ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+[36m  Serving HTML report at http://localhost:9323. Press Ctrl+C to quit.[39m
