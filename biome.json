@@ -75,11 +75,16 @@
       }
     },
     {
-      "includes": ["scripts/**"],
+      "includes": ["scripts/**", "scripts/**/*.mjs"],
       "linter": {
         "rules": {
           "suspicious": {
-            "noConsole": "off"
+            "noConsole": "off",
+            "useIterableCallbackReturn": "off"
+          },
+          "style": {
+            "useNodejsImportProtocol": "off",
+            "useTemplate": "off"
           }
         }
       }

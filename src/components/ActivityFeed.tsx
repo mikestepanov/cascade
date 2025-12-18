@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 

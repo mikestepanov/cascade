@@ -1,3 +1,4 @@
+import { api } from "@convex/_generated/api";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
@@ -18,7 +19,6 @@ import {
 } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { api } from "../../convex/_generated/api";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/Tooltip";
@@ -30,7 +30,7 @@ export function AppSidebar() {
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebarState();
 
   // Get company from URL context
-  const { companySlug, companyName } = useCompany();
+  const { companySlug, companyName, companyId } = useCompany();
 
   // All hooks must be called unconditionally
   const isAdmin = useQuery(api.users.isCompanyAdmin);
@@ -38,16 +38,22 @@ export function AppSidebar() {
 
   // Section expand states
   const [docsExpanded, setDocsExpanded] = useState(true);
-  const [projectsExpanded, setProjectsExpanded] = useState(true);
+  const [workspacesExpanded, setWorkspacesExpanded] = useState(true);
+  const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
 
   // Data
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
+  const workspaces = useQuery(api.workspaces.list, { companyId });
+  const teams = useQuery(api.teams.list, { companyId });
   const projects = useQuery(api.projects.list);
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
-  const createProject = useMutation(api.projects.create);
+  const createWorkspace = useMutation(api.workspaces.create);
+  // const createTeam = useMutation(api.teams.create); // TODO: Add team creation UI
+  // const createProject = useMutation(api.projects.create); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -67,21 +73,44 @@ export function AppSidebar() {
     }
   };
 
-  const handleCreateProject = async () => {
-    const key = `PROJ${Date.now().toString(36).toUpperCase().slice(-4)}`;
+  const handleCreateWorkspace = async () => {
     try {
-      await createProject({
-        name: "New Project",
-        key,
-        isPublic: false,
-        boardType: "kanban",
+      const slug = `workspace-${Date.now().toString(36)}`;
+      await createWorkspace({
+        name: "New Workspace",
+        slug,
+        companyId,
       });
-      navigate({ to: ROUTES.projects.board(companySlug, key) });
-      showSuccess("Project created");
+      navigate({ to: ROUTES.workspaces.detail(companySlug, slug) });
+      showSuccess("Workspace created");
       closeMobile();
     } catch (error) {
-      showError(error, "Failed to create project");
+      showError(error, "Failed to create workspace");
     }
+  };
+
+  const toggleWorkspace = (workspaceSlug: string) => {
+    setExpandedWorkspaces((prev) => {
+      const next = new Set(prev);
+      if (next.has(workspaceSlug)) {
+        next.delete(workspaceSlug);
+      } else {
+        next.add(workspaceSlug);
+      }
+      return next;
+    });
+  };
+
+  const toggleTeam = (teamSlug: string) => {
+    setExpandedTeams((prev) => {
+      const next = new Set(prev);
+      if (next.has(teamSlug)) {
+        next.delete(teamSlug);
+      } else {
+        next.add(teamSlug);
+      }
+      return next;
+    });
   };
 
   const handleNavClick = () => {
@@ -184,28 +213,101 @@ export function AppSidebar() {
             <CollapsibleSection
               icon={FolderKanban}
               label="Workspaces"
-              isExpanded={projectsExpanded}
-              onToggle={() => setProjectsExpanded(!projectsExpanded)}
-              isActive={isActive("/projects")}
+              isExpanded={workspacesExpanded}
+              onToggle={() => setWorkspacesExpanded(!workspacesExpanded)}
+              isActive={isActive("/workspaces")}
               isCollapsed={isCollapsed}
-              onAdd={handleCreateProject}
-              navigateTo={ROUTES.projects.list(companySlug)}
+              onAdd={handleCreateWorkspace}
+              navigateTo={ROUTES.workspaces.list(companySlug)}
               onClick={handleNavClick}
             >
-              {projects?.slice(0, 10).map((project) => (
-                <NavSubItem
-                  key={project._id}
-                  to={ROUTES.projects.board(companySlug, project.key)}
-                  label={`${project.key} - ${project.name}`}
-                  isActive={location.pathname.includes(`/projects/${project.key}`)}
-                  onClick={handleNavClick}
-                />
-              ))}
-              {projects && projects.length > 10 && (
-                <Typography variant="p" color="tertiary" className="px-3 py-1 text-xs">
-                  +{projects.length - 10} more
-                </Typography>
-              )}
+              {workspaces?.map((workspace) => {
+                const workspaceTeams = teams?.filter((t) => t.workspaceId === workspace._id) || [];
+                const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
+
+                return (
+                  <div key={workspace._id} className="ml-2">
+                    {/* Workspace Item */}
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => toggleWorkspace(workspace.slug)}
+                        className="h-6 w-6 p-0.5"
+                      >
+                        {isWorkspaceExpanded ? (
+                          <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <NavSubItem
+                        to={ROUTES.workspaces.detail(companySlug, workspace.slug)}
+                        label={workspace.name}
+                        isActive={location.pathname.includes(`/workspaces/${workspace.slug}`)}
+                        onClick={handleNavClick}
+                      />
+                    </div>
+
+                    {/* Teams under workspace */}
+                    {isWorkspaceExpanded &&
+                      workspaceTeams.map((team) => {
+                        const teamProjects = projects?.filter((p) => p.teamId === team._id) || [];
+                        const isTeamExpanded = expandedTeams.has(team.slug);
+
+                        return (
+                          <div key={team._id} className="ml-4">
+                            {/* Team Item */}
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleTeam(team.slug)}
+                                className="h-6 w-6 p-0.5"
+                              >
+                                {isTeamExpanded ? (
+                                  <ChevronDown className="w-4 h-4" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <NavSubItem
+                                to={ROUTES.workspaces.teams.detail(
+                                  companySlug,
+                                  workspace.slug,
+                                  team.slug,
+                                )}
+                                label={team.name}
+                                isActive={location.pathname.includes(`/teams/${team.slug}`)}
+                                onClick={handleNavClick}
+                              />
+                            </div>
+
+                            {/* Projects under team */}
+                            {isTeamExpanded &&
+                              teamProjects.map((project) => (
+                                <div key={project._id} className="ml-6">
+                                  <NavSubItem
+                                    to={ROUTES.workspaces.teams.projects.board(
+                                      companySlug,
+                                      workspace.slug,
+                                      team.slug,
+                                      project.key,
+                                    )}
+                                    label={`${project.key} - ${project.name}`}
+                                    isActive={location.pathname.includes(
+                                      `/projects/${project.key}`,
+                                    )}
+                                    onClick={handleNavClick}
+                                  />
+                                </div>
+                              ))}
+                          </div>
+                        );
+                      })}
+                  </div>
+                );
+              })}
             </CollapsibleSection>
 
             {/* Time Tracking (admin only) */}

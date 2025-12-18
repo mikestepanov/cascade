@@ -73,7 +73,6 @@ import type * as lib_pagination from "../lib/pagination.js";
 import type * as lib_queryLimits from "../lib/queryLimits.js";
 import type * as lib_vectorSearchHelpers from "../lib/vectorSearchHelpers.js";
 import type * as meetingBot from "../meetingBot.js";
-import type * as migrations_migrateProjectToWorkspace from "../migrations/migrateProjectToWorkspace.js";
 import type * as notificationPreferences from "../notificationPreferences.js";
 import type * as notifications from "../notifications.js";
 import type * as offlineSync from "../offlineSync.js";
@@ -175,7 +174,6 @@ declare const fullApi: ApiFromModules<{
   "lib/queryLimits": typeof lib_queryLimits;
   "lib/vectorSearchHelpers": typeof lib_vectorSearchHelpers;
   meetingBot: typeof meetingBot;
-  "migrations/migrateProjectToWorkspace": typeof migrations_migrateProjectToWorkspace;
   notificationPreferences: typeof notificationPreferences;
   notifications: typeof notifications;
   offlineSync: typeof offlineSync;

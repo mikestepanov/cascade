@@ -109,6 +109,38 @@ async function setupTestUser(
 }
 
 /**
+ * Wait for the React app to be fully loaded
+ */
+async function waitForAppReady(page: Page, baseURL: string): Promise<boolean> {
+  try {
+    console.log("⏳ Waiting for React app to be ready...");
+
+    // Navigate with generous timeout
+    await page.goto(baseURL, { waitUntil: "load", timeout: 120000 });
+
+    // Wait for EITHER sign-in page OR dashboard (whichever loads first)
+    // This is more reliable than checking for empty root
+    await page.waitForSelector('h1, h2, [role="heading"], button[type="submit"]', {
+      state: "visible",
+      timeout: 60000,
+    });
+
+    console.log("✓ React app is ready");
+    return true;
+  } catch (error) {
+    console.error("❌ React app failed to load:", error);
+    // Take screenshot for debugging
+    try {
+      await page.screenshot({ path: path.join(AUTH_DIR, "app-load-failed.png"), fullPage: true });
+      const html = await page.content();
+      fs.writeFileSync(path.join(AUTH_DIR, "app-load-failed.html"), html);
+      console.log("  📸 Debug files saved to .auth/");
+    } catch {}
+    return false;
+  }
+}
+
+/**
  * Global setup entry point
  */
 async function globalSetup(config: FullConfig): Promise<void> {
@@ -124,6 +156,16 @@ async function globalSetup(config: FullConfig): Promise<void> {
   }
 
   const browser = await chromium.launch();
+
+  // Wait for React app to be ready before starting user setup
+  const testPage = await browser.newPage();
+  const appReady = await waitForAppReady(testPage, baseURL);
+  await testPage.close();
+
+  if (!appReady) {
+    await browser.close();
+    throw new Error("React app failed to load. Cannot proceed with global setup.");
+  }
 
   // Users to set up (teamLead is the default user for most tests)
   const usersToSetup: Array<{ key: string; user: TestUser; authPath: string }> = [
@@ -143,7 +185,13 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
     try {
       const result = await setupTestUser(context, page, baseURL, key, user, authPath);
-      userConfigs[key] = { companySlug: result.companySlug };
+
+      if (!result.success) {
+        console.error(`  ❌ ${key}: Failed to create auth state`);
+        // Don't retry - app should be ready, if it fails there's a real issue
+      } else {
+        userConfigs[key] = { companySlug: result.companySlug };
+      }
     } catch (error) {
       console.error(`  ❌ ${key}: Setup error:`, error);
       try {

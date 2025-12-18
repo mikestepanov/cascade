@@ -3,8 +3,8 @@
  * Pairs with ConfirmDialog component for consistent delete UX
  */
 
+import type { Id } from "@convex/_generated/dataModel";
 import { useCallback, useState } from "react";
-import type { Id } from "../../convex/_generated/dataModel";
 import { showError, showSuccess } from "../lib/toast";
 
 export interface UseDeleteConfirmationOptions {

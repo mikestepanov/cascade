@@ -1,11 +1,11 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatCurrency, formatDate, formatTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";

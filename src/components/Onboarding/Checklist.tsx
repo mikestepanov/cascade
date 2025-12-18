@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
-import { api } from "../../../convex/_generated/api";
 import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";
 

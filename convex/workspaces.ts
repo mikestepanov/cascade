@@ -1,6 +1,6 @@
 /**
  * Workspaces - Department-level organization
- * 
+ *
  * Workspaces sit above teams in the hierarchy:
  * Company → Workspaces (departments) → Teams → Projects → Issues
  */
@@ -32,9 +32,7 @@ export const create = mutation({
     // Check if slug is unique within company
     const existing = await ctx.db
       .query("workspaces")
-      .withIndex("by_company_slug", (q) =>
-        q.eq("companyId", args.companyId).eq("slug", args.slug)
-      )
+      .withIndex("by_company_slug", (q) => q.eq("companyId", args.companyId).eq("slug", args.slug))
       .first();
 
     if (existing) {
@@ -104,9 +102,7 @@ export const getBySlug = query({
 
     const workspace = await ctx.db
       .query("workspaces")
-      .withIndex("by_company_slug", (q) =>
-        q.eq("companyId", args.companyId).eq("slug", args.slug)
-      )
+      .withIndex("by_company_slug", (q) => q.eq("companyId", args.companyId).eq("slug", args.slug))
       .first();
 
     if (!workspace) throw new Error("Workspace not found");
@@ -128,7 +124,7 @@ export const update = mutation({
       v.object({
         defaultProjectVisibility: v.optional(v.boolean()),
         allowExternalSharing: v.optional(v.boolean()),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -142,7 +138,7 @@ export const update = mutation({
 
     await ctx.db.patch(args.id, {
       ...Object.fromEntries(
-        Object.entries(args).filter(([key, value]) => key !== "id" && value !== undefined)
+        Object.entries(args).filter(([key, value]) => key !== "id" && value !== undefined),
       ),
       updatedAt: Date.now(),
     });
@@ -182,7 +178,9 @@ export const remove = mutation({
       .first();
 
     if (projects) {
-      throw new Error("Cannot delete workspace with projects. Please delete or move projects first.");
+      throw new Error(
+        "Cannot delete workspace with projects. Please delete or move projects first.",
+      );
     }
 
     await ctx.db.delete(args.id);

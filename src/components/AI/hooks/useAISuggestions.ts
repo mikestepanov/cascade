@@ -3,11 +3,11 @@
  * Manages AI suggestions state and business logic
  */
 
+import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { api } from "../../../../convex/_generated/api";
-import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 import type { SuggestionType } from "../config";
 
 export interface UseAISuggestionsOptions {

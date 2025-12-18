@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";

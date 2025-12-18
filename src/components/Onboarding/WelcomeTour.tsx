@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { useMutation } from "convex/react";
 import type { driver as driverFunction } from "driver.js";
 import { useEffect, useState } from "react";
-import { api } from "../../../convex/_generated/api";
 
 interface WelcomeTourProps {
   onComplete?: () => void;

@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
 import { MetricCard } from "./Analytics/MetricCard";

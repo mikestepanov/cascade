@@ -1,8 +1,8 @@
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
 import { Calendar } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";

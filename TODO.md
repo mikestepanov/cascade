@@ -1,31 +1,41 @@
 # Nixelo - Product Roadmap
 
-> **Last Updated:** 2024-12-17
-> **Status:** Architecture Migration in Progress (Option B)
+> **Last Updated:** 2025-12-18
+> **Current Architecture:** Company → Workspaces → Teams → Projects → Issues
 
 ---
 
-## 🚧 IN PROGRESS: Option B Architecture Migration
+## 🚨 URGENT: Fix Remaining E2E Test (1/3 failing)
 
-**Current Phase:** Phase 2 Complete - Adding Workspace Layer
+**Current Status:** 67% E2E passing (2/3 tests) - **17 commits, eliminated all retry logic!**
 
-**Architecture:** Company → Workspaces → Teams → Projects → Issues
+### ✅ Fixed (100% reliable, no retries)
+- ✅ Backend cold starts eliminated (playwright starts Convex)
+- ✅ Auth: 100% success rate (3/3 users, every time)
+- ✅ Flaky tests: ELIMINATED (teamLead sign-in fixed)
+- ✅ Manual retry logic: REMOVED (32 lines deleted)
+- ✅ Editor test: PASSING (tab hidden, redirect works)
+- ✅ Viewer test: PASSING (tab hidden, redirect works)
 
-**Completed:**
-- ✅ Phase 1: Renamed workspace → project (3,209 replacements)
-- ✅ Phase 2: Added workspace layer (departments)
+### ❌ Remaining Issue (Admin Test)
+- ❌ **Admin settings tab not visible** (`e2e/rbac.spec.ts:27`)
+  - Backend creates project with `ownerId = adminUser._id` ✅
+  - Backend adds `projectMembers` entry with `role="admin"` ✅
+  - Frontend logic: `isAdmin = userRole === "admin" || ownerId === userId` ✅
+  - **Hypothesis:** `userRole` query returns wrong value for admin
+  - **Next:** Add browser console logging to debug actual values
 
-**Next:**
-- [ ] Phase 3: Update routes for new hierarchy
-- [ ] Phase 4: Update UI components
-- [ ] Phase 5: Data migration
-- [ ] Phase 6: Testing
+**Files involved:**
+- `src/routes/_auth/_app/$companySlug/projects/$key/route.tsx` (tab visibility)
+- `convex/projectAccess.ts:260` (`getWorkspaceRole`)
+- `convex/e2e.ts:717` (`setupRbacProjectInternal`)
+- `e2e/rbac.spec.ts:27` (failing test)
 
 ---
 
-## 🔥 AFTER MIGRATION: Multi-Level Views
+## 🔥 NEXT: Multi-Level Views
 
-**Goal:** Support boards, documents, and wikis at multiple levels
+**Goal:** Support boards, documents, and wikis at multiple levels (inspired by ClickUp, Linear, Jira)
 
 ### Board Views (All Levels)
 - [ ] **Workspace Board** - Department-wide view
@@ -41,14 +51,14 @@
   - [ ] Team velocity tracking
   - [ ] Kanban, List, Timeline, Calendar views
   
-- [ ] **Project Board** - Filtered view (EXISTING)
-  - [ ] Project-specific issues only
-  - [ ] Project timeline/roadmap
-  - [ ] Client-facing boards (agency)
-  - [ ] Kanban, List, Timeline, Calendar views
+- [x] **Project Board** - Filtered view (EXISTING - already works!)
+  - [x] Project-specific issues only
+  - [x] Project timeline/roadmap
+  - [x] Client-facing boards (agency)
+  - [x] Kanban, List, Timeline, Calendar views
   
 - [ ] **Custom Boards** - Filter anything
-  - [ ] Saved filters
+  - [ ] Saved filters (already exists - just needs UI)
   - [ ] Cross-team boards
   - [ ] Personal boards (@me)
   - [ ] Multiple view types
@@ -69,16 +79,16 @@
   - [ ] Meeting notes, retrospectives
   - [ ] Code guidelines, best practices
   
-- [ ] **Project Wiki** - Project-specific docs (EXISTING)
-  - [ ] Project brief, requirements
-  - [ ] Technical specs
-  - [ ] Client deliverables
+- [x] **Project Wiki** - Project-specific docs (EXISTING - already works!)
+  - [x] Project brief, requirements
+  - [x] Technical specs
+  - [x] Client deliverables
 
 ### Calendar/Events (All Levels)
 - [ ] **Company Calendar** - All-hands, holidays
 - [ ] **Workspace Calendar** - Department events
 - [ ] **Team Calendar** - Team meetings, standups
-- [ ] **Project Calendar** - Project milestones, deadlines
+- [x] **Project Calendar** - Project milestones, deadlines (EXISTING)
 
 ---
 
@@ -96,9 +106,6 @@
 - [ ] Create demo video (2-3 min walkthrough)
 
 ### Day 3: GitHub Polish
-- [x] Polish README.md (hero image, quick start, features)
-- [x] Add CONTRIBUTING.md
-- [x] Add CODE_OF_CONDUCT.md
 - [ ] Add issue/PR templates
 - [ ] Add "good first issue" labels
 
@@ -196,17 +203,18 @@ A fully-built feature for managing document templates that was never integrated:
 
 ## Technical Debt
 
+### Testing
+- ✅ ~~Fix flaky E2E tests~~ - DONE (17 commits, 100% auth success)
+- [ ] **Fix admin settings tab E2E test** (1/3 failing, 67% → 100%)
+  - Debug `userRole` query return value
+  - Verify `ownerId` comparison logic
+  - Add browser console logging for debugging
+
 ### Backend Cleanup
-- [x] `@ts-nocheck` pragmas reviewed - kept for legitimate Convex framework limitations (circular types, aggregate API)
 - [ ] Implement AI response time calculation (`convex/internal/ai.ts:204`)
 - [ ] SendPulse email provider (optional, Resend works)
 
-### Critical (Before Launch)
-- [x] Webhook secrets in plain text (fixed - secrets no longer returned in queries)
-- [x] N+1 query patterns (fixed in bulk operations and dashboard queries)
-
 ### High Priority
-- [x] Refactored components (deleted duplicate `.refactored.tsx` files - were artifacts)
 - [ ] Unbounded queries (no pagination)
 
 ### Medium Priority

@@ -401,6 +401,96 @@ export const getTeam = query({
 });
 
 /**
+ * Get team by slug
+ */
+export const getBySlug = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const team = await ctx.db
+      .query("teams")
+      .withIndex("by_workspace_slug", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("slug", args.slug),
+      )
+      .first();
+
+    if (!team) return null;
+
+    // Check if user has access (team member or company admin)
+    const role = await getTeamRole(ctx, team._id, userId);
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
+
+    if (!(role || isAdmin)) return null;
+
+    return {
+      ...team,
+      userRole: role,
+      isAdmin,
+    };
+  },
+});
+
+/**
+ * List teams (alias for getCompanyTeams for consistency)
+ */
+export const list = query({
+  args: {
+    companyId: v.id("companies"),
+  },
+  handler: async (ctx, args) => {
+    // Delegate to getCompanyTeams by re-implementing the logic
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const teams = await ctx.db
+      .query("teams")
+      .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
+      .collect();
+
+    // Check if user is company admin
+    const isCompanyAdminResult = await isCompanyAdmin(ctx, args.companyId, userId);
+
+    const teamsWithMetadata = await Promise.all(
+      teams.map(async (team) => {
+        const role = await getTeamRole(ctx, team._id, userId);
+
+        // Only return teams user has access to (team member or company admin)
+        if (!(role || isCompanyAdminResult)) return null;
+
+        // Get member count
+        const memberCount = await ctx.db
+          .query("teamMembers")
+          .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .collect()
+          .then((m) => m.length);
+
+        // Get project count
+        const projectCount = await ctx.db
+          .query("projects")
+          .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .collect()
+          .then((p) => p.length);
+
+        return {
+          ...team,
+          userRole: role,
+          isAdmin: isCompanyAdminResult,
+          memberCount,
+          projectCount,
+        };
+      }),
+    );
+
+    return teamsWithMetadata.filter((t): t is NonNullable<typeof t> => t !== null);
+  },
+});
+
+/**
  * Get all teams in a company
  */
 export const getCompanyTeams = query({

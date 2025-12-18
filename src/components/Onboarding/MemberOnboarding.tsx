@@ -1,10 +1,10 @@
+import { api } from "@convex/_generated/api";
 import { useMutation } from "convex/react";
 import { ArrowLeft, Bell, Building2, Clock, FileText, Kanban } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
 import { Typography } from "../ui/Typography";
 
 interface MemberOnboardingProps {

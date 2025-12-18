@@ -308,6 +308,8 @@ export const createSampleProject = mutation({
     for (const issue of issues) {
       const issueId = await ctx.db.insert("issues", {
         projectId,
+        workspaceId: "" as Id<"workspaces">, // Sample project has no workspace
+        teamId: "" as Id<"teams">, // Sample project has no team
         key: `SAMPLE-${createdIssues.length + 1}`,
         title: issue.title,
         description: issue.description,
@@ -322,6 +324,7 @@ export const createSampleProject = mutation({
         sprintId: issue.type !== "epic" ? sprintId : undefined, // Don't add epic to sprint
         linkedDocuments: [],
         attachments: [],
+        loggedHours: 0,
         order: issue.order,
       });
       createdIssues.push(issueId);

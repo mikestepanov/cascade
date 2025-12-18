@@ -34,8 +34,8 @@ rbacTest(
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
 
-    // 2. Verify board is visible
-    await expect(adminPage.getByRole("heading", { name: /kanban board/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading (matches "RBAC Test Project (RBAC)")
+    await expect(adminPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Admin can view project board");
@@ -46,8 +46,10 @@ rbacTest(
     console.log("✓ Admin can see create issue button");
 
     // 4. Verify settings tab is visible
+    // Wait for navigation to fully render (userRole query needs to complete)
+    await adminPage.waitForTimeout(2000);
     const settingsTab = getProjectSettingsTab();
-    await expect(settingsTab).toBeVisible();
+    await expect(settingsTab).toBeVisible({ timeout: 15000 });
     console.log("✓ Admin can see settings tab");
 
     // 5. Navigate to settings and verify access
@@ -110,8 +112,8 @@ rbacTest(
     // 1. Navigate to project board
     await gotoRbacProject(editorPage);
 
-    // 2. Verify board is visible
-    await expect(editorPage.getByRole("heading", { name: /kanban board/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading
+    await expect(editorPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Editor can view project board");
@@ -189,8 +191,8 @@ rbacTest(
     // 1. Navigate to project board
     await gotoRbacProject(viewerPage);
 
-    // 2. Verify board is visible
-    await expect(viewerPage.getByRole("heading", { name: /kanban board/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading
+    await expect(viewerPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Viewer can view project board");

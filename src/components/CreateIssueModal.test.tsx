@@ -1,8 +1,8 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Id } from "../../convex/_generated/dataModel";
 import { CreateIssueModal } from "./CreateIssueModal";
 
 // Mock Convex hooks

@@ -50,6 +50,8 @@ async function processJSONIssue(
   issue: unknown,
   projectId: Id<"projects">,
   projectKey: string,
+  workspaceId: Id<"workspaces">,
+  teamId: Id<"teams">,
   userId: Id<"users">,
   defaultStatus: string,
 ): Promise<string> {
@@ -82,6 +84,8 @@ async function processJSONIssue(
     ctx,
     {
       projectId,
+      workspaceId,
+      teamId,
       key: issueKey,
       title: issueData.title,
       description: issueData.description || undefined,
@@ -142,12 +146,16 @@ function parseCSVRow(
   values: string[],
   indices: ReturnType<typeof parseCSVHeaders>,
   projectId: Id<"projects">,
+  workspaceId: Id<"workspaces">,
+  teamId: Id<"teams">,
   issueKey: string,
   userId: Id<"users">,
   defaultStatus: string,
   order: number,
 ): {
   projectId: Id<"projects">;
+  workspaceId: Id<"workspaces">;
+  teamId: Id<"teams">;
   key: string;
   title: string;
   description?: string;
@@ -166,6 +174,8 @@ function parseCSVRow(
 
   return {
     projectId,
+    workspaceId,
+    teamId,
     key: issueKey,
     title: values[indices.titleIndex],
     description: indices.descriptionIndex !== -1 ? values[indices.descriptionIndex] : undefined,
@@ -204,6 +214,8 @@ async function createIssueWithActivity(
   ctx: MutationCtx,
   issueData: {
     projectId: Id<"projects">;
+    workspaceId: Id<"workspaces">;
+    teamId: Id<"teams">;
     key: string;
     title: string;
     description?: string;
@@ -540,6 +552,8 @@ export const importIssuesJSON = mutation({
           issue,
           args.projectId,
           project.key,
+          project.workspaceId ?? ("" as Id<"workspaces">),
+          project.teamId ?? ("" as Id<"teams">),
           userId,
           project.workflowStates[0].id,
         );
@@ -603,6 +617,8 @@ export const importIssuesCSV = mutation({
           values,
           indices,
           args.projectId,
+          project.workspaceId ?? ("" as Id<"workspaces">),
+          project.teamId ?? ("" as Id<"teams">),
           issueKey,
           userId,
           project.workflowStates[0].id,

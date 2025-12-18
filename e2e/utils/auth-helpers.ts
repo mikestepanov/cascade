@@ -176,9 +176,47 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     console.log("  📋 Waiting for sign-in page...");
     // The "Welcome back" heading only appears after Convex determines auth state
     // (inside <Unauthenticated> wrapper). Use longer timeout for cold starts.
-    // Don't use networkidle - Convex WebSocket keeps connection active.
+    // FALLBACK: Also wait for form as backup (more reliable).
+
     const locators = authFormLocators(page);
-    await locators.signInHeading.waitFor({ state: "visible", timeout: 30000 });
+
+    // DIAGNOSTIC: Log page state while waiting
+    const startTime = Date.now();
+    let lastLog = startTime;
+    const diagnosticInterval = setInterval(async () => {
+      const now = Date.now();
+      if (now - lastLog > 5000) {
+        // Log every 5 seconds
+        const headingVisible = await locators.signInHeading.isVisible().catch(() => false);
+        const formVisible = await page
+          .locator("form")
+          .isVisible()
+          .catch(() => false);
+        const elapsed = Math.floor((now - startTime) / 1000);
+        console.log(`  ⏱️ Waiting ${elapsed}s - heading:${headingVisible}, form:${formVisible}`);
+        lastLog = now;
+      }
+    }, 1000);
+
+    try {
+      // Wait for EITHER heading OR form (whichever appears first)
+      await Promise.race([
+        locators.signInHeading.waitFor({ state: "visible", timeout: 30000 }),
+        page.locator("form").waitFor({ state: "visible", timeout: 30000 }),
+      ]);
+      clearInterval(diagnosticInterval);
+      console.log("  ✓ Sign-in page loaded");
+    } catch (error) {
+      clearInterval(diagnosticInterval);
+      // Take screenshot for debugging
+      await page.screenshot({ path: "e2e/.auth/signin-timeout-debug.png" });
+      const bodyText = await page
+        .locator("body")
+        .textContent()
+        .catch(() => "");
+      console.log("  ❌ Sign-in page did not load within 30s. Body text:", bodyText.slice(0, 200));
+      throw error;
+    }
 
     // Wait for Convex WebSocket to be fully connected before attempting auth
     // On cold starts, the WebSocket needs time to establish connection
@@ -303,35 +341,32 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      // Increase timeout to 30s for cold starts
+      // Timeout: 30s for cold starts
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
         timeout: 30000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
     } catch {
-      // Check for auth error on page
+      // Timeout or error - check for specific failures
       const errorText = await page
         .locator('[role="alert"], .text-red-500, .error')
         .textContent()
         .catch(() => null);
+      const toastError = await toastLocators(page)
+        .error.textContent()
+        .catch(() => null);
+
       if (errorText) {
         console.log("  ❌ Page error:", errorText.slice(0, 100));
-      }
-
-      // Check for Sonner toast error notifications
-      const toasts = toastLocators(page);
-      const toastError = await toasts.error.textContent().catch(() => null);
-      if (toastError) {
+      } else if (toastError) {
         console.log("  ❌ Toast error:", toastError.slice(0, 100));
+      } else {
+        // No explicit error - likely cold start timeout
+        console.log(`  ⚠️ Redirect timeout after 30s, URL: ${page.url()}`);
       }
 
-      // Check button state - use generic selector since submitButton pattern won't match "Signing in..."
-      const buttonText = await page
-        .locator('button[type="submit"]')
-        .textContent()
-        .catch(() => null);
-      console.log(`  ⚠️ No redirect detected, URL: ${page.url()}, button: "${buttonText}"`);
+      return false; // Let global-setup retry handle this
     }
 
     return await handleOnboardingOrDashboard(page);

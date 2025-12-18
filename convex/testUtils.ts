@@ -105,11 +105,34 @@ export async function createTestWorkspace(
     const name = projectData?.name || `Test Project ${now}`;
     const key = projectData?.key || `TEST${now.toString().slice(-6)}`;
 
+    // Create workspace and team first
+    const workspaceId = await ctx.db.insert("workspaces", {
+      companyId,
+      name: `Workspace for ${name}`,
+      slug: `ws-${key.toLowerCase()}`,
+      createdBy: creatorId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const teamId = await ctx.db.insert("teams", {
+      companyId,
+      workspaceId,
+      name: `Team for ${name}`,
+      slug: `team-${key.toLowerCase()}`,
+      isPrivate: false,
+      createdBy: creatorId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
     const projectId = await ctx.db.insert("projects", {
       name,
       key: key.toUpperCase(),
       description: projectData?.description,
       companyId,
+      workspaceId,
+      teamId,
       ownerId: creatorId,
       createdBy: creatorId,
       createdAt: now,
@@ -238,6 +261,8 @@ export async function createTestIssue(
 
     return await ctx.db.insert("issues", {
       projectId,
+      workspaceId: project.workspaceId,
+      teamId: project.teamId,
       key,
       title: issueData?.title || `Test Issue ${now}`,
       description: issueData?.description,
@@ -251,6 +276,7 @@ export async function createTestIssue(
       labels: [],
       linkedDocuments: [],
       attachments: [],
+      loggedHours: 0,
       order: issueCount,
     });
   });

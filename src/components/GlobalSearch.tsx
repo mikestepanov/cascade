@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
-import { api } from "../../convex/_generated/api";
-import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import {

@@ -115,8 +115,7 @@ async function checkDuplicatePendingInvite(
 
   if (!existingInvite) return;
 
-  const sameProject =
-    projectId && existingInvite.projectId?.toString() === projectId.toString();
+  const sameProject = projectId && existingInvite.projectId?.toString() === projectId.toString();
   const bothPlatform = !(projectId || existingInvite.projectId);
 
   if (sameProject) {
@@ -177,9 +176,7 @@ export const sendInvite = mutation({
     role: v.union(v.literal("user"), v.literal("superAdmin")),
     // Optional project-level invite fields
     projectId: v.optional(v.id("projects")),
-    projectRole: v.optional(
-      v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-    ),
+    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

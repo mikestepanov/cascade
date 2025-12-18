@@ -4,10 +4,10 @@
  * Designed for list views where issues are loaded incrementally.
  */
 
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import type { EnrichedIssue } from "../../convex/lib/issueHelpers";
 
 /** Type guard to validate EnrichedIssue array structure */

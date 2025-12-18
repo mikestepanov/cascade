@@ -3,9 +3,9 @@
  * Handles validation, upload progress, and error states
  */
 
+import { api } from "@convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useCallback, useRef, useState } from "react";
-import { api } from "../../convex/_generated/api";
 import { showError, showSuccess } from "../lib/toast";
 
 export interface FileUploadOptions {

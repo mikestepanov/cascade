@@ -1,7 +1,7 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";

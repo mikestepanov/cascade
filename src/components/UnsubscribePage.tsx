@@ -4,9 +4,9 @@
  * Allows users to unsubscribe from email notifications via one-click link
  */
 
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { api } from "../../convex/_generated/api";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface UnsubscribePageProps {

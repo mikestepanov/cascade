@@ -1,7 +1,7 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
-import type { Id } from "../../../convex/_generated/dataModel";
 import type { UseListNavigationResult } from "../../hooks/useListNavigation";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";

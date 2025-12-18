@@ -3,10 +3,10 @@
  * Manages AI chat state and business logic
  */
 
+import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "../../../../convex/_generated/api";
-import type { Doc, Id } from "../../../../convex/_generated/dataModel";
 
 export interface UseAIChatOptions {
   projectId?: Id<"projects">;

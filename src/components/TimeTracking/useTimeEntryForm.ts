@@ -1,6 +1,6 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { useEffect, useState } from "react";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
-import type { Id } from "../../../convex/_generated/dataModel";
 
 export type EntryMode = "timer" | "duration" | "timeRange";
 

@@ -1,3 +1,5 @@
+import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -6,8 +8,6 @@ import { ACTIVITY_TYPES } from "@/lib/constants";
 import { FormTextarea, useAppForm } from "@/lib/form";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
