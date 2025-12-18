@@ -102,10 +102,12 @@ export default defineConfig({
   // In CI: use preview mode (pre-built dist/) for faster tests
   // Locally: use dev mode for hot reload
   webServer: {
-    command: process.env.CI ? "pnpm run preview" : "pnpm run dev", // Changed: dev (both) instead of dev:frontend (only vite)
+    command: process.env.CI ? "pnpm run preview" : "pnpm run dev",
     url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    // Wait for the React app to be fully loaded (not just port open)
+    rethrowError: true, // Fail fast if server crashes
     stdout: "ignore",
     stderr: "pipe",
   },
