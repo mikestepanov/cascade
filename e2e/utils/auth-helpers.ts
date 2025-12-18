@@ -341,85 +341,32 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      // Increase timeout to 30s for cold starts
+      // Timeout: 30s for cold starts
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
         timeout: 30000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
     } catch {
-      // Check for auth error on page
+      // Timeout or error - check for specific failures
       const errorText = await page
         .locator('[role="alert"], .text-red-500, .error')
         .textContent()
         .catch(() => null);
-      if (errorText) {
-        console.log("  ❌ Page error:", errorText.slice(0, 100));
-      }
-
-      // Check for Sonner toast error notifications
-      const toasts = toastLocators(page);
-      const toastError = await toasts.error.textContent().catch(() => null);
-      if (toastError) {
-        console.log("  ❌ Toast error:", toastError.slice(0, 100));
-      }
-
-      // Check button state - use generic selector since submitButton pattern won't match "Signing in..."
-      const buttonText = await page
-        .locator('button[type="submit"]')
-        .textContent()
+      const toastError = await toastLocators(page)
+        .error.textContent()
         .catch(() => null);
 
-      // DIAGNOSTIC: Check if form disappeared (button is null)
-      if (buttonText === null || buttonText === "null") {
-        console.log("  ⚠️ Submit button disappeared - form may have unmounted");
-        const bodyText = await page
-          .locator("body")
-          .textContent()
-          .catch(() => "");
-        console.log("  📄 Page content:", bodyText.slice(0, 300));
-
-        // Check if we're authenticated now (form disappears when authenticated)
-        const hasAuth = await page
-          .locator("text=/dashboard|welcome/i")
-          .count()
-          .catch(() => 0);
-        if (hasAuth > 0) {
-          console.log("  ✓ User appears to be authenticated, checking URL...");
-
-          // Check for browser console errors
-          const errors: string[] = [];
-          page.on("console", (msg) => {
-            if (msg.type() === "error") errors.push(msg.text());
-          });
-          page.on("pageerror", (err) => errors.push(err.message));
-
-          // PostAuthRedirect queries getUserCompanies and getOnboardingStatus
-          // Give it more time to complete queries and redirect (up to 20s with URL logging)
-          for (let i = 0; i < 20; i++) {
-            await page.waitForTimeout(1000);
-            const currentUrl = page.url();
-            if (i % 5 === 0) {
-              console.log(`  ⏱️ ${i + 1}s: URL = ${currentUrl}`);
-              if (errors.length > 0) {
-                console.log(`  ❌ Browser errors: ${errors.slice(-3).join(", ")}`);
-              }
-            }
-            if (await isOnDashboard(page)) {
-              console.log(`  ✓ Now on dashboard after ${i + 1}s`);
-              return true;
-            }
-          }
-          console.log("  ⚠️ Still not on dashboard after 20s wait");
-          if (errors.length > 0) {
-            console.log(
-              `  ❌ Total browser errors: ${errors.length}, last: ${errors[errors.length - 1]}`,
-            );
-          }
-        }
+      if (errorText) {
+        console.log("  ❌ Page error:", errorText.slice(0, 100));
+      } else if (toastError) {
+        console.log("  ❌ Toast error:", toastError.slice(0, 100));
+      } else {
+        // No explicit error - likely cold start timeout
+        console.log(`  ⚠️ Redirect timeout after 30s, URL: ${page.url()}`);
       }
 
-      console.log(`  ⚠️ No redirect detected, URL: ${page.url()}, button: "${buttonText}"`);
+      return false; // Let global-setup retry handle this
     }
 
     return await handleOnboardingOrDashboard(page);
