@@ -1,4 +1,4 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
 import { useModal } from "./useModal";
 
