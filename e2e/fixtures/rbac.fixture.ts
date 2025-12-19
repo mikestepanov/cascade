@@ -73,6 +73,7 @@ function getAuthPath(role: UserRole): string {
 function isAuthStateValid(role: UserRole): boolean {
   const authPath = getAuthPath(role);
   if (!fs.existsSync(authPath)) {
+    console.warn(`⚠️  Auth state file not found: ${authPath}`);
     return false;
   }
 
@@ -95,8 +96,10 @@ function isAuthStateValid(role: UserRole): boolean {
         }
       }
     }
+    console.warn(`⚠️  Auth state invalid (no tokens found): ${authPath}`);
     return false;
-  } catch {
+  } catch (error) {
+    console.warn(`⚠️  Failed to parse auth state: ${authPath}`, error);
     return false;
   }
 }
@@ -135,7 +138,20 @@ export const rbacTest = base.extend<RbacFixtures>({
   // Test-scoped admin context - fresh for each test
   adminContext: async ({ browser }, use) => {
     if (!isAuthStateValid("admin")) {
-      throw new Error("Admin auth state not found. Run global setup first.");
+      const msg = `Admin auth state not found or invalid. 
+
+Troubleshooting steps:
+1. Ensure Convex dev server is running: pnpm run dev:backend
+2. Re-run global setup: pnpm exec playwright test rbac.spec.ts --grep="editor"
+3. Check e2e/.auth/user-teamlead.json exists
+4. If issue persists, check e2e/.auth/setup-error-teamLead.png for screenshot
+
+Current auth files: ${fs
+        .readdirSync(AUTH_DIR)
+        .filter((f) => f.endsWith(".json"))
+        .join(", ")}`;
+
+      throw new Error(msg);
     }
     const context = await browser.newContext({
       storageState: getAuthPath("admin"),
@@ -243,8 +259,20 @@ export const rbacTest = base.extend<RbacFixtures>({
 export { expect };
 
 /**
- * User info for reference in tests
+ * Check if all required RBAC auth states are available
+ * Used for conditional test execution
  */
+export function hasAdminAuth(): boolean {
+  return isAuthStateValid("admin");
+}
+
+export function hasEditorAuth(): boolean {
+  return isAuthStateValid("editor");
+}
+
+export function hasViewerAuth(): boolean {
+  return isAuthStateValid("viewer");
+}
 export const RBAC_USERS = {
   admin: {
     email: TEST_USERS.teamLead.email,
