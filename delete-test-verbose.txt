@@ -1,0 +1,82 @@
+
+> nixelo@0.0.0 test C:\Users\mikes\Desktop\cascade
+> vitest "src/hooks/useDeleteConfirmation.test.ts" "run" "--reporter=verbose"
+
+
+[1m[44m DEV [49m[22m [34mv4.0.15 [39m[90mC:/Users/mikes/Desktop/cascade[39m
+
+[90mstdout[2m | src/hooks/useDeleteConfirmation.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mInitial State[2m > [22mshould start with deleteId as null[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mInitial State[2m > [22mshould start with isDeleting as false[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mconfirmDelete[2m > [22mshould set deleteId when called[32m 98[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mconfirmDelete[2m > [22mshould update deleteId when called multiple times[32m 177[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mcancelDelete[2m > [22mshould set deleteId to null[32m 181[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mcancelDelete[2m > [22mshould work when deleteId is already null[32m 15[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould call deleteFn with the deleteId[32m 94[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould show success toast on successful delete[32m 74[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould show custom success message when provided[32m 95[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould call onSuccess callback on successful delete[32m 120[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould reset deleteId to null after successful delete[32m 157[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Success[2m > [22mshould set isDeleting to false after successful delete[32m 81[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Error[2m > [22mshould show error toast on failed delete[32m 120[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Error[2m > [22mshould show custom error message when provided[32m 154[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Error[2m > [22mshould call onError callback on failed delete[32m 107[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Error[2m > [22mshould NOT reset deleteId on failed delete[32m 107[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - Error[2m > [22mshould set isDeleting to false after failed delete[32m 94[2mms[22m[39m
+ [31m├ù[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - No deleteId[2m > [22mshould not call deleteFn when deleteId is null[32m 13[2mms[22m[39m
+[31m   ΓåÆ act is not defined[39m
+ [31m├ù[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mexecuteDelete - No deleteId[2m > [22mshould not show any toast when deleteId is null[32m 4[2mms[22m[39m
+[31m   ΓåÆ act is not defined[39m
+ [31m├ù[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22misDeleting State[2m > [22mshould set isDeleting to false after delete completes[32m 3[2mms[22m[39m
+[31m   ΓåÆ act is not defined[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mReturn Value Shape[2m > [22mshould return object with expected properties[32m 4[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useDeleteConfirmation.test.ts[2m > [22museDeleteConfirmation[2m > [22mReturn Value Shape[2m > [22mshould return functions for confirmDelete, cancelDelete, executeDelete[32m 3[2mms[22m[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 3 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - No deleteId > should not call deleteFn when deleteId is null
+ReferenceError: act is not defined
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:325:7
+    323|       const deleteFn = vi.fn().mockResolvedValue(undefined);
+    324| 
+    325|       await act(async () => {
+       |       ^
+    326|         await result.current.executeDelete(deleteFn);
+    327|       });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/3]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - No deleteId > should not show any toast when deleteId is null
+ReferenceError: act is not defined
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:337:7
+    335|       const deleteFn = vi.fn().mockResolvedValue(undefined);
+    336| 
+    337|       await act(async () => {
+       |       ^
+    338|         await result.current.executeDelete(deleteFn);
+    339|       });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/3]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > isDeleting State > should set isDeleting to false after delete completes
+ReferenceError: act is not defined
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:353:7
+    351|       const deleteFn = vi.fn().mockResolvedValue(undefined);
+    352| 
+    353|       act(() => {
+       |       ^
+    354|         result.current.confirmDelete(mockId);
+    355|       });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/3]ΓÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m19 passed[39m[22m[90m (22)[39m
+[2m   Start at [22m 22:15:04
+[2m   Duration [22m 10.31s[2m (transform 496ms, setup 2.22s, import 404ms, tests 1.74s, environment 4.78s)[22m
+
+[1m[41m FAIL [49m[22m [31mTests failed. Watching for file changes...[39m
+       [2mpress [22m[1mh[22m[2m to show help[22m[2m, [22m[2mpress [22m[1mq[22m[2m to quit[22m

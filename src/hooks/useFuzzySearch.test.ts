@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from "@/test/custom-render";
+import { renderHook, waitFor } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
 import {
   highlightMatches,
@@ -29,22 +29,22 @@ describe("useFuzzySearch", () => {
     expect(result.current.results[0].item.name).toBe("John Doe");
   });
 
-  it("should filter items based on query", () => {
+  it("should filter items based on query", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name", "email"],
       }),
     );
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    expect(result.current.results.length).toBeGreaterThan(0);
-    expect(result.current.results[0].item.name).toContain("John");
+    await waitFor(() => {
+      expect(result.current.results.length).toBeGreaterThan(0);
+      expect(result.current.results[0].item.name).toContain("John");
+    });
   });
 
-  it("should handle typos with fuzzy matching", () => {
+  it("should handle typos with fuzzy matching", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name"],
@@ -52,17 +52,17 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    act(() => {
-      result.current.search("jon"); // Typo: "jon" instead of "john"
-    });
+    result.current.search("jon"); // Typo: "jon" instead of "john"
 
-    expect(result.current.results.length).toBeGreaterThan(0);
-    // Should fuzzy match "John"
-    const johnResult = result.current.results.find((r) => r.item.name.includes("John"));
-    expect(johnResult).toBeDefined();
+    await waitFor(() => {
+      expect(result.current.results.length).toBeGreaterThan(0);
+      // Should fuzzy match "John"
+      const johnResult = result.current.results.find((r) => r.item.name.includes("John"));
+      expect(johnResult).toBeDefined();
+    });
   });
 
-  it("should respect limit option", () => {
+  it("should respect limit option", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name"],
@@ -70,32 +70,32 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    act(() => {
-      result.current.search("j");
-    });
+    result.current.search("j");
 
-    expect(result.current.results).toHaveLength(1);
+    await waitFor(() => {
+      expect(result.current.results).toHaveLength(1);
+    });
   });
 
-  it("should clear query", () => {
+  it("should clear query", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name"],
       }),
     );
 
-    act(() => {
-      result.current.search("john");
+    result.current.search("john");
+
+    await waitFor(() => {
+      expect(result.current.query).toBe("john");
     });
 
-    expect(result.current.query).toBe("john");
+    result.current.clear();
 
-    act(() => {
-      result.current.clear();
+    await waitFor(() => {
+      expect(result.current.query).toBe("");
+      expect(result.current.results).toHaveLength(3); // Back to all items
     });
-
-    expect(result.current.query).toBe("");
-    expect(result.current.results).toHaveLength(3); // Back to all items
   });
 
   it("should debounce search query", async () => {
@@ -106,14 +106,14 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    // Immediately after search, debounced query should be empty
-    expect(result.current.query).toBe("john");
-    expect(result.current.debouncedQuery).toBe("");
-    expect(result.current.isDebouncing).toBe(true);
+    await waitFor(() => {
+      // Immediately after search, debounced query should be empty
+      expect(result.current.query).toBe("john");
+      expect(result.current.debouncedQuery).toBe("");
+      expect(result.current.isDebouncing).toBe(true);
+    });
 
     // Wait for debounce
     await waitFor(
@@ -125,7 +125,7 @@ describe("useFuzzySearch", () => {
     );
   });
 
-  it("should indicate searching state", () => {
+  it("should indicate searching state", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name"],
@@ -134,11 +134,11 @@ describe("useFuzzySearch", () => {
 
     expect(result.current.isSearching).toBe(false);
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    expect(result.current.isSearching).toBe(true);
+    await waitFor(() => {
+      expect(result.current.isSearching).toBe(true);
+    });
   });
 
   it("should indicate when results exist", () => {
