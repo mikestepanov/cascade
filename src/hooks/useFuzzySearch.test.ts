@@ -141,7 +141,7 @@ describe("useFuzzySearch", () => {
     });
   });
 
-  it("should indicate when results exist", () => {
+  it("should indicate when results exist", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: ["name"],
@@ -150,11 +150,11 @@ describe("useFuzzySearch", () => {
 
     expect(result.current.hasResults).toBe(true);
 
-    act(() => {
-      result.current.search("xyz123nonexistent");
-    });
+    result.current.search("xyz123nonexistent");
 
-    expect(result.current.hasResults).toBe(false);
+    await waitFor(() => {
+      expect(result.current.hasResults).toBe(false);
+    });
   });
 
   it("should return total items count", () => {
@@ -188,7 +188,7 @@ describe("useFuzzySearch", () => {
     expect(result.current.results).toHaveLength(0);
   });
 
-  it("should prioritize weighted keys", () => {
+  it("should prioritize weighted keys", async () => {
     const { result } = renderHook(() =>
       useFuzzySearch(sampleUsers, {
         keys: [
@@ -198,12 +198,12 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    // Name match should rank higher than email match
-    expect(result.current.results[0].item.name).toBe("John Doe");
+    await waitFor(() => {
+      // Name match should rank higher than email match
+      expect(result.current.results[0].item.name).toBe("John Doe");
+    });
   });
 });
 
@@ -213,25 +213,25 @@ describe("useUserFuzzySearch", () => {
     { name: "Jane Smith", email: "jane@example.com" },
   ];
 
-  it("should search users by name and email", () => {
+  it("should search users by name and email", async () => {
     const { result } = renderHook(() => useUserFuzzySearch(users));
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    expect(result.current.results.length).toBeGreaterThan(0);
-    expect(result.current.results[0].item.name).toBe("John Doe");
+    await waitFor(() => {
+      expect(result.current.results.length).toBeGreaterThan(0);
+      expect(result.current.results[0].item.name).toBe("John Doe");
+    });
   });
 
   it("should have debounce enabled", async () => {
     const { result } = renderHook(() => useUserFuzzySearch(users));
 
-    act(() => {
-      result.current.search("john");
-    });
+    result.current.search("john");
 
-    expect(result.current.isDebouncing).toBe(true);
+    await waitFor(() => {
+      expect(result.current.isDebouncing).toBe(true);
+    });
 
     await waitFor(() => {
       expect(result.current.isDebouncing).toBe(false);
@@ -245,27 +245,27 @@ describe("useProjectFuzzySearch", () => {
     { name: "Project Beta", key: "BETA", description: "Second project" },
   ];
 
-  it("should search projects by name, key, and description", () => {
+  it("should search projects by name, key, and description", async () => {
     const { result } = renderHook(() => useProjectFuzzySearch(projects));
 
-    act(() => {
-      result.current.search("alpha");
-    });
+    result.current.search("alpha");
 
-    expect(result.current.results[0].item.name).toBe("Project Alpha");
+    await waitFor(() => {
+      expect(result.current.results[0].item.name).toBe("Project Alpha");
+    });
   });
 
-  it("should match project keys", () => {
+  it("should match project keys", async () => {
     const { result } = renderHook(() => useProjectFuzzySearch(projects));
 
-    act(() => {
-      result.current.search("BETA");
-    });
+    result.current.search("BETA");
 
-    // Should find BETA project
-    const betaProject = result.current.results.find((r) => r.item.key === "BETA");
-    expect(betaProject).toBeDefined();
-    expect(betaProject?.item.name).toBe("Project Beta");
+    await waitFor(() => {
+      // Should find BETA project
+      const betaProject = result.current.results.find((r) => r.item.key === "BETA");
+      expect(betaProject).toBeDefined();
+      expect(betaProject?.item.name).toBe("Project Beta");
+    });
   });
 });
 
@@ -275,27 +275,27 @@ describe("useIssueFuzzySearch", () => {
     { title: "Add dark mode", key: "PROJ-124", description: "Implement dark theme" },
   ];
 
-  it("should search issues by title and key", () => {
+  it("should search issues by title and key", async () => {
     const { result } = renderHook(() => useIssueFuzzySearch(issues));
 
-    act(() => {
-      result.current.search("PROJ-123");
-    });
+    result.current.search("PROJ-123");
 
-    expect(result.current.results[0].item.key).toBe("PROJ-123");
+    await waitFor(() => {
+      expect(result.current.results[0].item.key).toBe("PROJ-123");
+    });
   });
 
-  it("should match issue titles", () => {
+  it("should match issue titles", async () => {
     const { result } = renderHook(() => useIssueFuzzySearch(issues));
 
-    act(() => {
-      result.current.search("dark mode");
-    });
+    result.current.search("dark mode");
 
-    // Should find "Add dark mode" issue
-    const darkModeIssue = result.current.results.find((r) => r.item.title.includes("dark mode"));
-    expect(darkModeIssue).toBeDefined();
-    expect(darkModeIssue?.item.title).toBe("Add dark mode");
+    await waitFor(() => {
+      // Should find "Add dark mode" issue
+      const darkModeIssue = result.current.results.find((r) => r.item.title.includes("dark mode"));
+      expect(darkModeIssue).toBeDefined();
+      expect(darkModeIssue?.item.title).toBe("Add dark mode");
+    });
   });
 });
 
@@ -305,40 +305,40 @@ describe("useSprintFuzzySearch", () => {
     { name: "Sprint 2", goal: "Polish" },
   ];
 
-  it("should search sprints by name", () => {
+  it("should search sprints by name", async () => {
     const { result } = renderHook(() => useSprintFuzzySearch(sprints));
 
-    act(() => {
-      result.current.search("sprint 1");
-    });
+    result.current.search("sprint 1");
 
-    expect(result.current.results[0].item.name).toBe("Sprint 1");
+    await waitFor(() => {
+      expect(result.current.results[0].item.name).toBe("Sprint 1");
+    });
   });
 });
 
 describe("useLabelFuzzySearch", () => {
   const labels = ["bug", "feature", "enhancement", "documentation"];
 
-  it("should search labels", () => {
+  it("should search labels", async () => {
     const { result } = renderHook(() => useLabelFuzzySearch(labels));
 
-    act(() => {
-      result.current.search("bug");
-    });
+    result.current.search("bug");
 
-    expect(result.current.results[0].item.label).toBe("bug");
+    await waitFor(() => {
+      expect(result.current.results[0].item.label).toBe("bug");
+    });
   });
 
-  it("should handle typos in labels", () => {
+  it("should handle typos in labels", async () => {
     const { result } = renderHook(() => useLabelFuzzySearch(labels));
 
-    act(() => {
-      result.current.search("enhanc"); // Partial match
-    });
+    result.current.search("enhanc"); // Partial match
 
-    // Should find "enhancement"
-    const enhancementLabel = result.current.results.find((r) => r.item.label === "enhancement");
-    expect(enhancementLabel).toBeDefined();
+    await waitFor(() => {
+      // Should find "enhancement"
+      const enhancementLabel = result.current.results.find((r) => r.item.label === "enhancement");
+      expect(enhancementLabel).toBeDefined();
+    });
   });
 });
 
@@ -348,14 +348,14 @@ describe("useDocumentFuzzySearch", () => {
     { title: "API Reference", description: "Detailed API documentation" },
   ];
 
-  it("should search documents by title", () => {
+  it("should search documents by title", async () => {
     const { result } = renderHook(() => useDocumentFuzzySearch(documents));
 
-    act(() => {
-      result.current.search("getting started");
-    });
+    result.current.search("getting started");
 
-    expect(result.current.results[0].item.title).toBe("Getting Started");
+    await waitFor(() => {
+      expect(result.current.results[0].item.title).toBe("Getting Started");
+    });
   });
 });
 
