@@ -5,9 +5,9 @@
  * client-side fuzzy search with Fuse.js.
  */
 
-import { renderHook, waitFor } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
+import { renderHook, waitFor } from "@/test/custom-render";
 
 describe("Hybrid Search Integration", () => {
   describe("Convex + Fuse.js Pattern", () => {
@@ -27,12 +27,12 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.totalItems).toBe(3);
 
       // Search with typo
-      act(() => {
-        result.current.search("jhon"); // Typo
-      });
+      result.current.search("jhon"); // Typo
 
       // Should still find John due to fuzzy matching
-      expect(result.current.results.length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
+      });
     });
 
     it("should handle Convex data updates reactively", async () => {
@@ -263,18 +263,22 @@ describe("Hybrid Search Integration", () => {
       // Normal search
       result.current.search("john");
 
-      expect(result.current.results.length).toBeGreaterThan(0);
-
-      // Clear and search again
-      act(() => {
-        result.current.clear();
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
       });
 
-      expect(result.current.query).toBe("");
+      // Clear and search again
+      result.current.clear();
+
+      await waitFor(() => {
+        expect(result.current.query).toBe("");
+      });
 
       result.current.search("john");
 
-      expect(result.current.results.length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
+      });
     });
   });
 
@@ -327,4 +331,3 @@ describe("Hybrid Search Integration", () => {
     });
   });
 });
-
