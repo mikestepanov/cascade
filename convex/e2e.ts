@@ -1359,10 +1359,8 @@ export const verifyTestUserInternal = internalMutation({
       return { success: false, verified: false, error: "User not found" };
     }
 
-    // Update the authAccount with emailVerified timestamp (ISO string format)
-    await ctx.db.patch(account._id, {
-      emailVerified: new Date().toISOString(),
-    });
+    // Email is already verified via emailVerificationTime on user
+    // No need to update authAccount - verification status is on users table
 
     // Update the user with emailVerificationTime
     await ctx.db.patch(user._id, {
@@ -1434,7 +1432,6 @@ export const debugVerifyPasswordInternal = internalMutation({
     accountFound: v.boolean(),
     hasStoredHash: v.boolean(),
     passwordMatches: v.optional(v.boolean()),
-    emailVerified: v.optional(v.boolean()),
     error: v.optional(v.string()),
   }),
   handler: async (ctx, args) => {
@@ -1481,7 +1478,6 @@ export const debugVerifyPasswordInternal = internalMutation({
       accountFound: true,
       hasStoredHash: true,
       passwordMatches,
-      emailVerified: !!account.emailVerified,
     };
   },
 });
