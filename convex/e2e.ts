@@ -152,7 +152,6 @@ export const createTestUserInternal = internalMutation({
           provider: "password",
           providerAccountId: args.email,
           secret: args.passwordHash,
-          emailVerified: new Date().toISOString(),
         });
       }
 
@@ -254,7 +253,6 @@ export const createTestUserInternal = internalMutation({
       provider: "password",
       providerAccountId: args.email,
       secret: args.passwordHash,
-      emailVerified: new Date().toISOString(),
     });
 
     // If skipOnboarding is true, create completed onboarding record AND add to shared company
