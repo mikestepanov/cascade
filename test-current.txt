@@ -1,0 +1,1989 @@
+
+> nixelo@0.0.0 test C:\Users\mikes\Desktop\cascade
+> vitest "run"
+
+
+[1m[46m RUN [49m[22m [36mv4.0.15 [39m[90mC:/Users/mikes/Desktop/cascade[39m
+
+[90mstdout[2m | src/components/CustomFieldValues.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/FilterBar.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/BulkOperationsBar.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/AutomationRulesManager.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/NotificationCenter.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ErrorBoundary.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/CreateIssueModal.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/GlobalSearch.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ExportButton.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/AnalyticsDashboard.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/hooks/useDeleteConfirmation.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ImportExportModal.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/SectionErrorFallback.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/CustomFieldsManager.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/UserMenu.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/CommentRenderer.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ProjectBoard.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/IssueCard.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/IssueDetailModal.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m src/components/CommentRenderer.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 612[2mms[22m[39m
+ [31mΓ¥»[39m src/hooks/useDeleteConfirmation.test.ts [2m([22m[2m22 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[33m 460[2mms[22m[39m
+       [32mΓ£ô[39m should start with deleteId as null[32m 114[2mms[22m[39m
+       [32mΓ£ô[39m should start with isDeleting as false[32m 7[2mms[22m[39m
+[31m       [31m├ù[31m should set deleteId when called[39m[32m 83[2mms[22m[39m
+[31m       [31m├ù[31m should update deleteId when called multiple times[39m[32m 24[2mms[22m[39m
+[31m       [31m├ù[31m should set deleteId to null[39m[32m 13[2mms[22m[39m
+       [32mΓ£ô[39m should work when deleteId is already null[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should call deleteFn with the deleteId[39m[32m 6[2mms[22m[39m
+[31m       [31m├ù[31m should show success toast on successful delete[39m[32m 11[2mms[22m[39m
+[31m       [31m├ù[31m should show custom success message when provided[39m[32m 16[2mms[22m[39m
+[31m       [31m├ù[31m should call onSuccess callback on successful delete[39m[32m 11[2mms[22m[39m
+       [32mΓ£ô[39m should reset deleteId to null after successful delete[32m 11[2mms[22m[39m
+       [32mΓ£ô[39m should set isDeleting to false after successful delete[32m 27[2mms[22m[39m
+[31m       [31m├ù[31m should show error toast on failed delete[39m[32m 11[2mms[22m[39m
+[31m       [31m├ù[31m should show custom error message when provided[39m[32m 8[2mms[22m[39m
+[31m       [31m├ù[31m should call onError callback on failed delete[39m[32m 4[2mms[22m[39m
+[31m       [31m├ù[31m should NOT reset deleteId on failed delete[39m[32m 8[2mms[22m[39m
+       [32mΓ£ô[39m should set isDeleting to false after failed delete[32m 6[2mms[22m[39m
+       [32mΓ£ô[39m should not call deleteFn when deleteId is null[32m 5[2mms[22m[39m
+       [32mΓ£ô[39m should not show any toast when deleteId is null[32m 4[2mms[22m[39m
+       [32mΓ£ô[39m should set isDeleting to false after delete completes[32m 12[2mms[22m[39m
+       [32mΓ£ô[39m should return object with expected properties[32m 7[2mms[22m[39m
+       [32mΓ£ô[39m should return functions for confirmDelete, cancelDelete, executeDelete[32m 42[2mms[22m[39m
+ [32mΓ£ô[39m src/components/IssueCard.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 455[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display story points when present [33m 330[2mms[22m[39m
+ [32mΓ£ô[39m src/components/AnalyticsDashboard.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 1824[2mms[22m[39m
+ [32mΓ£ô[39m src/components/ErrorBoundary.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 2268[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render default error UI when an error occurs [33m 1191[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should reload page when reload button is clicked [33m 721[2mms[22m[39m
+ [32mΓ£ô[39m src/components/SectionErrorFallback.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 3380[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render provided title [33m 775[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onRetry when retry button is clicked [33m 312[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onRetry multiple times when clicked multiple times [33m 401[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should work with title and onRetry [33m 322[2mms[22m[39m
+ [32mΓ£ô[39m src/components/ExportButton.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 4152[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render import/export button [33m 938[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should open modal when button is clicked [33m 396[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close modal when onClose is called [33m 651[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should pass projectId to modal [33m 315[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display icon [33m 408[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should maintain modal state between renders [33m 318[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should work with different projectIds [33m 690[2mms[22m[39m
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should open modal when search button is clicked
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should open modal when Cmd+K is pressed
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should open modal when Ctrl+K is pressed
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should show all tabs: All, Issues, Documents
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should filter by tab selection
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Mode Switching Logic > should default to export mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Mode Switching Logic > should switch to import mode when Import button clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should open save dialog when clicking Save Filter button
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Display & State Management > should show form when 'Add Field' button is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Dialog Display Logic > should show dialog when Create Rule clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CreateIssueModal.test.tsx > CreateIssueModal > should render story points input field
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Mode Switching Logic > should switch back to export mode when Export button clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Display & State Management > should open dialog when 'Add Field' button is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Dialog Display Logic > should close dialog when Cancel clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CreateIssueModal.test.tsx > CreateIssueModal > should allow user to enter story points
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should close save dialog when clicking Cancel
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show loading state when issue is undefined
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Display & State Management > should reset and hide form when Cancel is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Mode Switching Logic > should maintain separate format selections for export and import
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should debounce search input
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should render issue details
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Dialog Display Logic > should reset form when opening create dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should display issue metadata
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CreateIssueModal.test.tsx > CreateIssueModal > should create issue with story points
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should display labels
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should validate filter name before saving
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show correct type icon
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show priority badge with correct color
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should show empty state when query is empty
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should render TimeTracker component
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should show empty state when no results found
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should close modal when close button is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should save filter with name and public flag
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/CreateIssueModal.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 5800[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render story points input field [33m 1812[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should allow user to enter story points [33m 1066[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should create issue with story points [33m 2914[2mms[22m[39m
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should close modal when close button is clicked via dialog-close
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Display & State Management > should show field key input in create mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Empty Data Validation > should show error when export data is empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Dialog Display Logic > should reset form when opening create dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Display & State Management > should default field type to 'text'
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should enter edit mode when Edit button is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Form Validation - Required Fields > should reject save when name is empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Validation > should show error when trying to save with empty name
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should display issue results with correct metadata
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Empty Data Validation > should show error when export data is whitespace-only
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Form Validation - Required Fields > should reject save when actionValue is empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should allow editing title and description
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Validation > should show error when trying to save with empty field key
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Empty Data Validation > should NOT show error when export has valid data
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should display document results
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Button State > should show 'Exporting...' text when isExporting is true
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/components/BulkOperationsBar.test.tsx [2m([22m[2m16 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 13810[2mms[22m[39m
+       [32mΓ£ô[39m should not render when no issues selected[32m 85[2mms[22m[39m
+       [32mΓ£ô[39m should render when at least one issue is selected[32m 222[2mms[22m[39m
+       [32mΓ£ô[39m should use singular 'issue' when exactly 1 selected[32m 22[2mms[22m[39m
+       [32mΓ£ô[39m should use plural 'issues' when multiple selected[32m 20[2mms[22m[39m
+[31m       [31m├ù[31m should update count when selection changes[39m[32m 60[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onClearSelection when Clear button clicked [33m 1191[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show singular message in delete dialog for 1 issue [33m 1304[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show plural message in delete dialog for multiple issues [33m 1119[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close dialog when cancel clicked [33m 1311[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call bulkDelete and onClearSelection after confirm [33m 1332[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast after delete [33m 1317[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error toast when delete fails [33m 1085[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should NOT call onClearSelection when delete fails [33m 1155[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should toggle actions visibility when clicking Show/Hide button [33m 2212[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show action dropdowns when actions are visible [33m 398[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should convert Set to Array when calling delete mutation [33m 947[2mms[22m[39m
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should close modal when backdrop is clicked
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/NotificationCenter.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 13064[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render notification bell button [33m 1069[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should open dropdown when bell is clicked [33m 1785[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show empty state when no notifications [33m 1480[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display notification list [33m 748[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should highlight unread notifications [33m 1147[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call markAsRead when mark as read button is clicked [33m 1226[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call markAllAsRead when mark all read button is clicked [33m 1149[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call remove when delete button is clicked [33m 1429[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should format time correctly [33m 1119[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show correct icon for notification type [33m 916[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close dropdown when backdrop is clicked [33m 879[2mms[22m[39m
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should handle save filter error
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Form Validation - Required Fields > should treat whitespace-only name as empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Form Validation > should accept whitespace-only name as invalid
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Button State > should disable export button while exporting
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should close modal when Escape is pressed
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should show result count
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Export Button State > should show correct format in button text when switching formats
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Form Validation - Required Fields > should treat whitespace-only actionValue as empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should reset form fields when save dialog is closed
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should call update mutation when Save is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import File Validation > should show error when trying to import without selecting file
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/GlobalSearch.test.tsx > GlobalSearch > should navigate to issue when result is clicked
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import File Validation > should disable import button when no file selected
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/hooks/useKeyboardShortcuts.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Field Key Transformation > should convert field key to lowercase
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/components/Dashboard/MyIssuesList.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+Not implemented: navigation to another Document
+ [32mΓ£ô[39m src/components/GlobalSearch.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 17509[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render search button [33m 988[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should open modal when search button is clicked [33m 1336[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should open modal when Cmd+K is pressed [33m 590[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should open modal when Ctrl+K is pressed [33m 463[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show all tabs: All, Issues, Documents [33m 513[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should filter by tab selection [33m 3002[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should debounce search input [33m 1824[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show empty state when query is empty [33m 486[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show empty state when no results found [33m 1977[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display issue results with correct metadata [33m 1695[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display document results [33m 855[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close modal when backdrop is clicked [33m 700[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close modal when Escape is pressed [33m 548[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show result count [33m 1186[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should navigate to issue when result is clicked [33m 1304[2mms[22m[39m
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import File Validation > should enable import button after file is selected
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/hooks/useFuzzySearch.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > JSON Validation Logic > should reject invalid JSON in actionValue
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/CustomFieldValues.test.tsx [2m([22m[2m32 tests[22m[2m)[22m[33m 22018[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render when custom fields exist [33m 349[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should trim value before saving [33m 2914[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call removeValue when saving whitespace-only value [33m 1684[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call removeValue when saving empty value [33m 811[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show edit form when Edit button clicked [33m 791[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should hide Set/Edit button when in edit mode [33m 405[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close edit mode when Cancel clicked [33m 1761[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close edit mode and clear form after successful save [33m 1974[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should store checkbox as 'true' string when checked [33m 1062[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should store checkbox as 'false' string when unchecked [33m 1386[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should display checked checkbox when value is 'true' [33m 546[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should display unchecked checkbox when value is not 'true' [33m 750[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should add option to comma-separated value when checked [33m 1107[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should handle multiple selections with comma separation [33m 1136[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should remove option from comma-separated value when unchecked [33m 1112[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error toast when save fails [33m 1625[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show generic error when error has no message [33m 1260[2mms[22m[39m
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should exit edit mode when Cancel is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/FilterBar.test.tsx > FilterBar > Save Filter Dialog > should reset form fields when save dialog is closed
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > File Selection Display > should display selected file name and size
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/UserMenu.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 5376[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m renders user avatar [33m 1586[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m opens menu and shows user details [33m 2222[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m calls signOut when sign out is clicked [33m 1528[2mms[22m[39m
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show No description provided when description is empty
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/FilterBar.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 19852[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render saved filters dropdown [33m 362[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should load filter when selecting from dropdown [33m 1299[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should load filter when clicking quick filter button [33m 891[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show save/clear buttons and count when filters are active [33m 459[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should display correct active filter count [33m 669[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should clear filters when clicking Clear button [33m 480[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should open save dialog when clicking Save Filter button [33m 1468[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close save dialog when clicking Cancel [33m 1793[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should validate filter name before saving [33m 1862[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should save filter with name and public flag [33m 4098[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should handle save filter error [33m 1812[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reset form fields when save dialog is closed [33m 3463[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should handle delete filter error [33m 301[2mms[22m[39m
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > JSON Validation Logic > should accept valid JSON in actionValue
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > File Selection Display > should calculate file size correctly
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show Unassigned when no assignee
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Field Key Transformation > should replace spaces with underscores in field key
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should not show Labels section when no labels
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should handle save error gracefully
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Success Message Formatting > should use singular 'issue' when importing 1 issue
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > JSON Validation Logic > should accept empty object as valid JSON
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should display story points in metadata
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Success Message Formatting > should use plural 'issues' when importing multiple
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should show 'Not set' when story points is undefined
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/IssueDetailModal.test.tsx > IssueDetailModal > should display decimal story points correctly
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/IssueDetailModal.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 18504[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show loading state when issue is undefined [33m 2626[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render issue details [33m 554[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show correct type icon [33m 414[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close modal when close button is clicked [33m 943[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close modal when close button is clicked via dialog-close [33m 598[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should enter edit mode when Edit button is clicked [33m 1481[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should allow editing title and description [33m 3625[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call update mutation when Save is clicked [33m 2508[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should exit edit mode when Cancel is clicked [33m 1211[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should show Unassigned when no assignee [33m 426[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should handle save error gracefully [33m 1755[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display story points in metadata [33m 330[2mms[22m[39m
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > JSON Validation Logic > should accept complex nested JSON
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/ProjectBoard.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 5351[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render project header with name and details [33m 370[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should switch to backlog when clicking Backlog tab [33m 1257[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should switch to sprints view when clicking Sprints tab [33m 417[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should switch to analytics view when clicking Analytics tab [33m 779[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should highlight active tab [33m 1341[2mms[22m[39m
+[90mstdout[2m | src/components/Dashboard/ProjectsList.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Field Key Transformation > should replace multiple spaces with single underscore
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Success Message Formatting > should include failure count in success message when some failed
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Whitespace Trimming Logic > should trim name before sending
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Success Message Formatting > should NOT show failure count when all succeeded
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/components/fuzzy-search/integration.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Error Handling > should show error when no issues were imported
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Whitespace Trimming Logic > should convert empty description to undefined
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Field Conditional Display > should not show options field for text type
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/components/Onboarding/WelcomeTour.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Field Conditional Display > should show options field when select type is chosen
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/components/fuzzy-search/FuzzySearchInput.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Whitespace Trimming Logic > should convert whitespace-only description to undefined
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Field Conditional Display > should show options field when multiselect type is chosen
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Error Handling > should show error message when import fails
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/hooks/useFuzzySearch.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 470[2mms[22m[39m
+     [32mΓ£ô[39m should return all items when query is empty[32m 131[2mms[22m[39m
+     [32mΓ£ô[39m should filter items based on query[32m 20[2mms[22m[39m
+     [32mΓ£ô[39m should handle typos with fuzzy matching[32m 20[2mms[22m[39m
+[31m     [31m├ù[31m should respect limit option[39m[32m 53[2mms[22m[39m
+[31m     [31m├ù[31m should clear query[39m[32m 8[2mms[22m[39m
+[31m     [31m├ù[31m should debounce search query[39m[32m 10[2mms[22m[39m
+[31m     [31m├ù[31m should indicate searching state[39m[32m 15[2mms[22m[39m
+[31m     [31m├ù[31m should indicate when results exist[39m[32m 9[2mms[22m[39m
+     [32mΓ£ô[39m should return total items count[32m 11[2mms[22m[39m
+     [32mΓ£ô[39m should handle undefined items[32m 10[2mms[22m[39m
+     [32mΓ£ô[39m should handle empty array[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should prioritize weighted keys[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should search users by name and email[32m 20[2mms[22m[39m
+[31m     [31m├ù[31m should have debounce enabled[39m[32m 18[2mms[22m[39m
+     [32mΓ£ô[39m should search projects by name, key, and description[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should match project keys[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should search issues by title and key[32m 6[2mms[22m[39m
+     [32mΓ£ô[39m should match issue titles[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should search sprints by name[32m 3[2mms[22m[39m
+     [32mΓ£ô[39m should search labels[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should handle typos in labels[32m 7[2mms[22m[39m
+     [32mΓ£ô[39m should search documents by title[32m 27[2mms[22m[39m
+     [32mΓ£ô[39m should return text without highlights when no matches[32m 23[2mms[22m[39m
+     [32mΓ£ô[39m should highlight single match[32m 6[2mms[22m[39m
+     [32mΓ£ô[39m should highlight multiple matches[32m 1[2mms[22m[39m
+     [32mΓ£ô[39m should handle empty indices array[32m 22[2mms[22m[39m
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Field Conditional Display > should hide options field when switching from select to text
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/hooks/useKeyboardShortcuts.test.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 473[2mms[22m[39m
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Error Handling > should show generic error when error has no message
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Parsing Logic > should parse comma-separated options correctly
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Whitespace Trimming Logic > should convert empty triggerValue to undefined
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Button State > should show 'Importing...' text while importing
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should populate form when Edit clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should show 'Edit Automation Rule' title in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should show 'Update Rule' button in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should preserve selected trigger and action type in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Import Button State > should disable import button while importing
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should call updateRule instead of createRule when saving in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should handle missing description in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/Dashboard/MyIssuesList.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 2814[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call onFilterChange when switching to assigned tab [33m 1066[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render multiple issues with staggered animation [33m 417[2mms[22m[39m
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Edit Mode Behavior > should handle missing triggerValue in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Parsing Logic > should trim whitespace from options
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Modal Close Behavior > should close modal after successful import
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Success & Error Handling > should show success toast and close dialog after create
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > Modal Close Behavior > should NOT close modal when import fails
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/components/fuzzy-search/integration.test.tsx [2m([22m[2m14 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[33m 485[2mms[22m[39m
+       [32mΓ£ô[39m should combine Convex data loading with fuzzy search[32m 76[2mms[22m[39m
+[31m       [31m├ù[31m should handle Convex data updates reactively[39m[32m 139[2mms[22m[39m
+[31m       [31m├ù[31m should maintain search query across data updates[39m[32m 21[2mms[22m[39m
+       [32mΓ£ô[39m should handle undefined data from Convex (loading state)[32m 23[2mms[22m[39m
+       [32mΓ£ô[39m should handle empty array from Convex (no data)[32m 12[2mms[22m[39m
+[31m       [31m├ù[31m should debounce search queries[39m[32m 13[2mms[22m[39m
+[31m       [31m├ù[31m should only search through permission-filtered data from Convex[39m[32m 37[2mms[22m[39m
+       [32mΓ£ô[39m should respect Convex data boundaries[32m 15[2mms[22m[39m
+       [32mΓ£ô[39m should support assignee dropdown pattern[32m 15[2mms[22m[39m
+       [32mΓ£ô[39m should support project switcher pattern[32m 16[2mms[22m[39m
+       [32mΓ£ô[39m should handle malformed data gracefully[32m 6[2mms[22m[39m
+       [32mΓ£ô[39m should recover from search errors[32m 29[2mms[22m[39m
+       [32mΓ£ô[39m should handle medium-sized datasets efficiently[32m 13[2mms[22m[39m
+[31m       [31m├ù[31m should respect limit to optimize large result sets[39m[32m 11[2mms[22m[39m
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Success & Error Handling > should show success toast and close dialog after update
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | src/components/Settings/PreferencesTab.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > File Accept Attribute > should accept .csv files when CSV format selected
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Success & Error Handling > should show error toast when create fails
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ImportExportModal.test.tsx > ImportExportModal - Component Behavior > File Accept Attribute > should accept .json files when JSON format selected
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/Onboarding/WelcomeTour.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 300[2mms[22m[39m
+ [32mΓ£ô[39m src/components/ImportExportModal.test.tsx [2m([22m[2m28 tests[22m[2m)[22m[33m 35913[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should default to export mode [33m 2257[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should switch to import mode when Import button clicked [33m 1252[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should switch back to export mode when Export button clicked [33m 1322[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should maintain separate format selections for export and import [33m 3001[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when export data is empty [33m 930[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when export data is whitespace-only [33m 1071[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should NOT show error when export has valid data [33m 933[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Exporting...' text when isExporting is true [33m 776[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should disable export button while exporting [33m 840[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show correct format in button text when switching formats [33m 1266[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when trying to import without selecting file [33m 646[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should disable import button when no file selected [33m 820[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should enable import button after file is selected [33m 1684[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should display selected file name and size [33m 737[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should calculate file size correctly [33m 732[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should use singular 'issue' when importing 1 issue [33m 1730[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should use plural 'issues' when importing multiple [33m 1580[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should include failure count in success message when some failed [33m 1419[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should NOT show failure count when all succeeded [33m 1332[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when no issues were imported [33m 1358[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error message when import fails [33m 1380[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show generic error when error has no message [33m 1357[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Importing...' text while importing [33m 1776[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should disable import button while importing [33m 1653[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close modal after successful import [33m 1537[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should NOT close modal when import fails [33m 1489[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept .csv files when CSV format selected [33m 446[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept .json files when JSON format selected [33m 559[2mms[22m[39m
+stderr | src/components/AutomationRulesManager.test.tsx > AutomationRulesManager - Component Behavior > Success & Error Handling > should show generic error when error has no message
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Parsing Logic > should filter out empty options
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/components/Dashboard/ProjectsList.test.tsx [2m([22m[2m18 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3118[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render card header with project count [33m 343[2mms[22m[39m
+     [32mΓ£ô[39m should render loading skeleton when data is undefined[32m 28[2mms[22m[39m
+     [32mΓ£ô[39m should render empty state when no projects[32m 29[2mms[22m[39m
+     [32mΓ£ô[39m should render Go to Workspaces button in empty state[32m 18[2mms[22m[39m
+[31m     [31m├ù[31m should navigate to projects when clicking Go to Workspaces[39m[33m 1260[2mms[22m[39m
+     [32mΓ£ô[39m should render all projects when data is present[32m 33[2mms[22m[39m
+     [32mΓ£ô[39m should display project role badges[32m 29[2mms[22m[39m
+     [32mΓ£ô[39m should display issue counts for each project[32m 28[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should navigate to project when clicking a project [33m 346[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render projects with staggered animation [33m 528[2mms[22m[39m
+     [32mΓ£ô[39m should apply navigation props to project items[32m 152[2mms[22m[39m
+     [32mΓ£ô[39m should have correct button types[32m 211[2mms[22m[39m
+     [32mΓ£ô[39m should handle project with long name (truncation)[32m 19[2mms[22m[39m
+     [32mΓ£ô[39m should handle zero issues in a project[32m 17[2mms[22m[39m
+     [32mΓ£ô[39m should render with capitalized role badges[32m 32[2mms[22m[39m
+     [32mΓ£ô[39m should handle single project[32m 15[2mms[22m[39m
+     [32mΓ£ô[39m should show 0 projects in header when array is empty[32m 11[2mms[22m[39m
+     [32mΓ£ô[39m should show 0 projects in header when undefined[32m 6[2mms[22m[39m
+ [32mΓ£ô[39m src/components/AutomationRulesManager.test.tsx [2m([22m[2m43 tests[22m[2m)[22m[33m 37207[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show empty state message when no rules exist [33m 339[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show Create Rule button [33m 1207[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show dialog when Create Rule clicked [33m 1737[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should close dialog when Cancel clicked [33m 1489[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reset form when opening create dialog [33m 3617[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reject save when name is empty [33m 1104[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reject save when actionValue is empty [33m 1832[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should treat whitespace-only name as empty [33m 1185[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should treat whitespace-only actionValue as empty [33m 2191[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reject invalid JSON in actionValue [33m 2064[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept valid JSON in actionValue [33m 1626[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept empty object as valid JSON [33m 1828[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept complex nested JSON [33m 1174[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should trim name before sending [33m 2342[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should convert empty description to undefined [33m 1285[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should convert whitespace-only description to undefined [33m 1921[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should convert empty triggerValue to undefined [33m 1352[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Update Rule' button in edit mode [33m 694[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should preserve selected trigger and action type in edit mode [33m 429[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call updateRule instead of createRule when saving in edit mode [33m 745[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should handle missing triggerValue in edit mode [33m 377[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast and close dialog after create [33m 1541[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast and close dialog after update [33m 1028[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error toast when create fails [33m 1095[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show generic error when error has no message [33m 1361[2mms[22m[39m
+[90mstdout[2m | src/components/Settings/ProfileContent.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ui/Card.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ui/EmptyState.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ui/ColorPicker.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Parsing Logic > should not send options for non-select field types
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/components/fuzzy-search/FuzzySearchInput.test.tsx [2m([22m[2m28 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 5329[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render search input [33m 1261[2mms[22m[39m
+     [32mΓ£ô[39m should display placeholder text[32m 52[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should call onSearch when typing [33m 710[2mms[22m[39m
+[31m     [31m├ù[31m should show results dropdown when query is provided[39m[32m 107[2mms[22m[39m
+     [32mΓ£ô[39m should not show dropdown when isOpen is false[32m 113[2mms[22m[39m
+[31m     [31m├ù[31m should call onSelect when clicking a result[39m[32m 24[2mms[22m[39m
+     [32mΓ£ô[39m should show clear button when query is not empty[32m 28[2mms[22m[39m
+     [32mΓ£ô[39m should call onSearch with empty string when clear button is clicked[32m 190[2mms[22m[39m
+     [32mΓ£ô[39m should call onClear when clear button is clicked[32m 215[2mms[22m[39m
+     [32mΓ£ô[39m should show loading indicator when isLoading is true[32m 59[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should navigate results with arrow keys [33m 1318[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should select result with Enter key [33m 403[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should close dropdown with Escape key [33m 452[2mms[22m[39m
+[31m     [31m├ù[31m should show no results message when results are empty[39m[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m should display match scores when showScore is true[39m[32m 11[2mms[22m[39m
+     [32mΓ£ô[39m should not display scores when showScore is false[32m 9[2mms[22m[39m
+[31m     [31m├ù[31m should have proper ARIA attributes[39m[32m 93[2mms[22m[39m
+[31m     [31m├ù[31m should close dropdown when clicking outside[39m[32m 21[2mms[22m[39m
+     [32mΓ£ô[39m should focus input when mounted[32m 101[2mms[22m[39m
+     [32mΓ£ô[39m should render text without highlighting when no matches[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should render text without highlighting when matches array is empty[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should highlight matched portion[32m 76[2mms[22m[39m
+     [32mΓ£ô[39m should handle multiple matches[32m 8[2mms[22m[39m
+     [32mΓ£ô[39m should apply custom className[32m 5[2mms[22m[39m
+     [32mΓ£ô[39m should apply custom highlight className[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should use default highlight className when not provided[32m 6[2mms[22m[39m
+     [32mΓ£ô[39m should handle matches at the end of text[32m 4[2mms[22m[39m
+     [32mΓ£ô[39m should handle matches at the beginning of text[32m 4[2mms[22m[39m
+[90mstdout[2m | src/components/ui/MarkdownPreviewModal.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/components/ui/LoadingSpinner.test.tsx
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should populate form with existing field data when Edit is clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should show 'Edit Field' title in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should hide field key input in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should disable field type selector in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/issues.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should show 'Update Field' button in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/invites.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should convert options array to comma-separated string in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Edit Mode Behavior > should not require field key validation in edit mode
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/Settings/PreferencesTab.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1236[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m changes theme when clicked [33m 935[2mms[22m[39m
+[90mstdout[2m | convex/webhooks.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Success & Error Handling > should show success toast and reset form after successful create
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/analytics.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Success & Error Handling > should show success toast after successful update
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/automationRules.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m src/components/ui/LoadingSpinner.test.tsx [2m([22m[2m36 tests[22m[2m)[22m[33m 2592[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render with default props [33m 1030[2mms[22m[39m
+ [32mΓ£ô[39m src/components/Settings/ProfileContent.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2806[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m allows editing profile [33m 2513[2mms[22m[39m
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Success & Error Handling > should show error toast when create fails
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/ui/Card.test.tsx [2m([22m[2m48 tests[22m[2m)[22m[33m 4245[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should have button role when onClick is provided [33m 799[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onClick multiple times [33m 383[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render complex nested children [33m 304[2mms[22m[39m
+[90mstdout[2m | src/hooks/useModal.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/sprints.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/documents.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Success & Error Handling > should show generic error when error has no message
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/timeTracking.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should render when open
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/ui/EmptyState.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 2994[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render icon and title [33m 613[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onClick multiple times when clicked multiple times [33m 372[2mms[22m[39m
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should display file statistics
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should show warning about content replacement
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should switch between Preview and Raw tabs
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[90mstdout[2m | convex/apiKeys.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should display raw markdown in Raw tab
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [31mΓ¥»[39m src/components/ui/ColorPicker.test.tsx [2m([22m[2m37 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 5339[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render default label [33m 360[2mms[22m[39m
+       [32mΓ£ô[39m should render custom label[32m 32[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should render all default preset color buttons [33m 589[2mms[22m[39m
+       [32mΓ£ô[39m should render custom color input[32m 28[2mms[22m[39m
+       [32mΓ£ô[39m should display 'Custom' text below color input[32m 17[2mms[22m[39m
+       [32mΓ£ô[39m should render buttons for all preset colors[32m 20[2mms[22m[39m
+       [32mΓ£ô[39m should apply correct background color to preset buttons[32m 212[2mms[22m[39m
+       [32mΓ£ô[39m should have title attribute with color value[32m 120[2mms[22m[39m
+       [32mΓ£ô[39m should use custom preset colors when provided[32m 16[2mms[22m[39m
+       [32mΓ£ô[39m should handle empty preset colors array[32m 6[2mms[22m[39m
+       [32mΓ£ô[39m should highlight selected preset color[32m 9[2mms[22m[39m
+       [32mΓ£ô[39m should not highlight non-selected colors[32m 8[2mms[22m[39m
+[31m       [31m├ù[31m should update highlight when value changes[39m[32m 22[2mms[22m[39m
+       [32mΓ£ô[39m should call onChange when preset color is clicked[32m 163[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should call onChange with correct color for each preset [33m 1392[2mms[22m[39m
+       [32mΓ£ô[39m should call onChange when clicking already selected color[32m 176[2mms[22m[39m
+       [32mΓ£ô[39m should have button type to prevent form submission[32m 172[2mms[22m[39m
+       [32mΓ£ô[39m should display current value in custom color input[32m 8[2mms[22m[39m
+       [32mΓ£ô[39m should call onChange when custom color input changes[32m 21[2mms[22m[39m
+       [32mΓ£ô[39m should have correct accessibility attributes[32m 19[2mms[22m[39m
+       [32mΓ£ô[39m should have correct styling classes[32m 7[2mms[22m[39m
+       [32mΓ£ô[39m should have flex layout for color buttons[32m 33[2mms[22m[39m
+       [32mΓ£ô[39m should have rounded-full class on preset buttons[32m 253[2mms[22m[39m
+       [32mΓ£ô[39m should have hover and focus styles on preset buttons[32m 8[2mms[22m[39m
+       [32mΓ£ô[39m should have label styling[32m 62[2mms[22m[39m
+       [32mΓ£ô[39m should have aria-label for each preset button[32m 17[2mms[22m[39m
+       [32mΓ£ô[39m should have aria-label for custom color input[32m 17[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should have keyboard accessible preset buttons [33m 498[2mms[22m[39m
+       [32mΓ£ô[39m should handle uppercase hex values[32m 10[2mms[22m[39m
+       [32mΓ£ô[39m should handle lowercase hex values[32m 9[2mms[22m[39m
+       [32mΓ£ô[39m should handle value not in preset colors[32m 139[2mms[22m[39m
+       [32mΓ£ô[39m should handle single preset color[32m 45[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should handle many preset colors [33m 367[2mms[22m[39m
+       [32mΓ£ô[39m should work with all default props[32m 173[2mms[22m[39m
+       [32mΓ£ô[39m should work with custom label and preset colors[32m 57[2mms[22m[39m
+[31m       [31m├ù[31m should work as theme color picker[39m[32m 186[2mms[22m[39m
+       [32mΓ£ô[39m should work as brand color selector[32m 33[2mms[22m[39m
+ [31mΓ¥»[39m src/components/CustomFieldsManager.test.tsx [2m([22m[2m47 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 54149[2mms[22m[39m
+       [32mΓ£ô[39m should show loading spinner when fields are undefined[32m 278[2mms[22m[39m
+       [32mΓ£ô[39m should show empty state with emoji when no fields exist[32m 157[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Add Field' button when not creating [33m 1189[2mms[22m[39m
+       [32mΓ£ô[39m should hide form initially[32m 59[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show form when 'Add Field' button is clicked [33m 1508[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should open dialog when 'Add Field' button is clicked [33m 1064[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should reset and hide form when Cancel is clicked [33m 3196[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show field key input in create mode [33m 579[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should default field type to 'text' [33m 837[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when trying to save with empty name [33m 856[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error when trying to save with empty field key [33m 1977[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should accept whitespace-only name as invalid [33m 2657[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should convert field key to lowercase [33m 2905[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should replace spaces with underscores in field key [33m 3347[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should replace multiple spaces with single underscore [33m 3356[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should not show options field for text type [33m 442[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show options field when select type is chosen [33m 857[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show options field when multiselect type is chosen [33m 589[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should hide options field when switching from select to text [33m 951[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should parse comma-separated options correctly [33m 4635[2mms[22m[39m
+[31m       [31m├ù[31m should trim whitespace from options[39m[33m 5097[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should filter out empty options [33m 4615[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should not send options for non-select field types [33m 1834[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should populate form with existing field data when Edit is clicked [33m 337[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Edit Field' title in edit mode [33m 350[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should hide field key input in edit mode [33m 519[2mms[22m[39m
+       [32mΓ£ô[39m should disable field type selector in edit mode[32m 285[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show 'Update Field' button in edit mode [33m 480[2mms[22m[39m
+       [32mΓ£ô[39m should convert options array to comma-separated string in edit mode[32m 233[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should not require field key validation in edit mode [33m 1570[2mms[22m[39m
+       [32mΓ£ô[39m should display field name and key[32m 33[2mms[22m[39m
+       [32mΓ£ô[39m should show Required badge when field is required[32m 22[2mms[22m[39m
+       [32mΓ£ô[39m should not show Required badge when field is optional[32m 34[2mms[22m[39m
+       [32mΓ£ô[39m should display description when present[32m 29[2mms[22m[39m
+       [32mΓ£ô[39m should not display description section when absent[32m 23[2mms[22m[39m
+       [32mΓ£ô[39m should display options as chips for select fields[32m 22[2mms[22m[39m
+       [32mΓ£ô[39m should show correct icon for text field[32m 12[2mms[22m[39m
+       [32mΓ£ô[39m should show correct icon for number field[32m 18[2mms[22m[39m
+       [32mΓ£ô[39m should show correct icon for checkbox field[32m 8[2mms[22m[39m
+       [32mΓ£ô[39m should show browser confirm dialog when delete is clicked[32m 192[2mms[22m[39m
+       [32mΓ£ô[39m should not delete if user cancels confirmation[32m 238[2mms[22m[39m
+       [32mΓ£ô[39m should delete if user confirms[32m 194[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast and reset form after successful create [33m 1936[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast after successful update [33m 762[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show success toast after successful delete [33m 338[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show error toast when create fails [33m 1418[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should show generic error when error has no message [33m 2063[2mms[22m[39m
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should call onConfirm when import button clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should call onOpenChange(false) when cancel button clicked
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should calculate correct line count
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should handle markdown without headings
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should handle markdown without lists
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should handle markdown without code blocks
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/MarkdownPreviewModal.test.tsx > MarkdownPreviewModal > should display filename
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ [32mΓ£ô[39m src/components/ui/MarkdownPreviewModal.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 3899[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should render when open [33m 1030[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display file statistics [33m 442[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should switch between Preview and Raw tabs [33m 422[2mms[22m[39m
+     [33m[2mΓ£ô[22m[39m should display raw markdown in Raw tab [33m 497[2mms[22m[39m
+[90mstdout[2m | convex/projects.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/webhooks.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 1541[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should create a webhook with all fields [33m 826[2mms[22m[39m
+ [32mΓ£ô[39m convex/issues.test.ts [2m([22m[2m22 tests[22m[2m)[22m[33m 1793[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should create an issue with auto-generated key [33m 1136[2mms[22m[39m
+ [32mΓ£ô[39m src/hooks/useModal.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1326[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should toggle multiple times correctly [33m 340[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should work correctly with open, close, toggle sequence [33m 371[2mms[22m[39m
+ [32mΓ£ô[39m convex/analytics.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 1595[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should deny unauthenticated users [33m 716[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should return burndown data for a sprint [33m 311[2mms[22m[39m
+ [32mΓ£ô[39m convex/invites.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 3804[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should send a platform invite from admin [33m 3515[2mms[22m[39m
+ [32mΓ£ô[39m convex/automationRules.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 1148[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should return automation rules for a project [33m 413[2mms[22m[39m
+[90mstdout[2m | convex/notifications.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/documents.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 553[2mms[22m[39m
+ [32mΓ£ô[39m convex/timeTracking.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 505[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should start and stop a timer [33m 345[2mms[22m[39m
+ [32mΓ£ô[39m convex/sprints.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 844[2mms[22m[39m
+ [32mΓ£ô[39m convex/apiKeys.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 829[2mms[22m[39m
+[90mstdout[2m | convex/github.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/companies.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/projects.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 336[2mms[22m[39m
+[90mstdout[2m | convex/internal/ai.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/users.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/rbac.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/lib/dates.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/teams.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/lib/markdown.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/notifications.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 290[2mms[22m[39m
+[90mstdout[2m | src/lib/toast.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/lib/accessibility.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | convex/auth.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/lib/markdown-batch.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+[90mstdout[2m | src/lib/issue-utils.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/companies.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+ [32mΓ£ô[39m convex/github.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 286[2mms[22m[39m
+ [32mΓ£ô[39m convex/internal/ai.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 412[2mms[22m[39m
+       [33m[2mΓ£ô[22m[39m should create a new chat for a user [33m 367[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/dates.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+[90mstdout[2m | src/lib/utils.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+ [32mΓ£ô[39m convex/users.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+[90mstdout[2m | src/lib/array-utils.test.ts
+[22m[39m[PATCH] test-utils.act patched with simple implementation
+
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ [32mΓ£ô[39m src/lib/markdown.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/toast.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32mΓ£ô[39m convex/rbac.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/accessibility.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/issue-utils.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32mΓ£ô[39m convex/teams.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/markdown-batch.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/utils.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32mΓ£ô[39m src/lib/array-utils.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32mΓ£ô[39m convex/auth.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 33 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  src/components/BulkOperationsBar.test.tsx > BulkOperationsBar - Component Behavior > Count Display Formatting > should update count when selection changes
+TestingLibraryElementError: Unable to find an element with the text: 2 issues selected. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-brand-600 text-white shadow-lg z-30 transition-transform"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 py-4"
+      >
+        <div
+          class="flex flex-row gap-4 items-center justify-between"
+        >
+          <div
+            class="flex flex-row gap-4 items-center"
+          >
+            <p
+              class="font-medium"
+            >
+              1
+               issue
+               selected
+            </p>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-brand-600 dark:text-brand-400 underline-offset-4 hover:underline h-9 px-3 text-sm"
+              type="button"
+            >
+              Clear selection
+            </button>
+          </div>
+          <div
+            class="flex flex-row gap-2 items-center flex-wrap"
+          >
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500 h-10 px-4 text-sm"
+              type="button"
+            >
+              Show Actions
+            </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-status-error text-white hover:bg-status-error/90 focus-visible:ring-status-error h-10 px-4 text-sm"
+              type="button"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/BulkOperationsBar.test.tsx:184:21
+    182|       );
+    183| 
+    184|       expect(screen.getByText("2 issues selected")).toBeInTheDocument(ΓÇª
+       |                     ^
+    185|     });
+    186|   });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/33]ΓÄ»
+
+ FAIL  src/components/CustomFieldsManager.test.tsx > CustomFieldsManager - Component Behavior > Options Parsing Logic > should trim whitespace from options
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ Γ¥» src/components/CustomFieldsManager.test.tsx:317:5
+    315|     });
+    316| 
+    317|     it("should trim whitespace from options", async () => {
+       |     ^
+    318|       const user = userEvent.setup();
+    319|       mockUpdateField.mockResolvedValue({ _id: "field1" });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > confirmDelete > should set deleteId when called
+AssertionError: expected null to be 'test-id-123' // Object.is equality
+
+- Expected: 
+"test-id-123"
+
++ Received: 
+null
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:46:39
+     44|       });
+     45| 
+     46|       expect(result.current.deleteId).toBe(mockId);
+       |                                       ^
+     47|     });
+     48| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > confirmDelete > should update deleteId when called multiple times
+AssertionError: expected null to be 'test-id-1' // Object.is equality
+
+- Expected: 
+"test-id-1"
+
++ Received: 
+null
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:58:39
+     56|         result.current.confirmDelete(mockId1);
+     57|       });
+     58|       expect(result.current.deleteId).toBe(mockId1);
+       |                                       ^
+     59| 
+     60|       act(() => {
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > cancelDelete > should set deleteId to null
+AssertionError: expected null to be 'test-id-123' // Object.is equality
+
+- Expected: 
+"test-id-123"
+
++ Received: 
+null
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:76:39
+     74|         result.current.confirmDelete(mockId);
+     75|       });
+     76|       expect(result.current.deleteId).toBe(mockId);
+       |                                       ^
+     77| 
+     78|       act(() => {
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Success > should call deleteFn with the deleteId
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'test-id-123' ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:110:24
+    108|       });
+    109| 
+    110|       expect(deleteFn).toHaveBeenCalledWith(mockId);
+       |                        ^
+    111|     });
+    112| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Success > should show success toast on successful delete
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'Deleted successfully' ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:127:27
+    125|       });
+    126| 
+    127|       expect(showSuccess).toHaveBeenCalledWith("Deleted successfully");
+       |                           ^
+    128|     });
+    129| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Success > should show custom success message when provided
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'Item removed!' ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:148:27
+    146|       });
+    147| 
+    148|       expect(showSuccess).toHaveBeenCalledWith("Item removed!");
+       |                           ^
+    149|     });
+    150| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Success > should call onSuccess callback on successful delete
+AssertionError: expected "vi.fn()" to be called at least once
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:170:25
+    168|       });
+    169| 
+    170|       expect(onSuccess).toHaveBeenCalled();
+       |                         ^
+    171|     });
+    172| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Error > should show error toast on failed delete
+AssertionError: expected "vi.fn()" to be called with arguments: [ Error: Delete failed, ΓÇª(1) ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:224:25
+    222|       });
+    223| 
+    224|       expect(showError).toHaveBeenCalledWith(error, "Failed to delete"ΓÇª
+       |                         ^
+    225|     });
+    226| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Error > should show custom error message when provided
+AssertionError: expected "vi.fn()" to be called with arguments: [ Error: Delete failed, ΓÇª(1) ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:246:25
+    244|       });
+    245| 
+    246|       expect(showError).toHaveBeenCalledWith(error, "Could not remove ΓÇª
+       |                         ^
+    247|     });
+    248| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Error > should call onError callback on failed delete
+AssertionError: expected "vi.fn()" to be called with arguments: [ Error: Delete failed ]
+
+Number of calls: 0
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:269:23
+    267|       });
+    268| 
+    269|       expect(onError).toHaveBeenCalledWith(error);
+       |                       ^
+    270|     });
+    271| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[12/33]ΓÄ»
+
+ FAIL  src/hooks/useDeleteConfirmation.test.ts > useDeleteConfirmation > executeDelete - Error > should NOT reset deleteId on failed delete
+AssertionError: expected null to be 'test-id-123' // Object.is equality
+
+- Expected: 
+"test-id-123"
+
++ Received: 
+null
+
+ Γ¥» src/hooks/useDeleteConfirmation.test.ts:287:39
+    285| 
+    286|       // deleteId should remain so user can retry
+    287|       expect(result.current.deleteId).toBe(mockId);
+       |                                       ^
+    288|     });
+    289| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[13/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useFuzzySearch > should respect limit option
+AssertionError: expected [ ΓÇª(3) ] to have a length of 1 but got 3
+
+- Expected
++ Received
+
+- 1
++ 3
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:77:36
+     75|     });
+     76| 
+     77|     expect(result.current.results).toHaveLength(1);
+       |                                    ^
+     78|   });
+     79| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[14/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useFuzzySearch > should clear query
+AssertionError: expected '' to be 'john' // Object.is equality
+
+- Expected
++ Received
+
+- john
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:91:34
+     89|     });
+     90| 
+     91|     expect(result.current.query).toBe("john");
+       |                                  ^
+     92| 
+     93|     act(() => {
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[15/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useFuzzySearch > should debounce search query
+AssertionError: expected '' to be 'john' // Object.is equality
+
+- Expected
++ Received
+
+- john
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:114:34
+    112| 
+    113|     // Immediately after search, debounced query should be empty
+    114|     expect(result.current.query).toBe("john");
+       |                                  ^
+    115|     expect(result.current.debouncedQuery).toBe("");
+    116|     expect(result.current.isDebouncing).toBe(true);
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[16/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useFuzzySearch > should indicate searching state
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:141:40
+    139|     });
+    140| 
+    141|     expect(result.current.isSearching).toBe(true);
+       |                                        ^
+    142|   });
+    143| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[17/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useFuzzySearch > should indicate when results exist
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:157:39
+    155|     });
+    156| 
+    157|     expect(result.current.hasResults).toBe(false);
+       |                                       ^
+    158|   });
+    159| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[18/33]ΓÄ»
+
+ FAIL  src/hooks/useFuzzySearch.test.ts > useUserFuzzySearch > should have debounce enabled
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ Γ¥» src/hooks/useFuzzySearch.test.ts:234:41
+    232|     });
+    233| 
+    234|     expect(result.current.isDebouncing).toBe(true);
+       |                                         ^
+    235| 
+    236|     await waitFor(() => {
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[19/33]ΓÄ»
+
+ FAIL  src/components/Dashboard/ProjectsList.test.tsx > WorkspacesList > should navigate to projects when clicking Go to Workspaces
+AssertionError: expected "vi.fn()" to be called with arguments: [ { to: '/test-company/projects' } ]
+
+Received: 
+
+  1st vi.fn() call:
+
+  [
+    {
+-     "to": "/test-company/projects",
++     "to": "/test-company/workspaces",
+    },
+  ]
+
+
+Number of calls: 1
+
+ Γ¥» src/components/Dashboard/ProjectsList.test.tsx:100:26
+     98|     await user.click(button);
+     99| 
+    100|     expect(mockNavigate).toHaveBeenCalledWith({
+       |                          ^
+    101|       to: "/test-company/projects",
+    102|     });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[20/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should show results dropdown when query is provided
+TestingLibraryElementError: Unable to find an element with the text: John Doe. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="relative w-full"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="fuzzy-search-results"
+          aria-expanded="false"
+          aria-label="Search..."
+          class="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark "
+          placeholder="Search..."
+          role="combobox"
+          type="text"
+          value="john"
+        />
+        <button
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <title>
+              Clear
+            </title>
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:60:19
+     58| 
+     59|     // Results should be visible
+     60|     expect(screen.getByText("John Doe")).toBeInTheDocument();
+       |                   ^
+     61|     expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+     62|     expect(screen.getByText("Bob Johnson")).toBeInTheDocument();
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[21/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should call onSelect when clicking a result
+TestingLibraryElementError: Unable to find an element with the text: John Doe. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="relative w-full"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="fuzzy-search-results"
+          aria-expanded="false"
+          aria-label="Search..."
+          class="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark "
+          placeholder="Search..."
+          role="combobox"
+          type="text"
+          value="john"
+        />
+        <button
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <title>
+              Clear
+            </title>
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:77:32
+     75|     render(<FuzzySearchInput {...defaultProps} query="john" onSelect={ΓÇª
+     76| 
+     77|     const firstResult = screen.getByText("John Doe");
+       |                                ^
+     78|     await user.click(firstResult);
+     79| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[22/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should show no results message when results are empty
+TestingLibraryElementError: Unable to find an element with the text: No results found for "xyz". This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="relative w-full"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="fuzzy-search-results"
+          aria-expanded="false"
+          aria-label="Search..."
+          class="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark "
+          placeholder="Search..."
+          role="combobox"
+          type="text"
+          value="xyz"
+        />
+        <button
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <title>
+              Clear
+            </title>
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:188:19
+    186|     render(<FuzzySearchInput {...defaultProps} results={[]} query="xyzΓÇª
+    187| 
+    188|     expect(screen.getByText('No results found for "xyz"')).toBeInTheDoΓÇª
+       |                   ^
+    189|   });
+    190| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[23/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should display match scores when showScore is true
+TestingLibraryElementError: Unable to find an element with the text: 90%. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="relative w-full"
+    >
+      <div
+        class="relative"
+      >
+        <input
+          aria-autocomplete="list"
+          aria-controls="fuzzy-search-results"
+          aria-expanded="false"
+          aria-label="Search..."
+          class="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark "
+          placeholder="Search..."
+          role="combobox"
+          type="text"
+          value="john"
+        />
+        <button
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+          type="button"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <title>
+              Clear
+            </title>
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:195:19
+    193| 
+    194|     // Score of 0.1 = 90% match
+    195|     expect(screen.getByText("90%")).toBeInTheDocument();
+       |                   ^
+    196|     // Score of 0.2 = 80% match
+    197|     expect(screen.getByText("80%")).toBeInTheDocument();
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[24/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should have proper ARIA attributes
+Error: expect(element).toHaveAttribute("aria-expanded", "true") // element.getAttribute("aria-expanded") === "true"
+
+Expected the element to have attribute:
+  aria-expanded="true"
+Received:
+  aria-expanded="false"
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:213:19
+    211|     expect(input).toHaveAttribute("aria-autocomplete", "list");
+    212|     expect(input).toHaveAttribute("aria-controls", "fuzzy-search-resulΓÇª
+    213|     expect(input).toHaveAttribute("aria-expanded", "true");
+       |                   ^
+    214|   });
+    215| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[25/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/FuzzySearchInput.test.tsx > FuzzySearchInput > should close dropdown when clicking outside
+TestingLibraryElementError: Unable to find an element with the text: John Doe. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div>
+      <div
+        class="relative w-full"
+      >
+        <div
+          class="relative"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="fuzzy-search-results"
+            aria-expanded="false"
+            aria-label="Search..."
+            class="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark "
+            placeholder="Search..."
+            role="combobox"
+            type="text"
+            value="john"
+          />
+          <button
+            aria-label="Clear search"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+            type="button"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <title>
+                Clear
+              </title>
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button
+        type="button"
+      >
+        Outside button
+      </button>
+    </div>
+  </div>
+</body>
+ Γ¥» Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ Γ¥» node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ Γ¥» src/components/fuzzy-search/FuzzySearchInput.test.tsx:227:19
+    225| 
+    226|     // Dropdown should be open
+    227|     expect(screen.getByText("John Doe")).toBeInTheDocument();
+       |                   ^
+    228| 
+    229|     // Click outside
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[26/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/integration.test.tsx > Hybrid Search Integration > Convex + Fuse.js Pattern > should handle Convex data updates reactively
+AssertionError: expected [ { item: { _id: '1', ΓÇª(2) }, ΓÇª(1) } ] to have a length of 2 but got 1
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ Γ¥» src/components/fuzzy-search/integration.test.tsx:57:38
+     55| 
+     56|       // Fuzzy search should work with new data
+     57|       expect(result.current.results).toHaveLength(2);
+       |                                      ^
+     58|     });
+     59| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[27/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/integration.test.tsx > Hybrid Search Integration > Convex + Fuse.js Pattern > should maintain search query across data updates
+AssertionError: expected '' to be 'john' // Object.is equality
+
+- Expected
++ Received
+
+- john
+
+ Γ¥» src/components/fuzzy-search/integration.test.tsx:75:36
+     73|       });
+     74| 
+     75|       expect(result.current.query).toBe("john");
+       |                                    ^
+     76| 
+     77|       // Simulate new data from Convex
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[28/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/integration.test.tsx > Hybrid Search Integration > Performance with Debouncing > should debounce search queries
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ Γ¥» src/components/fuzzy-search/integration.test.tsx:131:43
+    129| 
+    130|       // Should be debouncing
+    131|       expect(result.current.isDebouncing).toBe(true);
+       |                                           ^
+    132|       expect(result.current.query).toBe("john");
+    133|       expect(result.current.debouncedQuery).not.toBe("john");
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[29/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/integration.test.tsx > Hybrid Search Integration > Security: Permission Filtering > should only search through permission-filtered data from Convex
+AssertionError: expected [ ΓÇª(2) ] to have a length of +0 but got 2
+
+- Expected
++ Received
+
+- 0
++ 2
+
+ Γ¥» src/components/fuzzy-search/integration.test.tsx:172:38
+    170| 
+    171|       // No results because Bob wasn't in the Convex response
+    172|       expect(result.current.results).toHaveLength(0);
+       |                                      ^
+    173| 
+    174|       // Can find authorized users
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[30/33]ΓÄ»
+
+ FAIL  src/components/fuzzy-search/integration.test.tsx > Hybrid Search Integration > Performance Characteristics > should respect limit to optimize large result sets
+AssertionError: expected 100 to be less than or equal to 10
+ Γ¥» src/components/fuzzy-search/integration.test.tsx:342:45
+    340| 
+    341|       // useUserFuzzySearch has limit: 10
+    342|       expect(result.current.results.length).toBeLessThanOrEqual(10);
+       |                                             ^
+    343|     });
+    344|   });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[31/33]ΓÄ»
+
+ FAIL  src/components/ui/ColorPicker.test.tsx > ColorPicker > Selected State > should update highlight when value changes
+Error: expect(element).not.toHaveClass("scale-110")
+
+Expected the element not to have class:
+  scale-110
+Received:
+  w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110
+ Γ¥» src/components/ui/ColorPicker.test.tsx:134:34
+    132| 
+    133|       const previousButton = screen.getByLabelText("Select color #EF44ΓÇª
+    134|       expect(previousButton).not.toHaveClass("scale-110");
+       |                                  ^
+    135| 
+    136|       const newButton = screen.getByLabelText("Select color #F59E0B");
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[32/33]ΓÄ»
+
+ FAIL  src/components/ui/ColorPicker.test.tsx > ColorPicker > Real-world Scenarios > should work as theme color picker
+Error: expect(element).toHaveClass("scale-110")
+
+Expected the element to have class:
+  scale-110
+Received:
+  w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark
+ Γ¥» src/components/ui/ColorPicker.test.tsx:398:30
+    396|       // New color should be selected
+    397|       const selectedButton = screen.getByLabelText("Select color #3B82ΓÇª
+    398|       expect(selectedButton).toHaveClass("scale-110");
+       |                              ^
+    399|     });
+    400| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[33/33]ΓÄ»
+
+
+[2m Test Files [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m52 passed[39m[22m[90m (60)[39m
+[2m      Tests [22m [1m[31m33 failed[39m[22m[2m | [22m[1m[32m1133 passed[39m[22m[90m (1166)[39m
+[2m   Start at [22m 21:55:47
+[2m   Duration [22m 120.64s[2m (transform 112.98s, setup 360.54s, import 337.98s, tests 314.28s, environment 991.88s)[22m
+
+ΓÇëELIFECYCLEΓÇë Test failed. See above for more details.
