@@ -15,7 +15,7 @@
  * - Viewer: e2e-viewer@inbox.mailtrap.io
  */
 
-import { expect, hasAdminAuth, hasEditorAuth, hasViewerAuth, rbacTest } from "./fixtures";
+import { expect, rbacTest } from "./fixtures";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
