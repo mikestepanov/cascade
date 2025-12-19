@@ -5,8 +5,7 @@
  * client-side fuzzy search with Fuse.js.
  */
 
-import { renderHook, waitFor } from "@testing-library/react";
-import { act } from "react";
+import { act, renderHook, waitFor } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 

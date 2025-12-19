@@ -1,4 +1,10 @@
-import { type RenderOptions, render as rtlRender } from "@testing-library/react";
+import {
+  type RenderOptions,
+  type RenderHookOptions,
+  type RenderHookResult,
+  render as rtlRender,
+  renderHook as rtlRenderHook,
+} from "@testing-library/react";
 import type { ReactElement } from "react";
 import { flushSync } from "react-dom";
 
@@ -14,6 +20,20 @@ export function render(ui: ReactElement, options?: RenderOptions) {
   let result: ReturnType<typeof rtlRender>;
   flushSync(() => {
     result = rtlRender(ui, options);
+  });
+  return result!;
+}
+
+/**
+ * Custom renderHook for React 19 that uses flushSync
+ */
+export function renderHook<Result, Props>(
+  callback: (props: Props) => Result,
+  options?: RenderHookOptions<Props>,
+): RenderHookResult<Result, Props> {
+  let result: RenderHookResult<Result, Props>;
+  flushSync(() => {
+    result = rtlRenderHook(callback, options);
   });
   return result!;
 }

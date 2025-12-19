@@ -1,5 +1,5 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";

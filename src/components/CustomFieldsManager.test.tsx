@@ -1,5 +1,5 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";

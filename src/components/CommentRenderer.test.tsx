@@ -1,5 +1,5 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
 import { CommentRenderer } from "./CommentRenderer";
 

@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render } from "@/test/custom-render";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock driver.js CSS import

@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { useQuery } from "convex/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
