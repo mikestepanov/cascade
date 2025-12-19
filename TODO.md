@@ -175,6 +175,14 @@ A fully-built feature for managing document templates that was never integrated:
 
 ## Technical Debt
 
+### Testing
+- [ ] **Fix unit tests** (638/1172 failing - 45.5% pass rate)
+  - **Root cause:** Mock infrastructure broken (Convex hooks not mocked correctly)
+  - Components render as empty `<div />` in tests
+  - Affects 33 test files across UI components, hooks, and pages
+  - Not blocking: Backend (100%) and E2E (100%) tests pass
+  - **Scope:** Requires test infrastructure refactor (~2-3 days work)
+
 ### Backend Cleanup
 - [ ] Implement AI response time calculation (`convex/internal/ai.ts:204`)
 - [ ] SendPulse email provider (optional, Resend works)
