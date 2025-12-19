@@ -357,13 +357,26 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         .error.textContent()
         .catch(() => null);
 
+      // Get full page text for debugging
+      const pageText = await page
+        .locator("body")
+        .textContent()
+        .catch(() => "");
+      const buttonText = await page
+        .locator('button[type="submit"]')
+        .textContent()
+        .catch(() => "");
+
+      console.log(`  📍 Current URL: ${page.url()}`);
+      console.log(`  🔘 Submit button text: "${buttonText}"`);
+
       if (errorText) {
-        console.log("  ❌ Page error:", errorText.slice(0, 100));
+        console.log("  ❌ Page error:", errorText.slice(0, 200));
       } else if (toastError) {
-        console.log("  ❌ Toast error:", toastError.slice(0, 100));
+        console.log("  ❌ Toast error:", toastError.slice(0, 200));
       } else {
-        // No explicit error - likely cold start timeout
-        console.log(`  ⚠️ Redirect timeout after 30s, URL: ${page.url()}`);
+        console.log("  ⚠️ Redirect timeout after 30s");
+        console.log("  📄 Page content:", pageText.slice(0, 300));
       }
 
       return false; // Let global-setup retry handle this
