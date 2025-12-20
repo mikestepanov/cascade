@@ -35,23 +35,43 @@ Please upgrade your plan https://mailtrap.io/billing/plans/testing"]}
 
 **Users created via E2E API are ALREADY VERIFIED** - they should NOT trigger email verification on sign-in!
 
-### Options:
+### The Fix Applied:
 
-**Option 1:** Use password-based sign-in (not OTP)  
-- E2E users have password hash in `authAccounts`
-- Should sign in with email/password directly
-- Skip OTP flow entirely
+**Modified `convex/OTPVerification.ts`** to check if user is already verified before sending email:
+```typescript
+// Check if user is already verified (e.g., E2E test users)
+const existingUser = await ctx.db
+  .query("users")
+  .withIndex("email", (q) => q.eq("email", email))
+  .first();
 
-**Option 2:** Check `emailVerificationTime` before sending OTP  
-- Modify OTPVerification provider
-- Skip email send if user already verified
-- Fall through to password auth
+if (existingUser?.emailVerificationTime) {
+  // User already verified - skip sending email
+  return; // Don't send email
+}
+```
 
-**Option 3:** Use different email provider for E2E  
+**Why this works:**
+- E2E users are created with `emailVerificationTime` already set
+- No email sent = no Mailtrap API calls = no rate limit hit
+- Auth completes successfully without verification step
+
+### Alternative Solutions (not implemented):
+
+**Option 1:** Implement automatic provider fallback  
+- Email system could try Resend/SendPulse when Mailtrap fails
+- Would help but still wastes resources sending unnecessary emails
+- Our fix is better - don't send email at all for verified users
+
+**Option 2:** Use different email provider for E2E  
 - Configure Resend/SendGrid for E2E environment
-- Avoid Mailtrap limits
+- Still sends unnecessary emails
+- Our fix is better
 
-**RECOMMENDED:** Option 1 - E2E users should use password auth, not OTP auth.
+**Option 3:** Disable email verification in E2E  
+- Would require environment-specific auth configuration
+- More complex, harder to maintain
+- Our fix is simpler and cleaner
 
 ## 🔧 Implementation
 
