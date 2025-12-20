@@ -348,7 +348,7 @@ export class DashboardPage extends BasePage {
     const tabPaths = {
       dashboard: /\/dashboard/,
       documents: /\/documents/,
-      projects: /\/projects/,
+      projects: /\/workspaces/,
       timesheet: /\/timesheet/,
       calendar: /\/calendar/,
       settings: /\/settings/,

@@ -179,6 +179,7 @@ export function AppSidebar() {
               isActive={isActive("/dashboard")}
               isCollapsed={isCollapsed}
               onClick={handleNavClick}
+              data-tour="nav-dashboard"
             />
 
             {/* Documents Section */}
@@ -192,6 +193,7 @@ export function AppSidebar() {
               onAdd={handleCreateDocument}
               navigateTo={ROUTES.documents.list(companySlug)}
               onClick={handleNavClick}
+              data-tour="nav-documents"
             >
               {documents?.slice(0, 10).map((doc) => (
                 <NavSubItem
@@ -220,6 +222,7 @@ export function AppSidebar() {
               onAdd={handleCreateWorkspace}
               navigateTo={ROUTES.workspaces.list(companySlug)}
               onClick={handleNavClick}
+              data-tour="nav-projects"
             >
               {workspaces?.map((workspace) => {
                 const workspaceTeams = teams?.filter((t) => t.workspaceId === workspace._id) || [];
@@ -319,6 +322,7 @@ export function AppSidebar() {
                 isActive={isActive("/time-tracking")}
                 isCollapsed={isCollapsed}
                 onClick={handleNavClick}
+                data-tour="nav-timesheet"
               />
             )}
           </Flex>
@@ -332,6 +336,7 @@ export function AppSidebar() {
               isActive={isActive("/settings")}
               isCollapsed={isCollapsed}
               onClick={handleNavClick}
+              data-tour="nav-settings"
             />
           </div>
         </Flex>
@@ -348,13 +353,23 @@ interface NavItemProps {
   isActive: boolean;
   isCollapsed: boolean;
   onClick?: () => void;
+  "data-tour"?: string;
 }
 
-function NavItem({ to, icon: Icon, label, isActive, isCollapsed, onClick }: NavItemProps) {
+function NavItem({
+  to,
+  icon: Icon,
+  label,
+  isActive,
+  isCollapsed,
+  onClick,
+  "data-tour": dataTour,
+}: NavItemProps) {
   const content = (
     <Link
       to={to}
       onClick={onClick}
+      data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
         "text-sm font-medium",
@@ -393,6 +408,7 @@ interface CollapsibleSectionProps {
   navigateTo: string;
   onClick?: () => void;
   children: React.ReactNode;
+  "data-tour"?: string;
 }
 
 function CollapsibleSection({
@@ -406,6 +422,7 @@ function CollapsibleSection({
   navigateTo,
   onClick,
   children,
+  "data-tour": dataTour,
 }: CollapsibleSectionProps) {
   if (isCollapsed) {
     return (
@@ -414,6 +431,7 @@ function CollapsibleSection({
           <Link
             to={navigateTo}
             onClick={onClick}
+            data-tour={dataTour}
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
               isActive
@@ -459,6 +477,7 @@ function CollapsibleSection({
         <Link
           to={navigateTo}
           onClick={onClick}
+          data-tour={dataTour}
           className={cn(
             "flex-1 flex items-center gap-2 text-sm font-medium",
             isActive
