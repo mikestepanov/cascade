@@ -14,5 +14,3 @@ const actImpl = (callback: () => void | Promise<void>) => {
 
 // Patch test-utils
 testUtils.act = actImpl;
-
-console.log("[PATCH] test-utils.act patched with simple implementation");

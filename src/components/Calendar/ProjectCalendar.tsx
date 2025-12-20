@@ -9,8 +9,6 @@ interface ProjectCalendarProps {
  * Wraps the unified CalendarView.
  * TODO: Pass projectKey filter to CalendarView once supported by backend
  */
-export function ProjectCalendar({ projectKey }: ProjectCalendarProps) {
-  // eslint-disable-next-line no-console
-  console.log("Viewing calendar for project:", projectKey);
+export function ProjectCalendar({ projectKey: _projectKey }: ProjectCalendarProps) {
   return <CalendarView />;
 }
