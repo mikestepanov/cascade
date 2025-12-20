@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["./src/test/react-act-patch.ts", "./src/test/setup.ts"],
+    setupFiles: ["./src/test/setup.ts"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", "dist", ".idea", ".git", ".cache", "e2e", "bot-service"],
     coverage: {
