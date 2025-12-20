@@ -15,7 +15,7 @@
  * - Viewer: e2e-viewer@inbox.mailtrap.io
  */
 
-import { expect, rbacTest } from "./fixtures";
+import { expect, hasAdminAuth, rbacTest } from "./fixtures";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -35,7 +35,10 @@ rbacTest(
 
     // Helper to get the PROJECT settings tab
     const getProjectSettingsTab = () =>
-      adminPage.locator(`a[href="/${rbacCompanySlug}/projects/${rbacProjectKey}/settings"]`);
+      adminPage
+        .getByRole("main")
+        .getByRole("link", { name: /settings/i })
+        .first();
 
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
@@ -113,7 +116,10 @@ rbacTest(
   async ({ editorPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // Helper to get the PROJECT settings tab
     const getProjectSettingsTab = () =>
-      editorPage.locator(`a[href="/${rbacCompanySlug}/projects/${rbacProjectKey}/settings"]`);
+      editorPage
+        .getByRole("main")
+        .getByRole("link", { name: /settings/i })
+        .first();
 
     // 1. Navigate to project board
     await gotoRbacProject(editorPage);
@@ -192,7 +198,10 @@ rbacTest(
   async ({ viewerPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // Helper to get the PROJECT settings tab
     const getProjectSettingsTab = () =>
-      viewerPage.locator(`a[href="/${rbacCompanySlug}/projects/${rbacProjectKey}/settings"]`);
+      viewerPage
+        .getByRole("main")
+        .getByRole("link", { name: /settings/i })
+        .first();
 
     // 1. Navigate to project board
     await gotoRbacProject(viewerPage);

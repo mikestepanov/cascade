@@ -210,10 +210,11 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       clearInterval(diagnosticInterval);
       // Take screenshot for debugging
       await page.screenshot({ path: "e2e/.auth/signin-timeout-debug.png" });
-      const bodyText = await page
-        .locator("body")
-        .textContent()
-        .catch(() => "");
+      const bodyText =
+        (await page
+          .locator("body")
+          .textContent()
+          .catch(() => "")) || "";
       console.log("  ❌ Sign-in page did not load within 30s. Body text:", bodyText.slice(0, 200));
       throw error;
     }
@@ -341,9 +342,9 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      // Timeout: 30s for cold starts
+      // Timeout: 60s for cold starts (increased from 30s)
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
-        timeout: 30000,
+        timeout: 60000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
@@ -358,14 +359,16 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         .catch(() => null);
 
       // Get full page text for debugging
-      const pageText = await page
-        .locator("body")
-        .textContent()
-        .catch(() => "");
-      const buttonText = await page
-        .locator('button[type="submit"]')
-        .textContent()
-        .catch(() => "");
+      const pageText =
+        (await page
+          .locator("body")
+          .textContent()
+          .catch(() => "")) || "";
+      const buttonText =
+        (await page
+          .locator('button[type="submit"]')
+          .textContent()
+          .catch(() => "")) || "";
 
       console.log(`  📍 Current URL: ${page.url()}`);
       console.log(`  🔘 Submit button text: "${buttonText}"`);
