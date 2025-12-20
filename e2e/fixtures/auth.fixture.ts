@@ -102,6 +102,8 @@ export type AuthFixtures = {
   forceNewContext: boolean;
   /** Company slug for the default test user (from dashboard-config.json) */
   companySlug: string;
+  monitorAuthState: void;
+  skipAuthSave: boolean;
 };
 
 /**
@@ -117,7 +119,10 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
   storageState: async ({}, use, testInfo) => {
     if (!isAuthStateValid()) {
-      testInfo.skip(true, "Auth state not found or invalid. Global setup may have failed.");
+      console.log(
+        "⚠️ Auth state invalid/missing. Test will attempt auto-recovery via monitorAuthState.",
+      );
+      // Do not skip - let the test run and attempt re-auth
     }
     await use(AUTH_STATE_PATH);
   },
@@ -230,6 +235,16 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   settingsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
     await use(new SettingsPage(page));
   },
+
+  // Automatically check and restore auth state before EACH test
+  // This prevents cascading failures when tokens are rotated but not saved
+  monitorAuthState: [
+    async ({ ensureAuthenticated }, use) => {
+      await ensureAuthenticated();
+      await use();
+    },
+    { auto: true, scope: "test" },
+  ],
 });
 
 export { expect };
