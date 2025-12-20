@@ -148,13 +148,13 @@ window.addEventListener('message', async (message) => {
     sourcemap: mode === "production" ? "hidden" : true,
     cssCodeSplit: true,
     chunkSizeWarningLimit: 500,
-    rollupOptions: {
-      output: {
-        chunkFileNames: "assets/[name]-[hash].js",
-        entryFileNames: "assets/[name]-[hash].js",
-        assetFileNames: "assets/[name]-[hash].[ext]",
-      },
-    },
+    // rollupOptions: {
+    //   output: {
+    //     chunkFileNames: "assets/[name]-[hash].js",
+    //     entryFileNames: "assets/[name]-[hash].js",
+    //     assetFileNames: "assets/[name]-[hash].[ext]",
+    //   },
+    // },
     reportCompressedSize: true,
   },
   optimizeDeps: {

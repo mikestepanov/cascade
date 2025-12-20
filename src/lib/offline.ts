@@ -233,11 +233,13 @@ export const offlineDB = new OfflineDB();
 // Online/offline status tracking
 export class OfflineStatusManager {
   private listeners: Set<(isOnline: boolean) => void> = new Set();
-  private _isOnline = navigator.onLine;
+  private _isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
   constructor() {
-    window.addEventListener("online", this.handleOnline);
-    window.addEventListener("offline", this.handleOffline);
+    if (typeof window !== "undefined") {
+      window.addEventListener("online", this.handleOnline);
+      window.addEventListener("offline", this.handleOffline);
+    }
   }
 
   private handleOnline = () => {
@@ -284,8 +286,10 @@ export class OfflineStatusManager {
   }
 
   destroy() {
-    window.removeEventListener("online", this.handleOnline);
-    window.removeEventListener("offline", this.handleOffline);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("online", this.handleOnline);
+      window.removeEventListener("offline", this.handleOffline);
+    }
     this.listeners.clear();
   }
 }
