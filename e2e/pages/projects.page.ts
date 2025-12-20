@@ -137,15 +137,26 @@ export class ProjectsPage extends BasePage {
     this.analyticsTab = page
       .getByRole("tab", { name: /analytics/i })
       .or(page.getByRole("button", { name: /analytics/i }));
+    // Use a method for settings tab to allow scoping to main content if needed
     this.settingsTab = page
       .getByRole("tab", { name: /settings/i })
       .or(page.getByRole("button", { name: /settings/i }));
-
     // Issue detail dialog
     this.issueDetailDialog = page.getByRole("dialog");
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: "Stop Timer" });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
+  }
+
+  /**
+   * Get the project settings link specifically from the project navigation (top bar)
+   * Scoped to "main" to avoid confusing it with global settings or sidebar items
+   */
+  getProjectSettingsTab() {
+    return this.page
+      .getByRole("main")
+      .getByRole("link", { name: /settings/i })
+      .first();
   }
 
   // ===================
