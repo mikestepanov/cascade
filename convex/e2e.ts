@@ -247,12 +247,13 @@ export const createTestUserInternal = internalMutation({
       testUserCreatedAt: Date.now(),
     });
 
-    // Create auth account with password hash
+    // Create auth account with password hash and email verified
     await ctx.db.insert("authAccounts", {
       userId,
       provider: "password",
       providerAccountId: args.email,
       secret: args.passwordHash,
+      emailVerified: new Date().toISOString(), // Password provider checks this field
     });
 
     // If skipOnboarding is true, create completed onboarding record AND add to shared company
@@ -1359,8 +1360,12 @@ export const verifyTestUserInternal = internalMutation({
       return { success: false, verified: false, error: "User not found" };
     }
 
-    // Email is already verified via emailVerificationTime on user
-    // No need to update authAccount - verification status is on users table
+    // Update both verification fields:
+    // 1. authAccount.emailVerified - Used by Password provider to check verification
+    // 2. user.emailVerificationTime - Our custom field for app logic
+    await ctx.db.patch(account._id, {
+      emailVerified: new Date().toISOString(),
+    });
 
     // Update the user with emailVerificationTime
     await ctx.db.patch(user._id, {
