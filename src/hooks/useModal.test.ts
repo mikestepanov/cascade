@@ -1,5 +1,5 @@
-import { renderHook, waitFor } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
+import { renderHook, waitFor } from "@/test/custom-render";
 import { useModal } from "./useModal";
 
 describe("useModal", () => {

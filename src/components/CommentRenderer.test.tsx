@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen } from "@/test/custom-render";
 import { describe, expect, it } from "vitest";
+import { render, screen } from "@/test/custom-render";
 import { CommentRenderer } from "./CommentRenderer";
 
 describe("CommentRenderer", () => {

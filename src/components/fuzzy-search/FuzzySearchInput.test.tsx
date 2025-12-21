@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { FuzzySearchResult } from "@/hooks/useFuzzySearch";
+import { render, screen, waitFor } from "@/test/custom-render";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
 
 describe("FuzzySearchInput", () => {
@@ -219,7 +219,7 @@ describe("FuzzySearchInput", () => {
     render(<FuzzySearchInput {...defaultProps} query="john" aria-label="Search for users" />);
 
     const input = screen.getByRole("combobox");
-    
+
     await waitFor(() => {
       expect(input).toHaveAttribute("aria-label", "Search for users");
       expect(input).toHaveAttribute("aria-autocomplete", "list");

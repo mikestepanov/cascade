@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen } from "@/test/custom-render";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen } from "@/test/custom-render";
 import { IssueCard } from "./IssueCard";
 
 // Mock issue utilities

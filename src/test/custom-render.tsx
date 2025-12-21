@@ -1,7 +1,7 @@
 import {
-  type RenderOptions,
   type RenderHookOptions,
   type RenderHookResult,
+  type RenderOptions,
   render as rtlRender,
   renderHook as rtlRenderHook,
 } from "@testing-library/react";

@@ -1,10 +1,10 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { fireEvent, render, screen, waitFor } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
+import { fireEvent, render, screen, waitFor } from "@/test/custom-render";
 import { AutomationRulesManager } from "./AutomationRulesManager";
 
 // Helper to create properly typed mock IDs

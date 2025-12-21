@@ -1,6 +1,6 @@
-import { render, screen } from "@/test/custom-render";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@/test/custom-render";
 import { ThemeProvider } from "../../contexts/ThemeContext";
 import { PreferencesTab } from "./PreferencesTab";
 

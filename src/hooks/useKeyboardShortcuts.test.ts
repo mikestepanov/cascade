@@ -1,5 +1,5 @@
-import { renderHook } from "@/test/custom-render";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook } from "@/test/custom-render";
 import {
   getSequenceDisplay,
   getShortcutDisplay,

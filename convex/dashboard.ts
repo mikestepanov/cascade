@@ -194,7 +194,7 @@ export const getMyRecentActivity = query({
     // Filter to only activities for accessible issues
     const accessibleActivity = allActivity.filter((activity) => {
       const issue = issueMap.get(activity.issueId);
-      return issue && projectIdSet.has(issue.projectId!.toString());
+      return issue && projectIdSet.has(issue.projectId?.toString());
     });
 
     // Batch fetch projects and users for accessible activities

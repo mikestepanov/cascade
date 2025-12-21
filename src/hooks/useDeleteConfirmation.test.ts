@@ -1,5 +1,5 @@
-import { renderHook, waitFor } from "@/test/custom-render";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook, waitFor } from "@/test/custom-render";
 import { useDeleteConfirmation } from "./useDeleteConfirmation";
 
 // Mock the toast module

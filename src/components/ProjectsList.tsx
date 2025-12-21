@@ -23,7 +23,7 @@ export function ProjectsList() {
 
   const handleProjectCreated = async (projectId: string) => {
     // Fetch project to get key for navigation
-    const project = await convex.query(api.projects.get, { id: projectId as any });
+    const project = await convex.query(api.projects.get, { id: projectId as Id<"projects"> });
     if (project) {
       setIsCreateOpen(false);
       await navigate({ to: ROUTES.projects.board(companySlug, project.key) });
