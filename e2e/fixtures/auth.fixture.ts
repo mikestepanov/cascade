@@ -115,16 +115,36 @@ export type AuthFixtures = {
  * any refreshed tokens (Convex uses single-use refresh tokens).
  */
 export const authenticatedTest = base.extend<AuthFixtures>({
-  // Use saved storage state (cookies, localStorage) - only if valid
+  // Use saved storage state (cookies, localStorage) - with robust handling for file locking
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
   storageState: async ({}, use, testInfo) => {
-    if (!isAuthStateValid()) {
+    // Try to read the auth file manually to handle file locking/race conditions
+    let state: string | undefined;
+    try {
+      if (fs.existsSync(AUTH_STATE_PATH)) {
+        // Read file content manually - if this fails due to lock, we catch it
+        const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
+        // Verify it's valid JSON
+        JSON.parse(content);
+        // If valid, use the path (Playwright will re-read it, but we know it exists)
+        // Or better: pass the parsed object to avoid a second race condition?
+        // Playwright fixtures for storageState accept path or object.
+        // Let's pass the object to avoid the race of "checked file -> Playwright reads file -> Locked"
+        state = JSON.parse(content);
+      }
+    } catch (e) {
       console.log(
-        "⚠️ Auth state invalid/missing. Test will attempt auto-recovery via monitorAuthState.",
+        `⚠️ Auth state unavailable (locked/missing). Starting fresh. Error: ${(e as Error).message}`,
       );
-      // Do not skip - let the test run and attempt re-auth
     }
-    await use(AUTH_STATE_PATH);
+
+    if (!state) {
+      console.log("⚠️ Test starting without auth state. Auto-recovery will attempt sign-in.");
+    }
+
+    // Pass the state object (or undefined) instead of the path
+    // This bypasses Playwright's FS read which crashes on locks
+    await use(state as any);
   },
 
   // Flag to skip auto-save for specific tests (e.g., onboarding tests that corrupt state)
@@ -183,10 +203,21 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
         // Only save if auth tokens exist (don't overwrite with signed-out state)
         if (hasAuthTokens) {
-          await context.storageState({ path: AUTH_STATE_PATH });
+          try {
+            // Attempt write with minimal delay to reduce lock window
+            fs.writeFileSync(AUTH_STATE_PATH, JSON.stringify(currentState, null, 2));
+          } catch (writeError) {
+            const err = writeError as NodeJS.ErrnoException;
+            if (err.code === "EBUSY" || err.code === "EPERM") {
+              console.warn("⚠️ Failed to save auth state (file locked). Skipping save.");
+            } else {
+              throw writeError;
+            }
+          }
         }
-      } catch {
-        // Ignore errors - context might be closed
+      } catch (e) {
+        // Ignore errors - context might be closed or generalized failure
+        console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
       }
     };
     await use(save);
@@ -239,7 +270,15 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   // Automatically check and restore auth state before EACH test
   // This prevents cascading failures when tokens are rotated but not saved
   monitorAuthState: [
-    async ({ ensureAuthenticated }, use) => {
+    async ({ ensureAuthenticated, page }, use) => {
+      // Force online status for headless environment
+      await page.context().addInitScript(() => {
+        try {
+          Object.defineProperty(navigator, "onLine", { get: () => true });
+        } catch (e) {
+          // Ignore errors
+        }
+      });
       await ensureAuthenticated();
       await use();
     },

@@ -134,8 +134,8 @@ export const create = mutation({
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
-      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">), // Required field
-      teamId: project.teamId ?? ("" as Id<"teams">), // Required field
+      workspaceId: project.workspaceId,
+      teamId: project.teamId,
       key: issueKey,
       title: args.title,
       description: args.description,

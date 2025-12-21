@@ -29,7 +29,8 @@ test.describe("Sprints", () => {
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to access projects
+      await projectsPage.goto();
 
       // Create a project first
       await page.waitForLoadState("networkidle");
@@ -49,7 +50,8 @@ test.describe("Sprints", () => {
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to access projects
+      await projectsPage.goto();
 
       // Create a project first
       await page.waitForLoadState("networkidle");
@@ -74,7 +76,8 @@ test.describe("Sprints", () => {
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to access projects
+      await projectsPage.goto();
 
       // Create a project first
       await page.waitForLoadState("networkidle");

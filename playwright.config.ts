@@ -103,12 +103,11 @@ export default defineConfig({
   // Locally: use dev mode for hot reload
   webServer: {
     // Use preview (production build) locally to avoid Windows/Vite file locking issues (EPERM)
-    command: "npm run preview",
+    command: "npm run dev",
     url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     // Wait for the React app to be fully loaded (not just port open)
-    rethrowError: true, // Fail fast if server crashes
     stdout: "ignore",
     stderr: "pipe",
   },

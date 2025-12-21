@@ -13,7 +13,16 @@ import { promptInstall, register as registerServiceWorker } from "../lib/service
 // Initialize Convex client (only on client-side)
 let convex: ConvexReactClient | null = null;
 if (typeof window !== "undefined") {
-  convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+  try {
+    const convexUrl = import.meta.env.VITE_CONVEX_URL as string;
+    if (convexUrl) {
+      convex = new ConvexReactClient(convexUrl);
+      // Expose convex client globally for E2E testing
+      (window as any).convex = convex;
+    }
+  } catch (e) {
+    console.error("Convex Init Failed:", e);
+  }
 }
 
 const posthogOptions = {

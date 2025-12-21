@@ -8,6 +8,7 @@ import {
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
   resetOnboardingEndpoint,
+  seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
   updateCompanySettingsEndpoint,
   verifyTestUserEndpoint,
@@ -135,6 +136,13 @@ http.route({
   path: "/e2e/update-company-settings",
   method: "POST",
   handler: updateCompanySettingsEndpoint,
+});
+
+// Seed built-in project templates
+http.route({
+  path: "/e2e/seed-templates",
+  method: "POST",
+  handler: seedTemplatesEndpoint,
 });
 
 export default http;

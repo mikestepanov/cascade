@@ -78,8 +78,10 @@ export const create = mutation({
 });
 
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    companyId: v.optional(v.id("companies")),
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       return [];
@@ -129,6 +131,11 @@ export const list = query({
       .map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
+
+        // Filter by companyId if provided
+        if (args.companyId && project.companyId !== args.companyId) {
+          return null;
+        }
 
         const creator = creatorMap.get(project.createdBy);
         const wsId = membership.projectId.toString();

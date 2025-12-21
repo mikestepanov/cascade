@@ -10,12 +10,12 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$works
 });
 
 function WorkspaceHome() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const { workspaceSlug } = Route.useParams();
   const navigate = useNavigate();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: workspaceSlug,
   });
 
@@ -23,7 +23,7 @@ function WorkspaceHome() {
   useEffect(() => {
     if (workspace) {
       navigate({
-        to: ROUTES.workspaces.teams.list(company.slug, workspaceSlug),
+        to: ROUTES.workspaces.teams.list(companySlug, workspaceSlug),
         replace: true,
       });
     }

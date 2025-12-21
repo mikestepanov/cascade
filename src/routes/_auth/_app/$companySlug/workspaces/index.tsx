@@ -15,9 +15,9 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
 });
 
 function WorkspacesList() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const workspaces = useQuery(api.workspaces.list, {
-    companyId: company._id,
+    companyId: companyId,
   });
 
   if (workspaces === undefined) {
@@ -52,7 +52,7 @@ function WorkspacesList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workspaces.map((workspace) => (
-              <Link key={workspace._id} to={ROUTES.workspaces.detail(company.slug, workspace.slug)}>
+              <Link key={workspace._id} to={ROUTES.workspaces.detail(companySlug, workspace.slug)}>
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <Flex direction="column" gap="md">
                     <Flex align="center" gap="sm">

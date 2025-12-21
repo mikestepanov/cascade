@@ -100,7 +100,8 @@ export class DashboardPage extends BasePage {
     // Workspaces tab (previously Projects) - matches new UI label
     this.projectsTab = page
       .locator("[data-tour='nav-projects']")
-      .or(page.getByRole("link", { name: /^projects$/i }));
+      .or(page.getByRole("link", { name: /^projects$/i }))
+      .or(page.getByRole("link", { name: /^workspaces$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
       .or(page.getByRole("link", { name: /timesheet/i }));
@@ -140,7 +141,7 @@ export class DashboardPage extends BasePage {
 
     // Dashboard specific content - match actual UI headings
     this.myIssuesSection = page.getByRole("heading", { name: /my issues/i });
-    this.projectsSection = page.getByRole("heading", { name: /my projects/i });
+    this.projectsSection = page.getByRole("heading", { name: /my workspaces|my projects/i });
     this.recentActivitySection = page.getByText(/recent activity/i);
     this.quickStatsSection = page.getByText(/quick stats/i);
     // Issue filter tabs: "Assigned (0)" and "Created (0)"
@@ -272,7 +273,8 @@ export class DashboardPage extends BasePage {
 
   async signOutViaUserMenu() {
     await this.userMenuButton.click();
-    await this.page.waitForTimeout(300); // Wait for dropdown to open
+    // Wait for dropdown content to be visible
+    await this.userMenuSignOutItem.waitFor({ state: "visible", timeout: 5000 });
     await this.userMenuSignOutItem.click();
   }
 

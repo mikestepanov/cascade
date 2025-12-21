@@ -24,34 +24,35 @@ test.describe("Workspaces", () => {
   });
 
   test.describe("Project Navigation", () => {
-    test("can navigate to projects page", async ({ dashboardPage }) => {
+    test("can navigate to workspaces page", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects"); // Note: "projects" in code maps to /projects/ URL
-      await dashboardPage.expectActiveTab("projects");
+      await dashboardPage.navigateTo("projects"); // Maps to Workspaces link
+      await dashboardPage.expectActiveTab("projects"); // Checks for /workspaces/ URL
     });
   });
 
-  test.describe("Project Creation", () => {
-    test("can create a new project via sidebar button", async ({
+  test.describe("Workspace Creation", () => {
+    test("can create a new workspace via sidebar button", async ({
       dashboardPage,
       projectsPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      await dashboardPage.navigateTo("projects"); // Navigates to Workspaces list
 
       // Wait for page to stabilize
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(500);
 
-      // Click add new project button in sidebar
+      // Click add new workspace button (was project button)
       await projectsPage.addProjectButton.click();
 
-      // Should navigate to new project board
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
-      await projectsPage.expectBoardVisible();
+      // Should navigate to new workspace teams list
+      // URL pattern: /workspaces/$slug/teams
+      await page.waitForURL(/\/workspaces\/[^/]+\/teams/, { timeout: 10000 });
+      await expect(page.getByRole("heading", { name: "Teams" })).toBeVisible();
     });
   });
 
@@ -59,7 +60,8 @@ test.describe("Workspaces", () => {
     test("displays kanban board with columns", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to projects page to access Create Project functionality
+      await projectsPage.goto();
 
       // Create a new project first
       await page.waitForLoadState("networkidle");
@@ -77,7 +79,8 @@ test.describe("Workspaces", () => {
     test("can switch between project tabs", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to projects page to access Create Project functionality
+      await projectsPage.goto();
 
       // Create a project to have access to tabs
       await page.waitForLoadState("networkidle");

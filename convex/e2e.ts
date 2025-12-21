@@ -710,6 +710,29 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 });
 
 /**
+ * Seed built-in project templates
+ * POST /e2e/seed-templates
+ */
+export const seedTemplatesEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.projectTemplates.initializeBuiltInTemplates, {});
+    return new Response(JSON.stringify({ success: true, result }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
  * Internal mutation to set up RBAC test project
  * Uses the admin user's existing company instead of creating a new one
  */

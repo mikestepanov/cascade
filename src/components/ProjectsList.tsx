@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import { Link } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useConvex, useQuery } from "convex/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -9,12 +10,25 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
 export function ProjectsList() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
+  const navigate = useNavigate();
+  const convex = useConvex();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // For now, get all company projects
-  const allProjects = useQuery(api.projects.list, { companyId: company._id });
+  const allProjects = useQuery(api.projects.list, { companyId: companyId });
+
+  const handleProjectCreated = async (projectId: string) => {
+    // Fetch project to get key for navigation
+    const project = await convex.query(api.projects.get, { id: projectId as any });
+    if (project) {
+      setIsCreateOpen(false);
+      await navigate({ to: ROUTES.projects.board(companySlug, project.key) });
+    }
+  };
 
   if (allProjects === undefined) {
     return (
@@ -36,7 +50,9 @@ export function ProjectsList() {
             Manage your projects and initiatives
           </Typography>
         </div>
-        <Button variant="primary">+ Create Project</Button>
+        <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
+          + Create Project
+        </Button>
       </Flex>
 
       {/* Projects Grid */}
@@ -44,12 +60,16 @@ export function ProjectsList() {
         <EmptyState
           title="No projects yet"
           description="Create your first project to organize work"
-          action={<Button variant="primary">+ Create Project</Button>}
+          action={
+            <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
+              + Create Project
+            </Button>
+          }
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <Link key={project._id} to={ROUTES.projects.board(company.slug, project.key)}>
+            <Link key={project._id} to={ROUTES.projects.board(companySlug, project.key)}>
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">
                   <Flex justify="space-between" align="start">
@@ -76,6 +96,12 @@ export function ProjectsList() {
           ))}
         </div>
       )}
+
+      <CreateProjectFromTemplate
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onProjectCreated={handleProjectCreated}
+      />
     </Flex>
   );
 }

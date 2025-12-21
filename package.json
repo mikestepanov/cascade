@@ -35,6 +35,7 @@
     "e2e:headed": "playwright test --headed",
     "e2e:debug": "playwright test --debug",
     "e2e:setup-auth": "npx tsx e2e/setup-auth.ts",
+    "kill-port": "node scripts/kill-port.cjs 3000 3001 5173 5555",
     "build:e2e": "vite build --mode e2e",
     "preview": "vite preview",
     "preview:e2e": "vite preview --mode e2e",

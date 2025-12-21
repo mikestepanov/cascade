@@ -15,16 +15,16 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$works
 });
 
 function TeamsList() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const { workspaceSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: workspaceSlug,
   });
 
   // For now, teams are company-wide, but we'll filter by workspace later
-  const allTeams = useQuery(api.teams.list, { companyId: company._id });
+  const allTeams = useQuery(api.teams.list, { companyId: companyId });
 
   if (!workspace || allTeams === undefined) {
     return (
@@ -62,7 +62,7 @@ function TeamsList() {
           {teams.map((team) => (
             <Link
               key={team._id}
-              to={ROUTES.workspaces.teams.detail(company.slug, workspaceSlug, team.slug)}
+              to={ROUTES.workspaces.teams.detail(companySlug, workspaceSlug, team.slug)}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">

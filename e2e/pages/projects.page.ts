@@ -73,9 +73,13 @@ export class ProjectsPage extends BasePage {
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
-    // Updated to match "Project" terminology in UI
-    this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
-    this.addProjectButton = page.getByRole("button", { name: "Add new project" });
+    // Updated to match "Project" terminology in UI (now "Workspaces")
+    this.newProjectButton = page.getByRole("button", {
+      name: /\+ create project/i,
+    });
+    this.addProjectButton = page.getByRole("button", {
+      name: /add new project|create (workspace|project)|\+ create (workspace|project)/i,
+    });
     this.projectList = page
       .locator("[data-project-list]")
       .or(this.sidebar.locator("ul, [role='list']").first());
@@ -83,29 +87,32 @@ export class ProjectsPage extends BasePage {
       .locator("[data-project-item]")
       .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
-    // Create project form - look for form containing project inputs
-    this.createProjectForm = page
-      .locator("[data-create-project-form]")
-      .or(page.locator("form").filter({ has: page.getByPlaceholder(/project name/i) }));
-    this.projectNameInput = page
-      .getByPlaceholder(/project name/i)
-      .or(page.getByLabel(/project name/i));
-    this.projectKeyInput = page.getByPlaceholder(/project key/i);
-    this.projectDescriptionInput = page
-      .getByPlaceholder(/description/i)
-      .or(page.getByLabel(/description/i));
+    // Create project form - look for dialog content
+    this.createProjectForm = page.getByRole("dialog");
+
+    // Template selection
+    // We'll pick the first template by default or look for specific one
+    // const templateButton = this.createProjectForm.getByRole("button").filter({ hasText: "Software Project" });
+
+    this.projectNameInput = page.getByLabel(/project name/i);
+    this.projectKeyInput = page.getByLabel(/project key/i);
+    this.projectDescriptionInput = page.getByLabel(/description/i);
     this.makePublicCheckbox = page.getByRole("checkbox", { name: /public/i });
-    this.boardTypeKanban = page
-      .getByRole("radio", { name: /kanban/i })
-      .or(page.getByLabel(/kanban/i));
-    this.boardTypeScrum = page.getByRole("radio", { name: /scrum/i }).or(page.getByLabel(/scrum/i));
-    this.createButton = page.getByRole("button", { name: /^create$/i });
-    this.cancelButton = page.getByRole("button", { name: /cancel/i });
+
+    // Board type is now part of template, but keeping locators just in case
+    this.boardTypeKanban = page.getByRole("radio", { name: /kanban/i });
+    this.boardTypeScrum = page.getByRole("radio", { name: /scrum/i });
+
+    // Button in the modal
+    this.createButton = this.createProjectForm.getByRole("button", {
+      name: /create project/i,
+    });
+    this.cancelButton = this.createProjectForm.getByRole("button", { name: /cancel/i });
 
     // Project board - look for Kanban Board heading or board container
     this.projectBoard = page
       .locator("[data-project-board]")
-      .or(page.getByRole("heading", { name: /kanban board/i }));
+      .or(page.getByRole("heading", { name: /kanban board|scrum board/i }));
     this.boardColumns = page.locator("[data-board-column]").or(page.locator(".kanban-column"));
     this.issueCards = page.locator("[data-issue-card]").or(page.locator(".issue-card"));
     // Create issue - look for "Add issue" button (column headers have "Add issue to X")
@@ -164,7 +171,15 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async goto() {
-    await this.page.goto(`/${this.companySlug}/projects`);
+    // Navigate directly to the legacy projects route to ensure we hit ProjectsList
+    // which has the "Create Project" button wired up correctly.
+    // Assumes we are already logged in and on a page with company slug in URL.
+    // Fallback to nixelo-e2e if not found (dashboard test default).
+    const currentUrl = this.page.url();
+    const match = currentUrl.match(/\/([^/]+)\/(dashboard|workspaces|projects|settings)/);
+    const slug = match ? match[1] : "nixelo-e2e";
+    await this.page.goto(`/${slug}/projects`);
+    await this.page.waitForLoadState("networkidle");
     await this.waitForLoad();
   }
 
@@ -183,12 +198,35 @@ export class ProjectsPage extends BasePage {
 
   async createProject(name: string, key: string, description?: string) {
     await this.openCreateProjectForm();
+
+    // Check if we need to select a template (if template buttons are visible)
+    // We look for buttons that likely represent templates (e.g. "Software Project" or containing icons)
+    // The modal renders buttons with "Software Project", "Marketing Campaign", etc.
+    const softwareTemplate = this.createProjectForm
+      .getByRole("button")
+      .filter({ hasText: /software/i })
+      .first();
+
+    // Wait for either the template to be visible OR the inputs to be visible (in case we're already on step 2)
+    // But realistically we start on step 1.
+    // Let's waitFor the template button assuming default flow.
+    try {
+      await softwareTemplate.waitFor({ state: "visible", timeout: 5000 });
+      await softwareTemplate.click();
+      // Wait for the next step (inputs) to appear
+      await this.projectNameInput.waitFor({ state: "visible", timeout: 5000 });
+    } catch (e) {
+      // If template button didn't appear, maybe we are already on the form?
+      // Or maybe the name didn't match.
+      console.log("Template selection skipped or failed, trying to proceed to form...");
+    }
+
     await this.projectNameInput.fill(name);
     await this.projectKeyInput.fill(key);
     if (description) {
       await this.projectDescriptionInput.fill(description);
     }
-    await this.createButton.evaluate((el: HTMLElement) => el.click());
+    await this.createButton.click();
   }
 
   async cancelCreateProject() {
