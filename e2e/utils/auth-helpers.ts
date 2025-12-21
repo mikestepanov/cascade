@@ -221,23 +221,39 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     // Wait for Convex WebSocket to be fully connected before attempting auth
     // On cold starts, the WebSocket needs time to establish connection
+    // We exposed window.convex in __root.tsx for this purpose
     await page
       .waitForFunction(
         () => {
-          // Check if Convex client is ready by looking for React fiber on form
-          const form = document.querySelector("form");
-          if (!form) return false;
-          const keys = Object.keys(form);
-          return keys.some((k) => k.startsWith("__reactFiber"));
+          const convex = (window as any).convex;
+          if (!convex) {
+            console.log("    ⚠️ window.convex is missing!");
+            // Check if we can find the script tag or env var in DOM
+            return false;
+          }
+          // Check connection state
+          const state = convex.connectionState();
+          if (!state.isWebSocketConnected) {
+            // Log occasionally to browser console (visible in headed mode or trace)
+            console.log(
+              `    ⏳ AuthHelper: Waiting for WS. State: ${JSON.stringify(state)}. URL: ${convex.address}`,
+            );
+          }
+          return state.isWebSocketConnected;
         },
-        { timeout: 5000 },
+        undefined,
+        { timeout: 30000 }, // Wait up to 30s for connection
       )
       .catch(() => {
-        console.log("  ⚠️ React hydration check timed out, continuing anyway");
+        console.log("  ⚠️ Convex WebSocket connection timed out, attempting anyway");
+        // Getting the config from the page for diagnosis
+        page
+          .evaluate(() => {
+            const convex = (window as any).convex;
+            return convex ? { url: convex.address, state: convex.connectionState() } : "No Client";
+          })
+          .then((info) => console.log("  🔍 Debug Info:", JSON.stringify(info)));
       });
-
-    // Use direct DOM manipulation to avoid React state issues
-    console.log("  📧 Filling and submitting form via JS...");
 
     // Use evaluate to interact with the form directly
     const submitResult = await page.evaluate(
@@ -342,9 +358,9 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      // Timeout: 60s for cold starts (increased from 30s)
+      // Timeout: 90s for cold starts (increased from 60s)
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
-        timeout: 60000,
+        timeout: 90000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
@@ -378,7 +394,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       } else if (toastError) {
         console.log("  ❌ Toast error:", toastError.slice(0, 200));
       } else {
-        console.log("  ⚠️ Redirect timeout after 30s");
+        console.log("  ⚠️ Redirect timeout after 90s");
         console.log("  📄 Page content:", pageText.slice(0, 300));
       }
 

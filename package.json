@@ -35,7 +35,9 @@
     "e2e:headed": "playwright test --headed",
     "e2e:debug": "playwright test --debug",
     "e2e:setup-auth": "npx tsx e2e/setup-auth.ts",
+    "build:e2e": "vite build --mode e2e",
     "preview": "vite preview",
+    "preview:e2e": "vite preview --mode e2e",
     "prepare": "husky"
   },
   "dependencies": {
