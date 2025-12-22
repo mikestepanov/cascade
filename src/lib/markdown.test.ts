@@ -76,16 +76,39 @@ Not frontmatter
       // Mock FileReader to trigger error
       const originalFileReader = global.FileReader;
       global.FileReader = class {
+        error: DOMException | null = null;
+        result: string | ArrayBuffer | null = null;
+        readyState = 0;
+        LOADING = 1;
+        DONE = 2;
+        EMPTY = 0;
+
         readAsText() {
           setTimeout(() => {
+            this.error = new DOMException("Read failed");
             if (this.onerror) {
-              this.onerror(new Error("Read failed") as any);
+              const event = new ProgressEvent("error");
+              this.onerror(event);
             }
           }, 0);
         }
-        onerror: ((event: any) => void) | null = null;
-        onload: ((event: any) => void) | null = null;
-      } as any;
+        abort() {}
+        readAsArrayBuffer() {}
+        readAsBinaryString() {}
+        readAsDataURL() {}
+        addEventListener() {}
+        removeEventListener() {}
+        dispatchEvent() {
+          return true;
+        }
+
+        onabort: ((event: ProgressEvent) => void) | null = null;
+        onerror: ((event: ProgressEvent) => void) | null = null;
+        onload: ((event: ProgressEvent) => void) | null = null;
+        onloadend: ((event: ProgressEvent) => void) | null = null;
+        onloadstart: ((event: ProgressEvent) => void) | null = null;
+        onprogress: ((event: ProgressEvent) => void) | null = null;
+      } as unknown as typeof FileReader;
 
       await expect(readMarkdownFile(file)).rejects.toThrow("Failed to read file");
 
@@ -97,7 +120,7 @@ Not frontmatter
     beforeEach(() => {
       // Mock DOM APIs
       document.body.innerHTML = "";
-      global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+      global.URL.createObjectURL = vi.fn((_blob: Blob | MediaSource) => "blob:mock-url");
       global.URL.revokeObjectURL = vi.fn();
     });
 
@@ -114,7 +137,7 @@ Not frontmatter
           element.click = clickSpy;
         }
         return element;
-      });
+      }) as any;
 
       downloadMarkdown(markdown, filename);
 
@@ -145,7 +168,7 @@ Not frontmatter
           });
         }
         return element;
-      });
+      }) as any;
 
       downloadMarkdown(markdown, filename);
 
@@ -173,14 +196,15 @@ Not frontmatter
       const markdown = "# Test Content\n\nParagraph.";
       const filename = "test";
 
-      const createObjectURLMock = vi.fn(() => "blob:mock-url");
+      const createObjectURLMock = vi.fn((_blob: Blob | MediaSource) => "blob:mock-url");
       global.URL.createObjectURL = createObjectURLMock;
 
       downloadMarkdown(markdown, filename);
 
       // Check that blob was created with correct content
-      const call = createObjectURLMock.mock.calls[0];
-      const blob = call[0] as Blob;
+      const calls = createObjectURLMock.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      const blob = calls[0][0] as Blob;
       expect(blob.type).toBe("text/markdown;charset=utf-8");
     });
   });
