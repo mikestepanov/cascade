@@ -3,15 +3,13 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Workspaces E2E Tests
  *
- * Tests the project (project) management functionality:
- * - Project creation
- * - Project navigation
- * - Board view
+ * Tests the Workspace and Project management functionality:
+ * - Workspace/Project creation
+ * - Navigation between Workspaces
+ * - Project Board views
  * - Tabs navigation
  *
  * Uses serial mode to prevent auth token rotation issues between tests.
- * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
- * Test 2 loading stale tokens from file will fail.
  */
 
 test.describe("Workspaces", () => {
@@ -27,8 +25,8 @@ test.describe("Workspaces", () => {
     test("can navigate to workspaces page", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects"); // Maps to Workspaces link
-      await dashboardPage.expectActiveTab("projects"); // Checks for /workspaces/ URL
+      await dashboardPage.navigateTo("projects"); // "Projects" tab now navigates to /workspaces
+      await dashboardPage.expectActiveTab("projects"); // Verifies /workspaces URL via dashboardPage helper
     });
   });
 
@@ -43,11 +41,11 @@ test.describe("Workspaces", () => {
       await dashboardPage.navigateTo("projects"); // Navigates to Workspaces list
 
       // Wait for page to stabilize
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
 
-      // Click add new workspace button (was project button)
-      await projectsPage.addProjectButton.click();
+      // Create a new workspace with a unique name
+      const workspaceName = `Engineering ${Date.now()}`;
+      await projectsPage.createWorkspace(workspaceName, "Engineering department");
 
       // Should navigate to new workspace teams list
       // URL pattern: /workspaces/$slug/teams
@@ -64,11 +62,11 @@ test.describe("Workspaces", () => {
       await projectsPage.goto();
 
       // Create a new project first
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
-      await projectsPage.addProjectButton.click();
+      const projectName = `Project-${Date.now()}`;
+      const projectKey = `PROJ${Date.now().toString().slice(-4)}`;
+      await projectsPage.createProject(projectName, projectKey, "E2E Test Project");
 
-      // Wait for board to load
+      // Wait for project board to load (Projects still use /projects/board pattern)
       await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
       await projectsPage.expectBoardVisible();
 
@@ -83,9 +81,9 @@ test.describe("Workspaces", () => {
       await projectsPage.goto();
 
       // Create a project to have access to tabs
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
-      await projectsPage.addProjectButton.click();
+      const projectName = `ProjectTabs-${Date.now()}`;
+      const projectKey = `TABS${Date.now().toString().slice(-4)}`;
+      await projectsPage.createProject(projectName, projectKey, "E2E Test Project Tabs");
       await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
 
       // Test tab navigation

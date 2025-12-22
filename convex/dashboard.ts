@@ -23,7 +23,13 @@ export const getMyIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const projectIds = [...new Set(issues.map((i) => i.projectId!).filter(Boolean))];
+    const projectIds = [
+      ...new Set(
+        issues
+          .map((i) => i.projectId)
+          .filter((id): id is Id<"projects"> => id !== undefined && id !== null),
+      ),
+    ];
     const userIds = [
       ...new Set(issues.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
@@ -42,7 +48,7 @@ export const getMyIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.projectId!);
+      const project = issue.projectId ? projectMap.get(issue.projectId) : null;
       const reporter = issue.reporterId ? userMap.get(issue.reporterId) : null;
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
 
@@ -72,7 +78,13 @@ export const getMyCreatedIssues = query({
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
-    const projectIds = [...new Set(issues.map((i) => i.projectId!).filter(Boolean))];
+    const projectIds = [
+      ...new Set(
+        issues
+          .map((i) => i.projectId)
+          .filter((id): id is Id<"projects"> => id !== undefined && id !== null),
+      ),
+    ];
     const assigneeIds = [
       ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
     ] as Id<"users">[];
@@ -91,7 +103,7 @@ export const getMyCreatedIssues = query({
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
-      const project = projectMap.get(issue.projectId!);
+      const project = issue.projectId ? projectMap.get(issue.projectId) : null;
       const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
 
       return {
@@ -194,7 +206,7 @@ export const getMyRecentActivity = query({
     // Filter to only activities for accessible issues
     const accessibleActivity = allActivity.filter((activity) => {
       const issue = issueMap.get(activity.issueId);
-      return issue && projectIdSet.has(issue.projectId?.toString());
+      return issue?.projectId && projectIdSet.has(issue.projectId.toString());
     });
 
     // Batch fetch projects and users for accessible activities
@@ -213,8 +225,8 @@ export const getMyRecentActivity = query({
     const enrichedActivity = accessibleActivity
       .map((activity) => {
         const issue = issueMap.get(activity.issueId);
-        if (!issue) return null;
-        const project = projectMap.get(issue.projectId!);
+        if (!issue?.projectId) return null;
+        const project = projectMap.get(issue.projectId);
         const user = userMap.get(activity.userId);
 
         return {
@@ -268,7 +280,8 @@ export const getMyStats = query({
     });
 
     const completedThisWeek = assignedIssues.filter((issue) => {
-      const doneStates = doneStatesMap.get(issue.projectId!);
+      if (!issue.projectId) return false;
+      const doneStates = doneStatesMap.get(issue.projectId);
       return doneStates?.has(issue.status) && issue.updatedAt >= weekAgo;
     }).length;
 

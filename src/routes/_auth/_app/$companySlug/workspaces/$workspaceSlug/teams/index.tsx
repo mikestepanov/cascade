@@ -19,12 +19,12 @@ function TeamsList() {
   const { workspaceSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    companyId: companyId,
+    companyId,
     slug: workspaceSlug,
   });
 
   // For now, teams are company-wide, but we'll filter by workspace later
-  const allTeams = useQuery(api.teams.list, { companyId: companyId });
+  const allTeams = useQuery(api.teams.list, { companyId });
 
   if (!workspace || allTeams === undefined) {
     return (

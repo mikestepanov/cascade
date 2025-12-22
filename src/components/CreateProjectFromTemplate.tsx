@@ -96,7 +96,7 @@ export function CreateProjectFromTemplate({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-4xl" data-testid="create-project-modal">
         <DialogHeader>
           <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
         </DialogHeader>

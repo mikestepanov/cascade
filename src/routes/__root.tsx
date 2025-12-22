@@ -18,10 +18,11 @@ if (typeof window !== "undefined") {
     if (convexUrl) {
       convex = new ConvexReactClient(convexUrl);
       // Expose convex client globally for E2E testing
-      (window as any).convex = convex;
+      // biome-ignore lint/suspicious/noExplicitAny: window mutation for testing
+      (window as any).__convex_test_client = convex;
     }
-  } catch (e) {
-    console.error("Convex Init Failed:", e);
+  } catch (_e) {
+    // Convex Init Failed - fail silently on server or log appropriately if needed
   }
 }
 

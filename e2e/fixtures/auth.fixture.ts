@@ -102,7 +102,7 @@ export type AuthFixtures = {
   forceNewContext: boolean;
   /** Company slug for the default test user (from dashboard-config.json) */
   companySlug: string;
-  monitorAuthState: void;
+  monitorAuthState: unknown;
   skipAuthSave: boolean;
 };
 
@@ -117,20 +117,18 @@ export type AuthFixtures = {
 export const authenticatedTest = base.extend<AuthFixtures>({
   // Use saved storage state (cookies, localStorage) - with robust handling for file locking
   // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring pattern
-  storageState: async ({}, use, testInfo) => {
+  storageState: async ({}, use, _testInfo) => {
     // Try to read the auth file manually to handle file locking/race conditions
-    let state: string | undefined;
+    let state: any; // Type should be from Playwright's storageState object
     try {
       if (fs.existsSync(AUTH_STATE_PATH)) {
         // Read file content manually - if this fails due to lock, we catch it
         const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
-        // Verify it's valid JSON
-        JSON.parse(content);
-        // If valid, use the path (Playwright will re-read it, but we know it exists)
-        // Or better: pass the parsed object to avoid a second race condition?
-        // Playwright fixtures for storageState accept path or object.
-        // Let's pass the object to avoid the race of "checked file -> Playwright reads file -> Locked"
-        state = JSON.parse(content);
+        // Verify it's valid JSON and store the result
+        const parsedState = JSON.parse(content);
+        
+        // Use the parsed object directly to avoid race conditions of "checked file -> Playwright reads file -> Locked"
+        state = parsedState;
       }
     } catch (e) {
       console.log(
@@ -144,7 +142,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
     // Pass the state object (or undefined) instead of the path
     // This bypasses Playwright's FS read which crashes on locks
-    await use(state as any);
+    await use(state);
   },
 
   // Flag to skip auto-save for specific tests (e.g., onboarding tests that corrupt state)
@@ -270,7 +268,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   // Automatically check and restore auth state before EACH test
   // This prevents cascading failures when tokens are rotated but not saved
   monitorAuthState: [
-    async ({ ensureAuthenticated, page }, use) => {
+    async ({ ensureAuthenticated, page }: any, use: () => Promise<void>) => {
       // Force online status for headless environment
       await page.context().addInitScript(() => {
         try {

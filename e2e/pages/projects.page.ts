@@ -8,13 +8,12 @@ import { BasePage } from "./base.page";
  * Note: UI uses "Workspaces" terminology, URLs use /projects/ path
  */
 export class ProjectsPage extends BasePage {
-  private companySlug: string;
   // ===================
   // Locators - Sidebar
   // ===================
   readonly sidebar: Locator;
   readonly newProjectButton: Locator;
-  readonly addProjectButton: Locator; // Alias for sidebar "Add new project" button
+  readonly createEntityButton: Locator; // Alias for sidebar "Add new project" or "Create Workspace" button
   readonly projectList: Locator;
   readonly projectItems: Locator;
 
@@ -67,9 +66,13 @@ export class ProjectsPage extends BasePage {
   readonly stopTimerButton: Locator;
   readonly timerStoppedToast: Locator;
 
-  constructor(page: Page, companySlug = "nixelo-e2e") {
+  // Workspace creation
+  readonly workspaceNameInput: Locator;
+  readonly workspaceDescriptionInput: Locator;
+  readonly submitWorkspaceButton: Locator;
+
+  constructor(page: Page, _companySlug = "nixelo-e2e") {
     super(page);
-    this.companySlug = companySlug;
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
@@ -77,7 +80,7 @@ export class ProjectsPage extends BasePage {
     this.newProjectButton = page.getByRole("button", {
       name: /\+ create project/i,
     });
-    this.addProjectButton = page.getByRole("button", {
+    this.createEntityButton = page.getByRole("button", {
       name: /add new project|create (workspace|project)|\+ create (workspace|project)/i,
     });
     this.projectList = page
@@ -88,7 +91,7 @@ export class ProjectsPage extends BasePage {
       .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
     // Create project form - look for dialog content
-    this.createProjectForm = page.getByRole("dialog");
+    this.createProjectForm = page.getByTestId("create-project-modal");
 
     // Template selection
     // We'll pick the first template by default or look for specific one
@@ -131,28 +134,25 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs
-    this.boardTab = page
-      .getByRole("tab", { name: /board/i })
-      .or(page.getByRole("button", { name: /board/i }));
-    this.backlogTab = page
-      .getByRole("tab", { name: /backlog/i })
-      .or(page.getByRole("button", { name: /backlog/i }));
-    this.sprintsTab = page
-      .getByRole("tab", { name: /sprint/i })
-      .or(page.getByRole("button", { name: /sprint/i }));
-    this.analyticsTab = page
-      .getByRole("tab", { name: /analytics/i })
-      .or(page.getByRole("button", { name: /analytics/i }));
+    // Project tabs - updated to be more specific and avoid collision with role-based buttons
+    this.boardTab = page.getByRole("button", { name: /board view/i }).or(page.getByRole("tab", { name: /board/i }));
+    this.backlogTab = page.getByRole("button", { name: /backlog view/i }).or(page.getByRole("tab", { name: /backlog/i }));
+    this.sprintsTab = page.getByRole("button", { name: /sprints view/i }).or(page.getByRole("tab", { name: /sprint/i }));
+    this.analyticsTab = page.getByRole("button", { name: /analytics view/i }).or(page.getByRole("tab", { name: /analytics/i }));
     // Use a method for settings tab to allow scoping to main content if needed
     this.settingsTab = page
-      .getByRole("tab", { name: /settings/i })
-      .or(page.getByRole("button", { name: /settings/i }));
+      .getByRole("button", { name: /settings view/i })
+      .or(page.getByRole("tab", { name: /settings/i }));
     // Issue detail dialog
     this.issueDetailDialog = page.getByRole("dialog");
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: "Stop Timer" });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
+
+    // Workspace creation
+    this.workspaceNameInput = page.getByLabel(/workspace name/i);
+    this.workspaceDescriptionInput = page.getByLabel(/description/i);
+    this.submitWorkspaceButton = page.getByRole("button", { name: /create workspace/i });
   }
 
   /**
@@ -199,34 +199,39 @@ export class ProjectsPage extends BasePage {
   async createProject(name: string, key: string, description?: string) {
     await this.openCreateProjectForm();
 
-    // Check if we need to select a template (if template buttons are visible)
-    // We look for buttons that likely represent templates (e.g. "Software Project" or containing icons)
-    // The modal renders buttons with "Software Project", "Marketing Campaign", etc.
-    const softwareTemplate = this.createProjectForm
-      .getByRole("button")
-      .filter({ hasText: /software/i })
-      .first();
-
-    // Wait for either the template to be visible OR the inputs to be visible (in case we're already on step 2)
-    // But realistically we start on step 1.
-    // Let's waitFor the template button assuming default flow.
     try {
-      await softwareTemplate.waitFor({ state: "visible", timeout: 5000 });
-      await softwareTemplate.click();
-      // Wait for the next step (inputs) to appear
-      await this.projectNameInput.waitFor({ state: "visible", timeout: 5000 });
-    } catch (e) {
-      // If template button didn't appear, maybe we are already on the form?
-      // Or maybe the name didn't match.
-      console.log("Template selection skipped or failed, trying to proceed to form...");
-    }
+      // Step 1: Wait for templates to load and select Software Project
+      const softwareTemplate = this.createProjectForm
+        .getByRole("button")
+        .filter({ hasText: /software/i })
+        .first();
 
-    await this.projectNameInput.fill(name);
-    await this.projectKeyInput.fill(key);
-    if (description) {
-      await this.projectDescriptionInput.fill(description);
+      await softwareTemplate.waitFor({ state: "visible", timeout: 10000 });
+      // Use evaluate click if standard click is flaky due to re-renders
+      await softwareTemplate.click().catch(() => softwareTemplate.click());
+
+      // Step 2: Fill in project details
+      await this.projectNameInput.waitFor({ state: "visible", timeout: 5000 });
+      await this.projectNameInput.fill(name);
+      await this.projectKeyInput.fill(key.toUpperCase());
+      if (description) {
+        await this.projectDescriptionInput.fill(description);
+      }
+      await this.createButton.click();
+    } catch (e) {
+      console.error("Failed to create project from template:", e);
+      throw e;
     }
-    await this.createButton.click();
+  }
+
+  async createWorkspace(name: string, description?: string) {
+    await this.createEntityButton.click();
+    await this.workspaceNameInput.waitFor({ state: "visible", timeout: 5000 });
+    await this.workspaceNameInput.fill(name);
+    if (description) {
+      await this.workspaceDescriptionInput.fill(description);
+    }
+    await this.submitWorkspaceButton.click();
   }
 
   async cancelCreateProject() {

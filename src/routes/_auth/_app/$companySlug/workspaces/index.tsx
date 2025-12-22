@@ -9,6 +9,10 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { useState } from "react";
+import { CreateWorkspaceModal } from "@/components/CreateWorkspaceModal";
+import { useNavigate } from "@tanstack/react-router";
+
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
   component: WorkspacesList,
@@ -16,9 +20,15 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
 
 function WorkspacesList() {
   const { companyId, companySlug } = useCompany();
+  const navigate = useNavigate();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const workspaces = useQuery(api.workspaces.list, {
-    companyId: companyId,
+    companyId,
   });
+
+  const handleWorkspaceCreated = (_workspaceId: string, slug: string) => {
+    navigate({ to: ROUTES.workspaces.teams.list(companySlug, slug) });
+  };
 
   if (workspaces === undefined) {
     return (
@@ -39,15 +49,27 @@ function WorkspacesList() {
               Organize your company into departments and teams
             </Typography>
           </div>
-          <Button variant="primary">+ Create Workspace</Button>
+          <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+            + Create Workspace
+          </Button>
         </Flex>
+
+        <CreateWorkspaceModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreated={handleWorkspaceCreated}
+        />
 
         {/* Workspaces Grid */}
         {workspaces.length === 0 ? (
           <EmptyState
             title="No workspaces yet"
             description="Create your first workspace to organize teams and projects"
-            action={<Button variant="primary">+ Create Workspace</Button>}
+            action={
+              <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+                + Create Workspace
+              </Button>
+            }
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

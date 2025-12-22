@@ -27,7 +27,7 @@ function WorkspaceHome() {
         replace: true,
       });
     }
-  }, [workspace, company.slug, workspaceSlug, navigate]);
+  }, [workspace, companySlug, workspaceSlug, navigate]);
 
   return null;
 }

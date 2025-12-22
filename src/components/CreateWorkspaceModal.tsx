@@ -1,0 +1,99 @@
+import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@convex/_generated/api";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/Dialog";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
+import { Flex } from "@/components/ui/Flex";
+import { useCompany } from "@/hooks/useCompanyContext";
+import { toast } from "sonner";
+import type { Id } from "@convex/_generated/dataModel";
+
+interface CreateWorkspaceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreated?: (workspaceId: string, slug: string) => void;
+}
+
+export function CreateWorkspaceModal({ isOpen, onClose, onCreated }: CreateWorkspaceModalProps) {
+  const { companyId } = useCompany();
+  const createWorkspace = useMutation(api.workspaces.create);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      // Generate slug from name
+      const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      const workspaceId = await createWorkspace({
+        name,
+        slug,
+        description: description.trim() || undefined,
+        companyId: companyId as Id<"companies">,
+      });
+
+      toast.success("Workspace created successfully");
+      onCreated?.(workspaceId, slug);
+      onClose();
+      setName("");
+      setDescription("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create workspace");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Workspace</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <Flex direction="column" gap="md" className="py-4">
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="workspace-name">Workspace Name</Label>
+              <Input
+                id="workspace-name"
+                placeholder="e.g. Engineering, Marketing..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="workspace-description">Description (Optional)</Label>
+              <Textarea
+                id="workspace-description"
+                placeholder="What is this workspace for?"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          </Flex>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" loading={isSubmitting}>
+              Create Workspace
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

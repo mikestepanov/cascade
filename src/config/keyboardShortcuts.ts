@@ -1,6 +1,8 @@
 import type { KeySequence } from "../hooks/useKeyboardShortcuts";
+import { ROUTES } from "./routes";
 
 export interface ShortcutHandlers {
+  companySlug: string;
   navigate: (to: string) => void;
   setShowCommandPalette: (show: boolean) => void;
   setShowShortcutsHelp: (show: boolean) => void;
@@ -8,6 +10,7 @@ export interface ShortcutHandlers {
 }
 
 export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
+  const { companySlug } = handlers;
   const shortcuts = [
     // Command palette (Cmd/Ctrl+K)
     {
@@ -53,20 +56,20 @@ export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
     {
       key: "1",
       meta: true,
-      handler: () => handlers.navigate("/dashboard"),
+      handler: () => handlers.navigate(ROUTES.dashboard(companySlug)),
       description: "Go to dashboard",
     },
     {
       key: "2",
       meta: true,
-      handler: () => handlers.navigate("/documents"),
+      handler: () => handlers.navigate(ROUTES.documents.list(companySlug)),
       description: "Go to documents",
     },
     {
       key: "3",
       meta: true,
-      handler: () => handlers.navigate("/projects"),
-      description: "Go to projects",
+      handler: () => handlers.navigate(ROUTES.workspaces.list(companySlug)),
+      description: "Go to workspaces",
     },
     // Single-key actions (only when not typing)
     {
@@ -96,20 +99,21 @@ export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
 }
 
 export function createKeySequences(handlers: ShortcutHandlers): KeySequence[] {
+  const { companySlug } = handlers;
   return [
     {
       keys: ["g", "h"],
-      handler: () => handlers.navigate("/dashboard"),
+      handler: () => handlers.navigate(ROUTES.dashboard(companySlug)),
       description: "Go to home",
     },
     {
-      keys: ["g", "b"],
-      handler: () => handlers.navigate("/projects"),
-      description: "Go to board",
+      keys: ["g", "w"],
+      handler: () => handlers.navigate(ROUTES.workspaces.list(companySlug)),
+      description: "Go to workspaces",
     },
     {
       keys: ["g", "d"],
-      handler: () => handlers.navigate("/documents"),
+      handler: () => handlers.navigate(ROUTES.documents.list(companySlug)),
       description: "Go to documents",
     },
   ];

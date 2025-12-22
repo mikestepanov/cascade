@@ -22,6 +22,7 @@ interface Issue {
   type: string;
   order: number;
   assignee?: { name: string } | null;
+  labels: string[];
 }
 
 interface KanbanColumnProps {
@@ -83,6 +84,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
     <div
+      data-board-column
       className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}

@@ -34,12 +34,6 @@ export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
   const isAdmin = useQuery(api.users.isCompanyAdmin);
   const showDevTools = isTestEmail(currentUser?.email);
-  /*
-  // DEBUGGING: Throw error to see state in test output
-  if (currentUser !== undefined && !showDevTools) {
-     throw new Error(`DEBUG SETTINGS: currentUser=${JSON.stringify(currentUser)}, email=${currentUser?.email}, isTestEmail=${isTestEmail(currentUser?.email)}`);
-  }
-  */
   // Don't show admin tab while loading to prevent UI flicker
   const showAdminTab = isAdmin === true;
 

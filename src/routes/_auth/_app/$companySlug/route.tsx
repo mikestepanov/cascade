@@ -118,6 +118,8 @@ function CompanyLayoutInner() {
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
   const [_showAIAssistant, setShowAIAssistant] = useState(false);
 
+  const { companySlug } = useCompany();
+
   // Navigation callback for keyboard shortcuts
   const handleNavigate = useCallback(
     (to: string) => {
@@ -128,6 +130,7 @@ function CompanyLayoutInner() {
 
   // Build keyboard shortcuts (need companySlug for navigation)
   const shortcuts = createKeyboardShortcuts({
+    companySlug,
     navigate: handleNavigate,
     setShowCommandPalette,
     setShowShortcutsHelp,
@@ -135,6 +138,7 @@ function CompanyLayoutInner() {
   });
 
   const sequences = createKeySequences({
+    companySlug,
     navigate: handleNavigate,
     setShowCommandPalette,
     setShowShortcutsHelp,

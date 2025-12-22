@@ -2,6 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
+import { ROUTES } from "@/config/routes";
 import { MyIssuesList } from "./MyIssuesList";
 
 // Mock router
@@ -207,7 +208,7 @@ describe("MyIssuesList", () => {
     await user.click(firstIssue);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/projects/PROJ/board",
+      to: ROUTES.projects.board("test-company", "PROJ"),
     });
   });
 
@@ -226,7 +227,7 @@ describe("MyIssuesList", () => {
     await user.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/projects",
+      to: ROUTES.workspaces.list("test-company"),
     });
   });
 
