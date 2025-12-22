@@ -1,8 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NAV_PATHS } from "@/config/routes";
 import { render, screen } from "@/test/custom-render";
-import { ROUTES } from "@/config/routes";
 import { MyIssuesList } from "./MyIssuesList";
 
 // Mock router
@@ -20,9 +20,13 @@ vi.mock("@/hooks/useCompanyContext", () => ({
 const mockIssueNavigation = {
   listRef: { current: null },
   getItemProps: (index: number) => ({
+    "data-list-index": index,
     tabIndex: index === 0 ? 0 : -1,
     className: index === 0 ? "focused" : "",
+    onMouseEnter: vi.fn(),
   }),
+  selectedIndex: -1,
+  setSelectedIndex: vi.fn(),
 };
 
 describe("MyIssuesList", () => {
@@ -208,7 +212,8 @@ describe("MyIssuesList", () => {
     await user.click(firstIssue);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: ROUTES.projects.board("test-company", "PROJ"),
+      to: NAV_PATHS.projects.board,
+      params: { companySlug: "test-company", key: "PROJ" },
     });
   });
 
@@ -227,7 +232,8 @@ describe("MyIssuesList", () => {
     await user.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: ROUTES.workspaces.list("test-company"),
+      to: NAV_PATHS.workspaces.list,
+      params: { companySlug: "test-company" },
     });
   });
 

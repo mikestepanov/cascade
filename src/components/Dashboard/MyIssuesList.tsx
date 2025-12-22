@@ -1,8 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
-import { ROUTES } from "@/config/routes";
+import { NAV_PATHS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
-import type { UseListNavigationResult } from "../../hooks/useListNavigation";
+import type { useListNavigation } from "@/hooks/useListNavigation";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
@@ -30,7 +30,7 @@ interface MyIssuesListProps {
   displayIssues: Issue[] | undefined;
   issueFilter: IssueFilter;
   onFilterChange: (filter: IssueFilter) => void;
-  issueNavigation: UseListNavigationResult<Issue>;
+  issueNavigation: ReturnType<typeof useListNavigation<Issue>>;
 }
 
 /**
@@ -48,11 +48,17 @@ export function MyIssuesList({
   const { companySlug } = useCompany();
 
   const navigateToWorkspace = (projectKey: string) => {
-    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    navigate({
+      to: NAV_PATHS.projects.board,
+      params: { companySlug, key: projectKey },
+    });
   };
 
   const navigateToWorkspaces = () => {
-    navigate({ to: ROUTES.projects.list(companySlug) });
+    navigate({
+      to: NAV_PATHS.workspaces.list,
+      params: { companySlug },
+    });
   };
   return (
     <Card>

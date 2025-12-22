@@ -8,6 +8,20 @@ import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from "workbox-strategi
 
 declare const self: ServiceWorkerGlobalScope;
 
+interface SyncEvent extends Event {
+  readonly tag: string;
+  waitUntil(f: Promise<void>): void;
+}
+
+interface Mutation {
+  id: number;
+  status: string;
+  timestamp: number;
+  syncedAt?: number;
+  // biome-ignore lint/suspicious/noExplicitAny: generic payload
+  [key: string]: any;
+}
+
 // Take control of all pages immediately
 clientsClaim();
 
@@ -71,7 +85,7 @@ self.addEventListener("fetch", (event) => {
     fetch(event.request).catch(() => {
       // If fetch fails and we're requesting a page, return offline page
       if (event.request.mode === "navigate") {
-        return caches.match("/offline.html") || Response.error();
+        return caches.match("/offline.html").then((response) => response || Response.error());
       }
       return Response.error();
     }),
@@ -92,8 +106,9 @@ self.addEventListener("message", (event) => {
 
 // Background sync for offline mutations
 self.addEventListener("sync", (event) => {
-  if ((event as unknown as { tag: string }).tag === "sync-mutations") {
-    event.waitUntil(syncOfflineQueue());
+  const syncEvent = event as SyncEvent;
+  if (syncEvent.tag === "sync-mutations") {
+    syncEvent.waitUntil(syncOfflineQueue());
   }
 });
 
@@ -152,7 +167,7 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-function getAllPendingMutations(db: IDBDatabase): Promise<unknown[]> {
+function getAllPendingMutations(db: IDBDatabase): Promise<Mutation[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["mutations"], "readonly");
     const store = transaction.objectStore("mutations");

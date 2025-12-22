@@ -225,3 +225,15 @@ export const ROUTE_PATTERNS = {
 
   timeTracking: "/_auth/_app/$companySlug/time-tracking" as const,
 } as const;
+
+/**
+ * Route paths for navigation (excluding layout IDs)
+ */
+export const NAV_PATHS = {
+  workspaces: {
+    list: "/$companySlug/workspaces" as const,
+  },
+  projects: {
+    board: "/$companySlug/projects/$key/board" as const,
+  },
+} as const;

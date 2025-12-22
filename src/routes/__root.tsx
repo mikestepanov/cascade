@@ -10,6 +10,12 @@ import { ThemeProvider } from "../contexts/ThemeContext";
 import appCss from "../index.css?url";
 import { promptInstall, register as registerServiceWorker } from "../lib/serviceWorker";
 
+declare global {
+  interface Window {
+    __convex_test_client: ConvexReactClient | undefined;
+  }
+}
+
 // Initialize Convex client (only on client-side)
 let convex: ConvexReactClient | null = null;
 if (typeof window !== "undefined") {
@@ -18,8 +24,7 @@ if (typeof window !== "undefined") {
     if (convexUrl) {
       convex = new ConvexReactClient(convexUrl);
       // Expose convex client globally for E2E testing
-      // biome-ignore lint/suspicious/noExplicitAny: window mutation for testing
-      (window as any).__convex_test_client = convex;
+      window.__convex_test_client = convex;
     }
   } catch (_e) {
     // Convex Init Failed - fail silently on server or log appropriately if needed

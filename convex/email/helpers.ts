@@ -58,7 +58,10 @@ export async function sendEmailNotification(
   }
 
   // Get project details
-  const project = await ctx.db.get(issue.projectId!);
+  if (!issue.projectId) {
+    return; // Issue not found in a project
+  }
+  const project = await ctx.db.get(issue.projectId);
   if (!project) {
     return; // Project not found
   }

@@ -195,12 +195,16 @@ export const issueMutation = customMutation(mutation, {
       throw new Error("Issue not found");
     }
 
-    const project = await ctx.db.get(issue.projectId!);
+    if (!issue.projectId) {
+      throw new Error("Issue has no project");
+    }
+
+    const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    const role = await getProjectRole(ctx, issue.projectId!, userId);
+    const role = await getProjectRole(ctx, issue.projectId, userId);
 
     // Check minimum role
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
@@ -215,7 +219,7 @@ export const issueMutation = customMutation(mutation, {
       ctx: {
         ...ctx,
         userId,
-        projectId: issue.projectId!,
+        projectId: issue.projectId,
         role,
         project,
         issue,

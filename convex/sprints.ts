@@ -111,13 +111,17 @@ export const startSprint = mutation({
       throw new Error("Sprint not found");
     }
 
-    const project = await ctx.db.get(sprint.projectId!);
+    if (!sprint.projectId) {
+      throw new Error("Sprint has no project");
+    }
+
+    const project = await ctx.db.get(sprint.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions - requires editor role to start sprints
-    await assertCanEditProject(ctx, sprint.projectId!, userId);
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     // End any currently active sprint
     const activeSprints = await ctx.db
@@ -155,13 +159,17 @@ export const completeSprint = mutation({
       throw new Error("Sprint not found");
     }
 
-    const project = await ctx.db.get(sprint.projectId!);
+    if (!sprint.projectId) {
+      throw new Error("Sprint has no project");
+    }
+
+    const project = await ctx.db.get(sprint.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
     // Check permissions - requires editor role to complete sprints
-    await assertCanEditProject(ctx, sprint.projectId!, userId);
+    await assertCanEditProject(ctx, sprint.projectId, userId);
 
     await ctx.db.patch(args.sprintId, {
       status: "completed",

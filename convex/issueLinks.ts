@@ -21,7 +21,11 @@ export const create = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, fromIssue.projectId!, userId);
+    if (!fromIssue.projectId) {
+      throw new Error("Issue has no project");
+    }
+
+    await assertCanEditProject(ctx, fromIssue.projectId, userId);
 
     // Check if link already exists
     const existing = await ctx.db
@@ -80,7 +84,11 @@ export const remove = mutation({
       throw new Error("Issue not found");
     }
 
-    await assertCanEditProject(ctx, issue.projectId!, userId);
+    if (!issue.projectId) {
+      throw new Error("Issue has no project");
+    }
+
+    await assertCanEditProject(ctx, issue.projectId, userId);
 
     await ctx.db.delete(args.linkId);
 

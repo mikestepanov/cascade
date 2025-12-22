@@ -17,11 +17,11 @@ import { flushSync } from "react-dom";
  * Solution: Wrap render in flushSync() to force synchronous rendering.
  */
 export function render(ui: ReactElement, options?: RenderOptions) {
-  let result: ReturnType<typeof rtlRender>;
+  let result: ReturnType<typeof rtlRender> | undefined;
   flushSync(() => {
     result = rtlRender(ui, options);
   });
-  return result!;
+  return result as ReturnType<typeof rtlRender>;
 }
 
 /**
@@ -31,11 +31,11 @@ export function renderHook<Result, Props>(
   callback: (props: Props) => Result,
   options?: RenderHookOptions<Props>,
 ): RenderHookResult<Result, Props> {
-  let result: RenderHookResult<Result, Props>;
+  let result: RenderHookResult<Result, Props> | undefined;
   flushSync(() => {
     result = rtlRenderHook(callback, options);
   });
-  return result!;
+  return result as RenderHookResult<Result, Props>;
 }
 
 // Re-export everything else from RTL
