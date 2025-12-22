@@ -25,7 +25,6 @@ ports.forEach((port) => {
       // Line format: TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       12345
       const parts = line.trim().split(/\s+/);
       const pid = parts[parts.length - 1]; // PID is the last column
-      const state = parts[3]; // LISTENING, ESTABLISHED, etc. (optional check)
 
       if (pid && /^\d+$/.test(pid) && pid !== "0") {
         try {
@@ -37,7 +36,7 @@ ports.forEach((port) => {
         }
       }
     });
-  } catch (e) {
+  } catch (_e) {
     // netstat returns exit code 1 if nothing found, which is fine
     // console.log(`   ⚪ Port ${port} is free (or check failed)`);
   }

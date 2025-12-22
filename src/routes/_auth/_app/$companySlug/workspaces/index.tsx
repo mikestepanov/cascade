@@ -1,6 +1,8 @@
 import { api } from "@convex/_generated/api";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { useState } from "react";
+import { CreateWorkspaceModal } from "@/components/CreateWorkspaceModal";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -9,10 +11,6 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
-import { useState } from "react";
-import { CreateWorkspaceModal } from "@/components/CreateWorkspaceModal";
-import { useNavigate } from "@tanstack/react-router";
-
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
   component: WorkspacesList,

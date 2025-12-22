@@ -7,7 +7,7 @@ import { authenticatedTest, expect } from "./fixtures";
  */
 authenticatedTest(
   "Mailtrap account shows Dev Tools tab in Settings",
-  async ({ dashboardPage, settingsPage, page }) => {
+  async ({ dashboardPage, settingsPage }) => {
     authenticatedTest.setTimeout(60000);
 
     // Navigate to settings via sidebar

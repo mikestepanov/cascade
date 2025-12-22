@@ -134,6 +134,7 @@ export function useSmartBoardData({
   }, [projectId, sprintId]);
 
   // Build issues by status, merging additional done issues
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: complex merging logic required
   const issuesByStatus = useMemo(() => {
     const result: Record<string, EnrichedIssue[]> = {};
 

@@ -168,7 +168,9 @@ test("debug sign-in flow with full logging", async ({ page, baseURL }) => {
 
   console.log("\n📊 CONSOLE LOGS CAPTURED:");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  consoleLogs.slice(0, 50).forEach((log) => console.log(`  ${log}`));
+  consoleLogs.slice(0, 50).forEach((log) => {
+    console.log(`  ${log}`);
+  });
   if (consoleLogs.length > 50) {
     console.log(`  ... and ${consoleLogs.length - 50} more logs`);
   }

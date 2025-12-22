@@ -59,7 +59,6 @@ export const OTPVerification = Resend({
 
     if (existingUser?.emailVerificationTime) {
       // User already verified - skip sending email
-      console.log(`OTPVerification: Skipping email for already-verified user: ${email}`);
       return; // Don't send email
     }
 

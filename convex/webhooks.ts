@@ -384,7 +384,10 @@ export const retryExecution = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the retry
     await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {

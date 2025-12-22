@@ -126,7 +126,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
         const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
         // Verify it's valid JSON and store the result
         const parsedState = JSON.parse(content);
-        
+
         // Use the parsed object directly to avoid race conditions of "checked file -> Playwright reads file -> Locked"
         state = parsedState;
       }

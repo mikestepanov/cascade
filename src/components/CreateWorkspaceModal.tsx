@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/Dialog";
+import type { Id } from "@convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
-import { Flex } from "@/components/ui/Flex";
 import { useCompany } from "@/hooks/useCompanyContext";
-import { toast } from "sonner";
-import type { Id } from "@convex/_generated/dataModel";
 
 interface CreateWorkspaceModalProps {
   isOpen: boolean;
