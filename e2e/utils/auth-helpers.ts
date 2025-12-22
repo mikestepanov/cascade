@@ -6,6 +6,7 @@
  */
 
 import type { Page } from "@playwright/test";
+import type { ConvexReactClient } from "convex/react";
 import type { TestUser } from "../config";
 import {
   authFormLocators,
@@ -19,7 +20,7 @@ import { waitForFormReady } from "./wait-helpers";
 
 declare global {
   interface Window {
-    convex?: any;
+    __convex_test_client?: ConvexReactClient;
   }
 }
 
@@ -227,13 +228,13 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     // Wait for Convex WebSocket to be fully connected before attempting auth
     // On cold starts, the WebSocket needs time to establish connection
-    // We exposed window.convex in __root.tsx for this purpose
+    // We exposed window.__convex_test_client in __root.tsx for this purpose
     await page
       .waitForFunction(
         () => {
-          const convex = window.convex;
+          const convex = window.__convex_test_client;
           if (!convex) {
-            console.log("    ⚠️ window.convex is missing!");
+            console.log("    ⚠️ window.__convex_test_client is missing!");
             // Check if we can find the script tag or env var in DOM
             return false;
           }
@@ -241,9 +242,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
           const state = convex.connectionState();
           if (!state.isWebSocketConnected) {
             // Log occasionally to browser console (visible in headed mode or trace)
-            console.log(
-              `    ⏳ AuthHelper: Waiting for WS. State: ${JSON.stringify(state)}. URL: ${convex.address}`,
-            );
+            console.log(`    ⏳ AuthHelper: Waiting for WS. State: ${JSON.stringify(state)}.`);
           }
           return state.isWebSocketConnected;
         },
@@ -255,8 +254,8 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         // Getting the config from the page for diagnosis
         page
           .evaluate(() => {
-            const convex = window.convex;
-            return convex ? { url: convex.address, state: convex.connectionState() } : "No Client";
+            const convex = window.__convex_test_client;
+            return convex ? { state: convex.connectionState() } : "No Client";
           })
           .then((info) => console.log("  🔍 Debug Info:", JSON.stringify(info)));
       });
