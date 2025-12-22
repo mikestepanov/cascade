@@ -17,6 +17,12 @@ import {
 import { waitForVerificationEmail } from "./mailtrap";
 import { waitForFormReady } from "./wait-helpers";
 
+declare global {
+  interface Window {
+    convex?: any;
+  }
+}
+
 /**
  * Check if we're on the dashboard
  * Handles both old (/dashboard) and new (/:companySlug/dashboard) URL patterns
@@ -225,7 +231,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
     await page
       .waitForFunction(
         () => {
-          const convex = (window as any).convex;
+          const convex = window.convex;
           if (!convex) {
             console.log("    ⚠️ window.convex is missing!");
             // Check if we can find the script tag or env var in DOM
@@ -249,7 +255,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         // Getting the config from the page for diagnosis
         page
           .evaluate(() => {
-            const convex = (window as any).convex;
+            const convex = window.convex;
             return convex ? { url: convex.address, state: convex.connectionState() } : "No Client";
           })
           .then((info) => console.log("  🔍 Debug Info:", JSON.stringify(info)));

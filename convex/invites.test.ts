@@ -13,11 +13,13 @@ import {
 describe("Invites", () => {
   beforeEach(() => {
     // Mock global fetch for email sending
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true, message_ids: ["msg_123"] }),
-      text: async () => "OK",
-    } as any);
+    // Mock global fetch for email sending using native Response
+    global.fetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ success: true, message_ids: ["msg_123"] }), {
+        status: 200,
+        statusText: "OK",
+      }),
+    );
 
     // Mock env vars required by invites.ts and email providers
     process.env.SITE_URL = "http://localhost:3000";

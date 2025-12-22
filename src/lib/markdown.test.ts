@@ -137,7 +137,7 @@ Not frontmatter
           element.click = clickSpy;
         }
         return element;
-      }) as any;
+      });
 
       downloadMarkdown(markdown, filename);
 
@@ -168,7 +168,7 @@ Not frontmatter
           });
         }
         return element;
-      }) as any;
+      });
 
       downloadMarkdown(markdown, filename);
 
