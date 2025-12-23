@@ -208,24 +208,53 @@ export class ProjectsPage extends BasePage {
     await this.openCreateProjectForm();
 
     try {
+      // Step 0: Wait for loading spinner to NOT be visible (templates loading)
+      const spinner = this.createProjectForm.locator(".animate-spin");
+      if (await spinner.isVisible()) {
+        await expect(spinner).not.toBeVisible({ timeout: 10000 });
+      }
+
       // Step 1: Wait for templates to load and select Software Project
+      // Using a broader locator in case the text is slightly different or nested
       const softwareTemplate = this.createProjectForm
         .getByRole("button")
         .filter({ hasText: /software/i })
         .first();
 
+      // Ensure at least one template button is present before trying to click
+      const anyButton = this.createProjectForm.getByRole("button").first();
+      await expect(anyButton).toBeVisible({ timeout: 10000 });
+
       await softwareTemplate.waitFor({ state: "visible", timeout: 10000 });
-      // Use evaluate click if standard click is flaky due to re-renders
-      await softwareTemplate.click().catch(() => softwareTemplate.click());
+      await softwareTemplate.scrollIntoViewIfNeeded();
+      await softwareTemplate.click({ force: true });
+
+      // Verify visual selection state (border-brand-500 indicates selection)
+      // This ensures we don't proceed with a null template
+      await expect(softwareTemplate).toHaveClass(/border-brand-500/, { timeout: 5000 });
 
       // Step 2: Fill in project details
       await this.projectNameInput.waitFor({ state: "visible", timeout: 5000 });
       await this.projectNameInput.fill(name);
-      await this.projectKeyInput.fill(key.toUpperCase());
+      await expect(this.projectNameInput).toHaveValue(name);
+
+      await this.projectKeyInput.waitFor({ state: "visible", timeout: 5000 });
+      await this.projectKeyInput.fill(key);
+      await expect(this.projectKeyInput).toHaveValue(key.toUpperCase());
+
       if (description) {
         await this.projectDescriptionInput.fill(description);
       }
-      await this.createButton.click();
+
+      // Create project
+      await this.createButton.waitFor({ state: "visible", timeout: 15000 });
+      await this.createButton.click({ force: true });
+
+      // Wait for the modal to close to confirm successful submission
+      await expect(this.createProjectForm).not.toBeVisible({ timeout: 10000 });
+
+      // Wait for the new page to stabilize (redirect and hydration)
+      await this.page.waitForLoadState("networkidle");
     } catch (e) {
       console.error("Failed to create project from template:", e);
       throw e;
@@ -277,7 +306,11 @@ export class ProjectsPage extends BasePage {
       analytics: this.analyticsTab,
       settings: this.settingsTab,
     };
-    await tabs[tab].evaluate((el: HTMLElement) => el.click());
+
+    const tabLocator = tabs[tab];
+    await expect(tabLocator).toBeVisible({ timeout: 5000 });
+    // Use force click to ensure we hit it even if animations are playing
+    await tabLocator.click({ force: true });
   }
 
   /**

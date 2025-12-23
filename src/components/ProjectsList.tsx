@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useConvex, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -15,19 +15,14 @@ import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 export function ProjectsList() {
   const { companyId, companySlug } = useCompany();
   const navigate = useNavigate();
-  const convex = useConvex();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // For now, get all company projects
   const allProjects = useQuery(api.projects.list, { companyId: companyId });
 
-  const handleProjectCreated = async (projectId: string) => {
-    // Fetch project to get key for navigation
-    const project = await convex.query(api.projects.get, { id: projectId as Id<"projects"> });
-    if (project) {
-      setIsCreateOpen(false);
-      await navigate({ to: ROUTES.projects.board(companySlug, project.key) });
-    }
+  const handleProjectCreated = async (projectId: string, projectKey: string) => {
+    setIsCreateOpen(false);
+    await navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
   if (allProjects === undefined) {

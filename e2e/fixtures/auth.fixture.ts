@@ -277,6 +277,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
           // Ignore errors
         }
       });
+
       await ensureAuthenticated();
       await use();
     },
