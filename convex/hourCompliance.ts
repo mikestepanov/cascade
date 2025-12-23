@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
-import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { batchFetchUsers } from "./lib/batchHelpers";
 
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {

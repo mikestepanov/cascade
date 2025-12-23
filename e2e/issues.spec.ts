@@ -26,17 +26,17 @@ test.describe("Issues", () => {
     test("can create an issue from board view", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to projects page to access Create Project functionality
+      await projectsPage.goto();
 
       // Create a project first
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
-      await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
+      const uniqueId = Date.now();
+      const projectKey = `KEY${uniqueId}`.slice(0, 5); // Short key
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 15000 });
       await projectsPage.expectBoardVisible();
 
       // Create an issue
-      const uniqueId = Date.now();
       const issueTitle = `Test Issue ${uniqueId}`;
       await projectsPage.createIssue(issueTitle);
 
@@ -53,16 +53,16 @@ test.describe("Issues", () => {
     test("can open issue detail dialog", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to projects page to access Create Project functionality
+      await projectsPage.goto();
 
       // Create a project first
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
-      await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
+      const uniqueId = Date.now();
+      const projectKey = `KEY${uniqueId}`.slice(0, 5);
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 15000 });
 
       // Create an issue
-      const uniqueId = Date.now();
       const issueTitle = `Detail Test Issue ${uniqueId}`;
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
@@ -77,16 +77,16 @@ test.describe("Issues", () => {
     test("issue detail shows timer controls", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects");
+      // Use direct URL navigation to projects page to access Create Project functionality
+      await projectsPage.goto();
 
       // Create a project first
-      await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(500);
-      await projectsPage.addProjectButton.click();
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
+      const uniqueId = Date.now();
+      const projectKey = `KEY${uniqueId}`.slice(0, 5);
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
+      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 15000 });
 
       // Create an issue
-      const uniqueId = Date.now();
       const issueTitle = `Timer Test Issue ${uniqueId}`;
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });

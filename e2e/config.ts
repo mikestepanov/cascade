@@ -205,6 +205,8 @@ export const E2E_ENDPOINTS = {
   debugVerifyPassword: `${CONVEX_SITE_URL}/e2e/debug-verify-password`,
   // Update company settings (POST) - for testing different settings profiles
   updateCompanySettings: `${CONVEX_SITE_URL}/e2e/update-company-settings`,
+  // Seed project templates (POST)
+  seedTemplates: `${CONVEX_SITE_URL}/e2e/seed-templates`,
 };
 
 /**

@@ -150,6 +150,15 @@ async function globalSetup(config: FullConfig): Promise<void> {
   console.log("📧 Clearing Mailtrap inbox...");
   await clearInbox();
 
+  // Seed project templates
+  console.log("🌱 Seeding project templates...");
+  const seeded = await testUserService.seedTemplates();
+  if (seeded) {
+    console.log("  ✓ Project templates seeded");
+  } else {
+    console.warn("  ⚠️ Failed to seed project templates");
+  }
+
   // Ensure .auth directory exists
   if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
@@ -181,6 +190,14 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
   for (const { key, user, authPath } of usersToSetup) {
     const context = await browser.newContext();
+    // Force online status for headless environment (fixes Convex client connection)
+    await context.addInitScript(() => {
+      try {
+        Object.defineProperty(navigator, "onLine", { get: () => true });
+      } catch (e) {
+        console.warn("Failed to override navigator.onLine", e);
+      }
+    });
     const page = await context.newPage();
 
     try {

@@ -4,7 +4,6 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
@@ -12,9 +11,7 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
 });
 
 function ProjectLayout() {
-  const { key } = Route.useParams();
-  const { company } = useCompany();
-  const companySlug = company?.slug ?? "";
+  const { key, companySlug } = Route.useParams();
   const { user } = useCurrentUser();
   const project = useQuery(api.projects.getByKey, { key });
   const userRole = useQuery(

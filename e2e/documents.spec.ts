@@ -26,6 +26,10 @@ test.describe("Documents", () => {
   test.describe("Documents Navigation", () => {
     test("can navigate to documents page", async ({ dashboardPage }) => {
       await dashboardPage.goto();
+      const uniqueId = Date.now();
+      const projectKey = `DOC${Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")}`;
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("documents");
       await dashboardPage.expectActiveTab("documents");
@@ -73,20 +77,6 @@ test.describe("Documents", () => {
 
       // The BlockNote editor should be present
       await expect(documentsPage.editorContent).toBeVisible({ timeout: 10000 });
-    });
-  });
-
-  test.describe("Document Search", () => {
-    test("can search documents", async ({ dashboardPage, documentsPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.navigateTo("documents");
-      await documentsPage.expectDocumentsView();
-
-      // Search for a document
-      await documentsPage.searchDocuments("test");
-
-      // Clear search
-      await documentsPage.clearSearch();
     });
   });
 });

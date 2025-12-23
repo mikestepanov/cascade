@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { FuzzySearchResult } from "@/hooks/useFuzzySearch";
+import { render, screen, waitFor } from "@/test/custom-render";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
 
 describe("FuzzySearchInput", () => {
@@ -53,13 +53,15 @@ describe("FuzzySearchInput", () => {
     expect(onSearch.mock.calls[3][0]).toBe("n");
   });
 
-  it("should show results dropdown when query is provided", () => {
+  it("should show results dropdown when query is provided", async () => {
     render(<FuzzySearchInput {...defaultProps} query="john" />);
 
     // Results should be visible
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-    expect(screen.getByText("Bob Johnson")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      expect(screen.getByText("Bob Johnson")).toBeInTheDocument();
+    });
   });
 
   it("should not show dropdown when isOpen is false", () => {
@@ -74,10 +76,16 @@ describe("FuzzySearchInput", () => {
 
     render(<FuzzySearchInput {...defaultProps} query="john" onSelect={onSelect} />);
 
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
+
     const firstResult = screen.getByText("John Doe");
     await user.click(firstResult);
 
-    expect(onSelect).toHaveBeenCalledWith({ _id: "1", name: "John Doe" });
+    await waitFor(() => {
+      expect(onSelect).toHaveBeenCalledWith({ _id: "1", name: "John Doe" });
+    });
   });
 
   it("should show clear button when query is not empty", () => {
@@ -182,19 +190,23 @@ describe("FuzzySearchInput", () => {
     expect(input).not.toHaveFocus();
   });
 
-  it("should show no results message when results are empty", () => {
+  it("should show no results message when results are empty", async () => {
     render(<FuzzySearchInput {...defaultProps} results={[]} query="xyz" />);
 
-    expect(screen.getByText('No results found for "xyz"')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('No results found for "xyz"')).toBeInTheDocument();
+    });
   });
 
-  it("should display match scores when showScore is true", () => {
+  it("should display match scores when showScore is true", async () => {
     render(<FuzzySearchInput {...defaultProps} query="john" showScore={true} />);
 
-    // Score of 0.1 = 90% match
-    expect(screen.getByText("90%")).toBeInTheDocument();
-    // Score of 0.2 = 80% match
-    expect(screen.getByText("80%")).toBeInTheDocument();
+    await waitFor(() => {
+      // Score of 0.1 = 90% match
+      expect(screen.getByText("90%")).toBeInTheDocument();
+      // Score of 0.2 = 80% match
+      expect(screen.getByText("80%")).toBeInTheDocument();
+    });
   });
 
   it("should not display scores when showScore is false", () => {
@@ -203,14 +215,17 @@ describe("FuzzySearchInput", () => {
     expect(screen.queryByText("90%")).not.toBeInTheDocument();
   });
 
-  it("should have proper ARIA attributes", () => {
+  it("should have proper ARIA attributes", async () => {
     render(<FuzzySearchInput {...defaultProps} query="john" aria-label="Search for users" />);
 
     const input = screen.getByRole("combobox");
-    expect(input).toHaveAttribute("aria-label", "Search for users");
-    expect(input).toHaveAttribute("aria-autocomplete", "list");
-    expect(input).toHaveAttribute("aria-controls", "fuzzy-search-results");
-    expect(input).toHaveAttribute("aria-expanded", "true");
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-label", "Search for users");
+      expect(input).toHaveAttribute("aria-autocomplete", "list");
+      expect(input).toHaveAttribute("aria-controls", "fuzzy-search-results");
+      expect(input).toHaveAttribute("aria-expanded", "true");
+    });
   });
 
   it("should close dropdown when clicking outside", async () => {
@@ -224,7 +239,9 @@ describe("FuzzySearchInput", () => {
     );
 
     // Dropdown should be open
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
 
     // Click outside
     const outsideButton = screen.getByText("Outside button");

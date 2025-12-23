@@ -1,7 +1,7 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useQuery } from "convex/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, render, screen, waitFor } from "@/test/custom-render";
 import { GlobalSearch } from "./GlobalSearch";
 
 // Mock Convex hooks

@@ -5,14 +5,13 @@
  * client-side fuzzy search with Fuse.js.
  */
 
-import { renderHook, waitFor } from "@testing-library/react";
-import { act } from "react";
 import { describe, expect, it } from "vitest";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
+import { renderHook, waitFor } from "@/test/custom-render";
 
 describe("Hybrid Search Integration", () => {
   describe("Convex + Fuse.js Pattern", () => {
-    it("should combine Convex data loading with fuzzy search", () => {
+    it("should combine Convex data loading with fuzzy search", async () => {
       // Simulate data loaded from Convex
       const convexData = [
         { _id: "1", name: "John Doe", email: "john@example.com" },
@@ -28,15 +27,15 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.totalItems).toBe(3);
 
       // Search with typo
-      act(() => {
-        result.current.search("jhon"); // Typo
-      });
+      result.current.search("jhon"); // Typo
 
       // Should still find John due to fuzzy matching
-      expect(result.current.results.length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
+      });
     });
 
-    it("should handle Convex data updates reactively", () => {
+    it("should handle Convex data updates reactively", async () => {
       // Initial data
       const initialData = [{ _id: "1", name: "John Doe", email: "john@example.com" }];
 
@@ -55,10 +54,12 @@ describe("Hybrid Search Integration", () => {
       rerender({ data: updatedData });
 
       // Fuzzy search should work with new data
-      expect(result.current.results).toHaveLength(2);
+      await waitFor(() => {
+        expect(result.current.results).toHaveLength(2);
+      });
     });
 
-    it("should maintain search query across data updates", () => {
+    it("should maintain search query across data updates", async () => {
       const initialData = [
         { _id: "1", name: "John Doe", email: "john@example.com" },
         { _id: "2", name: "Jane Smith", email: "jane@example.com" },
@@ -69,11 +70,11 @@ describe("Hybrid Search Integration", () => {
       });
 
       // Search for "john"
-      act(() => {
-        result.current.search("john");
-      });
+      result.current.search("john");
 
-      expect(result.current.query).toBe("john");
+      await waitFor(() => {
+        expect(result.current.query).toBe("john");
+      });
 
       // Simulate new data from Convex
       const updatedData = [
@@ -88,7 +89,7 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.results.length).toBeGreaterThan(1);
     });
 
-    it("should handle undefined data from Convex (loading state)", () => {
+    it("should handle undefined data from Convex (loading state)", async () => {
       const { result } = renderHook(() => useUserFuzzySearch(undefined));
 
       expect(result.current.results).toHaveLength(0);
@@ -96,7 +97,7 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.hasResults).toBe(false);
     });
 
-    it("should handle empty array from Convex (no data)", () => {
+    it("should handle empty array from Convex (no data)", async () => {
       const { result } = renderHook(() => useUserFuzzySearch([]));
 
       expect(result.current.results).toHaveLength(0);
@@ -115,23 +116,17 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(data));
 
       // Type quickly
-      act(() => {
-        result.current.search("j");
-      });
-      act(() => {
-        result.current.search("jo");
-      });
-      act(() => {
-        result.current.search("joh");
-      });
-      act(() => {
-        result.current.search("john");
-      });
+      result.current.search("j");
+      result.current.search("jo");
+      result.current.search("joh");
+      result.current.search("john");
 
       // Should be debouncing
-      expect(result.current.isDebouncing).toBe(true);
-      expect(result.current.query).toBe("john");
-      expect(result.current.debouncedQuery).not.toBe("john");
+      await waitFor(() => {
+        expect(result.current.isDebouncing).toBe(true);
+        expect(result.current.query).toBe("john");
+        expect(result.current.debouncedQuery).not.toBe("john");
+      });
 
       // Wait for debounce
       await waitFor(
@@ -157,9 +152,7 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(authorizedUsers));
 
       // Search should only work with data Convex returned
-      act(() => {
-        result.current.search("bob"); // User that Convex didn't return
-      });
+      result.current.search("bob"); // User that Convex didn't return
 
       // Wait for debounce
       await waitFor(
@@ -170,12 +163,12 @@ describe("Hybrid Search Integration", () => {
       );
 
       // No results because Bob wasn't in the Convex response
-      expect(result.current.results).toHaveLength(0);
+      await waitFor(() => {
+        expect(result.current.results).toHaveLength(0);
+      });
 
       // Can find authorized users
-      act(() => {
-        result.current.search("alice");
-      });
+      result.current.search("alice");
 
       // Wait for debounce
       await waitFor(
@@ -185,11 +178,13 @@ describe("Hybrid Search Integration", () => {
         { timeout: 500 },
       );
 
-      expect(result.current.results.length).toBeGreaterThan(0);
-      expect(result.current.results[0].item.name).toContain("Alice");
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
+        expect(result.current.results[0].item.name).toContain("Alice");
+      });
     });
 
-    it("should respect Convex data boundaries", () => {
+    it("should respect Convex data boundaries", async () => {
       // Simulate project-scoped members (Convex filters by projectId)
       const projectMembers = [
         { _id: "1", name: "Alice", email: "alice@example.com" },
@@ -205,7 +200,7 @@ describe("Hybrid Search Integration", () => {
   });
 
   describe("Real-world Use Cases", () => {
-    it("should support assignee dropdown pattern", () => {
+    it("should support assignee dropdown pattern", async () => {
       // Typical pattern: Load project members, then fuzzy search
       const projectMembers = [
         { _id: "1", name: "John Doe", email: "john@example.com" },
@@ -216,16 +211,14 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(projectMembers));
 
       // User types with typo
-      act(() => {
-        result.current.search("jhon");
-      });
+      result.current.search("jhon");
 
       // Should find John despite typo
       const johnResult = result.current.results.find((r) => r.item.name.includes("John"));
       expect(johnResult).toBeDefined();
     });
 
-    it("should support project switcher pattern", () => {
+    it("should support project switcher pattern", async () => {
       // User's projects from Convex
       const projects = [
         { name: "Nixelo", email: "Project management" },
@@ -238,9 +231,7 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.totalItems).toBe(2);
 
       // Can search by project name
-      act(() => {
-        result.current.search("nixelo");
-      });
+      result.current.search("nixelo");
 
       expect(result.current.results.length).toBeGreaterThan(0);
       expect(result.current.results[0].item.name).toContain("Nixelo");
@@ -248,7 +239,7 @@ describe("Hybrid Search Integration", () => {
   });
 
   describe("Error Handling", () => {
-    it("should handle malformed data gracefully", () => {
+    it("should handle malformed data gracefully", async () => {
       const malformedData = [
         { _id: "1", name: "John", email: "john@example.com" },
         // @ts-expect-error Testing malformed data
@@ -259,42 +250,40 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(malformedData));
 
       // Should still work with valid entries
-      act(() => {
-        result.current.search("john");
-      });
+      result.current.search("john");
 
       expect(result.current.results.length).toBeGreaterThan(0);
     });
 
-    it("should recover from search errors", () => {
+    it("should recover from search errors", async () => {
       const data = [{ _id: "1", name: "John", email: "john@example.com" }];
 
       const { result } = renderHook(() => useUserFuzzySearch(data));
 
       // Normal search
-      act(() => {
-        result.current.search("john");
-      });
+      result.current.search("john");
 
-      expect(result.current.results.length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
+      });
 
       // Clear and search again
-      act(() => {
-        result.current.clear();
+      result.current.clear();
+
+      await waitFor(() => {
+        expect(result.current.query).toBe("");
       });
 
-      expect(result.current.query).toBe("");
+      result.current.search("john");
 
-      act(() => {
-        result.current.search("john");
+      await waitFor(() => {
+        expect(result.current.results.length).toBeGreaterThan(0);
       });
-
-      expect(result.current.results.length).toBeGreaterThan(0);
     });
   });
 
   describe("Performance Characteristics", () => {
-    it("should handle medium-sized datasets efficiently", () => {
+    it("should handle medium-sized datasets efficiently", async () => {
       // Generate 500 users
       const largeDataset = Array.from({ length: 500 }, (_, i) => ({
         _id: `${i}`,
@@ -306,9 +295,7 @@ describe("Hybrid Search Integration", () => {
 
       const startTime = performance.now();
 
-      act(() => {
-        result.current.search("user 123");
-      });
+      result.current.search("user 123");
 
       const endTime = performance.now();
       const searchTime = endTime - startTime;
@@ -327,9 +314,7 @@ describe("Hybrid Search Integration", () => {
 
       const { result } = renderHook(() => useUserFuzzySearch(data));
 
-      act(() => {
-        result.current.search("john");
-      });
+      result.current.search("john");
 
       // Wait for debounce (useUserFuzzySearch has debounce: 100ms)
       await waitFor(
@@ -340,7 +325,9 @@ describe("Hybrid Search Integration", () => {
       );
 
       // useUserFuzzySearch has limit: 10
-      expect(result.current.results.length).toBeLessThanOrEqual(10);
+      await waitFor(() => {
+        expect(result.current.results.length).toBeLessThanOrEqual(10);
+      });
     });
   });
 });

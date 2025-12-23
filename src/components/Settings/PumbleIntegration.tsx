@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -430,9 +431,9 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
     setSelectedEvents((prev) => toggleInArray(prev, event));
   };
 
-  const sendMentions = form.useStore((state) => state.values.sendMentions);
-  const sendAssignments = form.useStore((state) => state.values.sendAssignments);
-  const sendStatusChanges = form.useStore((state) => state.values.sendStatusChanges);
+  const sendMentions = useStore(form.store, (state) => state.values.sendMentions);
+  const sendAssignments = useStore(form.store, (state) => state.values.sendAssignments);
+  const sendStatusChanges = useStore(form.store, (state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -644,9 +645,9 @@ function EditWebhookModal({
     setSelectedEvents((prev) => toggleInArray(prev, event));
   };
 
-  const sendMentions = form.useStore((state) => state.values.sendMentions);
-  const sendAssignments = form.useStore((state) => state.values.sendAssignments);
-  const sendStatusChanges = form.useStore((state) => state.values.sendStatusChanges);
+  const sendMentions = useStore(form.store, (state) => state.values.sendMentions);
+  const sendAssignments = useStore(form.store, (state) => state.values.sendAssignments);
+  const sendStatusChanges = useStore(form.store, (state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

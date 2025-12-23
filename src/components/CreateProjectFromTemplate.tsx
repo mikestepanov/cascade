@@ -12,7 +12,7 @@ import { LoadingSpinner } from "./ui/LoadingSpinner";
 interface CreateProjectFromTemplateProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onProjectCreated?: (projectId: Id<"projects">) => void;
+  onProjectCreated?: (projectId: Id<"projects">, projectKey: string) => void;
 }
 
 export function CreateProjectFromTemplate({
@@ -60,7 +60,7 @@ export function CreateProjectFromTemplate({
       });
 
       toast.success("Project created successfully");
-      onProjectCreated?.(projectId);
+      onProjectCreated?.(projectId, projectKey.trim().toUpperCase());
       onOpenChange(false);
       resetForm();
     } catch (error) {
@@ -96,7 +96,7 @@ export function CreateProjectFromTemplate({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-4xl" data-testid="create-project-modal">
         <DialogHeader>
           <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
         </DialogHeader>

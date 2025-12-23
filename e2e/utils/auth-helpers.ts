@@ -6,6 +6,7 @@
  */
 
 import type { Page } from "@playwright/test";
+import type { ConvexReactClient } from "convex/react";
 import type { TestUser } from "../config";
 import {
   authFormLocators,
@@ -16,6 +17,12 @@ import {
 } from "../locators";
 import { waitForVerificationEmail } from "./mailtrap";
 import { waitForFormReady } from "./wait-helpers";
+
+declare global {
+  interface Window {
+    __convex_test_client?: ConvexReactClient;
+  }
+}
 
 /**
  * Check if we're on the dashboard
@@ -210,33 +217,48 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       clearInterval(diagnosticInterval);
       // Take screenshot for debugging
       await page.screenshot({ path: "e2e/.auth/signin-timeout-debug.png" });
-      const bodyText = await page
-        .locator("body")
-        .textContent()
-        .catch(() => "");
+      const bodyText =
+        (await page
+          .locator("body")
+          .textContent()
+          .catch(() => "")) || "";
       console.log("  ❌ Sign-in page did not load within 30s. Body text:", bodyText.slice(0, 200));
       throw error;
     }
 
     // Wait for Convex WebSocket to be fully connected before attempting auth
     // On cold starts, the WebSocket needs time to establish connection
+    // We exposed window.__convex_test_client in __root.tsx for this purpose
     await page
       .waitForFunction(
         () => {
-          // Check if Convex client is ready by looking for React fiber on form
-          const form = document.querySelector("form");
-          if (!form) return false;
-          const keys = Object.keys(form);
-          return keys.some((k) => k.startsWith("__reactFiber"));
+          const convex = window.__convex_test_client;
+          if (!convex) {
+            console.log("    ⚠️ window.__convex_test_client is missing!");
+            // Check if we can find the script tag or env var in DOM
+            return false;
+          }
+          // Check connection state
+          const state = convex.connectionState();
+          if (!state.isWebSocketConnected) {
+            // Log occasionally to browser console (visible in headed mode or trace)
+            console.log(`    ⏳ AuthHelper: Waiting for WS. State: ${JSON.stringify(state)}.`);
+          }
+          return state.isWebSocketConnected;
         },
-        { timeout: 5000 },
+        undefined,
+        { timeout: 30000 }, // Wait up to 30s for connection
       )
       .catch(() => {
-        console.log("  ⚠️ React hydration check timed out, continuing anyway");
+        console.log("  ⚠️ Convex WebSocket connection timed out, attempting anyway");
+        // Getting the config from the page for diagnosis
+        page
+          .evaluate(() => {
+            const convex = window.__convex_test_client;
+            return convex ? { state: convex.connectionState() } : "No Client";
+          })
+          .then((info) => console.log("  🔍 Debug Info:", JSON.stringify(info)));
       });
-
-    // Use direct DOM manipulation to avoid React state issues
-    console.log("  📧 Filling and submitting form via JS...");
 
     // Use evaluate to interact with the form directly
     const submitResult = await page.evaluate(
@@ -341,9 +363,9 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:companySlug/dashboard) patterns
-      // Timeout: 30s for cold starts
+      // Timeout: 90s for cold starts (increased from 60s)
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
-        timeout: 30000,
+        timeout: 90000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
@@ -357,13 +379,28 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
         .error.textContent()
         .catch(() => null);
 
+      // Get full page text for debugging
+      const pageText =
+        (await page
+          .locator("body")
+          .textContent()
+          .catch(() => "")) || "";
+      const buttonText =
+        (await page
+          .locator('button[type="submit"]')
+          .textContent()
+          .catch(() => "")) || "";
+
+      console.log(`  📍 Current URL: ${page.url()}`);
+      console.log(`  🔘 Submit button text: "${buttonText}"`);
+
       if (errorText) {
-        console.log("  ❌ Page error:", errorText.slice(0, 100));
+        console.log("  ❌ Page error:", errorText.slice(0, 200));
       } else if (toastError) {
-        console.log("  ❌ Toast error:", toastError.slice(0, 100));
+        console.log("  ❌ Toast error:", toastError.slice(0, 200));
       } else {
-        // No explicit error - likely cold start timeout
-        console.log(`  ⚠️ Redirect timeout after 30s, URL: ${page.url()}`);
+        console.log("  ⚠️ Redirect timeout after 90s");
+        console.log("  📄 Page content:", pageText.slice(0, 300));
       }
 
       return false; // Let global-setup retry handle this

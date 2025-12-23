@@ -1,9 +1,9 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@/test/custom-render";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 
 // Mock Radix Select to use native select for testability
@@ -157,7 +157,7 @@ describe("BulkOperationsBar - Component Behavior", () => {
       expect(screen.getByText("3 issues selected")).toBeInTheDocument();
     });
 
-    it("should update count when selection changes", () => {
+    it("should update count when selection changes", async () => {
       const selection = new Set(["issue1" as Id<"issues">]);
 
       const { rerender } = render(
@@ -181,7 +181,9 @@ describe("BulkOperationsBar - Component Behavior", () => {
         />,
       );
 
-      expect(screen.getByText("2 issues selected")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("2 issues selected")).toBeInTheDocument();
+      });
     });
   });
 

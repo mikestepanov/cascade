@@ -26,6 +26,7 @@ export const heartbeat = mutation({
     roomId: v.string(),
     sessionId: v.string(),
     interval: v.number(),
+    userId: v.optional(v.string()), // Accepted but validated via auth
   },
   handler: async (ctx, { roomId, sessionId, interval }) => {
     const authUserId = await getAuthUserId(ctx);

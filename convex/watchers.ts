@@ -154,7 +154,8 @@ export const getWatchedIssues = query({
         const issue = await ctx.db.get(watcher.issueId);
         if (!issue) return null;
 
-        const project = await ctx.db.get(issue.projectId!);
+        if (!issue.projectId) return null;
+        const project = await ctx.db.get(issue.projectId);
         const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
 
         return {

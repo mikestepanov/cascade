@@ -34,7 +34,6 @@ export function Settings() {
   const currentUser = useQuery(api.users.getCurrent);
   const isAdmin = useQuery(api.users.isCompanyAdmin);
   const showDevTools = isTestEmail(currentUser?.email);
-
   // Don't show admin tab while loading to prevent UI flicker
   const showAdminTab = isAdmin === true;
 

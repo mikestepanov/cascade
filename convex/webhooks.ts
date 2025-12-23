@@ -83,7 +83,10 @@ export const update = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can update webhooks
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -107,7 +110,10 @@ export const remove = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can delete webhooks
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     await ctx.db.delete(args.id);
   },
@@ -222,7 +228,10 @@ export const listExecutions = query({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can view webhook logs
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     const executions = await ctx.db
       .query("webhookExecutions")
@@ -245,7 +254,10 @@ export const test = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can test webhooks
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the test webhook delivery
     await ctx.scheduler.runAfter(0, internal.webhooks.deliverTestWebhook, {
@@ -372,7 +384,10 @@ export const retryExecution = mutation({
     if (!webhook) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
-    await assertIsProjectAdmin(ctx, webhook.projectId!, userId);
+    if (!webhook.projectId) {
+      throw new Error("Webhook has no project");
+    }
+    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     // Schedule the retry
     await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {

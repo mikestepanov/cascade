@@ -12,6 +12,7 @@
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
+import type { QueryCtx } from "./_generated/server";
 import { sendEmail } from "./email";
 
 /**
@@ -48,7 +49,19 @@ export const OTPVerification = Resend({
   },
   // @ts-expect-error - ctx IS passed at runtime by @convex-dev/auth (see signIn.ts:92-95)
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest({ identifier: email, token }, ctx) {
+  async sendVerificationRequest({ identifier: email, token }, _ctx) {
+    const ctx = _ctx as QueryCtx;
+    // Check if user is already verified (e.g., E2E test users)
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .first();
+
+    if (existingUser?.emailVerificationTime) {
+      // User already verified - skip sending email
+      return; // Don't send email
+    }
+
     // Send verification email through the email provider system
     // In dev/E2E (MAILTRAP_MODE=sandbox), emails go to Mailtrap inbox
     const result = await sendEmail(ctx, {

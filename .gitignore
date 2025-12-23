@@ -38,6 +38,9 @@ e2e/.auth/
 playwright-report/
 test-results/
 
+# Test output and temporary files
+*.txt
+
 .vercel
 
 # TanStack

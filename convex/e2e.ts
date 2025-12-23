@@ -152,7 +152,6 @@ export const createTestUserInternal = internalMutation({
           provider: "password",
           providerAccountId: args.email,
           secret: args.passwordHash,
-          emailVerified: new Date().toISOString(),
         });
       }
 
@@ -248,13 +247,13 @@ export const createTestUserInternal = internalMutation({
       testUserCreatedAt: Date.now(),
     });
 
-    // Create auth account with password hash
+    // Create auth account with password hash and email verified
     await ctx.db.insert("authAccounts", {
       userId,
       provider: "password",
       providerAccountId: args.email,
       secret: args.passwordHash,
-      emailVerified: new Date().toISOString(),
+      emailVerified: new Date().toISOString(), // Password provider checks this field
     });
 
     // If skipOnboarding is true, create completed onboarding record AND add to shared company
@@ -711,6 +710,29 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 });
 
 /**
+ * Seed built-in project templates
+ * POST /e2e/seed-templates
+ */
+export const seedTemplatesEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.projectTemplates.initializeBuiltInTemplates, {});
+    return new Response(JSON.stringify({ success: true, result }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
  * Internal mutation to set up RBAC test project
  * Uses the admin user's existing company instead of creating a new one
  */
@@ -1103,6 +1125,10 @@ export const cleanupRbacProjectInternal = internalMutation({
       };
     }
 
+    // Capture workspace ID before deleting project
+    const workspaceId = project.workspaceId;
+    const teamId = project.teamId;
+
     // Delete all project members
     const members = await ctx.db
       .query("projectMembers")
@@ -1148,6 +1174,31 @@ export const cleanupRbacProjectInternal = internalMutation({
 
     // Delete the project
     await ctx.db.delete(project._id);
+
+    // Verify and clean up workspace/team if they were created for E2E
+    // We check if the workspace name matches our E2E pattern to avoid deleting user data
+    if (workspaceId) {
+      const workspace = await ctx.db.get(workspaceId);
+      if (workspace && workspace.name === "E2E Testing Workspace") {
+        // Delete all teams in this workspace
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+          .collect();
+        for (const team of teams) {
+          // Delete team members
+          const members = await ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", team._id))
+            .collect();
+          for (const member of members) {
+            await ctx.db.delete(member._id);
+          }
+          await ctx.db.delete(team._id);
+        }
+        await ctx.db.delete(workspace._id);
+      }
+    }
 
     return {
       success: true,
@@ -1361,7 +1412,9 @@ export const verifyTestUserInternal = internalMutation({
       return { success: false, verified: false, error: "User not found" };
     }
 
-    // Update the authAccount with emailVerified timestamp (ISO string format)
+    // Update both verification fields:
+    // 1. authAccount.emailVerified - Used by Password provider to check verification
+    // 2. user.emailVerificationTime - Our custom field for app logic
     await ctx.db.patch(account._id, {
       emailVerified: new Date().toISOString(),
     });
@@ -1436,7 +1489,6 @@ export const debugVerifyPasswordInternal = internalMutation({
     accountFound: v.boolean(),
     hasStoredHash: v.boolean(),
     passwordMatches: v.optional(v.boolean()),
-    emailVerified: v.optional(v.boolean()),
     error: v.optional(v.string()),
   }),
   handler: async (ctx, args) => {
@@ -1483,7 +1535,6 @@ export const debugVerifyPasswordInternal = internalMutation({
       accountFound: true,
       hasStoredHash: true,
       passwordMatches,
-      emailVerified: !!account.emailVerified,
     };
   },
 });
@@ -1501,5 +1552,151 @@ export const resetAllOnboarding = internalMutation({
       await ctx.db.delete(record._id);
     }
     return { deleted: records.length };
+  },
+});
+
+/**
+ * Cleanup ALL E2E workspaces for a user (garbage collection)
+ * POST /e2e/cleanup-workspaces
+ * Body: { email: string }
+ */
+export const cleanupE2EWorkspacesEndpoint = httpAction(async (ctx, request) => {
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email } = body;
+    if (!email) return new Response("Missing email", { status: 400 });
+
+    const result = await ctx.runMutation(internal.e2e.cleanupE2EWorkspacesInternal, { email });
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+  }
+});
+
+export const cleanupE2EWorkspacesInternal = internalMutation({
+  args: { email: v.string() },
+  returns: v.object({ deleted: v.number() }),
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .first();
+    if (!user) return { deleted: 0 };
+
+    const workspaces = await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("createdBy"), user._id))
+      .collect();
+
+    let deleted = 0;
+    for (const ws of workspaces) {
+      if (ws.name === "E2E Testing Workspace") {
+        // Delete teams
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+          .collect();
+        for (const team of teams) {
+          const tMembers = await ctx.db
+            .query("teamMembers")
+            .withIndex("by_team", (q) => q.eq("teamId", team._id))
+            .collect();
+          for (const m of tMembers) await ctx.db.delete(m._id);
+          await ctx.db.delete(team._id);
+        }
+        await ctx.db.delete(ws._id);
+        deleted++;
+      }
+    }
+    return { deleted };
+  },
+});
+
+/**
+ * Nuke ALL E2E workspaces (Global Cleanup)
+ * POST /e2e/nuke-workspaces
+ * Param: { confirm: true }
+ */
+export const nukeAllE2EWorkspacesEndpoint = httpAction(async (ctx, request) => {
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    if (!body.confirm) return new Response("Missing confirm: true", { status: 400 });
+
+    const result = await ctx.runMutation(internal.e2e.nukeAllE2EWorkspacesInternal, {});
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+  }
+});
+
+export const nukeAllE2EWorkspacesInternal = internalMutation({
+  args: {},
+  returns: v.object({ deleted: v.number() }),
+  handler: async (ctx) => {
+    // 1. Find the shared E2E company
+    const company = await ctx.db
+      .query("companies")
+      .withIndex("by_slug", (q) => q.eq("slug", "nixelo-e2e"))
+      .first();
+
+    if (!company) return { deleted: 0 };
+
+    // 2. Find all workspaces in this company
+    const workspaces = await ctx.db
+      .query("workspaces")
+      .withIndex("by_company", (q) => q.eq("companyId", company._id))
+      .collect();
+
+    let deleted = 0;
+    for (const ws of workspaces) {
+      // 3. Delete everything in the workspace
+      const teams = await ctx.db
+        .query("teams")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .collect();
+
+      for (const team of teams) {
+        // Delete team members
+        const tMembers = await ctx.db
+          .query("teamMembers")
+          .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .collect();
+        for (const m of tMembers) await ctx.db.delete(m._id);
+
+        // Delete projects within the team
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .collect();
+        for (const p of projects) await ctx.db.delete(p._id);
+
+        await ctx.db.delete(team._id);
+      }
+
+      // Delete projects in workspace (if any direct children)
+      const wsProjects = await ctx.db
+        .query("projects")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .collect();
+
+      for (const p of wsProjects) await ctx.db.delete(p._id);
+
+      await ctx.db.delete(ws._id);
+      deleted++;
+    }
+
+    return { deleted };
   },
 });

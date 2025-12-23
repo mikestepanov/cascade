@@ -10,10 +10,25 @@ import { ThemeProvider } from "../contexts/ThemeContext";
 import appCss from "../index.css?url";
 import { promptInstall, register as registerServiceWorker } from "../lib/serviceWorker";
 
+declare global {
+  interface Window {
+    __convex_test_client: ConvexReactClient | undefined;
+  }
+}
+
 // Initialize Convex client (only on client-side)
 let convex: ConvexReactClient | null = null;
 if (typeof window !== "undefined") {
-  convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+  try {
+    const convexUrl = import.meta.env.VITE_CONVEX_URL as string;
+    if (convexUrl) {
+      convex = new ConvexReactClient(convexUrl);
+      // Expose convex client globally for E2E testing
+      window.__convex_test_client = convex;
+    }
+  } catch (_e) {
+    // Convex Init Failed - fail silently on server or log appropriately if needed
+  }
 }
 
 const posthogOptions = {

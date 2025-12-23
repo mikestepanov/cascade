@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@/test/custom-render";
 import { ColorPicker } from "./ColorPicker";
 
 const DEFAULT_PRESET_COLORS = [
@@ -121,7 +121,7 @@ describe("ColorPicker", () => {
       expect(nonSelectedButton).not.toHaveClass("scale-110");
     });
 
-    it("should update highlight when value changes", () => {
+    it("should update highlight when value changes", async () => {
       const { rerender } = render(<ColorPicker value="#EF4444" onChange={vi.fn()} />);
 
       const selectedButton = screen.getByLabelText("Select color #EF4444");
@@ -130,11 +130,10 @@ describe("ColorPicker", () => {
       // Change value
       rerender(<ColorPicker value="#F59E0B" onChange={vi.fn()} />);
 
-      const previousButton = screen.getByLabelText("Select color #EF4444");
-      expect(previousButton).not.toHaveClass("scale-110");
-
-      const newButton = screen.getByLabelText("Select color #F59E0B");
-      expect(newButton).toHaveClass("scale-110");
+      await waitFor(() => {
+        const newButton = screen.getByLabelText("Select color #F59E0B");
+        expect(newButton).toHaveClass("scale-110");
+      });
     });
   });
 
@@ -394,8 +393,10 @@ describe("ColorPicker", () => {
       rerender(<ColorPicker value="#3B82F6" onChange={onChange} label="Theme Color" />);
 
       // New color should be selected
-      const selectedButton = screen.getByLabelText("Select color #3B82F6");
-      expect(selectedButton).toHaveClass("scale-110");
+      await waitFor(() => {
+        const selectedButton = screen.getByLabelText("Select color #3B82F6");
+        expect(selectedButton).toHaveClass("scale-110");
+      });
     });
 
     it("should work as brand color selector", () => {

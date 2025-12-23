@@ -73,6 +73,7 @@ function getAuthPath(role: UserRole): string {
 function isAuthStateValid(role: UserRole): boolean {
   const authPath = getAuthPath(role);
   if (!fs.existsSync(authPath)) {
+    console.warn(`⚠️  Auth state file not found: ${authPath}`);
     return false;
   }
 
@@ -95,8 +96,10 @@ function isAuthStateValid(role: UserRole): boolean {
         }
       }
     }
+    console.warn(`⚠️  Auth state invalid (no tokens found): ${authPath}`);
     return false;
-  } catch {
+  } catch (error) {
+    console.warn(`⚠️  Failed to parse auth state: ${authPath}`, error);
     return false;
   }
 }
@@ -135,7 +138,20 @@ export const rbacTest = base.extend<RbacFixtures>({
   // Test-scoped admin context - fresh for each test
   adminContext: async ({ browser }, use) => {
     if (!isAuthStateValid("admin")) {
-      throw new Error("Admin auth state not found. Run global setup first.");
+      const msg = `Admin auth state not found or invalid. 
+
+Troubleshooting steps:
+1. Ensure Convex dev server is running: pnpm run dev:backend
+2. Re-run global setup: pnpm exec playwright test rbac.spec.ts --grep="editor"
+3. Check e2e/.auth/user-teamlead.json exists
+4. If issue persists, check e2e/.auth/setup-error-teamLead.png for screenshot
+
+Current auth files: ${fs
+        .readdirSync(AUTH_DIR)
+        .filter((f) => f.endsWith(".json"))
+        .join(", ")}`;
+
+      throw new Error(msg);
     }
     const context = await browser.newContext({
       storageState: getAuthPath("admin"),
@@ -217,41 +233,23 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
 
   // Helper to navigate to RBAC project with auth initialization
-  // This helper first visits the landing page to initialize Convex auth,
-  // then navigates to the target project board URL
   gotoRbacProject: async ({ rbacCompanySlug, rbacProjectKey }, use) => {
     const goto = async (page: Page) => {
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
-      // First, initialize auth by visiting landing page
-      // This triggers Convex to load auth tokens from localStorage
-      await page.goto("/");
-      await page.waitForLoadState("domcontentloaded");
-
-      // Wait for auth to process - should redirect to dashboard if authenticated
-      try {
-        await page.waitForURL(/\/([\w-]+)\/dashboard/, { timeout: 10000 });
-      } catch {
-        // No redirect - might still be on landing page, give it more time
-        await page.waitForTimeout(2000);
-      }
-
-      // Now navigate to the target protected route
+      // Navigate directly to target - auth tokens should be in localStorage from storageState
       await page.goto(targetUrl);
-      await page.waitForLoadState("domcontentloaded");
+      await page.waitForLoadState("networkidle");
 
-      // Wait for the page to fully render
-      await page.waitForTimeout(1500);
+      // Wait for auth to process and Convex queries to complete
+      await page.waitForTimeout(2000);
 
       // Check if we got redirected to landing page (auth not working)
       const currentUrl = page.url();
       if (currentUrl === "http://localhost:5555/" || currentUrl.endsWith("/signin")) {
-        // Auth failed - log and retry once more
-        console.log(`Auth redirect detected for ${targetUrl}, retrying...`);
-        await page.waitForTimeout(3000);
-        await page.goto(targetUrl);
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(1500);
+        throw new Error(
+          `Auth failed: redirected to ${currentUrl}. Check that global-setup ran correctly.`,
+        );
       }
     };
     await use(goto);
@@ -261,8 +259,20 @@ export const rbacTest = base.extend<RbacFixtures>({
 export { expect };
 
 /**
- * User info for reference in tests
+ * Check if all required RBAC auth states are available
+ * Used for conditional test execution
  */
+export function hasAdminAuth(): boolean {
+  return isAuthStateValid("admin");
+}
+
+export function hasEditorAuth(): boolean {
+  return isAuthStateValid("editor");
+}
+
+export function hasViewerAuth(): boolean {
+  return isAuthStateValid("viewer");
+}
 export const RBAC_USERS = {
   admin: {
     email: TEST_USERS.teamLead.email,

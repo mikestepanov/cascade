@@ -1,5 +1,5 @@
-import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook, waitFor } from "@/test/custom-render";
 import { useDeleteConfirmation } from "./useDeleteConfirmation";
 
 // Mock the toast module
@@ -34,61 +34,61 @@ describe("useDeleteConfirmation", () => {
   });
 
   describe("confirmDelete", () => {
-    it("should set deleteId when called", () => {
+    it("should set deleteId when called", async () => {
       const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
 
       const mockId = createMockId("test-id-123");
 
-      act(() => {
-        result.current.confirmDelete(mockId);
-      });
+      result.current.confirmDelete(mockId);
 
-      expect(result.current.deleteId).toBe(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
+      });
     });
 
-    it("should update deleteId when called multiple times", () => {
+    it("should update deleteId when called multiple times", async () => {
       const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
 
       const mockId1 = createMockId("test-id-1");
       const mockId2 = createMockId("test-id-2");
 
-      act(() => {
-        result.current.confirmDelete(mockId1);
+      result.current.confirmDelete(mockId1);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId1);
       });
-      expect(result.current.deleteId).toBe(mockId1);
 
-      act(() => {
-        result.current.confirmDelete(mockId2);
+      result.current.confirmDelete(mockId2);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId2);
       });
-      expect(result.current.deleteId).toBe(mockId2);
     });
   });
 
   describe("cancelDelete", () => {
-    it("should set deleteId to null", () => {
+    it("should set deleteId to null", async () => {
       const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
 
       const mockId = createMockId("test-id-123");
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
-      expect(result.current.deleteId).toBe(mockId);
 
-      act(() => {
-        result.current.cancelDelete();
+      result.current.cancelDelete();
+      await waitFor(() => {
+        expect(result.current.deleteId).toBeNull();
       });
-      expect(result.current.deleteId).toBeNull();
     });
 
-    it("should work when deleteId is already null", () => {
+    it("should work when deleteId is already null", async () => {
       const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
 
-      act(() => {
-        result.current.cancelDelete();
-      });
+      result.current.cancelDelete();
 
-      expect(result.current.deleteId).toBeNull();
+      await waitFor(() => {
+        expect(result.current.deleteId).toBeNull();
+      });
     });
   });
 
@@ -99,15 +99,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(deleteFn).toHaveBeenCalledWith(mockId);
+      await waitFor(() => {
+        expect(deleteFn).toHaveBeenCalledWith(mockId);
+      });
     });
 
     it("should show success toast on successful delete", async () => {
@@ -116,15 +117,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(showSuccess).toHaveBeenCalledWith("Deleted successfully");
+      await waitFor(() => {
+        expect(showSuccess).toHaveBeenCalledWith("Deleted successfully");
+      });
     });
 
     it("should show custom success message when provided", async () => {
@@ -137,15 +139,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(showSuccess).toHaveBeenCalledWith("Item removed!");
+      await waitFor(() => {
+        expect(showSuccess).toHaveBeenCalledWith("Item removed!");
+      });
     });
 
     it("should call onSuccess callback on successful delete", async () => {
@@ -159,15 +162,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(onSuccess).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled();
+      });
     });
 
     it("should reset deleteId to null after successful delete", async () => {
@@ -176,15 +180,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(result.current.deleteId).toBeNull();
+      await waitFor(() => {
+        expect(result.current.deleteId).toBeNull();
+      });
     });
 
     it("should set isDeleting to false after successful delete", async () => {
@@ -193,15 +198,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(result.current.isDeleting).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isDeleting).toBe(false);
+      });
     });
   });
 
@@ -213,15 +219,16 @@ describe("useDeleteConfirmation", () => {
       const error = new Error("Delete failed");
       const deleteFn = vi.fn().mockRejectedValue(error);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(showError).toHaveBeenCalledWith(error, "Failed to delete");
+      await waitFor(() => {
+        expect(showError).toHaveBeenCalledWith(error, "Failed to delete");
+      });
     });
 
     it("should show custom error message when provided", async () => {
@@ -235,15 +242,16 @@ describe("useDeleteConfirmation", () => {
       const error = new Error("Delete failed");
       const deleteFn = vi.fn().mockRejectedValue(error);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(showError).toHaveBeenCalledWith(error, "Could not remove item");
+      await waitFor(() => {
+        expect(showError).toHaveBeenCalledWith(error, "Could not remove item");
+      });
     });
 
     it("should call onError callback on failed delete", async () => {
@@ -258,15 +266,16 @@ describe("useDeleteConfirmation", () => {
       const error = new Error("Delete failed");
       const deleteFn = vi.fn().mockRejectedValue(error);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(onError).toHaveBeenCalledWith(error);
+      await waitFor(() => {
+        expect(onError).toHaveBeenCalledWith(error);
+      });
     });
 
     it("should NOT reset deleteId on failed delete", async () => {
@@ -275,16 +284,17 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockRejectedValue(new Error("Delete failed"));
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      // deleteId should remain so user can retry
-      expect(result.current.deleteId).toBe(mockId);
+      await waitFor(() => {
+        // deleteId should remain so user can retry
+        expect(result.current.deleteId).toBe(mockId);
+      });
     });
 
     it("should set isDeleting to false after failed delete", async () => {
@@ -293,15 +303,16 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockRejectedValue(new Error("Delete failed"));
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(result.current.isDeleting).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isDeleting).toBe(false);
+      });
     });
   });
 
@@ -311,11 +322,11 @@ describe("useDeleteConfirmation", () => {
 
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(deleteFn).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(deleteFn).not.toHaveBeenCalled();
+      });
     });
 
     it("should not show any toast when deleteId is null", async () => {
@@ -323,12 +334,12 @@ describe("useDeleteConfirmation", () => {
 
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
-      expect(showSuccess).not.toHaveBeenCalled();
-      expect(showError).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(showSuccess).not.toHaveBeenCalled();
+        expect(showError).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -339,19 +350,20 @@ describe("useDeleteConfirmation", () => {
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
-      act(() => {
-        result.current.confirmDelete(mockId);
+      result.current.confirmDelete(mockId);
+      await waitFor(() => {
+        expect(result.current.deleteId).toBe(mockId);
       });
 
       // Before delete
       expect(result.current.isDeleting).toBe(false);
 
-      await act(async () => {
-        await result.current.executeDelete(deleteFn);
-      });
+      await result.current.executeDelete(deleteFn);
 
       // After delete completes
-      expect(result.current.isDeleting).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isDeleting).toBe(false);
+      });
     });
   });
 

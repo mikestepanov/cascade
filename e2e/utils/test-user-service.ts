@@ -208,6 +208,23 @@ export class TestUserService {
       return { success: false, error: String(error) };
     }
   }
+
+  /**
+   * Seed project templates
+   */
+  async seedTemplates(): Promise<boolean> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.seedTemplates, {
+        method: "POST",
+        headers: getE2EHeaders(),
+      });
+      const result = await response.json();
+      return result.success === true;
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to seed templates:`, error);
+      return false;
+    }
+  }
 }
 
 // Singleton instance for convenience

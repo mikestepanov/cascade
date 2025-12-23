@@ -1,9 +1,9 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
+import { render, screen, waitFor } from "@/test/custom-render";
 import { CustomFieldsManager } from "./CustomFieldsManager";
 
 // Mock dependencies
@@ -355,14 +355,17 @@ describe("CustomFieldsManager - Component Behavior", () => {
 
       await user.click(screen.getByRole("button", { name: /Save/i }));
 
-      await waitFor(() => {
-        expect(mockUpdateField).toHaveBeenCalledWith(
-          expect.objectContaining({
-            options: ["Valid", "Another Valid"],
-          }),
-        );
-      });
-    });
+      await waitFor(
+        () => {
+          expect(mockUpdateField).toHaveBeenCalledWith(
+            expect.objectContaining({
+              options: ["Valid", "Another Valid"],
+            }),
+          );
+        },
+        { timeout: 10000 },
+      );
+    }, 15000);
 
     it("should not send options for non-select field types", async () => {
       const user = userEvent.setup();

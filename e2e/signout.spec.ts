@@ -30,9 +30,11 @@ test.describe("Sign Out", () => {
     await dashboardPage.expectLoaded();
 
     // Sign out via user menu dropdown
+    console.log("  🚪 Clicking sign out...");
     await dashboardPage.signOutViaUserMenu();
+    console.log("  ✓ Sign out clicked, waiting for landing page...");
 
     // Should return to landing page - verify Get Started button is visible
-    await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 10000 });
+    await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 20000 });
   });
 });

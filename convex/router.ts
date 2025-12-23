@@ -2,12 +2,15 @@ import { httpRouter } from "convex/server";
 import { handler as issuesHandler } from "./api/issues";
 import { securePasswordReset } from "./authWrapper";
 import {
+  cleanupE2EWorkspacesEndpoint,
   cleanupRbacProjectEndpoint,
   cleanupTestUsersEndpoint,
   createTestUserEndpoint,
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
+  nukeAllE2EWorkspacesEndpoint,
   resetOnboardingEndpoint,
+  seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
   updateCompanySettingsEndpoint,
   verifyTestUserEndpoint,
@@ -135,6 +138,27 @@ http.route({
   path: "/e2e/update-company-settings",
   method: "POST",
   handler: updateCompanySettingsEndpoint,
+});
+
+// Seed built-in project templates
+http.route({
+  path: "/e2e/seed-templates",
+  method: "POST",
+  handler: seedTemplatesEndpoint,
+});
+
+// Cleanup ALL E2E workspaces
+http.route({
+  path: "/e2e/cleanup-workspaces",
+  method: "POST",
+  handler: cleanupE2EWorkspacesEndpoint,
+});
+
+// Nuke ALL E2E workspaces
+http.route({
+  path: "/e2e/nuke-workspaces",
+  method: "POST",
+  handler: nukeAllE2EWorkspacesEndpoint,
 });
 
 export default http;

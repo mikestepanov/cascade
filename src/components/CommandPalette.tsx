@@ -175,9 +175,9 @@ export function useCommands({
       id: "nav-projects",
       label: "Go to Workspaces",
       icon: "📋",
-      description: "View all projects",
-      keywords: ["boards", "kanban", "projects"],
-      action: () => navigate({ to: ROUTES.projects.list(companySlug) }),
+      description: "View all workspaces",
+      keywords: ["boards", "kanban", "projects", "workspaces"],
+      action: () => navigate({ to: ROUTES.workspaces.list(companySlug) }),
       group: "Navigation",
     },
 

@@ -1,4 +1,4 @@
-import type { Block, BlockNoteEditor } from "@blocknote/core";
+import type { Block, BlockNoteEditor, PartialBlock } from "@blocknote/core";
 import { toast } from "sonner";
 
 /**
@@ -135,7 +135,7 @@ function convertBlockType(block: Block, textContent: string, indent: string): st
  */
 async function blockToMarkdown(block: Block, level: number): Promise<string> {
   const indent = "  ".repeat(level);
-  const textContent = getTextContent(block.content as unknown);
+  const textContent = getTextContent(block.content);
   let result = convertBlockType(block, textContent, indent);
 
   // Process children recursively
@@ -165,7 +165,10 @@ export function stripFrontmatter(markdown: string): string {
  * Convert markdown string to BlockNote blocks
  * Uses BlockNote's built-in markdown parsing when available
  */
-async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Promise<Block[]> {
+async function markdownToBlocks(
+  editor: BlockNoteEditor,
+  markdown: string,
+): Promise<PartialBlock[]> {
   // Strip frontmatter before parsing
   const content = stripFrontmatter(markdown);
 
@@ -176,7 +179,7 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
   ) {
     try {
       const editorWithMarkdown = editor as BlockNoteEditor & {
-        tryParseMarkdownToBlocks: (content: string) => Promise<Block[]>;
+        tryParseMarkdownToBlocks: (content: string) => Promise<PartialBlock[]>;
       };
       const blocks = await editorWithMarkdown.tryParseMarkdownToBlocks(content);
       if (blocks && Array.isArray(blocks)) {
@@ -196,7 +199,7 @@ async function markdownToBlocks(editor: BlockNoteEditor, markdown: string): Prom
  * Handles common markdown syntax
  */
 // Helper to try parsing heading
-function tryParseHeading(line: string, blocks: Block[]): boolean {
+function tryParseHeading(line: string, blocks: PartialBlock[]): boolean {
   const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
   if (!headingMatch) return false;
 
@@ -205,12 +208,12 @@ function tryParseHeading(line: string, blocks: Block[]): boolean {
     props: { level: headingMatch[1].length },
     content: [{ type: "text", text: headingMatch[2], styles: {} }],
     children: [],
-  } as Block);
+  } as PartialBlock);
   return true;
 }
 
 // Helper to try parsing list items
-function tryParseListItem(line: string, blocks: Block[]): boolean {
+function tryParseListItem(line: string, blocks: PartialBlock[]): boolean {
   // Checklist items
   if (line.match(/^\s*[-*]\s+\[[ x]\]/)) {
     const checked = line.includes("[x]");
@@ -220,7 +223,7 @@ function tryParseListItem(line: string, blocks: Block[]): boolean {
       props: { checked },
       content: [{ type: "text", text, styles: {} }],
       children: [],
-    } as Block);
+    } as PartialBlock);
     return true;
   }
 
@@ -232,7 +235,7 @@ function tryParseListItem(line: string, blocks: Block[]): boolean {
       props: {},
       content: [{ type: "text", text, styles: {} }],
       children: [],
-    } as Block);
+    } as PartialBlock);
     return true;
   }
 
@@ -244,7 +247,7 @@ function tryParseListItem(line: string, blocks: Block[]): boolean {
       props: {},
       content: [{ type: "text", text, styles: {} }],
       children: [],
-    } as Block);
+    } as PartialBlock);
     return true;
   }
 
@@ -252,21 +255,19 @@ function tryParseListItem(line: string, blocks: Block[]): boolean {
 }
 
 // Helper to try parsing images
-function tryParseImage(line: string, blocks: Block[]): boolean {
+function tryParseImage(line: string, blocks: PartialBlock[]): boolean {
   const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
   if (!imageMatch) return false;
 
   blocks.push({
     type: "image",
     props: { url: imageMatch[2], caption: imageMatch[1] },
-    content: [],
-    children: [],
-  } as Block);
+  } as PartialBlock);
   return true;
 }
 
-function parseMarkdownSimple(markdown: string): Block[] {
-  const blocks: Block[] = [];
+function parseMarkdownSimple(markdown: string): PartialBlock[] {
+  const blocks: PartialBlock[] = [];
   const lines = markdown.split("\n");
 
   let currentBlock: string[] = [];
@@ -283,7 +284,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
           props: { language: codeLanguage },
           content: [{ type: "text", text: currentBlock.join("\n"), styles: {} }],
           children: [],
-        } as Block);
+        } as PartialBlock);
         currentBlock = [];
         inCodeBlock = false;
         codeLanguage = "";
@@ -320,7 +321,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
       props: {},
       content: [{ type: "text", text: line, styles: {} }],
       children: [],
-    } as Block);
+    } as PartialBlock);
   }
 
   // Handle any remaining code block
@@ -330,7 +331,7 @@ function parseMarkdownSimple(markdown: string): Block[] {
       props: { language: codeLanguage },
       content: [{ type: "text", text: currentBlock.join("\n"), styles: {} }],
       children: [],
-    } as Block);
+    } as PartialBlock);
   }
 
   return blocks;

@@ -74,8 +74,12 @@ export const update = mutation({
     const label = await ctx.db.get(args.id);
     if (!label) throw new Error("Label not found");
 
+    if (!label.projectId) {
+      throw new Error("Label has no project");
+    }
+
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId!, userId);
+    await assertCanEditProject(ctx, label.projectId, userId);
 
     // If name is changing, check for duplicates
     if (args.name && args.name !== label.name) {
@@ -110,8 +114,12 @@ export const remove = mutation({
     const label = await ctx.db.get(args.id);
     if (!label) throw new Error("Label not found");
 
+    if (!label.projectId) {
+      throw new Error("Label has no project");
+    }
+
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId!, userId);
+    await assertCanEditProject(ctx, label.projectId, userId);
 
     // Remove label from all issues (with reasonable limit)
     const MAX_ISSUES_TO_UPDATE = 5000;

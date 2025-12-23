@@ -155,6 +155,14 @@ export class DocumentsPage extends BasePage {
   }
 
   async expectEditorVisible() {
+    // Handle "Initialize Document" empty state if present (for new documents)
+    const initButton = this.page.getByRole("button", { name: /initialize.*document/i });
+    try {
+      await initButton.waitFor({ state: "visible", timeout: 3000 });
+      await initButton.click();
+    } catch {
+      // Button didn't appear, proceed to check for editor
+    }
     await expect(this.editor).toBeVisible();
   }
 

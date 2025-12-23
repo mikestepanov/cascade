@@ -82,7 +82,11 @@ export const update = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId!, userId);
+    if (!rule.projectId) {
+      throw new Error("Rule has no project");
+    }
+
+    await assertIsProjectAdmin(ctx, rule.projectId, userId);
 
     const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
@@ -112,7 +116,11 @@ export const remove = mutation({
       throw new Error("Rule not found");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId!, userId);
+    if (!rule.projectId) {
+      throw new Error("Rule has no project");
+    }
+
+    await assertIsProjectAdmin(ctx, rule.projectId, userId);
 
     await ctx.db.delete(args.id);
   },

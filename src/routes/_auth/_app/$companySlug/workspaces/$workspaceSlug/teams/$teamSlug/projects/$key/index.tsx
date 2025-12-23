@@ -1,6 +1,5 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
   "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/",
@@ -9,9 +8,7 @@ export const Route = createFileRoute(
 });
 
 function ProjectIndexPage() {
-  const { key, workspaceSlug, teamSlug } = Route.useParams();
-  const { company } = useCompany();
-  const companySlug = company?.slug ?? "";
+  const { key, companySlug, workspaceSlug, teamSlug } = Route.useParams();
 
   // Redirect to board by default
   return (

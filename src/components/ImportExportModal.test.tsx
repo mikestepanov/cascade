@@ -1,10 +1,10 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
+import { render, screen, waitFor } from "@/test/custom-render";
 import { ImportExportModal } from "./ImportExportModal";
 
 // Mock dependencies

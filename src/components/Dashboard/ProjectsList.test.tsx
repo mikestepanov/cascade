@@ -1,7 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ROUTES } from "@/config/routes";
+import { render, screen } from "@/test/custom-render";
 import { WorkspacesList } from "./ProjectsList";
 
 // Mock router
@@ -11,8 +12,9 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // Mock company context
+const TEST_COMPANY_SLUG = "test-company";
 vi.mock("@/hooks/useCompanyContext", () => ({
-  useCompany: () => ({ companySlug: "test-company" }),
+  useCompany: () => ({ companySlug: TEST_COMPANY_SLUG }),
 }));
 
 // Mock navigation hook
@@ -89,7 +91,7 @@ describe("WorkspacesList", () => {
     expect(screen.getByText("Go to Workspaces")).toBeInTheDocument();
   });
 
-  it("should navigate to projects when clicking Go to Workspaces", async () => {
+  it("should navigate to workspaces when clicking Go to Workspaces", async () => {
     const user = userEvent.setup();
 
     render(<WorkspacesList {...defaultProps} projects={[]} />);
@@ -98,7 +100,7 @@ describe("WorkspacesList", () => {
     await user.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/projects",
+      to: ROUTES.workspaces.list(TEST_COMPANY_SLUG),
     });
   });
 
@@ -131,7 +133,7 @@ describe("WorkspacesList", () => {
     expect(screen.getByText("0 my issues • 3 total")).toBeInTheDocument();
   });
 
-  it("should navigate to project when clicking a project", async () => {
+  it("should navigate to project board when clicking a project", async () => {
     const user = userEvent.setup();
 
     render(<WorkspacesList {...defaultProps} />);
@@ -140,7 +142,7 @@ describe("WorkspacesList", () => {
     await user.click(firstWorkspace);
 
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: "/test-company/projects/ALPHA/board",
+      to: ROUTES.projects.board(TEST_COMPANY_SLUG, "ALPHA"),
     });
   });
 
