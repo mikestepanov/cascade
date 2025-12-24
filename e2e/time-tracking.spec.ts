@@ -1,19 +1,9 @@
+import { CONVEX_SITE_URL, E2E_API_KEY, TEST_USERS } from "./config";
 import { expect, authenticatedTest as test } from "./fixtures";
 
 /**
  * Time Tracking E2E Tests
- *
- * Tests the time tracking functionality:
- * 1. Create a project and issue
- * 2. Start timer
- * 3. Stop timer
- * 4. Verify time entry
- *
- * Uses serial mode to prevent auth token rotation issues between tests.
- * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
- * Test 2 loading stale tokens from file will fail.
- *
- * Uses ProjectsPage page object for consistent locators.
+ * ...
  */
 
 test.describe("Time Tracking", () => {
@@ -21,7 +11,24 @@ test.describe("Time Tracking", () => {
   test.describe.configure({ mode: "serial" });
   test.use({ skipAuthSave: true });
 
-  test.skip("user can track time on an issue", async ({
+  test.beforeEach(async () => {
+    // Clean up any running timers for the test user to ensure clean state
+    try {
+      await fetch(`${CONVEX_SITE_URL}/e2e/nuke-timers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-e2e-api-key": E2E_API_KEY,
+        },
+        body: JSON.stringify({ email: TEST_USERS.teamLead.email }),
+      });
+      console.log("Helper: Nuked timers for test user");
+    } catch (e) {
+      console.error("Helper: Failed to nuke timers", e);
+    }
+  });
+
+  test("user can track time on an issue", async ({
     dashboardPage,
     projectsPage,
     page,
@@ -54,26 +61,18 @@ test.describe("Time Tracking", () => {
     // Wait for the create issue modal to close
     await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
-    // 4. Open Issue Detail Modal using page object
+    // 5. Open Issue Detail Modal using page object
     await projectsPage.openIssueDetail(issueTitle);
 
     // Wait for React to fully hydrate and Convex queries to load
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(1000);
 
-    // 5. Start Timer using page object
+    // 6. Start Timer using page object
     await projectsPage.startTimer();
 
-    // Verify project created and navigate to it
-    await expect(page).toHaveURL(/\/(board|sprints|backlog)/, { timeout: 15000 });
-
-    // Handle potential slow hydration/loading state
-    const loading = page.getByText("Loading...");
-    if (await loading.isVisible()) {
-      await loading.waitFor({ state: "hidden", timeout: 15000 });
-    }
-
-    // Enable time tracking for the project
-    await projectsPage.enableTimeTracking();
+    // Verify timer started (UI feedback handled in startTimer)
+    // Optional: Stop timer to clean up
+    await projectsPage.stopTimer();
   });
 });

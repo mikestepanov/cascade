@@ -9,6 +9,7 @@ import {
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
   nukeAllE2EWorkspacesEndpoint,
+  nukeTimersEndpoint,
   resetOnboardingEndpoint,
   seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
@@ -159,6 +160,13 @@ http.route({
   path: "/e2e/nuke-workspaces",
   method: "POST",
   handler: nukeAllE2EWorkspacesEndpoint,
+});
+
+// Nuke timers
+http.route({
+  path: "/e2e/nuke-timers",
+  method: "POST",
+  handler: nukeTimersEndpoint,
 });
 
 export default http;

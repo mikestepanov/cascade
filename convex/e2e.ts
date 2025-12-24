@@ -1700,3 +1700,79 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
     return { deleted };
   },
 });
+
+/**
+ * Nuke timers for E2E testing
+ * POST /e2e/nuke-timers
+ * Body: { email?: string }
+ */
+export const nukeTimersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    const { email } = body as { email?: string };
+
+    const result = await ctx.runMutation(internal.e2e.nukeTimersInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to nuke timers
+ */
+export const nukeTimersInternal = internalMutation({
+  args: {
+    email: v.optional(v.string()),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    let usersToCheck: Doc<"users">[] = [];
+
+    if (args.email) {
+      if (!isTestEmail(args.email)) {
+        throw new Error("Only test emails allowed");
+      }
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.email))
+        .first();
+      if (user) usersToCheck.push(user);
+    } else {
+      // All test users
+      usersToCheck = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("isTestUser"), true))
+        .collect();
+    }
+
+    let deletedCount = 0;
+    for (const user of usersToCheck) {
+      const timers = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      for (const timer of timers) {
+        await ctx.db.delete(timer._id);
+        deletedCount++;
+      }
+    }
+
+    return { success: true, deleted: deletedCount };
+  },
+});
