@@ -11,6 +11,7 @@ import {
   nukeAllE2EWorkspacesEndpoint,
   nukeTimersEndpoint,
   resetOnboardingEndpoint,
+  resetTestWorkspaceEndpoint,
   seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
   updateCompanySettingsEndpoint,
@@ -167,6 +168,13 @@ http.route({
   path: "/e2e/nuke-timers",
   method: "POST",
   handler: nukeTimersEndpoint,
+});
+
+// Reset specific test workspace
+http.route({
+  path: "/e2e/reset-workspace",
+  method: "POST",
+  handler: resetTestWorkspaceEndpoint,
 });
 
 export default http;

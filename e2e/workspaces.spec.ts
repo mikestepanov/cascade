@@ -35,7 +35,24 @@ test.describe("Workspaces", () => {
       dashboardPage,
       projectsPage,
       page,
+      request,
     }) => {
+      // 1. Idempotent Reset: Ensure the specific workspace does not exist
+      const workspaceName = "🧪 E2E Testing Workspace";
+      // Use VITE_CONVEX_URL from process.env (loaded via dotenv in config)
+      // Provide a fallback if running in a context without it strictly defined, though config should have it.
+      const convexUrl = process.env.VITE_CONVEX_URL;
+      if (!convexUrl) throw new Error("VITE_CONVEX_URL is not defined");
+
+      const resetResponse = await request.post(`${convexUrl}/e2e/reset-workspace`, {
+        headers: {
+          Authorization: `Bearer ${process.env.E2E_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        data: { name: workspaceName },
+      });
+      expect(resetResponse.ok()).toBeTruthy();
+
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("projects"); // Navigates to Workspaces list
@@ -43,8 +60,7 @@ test.describe("Workspaces", () => {
       // Wait for page to stabilize
       await page.waitForTimeout(1000);
 
-      // Create a new workspace with a unique name
-      const workspaceName = `Engineering ${Date.now()}`;
+      // Create a new workspace with the fixed unique name
       await projectsPage.createWorkspace(workspaceName, "Engineering department");
 
       // Should navigate to new workspace teams list
