@@ -1836,15 +1836,18 @@ export const nukeWorkspacesInternal = internalMutation({
     // Actually, just deleting the workspaces might be enough for the test selector?
     // The test selector looks for "E2E Testing Workspace".
 
-    const spamWorkspaces = await ctx.db
-      .query("workspaces")
-      .filter((q) =>
-        q.or(
-          q.eq(q.field("name"), "E2E Testing Workspace"),
-          q.eq(q.field("name"), "🧪 E2E Testing Workspace"),
-        ),
-      )
-      .collect();
+    // Scan all workspaces to find "Engineering *" and other dynamic patterns
+    // We fetch all because we can't filter by "startsWith" in DB query easily without specific index
+    const allWorkspaces = await ctx.db.query("workspaces").collect();
+
+    const spamWorkspaces = allWorkspaces.filter(
+      (ws) =>
+        ws.name === "E2E Testing Workspace" ||
+        ws.name === "🧪 E2E Testing Workspace" ||
+        ws.name === "New Workspace" ||
+        ws.name.startsWith("Engineering ") ||
+        ws.name.startsWith("Project-"), // Also clean up project leftovers if they leaked into workspaces table?
+    );
 
     for (const ws of spamWorkspaces) {
       // Delete workspace artifacts?

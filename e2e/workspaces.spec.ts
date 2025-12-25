@@ -44,17 +44,26 @@ test.describe("Workspaces", () => {
       const convexUrl = process.env.VITE_CONVEX_URL;
       if (!convexUrl) throw new Error("VITE_CONVEX_URL is not defined");
 
-      const resetResponse = await request.post(`${convexUrl}/e2e/reset-workspace`, {
-        headers: {
-          Authorization: `Bearer ${process.env.E2E_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        data: { name: workspaceName },
-      });
-      expect(resetResponse.ok()).toBeTruthy();
+      // Reset BOTH the new emoji name (for idempotency) and the old name (to clean up zombies)
+      const namesToReset = ["🧪 E2E Testing Workspace", "E2E Testing Workspace"];
+
+      for (const name of namesToReset) {
+        const resetResponse = await request.post(`${convexUrl}/e2e/reset-workspace`, {
+          headers: {
+            Authorization: `Bearer ${process.env.E2E_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          data: { name },
+        });
+        expect(resetResponse.ok()).toBeTruthy();
+      }
 
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
+      // Force reload to ensure sidebar state is fresh after backend cleanups
+      await page.reload();
+      await dashboardPage.expectLoaded();
+
       await dashboardPage.navigateTo("projects"); // Navigates to Workspaces list
 
       // Wait for page to stabilize
