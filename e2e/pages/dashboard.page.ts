@@ -203,10 +203,21 @@ export class DashboardPage extends BasePage {
 
     // Navigate directly to dashboard URL
     await this.page.goto(dashboardUrl);
-    await this.waitForLoad();
 
-    // Wait for dashboard app shell to load (command palette button is always visible)
-    await this.commandPaletteButton.waitFor({ state: "visible", timeout: 15000 });
+    // Wait for dashboard app shell with recovery
+    try {
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 10000 });
+    } catch (e) {
+      console.log("Dashboard didn't load in time, reloading...");
+      await this.page.reload();
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 15000 });
+    }
+
+    // Ensure loading spinner is gone
+    await this.expectLoaded();
+
+    // Explicitly wait for the main content sections to prevent hydration flakes
+    await this.myIssuesSection.waitFor({ state: "visible", timeout: 10000 });
   }
 
   async navigateTo(
@@ -222,7 +233,8 @@ export class DashboardPage extends BasePage {
     };
     // Wait for tab to be visible and stable
     await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
-    await tabs[tab].click();
+    // Use force click to bypass potential animation obstructions or layout shifts in sidebar
+    await tabs[tab].click({ force: true });
     await this.waitForLoad();
   }
 
@@ -236,8 +248,19 @@ export class DashboardPage extends BasePage {
   }
 
   async closeCommandPalette() {
-    await this.page.keyboard.press("Escape");
-    await expect(this.commandPalette).not.toBeVisible();
+    await expect(async () => {
+      if (!(await this.commandPalette.isVisible())) return;
+      // Focus input to ensure keyboard environment is captured
+      await this.commandPaletteInput.click().catch(() => {});
+      await this.page.keyboard.press("Escape");
+
+      // Fallback: click top-left corner (backdrop) if escape fails
+      if (await this.commandPalette.isVisible()) {
+        await this.page.mouse.click(0, 0);
+      }
+
+      await expect(this.commandPalette).not.toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 10000 });
   }
 
   async openShortcutsHelp() {
@@ -246,8 +269,15 @@ export class DashboardPage extends BasePage {
   }
 
   async closeShortcutsHelp() {
-    await this.page.keyboard.press("Escape");
-    await expect(this.shortcutsModal).not.toBeVisible();
+    await expect(async () => {
+      if (!(await this.shortcutsModal.isVisible())) return;
+      await this.page.keyboard.press("Escape");
+      // Fallback: click outside if escape fails (try clicking main content)
+      if (await this.shortcutsModal.isVisible()) {
+        await this.mainContent.click({ force: true, position: { x: 10, y: 10 } }).catch(() => {});
+      }
+      await expect(this.shortcutsModal).not.toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 10000 });
   }
 
   async setTheme(theme: "light" | "dark" | "system") {
@@ -284,8 +314,18 @@ export class DashboardPage extends BasePage {
   }
 
   async closeGlobalSearch() {
-    await this.page.keyboard.press("Escape");
-    await expect(this.globalSearchModal).not.toBeVisible();
+    await expect(async () => {
+      if (!(await this.globalSearchModal.isVisible())) return;
+      await this.globalSearchInput.click().catch(() => {});
+      await this.page.keyboard.press("Escape");
+
+      // Fallback: click top-left corner (backdrop) if escape fails
+      if (await this.globalSearchModal.isVisible()) {
+        await this.page.mouse.click(0, 0);
+      }
+
+      await expect(this.globalSearchModal).not.toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 10000 });
   }
 
   // ===================

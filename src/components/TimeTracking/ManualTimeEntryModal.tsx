@@ -127,7 +127,7 @@ export function ManualTimeEntryModal({
   const [tagInput, setTagInput] = useState("");
 
   // Fetch issues for selected project
-  const projectIssues = useQuery(api.issues.listByProject, projectId ? { projectId } : "skip");
+  const projectIssues = useQuery(api.issues.listIssuesLegacy, projectId ? { projectId } : "skip");
 
   const form = useAppForm({
     defaultValues: {

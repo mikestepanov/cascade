@@ -152,8 +152,6 @@ window.addEventListener('message', async (message) => {
   },
   optimizeDeps: {
     include: [
-      "react",
-      "react-dom",
       "convex/react",
       "sonner",
       "clsx",

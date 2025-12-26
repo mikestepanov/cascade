@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { batchFetchIssues, batchFetchUsers, batchFetchWorkspaces } from "./lib/batchHelpers";
 import {
@@ -215,7 +216,7 @@ export const listByUser = query({
   },
 });
 
-export const listByProject = query({
+export const listIssuesLegacy = query({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -237,19 +238,104 @@ export const listByProject = query({
       return [];
     }
 
-    const issuesQuery = ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
-
-    const issues = await issuesQuery.collect();
-
-    // Filter by sprint if specified
-    const filteredIssues = args.sprintId
-      ? issues.filter((issue) => issue.sprintId === args.sprintId)
-      : issues.filter((issue) => !issue.sprintId); // Backlog items
+    // Use index for efficient filtering if sprint is specified
+    // Note: by_workspace_sprint_created sorts by createdAt automatically
+    let issues: Doc<"issues">[];
+    if (args.sprintId) {
+      issues = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+        )
+        .collect();
+    } else {
+      // Fallback for backlog (missing sprintId) - use optimal index "by_workspace" and filter
+      // (Convex indexes skip missing optional fields so we can't query eq(undefined))
+      const allIssues = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .collect();
+      issues = allIssues.filter((issue) => !issue.sprintId);
+    }
 
     // Use batch enrichment to avoid N+1 queries
-    return await enrichIssues(ctx, filteredIssues);
+    return await enrichIssues(ctx, issues);
+  },
+});
+
+export const listByProject = query({
+  args: {
+    projectId: v.id("projects"),
+    sprintId: v.optional(v.id("sprints")),
+    status: v.optional(v.string()),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    // Use by_workspace_updated index for generic listing
+    // Note: To support precise filtering by sprint/status with pagination, we need specific indexes.
+    // by_workspace_status (projectId, status)
+    // by_workspace (projectId)
+
+    // If strict filters are provided, we should try to use specific indexes if available,
+    // or fallback to memory filtering if the result set is small enough?
+    // BUT memory filtering breaks pagination pages.
+
+    // Current indexes available (assumed):
+    // by_workspace, by_workspace_status
+    // We do NOT have by_workspace_sprint visible in file scan (need to check schema).
+    // Assuming standard indexes.
+
+    let results: PaginationResult<Doc<"issues">>;
+
+    if (args.sprintId) {
+      // Use specific index for sprint to ensure correct pagination
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId!),
+        )
+        .order("desc") // created matches generic sort? standard is usually desc
+        .paginate(args.paginationOpts);
+    } else if (args.status) {
+      // Filter by status using index
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_status", (q) =>
+          q.eq("projectId", args.projectId).eq("status", args.status as string),
+        )
+        .order("desc")
+        .paginate(args.paginationOpts);
+    } else {
+      // Generic list
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    // Enrich page
+    const enrichedPage = await enrichIssues(ctx, results.page);
+
+    return {
+      ...results,
+      page: enrichedPage,
+    };
   },
 });
 
@@ -286,18 +372,19 @@ export const get = query({
     const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
 
     // Get comments and activity in parallel
-    const [comments, activities] = await Promise.all([
-      ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-        .order("asc")
-        .collect(),
-      ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-        .order("desc")
-        .take(20),
-    ]);
+    const [comments, activities]: [Doc<"issueComments">[], Doc<"issueActivity">[]] =
+      await Promise.all([
+        ctx.db
+          .query("issueComments")
+          .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+          .order("asc")
+          .collect(),
+        ctx.db
+          .query("issueActivity")
+          .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+          .order("desc")
+          .take(20),
+      ]);
 
     // Batch fetch all users for comments and activities (avoid N+1!)
     const commentAuthorIds = comments.map((c) => c.authorId);

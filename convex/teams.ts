@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
@@ -441,52 +442,109 @@ export const getBySlug = query({
 export const list = query({
   args: {
     companyId: v.id("companies"),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    // Delegate to getCompanyTeams by re-implementing the logic
     const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
-    const teams = await ctx.db
-      .query("teams")
-      .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
-      .collect();
+    if (!userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
 
     // Check if user is company admin
-    const isCompanyAdminResult = await isCompanyAdmin(ctx, args.companyId, userId);
+    const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
 
-    const teamsWithMetadata = await Promise.all(
-      teams.map(async (team) => {
-        const role = await getTeamRole(ctx, team._id, userId);
+    let results: PaginationResult<Doc<"teams">> | PaginationResult<Doc<"teamMembers">>;
+    if (isAdmin) {
+      // Admins see all teams in the company
+      results = await ctx.db
+        .query("teams")
+        .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
+        .paginate(args.paginationOpts);
+    } else {
+      // Non-admins see only teams they are a member of
+      const membershipResults = await ctx.db
+        .query("teamMembers")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .paginate(args.paginationOpts);
 
-        // Only return teams user has access to (team member or company admin)
-        if (!(role || isCompanyAdminResult)) return null;
+      // Map memberships to teams
+      const teamIds = membershipResults.page.map((m) => m.teamId);
+      const teams = await batchFetchTeams(ctx, teamIds);
 
-        // Get member count
-        const memberCount = await ctx.db
-          .query("teamMembers")
-          .withIndex("by_team", (q) => q.eq("teamId", team._id))
-          .collect()
-          .then((m) => m.length);
+      // Filter out teams from other companies
+      const filteredPage = membershipResults.page.filter((m) => {
+        const t = teams.get(m.teamId);
+        return t && t.companyId === args.companyId;
+      });
 
-        // Get project count
-        const projectCount = await ctx.db
-          .query("projects")
-          .withIndex("by_team", (q) => q.eq("teamId", team._id))
-          .collect()
-          .then((p) => p.length);
+      results = {
+        ...membershipResults,
+        page: filteredPage,
+      };
+    }
+
+    // Now enrich the page results
+
+    // If admin, it's Doc<"teams">[], if member, it's Doc<"teamMembers">[]
+
+    // We need unified handling.
+
+    // Let's standardize on: We have a list of teamIds.
+    let teamIds: Id<"teams">[];
+    if (isAdmin) {
+      teamIds = (results.page as Doc<"teams">[]).map((t) => t._id);
+    } else {
+      teamIds = (results.page as Doc<"teamMembers">[]).map((m) => m.teamId);
+    }
+
+    const teamMap = await batchFetchTeams(ctx, teamIds);
+
+    // Fetch counts
+    const memberCountsPromises = teamIds.map(async (teamId) => {
+      return await ctx.db
+        .query("teamMembers")
+        .withIndex("by_team", (q) => q.eq("teamId", teamId))
+        .collect()
+        .then((m) => m.length);
+    });
+
+    const memberCounts = await Promise.all(memberCountsPromises);
+
+    const projectCountsPromises = teamIds.map(async (teamId) => {
+      return await ctx.db
+        .query("projects")
+        .withIndex("by_team", (q) => q.eq("teamId", teamId))
+        .collect()
+        .then((p) => p.length);
+    });
+    const projectCounts = await Promise.all(projectCountsPromises);
+
+    // Fetch user role for each team
+    const pageWithMetadata = await Promise.all(
+      teamIds.map(async (teamId, index) => {
+        const team = teamMap.get(teamId);
+        if (!team) return null;
+        if (team.companyId !== args.companyId) return null;
+
+        const memberCount = memberCounts[index];
+        const projectCount = projectCounts[index];
+
+        const role = await getTeamRole(ctx, teamId, userId);
 
         return {
           ...team,
           userRole: role,
-          isAdmin: isCompanyAdminResult,
+          isAdmin,
           memberCount,
           projectCount,
         };
       }),
     );
 
-    return teamsWithMetadata.filter((t): t is NonNullable<typeof t> => t !== null);
+    return {
+      ...results,
+      page: pageWithMetadata.filter((t): t is NonNullable<typeof t> => t !== null),
+    };
   },
 });
 

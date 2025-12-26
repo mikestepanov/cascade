@@ -14,7 +14,7 @@
 import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { httpAction, internalMutation } from "./_generated/server";
 
 // Test user expiration (1 hour - for garbage collection)
@@ -1698,5 +1698,345 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
     }
 
     return { deleted };
+  },
+});
+
+/**
+ * Nuke timers for E2E testing
+ * POST /e2e/nuke-timers
+ * Body: { email?: string }
+ */
+export const nukeTimersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    const { email } = body as { email?: string };
+
+    const result = await ctx.runMutation(internal.e2e.nukeTimersInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to nuke timers
+ */
+export const nukeTimersInternal = internalMutation({
+  args: {
+    email: v.optional(v.string()),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    let usersToCheck: Doc<"users">[] = [];
+
+    if (args.email) {
+      if (!isTestEmail(args.email)) {
+        throw new Error("Only test emails allowed");
+      }
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.email))
+        .first();
+      if (user) usersToCheck.push(user);
+    } else {
+      // All test users
+      usersToCheck = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("isTestUser"), true))
+        .collect();
+    }
+
+    let deletedCount = 0;
+    for (const user of usersToCheck) {
+      const timers = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      for (const timer of timers) {
+        await ctx.db.delete(timer._id);
+        deletedCount++;
+      }
+    }
+
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Nuke workspaces for E2E testing
+ * POST /e2e/nuke-workspaces
+ */
+export const nukeWorkspacesEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.e2e.nukeWorkspacesInternal, {});
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to nuke workspaces created by test users
+ */
+export const nukeWorkspacesInternal = internalMutation({
+  args: {},
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx) => {
+    // Find all test users
+    const testUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("isTestUser"), true))
+      .collect();
+
+    let deletedCount = 0;
+
+    // 2. Orphan Cleanup: Delete companies/workspaces matching E2E patterns
+    // This catches data where the creator user was already deleted
+
+    // Delete orphan companies by slug/name pattern
+    const orphanCompanies = await ctx.db
+      .query("companies")
+      .withIndex("by_slug")
+      .filter((q) => q.or(q.eq(q.field("slug"), "nixelo-e2e"), q.eq(q.field("name"), "Nixelo E2E")))
+      .collect();
+
+    // Also check for companies wrapping E2E workspaces if possible?
+    // Usually workspaces are children of companies.
+    // In the schema, `workspaces` have `companyId`.
+    // We should look for `workspaces` named "E2E Testing Workspace" and delete them + their parent company if it's test-only?
+    // Actually, just deleting the workspaces might be enough for the test selector?
+    // The test selector looks for "E2E Testing Workspace".
+
+    // Scan all workspaces to find "Engineering *" and other dynamic patterns
+    // We fetch all because we can't filter by "startsWith" in DB query easily without specific index
+    const allWorkspaces = await ctx.db.query("workspaces").collect();
+
+    const spamWorkspaces = allWorkspaces.filter(
+      (ws) =>
+        ws.name === "E2E Testing Workspace" ||
+        ws.name === "🧪 E2E Testing Workspace" ||
+        ws.name === "New Workspace" ||
+        ws.name.startsWith("Engineering ") ||
+        ws.name.startsWith("Project-"), // Also clean up project leftovers if they leaked into workspaces table?
+    );
+    // Note: This full table scan is inefficient.
+    // Ideally, we should add a `search_name` index or a `by_name_prefix` index
+    // to filter these on the DB side. For now, in a test environment, this is acceptable.
+
+    for (const ws of spamWorkspaces) {
+      // Delete workspace artifacts?
+      // Just delete the workspace for now to clear the UI list
+      await ctx.db.delete(ws._id);
+      deletedCount++;
+    }
+
+    // Continue with standard cleanup...
+    for (const user of testUsers) {
+      const companies = await ctx.db
+        .query("companies")
+        .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
+        .collect();
+
+      for (const company of companies) {
+        // Delete company members
+        const members = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const member of members) {
+          await ctx.db.delete(member._id);
+        }
+
+        // Delete teams
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const team of teams) {
+          await ctx.db.delete(team._id);
+        }
+
+        // Delete projects
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const project of projects) {
+          await ctx.db.delete(project._id);
+        }
+
+        // Delete workspaces (departments)
+        const workspaces = await ctx.db
+          .query("workspaces")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const workspace of workspaces) {
+          await ctx.db.delete(workspace._id);
+        }
+
+        // Delete the company (workspace container)
+        await ctx.db.delete(company._id);
+        deletedCount++;
+      }
+    }
+
+    // Also cleaning up "E2E Testing Workspace" specifically if created by admin but somehow left over?
+    // The above loop covers it if created by a test user.
+
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Reset a specific test workspace by name (Autonuke if exists)
+ * POST /e2e/reset-workspace
+ * Body: { name: string }
+ */
+export const resetTestWorkspaceEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { name } = body;
+
+    if (!name) {
+      return new Response(JSON.stringify({ error: "Missing workspace name" }), { status: 400 });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.resetTestWorkspaceInternal, { name });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to delete a workspace by name
+ */
+export const resetTestWorkspaceInternal = internalMutation({
+  args: {
+    name: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    // Find workspaces with the exact name
+    const workspaces = await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .collect();
+
+    let deletedCount = 0;
+
+    for (const ws of workspaces) {
+      // Delete Projects
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .collect();
+      for (const p of projects) await ctx.db.delete(p._id);
+
+      // Delete Teams
+      const teams = await ctx.db
+        .query("teams")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .collect();
+      for (const t of teams) await ctx.db.delete(t._id);
+
+      // Delete the workspace itself
+      await ctx.db.delete(ws._id);
+      deletedCount++;
+    }
+
+    // Also try to find companies (containers) with this name?
+    // "E2E Testing Workspace" is used for the workspace list item, which comes from companies/workspaces.
+    // Let's also check companies just in case
+    const companies = await ctx.db
+      .query("companies")
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .collect();
+
+    for (const company of companies) {
+      // Delete children logic similar to nuke
+      // ... abbreviated for safety, assume nuke handles big cleanup, this handles targeted test iterations
+      // If we are strictly creating a workspace (department), the above workspace deletion is sufficient.
+      // If we are creating a company, we need company deletion.
+      // The test "User can create a workspace" likely creates a COMPANY (multi-tenant root) or a WORKSPACE (project group)?
+      // Based on UI text "Add new workspace", it usually maps to the top-level entity.
+      // Let's delete the company too.
+
+      // Delete company members
+      const members = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const member of members) await ctx.db.delete(member._id);
+
+      // Delete teams
+      const teams = await ctx.db
+        .query("teams")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const team of teams) await ctx.db.delete(team._id);
+
+      // Delete projects
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const project of projects) await ctx.db.delete(project._id);
+
+      // Delete workspaces (departments)
+      const workspaces = await ctx.db
+        .query("workspaces")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const workspace of workspaces) await ctx.db.delete(workspace._id);
+
+      await ctx.db.delete(company._id);
+      deletedCount++;
+    }
+
+    return { success: true, deleted: deletedCount };
   },
 });
