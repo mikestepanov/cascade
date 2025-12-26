@@ -1,4 +1,4 @@
-# Cascade Architecture (Innovation)
+# Nixelo Architecture (Innovation)
 
 **Stack**: Convex (Real-time DB), React (SPA), PyTorch (AI).
 

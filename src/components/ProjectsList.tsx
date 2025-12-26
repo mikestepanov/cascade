@@ -29,7 +29,7 @@ export function ProjectsList() {
     await navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
-  if (!projects) {
+  if (status === "LoadingFirstPage") {
     return (
       <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
         <LoadingSpinner />

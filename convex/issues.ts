@@ -1,5 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { paginationOptsValidator } from "convex/server";
+import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
@@ -300,20 +300,34 @@ export const listByProject = query({
     // We do NOT have by_workspace_sprint visible in file scan (need to check schema).
     // Assuming standard indexes.
 
-    let query = args.status
-      ? ctx.db
-          .query("issues")
-          .withIndex("by_workspace_status", (q) =>
-            q.eq("projectId", args.projectId).eq("status", args.status as string),
-          )
-      : ctx.db.query("issues").withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+    let results: PaginationResult<Doc<"issues">>;
 
-    // Filter by sprint if provided (using .filter() is efficient enough for sprint filtering typically)
     if (args.sprintId) {
-      query = query.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
+      // Use specific index for sprint to ensure correct pagination
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId!),
+        )
+        .order("desc") // created matches generic sort? standard is usually desc
+        .paginate(args.paginationOpts);
+    } else if (args.status) {
+      // Filter by status using index
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_status", (q) =>
+          q.eq("projectId", args.projectId).eq("status", args.status as string),
+        )
+        .order("desc")
+        .paginate(args.paginationOpts);
+    } else {
+      // Generic list
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .order("desc")
+        .paginate(args.paginationOpts);
     }
-
-    const results = await query.order("desc").paginate(args.paginationOpts);
 
     // Enrich page
     const enrichedPage = await enrichIssues(ctx, results.page);

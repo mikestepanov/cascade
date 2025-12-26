@@ -1,4 +1,5 @@
-const fs = require("fs");
+import * as fs from "fs";
+import process from "process";
 
 // Usage: node generate-unified.js <input-md-file> <output-mmd-file>
 const inputFile = process.argv[2];
@@ -20,15 +21,17 @@ try {
   let combinedGraph = "erDiagram\n";
   let foundAny = false;
 
-  match = mermaidRegex.exec(content);
-  while (match !== null) {
+  // Use matchAll for safer iteration
+  const matches = content.matchAll(mermaidRegex);
+
+  for (const match of matches) {
     const graphContent = match[1].trim();
 
     // Only process ER diagrams
     if (graphContent.startsWith("erDiagram")) {
       foundAny = true;
-      // Remove "erDiagram" header from the block
-      const body = graphContent.replace("erDiagram", "").trim();
+      // Remove "erDiagram" header from the block using regex to ensure only the start is removed
+      const body = graphContent.replace(/^erDiagram/gm, "").trim();
       combinedGraph += "    %% --- Merged Block ---\n";
       // Indent for readability
       combinedGraph += body
@@ -37,8 +40,6 @@ try {
         .join("\n");
       combinedGraph += "\n\n";
     }
-
-    match = mermaidRegex.exec(content);
   }
 
   if (foundAny) {

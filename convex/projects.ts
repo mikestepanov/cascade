@@ -169,9 +169,21 @@ export const listByTeam = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    // TODO: Improve access control (check team membership or company admin)
-    // For now, we rely on the fact that if a user can access the workspace context,
-    // they can list the team's projects.
+    // Check access control
+    const team = await ctx.db.get(args.teamId);
+    if (!team) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    const { getTeamRole } = await import("./teams");
+    const { isCompanyAdmin } = await import("./companies");
+
+    const role = await getTeamRole(ctx, args.teamId, userId);
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
+
+    if (!(role || isAdmin)) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
 
     return await ctx.db
       .query("projects")
@@ -207,6 +219,9 @@ export const listOrphanedProjects = query({
     return await ctx.db
       .query("projects")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      // Note: We use a filter here because we lack a specific `by_workspace_no_team` index.
+      // This works for now as the number of projects per workspace is manageable,
+      // but for high scale, we should add an index or a "orphaned" status field.
       .filter((q) => q.eq(q.field("teamId"), undefined))
       .paginate(args.paginationOpts);
   },

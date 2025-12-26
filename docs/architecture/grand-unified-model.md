@@ -41,14 +41,14 @@ erDiagram
     SPRINT {
         id _id PK
         enum status "ACTIVE|FUTURE"
-        id workspaceId FK "Global"
+        id projectId FK "→ Project"
     }
 
     ISSUE {
         id _id PK
         string title
         id assigneeId FK
-        id workspaceId FK "Global"
+        id workspaceId FK "→ Workspace"
     }
 
     %% --- Agency & CRM Domain ---

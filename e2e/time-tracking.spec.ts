@@ -25,6 +25,8 @@ test.describe("Time Tracking", () => {
       console.log("Helper: Nuked timers for test user");
     } catch (e) {
       console.error("Helper: Failed to nuke timers", e);
+      // Fail the test if cleanup fails - we need a clean slate
+      throw new Error(`Failed to nuke timers: ${e}`);
     }
   });
 

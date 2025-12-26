@@ -78,7 +78,7 @@ erDiagram
     PROJECT ||--o{ SAVED_FILTER : "views"
     ISSUE ||--o{ ISSUE_COMMENT : "discusses"
     ISSUE ||--o{ ISSUE_LINK : "relates/blocks"
-    ISSUE ||--o{ CUSTOM_FIELD_VALUE : "extensions"
+
 
     PROJECT {
         id _id PK
@@ -92,7 +92,7 @@ erDiagram
         id _id PK
         string name
         enum status "ACTIVE|FUTURE"
-        id workspaceId FK "→ Workspace (Global)"
+        id projectId FK "→ Project"
     }
 
     SAVED_FILTER {
@@ -110,7 +110,7 @@ erDiagram
         id assigneeId FK "→ User"
         id workspaceId FK "→ Workspace (Global)"
         id sprintId FK "→ Sprint"
-        id sprintId FK "→ Sprint"
+
         float64[] embedding "Vector Search"
     }
 
@@ -127,12 +127,7 @@ erDiagram
         enum type "BLOCKS|RELATES"
     }
 
-    CUSTOM_FIELD_VALUE {
-        id _id PK
-        id issueId FK "→ Issue"
-        id fieldId FK "→ CustomField"
-        string value
-    }
+
 
     ISSUE_COMMENT {
         id _id PK
@@ -321,12 +316,7 @@ erDiagram
         string startTime "09:00"
         string endTime "17:00"
     }
-    AVAILABILITY_SLOT {
-        id _id PK
-        enum dayOfWeek "MONDAY..."
-        string startTime "09:00"
-        string endTime "17:00"
-    }
+
 
     BOOKING {
         id _id PK

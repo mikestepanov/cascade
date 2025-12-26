@@ -55,7 +55,10 @@ test.describe("Workspaces", () => {
           },
           data: { name },
         });
-        expect(resetResponse.ok()).toBeTruthy();
+        if (!resetResponse.ok()) {
+          console.error(`Values reset failed: ${await resetResponse.text()}`);
+        }
+        expect(resetResponse.ok(), "Failed to reset workspace").toBeTruthy();
       }
 
       await dashboardPage.goto();

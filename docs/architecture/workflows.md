@@ -34,9 +34,9 @@ Cascade is optimized for speed. No migration files.
     });
     ```
 2.  **Save**: `npx convex dev` automatically pushes changes.
-    37: 3. **Use**: Field is immediately available in `ctx.db` in your functions.
+3.  **Use**: Field is immediately available in `ctx.db` in your functions.
 
-## 2. Project Management Lifecycle
+## 3. Project Management Lifecycle
 
 _Domain: Project Management_
 
@@ -61,7 +61,7 @@ sequenceDiagram
     end
 ```
 
-## 3. AI Processing Pipeline
+## 4. AI Processing Pipeline
 
 _Domain: AI & Meeting Intelligence_
 
@@ -90,7 +90,7 @@ sequenceDiagram
     TransformationAction->>DB: Update Meeting Status (COMPLETED)
 ```
 
-## 4. Offline Sync & Optimistic UI
+## 5. Offline Sync & Optimistic UI
 
 _Domain: System_
 
@@ -121,7 +121,7 @@ sequenceDiagram
     end
 ```
 
-## 3. Indexing in Convex
+## 6. Indexing in Convex
 
 Indexes are defined directly on the table definition in schema.ts.
 

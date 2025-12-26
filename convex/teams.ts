@@ -471,7 +471,7 @@ export const list = query({
       const teamIds = membershipResults.page.map((m) => m.teamId);
       const teams = await batchFetchTeams(ctx, teamIds);
 
-      // Filter filtering out teams from other companies
+      // Filter out teams from other companies
       const filteredPage = membershipResults.page.filter((m) => {
         const t = teams.get(m.teamId);
         return t && t.companyId === args.companyId;

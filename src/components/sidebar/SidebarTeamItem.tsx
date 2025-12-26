@@ -25,7 +25,11 @@ export function SidebarTeamItem({
   onNavClick,
 }: SidebarTeamItemProps) {
   const location = useLocation();
-  const isActive = location.pathname.includes(`/teams/${team.slug}`);
+  // Use regex to ensure we match /teams/slug exactly, or /teams/slug/...
+  // but NOT /teams/slug-prefix... using word boundary or path separator check
+  const isActive =
+    location.pathname === `/teams/${team.slug}` ||
+    location.pathname.startsWith(`/teams/${team.slug}/`);
 
   return (
     <div className="ml-4">
@@ -109,7 +113,8 @@ function SidebarTeamProjects({
             onClick={onNavClick}
             className={cn(
               "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
-              location.pathname.includes(`/projects/${project.key}`)
+              location.pathname === `/projects/${project.key}` ||
+                location.pathname.startsWith(`/projects/${project.key}/`)
                 ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium"
                 : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
             )}

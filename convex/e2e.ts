@@ -1848,6 +1848,9 @@ export const nukeWorkspacesInternal = internalMutation({
         ws.name.startsWith("Engineering ") ||
         ws.name.startsWith("Project-"), // Also clean up project leftovers if they leaked into workspaces table?
     );
+    // Note: This full table scan is inefficient.
+    // Ideally, we should add a `search_name` index or a `by_name_prefix` index
+    // to filter these on the DB side. For now, in a test environment, this is acceptable.
 
     for (const ws of spamWorkspaces) {
       // Delete workspace artifacts?

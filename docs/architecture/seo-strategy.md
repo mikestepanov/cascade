@@ -1,42 +1,17 @@
-# Cascade SEO Strategy
+# Nixelo SEO Strategy
 
-> **Note**: Since Cascade uses Convex (typically with React/Next.js), the SEO strategy depends on the frontend framework.
+> **Note**: Since Nixelo uses React 19 + Vite + TanStack Router (SPA), the SEO strategy relies on pre-rendering and meta tag management.
 
-## Scenario A: Next.js (Recommended)
+## 1. SPA SEO Strategy (Vite)
 
-If Cascade uses Next.js, follow the **StartHub** pattern:
+Since Nixelo is a Single Page App (SPA), strict server-side rendering (like Next.js) is not the default.
 
-- Use server-side `generateMetadata`.
-- Render JSON-LD on the server.
-
-## Scenario B: Pure React SPA (Vite)
-
-If Cascade is a Single Page App (SPA), SEO is harder.
-
-1. **Pre-rendering**: Use tools like `react-snap` or Prerender.io.
-2. **Meta Tags**: Use `react-helmet-async` for dynamic head management.
-
-### Example (React Helmet)
-
-```tsx
-import { Helmet } from "react-helmet-async";
-
-function ProjectPage({ project }) {
-  return (
-    <>
-      <Helmet>
-        <title>{project.title} | Cascade</title>
-        <meta name="robots" content="noindex" /> {/* Secure App Content */}
-      </Helmet>
-      <h1>{project.title}</h1>
-    </>
-  );
-}
-```
+1.  **Meta Tags**: Use `@tanstack/react-router` or `react-helmet-async` to manage `<head>` tags.
+2.  **Pre-rendering**: Use tools like `prerender.io` or logical SSR if needed for public pages.
 
 ## 2. Public vs. Private Strategy
 
-Since Cascade is a secure Enterprise SaaS, 90% of pages should NOT be indexed.
+Since Nixelo is a secure Enterprise SaaS, 90% of pages should NOT be indexed.
 
 | Page Type            | Strategy    | Robots Tag          |
 | :------------------- | :---------- | :------------------ |
