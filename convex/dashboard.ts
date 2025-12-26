@@ -137,26 +137,24 @@ export const getMyProjects = query({
     const projectIds = memberships.map((m) => m.projectId);
     const projectMap = await batchFetchWorkspaces(ctx, projectIds);
 
-    // Fetch issues per project using index (NOT loading all issues!)
-    const issuesByWorkspace = await Promise.all(
-      projectIds.map((projectId) =>
-        ctx.db
-          .query("issues")
-          .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
-          .collect(),
-      ),
-    );
+    // Calculate "My Issues" count efficiently by querying issues assigned to ME
+    // This is scalable because per-user assignment count is usually small (<1000)
+    const myIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .collect();
 
-    // Build counts per project
-    const totalIssuesByWorkspace = new Map<string, number>();
     const myIssuesByWorkspace = new Map<string, number>();
+    for (const issue of myIssues) {
+      if (issue.projectId) {
+        const wsId = issue.projectId.toString();
+        myIssuesByWorkspace.set(wsId, (myIssuesByWorkspace.get(wsId) || 0) + 1);
+      }
+    }
 
-    projectIds.forEach((projectId, index) => {
-      const issues = issuesByWorkspace[index];
-      const wsId = projectId.toString();
-      totalIssuesByWorkspace.set(wsId, issues.length);
-      myIssuesByWorkspace.set(wsId, issues.filter((i) => i.assigneeId === userId).length);
-    });
+    // Note: We removed "totalQuestions" / "totalIssues" calculation because fetching ALL issues
+    // for every project is a performance killer and OOM risk (loading 10k+ items).
+    // If total counts are needed, they should be pre-aggregated in a stats table.
 
     // Enrich memberships with project data and counts
     const projects = memberships
@@ -169,7 +167,7 @@ export const getMyProjects = query({
           ...project,
           _id: membership.projectId,
           role: membership.role,
-          totalIssues: totalIssuesByWorkspace.get(wsId) ?? 0,
+          totalIssues: 0, // Disabled for performance
           myIssues: myIssuesByWorkspace.get(wsId) ?? 0,
         };
       })

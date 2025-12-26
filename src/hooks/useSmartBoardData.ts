@@ -201,11 +201,14 @@ export function useSmartBoardData({
     return result;
   }, [statusCounts]);
 
-  // Calculate total hidden done count
+  // Calculate total hidden done count from accurate statusCounts
   const hiddenDoneCount = useMemo(() => {
-    const baseHidden = smartData?.hiddenDoneCount ?? 0;
-    return Math.max(0, baseHidden - additionalDoneIssues.length);
-  }, [smartData?.hiddenDoneCount, additionalDoneIssues.length]);
+    let total = 0;
+    for (const counts of Object.values(statusCounts)) {
+      total += counts.hidden;
+    }
+    return total;
+  }, [statusCounts]);
 
   // Collect all issues for finding oldest
   const allLoadedIssues = useMemo(() => {

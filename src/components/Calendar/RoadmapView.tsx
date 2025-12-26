@@ -20,7 +20,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   const { startDate, endDate, columns } = getDateRange(currentDate, timeScale);
 
   // Fetch issues and sprints
-  const issues = useQuery(api.issues.listByProject, { projectId });
+  const issues = useQuery(api.issues.listRoadmapIssues, { projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
 
   // Filter to items with dates

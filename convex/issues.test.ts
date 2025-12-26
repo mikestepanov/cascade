@@ -336,7 +336,7 @@ describe("Issues", () => {
     });
   });
 
-  describe("listByProject", () => {
+  describe("listPaginatedIssues", () => {
     it("should return all issues in a project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -362,7 +362,10 @@ describe("Issues", () => {
         priority: "low",
       });
 
-      const issues = await asUser.query(api.issues.listByProject, { projectId });
+      const { page: issues } = await asUser.query(api.issues.listPaginatedIssues, {
+        projectId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
       expect(issues).toHaveLength(3);
       expect(issues.map((i) => i.title)).toContain("Issue 1");
       expect(issues.map((i) => i.title)).toContain("Issue 2");
@@ -375,7 +378,10 @@ describe("Issues", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const issues = await asUser.query(api.issues.listByProject, { projectId });
+      const { page: issues } = await asUser.query(api.issues.listPaginatedIssues, {
+        projectId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
       expect(issues).toEqual([]);
     });
   });

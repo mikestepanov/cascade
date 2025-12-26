@@ -17,7 +17,6 @@ try {
   // Matches ```mermaid [content] ```
   const mermaidRegex = /```mermaid\s+([\s\S]*?)```/g;
 
-  let match;
   let combinedGraph = "erDiagram\n";
   let foundAny = false;
 

@@ -216,7 +216,10 @@ export const listByUser = query({
   },
 });
 
-export const listIssuesLegacy = query({
+// Types that are considered "Root" (top-level) issues
+const ROOT_ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
+
+export const listRoadmapIssues = query({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -232,38 +235,72 @@ export const listIssuesLegacy = query({
       return [];
     }
 
-    // Check access permissions
     const hasAccess = await canAccessProject(ctx, args.projectId, userId);
     if (!hasAccess) {
       return [];
     }
 
-    // Use index for efficient filtering if sprint is specified
-    // Note: by_workspace_sprint_created sorts by createdAt automatically
-    let issues: Doc<"issues">[];
+    let issues: Doc<"issues">[] = [];
     if (args.sprintId) {
-      issues = await ctx.db
+      // If sprint is selected, we usually want EVERYTHING in that sprint (including subtasks?)
+      // Roadmap implies viewing the timeline. Subtasks typically move with parents.
+      // But adhering to "Root Only" request:
+      const allSprintIssues = await ctx.db
         .query("issues")
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
         .collect();
+
+      // We still have to memory filter here because we lack a by_sprint_type index
+      issues = allSprintIssues.filter((i) => ROOT_ISSUE_TYPES.includes(i.type as any));
     } else {
-      // Fallback for backlog (missing sprintId) - use optimal index "by_workspace" and filter
-      // (Convex indexes skip missing optional fields so we can't query eq(undefined))
-      const allIssues = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-        .collect();
-      issues = allIssues.filter((issue) => !issue.sprintId);
+      // Backend filtering using parallel queries on the new index
+      // This ensures we never load "subtask" type issues from DB
+      const outcomes = await Promise.all(
+        ROOT_ISSUE_TYPES.map((type) =>
+          ctx.db
+            .query("issues")
+            .withIndex("by_workspace_type", (q) =>
+              q.eq("projectId", args.projectId).eq("type", type),
+            )
+            .collect(),
+        ),
+      );
+      issues = outcomes.flat();
     }
 
-    // Use batch enrichment to avoid N+1 queries
     return await enrichIssues(ctx, issues);
   },
 });
 
-export const listByProject = query({
+export const listSelectableIssues = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    // Limit to recent 500 root issues for dropdowns to avoid performance kill
+    // Real solution is a ComboBox with async search
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .order("desc") // Most recent first
+      .take(500);
+
+    return issues
+      .filter((i) => !i.parentId && i.type !== "subtask") // Root only
+      .map((i) => ({
+        _id: i._id,
+        key: i.key,
+        title: i.title,
+      }));
+  },
+});
+
+export const listPaginatedIssues = query({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -303,11 +340,12 @@ export const listByProject = query({
     let results: PaginationResult<Doc<"issues">>;
 
     if (args.sprintId) {
+      const sprintId = args.sprintId;
       // Use specific index for sprint to ensure correct pagination
       results = await ctx.db
         .query("issues")
         .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId!),
+          q.eq("projectId", args.projectId).eq("sprintId", sprintId),
         )
         .order("desc") // created matches generic sort? standard is usually desc
         .paginate(args.paginationOpts);
@@ -1516,51 +1554,72 @@ export const listByWorkspaceSmart = query({
     const workflowStates = project.workflowStates || [];
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
 
-    // Build a map of status -> category
-    const statusToCategory: Record<string, string> = {};
-    for (const state of workflowStates) {
-      statusToCategory[state.id] = state.category;
+    // Filter by sprint if provided
+    // If sprint is provided, we use by_workspace_sprint_created index because it's efficient for finding all sprint issues
+    // regardless of status. Sprint views are usually smaller than backlog/entire board.
+    if (args.sprintId) {
+      const allSprintIssues = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+        )
+        .collect();
+
+      // Apply smart filtering in memory for sprint view (it's small enough usually)
+      const smartFiltered = allSprintIssues.filter((issue) => {
+        const state = workflowStates.find((s) => s.id === issue.status);
+        if (state?.category === "done") {
+          return issue.updatedAt >= doneThreshold;
+        }
+        return true;
+      });
+
+      const hiddenDoneCount = allSprintIssues.length - smartFiltered.length;
+      const enriched = await enrichIssues(ctx, smartFiltered);
+      return {
+        issuesByStatus: groupIssuesByStatus(enriched),
+        hiddenDoneCount,
+        workflowStates,
+      };
     }
 
-    // Get all issues for this project (optionally filtered by sprint)
-    const issuesQuery = ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+    // For Full Board (Backlog/Kanban), use status-based parallel queries to avoid loading old done issues
+    const queries = workflowStates.map((state) => {
+      // Use by_workspace_status or by_workspace_status_updated
+      // We have by_workspace_status_updated: ["projectId", "status", "updatedAt"]
 
-    const allIssues = await issuesQuery.collect();
+      const BaseQueryFn = (q: any) => q.eq("projectId", args.projectId).eq("status", state.id);
 
-    // Filter by sprint if provided
-    const sprintFiltered = args.sprintId
-      ? allIssues.filter((i) => i.sprintId === args.sprintId)
-      : allIssues;
-
-    // Apply smart loading: filter done items by date
-    const smartFiltered = sprintFiltered.filter((issue) => {
-      const category = statusToCategory[issue.status] || "todo";
-      if (category === "done") {
-        return issue.updatedAt >= doneThreshold;
+      if (state.category === "done") {
+        // Only fetch recent done items from DB
+        return ctx.db
+          .query("issues")
+          .withIndex("by_workspace_status_updated", (q) =>
+            BaseQueryFn(q).gt("updatedAt", doneThreshold),
+          )
+          .collect();
       }
-      return true; // Load all for todo/inprogress
+
+      // Fetch all for todo/inprogress
+      return ctx.db
+        .query("issues")
+        .withIndex("by_workspace_status_updated", (q) => BaseQueryFn(q))
+        .collect();
     });
 
-    // Count hidden done items
-    const hiddenDoneCount = sprintFiltered.filter((issue) => {
-      const category = statusToCategory[issue.status] || "todo";
-      return category === "done" && issue.updatedAt < doneThreshold;
-    }).length;
+    // Execute all issue fetches
+    const results = await Promise.all(queries);
+    const allIssues = results.flat();
 
-    // Enrich with user data
-    const enriched = await enrichIssues(ctx, smartFiltered);
+    const enriched = await enrichIssues(ctx, allIssues);
 
-    // Group by status
-    const byStatus = groupIssuesByStatus(enriched);
+    // We can't easily calculate hiddenDoneCount without querying them.
+    // Since useSmartBoardData calls api.issues.getIssueCounts separately, we can return 0 here.
 
     return {
-      issuesByStatus: byStatus,
-      hiddenDoneCount,
+      issuesByStatus: groupIssuesByStatus(enriched),
+      hiddenDoneCount: 0, // Handled by separate stats query
       workflowStates,
-      totalCount: sprintFiltered.length,
-      loadedCount: smartFiltered.length,
     };
   },
 });
@@ -1670,40 +1729,102 @@ export const getIssueCounts = query({
       statusToCategory[state.id] = state.category;
     }
 
-    // Get all issues
-    let issues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    // Filter by sprint if provided
-    if (args.sprintId) {
-      issues = issues.filter((i) => i.sprintId === args.sprintId);
-    }
-
-    // Count totals by status
-    const totalByStatus = countIssuesByStatus(issues);
-
-    // Count visible (after smart loading filter) by status
-    const visibleIssues = issues.filter((issue) => {
-      const category = statusToCategory[issue.status] || "todo";
-      if (category === "done") {
-        return issue.updatedAt >= doneThreshold;
-      }
-      return true;
-    });
-    const visibleByStatus = countIssuesByStatus(visibleIssues);
-
-    // Calculate hidden counts
+    // Initialize counters
+    const totalByStatus: Record<string, number> = {};
+    const visibleByStatus: Record<string, number> = {};
     const hiddenByStatus: Record<string, number> = {};
-    for (const status of Object.keys(totalByStatus)) {
-      hiddenByStatus[status] = (totalByStatus[status] || 0) - (visibleByStatus[status] || 0);
+    let total = 0;
+    let visibleTotal = 0;
+    let hiddenTotal = 0;
+
+    // Use parallel queries for each status to avoid loading all items at once
+    // This is much safer for large projects
+    await Promise.all(
+      workflowStates.map(async (state) => {
+        let issues: { updatedAt: number; sprintId?: Id<"sprints"> }[] = [];
+
+        // If sprint is specified, use sprint index (usually smaller dataset)
+        if (args.sprintId) {
+          // For sprint view, we just rely on the main sprint query pattern or per-status logic
+          // Since we can't easily combine "by_sprint" and "by_status" in one index efficiently without "by_workspace_sprint_status" (which we don't have)
+          // We will use existing behavior for sprint-filtered counts (filtering in memory after fetching sprint),
+          // BUT since sprints are small, this is fine.
+          // However, to keep it parallelized, we could query by workspace_sprint_created and filter by status in memory?
+          // Actually, for specific status counts, we can stick to status index + filter by sprint?
+          // No, filtering 10k done items for 1 sprint item is bad.
+          // BETTER: If sprintId is present, fetch ALL sprint items once (small set) and aggregate in memory.
+          return;
+        }
+
+        // Full Board: Query by status
+        const statusIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_workspace_status_updated", (q) =>
+            q.eq("projectId", args.projectId).eq("status", state.id),
+          )
+          .collect();
+
+        issues = statusIssues;
+
+        const totalCount = issues.length;
+        let visibleCount = 0;
+
+        if (state.category === "done") {
+          // Done column: Check threshold
+          visibleCount = issues.filter((i) => i.updatedAt >= doneThreshold).length;
+        } else {
+          // Todo/Inprogress: All visible
+          visibleCount = totalCount;
+        }
+
+        const hiddenCount = totalCount - visibleCount;
+
+        // Update aggregators
+        totalByStatus[state.id] = totalCount;
+        visibleByStatus[state.id] = visibleCount;
+        hiddenByStatus[state.id] = hiddenCount;
+        total += totalCount;
+        visibleTotal += visibleCount;
+        hiddenTotal += hiddenCount;
+      }),
+    );
+
+    // Special handling for Sprint View (if sprintId was provided)
+    if (args.sprintId) {
+      const allSprintIssues = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+        )
+        .collect();
+
+      // Aggregate sprint issues
+      for (const issue of allSprintIssues) {
+        const stateId = issue.status;
+        const category = statusToCategory[stateId] || "todo";
+
+        totalByStatus[stateId] = (totalByStatus[stateId] || 0) + 1;
+        total++;
+
+        let isVisible = true;
+        if (category === "done") {
+          isVisible = issue.updatedAt >= doneThreshold;
+        }
+
+        if (isVisible) {
+          visibleByStatus[stateId] = (visibleByStatus[stateId] || 0) + 1;
+          visibleTotal++;
+        } else {
+          hiddenByStatus[stateId] = (hiddenByStatus[stateId] || 0) + 1;
+          hiddenTotal++;
+        }
+      }
     }
 
     return {
-      total: issues.length,
-      visible: visibleIssues.length,
-      hidden: issues.length - visibleIssues.length,
+      total,
+      visible: visibleTotal,
+      hidden: hiddenTotal,
       byStatus: {
         total: totalByStatus,
         visible: visibleByStatus,
