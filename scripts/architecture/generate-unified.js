@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 
 // Usage: node generate-unified.js <input-md-file> <output-mmd-file>
 const inputFile = process.argv[2];
@@ -21,7 +20,8 @@ try {
   let combinedGraph = "erDiagram\n";
   let foundAny = false;
 
-  while ((match = mermaidRegex.exec(content)) !== null) {
+  match = mermaidRegex.exec(content);
+  while (match !== null) {
     const graphContent = match[1].trim();
 
     // Only process ER diagrams
@@ -37,6 +37,8 @@ try {
         .join("\n");
       combinedGraph += "\n\n";
     }
+
+    match = mermaidRegex.exec(content);
   }
 
   if (foundAny) {

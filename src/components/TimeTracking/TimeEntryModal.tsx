@@ -321,7 +321,7 @@ export function TimeEntryModal({
   });
 
   const projectIssues = useQuery(
-    api.issues.listByProject,
+    api.issues.listIssuesLegacy,
     state.projectId ? { projectId: state.projectId } : "skip",
   );
 

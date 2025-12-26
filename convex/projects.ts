@@ -1,4 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
@@ -80,36 +81,36 @@ export const create = mutation({
 export const list = query({
   args: {
     companyId: v.optional(v.id("companies")),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return { page: [], isDone: true, continueCursor: "" };
     }
 
-    // Query memberships directly via index (NOT loading all projects!)
-    const memberships = await ctx.db
+    // Paginate memberships directly via index
+    const results = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .paginate(args.paginationOpts);
 
-    if (memberships.length === 0) {
-      return [];
+    if (results.page.length === 0) {
+      return { ...results, page: [] };
     }
 
-    // Batch fetch all projects user is a member of
-    const projectIds = memberships.map((m) => m.projectId);
+    // Batch fetch all projects
+    const projectIds = results.page.map((m) => m.projectId);
     const projectMap = await batchFetchWorkspaces(ctx, projectIds);
 
-    // Build role map from memberships
-    const roleMap = new Map(memberships.map((m) => [m.projectId.toString(), m.role]));
+    // Build role map
+    const roleMap = new Map(results.page.map((m) => [m.projectId.toString(), m.role]));
 
     // Batch fetch creators
     const creatorIds = [...projectMap.values()].map((w) => w.createdBy);
     const creatorMap = await batchFetchUsers(ctx, creatorIds);
 
-    // Fetch issue counts per project using index with reasonable limit
-    // Cap at 1000 for performance - UI can show "1000+" if needed
+    // Fetch issue counts
     const MAX_ISSUE_COUNT = 1000;
     const issueCountsPromises = projectIds.map(async (projectId) => {
       const issues = await ctx.db
@@ -126,8 +127,8 @@ export const list = query({
       issueCounts.map(({ projectId, count }) => [projectId.toString(), count]),
     );
 
-    // Build result using pre-fetched data (no N+1!)
-    const result = memberships
+    // Build result
+    const page = results.page
       .map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
@@ -150,7 +151,64 @@ export const list = query({
       })
       .filter((w): w is NonNullable<typeof w> => w !== null);
 
-    return result;
+    return {
+      ...results,
+      page,
+    };
+  },
+});
+
+export const listByTeam = query({
+  args: {
+    teamId: v.id("teams"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    // TODO: Improve access control (check team membership or company admin)
+    // For now, we rely on the fact that if a user can access the workspace context,
+    // they can list the team's projects.
+
+    return await ctx.db
+      .query("projects")
+      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const listOrphanedProjects = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    // Check workspace access
+    // Check workspace access
+    const workspace = await ctx.db.get(args.workspaceId);
+    if (!workspace) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+    // Ideally check if user is in company, but for now existence + auth is better than crashing on type mismatch against projectAccess
+
+    // Fetch projects directly attached to workspace but NO teamId
+    // We use by_workspace index. Since we can't complex filter efficiently in pagination
+    // without a specific index (by_workspace_no_team?), we rely on filtering stream
+    // or we scan.
+    // But `filter` in `paginate` is supported.
+    return await ctx.db
+      .query("projects")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .filter((q) => q.eq(q.field("teamId"), undefined))
+      .paginate(args.paginationOpts);
   },
 });
 

@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -17,23 +17,25 @@ export function ProjectsList() {
   const navigate = useNavigate();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // For now, get all company projects
-  const allProjects = useQuery(api.projects.list, { companyId: companyId });
+  // Paginated projects list
+  const {
+    results: projects,
+    status,
+    loadMore,
+  } = usePaginatedQuery(api.projects.list, { companyId }, { initialNumItems: 20 });
 
-  const handleProjectCreated = async (projectId: string, projectKey: string) => {
+  const handleProjectCreated = async (_projectId: string, projectKey: string) => {
     setIsCreateOpen(false);
     await navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
   };
 
-  if (allProjects === undefined) {
+  if (!projects) {
     return (
       <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
         <LoadingSpinner />
       </Flex>
     );
   }
-
-  const projects = allProjects || [];
 
   return (
     <Flex direction="column" gap="lg">
@@ -90,6 +92,14 @@ export function ProjectsList() {
             </Link>
           ))}
         </div>
+      )}
+
+      {status === "CanLoadMore" && (
+        <Flex justify="center" className="mt-8">
+          <Button variant="outline" onClick={() => loadMore(20)}>
+            Load More Projects
+          </Button>
+        </Flex>
       )}
 
       <CreateProjectFromTemplate

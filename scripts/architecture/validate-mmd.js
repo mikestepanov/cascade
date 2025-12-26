@@ -16,16 +16,20 @@ try {
   // Regex for definitions: ENTITY_NAME {
   const defRegex = /^\s*([A-Z_0-9]+)\s*\{/gm;
   let match;
-  while ((match = defRegex.exec(content)) !== null) {
+  match = defRegex.exec(content);
+  while (match !== null) {
     definedEntities.add(match[1]);
+    match = defRegex.exec(content);
   }
 
   // Regex for relationships: ENTITY_A ||--o{ ENTITY_B
   // Supports various cardinalities: ||--||, ||--|{, }|--||, etc.
   const relRegex = /^\s*([A-Z_0-9]+)\s*[}|][|o][-.]+[o|][{|]\s*([A-Z_0-9]+)/gm;
-  while ((match = relRegex.exec(content)) !== null) {
+  match = relRegex.exec(content);
+  while (match !== null) {
     referencedEntities.add(match[1]);
     referencedEntities.add(match[2]);
+    match = relRegex.exec(content);
   }
 
   const missing = [];

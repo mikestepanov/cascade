@@ -16,7 +16,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
-  const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
+  const issues = useQuery(api.issues.listIssuesLegacy, { projectId, sprintId });
 
   // Get calendar data
   const { daysInMonth, firstDayOfMonth, issuesByDate } = useMemo(() => {
