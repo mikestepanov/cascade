@@ -300,7 +300,7 @@ export const listSelectableIssues = query({
   },
 });
 
-export const listPaginatedIssues = query({
+export const listProjectIssues = query({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
