@@ -1600,11 +1600,11 @@ export const listByWorkspaceSmart = query({
           .collect();
       }
 
-      // Fetch all for todo/inprogress
+      // Fetch limit for todo/inprogress to prevent memory issues with massive backlogs
       return ctx.db
         .query("issues")
         .withIndex("by_workspace_status_updated", (q) => BaseQueryFn(q))
-        .collect();
+        .take(500);
     });
 
     // Execute all issue fetches
@@ -1620,79 +1620,6 @@ export const listByWorkspaceSmart = query({
       issuesByStatus: groupIssuesByStatus(enriched),
       hiddenDoneCount: 0, // Handled by separate stats query
       workflowStates,
-    };
-  },
-});
-
-/**
- * Paginated issue list for backlog/list views
- */
-export const listByWorkspacePaginated = query({
-  args: {
-    projectId: v.id("projects"),
-    sprintId: v.optional(v.id("sprints")),
-    status: v.optional(v.string()),
-    cursor: v.optional(v.string()),
-    pageSize: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
-
-    const pageSize = args.pageSize ?? DEFAULT_PAGE_SIZE;
-
-    // Query issues with proper index
-    let issues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace_updated", (q) => q.eq("projectId", args.projectId))
-      .order("desc")
-      .collect();
-
-    // Apply filters
-    if (args.sprintId) {
-      issues = issues.filter((i) => i.sprintId === args.sprintId);
-    }
-    if (args.status) {
-      issues = issues.filter((i) => i.status === args.status);
-    }
-
-    // Count total BEFORE cursor pagination (reuse already-fetched data)
-    const totalCount = issues.length;
-
-    // Apply cursor-based pagination with ID tiebreaking
-    if (args.cursor) {
-      try {
-        const { timestamp, id } = decodeCursor(args.cursor);
-        issues = issues.filter(
-          (i) => i.updatedAt < timestamp || (i.updatedAt === timestamp && i._id.toString() < id),
-        );
-      } catch {
-        // Invalid cursor - ignore and start from beginning
-      }
-    }
-
-    // Get one extra to check if there is more
-    const pageItems = issues.slice(0, pageSize + 1);
-    const hasMore = pageItems.length > pageSize;
-    const resultItems = hasMore ? pageItems.slice(0, pageSize) : pageItems;
-
-    // Enrich with user data
-    const enriched = await enrichIssues(ctx, resultItems);
-
-    // Build next cursor with ID for tiebreaking
-    const lastItem = resultItems[resultItems.length - 1];
-    const nextCursor =
-      hasMore && lastItem ? encodeCursor(lastItem.updatedAt, lastItem._id.toString()) : null;
-
-    return {
-      items: enriched,
-      nextCursor,
-      hasMore,
-      totalCount,
     };
   },
 });
