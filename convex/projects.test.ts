@@ -7,7 +7,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createCompanyAdmin, createTestUser } from "./testUtils";
 
-describe("Workspaces", () => {
+describe("Projects", () => {
   describe("create", () => {
     it("should create a project with default workflow states", async () => {
       const t = convexTest(schema, modules);

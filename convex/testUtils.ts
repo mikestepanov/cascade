@@ -88,7 +88,7 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
  * @param projectData - Optional project data
  * @returns Project ID
  */
-export async function createTestWorkspace(
+export async function createProjectInCompany(
   t: TestCtx,
   creatorId: Id<"users">,
   companyId: Id<"companies">,
@@ -175,7 +175,7 @@ export async function createTestWorkspace(
 }
 
 /**
- * @deprecated Use createTestWorkspace instead
+ * @deprecated Use createProjectInCompany instead
  */
 export async function createTestProject(
   t: TestCtx,
@@ -190,7 +190,7 @@ export async function createTestProject(
 ): Promise<Id<"projects">> {
   // Create a company first for backward compatibility
   const companyId = await createCompanyAdmin(t, creatorId);
-  return createTestWorkspace(t, creatorId, companyId, projectData);
+  return createProjectInCompany(t, creatorId, companyId, projectData);
 }
 
 /**

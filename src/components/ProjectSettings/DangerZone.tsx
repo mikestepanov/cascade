@@ -31,7 +31,7 @@ export function DangerZone({
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
-  const deleteProject = useMutation(api.projects.deleteWorkspace);
+  const deleteProject = useMutation(api.projects.deleteProject);
 
   const handleDelete = async () => {
     if (confirmText !== projectKey) {

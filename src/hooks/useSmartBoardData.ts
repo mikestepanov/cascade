@@ -88,7 +88,7 @@ export function useSmartBoardData({
   const loadingRef = useRef(false);
 
   // Fetch smart-loaded issues (done column filtered by date)
-  const smartData = useQuery(api.issues.listByWorkspaceSmart, {
+  const smartData = useQuery(api.issues.listByProjectSmart, {
     projectId,
     sprintId,
     doneColumnDays,

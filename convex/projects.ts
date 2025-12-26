@@ -2,8 +2,8 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
-import { assertIsWorkspaceAdmin, canAccessWorkspace, getWorkspaceRole } from "./projectAccess";
+import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 
 export const create = mutation({
   args: {
@@ -27,12 +27,12 @@ export const create = mutation({
     }
 
     // Check if project key already exists
-    const existingWorkspace = await ctx.db
+    const existingProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.key.toUpperCase()))
       .first();
 
-    if (existingWorkspace) {
+    if (existingProject) {
       throw new Error("Project key already exists");
     }
 
@@ -101,7 +101,7 @@ export const list = query({
 
     // Batch fetch all projects
     const projectIds = results.page.map((m) => m.projectId);
-    const projectMap = await batchFetchWorkspaces(ctx, projectIds);
+    const projectMap = await batchFetchProjects(ctx, projectIds);
 
     // Build role map
     const roleMap = new Map(results.page.map((m) => [m.projectId.toString(), m.role]));
@@ -139,14 +139,14 @@ export const list = query({
         }
 
         const creator = creatorMap.get(project.createdBy);
-        const wsId = membership.projectId.toString();
+        const projId = membership.projectId.toString();
 
         return {
           ...project,
           creatorName: getUserName(creator),
-          issueCount: issueCountByWorkspace.get(wsId) ?? 0,
+          issueCount: issueCountByWorkspace.get(projId) ?? 0,
           isOwner: project.ownerId === userId || project.createdBy === userId,
-          userRole: roleMap.get(wsId) ?? null,
+          userRole: roleMap.get(projId) ?? null,
         };
       })
       .filter((w): w is NonNullable<typeof w> => w !== null);
@@ -239,7 +239,7 @@ export const get = query({
 
     // Check access permissions
     if (userId) {
-      const hasAccess = await canAccessWorkspace(ctx, project._id, userId);
+      const hasAccess = await canAccessProject(ctx, project._id, userId);
       if (!hasAccess) {
         throw new Error("Not authorized to access this project");
       }
@@ -272,7 +272,7 @@ export const get = query({
       };
     });
 
-    const userRole = userId ? await getWorkspaceRole(ctx, project._id, userId) : null;
+    const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
 
     return {
       ...project,
@@ -305,7 +305,7 @@ export const getByKey = query({
       return null; // Unauthenticated users cannot access projects
     }
 
-    const hasAccess = await canAccessWorkspace(ctx, project._id, userId);
+    const hasAccess = await canAccessProject(ctx, project._id, userId);
     if (!hasAccess) {
       return null; // Return null instead of throwing for cleaner UI handling
     }
@@ -334,7 +334,7 @@ export const getByKey = query({
       };
     });
 
-    const userRole = await getWorkspaceRole(ctx, project._id, userId);
+    const userRole = await getProjectRole(ctx, project._id, userId);
 
     return {
       ...project,
@@ -365,7 +365,7 @@ export const update = mutation({
     }
 
     // Only project admins can update project settings
-    await assertIsWorkspaceAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
@@ -386,7 +386,7 @@ export const update = mutation({
   },
 });
 
-export const deleteWorkspace = mutation({
+export const deleteProject = mutation({
   args: {
     projectId: v.id("projects"),
   },
@@ -514,7 +514,7 @@ export const updateWorkflow = mutation({
     }
 
     // Only project admins can modify workflow
-    await assertIsWorkspaceAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     await ctx.db.patch(args.projectId, {
       workflowStates: args.workflowStates,
@@ -541,7 +541,7 @@ export const addMember = mutation({
     }
 
     // Only project admins can add members
-    await assertIsWorkspaceAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Find user by email
     const user = await ctx.db
@@ -596,7 +596,7 @@ export const updateMemberRole = mutation({
     }
 
     // Only project admins can change roles
-    await assertIsWorkspaceAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Can't change project owner's role
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -638,7 +638,7 @@ export const removeMember = mutation({
     }
 
     // Only project admins can remove members
-    await assertIsWorkspaceAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Can't remove the project owner
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -670,6 +670,6 @@ export const getUserRole = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    return await getWorkspaceRole(ctx, args.projectId, userId);
+    return await getProjectRole(ctx, args.projectId, userId);
   },
 });

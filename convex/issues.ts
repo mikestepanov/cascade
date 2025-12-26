@@ -3,7 +3,7 @@ import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { batchFetchIssues, batchFetchUsers, batchFetchWorkspaces } from "./lib/batchHelpers";
+import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -1091,7 +1091,7 @@ export const search = query({
     const [userMap, epicMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, userIds),
       batchFetchIssues(ctx, epicIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
@@ -1532,7 +1532,7 @@ import {
  * - todo/inprogress: Load all items
  * - done: Load only recent items (last N days)
  */
-export const listByWorkspaceSmart = query({
+export const listByProjectSmart = query({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),

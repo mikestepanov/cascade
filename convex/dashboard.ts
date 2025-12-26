@@ -4,8 +4,8 @@ import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import {
   batchFetchIssues,
+  batchFetchProjects,
   batchFetchUsers,
-  batchFetchWorkspaces,
   getUserName,
 } from "./lib/batchHelpers";
 import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
@@ -135,7 +135,7 @@ export const getMyProjects = query({
 
     // Batch fetch all projects
     const projectIds = memberships.map((m) => m.projectId);
-    const projectMap = await batchFetchWorkspaces(ctx, projectIds);
+    const projectMap = await batchFetchProjects(ctx, projectIds);
 
     // Calculate "My Issues" count efficiently by querying issues assigned to ME
     // This is scalable because per-user assignment count is usually small (<1000)
@@ -144,11 +144,11 @@ export const getMyProjects = query({
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
       .collect();
 
-    const myIssuesByWorkspace = new Map<string, number>();
+    const myIssuesByProject = new Map<string, number>();
     for (const issue of myIssues) {
       if (issue.projectId) {
-        const wsId = issue.projectId.toString();
-        myIssuesByWorkspace.set(wsId, (myIssuesByWorkspace.get(wsId) || 0) + 1);
+        const projId = issue.projectId.toString();
+        myIssuesByProject.set(projId, (myIssuesByProject.get(projId) || 0) + 1);
       }
     }
 
@@ -162,13 +162,13 @@ export const getMyProjects = query({
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
-        const wsId = membership.projectId.toString();
+        const projId = membership.projectId.toString();
         return {
           ...project,
           _id: membership.projectId,
           role: membership.role,
           totalIssues: 0, // Disabled for performance
-          myIssues: myIssuesByWorkspace.get(wsId) ?? 0,
+          myIssues: myIssuesByProject.get(projId) ?? 0,
         };
       })
       .filter((p) => p !== null);
@@ -215,7 +215,7 @@ export const getMyRecentActivity = query({
     const userIds = accessibleActivity.map((a) => a.userId);
 
     const [projectMap, userMap] = await Promise.all([
-      batchFetchWorkspaces(ctx, projectIdsToFetch),
+      batchFetchProjects(ctx, projectIdsToFetch),
       batchFetchUsers(ctx, userIds),
     ]);
 
@@ -266,7 +266,7 @@ export const getMyStats = query({
 
     // Batch fetch all projects to check workflow states (avoid N+1)
     const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
-    const projectMap = await batchFetchWorkspaces(ctx, projectIds);
+    const projectMap = await batchFetchProjects(ctx, projectIds);
 
     // Build a map of projectId -> done workflow states
     const doneStatesMap = new Map<string, Set<string>>();
