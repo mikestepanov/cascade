@@ -82,14 +82,17 @@ This document outlines remaining architectural improvements for the Convex backe
 **Current State**: `offlineSyncQueue` table exists.
 **Recommendation**: Ensure there is a dedicated cron job or processing trigger that actively retries `status: "failed"` items effectively, with exponential backoff, to prevent the queue from growing indefinitely.
 
-### 2. Type-Safe "Exclude" for Sensitive Fields
-
-**Current State**: User objects are often returned mostly whole.
-**Recommendation**: Ensure sensitive fields (like `email` in public contexts) are explicitly stripped. Convex 1.0+ supports defining return types (validators) for queries, which enforces this at the framework level.
-
 ---
 
 ## 📝 Completed Tasks (Reference)
+
+### ✅ Type-Safe Field Exclusion (Completed 2025-12-27)
+- Created `convex/lib/userUtils.ts` with sanitizer functions
+- Added `sanitizeUserForAuth()` and `sanitizeUserForPublic()` helpers
+- Updated `users.ts` to use sanitizer for public user queries
+- Updated `issues.ts` enrichment functions to sanitize user objects
+- Prevents sensitive fields (phone, timezone, etc.) from leaking
+- Email included only in authenticated contexts
 
 ### ✅ Efficient Rate Limiting (Completed 2025-12-27)
 - Migrated to `@convex-dev/rate-limiter` component with O(1) token bucket algorithm

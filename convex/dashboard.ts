@@ -1,4 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server"; // Added
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
@@ -12,26 +13,34 @@ import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits"
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { paginationOpts: paginationOptsValidator }, // Pagination args
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
+    if (!userId) {
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
 
-    const issues = await ctx.db
+    // Paginate using the by_assignee index
+    const results = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .collect();
+      .order("desc") // Sort by creation time (descending)
+      .paginate(args.paginationOpts);
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
       ...new Set(
-        issues
+        results.page
           .map((i) => i.projectId)
           .filter((id): id is Id<"projects"> => id !== undefined && id !== null),
       ),
     ];
     const userIds = [
-      ...new Set(issues.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
+      ...new Set(results.page.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
 
     const [projects, users] = await Promise.all([
@@ -47,7 +56,7 @@ export const getMyIssues = query({
     );
 
     // Enrich with pre-fetched data
-    const enrichedIssues = issues.map((issue) => {
+    const enrichedIssues = results.page.map((issue) => {
       const project = issue.projectId ? projectMap.get(issue.projectId) : null;
       const reporter = issue.reporterId ? userMap.get(issue.reporterId) : null;
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
@@ -61,7 +70,10 @@ export const getMyIssues = query({
       };
     });
 
-    return enrichedIssues.sort((a, b) => b.updatedAt - a.updatedAt);
+    return {
+      ...results,
+      page: enrichedIssues,
+    };
   },
 });
 

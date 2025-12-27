@@ -2,11 +2,19 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { sanitizeUserForAuth } from "./lib/userUtils";
 
+/**
+ * Get a user by ID (sanitized for authenticated users)
+ * Note: Does not check if requester should see this user.
+ * For team contexts, ensure proper access checks.
+ */
 export const get = query({
   args: { id: v.id("users") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const user = await ctx.db.get(args.id);
+    // Return sanitized user - strips sensitive fields beyond email
+    return sanitizeUserForAuth(user);
   },
 });
 
@@ -14,6 +22,7 @@ export const getCurrent = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
+    // Current user can see their full profile
     return await ctx.db.get(userId);
   },
 });

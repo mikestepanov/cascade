@@ -8,6 +8,7 @@ import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
+import { LoadMoreButton } from "../ui/LoadMoreButton";
 import { SkeletonList } from "../ui/Skeleton";
 
 type IssueFilter = "assigned" | "created" | "all";
@@ -31,6 +32,9 @@ interface MyIssuesListProps {
   issueFilter: IssueFilter;
   onFilterChange: (filter: IssueFilter) => void;
   issueNavigation: ReturnType<typeof useListNavigation<Issue>>;
+  // Pagination props
+  loadMore?: (numItems: number) => void;
+  status?: "CanLoadMore" | "LoadingMore" | "Exhausted" | "LoadingFirstPage";
 }
 
 /**
@@ -43,6 +47,8 @@ export function MyIssuesList({
   issueFilter,
   onFilterChange,
   issueNavigation,
+  loadMore,
+  status,
 }: MyIssuesListProps) {
   const navigate = useNavigate();
   const { companySlug } = useCompany();
@@ -60,6 +66,10 @@ export function MyIssuesList({
       params: { companySlug },
     });
   };
+
+  const showLoadMore = issueFilter === "assigned" && status === "CanLoadMore";
+  const isLoadingMore = status === "LoadingMore";
+
   return (
     <Card>
       <CardHeader title="My Issues" description="Track your assigned and created issues" />
@@ -154,6 +164,18 @@ export function MyIssuesList({
                 </Flex>
               </button>
             ))}
+
+            {showLoadMore && loadMore && (
+              <div className="pt-2 pb-2">
+                <LoadMoreButton
+                  onClick={() => loadMore(20)}
+                  isLoading={isLoadingMore}
+                  className="w-full"
+                >
+                  Load More Issues
+                </LoadMoreButton>
+              </div>
+            )}
           </Flex>
         )}
       </CardBody>

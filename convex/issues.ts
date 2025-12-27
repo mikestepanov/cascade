@@ -5,6 +5,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { type ProjectQueryCtx, projectQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -581,35 +582,15 @@ export const get = query({
       const user = userMap.get(act.userId);
       return {
         ...act,
-        user: user
-          ? {
-              _id: user._id,
-              name: user.name || user.email || "Unknown",
-              image: user.image,
-            }
-          : null,
+        user: sanitizeUserForAuth(user),
       };
     });
 
     return {
       ...issue,
       project,
-      assignee: assignee
-        ? {
-            _id: assignee._id,
-            name: assignee.name || assignee.email || "Unknown",
-            email: assignee.email,
-            image: assignee.image,
-          }
-        : null,
-      reporter: reporter
-        ? {
-            _id: reporter._id,
-            name: reporter.name || reporter.email || "Unknown",
-            email: reporter.email,
-            image: reporter.image,
-          }
-        : null,
+      assignee: sanitizeUserForAuth(assignee),
+      reporter: sanitizeUserForAuth(reporter),
       epic: epic
         ? {
             _id: epic._id,
@@ -745,19 +726,8 @@ export const listSubtasks = query({
 
       return {
         ...subtask,
-        assignee: assignee
-          ? {
-              _id: assignee._id,
-              name: assignee.name || assignee.email || "Unknown",
-              image: assignee.image,
-            }
-          : null,
-        reporter: reporter
-          ? {
-              _id: reporter._id,
-              name: reporter.name || reporter.email || "Unknown",
-            }
-          : null,
+        assignee: sanitizeUserForAuth(assignee),
+        reporter: sanitizeUserForAuth(reporter),
       };
     });
 
@@ -1361,22 +1331,8 @@ export const search = query({
 
       return {
         ...issue,
-        assignee: assignee
-          ? {
-              _id: assignee._id,
-              name: assignee.name || assignee.email || "Unknown",
-              email: assignee.email,
-              image: assignee.image,
-            }
-          : null,
-        reporter: reporter
-          ? {
-              _id: reporter._id,
-              name: reporter.name || reporter.email || "Unknown",
-              email: reporter.email,
-              image: reporter.image,
-            }
-          : null,
+        assignee: sanitizeUserForAuth(assignee),
+        reporter: sanitizeUserForAuth(reporter),
         epic: epic
           ? {
               _id: epic._id,

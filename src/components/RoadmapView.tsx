@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
+import { FixedSizeList as List } from "react-window";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -82,6 +83,65 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
     [startOfMonth, endDate],
   );
 
+  // Row renderer for virtualization
+  const Row = useCallback(
+    ({ index, style }: { index: number; style: React.CSSProperties }) => {
+      const issue = filteredIssues[index];
+      return (
+        <div
+          style={style}
+          className="flex items-center p-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+        >
+          {/* Issue Info */}
+          <div className="w-64 flex-shrink-0 pr-4">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-sm">{getTypeIcon(issue.type)}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedIssue(issue._id)}
+                className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400 truncate text-left"
+              >
+                {issue.key}
+              </button>
+            </div>
+            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+              {issue.title}
+            </p>
+          </div>
+
+          {/* Timeline Bar */}
+          <div className="flex-1 relative h-8">
+            {issue.dueDate && (
+              <button
+                type="button"
+                className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
+                style={{
+                  left: `${getPositionOnTimeline(issue.dueDate)}%`,
+                  width: "5%", // Default width for single date
+                }}
+                onClick={() => setSelectedIssue(issue._id)}
+                title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
+                aria-label={`View issue ${issue.key}`}
+              >
+                <span className="text-xs text-white font-medium truncate">
+                  {issue.assignee?.name.split(" ")[0]}
+                </span>
+              </button>
+            )}
+
+            {/* Today Indicator */}
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-status-error z-10"
+              style={{ left: `${getPositionOnTimeline(Date.now())}%` }}
+              title="Today"
+            />
+          </div>
+        </div>
+      );
+    },
+    [filteredIssues, getPositionOnTimeline],
+  );
+
   if (!(project && issues)) {
     return (
       <div className="flex-1 overflow-auto p-6">
@@ -103,9 +163,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between flex-shrink-0">
         <div>
           <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
@@ -149,10 +209,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden">
-        {/* Timeline Header */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4">
+      {/* Timeline Container */}
+      <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+        {/* Timeline Header (Fixed) */}
+        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
           <div className="flex">
             <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Issue
@@ -170,65 +230,22 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           </div>
         </div>
 
-        {/* Timeline Body */}
-        <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+        {/* Timeline Body (Virtualized) */}
+        <div className="flex-1">
           {filteredIssues.length === 0 ? (
             <div className="p-12 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <p>No issues with due dates to display</p>
               <p className="text-sm mt-1">Add due dates to issues to see them on the roadmap</p>
             </div>
           ) : (
-            filteredIssues.map((issue) => (
-              <div
-                key={issue._id}
-                className="flex items-center p-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
-              >
-                {/* Issue Info */}
-                <div className="w-64 flex-shrink-0 pr-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedIssue(issue._id)}
-                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400 truncate text-left"
-                    >
-                      {issue.key}
-                    </button>
-                  </div>
-                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
-                    {issue.title}
-                  </p>
-                </div>
-
-                {/* Timeline Bar */}
-                <div className="flex-1 relative h-8">
-                  {issue.dueDate && (
-                    <button
-                      type="button"
-                      className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
-                      style={{
-                        left: `${getPositionOnTimeline(issue.dueDate)}%`,
-                        width: "5%", // Default width for single date
-                      }}
-                      onClick={() => setSelectedIssue(issue._id)}
-                      title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
-                      aria-label={`View issue ${issue.key}`}
-                    >
-                      <span className="text-xs text-white font-medium truncate">
-                        {issue.assignee?.name.split(" ")[0]}
-                      </span>
-                    </button>
-                  )}
-
-                  {/* Today Indicator */}
-                  <div
-                    className="absolute top-0 bottom-0 w-0.5 bg-status-error z-10"
-                    style={{ left: `${getPositionOnTimeline(Date.now())}%` }}
-                    title="Today"
-                  />
-                </div>
-              </div>
-            ))
+            <List
+              height={600} // This should ideally be dynamic, but 600 is a safe default for now
+              itemCount={filteredIssues.length}
+              itemSize={56} // Approximate height of each row
+              width="100%"
+            >
+              {Row}
+            </List>
           )}
         </div>
       </div>
