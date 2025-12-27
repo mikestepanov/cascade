@@ -11,8 +11,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
-import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { getProjectRole } from "./projectAccess";
 
 /**
@@ -236,41 +236,17 @@ export type AuthenticatedQueryCtx = {
   userId: Id<"users">;
 };
 
-export type ProjectQueryCtx = AuthenticatedQueryCtx & {
-  projectId: Id<"projects">;
-  role: "viewer" | "editor" | "admin" | null;
-  project: {
-    _id: Id<"projects">;
-    _creationTime: number;
-    name: string;
-    key: string;
-    description?: string;
-    isPublic: boolean;
-    createdBy: Id<"users">;
-    workflowStates: Array<{
-      id: string;
-      name: string;
-      category: "todo" | "inProgress" | "done";
-      color: string;
-    }>;
-    boardType: "kanban" | "scrum";
-  };
-};
-
-export type IssueMutationCtx = ProjectQueryCtx & {
-  issue: {
-    _id: Id<"issues">;
-    _creationTime: number;
+export type ProjectQueryCtx = QueryCtx &
+  AuthenticatedQueryCtx & {
     projectId: Id<"projects">;
-    key: string;
-    title: string;
-    description?: string;
-    type: "story" | "bug" | "task" | "epic";
-    status: string;
-    priority: "lowest" | "low" | "medium" | "high" | "highest";
-    assigneeId?: Id<"users">;
-    reporterId: Id<"users">;
-    sprintId?: Id<"sprints">;
-    epicId?: Id<"issues">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
   };
-};
+
+export type IssueMutationCtx = MutationCtx &
+  AuthenticatedQueryCtx & {
+    projectId: Id<"projects">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
+    issue: Doc<"issues">;
+  };

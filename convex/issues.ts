@@ -3,6 +3,7 @@ import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { type ProjectQueryCtx, projectQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import {
   assertCanAccessProject,
@@ -253,7 +254,9 @@ export const listRoadmapIssues = query({
         .collect();
 
       // We still have to memory filter here because we lack a by_sprint_type index
-      issues = allSprintIssues.filter((i) => ROOT_ISSUE_TYPES.includes(i.type as any));
+      issues = allSprintIssues.filter((i) =>
+        (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
+      );
     } else {
       // Backend filtering using parallel queries on the new index
       // This ensures we never load "subtask" type issues from DB
@@ -1519,38 +1522,51 @@ export const bulkDelete = mutation({
 // ============================================================================
 
 import { countIssuesByStatus, enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
-import {
-  DEFAULT_PAGE_SIZE,
-  DONE_COLUMN_DAYS,
-  decodeCursor,
-  encodeCursor,
-  getDoneColumnThreshold,
-} from "./lib/pagination";
+import { DEFAULT_PAGE_SIZE, DONE_COLUMN_DAYS, getDoneColumnThreshold } from "./lib/pagination";
+
+// Helper for fetching issues based on state
+function fetchIssuesForState(
+  ctx: ProjectQueryCtx,
+  state: { id: string; category: string },
+  doneThreshold: number,
+) {
+  if (state.category === "done") {
+    return ctx.db
+      .query("issues")
+      .withIndex("by_workspace_status_updated", (q) =>
+        q.eq("projectId", ctx.projectId).eq("status", state.id).gt("updatedAt", doneThreshold),
+      )
+      .collect();
+  }
+
+  // Fetch limit for todo/inprogress to prevent memory issues with massive backlogs
+  return ctx.db
+    .query("issues")
+    .withIndex("by_workspace_status_updated", (q) =>
+      q.eq("projectId", ctx.projectId).eq("status", state.id),
+    )
+    .take(500);
+}
 
 /**
  * Smart loading for Kanban boards
  * - todo/inprogress: Load all items
  * - done: Load only recent items (last N days)
  */
-export const listByProjectSmart = query({
+/**
+ * Smart loading for Kanban boards
+ * - todo/inprogress: Load all items
+ * - done: Load only recent items (last N days)
+ */
+export const listByProjectSmart = projectQuery({
   args: {
-    projectId: v.id("projects"),
+    // projectId is automatically included by projectQuery
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
+    // ctx.project is available here and typed!
+    const project = ctx.project;
     const workflowStates = project.workflowStates || [];
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
 
@@ -1561,7 +1577,10 @@ export const listByProjectSmart = query({
       const allSprintIssues = await ctx.db
         .query("issues")
         .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+          // Note: using ctx.projectId which comes from projectQuery
+          q
+            .eq("projectId", ctx.projectId)
+            .eq("sprintId", args.sprintId as Id<"sprints">),
         )
         .collect();
 
@@ -1584,28 +1603,7 @@ export const listByProjectSmart = query({
     }
 
     // For Full Board (Backlog/Kanban), use status-based parallel queries to avoid loading old done issues
-    const queries = workflowStates.map((state) => {
-      // Use by_workspace_status or by_workspace_status_updated
-      // We have by_workspace_status_updated: ["projectId", "status", "updatedAt"]
-
-      const BaseQueryFn = (q: any) => q.eq("projectId", args.projectId).eq("status", state.id);
-
-      if (state.category === "done") {
-        // Only fetch recent done items from DB
-        return ctx.db
-          .query("issues")
-          .withIndex("by_workspace_status_updated", (q) =>
-            BaseQueryFn(q).gt("updatedAt", doneThreshold),
-          )
-          .collect();
-      }
-
-      // Fetch limit for todo/inprogress to prevent memory issues with massive backlogs
-      return ctx.db
-        .query("issues")
-        .withIndex("by_workspace_status_updated", (q) => BaseQueryFn(q))
-        .take(500);
-    });
+    const queries = workflowStates.map((state) => fetchIssuesForState(ctx, state, doneThreshold));
 
     // Execute all issue fetches
     const results = await Promise.all(queries);
