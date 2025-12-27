@@ -51,19 +51,3 @@ This document outlines critical user interface and frontend architecture gaps fo
 
 - **Loading States**: `KanbanBoard` has nice Skeletons. Ensure `RoadmapView` and `Dashboard` have matching fidelity skeletons.
 - **Colors**: Verify that status colors (Todo/In Progress/Done) are consistent across all views (Kanban vs Roadmap vs Activity Feed).
-
----
-
-## ✅ Completed Tasks
-
-### Virtualized Roadmap View (Completed)
-
-- Implemented `react-window` in `RoadmapView.tsx`
-- Virtualized list rendering for timeline to support 500+ issues seamlessly
-- Optimized scroll performance
-
-### Scalable Dashboard "My Work" (Completed)
-
-- Added `paginationOpts` to `getMyIssues` query in `dashboard.ts`
-- Refactored `Dashboard.tsx` to use `usePaginatedQuery`
-- Added "Load More" button to `MyIssuesList` component

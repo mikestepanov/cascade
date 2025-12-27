@@ -3,7 +3,7 @@ import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { type ProjectQueryCtx, projectQuery } from "./customFunctions";
+import { issueMutation, type ProjectQueryCtx, projectQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
@@ -735,35 +735,19 @@ export const listSubtasks = query({
   },
 });
 
-export const updateStatus = mutation({
+export const updateStatus = issueMutation({
   args: {
-    issueId: v.id("issues"),
+    // issueId is automatically included by issueMutation
     newStatus: v.string(),
     newOrder: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) {
-      throw new Error("Issue not found");
-    }
-
-    const project = await ctx.db.get(issue.projectId as Id<"projects">);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
-
-    const oldStatus = issue.status;
+    // ctx.issue, ctx.project, ctx.userId, ctx.role are available
+    // Auth and permissions already checked by issueMutation wrapper
+    const oldStatus = ctx.issue.status;
     const now = Date.now();
 
-    await ctx.db.patch(args.issueId, {
+    await ctx.db.patch(ctx.issue._id, {
       status: args.newStatus,
       order: args.newOrder,
       updatedAt: now,
@@ -772,8 +756,8 @@ export const updateStatus = mutation({
     // Log activity
     if (oldStatus !== args.newStatus) {
       await ctx.db.insert("issueActivity", {
-        issueId: args.issueId,
-        userId,
+        issueId: ctx.issue._id,
+        userId: ctx.userId,
         action: "updated",
         field: "status",
         oldValue: oldStatus,

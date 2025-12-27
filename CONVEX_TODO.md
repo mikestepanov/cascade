@@ -12,6 +12,7 @@ This document outlines remaining architectural improvements for the Convex backe
 **Status**: ⚠️ **REQUIRES PLANNING** - Large architectural change
 
 **Why This Needs Careful Planning**:
+
 - **Schema Migration**: Need to add `isDeleted`, `deletedAt`, `deletedBy` to multiple tables
 - **Query Updates**: ALL queries across the codebase need `.neq("isDeleted", true)` filters
 - **Data Migration**: Existing records need default `isDeleted: false`
@@ -22,12 +23,14 @@ This document outlines remaining architectural improvements for the Convex backe
 - **Testing**: Comprehensive tests for delete/restore flows
 
 **Recommended Action**:
+
 - Create detailed implementation plan with phases
 - Dedicate sprint/milestone for this feature
 - Start with issues table, then expand to projects, documents
 - Add feature flag to test in production safely
 
 **Tables Requiring Soft Deletes**:
+
 1. `issues` (highest priority)
 2. `projects`
 3. `documents`
@@ -36,6 +39,7 @@ This document outlines remaining architectural improvements for the Convex backe
 6. `projectMembers`
 
 **Implementation Phases**:
+
 - **Phase 1**: Schema updates + migrations
 - **Phase 2**: Update all read queries to filter deleted
 - **Phase 3**: Update delete mutations to soft delete
@@ -74,37 +78,3 @@ This document outlines remaining architectural improvements for the Convex backe
 
 **Current State**: `offlineSyncQueue` table exists.
 **Recommendation**: Ensure there is a dedicated cron job or processing trigger that actively retries `status: "failed"` items effectively, with exponential backoff, to prevent the queue from growing indefinitely.
-
----
-
-## 📝 Completed Tasks (Reference)
-
-### ✅ Optimize Smart Board Indexes (Completed 2025-12-27)
-- Analyzed `listByProjectSmart` query performance
-- Confirmed `by_workspace_status_updated` index is already optimal
-- Index structure `["projectId", "status", "updatedAt"]` allows:
-  - O(log n) seek to projectId and status
-  - Efficient range scan on updatedAt for done items
-  - Database can skip old done items without reading them
-- Added explicit `.order("desc")` for consistent ordering
-- Improved documentation explaining index optimization
-- Performance: O(log n + k) where k = matching items
-
-### ✅ Type-Safe Field Exclusion (Completed 2025-12-27)
-- Created `convex/lib/userUtils.ts` with sanitizer functions
-- Added `sanitizeUserForAuth()` and `sanitizeUserForPublic()` helpers
-- Updated `users.ts` to use sanitizer for public user queries
-- Updated `issues.ts` enrichment functions to sanitize user objects
-- Prevents sensitive fields (phone, timezone, etc.) from leaking
-- Email included only in authenticated contexts
-
-### ✅ Efficient Rate Limiting (Completed 2025-12-27)
-- Migrated to `@convex-dev/rate-limiter` component with O(1) token bucket algorithm
-- Created `convex/lib/rateLimiter.ts`
-- Updated `convex/lib/apiAuth.ts`
-- Added `rateLimits` table to schema
-
-### ✅ Scalable Roadmap Pagination (Completed 2025-12-27)
-- Added `listRoadmapIssuesPaginated` query with cursor-based pagination
-- Backward compatible with existing `listRoadmapIssues`
-- Supports "Load More" / infinite scroll patterns
