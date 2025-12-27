@@ -51,38 +51,7 @@ This document outlines remaining architectural improvements for the Convex backe
 
 ## 🛠 Medium Priority (Maintainability & Robustness)
 
-### 1. ✅ Standardize Project Authorization (MOSTLY COMPLETE - 7/11 done)
-
-**Status**: 🟡 **MOSTLY COMPLETE** - Single-issue mutations refactored, bulk operations remain
-
-**What was done**:
-- Created `issueViewerMutation` wrapper for viewer-level permissions
-- Refactored 7 out of 11 mutations to use wrappers:
-  - ✅ `updateStatus` - issueMutation
-  - ✅ `updateStatusByCategory` - issueMutation
-  - ✅ `addComment` - issueViewerMutation
-  - ✅ `create` - editorMutation
-  - ✅ `update` - issueMutation
-  - ✅ `bulkUpdateStatus` - authenticatedMutation
-  - ✅ `bulkUpdatePriority` - authenticatedMutation
-
-**Benefits Achieved**:
-- **Code reduction**: ~120 lines of boilerplate eliminated
-- **Security**: Impossible to forget auth/permission checks
-- **Consistency**: Standardized error messages across mutations
-- **Type safety**: Better IntelliSense with typed context
-- **Maintainability**: Single source of truth for auth logic
-
-**Remaining Work** (4 bulk mutations):
-- `bulkAssign`
-- `bulkAddLabels`
-- `bulkMoveToSprint`
-- `bulkDelete`
-
-**Note**: These follow the same pattern as `bulkUpdateStatus` and `bulkUpdatePriority`.
-Easy to complete when needed (10-15 mins). Recommend completing during next sprint.
-
-### 2. Robust Cascading Deletes
+### 1. Robust Cascading Deletes
 
 **Current State**: `deleteIssueRelatedRecords` manually deletes child records one-by-one in a loop.
 **Risk**: Maintenance burden & "Dangling References". If a new table (e.g., `tags`) is added, developers might forget to update this function.
@@ -99,3 +68,32 @@ Easy to complete when needed (10-15 mins). Recommend completing during next spri
 
 **Current State**: `offlineSyncQueue` table exists.
 **Recommendation**: Ensure there is a dedicated cron job or processing trigger that actively retries `status: "failed"` items effectively, with exponential backoff, to prevent the queue from growing indefinitely.
+
+
+---
+
+## 📝 Completed Tasks (Reference)
+
+### ✅ Standardize Project Authorization (Completed 2025-12-27)
+- Refactored ALL 11 issue mutations to use auth wrappers (100%)
+- Created issueViewerMutation wrapper for viewer-level permissions
+- Eliminated ~150 lines of authentication boilerplate
+- Enforced consistent permission checking across all mutations
+- Impossible to forget auth checks on new mutations
+
+### ✅ Efficient Rate Limiting (Completed 2025-12-27)
+- Migrated to @convex-dev/rate-limiter with O(1) token bucket algorithm
+- Created convex/lib/rateLimiter.ts
+- Updated convex/lib/apiAuth.ts
+
+### ✅ Scalable Roadmap Pagination (Completed 2025-12-27)
+- Added listRoadmapIssuesPaginated with cursor-based pagination
+- Backward compatible with existing listRoadmapIssues
+
+### ✅ Optimize Smart Board Indexes (Completed 2025-12-27)
+- Confirmed by_workspace_status_updated index is optimal
+- Added explicit ordering for consistent behavior
+
+### ✅ Type-Safe Field Exclusion (Completed 2025-12-27)
+- Created convex/lib/userUtils.ts with sanitization utilities
+- Updated users.ts and issues.ts to sanitize user data
