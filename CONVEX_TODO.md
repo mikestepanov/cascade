@@ -68,32 +68,3 @@ This document outlines remaining architectural improvements for the Convex backe
 
 **Current State**: `offlineSyncQueue` table exists.
 **Recommendation**: Ensure there is a dedicated cron job or processing trigger that actively retries `status: "failed"` items effectively, with exponential backoff, to prevent the queue from growing indefinitely.
-
-
----
-
-## 📝 Completed Tasks (Reference)
-
-### ✅ Standardize Project Authorization (Completed 2025-12-27)
-- Refactored ALL 11 issue mutations to use auth wrappers (100%)
-- Created issueViewerMutation wrapper for viewer-level permissions
-- Eliminated ~150 lines of authentication boilerplate
-- Enforced consistent permission checking across all mutations
-- Impossible to forget auth checks on new mutations
-
-### ✅ Efficient Rate Limiting (Completed 2025-12-27)
-- Migrated to @convex-dev/rate-limiter with O(1) token bucket algorithm
-- Created convex/lib/rateLimiter.ts
-- Updated convex/lib/apiAuth.ts
-
-### ✅ Scalable Roadmap Pagination (Completed 2025-12-27)
-- Added listRoadmapIssuesPaginated with cursor-based pagination
-- Backward compatible with existing listRoadmapIssues
-
-### ✅ Optimize Smart Board Indexes (Completed 2025-12-27)
-- Confirmed by_workspace_status_updated index is optimal
-- Added explicit ordering for consistent behavior
-
-### ✅ Type-Safe Field Exclusion (Completed 2025-12-27)
-- Created convex/lib/userUtils.ts with sanitization utilities
-- Updated users.ts and issues.ts to sanitize user data
