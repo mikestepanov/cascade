@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import {
+  authenticatedMutation,
   editorMutation,
   issueMutation,
   issueViewerMutation,
@@ -1397,17 +1398,12 @@ export const bulkUpdatePriority = mutation({
   },
 });
 
-export const bulkAssign = mutation({
+export const bulkAssign = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     assigneeId: v.union(v.id("users"), v.null()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Batch fetch all issues at once to avoid N+1
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
@@ -1420,7 +1416,7 @@ export const bulkAssign = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -1434,7 +1430,7 @@ export const bulkAssign = mutation({
 
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "updated",
         field: "assignee",
         oldValue: oldAssignee ? String(oldAssignee) : "",
@@ -1449,17 +1445,12 @@ export const bulkAssign = mutation({
   },
 });
 
-export const bulkAddLabels = mutation({
+export const bulkAddLabels = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     labels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Batch fetch all issues at once to avoid N+1
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
@@ -1472,7 +1463,7 @@ export const bulkAddLabels = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -1487,7 +1478,7 @@ export const bulkAddLabels = mutation({
 
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "updated",
         field: "labels",
         oldValue: issue.labels.join(", "),
@@ -1502,17 +1493,12 @@ export const bulkAddLabels = mutation({
   },
 });
 
-export const bulkMoveToSprint = mutation({
+export const bulkMoveToSprint = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     sprintId: v.union(v.id("sprints"), v.null()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Batch fetch all issues at once to avoid N+1
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
@@ -1525,7 +1511,7 @@ export const bulkMoveToSprint = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -1539,7 +1525,7 @@ export const bulkMoveToSprint = mutation({
 
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "updated",
         field: "sprint",
         oldValue: oldSprint ? String(oldSprint) : "",
@@ -1611,16 +1597,11 @@ async function deleteIssueRelatedRecords(ctx: MutationCtx, issueId: Id<"issues">
   }
 }
 
-export const bulkDelete = mutation({
+export const bulkDelete = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Batch fetch all issues at once to avoid N+1
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
@@ -1632,7 +1613,7 @@ export const bulkDelete = mutation({
       if (!issue) continue;
 
       try {
-        await assertIsProjectAdmin(ctx, issue.projectId as Id<"projects">, userId);
+        await assertIsProjectAdmin(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue; // Only admins can delete
       }

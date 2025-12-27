@@ -61,6 +61,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
     issuesByStatus,
     isTeamMode,
     pushHistoryAction: pushAction,
+    boardOptions: { projectId, teamId, sprintId, doneColumnDays: 14 },
   });
 
   // Handlers
