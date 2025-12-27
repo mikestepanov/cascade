@@ -380,6 +380,56 @@ export const listProjectIssues = query({
   },
 });
 
+export const listTeamIssues = query({
+  args: {
+    teamId: v.id("teams"),
+    status: v.optional(v.string()),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    // Check team membership
+    const teamMember = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .first();
+
+    if (!teamMember) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    let results: PaginationResult<Doc<"issues">>;
+
+    if (args.status) {
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_team_status", (q) =>
+          q.eq("teamId", args.teamId).eq("status", args.status as string),
+        )
+        .order("desc")
+        .paginate(args.paginationOpts);
+    } else {
+      results = await ctx.db
+        .query("issues")
+        .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    // Enrich page
+    const enrichedPage = await enrichIssues(ctx, results.page);
+
+    return {
+      ...results,
+      page: enrichedPage,
+    };
+  },
+});
+
 export const get = query({
   args: { id: v.id("issues") },
   handler: async (ctx, args) => {
@@ -681,6 +731,70 @@ export const updateStatus = mutation({
         field: "status",
         oldValue: oldStatus,
         newValue: args.newStatus,
+        createdAt: now,
+      });
+    }
+  },
+});
+
+export const updateStatusByCategory = mutation({
+  args: {
+    issueId: v.id("issues"),
+    category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+    newOrder: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) {
+      throw new Error("Issue not found");
+    }
+
+    const project = await ctx.db.get(issue.projectId as Id<"projects">);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Check permissions
+    await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+
+    // Find the target status in the project's workflow based on the category
+    // We pick the FIRST status in that category as the default "entry point"
+    const targetState = project.workflowStates
+      .sort((a, b) => a.order - b.order)
+      .find((s) => s.category === args.category);
+
+    if (!targetState) {
+      throw new Error(
+        `No workflow state found for category ${args.category} in project ${project.name}`,
+      );
+    }
+
+    const oldStatus = issue.status;
+    const now = Date.now();
+
+    // Only update if status actually changed or order changed
+    // (If moving within same category, status might not change if mapping to same state, but order usually will)
+
+    await ctx.db.patch(args.issueId, {
+      status: targetState.id,
+      order: args.newOrder,
+      updatedAt: now,
+    });
+
+    // Log activity
+    if (oldStatus !== targetState.id) {
+      await ctx.db.insert("issueActivity", {
+        issueId: args.issueId,
+        userId,
+        action: "updated",
+        field: "status",
+        oldValue: oldStatus,
+        newValue: targetState.id,
         createdAt: now,
       });
     }
@@ -1585,7 +1699,12 @@ export const bulkDelete = mutation({
 // PAGINATION & SMART LOADING QUERIES
 // ============================================================================
 
-import { countIssuesByStatus, enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
+import {
+  countIssuesByStatus,
+  type EnrichedIssue,
+  enrichIssues,
+  groupIssuesByStatus,
+} from "./lib/issueHelpers";
 import { DEFAULT_PAGE_SIZE, DONE_COLUMN_DAYS, getDoneColumnThreshold } from "./lib/pagination";
 
 // Helper for fetching issues based on state
@@ -1683,6 +1802,169 @@ export const listByProjectSmart = projectQuery({
       hiddenDoneCount: 0, // Handled by separate stats query
       workflowStates,
     };
+  },
+});
+
+export const listByTeamSmart = query({
+  args: {
+    teamId: v.id("teams"),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    // Check team membership
+    const teamMember = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .first();
+
+    if (!teamMember) {
+      throw new Error("Not authorized to access this team");
+    }
+
+    // Fetch all projects in the team to map statuses
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .collect();
+
+    // Build map of statusId -> category
+    const statusCategoryMap = new Map<string, string>();
+    for (const project of projects) {
+      for (const state of project.workflowStates) {
+        statusCategoryMap.set(state.id, state.category);
+      }
+    }
+
+    // Determine cutoff for done issues
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Fetch all issues for the team
+    const allIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .collect();
+
+    const smartFiltered = allIssues.filter((issue) => {
+      const category = statusCategoryMap.get(issue.status) || "todo";
+      if (category === "done") {
+        return issue.updatedAt >= doneThreshold;
+      }
+      return true;
+    });
+
+    const hiddenDoneCount = allIssues.length - smartFiltered.length;
+    const enriched = await enrichIssues(ctx, smartFiltered);
+
+    // Group by CATEGORY, not status key
+    const issuesByCategory: Record<string, EnrichedIssue[]> = {
+      todo: [],
+      inprogress: [],
+      done: [],
+    };
+
+    for (const issue of enriched) {
+      const category = statusCategoryMap.get(issue.status) || "todo";
+      if (!issuesByCategory[category]) {
+        issuesByCategory[category] = [];
+      }
+      issuesByCategory[category].push(issue);
+    }
+
+    // Synthesized workflow states for the shared board
+    // Cast to any to bypass strict type checking against project-specific structure if needed,
+    // but here we match the shape { id, name, category, order }
+    const teamWorkflowStates = [
+      { id: "todo", name: "To Do", category: "todo" as const, order: 1 },
+      { id: "inprogress", name: "In Progress", category: "inprogress" as const, order: 2 },
+      { id: "done", name: "Done", category: "done" as const, order: 3 },
+    ];
+
+    return {
+      issuesByStatus: issuesByCategory,
+      hiddenDoneCount,
+      workflowStates: teamWorkflowStates,
+    };
+  },
+});
+
+export const getTeamIssueCounts = query({
+  args: {
+    teamId: v.id("teams"),
+    doneColumnDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const teamMember = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .first();
+
+    if (!teamMember) {
+      throw new Error("Not authorized");
+    }
+
+    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
+
+    // Get projects to map status -> category
+    const projects = await ctx.db
+      .query("projects")
+      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .collect();
+
+    const statusCategoryMap = new Map<string, string>();
+    for (const project of projects) {
+      for (const state of project.workflowStates) {
+        statusCategoryMap.set(state.id, state.category);
+      }
+    }
+
+    // Fetch all issues
+    const allIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .collect();
+
+    // Aggregate counts by category (mapped from status)
+    const byStatus = {
+      total: {} as Record<string, number>,
+      visible: {} as Record<string, number>,
+      hidden: {} as Record<string, number>,
+    };
+
+    // Initialize categories
+    const categories = ["todo", "inprogress", "done"];
+    for (const cat of categories) {
+      byStatus.total[cat] = 0;
+      byStatus.visible[cat] = 0;
+      byStatus.hidden[cat] = 0;
+    }
+
+    for (const issue of allIssues) {
+      const category = statusCategoryMap.get(issue.status) || "todo";
+
+      byStatus.total[category] = (byStatus.total[category] || 0) + 1;
+
+      if (category === "done") {
+        if (issue.updatedAt >= doneThreshold) {
+          byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
+        } else {
+          byStatus.hidden[category] = (byStatus.hidden[category] || 0) + 1;
+        }
+      } else {
+        byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
+      }
+    }
+
+    return { byStatus };
   },
 });
 
