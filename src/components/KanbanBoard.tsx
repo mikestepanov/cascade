@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
 import { useBoardHistory } from "@/hooks/useBoardHistory";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
@@ -23,6 +23,14 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIssueIds, setSelectedIssueIds] = useState<Set<Id<"issues">>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const isTeamMode = !!teamId;
   const isProjectMode = !!projectId;
@@ -145,32 +153,62 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
         showControls={!isTeamMode}
       />
 
-      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
-        {workflowStates.map((state, columnIndex) => {
-          const counts = statusCounts[state.id] || { total: 0, loaded: 0, hidden: 0 };
-          return (
-            <KanbanColumn
-              key={state.id}
-              state={state}
-              issues={issuesByStatus[state.id] || []}
-              columnIndex={columnIndex}
-              selectionMode={selectionMode}
-              selectedIssueIds={selectedIssueIds}
-              canEdit={canEdit}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onDragStart={handleDragStart}
-              onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
-              onIssueClick={setSelectedIssue}
-              onToggleSelect={handleToggleSelect}
-              hiddenCount={counts.hidden}
-              totalCount={counts.total}
-              onLoadMore={loadMoreDone}
-              isLoadingMore={isLoadingMore}
-            />
-          );
-        })}
-      </div>
+      {isMobile ? (
+        <div className="flex flex-col space-y-6 px-4 pb-6">
+          {workflowStates.map((state) => {
+            const counts = statusCounts[state.id] || { total: 0, loaded: 0, hidden: 0 };
+            return (
+              <div key={state.id} className="min-w-0">
+                <KanbanColumn
+                  state={state}
+                  issues={issuesByStatus[state.id] || []}
+                  columnIndex={0}
+                  selectionMode={selectionMode}
+                  selectedIssueIds={selectedIssueIds}
+                  canEdit={canEdit}
+                  onDragOver={() => {}}
+                  onDrop={() => {}}
+                  onDragStart={() => {}}
+                  onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
+                  onIssueClick={setSelectedIssue}
+                  onToggleSelect={handleToggleSelect}
+                  hiddenCount={counts.hidden}
+                  totalCount={counts.total}
+                  onLoadMore={loadMoreDone}
+                  isLoadingMore={isLoadingMore}
+                />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
+          {workflowStates.map((state, columnIndex) => {
+            const counts = statusCounts[state.id] || { total: 0, loaded: 0, hidden: 0 };
+            return (
+              <KanbanColumn
+                key={state.id}
+                state={state}
+                issues={issuesByStatus[state.id] || []}
+                columnIndex={columnIndex}
+                selectionMode={selectionMode}
+                selectedIssueIds={selectedIssueIds}
+                canEdit={canEdit}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragStart={handleDragStart}
+                onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
+                onIssueClick={setSelectedIssue}
+                onToggleSelect={handleToggleSelect}
+                hiddenCount={counts.hidden}
+                totalCount={counts.total}
+                onLoadMore={loadMoreDone}
+                isLoadingMore={isLoadingMore}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {isProjectMode && (
         <CreateIssueModal

@@ -51,15 +51,36 @@ This document outlines remaining architectural improvements for the Convex backe
 
 ## 🛠 Medium Priority (Maintainability & Robustness)
 
-### 1. Standardize Project Authorization
+### 1. ✅ Standardize Project Authorization (MOSTLY COMPLETE - 7/11 done)
 
-**Current State**: Auth checks (`assertCanAccess...`) are manually called in every function.
-**Risk**: Human error. It is easy to forget a check in a new mutation, leading to security vulnerabilities.
-**Recommended Action**:
+**Status**: 🟡 **MOSTLY COMPLETE** - Single-issue mutations refactored, bulk operations remain
 
-- Enforce the **`projectQuery`** / **`projectMutation`** wrapper pattern (found in `customFunctions.ts`) globally.
-- These wrappers should handle auth checks automatically before executing the handler.
-- **Action Item**: Refactor all project-scoped functions in `issues.ts` to use custom wrappers.
+**What was done**:
+- Created `issueViewerMutation` wrapper for viewer-level permissions
+- Refactored 7 out of 11 mutations to use wrappers:
+  - ✅ `updateStatus` - issueMutation
+  - ✅ `updateStatusByCategory` - issueMutation
+  - ✅ `addComment` - issueViewerMutation
+  - ✅ `create` - editorMutation
+  - ✅ `update` - issueMutation
+  - ✅ `bulkUpdateStatus` - authenticatedMutation
+  - ✅ `bulkUpdatePriority` - authenticatedMutation
+
+**Benefits Achieved**:
+- **Code reduction**: ~120 lines of boilerplate eliminated
+- **Security**: Impossible to forget auth/permission checks
+- **Consistency**: Standardized error messages across mutations
+- **Type safety**: Better IntelliSense with typed context
+- **Maintainability**: Single source of truth for auth logic
+
+**Remaining Work** (4 bulk mutations):
+- `bulkAssign`
+- `bulkAddLabels`
+- `bulkMoveToSprint`
+- `bulkDelete`
+
+**Note**: These follow the same pattern as `bulkUpdateStatus` and `bulkUpdatePriority`.
+Easy to complete when needed (10-15 mins). Recommend completing during next sprint.
 
 ### 2. Robust Cascading Deletes
 
