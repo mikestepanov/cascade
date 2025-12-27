@@ -7,6 +7,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 **Nixelo** is a collaborative project management platform that combines document management (Confluence-like) with issue tracking (Jira-like). It features real-time collaboration, presence indicators, and live updates.
 
 **Key Features:**
+
 - Real-time collaborative document editing with BlockNote
 - Kanban boards with drag-and-drop issue management
 - Sprint planning and tracking
@@ -32,6 +33,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 ## Tech Stack
 
 ### Frontend
+
 - **Framework:** React 19 with TypeScript
 - **Build Tool:** Vite 6
 - **Routing:** TanStack Router (file-based routing with type-safe navigation)
@@ -42,6 +44,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 - **Analytics:** PostHog (product analytics & session replay)
 
 ### Backend
+
 - **Platform:** Convex (serverless backend with real-time database)
 - **Authentication:** @convex-dev/auth (Password, Google OAuth, Anonymous providers)
 - **Real-time Features:**
@@ -51,6 +54,7 @@ This document provides comprehensive guidance for AI assistants working on the N
 - **User Management:** Invitation system with admin controls
 
 ### Development Tools
+
 - **Package Manager:** pnpm (preferred) or npm
 - **Linting & Formatting:** Biome 2.3.5 (replaces ESLint + Prettier)
   - Comprehensive linting rules (a11y, security, performance, complexity)
@@ -77,7 +81,7 @@ nixelo/
 │   │       │   ├── index.tsx    # Documents list (/documents)
 │   │       │   └── $id.tsx      # Document editor (/documents/:id)
 │   │       ├── projects/      # Project routes
-│   │       │   ├── index.tsx    # Workspaces list (/projects)
+│   │       │   ├── index.tsx    # Projects list (/projects)
 │   │       │   └── $key/        # Project detail (/projects/:key)
 │   │       │       ├── route.tsx    # Project layout with tabs
 │   │       │       ├── index.tsx    # Redirects to board
@@ -159,8 +163,8 @@ nixelo/
 ├── tailwind.config.js            # Tailwind CSS customization
 ├── eslint.config.js              # ESLint configuration
 ├── postcss.config.cjs            # PostCSS configuration
-├── components.json               # Shadcn component configuration
-└── setup.mjs                     # Convex Auth setup script
+└── components.json               # Shadcn component configuration
+
 ```
 
 ## Database Schema
@@ -168,50 +172,59 @@ nixelo/
 ### Core Tables
 
 **documents**
+
 - Stores collaborative documents
 - Fields: title, isPublic, createdBy, projectId (optional)
 - Indexes: by_creator, by_public, by_created_at, by_project
 - Search index on title
 
 **projects**
+
 - Project definitions with custom workflows
 - Fields: name, key (e.g., "PROJ"), description, members[], workflowStates[], boardType
 - Indexes: by_creator, by_key, by_public
 - Search index on name
 
 **issues**
+
 - Individual tasks/bugs/stories/epics
 - Fields: key (e.g., "PROJ-123"), title, description, type, status, priority, assigneeId, reporterId, sprintId, epicId, linkedDocuments[], order
 - Indexes: by_project, by_assignee, by_status, by_sprint, by_epic, by_project_status
 - Search index on title
 
 **sprints**
+
 - Sprint planning and tracking
 - Fields: name, goal, startDate, endDate, status (future/active/completed)
 - Indexes: by_project, by_status
 
 **issueComments**
+
 - Threaded comments on issues
 - Fields: issueId, authorId, content, createdAt, updatedAt
 - Indexes: by_issue, by_author
 
 **issueActivity**
+
 - Audit log of all issue changes
 - Fields: issueId, userId, action, field, oldValue, newValue
 - Indexes: by_issue, by_user
 
 **issueLinks**
+
 - Relationships between issues
 - Types: blocks, relates, duplicates
 - Indexes: by_from_issue, by_to_issue
 
 **calendarEvents**
+
 - Calendar events and meetings
 - Fields: title, description, startTime, endTime, eventType (meeting/deadline/other), organizerId, attendeeIds[], isRequired
 - Indexes: by_organizer, by_start_time, by_required
 - Feature: Attendance tracking for required meetings
 
 **meetingAttendance**
+
 - Attendance records for required meetings
 - Fields: eventId, userId, status (present/tardy/absent), markedBy, markedAt, notes
 - Indexes: by_event, by_user, by_event_user
@@ -222,12 +235,14 @@ nixelo/
 ### Code Style
 
 1. **TypeScript Patterns:**
+
    - Use strict type checking (enabled in tsconfig)
    - Prefer explicit types for function parameters
    - Use Convex's `v` validators for runtime type safety
    - Use generated types from `convex/_generated/dataModel`
 
 2. **React Patterns:**
+
    - Functional components with hooks
    - Use `useQuery` for reactive Convex queries
    - Use `useMutation` for Convex mutations
@@ -235,12 +250,14 @@ nixelo/
    - Authenticated/Unauthenticated wrappers from convex/react
 
 3. **Styling:**
+
    - Tailwind CSS utility classes
    - Use `cn()` utility from `@/lib/utils` for conditional classes
    - Custom theme colors: primary, secondary, accent (see tailwind.config.js)
    - Responsive design with mobile-first approach
 
 4. **Naming Conventions:**
+
    - Components: PascalCase (e.g., `DocumentEditor.tsx`)
    - Files: camelCase for utilities, PascalCase for components
    - Convex functions: camelCase (e.g., `createDocument`)
@@ -267,34 +284,34 @@ The `ROUTES` object provides type-safe URL generation for all application routes
 import { ROUTES } from "@/config/routes";
 
 // Static routes
-ROUTES.home           // "/"
-ROUTES.signin         // "/signin"
-ROUTES.signup         // "/signup"
-ROUTES.forgotPassword // "/forgot-password"
-ROUTES.onboarding     // "/onboarding"
+ROUTES.home; // "/"
+ROUTES.signin; // "/signin"
+ROUTES.signup; // "/signup"
+ROUTES.forgotPassword; // "/forgot-password"
+ROUTES.onboarding; // "/onboarding"
 
 // Dynamic routes (require parameters)
-ROUTES.invite(token)                      // "/invite/:token"
-ROUTES.dashboard(slug)                    // "/:slug/dashboard"
-ROUTES.documents.list(slug)               // "/:slug/documents"
-ROUTES.documents.detail(slug, id)         // "/:slug/documents/:id"
-ROUTES.projects.list(slug)              // "/:slug/projects"
-ROUTES.projects.board(slug, key)        // "/:slug/projects/:key/board"
-ROUTES.projects.calendar(slug, key)     // "/:slug/projects/:key/calendar"
-ROUTES.projects.timesheet(slug, key)    // "/:slug/projects/:key/timesheet"
-ROUTES.projects.settings(slug, key)     // "/:slug/projects/:key/settings"
-ROUTES.issues.detail(slug, key)           // "/:slug/issues/:key"
-ROUTES.settings.profile(slug)             // "/:slug/settings/profile"
-ROUTES.timeTracking(slug)                 // "/:slug/time-tracking"
+ROUTES.invite(token); // "/invite/:token"
+ROUTES.dashboard(slug); // "/:slug/dashboard"
+ROUTES.documents.list(slug); // "/:slug/documents"
+ROUTES.documents.detail(slug, id); // "/:slug/documents/:id"
+ROUTES.projects.list(slug); // "/:slug/projects"
+ROUTES.projects.board(slug, key); // "/:slug/projects/:key/board"
+ROUTES.projects.calendar(slug, key); // "/:slug/projects/:key/calendar"
+ROUTES.projects.timesheet(slug, key); // "/:slug/projects/:key/timesheet"
+ROUTES.projects.settings(slug, key); // "/:slug/projects/:key/settings"
+ROUTES.issues.detail(slug, key); // "/:slug/issues/:key"
+ROUTES.settings.profile(slug); // "/:slug/settings/profile"
+ROUTES.timeTracking(slug); // "/:slug/time-tracking"
 ```
 
 #### Route Categories
 
-| Category | Auth Required | Company Required | Examples |
-|----------|--------------|------------------|----------|
-| **Public** | No | No | `/`, `/signin`, `/signup`, `/forgot-password`, `/invite/:token` |
-| **Auth** | Yes | No | `/onboarding` |
-| **App** | Yes | Yes | `/:slug/dashboard`, `/:slug/projects`, etc. |
+| Category   | Auth Required | Company Required | Examples                                                        |
+| ---------- | ------------- | ---------------- | --------------------------------------------------------------- |
+| **Public** | No            | No               | `/`, `/signin`, `/signup`, `/forgot-password`, `/invite/:token` |
+| **Auth**   | Yes           | No               | `/onboarding`                                                   |
+| **App**    | Yes           | Yes              | `/:slug/dashboard`, `/:slug/projects`, etc.                     |
 
 #### Usage Examples
 
@@ -313,7 +330,7 @@ navigate({ to: ROUTES.dashboard(slug), replace: true });
 
 // In components with company context
 const { companySlug } = useCompany(); // from CompanyContext
-<Link to={ROUTES.projects.list(companySlug)}>Workspaces</Link>
+<Link to={ROUTES.projects.list(companySlug)}>Projects</Link>
 ```
 
 #### Post-Auth Redirect Flow
@@ -327,10 +344,11 @@ import { Authenticated } from "convex/react";
 // In auth pages (signin, signup, forgot-password)
 <Authenticated>
   <PostAuthRedirect />
-</Authenticated>
+</Authenticated>;
 ```
 
 **`PostAuthRedirect` behavior:**
+
 1. Queries user's companies and onboarding status
 2. If onboarding incomplete → redirects to `/onboarding`
 3. If user has companies → redirects to first company's dashboard
@@ -347,28 +365,29 @@ import { Authenticated } from "convex/react";
 
 The project has a reusable component library in `src/components/ui/`. **Always use these instead of raw HTML elements:**
 
-| Component | Use Instead Of | Key Props |
-|-----------|---------------|-----------|
-| `Button` | `<button>` | `variant` (primary, secondary, ghost, danger, link), `size` (sm, md, lg, icon), `leftIcon`, `rightIcon`, `isLoading` |
-| `Flex` | `<div className="flex ...">` | `direction` (row, column), `gap` (none, xs, sm, md, lg, xl), `align`, `justify`, `wrap` |
-| `Typography` | `<h1>`, `<h2>`, `<p>`, etc. | `variant` (h1, h2, h3, p, small), `color` (primary, secondary, tertiary) |
-| `Card` | custom card divs | Standard card container with consistent styling |
-| `Input` | `<input>` | Standard form input with labels and error states |
-| `Textarea` | `<textarea>` | Multi-line text input |
-| `Select` | `<select>` | Dropdown selection |
-| `Checkbox` | `<input type="checkbox">` | Checkbox with label |
-| `Switch` | toggle switches | Boolean toggle |
-| `Dialog` | modal divs | Modal dialogs |
-| `ConfirmDialog` | confirmation modals | Confirm/cancel dialogs |
-| `Tooltip` | title attributes | Hover tooltips (use with `TooltipProvider`, `TooltipTrigger`, `TooltipContent`) |
-| `Badge` | status spans | Status indicators, tags |
-| `Avatar` | user images | User profile pictures |
-| `LoadingSpinner` | custom spinners | Loading indicators |
-| `EmptyState` | empty content divs | Empty state messaging |
-| `DropdownMenu` | custom dropdowns | Action menus |
-| `Popover` | custom popovers | Floating content |
+| Component        | Use Instead Of               | Key Props                                                                                                            |
+| ---------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `Button`         | `<button>`                   | `variant` (primary, secondary, ghost, danger, link), `size` (sm, md, lg, icon), `leftIcon`, `rightIcon`, `isLoading` |
+| `Flex`           | `<div className="flex ...">` | `direction` (row, column), `gap` (none, xs, sm, md, lg, xl), `align`, `justify`, `wrap`                              |
+| `Typography`     | `<h1>`, `<h2>`, `<p>`, etc.  | `variant` (h1, h2, h3, p, small), `color` (primary, secondary, tertiary)                                             |
+| `Card`           | custom card divs             | Standard card container with consistent styling                                                                      |
+| `Input`          | `<input>`                    | Standard form input with labels and error states                                                                     |
+| `Textarea`       | `<textarea>`                 | Multi-line text input                                                                                                |
+| `Select`         | `<select>`                   | Dropdown selection                                                                                                   |
+| `Checkbox`       | `<input type="checkbox">`    | Checkbox with label                                                                                                  |
+| `Switch`         | toggle switches              | Boolean toggle                                                                                                       |
+| `Dialog`         | modal divs                   | Modal dialogs                                                                                                        |
+| `ConfirmDialog`  | confirmation modals          | Confirm/cancel dialogs                                                                                               |
+| `Tooltip`        | title attributes             | Hover tooltips (use with `TooltipProvider`, `TooltipTrigger`, `TooltipContent`)                                      |
+| `Badge`          | status spans                 | Status indicators, tags                                                                                              |
+| `Avatar`         | user images                  | User profile pictures                                                                                                |
+| `LoadingSpinner` | custom spinners              | Loading indicators                                                                                                   |
+| `EmptyState`     | empty content divs           | Empty state messaging                                                                                                |
+| `DropdownMenu`   | custom dropdowns             | Action menus                                                                                                         |
+| `Popover`        | custom popovers              | Floating content                                                                                                     |
 
 **Example usage:**
+
 ```typescript
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
@@ -390,6 +409,7 @@ function MyComponent() {
 ### Convex Backend Patterns
 
 1. **Query Pattern:**
+
 ```typescript
 export const get = query({
   args: { id: v.id("documents") },
@@ -403,6 +423,7 @@ export const get = query({
 ```
 
 2. **Mutation Pattern:**
+
 ```typescript
 export const update = mutation({
   args: { id: v.id("documents"), title: v.string() },
@@ -417,11 +438,13 @@ export const update = mutation({
 ```
 
 3. **Authentication:**
+
    - Always use `getAuthUserId(ctx)` to get current user
    - Check `if (!userId)` to enforce authentication
    - Throw errors for unauthorized access
 
 4. **Access Control:**
+
    - Public/private documents based on `isPublic` flag
    - Project members array for team access
    - Owner-only operations for deletes and certain updates
@@ -435,6 +458,7 @@ export const update = mutation({
 ### Frontend Patterns
 
 1. **Component Structure:**
+
 ```typescript
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -445,22 +469,19 @@ export function ComponentName({ prop }: { prop: Type }) {
 
   // Component logic
 
-  return (
-    <div className="tailwind classes">
-      {/* JSX */}
-    </div>
-  );
+  return <div className="tailwind classes">{/* JSX */}</div>;
 }
 ```
 
 2. **Navigation with TanStack Router:**
+
 ```typescript
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 
 // Declarative navigation with <Link>
 <Link to="/projects/$key/board" params={{ key: "PROJ" }}>
   Board
-</Link>
+</Link>;
 
 // Programmatic navigation
 const navigate = useNavigate();
@@ -475,6 +496,7 @@ const location = useLocation();
 ```
 
 3. **Route File Structure:**
+
 ```typescript
 // routes/_app/projects/$key/board.tsx
 import { createFileRoute } from "@tanstack/react-router";
@@ -491,12 +513,14 @@ function BoardPage() {
 ```
 
 4. **State Management:**
+
    - Navigation state lives in URL (routes/params) - not React state
    - Use `useState` for local UI state only
    - Use Convex `useQuery` for server state (automatic reactivity)
    - Global UI state (modals, command palette) in route layouts or context
 
 5. **Error Handling:**
+
    - **Error Boundaries:** App uses React Error Boundaries to prevent crashes
    - Use try/catch with Convex mutations
    - Display errors with Sonner toast notifications
@@ -504,6 +528,7 @@ function BoardPage() {
    - Handle null/undefined from queries gracefully
 
    **Error Boundary Usage:**
+
    ```typescript
    import { ErrorBoundary } from "@/components/ErrorBoundary";
    import { SectionErrorFallback } from "@/components/SectionErrorFallback";
@@ -514,15 +539,17 @@ function BoardPage() {
      onError={(error, errorInfo) => console.error(error)}
    >
      <YourComponent />
-   </ErrorBoundary>
+   </ErrorBoundary>;
    ```
 
    **Error Boundary Locations:**
+
    - Root layout: Wraps entire application (`routes/__root.tsx`)
    - App layout: Wraps authenticated sections (`routes/_app/route.tsx`)
    - Component level: Individual components can have their own boundaries
 
    **Custom Error Fallbacks:**
+
    - Use `SectionErrorFallback` for consistent error UI
    - Provide custom fallback for specialized sections
    - Include retry functionality when appropriate
@@ -570,6 +597,7 @@ pnpm run check        # Run typecheck, lint check, and all tests
 ### Making Changes
 
 1. **Adding a new feature:**
+
    - Define schema changes in `convex/schema.ts` if needed
    - Create/update Convex functions in appropriate module
    - Create/update React components
@@ -577,6 +605,7 @@ pnpm run check        # Run typecheck, lint check, and all tests
    - Run `pnpm run check` before committing
 
 2. **Modifying the database:**
+
    - Update schema in `convex/schema.ts`
    - Add indexes for query performance
    - Add search indexes for full-text search
@@ -590,6 +619,7 @@ pnpm run check        # Run typecheck, lint check, and all tests
 ### Code Quality
 
 1. **Before Committing:**
+
 ```bash
 pnpm run typecheck  # Ensure no TypeScript errors
 pnpm run lint       # Run Biome linting and auto-fix issues
@@ -598,6 +628,7 @@ pnpm run check      # Run typecheck, lint check, and all tests
 ```
 
 2. **Biome Configuration (`biome.json`):**
+
    - Comprehensive linting rules across multiple categories:
      - **Accessibility (a11y)**: ARIA attributes, keyboard navigation, semantic HTML
      - **Security**: Dangerous patterns, innerHTML usage, eval prevention
@@ -607,10 +638,11 @@ pnpm run check      # Run typecheck, lint check, and all tests
      - **Style**: Consistent code style, modern JS patterns
    - **Import Organization**: Automatic import sorting and cleanup
    - **Formatter**: Consistent code formatting (replaces Prettier)
-   - **Test Overrides**: Relaxed rules for test files (*.test.ts, *.spec.tsx)
+   - **Test Overrides**: Relaxed rules for test files (_.test.ts, _.spec.tsx)
    - **Generated Files**: Disabled linting for `convex/_generated/**`
 
 3. **TypeScript Configuration:**
+
    - Strict mode enabled
    - Path alias `@/*` → `./src/*`
    - Separate configs for app, node, and convex code
@@ -632,11 +664,13 @@ pnpm convex deploy
 ```
 
 Required environment variable for CI/CD:
+
 - `CONVEX_DEPLOY_KEY` - Get from Convex dashboard → Settings → Deploy Keys
 
 ### Frontend Deployment (Vercel Recommended)
 
 1. **Build Command:**
+
 ```bash
 npx convex deploy --cmd 'pnpm run build'
 ```
@@ -644,6 +678,7 @@ npx convex deploy --cmd 'pnpm run build'
 2. **Output Directory:** `dist`
 
 3. **Environment Variables:**
+
    - `CONVEX_DEPLOY_KEY` (required for production)
    - `VITE_PUBLIC_POSTHOG_KEY` (optional, for analytics)
    - `VITE_PUBLIC_POSTHOG_HOST` (optional, for analytics)
@@ -662,11 +697,13 @@ npx convex deploy --cmd 'pnpm run build'
 ### Real-time Collaboration
 
 1. **Document Editing:**
+
    - Uses ProseMirror Sync for collaborative editing
    - Presence indicators show active users
    - Changes sync automatically through Convex
 
 2. **Presence Tracking:**
+
    - Configured in `convex/presence.ts`
    - Shows who's viewing/editing documents
    - Updates in real-time via Convex Presence
@@ -679,12 +716,14 @@ npx convex deploy --cmd 'pnpm run build'
 ### Performance Considerations
 
 1. **Database Queries:**
+
    - Always use indexes for queries (defined in schema)
    - Use `.withIndex()` for filtered queries
    - Use `.withSearchIndex()` for search
    - Order results with `.order("desc")` or `.order("asc")`
 
 2. **Data Fetching:**
+
    - Use Promise.all() for parallel fetches
    - Denormalize when showing related data (e.g., creator names)
    - Filter results in query when possible
@@ -697,37 +736,43 @@ npx convex deploy --cmd 'pnpm run build'
 ### Security Patterns
 
 1. **Authentication:**
+
    - Check `userId` in every mutation/query
    - Use `getAuthUserId(ctx)` for current user
    - Throw errors for unauthenticated access
 
 2. **Authorization & RBAC (Role-Based Access Control):**
+
    - **Roles:** admin, editor, viewer
    - **Hierarchy:** viewer < editor < admin
    - **Project creator:** Always has admin role
    - **Permission checks:** Use RBAC utilities from `convex/rbac.ts`
 
    **RBAC Utilities:**
+
    ```typescript
-   import { assertMinimumRole, getUserRole, canEditWorkspace } from "./rbac";
+   import { assertCanEditProject, getProjectRole } from "./projectAccess";
+   import { hasMinimumRole } from "./rbac";
 
    // In a mutation/query
-   await assertMinimumRole(ctx, projectId, userId, "editor"); // Throws if insufficient
-   const role = await getUserRole(ctx, projectId, userId); // Returns role or null
-   const canEdit = await canEditWorkspace(ctx, projectId, userId); // Boolean
+   const role = await getProjectRole(ctx, projectId, userId); // Returns role or null
+   const canEdit = await assertCanEditProject(ctx, projectId, userId); // Throws if insufficient
    ```
 
    **Role Permissions:**
+
    - **Viewer:** Read-only access, can comment
    - **Editor:** Can create/edit/delete issues, sprints, documents
    - **Admin:** Full control - manage settings, members, workflow, delete project
 
    **Database Tables:**
+
    - `projectMembers`: Maps users to projects with roles
    - Fields: projectId, userId, role, addedBy, addedAt
    - Indexed by project, user, and project+user combination
 
    **Member Management:**
+
    - Use `addMember` mutation with role parameter
    - Use `updateMemberRole` to change roles (admin only)
    - Use `removeMember` to remove members (admin only)
@@ -743,6 +788,7 @@ npx convex deploy --cmd 'pnpm run build'
 The project includes a comprehensive analytics dashboard for tracking project and team performance.
 
 **Available Analytics:**
+
 - **Project Overview:** Total issues, unassigned count, team velocity
 - **Issue Distribution:** By status, type, priority, and assignee
 - **Sprint Burndown:** Track sprint progress with ideal vs. actual burndown
@@ -750,6 +796,7 @@ The project includes a comprehensive analytics dashboard for tracking project an
 - **Recent Activity:** Timeline of project activity and changes
 
 **Analytics Queries** (`convex/analytics.ts`):
+
 ```typescript
 // Get project analytics overview
 const analytics = useQuery(api.analytics.getProjectAnalytics, { projectId });
@@ -761,15 +808,20 @@ const burndown = useQuery(api.analytics.getSprintBurndown, { sprintId });
 const velocity = useQuery(api.analytics.getTeamVelocity, { projectId });
 
 // Get recent activity
-const activity = useQuery(api.analytics.getRecentActivity, { projectId, limit: 10 });
+const activity = useQuery(api.analytics.getRecentActivity, {
+  projectId,
+  limit: 10,
+});
 ```
 
 **Accessing the Dashboard:**
+
 - Navigate to a project
 - Click the "📊 Analytics" tab
 - View charts, metrics, and team performance
 
 **Metrics Calculated:**
+
 - **Story Points:** Uses `estimatedHours` field as story points
 - **Completion:** Issues in "done" category workflow states
 - **Velocity:** Average points completed per sprint
@@ -780,6 +832,7 @@ const activity = useQuery(api.analytics.getRecentActivity, { projectId, limit: 1
 Multi-provider email notification system with user preferences.
 
 **Features:**
+
 - Provider rotation (Resend, SendPulse, Mailgun, SendGrid)
 - React Email templates for consistent branding
 - User notification preferences
@@ -788,6 +841,7 @@ Multi-provider email notification system with user preferences.
 **Documentation:** See [docs/email/](./docs/email/) for full documentation.
 
 **Quick Usage:**
+
 ```typescript
 import { sendEmail } from "./email";
 
@@ -807,6 +861,7 @@ Nixelo includes two AI systems:
 Intelligent text-based assistance for project management.
 
 **Features:**
+
 - AI Chat - Ask questions about projects in natural language
 - Semantic Search - Find issues by meaning using vector embeddings
 - Duplicate Detection - Prevent duplicate issues before creation
@@ -815,6 +870,7 @@ Intelligent text-based assistance for project management.
 **Documentation:** See [docs/ai/text/](./docs/ai/text/) for full documentation.
 
 **Quick Usage:**
+
 ```typescript
 // Semantic search
 const results = await searchSimilarIssues({
@@ -835,6 +891,7 @@ const description = await suggestIssueDescription({
 Automated meeting recording, transcription, and summarization.
 
 **Features:**
+
 - Automatic meeting joining (Google Meet, Zoom planned)
 - Multi-provider transcription (Whisper, Google, Azure, etc.)
 - AI summarization with Claude
@@ -843,6 +900,7 @@ Automated meeting recording, transcription, and summarization.
 **Documentation:** See [docs/ai/voice/](./docs/ai/voice/) for full documentation.
 
 **Quick Usage:**
+
 ```typescript
 // Schedule a recording
 await scheduleRecording({
@@ -855,6 +913,7 @@ await scheduleRecording({
 ### Common Tasks
 
 **Adding a new Convex function:**
+
 ```typescript
 // In convex/yourModule.ts
 import { query, mutation } from "./_generated/server";
@@ -876,6 +935,7 @@ export const yourFunction = mutation({
 ```
 
 **Adding a new React component:**
+
 ```typescript
 // In src/components/YourComponent.tsx
 import { useQuery, useMutation } from "convex/react";
@@ -888,15 +948,12 @@ export function YourComponent({ id }: { id: Id<"table"> }) {
 
   if (!data) return <div>Loading...</div>;
 
-  return (
-    <div className="p-4">
-      {/* Your component JSX */}
-    </div>
-  );
+  return <div className="p-4">{/* Your component JSX */}</div>;
 }
 ```
 
 **Adding a new database table:**
+
 ```typescript
 // In convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
@@ -927,11 +984,11 @@ Nixelo uses a comprehensive testing strategy with three layers.
 
 ### Testing Stack
 
-| Layer | Framework | Location | Purpose |
-|-------|-----------|----------|---------|
-| **Unit Tests** | Vitest + React Testing Library | `src/**/*.test.ts(x)` | Component & utility testing |
-| **Backend Tests** | Vitest + convex-test | `convex/**/*.test.ts` | Convex function testing |
-| **E2E Tests** | Playwright | `e2e/**/*.spec.ts` | Full user flow testing |
+| Layer             | Framework                      | Location              | Purpose                     |
+| ----------------- | ------------------------------ | --------------------- | --------------------------- |
+| **Unit Tests**    | Vitest + React Testing Library | `src/**/*.test.ts(x)` | Component & utility testing |
+| **Backend Tests** | Vitest + convex-test           | `convex/**/*.test.ts` | Convex function testing     |
+| **E2E Tests**     | Playwright                     | `e2e/**/*.spec.ts`    | Full user flow testing      |
 
 ### Quick Commands
 
@@ -961,13 +1018,13 @@ We use accessible selectors following Playwright best practices:
 
 ```typescript
 // Preferred (accessible selectors)
-page.getByRole("button", { name: /submit/i })
-page.getByLabel("Email")
-page.getByPlaceholder("Enter email")
-page.getByText("Sign in")
+page.getByRole("button", { name: /submit/i });
+page.getByLabel("Email");
+page.getByPlaceholder("Enter email");
+page.getByText("Sign in");
 
 // Last resort (test IDs)
-page.getByTestId("complex-widget")
+page.getByTestId("complex-widget");
 ```
 
 ### AI-Assisted Testing (MCP)
@@ -984,6 +1041,7 @@ Playwright MCP Server is configured at `.claude/mcp.json` for AI-assisted testin
 ## Analytics
 
 PostHog integration provides:
+
 - User behavior tracking
 - Session recordings
 - Feature usage metrics
@@ -994,6 +1052,7 @@ Analytics are opt-in via environment variables and privacy-focused.
 ## Chef Integration
 
 The project includes Chef (Convex's development platform) integration:
+
 - Enables screenshots during development
 - Only active in development mode
 - Safe to remove if not using Chef
@@ -1001,6 +1060,7 @@ The project includes Chef (Convex's development platform) integration:
 ## Resources
 
 ### Internal Documentation
+
 - [Testing Overview](./docs/testing/README.md) - Testing strategy, commands, architecture
 - [Email System](./docs/email/README.md) - Email notifications setup & usage
 - [AI Overview](./docs/ai/README.md) - AI features overview
@@ -1009,6 +1069,7 @@ The project includes Chef (Convex's development platform) integration:
 - [Pagination Patterns](./docs/PAGINATION_PATTERNS.md) - Cursor-based pagination & smart loading patterns
 
 ### External Documentation
+
 - [Convex Documentation](https://docs.convex.dev/)
 - [React 19 Documentation](https://react.dev/)
 - [TanStack Router](https://tanstack.com/router/latest) - File-based routing
