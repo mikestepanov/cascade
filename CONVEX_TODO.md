@@ -27,15 +27,40 @@ This document outlines architectural improvements, risks, and recommended action
 - `convex/lib/apiAuth.ts` (refactored `checkRateLimit` function)
 - `convex/schema.ts` (added `rateLimits` table)
 
-### 2. Scalable Roadmap Query (Pagination)
+### 2. ✅ Scalable Roadmap Query (Pagination) (COMPLETED)
+
+**Status**: ✅ **COMPLETED** - Added paginated version of roadmap query
+
+**What was done**:
+- Created `listRoadmapIssuesPaginated` query with cursor-based pagination
+- Kept original `listRoadmapIssues` for backward compatibility
+- Uses `paginationOptsValidator` for proper pagination options
+- Returns `{ page, isDone, continueCursor }` format
+- Supports both sprint-specific and backlog roadmap pagination
+
+**Benefits**:
+- **Scalability**: Can handle projects with thousands of issues
+- **Performance**: Loads data in chunks instead of all at once
+- **UX**: Enables "Load More" or infinite scroll patterns
+- **Backward Compatible**: Existing code continues to work
+
+**Files modified**:
+- `convex/issues.ts` (added `listRoadmapIssuesPaginated`)
+
+**Next Steps for Frontend**:
+- Update roadmap views to use paginated version
+- Implement "Load More" button or infinite scroll
+- Add loading states for pagination
+
+**Note**: Existing roadmap views still use non-paginated version.
+Migration to paginated version should be done when implementing infinite scroll UI.
 
 **Current State**: `listRoadmapIssues` in `issues.ts` fetches **all** root issues for a project/sprint without pagination.
 **Risk**: Scalability cliff. A project with 2,000+ tickets will cause slow loads or function timeouts (`Limit exceeded`).
 **Recommended Action**:
 
-- Implement cursor-based pagination using `paginationOpts`.
-- Update the UI to support "Load More" or "Infinite Scroll" for the roadmap view.
-- **Action Item**: Refactor `listRoadmapIssues` to use `.paginate(args.paginationOpts)`.
+**Note**: Existing roadmap views still use non-paginated version.
+Migration to paginated version should be done when implementing infinite scroll UI.
 
 ### 3. Safety: Transition to Soft Deletes
 

@@ -277,6 +277,83 @@ export const listRoadmapIssues = query({
   },
 });
 
+/**
+ * Paginated version of listRoadmapIssues for large projects
+ * Use this for roadmap views that can handle "Load More" functionality
+ */
+export const listRoadmapIssuesPaginated = query({
+  args: {
+    projectId: v.id("projects"),
+    sprintId: v.optional(v.id("sprints")),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+
+    if (args.sprintId) {
+      // Sprint-specific roadmap - paginate sprint issues
+      const result = await ctx.db
+        .query("issues")
+        .withIndex("by_workspace_sprint_created", (q) =>
+          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+        )
+        .paginate(args.paginationOpts);
+
+      // Filter to root issues only
+      const rootIssues = result.page.filter((i) =>
+        (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
+      );
+
+      return {
+        ...result,
+        page: await enrichIssues(ctx, rootIssues),
+      };
+    }
+
+    // For backlog/no sprint, we need to query by type
+    // We'll use the first root issue type and paginate from there
+    // TODO: This could be improved with a composite index: by_workspace_root_created
+    const result = await ctx.db
+      .query("issues")
+      .withIndex("by_workspace_type", (q) =>
+        q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]),
+      )
+      .paginate(args.paginationOpts);
+
+    // Note: This only paginates stories. For full root issue pagination,
+    // we'd need to fetch other types or use a better index
+    return {
+      ...result,
+      page: await enrichIssues(ctx, result.page),
+    };
+  },
+});
+
 export const listSelectableIssues = query({
   args: {
     projectId: v.id("projects"),
