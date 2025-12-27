@@ -190,11 +190,11 @@ export const listByUser = query({
       ctx.db
         .query("issues")
         .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-        .collect(),
+        .take(50),
       ctx.db
         .query("issues")
         .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
-        .collect(),
+        .take(50),
     ]);
 
     // Combine and deduplicate (user might be both assignee and reporter)
@@ -419,7 +419,7 @@ export const get = query({
           .query("issueComments")
           .withIndex("by_issue", (q) => q.eq("issueId", args.id))
           .order("asc")
-          .collect(),
+          .take(200),
         ctx.db
           .query("issueActivity")
           .withIndex("by_issue", (q) => q.eq("issueId", args.id))

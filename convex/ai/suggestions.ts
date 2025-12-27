@@ -16,6 +16,7 @@ import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { action, internalAction, mutation, query } from "../_generated/server";
+import { extractUsage } from "../lib/aiHelpers";
 import { rateLimit } from "../rateLimits";
 
 // Claude Haiku 4.5 for fast, cheap suggestions (alias auto-points to latest)
@@ -35,7 +36,10 @@ export const generateDescription = internalAction({
       model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
-    return response.text;
+    return {
+      text: response.text,
+      usage: extractUsage(response.usage),
+    };
   },
 });
 
@@ -53,7 +57,10 @@ export const generatePriority = internalAction({
       model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
-    return response.text;
+    return {
+      text: response.text,
+      usage: extractUsage(response.usage),
+    };
   },
 });
 
@@ -71,7 +78,10 @@ export const generateLabels = internalAction({
       model: anthropic(CLAUDE_HAIKU),
       prompt: args.prompt,
     });
-    return response.text;
+    return {
+      text: response.text,
+      usage: extractUsage(response.usage),
+    };
   },
 });
 
@@ -123,11 +133,20 @@ Description:`;
 
     // Use cache with 1 hour TTL - same title + type = cached result
     const cacheKey = `desc:${args.type}:${args.title}`;
-    const suggestion = await descriptionCache.fetch(ctx, {
+    const startTime = Date.now();
+    const result = await descriptionCache.fetch(ctx, {
       key: cacheKey,
       action: prompt,
       ttl: 3600000, // 1 hour
     });
+    const responseTime = Date.now() - startTime;
+
+    // Handle backward compatibility (cache might contain strings)
+    const suggestion = typeof result === "string" ? result : result.text;
+    const usage =
+      typeof result === "string"
+        ? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
+        : result.usage;
 
     // Store suggestion
     await ctx.runMutation(internal.ai.storeSuggestion, {
@@ -137,6 +156,20 @@ Description:`;
       targetId: args.title,
       suggestion,
       modelUsed: CLAUDE_HAIKU,
+    });
+
+    // Track usage
+    await ctx.runMutation(internal.internal.ai.trackUsage, {
+      userId: userId.subject,
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
     });
 
     return suggestion;
@@ -184,13 +217,22 @@ Priority:`;
 
     // Use cache with 1 hour TTL
     const cacheKey = `priority:${args.type}:${args.title}:${args.description || ""}`;
-    const response = await priorityCache.fetch(ctx, {
+    const startTime = Date.now();
+    const result = await priorityCache.fetch(ctx, {
       key: cacheKey,
       action: prompt,
       ttl: 3600000, // 1 hour
     });
+    const responseTime = Date.now() - startTime;
 
-    const priority = response.trim().toLowerCase();
+    // Handle backward compatibility
+    const responseText = typeof result === "string" ? result : result.text;
+    const usage =
+      typeof result === "string"
+        ? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
+        : result.usage;
+
+    const priority = responseText.trim().toLowerCase();
 
     // Validate priority
     const validPriorities = ["highest", "high", "medium", "low", "lowest"];
@@ -204,6 +246,20 @@ Priority:`;
       targetId: args.title,
       suggestion: suggestedPriority,
       modelUsed: CLAUDE_HAIKU,
+    });
+
+    // Track usage
+    await ctx.runMutation(internal.internal.ai.trackUsage, {
+      userId: userId.subject,
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
     });
 
     return suggestedPriority as "highest" | "high" | "medium" | "low" | "lowest";
@@ -258,13 +314,22 @@ Labels:`;
 
     // Use cache with 1 hour TTL
     const cacheKey = `labels:${args.type}:${args.title}:${args.description || ""}`;
-    const response = await labelsCache.fetch(ctx, {
+    const startTime = Date.now();
+    const result = await labelsCache.fetch(ctx, {
       key: cacheKey,
       action: prompt,
       ttl: 3600000, // 1 hour
     });
+    const responseTime = Date.now() - startTime;
 
-    const suggestedLabels = response
+    // Handle backward compatibility
+    const responseText = typeof result === "string" ? result : result.text;
+    const usage =
+      typeof result === "string"
+        ? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
+        : result.usage;
+
+    const suggestedLabels = responseText
       .split(",")
       .map((label) => label.trim().toLowerCase())
       .filter((label) => label.length > 0)
@@ -278,6 +343,20 @@ Labels:`;
       targetId: args.title,
       suggestion: suggestedLabels.join(", "),
       modelUsed: CLAUDE_HAIKU,
+    });
+
+    // Track usage
+    await ctx.runMutation(internal.internal.ai.trackUsage, {
+      userId: userId.subject,
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
     });
 
     return suggestedLabels;
