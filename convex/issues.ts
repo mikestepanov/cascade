@@ -496,6 +496,70 @@ export const get = query({
   },
 });
 
+export const listComments = query({
+  args: {
+    issueId: v.id("issues"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    const issue = await ctx.db.get(args.issueId);
+
+    if (!issue) {
+      throw new Error("Issue not found");
+    }
+
+    const project = await ctx.db.get(issue.projectId as Id<"projects">);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Check access permissions
+    if (userId) {
+      const hasAccess = await canAccessProject(ctx, issue.projectId as Id<"projects">, userId);
+      if (!hasAccess) {
+        throw new Error("Not authorized to access this issue");
+      }
+    } else {
+      // Unauthenticated users can only access public projects
+      if (!project.isPublic) {
+        throw new Error("Not authorized to access this issue");
+      }
+    }
+
+    const results = await ctx.db
+      .query("issueComments")
+      .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+      .order("asc")
+      .paginate(args.paginationOpts);
+
+    // Batch fetch authors
+    const authorIds = results.page.map((c) => c.authorId);
+    const userMap = await batchFetchUsers(ctx, authorIds);
+
+    // Enrich comments
+    const enrichedPage = results.page.map((comment) => {
+      const author = userMap.get(comment.authorId);
+      return {
+        ...comment,
+        author: author
+          ? {
+              _id: author._id,
+              name: author.name || author.email || "Unknown",
+              email: author.email,
+              image: author.image,
+            }
+          : null,
+      };
+    });
+
+    return {
+      ...results,
+      page: enrichedPage,
+    };
+  },
+});
+
 /**
  * Get issue by key (e.g., "PROJ-123")
  * Used by REST API for looking up issues by their human-readable key

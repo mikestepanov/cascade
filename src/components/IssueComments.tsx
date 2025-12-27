@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { formatRelativeTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
@@ -19,10 +19,13 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
   const [mentions, setMentions] = useState<Id<"users">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const issue = useQuery(api.issues.get, { id: issueId });
-  const addComment = useMutation(api.issues.addComment);
+  const {
+    results: comments,
+    status,
+    loadMore,
+  } = usePaginatedQuery(api.issues.listComments, { issueId }, { initialNumItems: 50 });
 
-  const comments = issue?.comments || [];
+  const addComment = useMutation(api.issues.addComment);
 
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
@@ -45,11 +48,15 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
     }
   };
 
+  if (status === "LoadingFirstPage") {
+    return <div className="p-8 text-center">Loading comments...</div>;
+  }
+
   return (
     <div className="space-y-6">
       {/* Comments List */}
       <div className="space-y-4">
-        {comments.length === 0 ? (
+        {comments?.length === 0 ? (
           <div className="text-center py-8 text-ui-text-secondary dark:text-ui-text-secondary-dark">
             <svg
               aria-hidden="true"
@@ -69,38 +76,51 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
             <p className="text-sm mt-1">Be the first to comment!</p>
           </div>
         ) : (
-          comments.map((comment) => (
-            <div
-              key={comment._id}
-              className="flex gap-3 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-            >
-              {/* Avatar */}
-              <div className="flex-shrink-0">
-                <Avatar name={comment.author.name} src={comment.author.image} size="lg" />
-              </div>
-
-              {/* Comment Content */}
-              <div className="flex-1 min-w-0">
-                {/* Author and Date */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {comment.author.name}
-                  </span>
-                  <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    {formatRelativeTime(comment.createdAt)}
-                  </span>
-                  {comment.updatedAt > comment.createdAt && (
-                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      (edited)
-                    </span>
-                  )}
+          <>
+            {comments?.map((comment) => (
+              <div
+                key={comment._id}
+                className="flex gap-3 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+              >
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  <Avatar name={comment.author?.name} src={comment.author?.image} size="lg" />
                 </div>
 
-                {/* Comment Text with Mentions */}
-                <CommentRenderer content={comment.content} mentions={comment.mentions} />
+                {/* Comment Content */}
+                <div className="flex-1 min-w-0">
+                  {/* Author and Date */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {comment.author?.name || "Unknown User"}
+                    </span>
+                    <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                      {formatRelativeTime(comment.createdAt)}
+                    </span>
+                    {comment.updatedAt > comment.createdAt && (
+                      <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        (edited)
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Comment Text with Mentions */}
+                  <CommentRenderer content={comment.content} mentions={comment.mentions} />
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+
+            {status === "CanLoadMore" && (
+              <div className="text-center pt-2">
+                <Button variant="secondary" onClick={() => loadMore(50)}>
+                  Load More Comments
+                </Button>
+              </div>
+            )}
+            {status === "LoadingMore" && (
+              <div className="text-center pt-2 text-sm text-ui-text-tertiary">Loading...</div>
+            )}
+          </>
         )}
       </div>
 
