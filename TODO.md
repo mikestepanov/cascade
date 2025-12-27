@@ -204,7 +204,7 @@ A fully-built feature for managing document templates that was never integrated:
 
 ### High Priority
 
-- [x] Unbounded queries (no pagination) - Capped `issues.listByUser` and `issues.get` comments ✅
+- [x] Unbounded queries (no pagination) - Capped `issues.listByUser`, implemented full pagination for comments ✅
 
 ### Medium Priority
 
