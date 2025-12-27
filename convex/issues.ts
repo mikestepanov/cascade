@@ -1742,32 +1742,51 @@ function fetchIssuesForState(
   doneThreshold: number,
 ) {
   if (state.category === "done") {
+    // For done items: Only fetch recent ones (based on updatedAt threshold)
+    // Index by_workspace_status_updated is optimal here:
+    // - Filters by projectId, status
+    // - Range scans updatedAt >= threshold
     return ctx.db
       .query("issues")
       .withIndex("by_workspace_status_updated", (q) =>
         q.eq("projectId", ctx.projectId).eq("status", state.id).gt("updatedAt", doneThreshold),
       )
+      .order("desc") // Most recently updated first
       .collect();
   }
 
-  // Fetch limit for todo/inprogress to prevent memory issues with massive backlogs
+  // For todo/inprogress: Fetch up to 500 items
+  // Using by_workspace_status_updated index for efficient filtering
+  // Order by updatedAt descending to show most recently updated first
+  // This ensures active/recent items are prioritized
   return ctx.db
     .query("issues")
     .withIndex("by_workspace_status_updated", (q) =>
       q.eq("projectId", ctx.projectId).eq("status", state.id),
     )
+    .order("desc") // Most recently updated first - ensures we see active items
     .take(500);
 }
 
 /**
- * Smart loading for Kanban boards
- * - todo/inprogress: Load all items
- * - done: Load only recent items (last N days)
- */
-/**
- * Smart loading for Kanban boards
- * - todo/inprogress: Load all items
- * - done: Load only recent items (last N days)
+ * Smart loading for Kanban boards with optimized index usage
+ *
+ * Index Optimization Analysis:
+ * - Uses `by_workspace_status_updated` index: ["projectId", "status", "updatedAt"]
+ * - This index is OPTIMAL for our query pattern:
+ *   1. Filters by projectId (index seek)
+ *   2. Filters by status (index seek)
+ *   3. Range filter on updatedAt (efficient index range scan)
+ *
+ * Performance characteristics:
+ * - Done items: O(log n + k) where k = items updated after threshold
+ * - Active items: O(log n + 500) with .take(500) limit
+ * - Database can skip old done items entirely without reading them
+ *
+ * Loading strategy:
+ * - todo/inprogress: Load up to 500 most recently updated items
+ * - done: Load only items updated within last N days (configurable)
+ * - All ordered by updatedAt DESC to prioritize active work
  */
 export const listByProjectSmart = projectQuery({
   args: {

@@ -66,13 +66,6 @@ This document outlines remaining architectural improvements for the Convex backe
 - Use **`convex-helpers`** or a strict "service layer" pattern where defining a relation automatically registers a deletion hook.
 - For soft deletes, cascading is less critical immediately, but "restoring" an issue must also handle its children (or leave them deleted).
 
-### 3. Optimize "Smart Board" Indexes
-
-**Current State**: `listByProjectSmart` does excellent work filtering in-memory, but depends on `by_workspace_status_updated`.
-**Optimization**: Ensure your compound indexes fully cover the query predicates to avoid scanning unnecessary rows.
-
-- **Action Item**: Review `schema.ts` indexes against the `doneColumnDays` filter in `issues.ts` to ensure the database engine can skip old "Done" items entirely without reading them.
-
 ---
 
 ## 🔍 Future / Low Priority
@@ -85,6 +78,17 @@ This document outlines remaining architectural improvements for the Convex backe
 ---
 
 ## 📝 Completed Tasks (Reference)
+
+### ✅ Optimize Smart Board Indexes (Completed 2025-12-27)
+- Analyzed `listByProjectSmart` query performance
+- Confirmed `by_workspace_status_updated` index is already optimal
+- Index structure `["projectId", "status", "updatedAt"]` allows:
+  - O(log n) seek to projectId and status
+  - Efficient range scan on updatedAt for done items
+  - Database can skip old done items without reading them
+- Added explicit `.order("desc")` for consistent ordering
+- Improved documentation explaining index optimization
+- Performance: O(log n + k) where k = matching items
 
 ### ✅ Type-Safe Field Exclusion (Completed 2025-12-27)
 - Created `convex/lib/userUtils.ts` with sanitizer functions
