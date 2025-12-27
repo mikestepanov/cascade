@@ -230,6 +230,54 @@ export const issueMutation = customMutation(mutation, {
 });
 
 /**
+ * Issue Viewer Mutation - automatically loads issue and checks viewer access
+ * Requires viewer role or higher (any project member can use this)
+ * Use for operations like commenting where viewers should have access
+ */
+export const issueViewerMutation = customMutation(mutation, {
+  args: { issueId: v.id("issues") },
+  input: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Authentication required");
+    }
+
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) {
+      throw new Error("Issue not found");
+    }
+
+    if (!issue.projectId) {
+      throw new Error("Issue has no project");
+    }
+
+    const project = await ctx.db.get(issue.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    const role = await getProjectRole(ctx, issue.projectId, userId);
+
+    // Check minimum role (viewer or higher)
+    if (!role) {
+      throw new Error("Access denied - must be a project member");
+    }
+
+    return {
+      ctx: {
+        ...ctx,
+        userId,
+        projectId: issue.projectId,
+        role,
+        project,
+        issue,
+      },
+      args: {},
+    };
+  },
+});
+
+/**
  * Helper type to extract custom context from custom functions
  */
 export type AuthenticatedQueryCtx = {

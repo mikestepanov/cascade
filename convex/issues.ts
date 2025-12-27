@@ -3,7 +3,12 @@ import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
-import { issueMutation, type ProjectQueryCtx, projectQuery } from "./customFunctions";
+import {
+  issueMutation,
+  issueViewerMutation,
+  type ProjectQueryCtx,
+  projectQuery,
+} from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
@@ -768,50 +773,28 @@ export const updateStatus = issueMutation({
   },
 });
 
-export const updateStatusByCategory = mutation({
+export const updateStatusByCategory = issueMutation({
   args: {
-    issueId: v.id("issues"),
     category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
     newOrder: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) {
-      throw new Error("Issue not found");
-    }
-
-    const project = await ctx.db.get(issue.projectId as Id<"projects">);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    // Check permissions
-    await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
-
     // Find the target status in the project's workflow based on the category
     // We pick the FIRST status in that category as the default "entry point"
-    const targetState = project.workflowStates
+    const targetState = ctx.project.workflowStates
       .sort((a, b) => a.order - b.order)
       .find((s) => s.category === args.category);
 
     if (!targetState) {
       throw new Error(
-        `No workflow state found for category ${args.category} in project ${project.name}`,
+        `No workflow state found for category ${args.category} in project ${ctx.project.name}`,
       );
     }
 
-    const oldStatus = issue.status;
+    const oldStatus = ctx.issue.status;
     const now = Date.now();
 
-    // Only update if status actually changed or order changed
-    // (If moving within same category, status might not change if mapping to same state, but order usually will)
-
-    await ctx.db.patch(args.issueId, {
+    await ctx.db.patch(ctx.issue._id, {
       status: targetState.id,
       order: args.newOrder,
       updatedAt: now,
@@ -820,8 +803,8 @@ export const updateStatusByCategory = mutation({
     // Log activity
     if (oldStatus !== targetState.id) {
       await ctx.db.insert("issueActivity", {
-        issueId: args.issueId,
-        userId,
+        issueId: ctx.issue._id,
+        userId: ctx.userId,
         action: "updated",
         field: "status",
         oldValue: oldStatus,
@@ -1027,37 +1010,18 @@ export const update = mutation({
   },
 });
 
-export const addComment = mutation({
+export const addComment = issueViewerMutation({
   args: {
-    issueId: v.id("issues"),
     content: v.string(),
     mentions: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) {
-      throw new Error("Issue not found");
-    }
-
-    const project = await ctx.db.get(issue.projectId as Id<"projects">);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    // Check permissions (any role can comment, even viewers)
-    await assertCanAccessProject(ctx, issue.projectId as Id<"projects">, userId);
-
     const now = Date.now();
     const mentions = args.mentions || [];
 
     const commentId = await ctx.db.insert("issueComments", {
-      issueId: args.issueId,
-      authorId: userId,
+      issueId: ctx.issue._id,
+      authorId: ctx.userId,
       content: args.content,
       mentions,
       createdAt: now,
@@ -1066,26 +1030,26 @@ export const addComment = mutation({
 
     // Log activity
     await ctx.db.insert("issueActivity", {
-      issueId: args.issueId,
-      userId,
+      issueId: ctx.issue._id,
+      userId: ctx.userId,
       action: "commented",
       createdAt: now,
     });
 
     // Create notifications for mentioned users
-    const author = await ctx.db.get(userId);
+    const author = await ctx.db.get(ctx.userId);
     const { sendEmailNotification } = await import("./email/helpers");
 
     for (const mentionedUserId of mentions) {
-      if (mentionedUserId !== userId) {
+      if (mentionedUserId !== ctx.userId) {
         // Don't notify yourself
         await ctx.db.insert("notifications", {
           userId: mentionedUserId,
           type: "issue_mentioned",
           title: "You were mentioned",
-          message: `${author?.name || "Someone"} mentioned you in ${issue.key}`,
-          issueId: args.issueId,
-          projectId: issue.projectId as Id<"projects">,
+          message: `${author?.name || "Someone"} mentioned you in ${ctx.issue.key}`,
+          issueId: ctx.issue._id,
+          projectId: ctx.projectId,
           isRead: false,
           createdAt: now,
         });
@@ -1094,32 +1058,32 @@ export const addComment = mutation({
         await sendEmailNotification(ctx, {
           userId: mentionedUserId,
           type: "mention",
-          issueId: args.issueId,
-          actorId: userId,
+          issueId: ctx.issue._id,
+          actorId: ctx.userId,
           commentText: args.content,
         });
       }
     }
 
     // Notify issue reporter about comment (if not the commenter)
-    if (issue.reporterId !== userId) {
+    if (ctx.issue.reporterId !== ctx.userId) {
       await ctx.db.insert("notifications", {
-        userId: issue.reporterId,
+        userId: ctx.issue.reporterId,
         type: "issue_comment",
         title: "New comment",
-        message: `${author?.name || "Someone"} commented on ${issue.key}`,
-        issueId: args.issueId,
-        projectId: issue.projectId as Id<"projects">,
+        message: `${author?.name || "Someone"} commented on ${ctx.issue.key}`,
+        issueId: ctx.issue._id,
+        projectId: ctx.projectId,
         isRead: false,
         createdAt: now,
       });
 
       // Send comment email to reporter
       await sendEmailNotification(ctx, {
-        userId: issue.reporterId,
+        userId: ctx.issue.reporterId,
         type: "comment",
-        issueId: args.issueId,
-        actorId: userId,
+        issueId: ctx.issue._id,
+        actorId: ctx.userId,
         commentText: args.content,
       });
     }
