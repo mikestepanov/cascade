@@ -2,6 +2,18 @@
 
 This document outlines architectural improvements, risks, and recommended actions for the Convex backend, based on a comprehensive codebase review and analysis of Convex best practices.
 
+## 📊 Progress Summary
+
+**Critical Priority**: 2/3 completed ✅
+- ✅ Efficient Rate Limiting (completed)
+- ✅ Scalable Roadmap Pagination (completed)
+- ⚠️ Soft Deletes (requires planning - large architectural change)
+
+**Medium Priority**: 0/3 completed
+**Low Priority**: 0/2 completed
+
+---
+
 ## 🚨 Critical Priority (Performance & Scalability)
 
 ### 1. ✅ Implement Efficient Rate Limiting (COMPLETED)
@@ -66,12 +78,40 @@ Migration to paginated version should be done when implementing infinite scroll 
 
 **Current State**: `bulkDelete` in `issues.ts` permanently removes issues and all related records (comments, etc.).
 **Risk**: Data loss. No "Undo" functionality. Accidental deletion is catastrophic.
-**Recommended Action**:
 
-- Add `isDeleted: v.optional(v.boolean())` and `deletedAt: v.optional(v.number())` to key tables (`issues`, `projects`).
-- Update queries to filter `q.neq("isDeleted", true)`.
-- Use a cron job (`crons.ts`) to permanently delete items older than 30 days.
-- **Action Item**: Update `schema.ts` and refactor deletion mutations to simple updates.
+**Status**: ⚠️ **REQUIRES PLANNING** - Large architectural change
+
+**Why This Needs Careful Planning**:
+- **Schema Migration**: Need to add `isDeleted`, `deletedAt`, `deletedBy` to multiple tables
+- **Query Updates**: ALL queries across the codebase need `.neq("isDeleted", true)` filters
+- **Data Migration**: Existing records need default `isDeleted: false`
+- **Cascading Logic**: Child records (comments, links) must be soft-deleted with parent
+- **Restore Functionality**: Need mutations to restore deleted items and their children
+- **Cron Jobs**: Setup scheduled deletion of items > 30 days old
+- **UI Changes**: Admin interface to view/restore deleted items
+- **Testing**: Comprehensive tests for delete/restore flows
+
+**Recommended Action**:
+- Create detailed implementation plan with phases
+- Dedicate sprint/milestone for this feature
+- Start with issues table, then expand to projects, documents
+- Add feature flag to test in production safely
+
+**Tables Requiring Soft Deletes**:
+1. `issues` (highest priority)
+2. `projects`
+3. `documents`
+4. `sprints`
+5. `issueComments`
+6. `projectMembers`
+
+**Implementation Phases**:
+- **Phase 1**: Schema updates + migrations
+- **Phase 2**: Update all read queries to filter deleted
+- **Phase 3**: Update delete mutations to soft delete
+- **Phase 4**: Add restore mutations
+- **Phase 5**: Implement cron job for permanent deletion
+- **Phase 6**: UI for viewing/restoring deleted items
 
 ---
 
