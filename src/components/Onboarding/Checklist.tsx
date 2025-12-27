@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { Flex } from "../ui/Flex";
@@ -16,7 +16,11 @@ export function OnboardingChecklist() {
   const [isExpanded, setIsExpanded] = useState(true);
   const onboarding = useQuery(api.onboarding.getOnboardingStatus);
   const projects = useQuery(api.projects.list, {});
-  const issues = useQuery(api.issues.listByUser, {});
+  const { results: issues } = usePaginatedQuery(
+    api.issues.listByUser,
+    {},
+    { initialNumItems: 100 },
+  );
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
   if (!onboarding || onboarding.checklistDismissed || onboarding.onboardingCompleted) {

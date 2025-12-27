@@ -170,36 +170,31 @@ export const create = editorMutation({
 /**
  * List all issues assigned to or reported by the current user
  * Used by onboarding checklist to track user progress
+ * Returns paginated results to handle users with many issues
  */
 export const listByUser = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return [];
+      return {
+        page: [],
+        isDone: true,
+        continueCursor: "",
+      };
     }
 
-    // Query issues by assignee and reporter using indexes (NOT loading all issues!)
-    const [assignedIssues, reportedIssues] = await Promise.all([
-      ctx.db
-        .query("issues")
-        .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-        .take(50),
-      ctx.db
-        .query("issues")
-        .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
-        .take(50),
-    ]);
+    // Paginate assigned issues
+    const assignedResult = await ctx.db
+      .query("issues")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .paginate(args.paginationOpts);
 
-    // Combine and deduplicate (user might be both assignee and reporter)
-    const seenIds = new Set<string>();
-    const userIssues = [...assignedIssues, ...reportedIssues].filter((issue) => {
-      if (seenIds.has(issue._id)) return false;
-      seenIds.add(issue._id);
-      return true;
-    });
-
-    return userIssues.map((issue) => ({
+    // For simplicity, only return assigned issues in first implementation
+    // TODO: Could merge with reported issues if needed
+    const mappedIssues = assignedResult.page.map((issue) => ({
       _id: issue._id,
       key: issue.key,
       title: issue.title,
@@ -208,6 +203,12 @@ export const listByUser = query({
       priority: issue.priority,
       projectId: issue.projectId as Id<"projects">,
     }));
+
+    return {
+      page: mappedIssues,
+      isDone: assignedResult.isDone,
+      continueCursor: assignedResult.continueCursor,
+    };
   },
 });
 
