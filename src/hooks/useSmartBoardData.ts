@@ -30,15 +30,14 @@ function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
 }
 
 export interface UseSmartBoardDataOptions {
-  projectId: Id<"projects">;
+  projectId?: Id<"projects">;
+  teamId?: Id<"teams">;
   sprintId?: Id<"sprints">;
   doneColumnDays?: number;
 }
 
 export interface SmartBoardData {
-  /** Issues grouped by status */
   issuesByStatus: Record<string, EnrichedIssue[]>;
-  /** Counts per status (total, loaded, hidden) */
   statusCounts: Record<
     string,
     {
@@ -47,39 +46,25 @@ export interface SmartBoardData {
       hidden: number;
     }
   >;
-  /** Whether data is loading */
   isLoading: boolean;
-  /** Done statuses that have more items to load */
   doneStatusesWithMore: string[];
-  /** Load more done issues for a specific status */
   loadMoreDone: (status: string) => void;
-  /** Whether more done issues are loading */
   isLoadingMore: boolean;
-  /** Total hidden done count across all done statuses */
   hiddenDoneCount: number;
+  workflowStates?: {
+    id: string;
+    name: string;
+    category: "todo" | "inprogress" | "done";
+    order: number;
+  }[];
 }
 
-/**
- * Hook for smart Kanban board data loading
- *
- * @example
- * const {
- *   issuesByStatus,
- *   statusCounts,
- *   doneStatusesWithMore,
- *   loadMoreDone,
- *   hiddenDoneCount,
- * } = useSmartBoardData({
- *   projectId,
- *   sprintId: activeSprint?._id,
- * });
- */
 export function useSmartBoardData({
   projectId,
+  teamId,
   sprintId,
   doneColumnDays = 14,
 }: UseSmartBoardDataOptions): SmartBoardData {
-  // Track expanded done issues loaded via loadMoreDoneIssues
   const [additionalDoneIssues, setAdditionalDoneIssues] = useState<EnrichedIssue[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreCursor, setLoadMoreCursor] = useState<
@@ -87,24 +72,32 @@ export function useSmartBoardData({
   >(undefined);
   const loadingRef = useRef(false);
 
-  // Fetch smart-loaded issues (done column filtered by date)
-  const smartData = useQuery(api.issues.listByProjectSmart, {
-    projectId,
-    sprintId,
-    doneColumnDays,
-  });
+  // Determine which mode we are in
+  const isTeamMode = !!teamId;
+  const isProjectMode = !!projectId;
 
-  // Fetch counts to know how many are hidden
-  const countsData = useQuery(api.issues.getIssueCounts, {
-    projectId,
-    sprintId,
-    doneColumnDays,
-  });
+  // Fetch smart-loaded issues
+  const smartData = useQuery(
+    isTeamMode ? api.issues.listByTeamSmart : api.issues.listByProjectSmart,
+    isTeamMode && teamId
+      ? { teamId, doneColumnDays }
+      : isProjectMode && projectId
+        ? { projectId, sprintId, doneColumnDays }
+        : "skip",
+  );
 
-  // Fetch additional done issues when cursor is set
+  const countsData = useQuery(
+    isTeamMode ? api.issues.getTeamIssueCounts : api.issues.getIssueCounts,
+    isTeamMode && teamId
+      ? { teamId, doneColumnDays }
+      : isProjectMode && projectId
+        ? { projectId, sprintId, doneColumnDays }
+        : "skip",
+  );
+
   const moreDoneData = useQuery(
     api.issues.loadMoreDoneIssues,
-    loadMoreCursor !== undefined
+    !isTeamMode && loadMoreCursor !== undefined && projectId
       ? {
           projectId,
           sprintId,
@@ -116,8 +109,6 @@ export function useSmartBoardData({
   );
 
   // When more done issues arrive, merge them
-  // Note: We check moreDoneData directly, not loadingRef, to avoid race conditions
-  // where the effect runs before the ref is set
   useEffect(() => {
     if (moreDoneData && isEnrichedIssueArray(moreDoneData.items)) {
       setAdditionalDoneIssues((prev) => [...prev, ...moreDoneData.items]);
@@ -127,14 +118,14 @@ export function useSmartBoardData({
   }, [moreDoneData]);
 
   // Reset additional issues when project/sprint changes
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset on filter change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset state on scope change
   useEffect(() => {
     setAdditionalDoneIssues([]);
     setLoadMoreCursor(undefined);
-  }, [projectId, sprintId]);
+  }, [projectId, sprintId, teamId]); // Added teamId
 
-  // Build issues by status, merging additional done issues
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: complex merging logic required
+  // Build issues by status
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: data merging logic
   const issuesByStatus = useMemo(() => {
     const result: Record<string, EnrichedIssue[]> = {};
 
@@ -210,7 +201,6 @@ export function useSmartBoardData({
     return total;
   }, [statusCounts]);
 
-  // Collect all issues for finding oldest
   const allLoadedIssues = useMemo(() => {
     const issues: EnrichedIssue[] = [...additionalDoneIssues];
     if (smartData?.issuesByStatus) {
@@ -223,7 +213,6 @@ export function useSmartBoardData({
     return issues;
   }, [additionalDoneIssues, smartData?.issuesByStatus]);
 
-  // Find the oldest issue (by timestamp) for cursor
   const findOldestIssue = useCallback((): { timestamp: number; id: string } | undefined => {
     if (allLoadedIssues.length === 0) return undefined;
 
@@ -233,7 +222,6 @@ export function useSmartBoardData({
     return { timestamp: oldest.updatedAt, id: oldest._id.toString() };
   }, [allLoadedIssues]);
 
-  // Load more done issues handler
   const loadMoreDone = useCallback(
     (_status: string) => {
       // Double-check with ref and state to prevent race conditions from rapid clicks
@@ -254,5 +242,6 @@ export function useSmartBoardData({
     loadMoreDone,
     isLoadingMore,
     hiddenDoneCount,
+    workflowStates: smartData?.workflowStates,
   };
 }

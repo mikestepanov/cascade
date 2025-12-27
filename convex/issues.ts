@@ -1699,12 +1699,7 @@ export const bulkDelete = mutation({
 // PAGINATION & SMART LOADING QUERIES
 // ============================================================================
 
-import {
-  countIssuesByStatus,
-  type EnrichedIssue,
-  enrichIssues,
-  groupIssuesByStatus,
-} from "./lib/issueHelpers";
+import { type EnrichedIssue, enrichIssues, groupIssuesByStatus } from "./lib/issueHelpers";
 import { DEFAULT_PAGE_SIZE, DONE_COLUMN_DAYS, getDoneColumnThreshold } from "./lib/pagination";
 
 // Helper for fetching issues based on state
@@ -1897,6 +1892,7 @@ export const getTeamIssueCounts = query({
     teamId: v.id("teams"),
     doneColumnDays: v.optional(v.number()),
   },
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -1978,6 +1974,7 @@ export const getIssueCounts = query({
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {

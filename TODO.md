@@ -16,12 +16,12 @@
   - [ ] Workspace backlog (unassigned issues)
   - [ ] Workspace sprint view (all active sprints)
   - [ ] Kanban, List, Timeline, Calendar views
-- [ ] **Team Board** - Team-wide view (PRIMARY)
-  - [ ] All team issues (across projects or none)
+- [/] **Team Board** - Team-wide view (PRIMARY)
+  - [x] All team issues (across projects or none)
   - [ ] Team backlog (unassigned to projects)
   - [ ] Team sprint/cycle view
   - [ ] Team velocity tracking
-  - [ ] Kanban, List, Timeline, Calendar views
+  - [/] Kanban, List, Timeline, Calendar views
 - [x] **Project Board** - Filtered view (EXISTING - already works!)
   - [x] Project-specific issues only
   - [x] Project timeline/roadmap
