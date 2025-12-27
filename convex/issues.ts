@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import {
+  editorMutation,
   issueMutation,
   issueViewerMutation,
   type ProjectQueryCtx,
@@ -85,9 +86,8 @@ async function getMaxOrderForStatus(ctx: MutationCtx, projectId: Id<"projects">,
   return Math.max(...issuesInStatus.map((i) => i.order), -1);
 }
 
-export const create = mutation({
+export const create = editorMutation({
   args: {
-    projectId: v.id("projects"),
     title: v.string(),
     description: v.optional(v.string()),
     type: v.union(
@@ -114,36 +114,23 @@ export const create = mutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    // Check if user can create issues (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
-
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
     // Generate issue key
-    const issueKey = await generateIssueKey(ctx, args.projectId, project.key);
+    const issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
 
     // Get the first workflow state as default status
-    const defaultStatus = project.workflowStates[0]?.id || "todo";
+    const defaultStatus = ctx.project.workflowStates[0]?.id || "todo";
 
     // Get max order for the status column
-    const maxOrder = await getMaxOrderForStatus(ctx, args.projectId, defaultStatus);
+    const maxOrder = await getMaxOrderForStatus(ctx, ctx.projectId, defaultStatus);
 
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
-      projectId: args.projectId,
-      workspaceId: project.workspaceId,
-      teamId: project.teamId,
+      projectId: ctx.projectId,
+      workspaceId: ctx.project.workspaceId,
+      teamId: ctx.project.teamId,
       key: issueKey,
       title: args.title,
       description: args.description,
@@ -151,7 +138,7 @@ export const create = mutation({
       status: defaultStatus,
       priority: args.priority,
       assigneeId: args.assigneeId,
-      reporterId: userId,
+      reporterId: ctx.userId,
       createdAt: now,
       updatedAt: now,
       labels: args.labels || [],
@@ -170,7 +157,7 @@ export const create = mutation({
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId,
-      userId,
+      userId: ctx.userId,
       action: "created",
       createdAt: now,
     });
@@ -930,9 +917,8 @@ function processIssueUpdates(
   return updates;
 }
 
-export const update = mutation({
+export const update = issueMutation({
   args: {
-    issueId: v.id("issues"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
     priority: v.optional(
@@ -951,19 +937,6 @@ export const update = mutation({
     storyPoints: v.optional(v.union(v.number(), v.null())),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) {
-      throw new Error("Issue not found");
-    }
-
-    // Check permissions (requires editor role or higher)
-    await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
-
     const now = Date.now();
     const changes: Array<{
       field: string;
@@ -972,33 +945,33 @@ export const update = mutation({
     }> = [];
 
     // Process all field updates and track changes
-    const updates = processIssueUpdates(issue, args, changes);
+    const updates = processIssueUpdates(ctx.issue, args, changes);
 
     // Send assignment email notification if assigned to someone new
     if (
       args.assigneeId !== undefined &&
-      args.assigneeId !== issue.assigneeId &&
+      args.assigneeId !== ctx.issue.assigneeId &&
       args.assigneeId &&
-      args.assigneeId !== userId
+      args.assigneeId !== ctx.userId
     ) {
       const { sendEmailNotification } = await import("./email/helpers");
       await sendEmailNotification(ctx, {
         userId: args.assigneeId,
         type: "assigned",
-        issueId: args.issueId,
-        actorId: userId,
+        issueId: ctx.issue._id,
+        actorId: ctx.userId,
       });
     }
 
     if (Object.keys(updates).length > 1) {
       // More than just updatedAt
-      await ctx.db.patch(args.issueId, updates);
+      await ctx.db.patch(ctx.issue._id, updates);
 
       // Log activities
       for (const change of changes) {
         await ctx.db.insert("issueActivity", {
-          issueId: args.issueId,
-          userId,
+          issueId: ctx.issue._id,
+          userId: ctx.userId,
           action: "updated",
           field: change.field,
           oldValue: String(change.oldValue || ""),
