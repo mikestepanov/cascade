@@ -6,8 +6,11 @@
  */
 
 import { internalMutation } from "./_generated/server";
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { cascadeDelete } from "./lib/relationships";
-import { isEligibleForPermanentDeletion } from "./lib/softDeleteHelpers";
+import { isEligibleForPermanentDeletion, onlyDeleted } from "./lib/softDeleteHelpers";
 
 const TABLES_WITH_SOFT_DELETE = [
   "projects",
@@ -51,5 +54,65 @@ export const permanentlyDeleteOld = internalMutation({
 
     console.log(`Total records permanently deleted: ${totalDeleted}`);
     return { deleted: totalDeleted };
+  },
+});
+
+/**
+ * List deleted projects (trash view)
+ * Shows projects deleted by current user
+ */
+export const listDeletedProjects = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    const deleted = await ctx.db
+      .query("projects")
+      .filter(onlyDeleted)
+      .collect();
+
+    // Filter to projects user has access to
+    return deleted.filter(
+      (p) => p.createdBy === userId || p.ownerId === userId || p.isPublic
+    );
+  },
+});
+
+/**
+ * List deleted documents (trash view)
+ * Shows documents deleted by current user
+ */
+export const listDeletedDocuments = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    return await ctx.db
+      .query("documents")
+      .filter(onlyDeleted)
+      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .collect();
+  },
+});
+
+/**
+ * List deleted issues for a project (trash view)
+ * Shows all deleted issues in a project
+ */
+export const listDeletedIssues = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    return await ctx.db
+      .query("issues")
+      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .filter(onlyDeleted)
+      .collect();
   },
 });
