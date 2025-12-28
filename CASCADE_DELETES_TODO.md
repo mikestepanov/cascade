@@ -1,5 +1,34 @@
 # Robust Cascading Deletes Analysis
 
+## ⚡ TL;DR
+
+**What**: Auto-cascade deletes using relationship registry  
+**Why**: Manual cascade = easy to forget, leads to orphaned data  
+**Scope**: Create centralized relationship system  
+**Time**: 1-2 hours  
+**Status**: Ready to implement (use Approach 1 below)
+
+**Quick Facts:**
+- Single source of truth for all relationships
+- Impossible to forget updating
+- Handles multi-level cascading (parent → child → grandchild)
+- Works with both hard and soft deletes
+- 3 strategies: cascade, set_null, restrict
+
+**Pattern:**
+```typescript
+// Define once:
+{ parent: "issues", child: "issueComments", foreignKey: "issueId", onDelete: "cascade" }
+
+// Use everywhere:
+await cascadeDelete(ctx, "issues", issueId); // Automatic!
+```
+
+**Before**: Update manual function when adding tables (easy to forget)  
+**After**: Add to registry (5 mins, enforced in code review)
+
+---
+
 ## Executive Summary
 
 **Current State**: Manual cascade logic in `deleteIssueRelatedRecords` function

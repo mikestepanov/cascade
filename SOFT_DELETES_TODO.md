@@ -1,5 +1,29 @@
 # Soft Deletes Implementation Analysis
 
+## ⚡ TL;DR
+
+**What**: Add `isDeleted` flag instead of permanent deletion  
+**Why**: Accidental deletes = permanent data loss (no undo!)  
+**Scope**: Update 120+ queries across 6 tables  
+**Time**: 2-3 days  
+**Status**: Ready to implement (follow 7-phase plan below)
+
+**Quick Facts:**
+- 51 queries for `issues` table alone
+- 30-day retention before permanent deletion
+- Backward compatible (optional fields)
+- Auto-cleanup via cron job
+- Works with cascade system
+
+**Pattern:**
+```typescript
+// Add to queries: .filter(q => q.neq(q.field("isDeleted"), true))
+// Delete becomes: patch({ isDeleted: true, deletedAt: now, deletedBy: userId })
+// Add restore: patch({ isDeleted: undefined, deletedAt: undefined })
+```
+
+---
+
 ## Executive Summary
 
 **Current State**: Hard deletes permanently remove data (issues, projects, documents)
