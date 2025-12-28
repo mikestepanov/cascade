@@ -2,25 +2,288 @@
 
 ## ⚡ TL;DR
 
-**What**: Add `isDeleted` flag instead of permanent deletion  
-**Why**: Accidental deletes = permanent data loss (no undo!)  
-**Scope**: Update 120+ queries across 6 tables  
-**Time**: 2-3 days  
-**Status**: Ready to implement (follow 7-phase plan below)
+**What**: Replace permanent deletion with recoverable "soft delete" using `isDeleted` flag  
+**Why**: Accidental deletes lose data FOREVER - no undo, no recovery, catastrophic  
+**Scope**: 120+ queries across 6 tables need filtering  
+**Time**: 2-3 days full implementation  
+**Status**: Fully analyzed, ready to implement with detailed plan below
 
-**Quick Facts:**
-- 51 queries for `issues` table alone
-- 30-day retention before permanent deletion
-- Backward compatible (optional fields)
-- Auto-cleanup via cron job
-- Works with cascade system
+---
 
-**Pattern:**
+## 🎯 What We're Doing (Step-by-Step)
+
+### Current State (Broken):
 ```typescript
-// Add to queries: .filter(q => q.neq(q.field("isDeleted"), true))
-// Delete becomes: patch({ isDeleted: true, deletedAt: now, deletedBy: userId })
-// Add restore: patch({ isDeleted: undefined, deletedAt: undefined })
+// User clicks delete → data GONE forever
+await ctx.db.delete(issueId);  // ❌ Permanent, no recovery
+
+// Scenario: User accidentally bulk deletes entire sprint
+// Result: All issues, comments, attachments LOST permanently
+// Fix: Impossible - data is gone
 ```
+
+### New State (Safe):
+```typescript
+// User clicks delete → data marked as deleted (recoverable)
+await ctx.db.patch(issueId, {
+  isDeleted: true,           // ✅ Hidden from view
+  deletedAt: Date.now(),     // ✅ Track when
+  deletedBy: userId,         // ✅ Track who
+});
+
+// 30 days later: Auto-cleanup removes it permanently
+// During 30 days: Admin can restore from trash
+```
+
+---
+
+## 📋 Implementation Checklist (What Gets Changed)
+
+### Phase 1: Schema Changes (2 hours)
+**Add to 6 tables:**
+- `issues` (highest priority)
+- `projects`
+- `documents`
+- `sprints`
+- `issueComments`
+- `projectMembers`
+
+**New fields:**
+```typescript
+isDeleted: v.optional(v.boolean()),      // Default: undefined = false
+deletedAt: v.optional(v.number()),       // Timestamp when deleted
+deletedBy: v.optional(v.id("users")),    // Who deleted it
+```
+
+**New indexes:**
+```typescript
+.index("by_deleted", ["isDeleted"])
+.index("by_project_deleted", ["projectId", "isDeleted"])
+```
+
+### Phase 2: Query Updates (1 day)
+**Update ALL queries** (120+ locations) to filter out deleted items:
+
+**Before:**
+```typescript
+const issues = await ctx.db
+  .query("issues")
+  .withIndex("by_project", (q) => q.eq("projectId", projectId))
+  .collect();
+// ❌ Shows deleted issues!
+```
+
+**After:**
+```typescript
+const issues = await ctx.db
+  .query("issues")
+  .withIndex("by_project", (q) => q.eq("projectId", projectId))
+  .filter((q) => q.neq(q.field("isDeleted"), true))  // ✅ Hide deleted
+  .collect();
+```
+
+**Files to update:**
+- `convex/issues.ts` - 51 queries
+- `convex/projects.ts` - ~30 queries
+- `convex/documents.ts` - ~15 queries
+- `convex/sprints.ts` - ~10 queries
+- Other files - ~14 queries
+
+### Phase 3: Delete Mutations (4 hours)
+**Convert "delete" to "patch":**
+
+**Before:**
+```typescript
+export const bulkDelete = mutation({
+  handler: async (ctx, args) => {
+    await deleteRelatedRecords(ctx, issueId);  // Delete comments, links, etc.
+    await ctx.db.delete(issueId);              // ❌ Gone forever
+  }
+});
+```
+
+**After:**
+```typescript
+export const bulkDelete = mutation({
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    
+    // Soft delete the issue
+    await ctx.db.patch(issueId, {
+      isDeleted: true,
+      deletedAt: now,
+      deletedBy: ctx.userId,
+    });
+    
+    // Cascade: soft delete all children (comments, links, etc.)
+    await cascadeSoftDelete(ctx, "issues", issueId, now, ctx.userId);
+  }
+});
+```
+
+### Phase 4: Restore Functionality (3 hours)
+**Add ability to undo deletions:**
+
+```typescript
+export const restore = mutation({
+  args: { issueId: v.id("issues") },
+  handler: async (ctx, args) => {
+    // Restore the issue
+    await ctx.db.patch(args.issueId, {
+      isDeleted: undefined,    // Remove deleted flag
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+    
+    // Optionally restore children (comments, links)
+    await restoreChildren(ctx, args.issueId);
+  }
+});
+
+// Add "trash" view query
+export const listDeleted = query({
+  args: { projectId: v.id("projects") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("issues")
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("projectId"), args.projectId),
+          q.eq(q.field("isDeleted"), true)  // Only show deleted
+        )
+      )
+      .collect();
+  }
+});
+```
+
+### Phase 5: Auto-Cleanup Cron (1 hour)
+**Permanent deletion after 30 days:**
+
+```typescript
+// convex/crons.ts
+crons.daily(
+  "permanent delete old items",
+  { hourUTC: 2, minuteUTC: 0 },
+  internal.cleanup.deleteOldSoftDeleted
+);
+
+// convex/cleanup.ts
+export const deleteOldSoftDeleted = internalMutation({
+  handler: async (ctx) => {
+    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+    const cutoff = Date.now() - THIRTY_DAYS;
+    
+    // Find items deleted more than 30 days ago
+    const oldDeleted = await ctx.db
+      .query("issues")
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("isDeleted"), true),
+          q.lt(q.field("deletedAt"), cutoff)
+        )
+      )
+      .collect();
+    
+    // NOW permanently delete them
+    for (const issue of oldDeleted) {
+      await hardDeleteIssue(ctx, issue._id);  // Original delete logic
+    }
+    
+    return { deleted: oldDeleted.length };
+  }
+});
+```
+
+### Phase 6: UI Changes (4 hours)
+**Add trash management interface:**
+
+- Project settings → "Trash" tab
+- List deleted issues with restore button
+- "Empty Trash" button (permanent delete)
+- Confirmation dialogs
+- Show "Deleted by X on Y" info
+
+### Phase 7: Testing (4 hours)
+**Comprehensive test suite:**
+
+```typescript
+// Unit tests
+- test("soft delete sets isDeleted flag")
+- test("queries exclude deleted items")
+- test("restore brings item back")
+- test("cascade deletes children")
+
+// Integration tests  
+- test("delete issue → not in list → shows in trash → restore → back in list")
+- test("delete project → all issues deleted → restore project → issues restored")
+- test("permanent delete after 30 days")
+
+// Manual testing
+- Create/delete/restore flow
+- Bulk operations
+- UI trash view
+- Cron job execution
+```
+
+---
+
+## 🔢 Effort Breakdown
+
+| Phase | Time | Complexity | Risk |
+|-------|------|-----------|------|
+| 1. Schema | 2 hours | Low | Low |
+| 2. Queries | 8 hours | Medium | Medium |
+| 3. Mutations | 4 hours | Medium | Low |
+| 4. Restore | 3 hours | Medium | Low |
+| 5. Cron | 1 hour | Low | Low |
+| 6. UI | 4 hours | Medium | Low |
+| 7. Testing | 4 hours | Medium | Medium |
+| **Total** | **26 hours** | **~3 days** | **Medium** |
+
+---
+
+## 🚨 Why This Matters (Real Impact)
+
+### Without Soft Deletes (Current):
+❌ User accidentally deletes issue → **50+ comments GONE forever**  
+❌ Admin fat-fingers project delete → **Entire team's work LOST**  
+❌ Bulk delete wrong sprint → **No way to undo**  
+❌ "Where did issue X go?" → **Cannot investigate, no audit trail**  
+❌ Regulatory compliance issues → **No data retention**
+
+### With Soft Deletes (After):
+✅ User deletes issue → **Can restore within 30 days**  
+✅ Admin deletes project → **Recoverable from trash**  
+✅ Wrong bulk delete → **"Undo" restores everything**  
+✅ "Where did issue X go?" → **See: Deleted by John on Dec 27**  
+✅ Compliance → **30-day retention window**
+
+---
+
+## 🎯 Success Metrics
+
+**Before Implementation:**
+- Data recovery: Impossible (0%)
+- Accidental delete protection: None
+- Audit trail: None
+- User confidence: Low
+
+**After Implementation:**
+- Data recovery: 30-day window (100%)
+- Accidental delete protection: Full
+- Audit trail: Complete (who/when/what)
+- User confidence: High
+
+---
+
+## 📦 Backward Compatibility
+
+**Safe approach using optional fields:**
+- `isDeleted: v.optional(v.boolean())` - existing records = `undefined` = `false`
+- No migration needed for existing data
+- Old queries still work (just need filter added)
+- Can roll out incrementally per table
 
 ---
 

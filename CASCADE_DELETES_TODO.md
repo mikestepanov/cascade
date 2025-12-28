@@ -2,30 +2,455 @@
 
 ## ⚡ TL;DR
 
-**What**: Auto-cascade deletes using relationship registry  
-**Why**: Manual cascade = easy to forget, leads to orphaned data  
-**Scope**: Create centralized relationship system  
+**What**: Replace manual cascade logic with automated relationship registry  
+**Why**: Easy to forget updating cascade function when adding new tables → orphaned data  
+**Scope**: Create centralized system that auto-handles all relationships  
 **Time**: 1-2 hours  
-**Status**: Ready to implement (use Approach 1 below)
+**Status**: Fully analyzed, ready to implement (Approach 1 recommended)
 
-**Quick Facts:**
-- Single source of truth for all relationships
-- Impossible to forget updating
-- Handles multi-level cascading (parent → child → grandchild)
-- Works with both hard and soft deletes
-- 3 strategies: cascade, set_null, restrict
+---
 
-**Pattern:**
+## 🎯 What We're Doing (Step-by-Step)
+
+### Current State (Broken):
 ```typescript
-// Define once:
-{ parent: "issues", child: "issueComments", foreignKey: "issueId", onDelete: "cascade" }
+// Manual cascade function in issues.ts
+async function deleteIssueRelatedRecords(ctx, issueId) {
+  // Delete comments
+  const comments = await ctx.db.query("issueComments")...
+  for (const c of comments) await ctx.db.delete(c._id);
+  
+  // Delete activities
+  const activities = await ctx.db.query("issueActivity")...
+  for (const a of activities) await ctx.db.delete(a._id);
+  
+  // Delete links
+  // Delete watchers
+  // Delete time entries
+  // ... 6 different related tables
+}
 
-// Use everywhere:
-await cascadeDelete(ctx, "issues", issueId); // Automatic!
+// Problem: Add new table with relationship
+export const issueAttachments = defineTable({
+  issueId: v.id("issues"),
+  fileUrl: v.string(),
+});
+
+// ❌ Developer forgets to update deleteIssueRelatedRecords
+// Result: Orphaned attachments when issue deleted
+// Bug: Attachments table grows indefinitely with dead references
 ```
 
-**Before**: Update manual function when adding tables (easy to forget)  
-**After**: Add to registry (5 mins, enforced in code review)
+### New State (Safe):
+```typescript
+// 1. Define relationship ONCE in registry
+// convex/lib/relationships.ts
+export const RELATIONSHIPS = [
+  {
+    parent: "issues",
+    child: "issueComments",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",  // Delete children when parent deleted
+  },
+  {
+    parent: "issues",
+    child: "issueActivity",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",
+  },
+  // ... all 6 relationships defined here
+];
+
+// 2. Use automatic cascade everywhere
+export const bulkDelete = mutation({
+  handler: async (ctx, args) => {
+    await cascadeDelete(ctx, "issues", issueId);  // ✅ Automatic!
+    await ctx.db.delete(issueId);
+  }
+});
+
+// 3. Add new table? Just add to registry (takes 30 seconds)
+{
+  parent: "issues",
+  child: "issueAttachments",
+  foreignKey: "issueId",
+  index: "by_issue",
+  onDelete: "cascade",
+}
+// ✅ Cascade automatically works - impossible to forget!
+```
+
+---
+
+## 📋 Implementation Checklist (What Gets Changed)
+
+### Step 1: Create Relationship Registry (30 mins)
+
+**Create `convex/lib/relationships.ts`:**
+
+```typescript
+import type { Id } from "../_generated/dataModel";
+import type { MutationCtx } from "../_generated/server";
+
+// Define all relationships in one place
+export type Relationship = {
+  parent: string;      // Parent table name
+  child: string;       // Child table name
+  foreignKey: string;  // Field in child pointing to parent
+  index: string;       // Index name for fast lookup
+  onDelete: "cascade" | "set_null" | "restrict";
+};
+
+export const RELATIONSHIPS: Relationship[] = [
+  // Issue relationships
+  {
+    parent: "issues",
+    child: "issueComments",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",  // Delete comments when issue deleted
+  },
+  {
+    parent: "issues",
+    child: "issueActivity",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",  // Delete activity when issue deleted
+  },
+  {
+    parent: "issues",
+    child: "issueLinks",
+    foreignKey: "fromIssueId",
+    index: "by_from_issue",
+    onDelete: "cascade",  // Delete outgoing links
+  },
+  {
+    parent: "issues",
+    child: "issueLinks",
+    foreignKey: "toIssueId",
+    index: "by_to_issue",
+    onDelete: "cascade",  // Delete incoming links
+  },
+  {
+    parent: "issues",
+    child: "issueWatchers",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",
+  },
+  {
+    parent: "issues",
+    child: "timeEntries",
+    foreignKey: "issueId",
+    index: "by_issue",
+    onDelete: "cascade",
+  },
+  
+  // Project relationships
+  {
+    parent: "projects",
+    child: "issues",
+    foreignKey: "projectId",
+    index: "by_workspace",
+    onDelete: "cascade",  // Delete all issues when project deleted
+  },
+  {
+    parent: "projects",
+    child: "sprints",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade",
+  },
+  {
+    parent: "sprints",
+    child: "issues",
+    foreignKey: "sprintId",
+    index: "by_sprint",
+    onDelete: "set_null",  // Move issues to backlog when sprint deleted
+  },
+  
+  // Add more relationships as needed...
+];
+
+/**
+ * Automatically cascade delete all related records
+ * Handles multi-level cascading (parent → child → grandchild)
+ */
+export async function cascadeDelete(
+  ctx: MutationCtx,
+  table: string,
+  recordId: Id<any>
+): Promise<void> {
+  // Find all relationships where this table is parent
+  const childRelationships = RELATIONSHIPS.filter(r => r.parent === table);
+  
+  for (const rel of childRelationships) {
+    if (rel.onDelete === "cascade") {
+      // Find all children
+      const children = await ctx.db
+        .query(rel.child as any)
+        .withIndex(rel.index as any, (q: any) => 
+          q.eq(rel.foreignKey, recordId)
+        )
+        .collect();
+      
+      // Recursively delete children (handles grandchildren)
+      for (const child of children) {
+        await cascadeDelete(ctx, rel.child, child._id);
+        await ctx.db.delete(child._id);
+      }
+    } 
+    else if (rel.onDelete === "set_null") {
+      // Set foreign key to null instead
+      const children = await ctx.db
+        .query(rel.child as any)
+        .withIndex(rel.index as any, (q: any) => 
+          q.eq(rel.foreignKey, recordId)
+        )
+        .collect();
+        
+      for (const child of children) {
+        await ctx.db.patch(child._id, {
+          [rel.foreignKey]: undefined,
+        } as any);
+      }
+    } 
+    else if (rel.onDelete === "restrict") {
+      // Don't allow delete if children exist
+      const children = await ctx.db
+        .query(rel.child as any)
+        .withIndex(rel.index as any, (q: any) => 
+          q.eq(rel.foreignKey, recordId)
+        )
+        .collect();
+        
+      if (children.length > 0) {
+        throw new Error(
+          `Cannot delete ${table}: ${children.length} ${rel.child} still reference it`
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Soft delete version - cascades isDeleted flag to children
+ */
+export async function cascadeSoftDelete(
+  ctx: MutationCtx,
+  table: string,
+  recordId: Id<any>,
+  deletedBy: Id<"users">,
+  deletedAt: number
+): Promise<void> {
+  const childRelationships = RELATIONSHIPS.filter(r => r.parent === table);
+  
+  for (const rel of childRelationships) {
+    if (rel.onDelete === "cascade") {
+      const children = await ctx.db
+        .query(rel.child as any)
+        .withIndex(rel.index as any, (q: any) => 
+          q.eq(rel.foreignKey, recordId)
+        )
+        .collect();
+      
+      for (const child of children) {
+        // Recursively soft delete children
+        await cascadeSoftDelete(ctx, rel.child, child._id, deletedBy, deletedAt);
+        
+        // Mark as deleted
+        await ctx.db.patch(child._id, {
+          isDeleted: true,
+          deletedAt,
+          deletedBy,
+        } as any);
+      }
+    }
+  }
+}
+```
+
+### Step 2: Update Delete Functions (30 mins)
+
+**Replace manual cascade with automatic:**
+
+```typescript
+// BEFORE - convex/issues.ts
+async function deleteIssueRelatedRecords(ctx, issueId) {
+  // 40 lines of manual deletion code
+  const comments = await ctx.db.query("issueComments")...
+  for (const c of comments) await ctx.db.delete(c._id);
+  // ... repeat 6 times
+}
+
+export const bulkDelete = mutation({
+  handler: async (ctx, args) => {
+    await deleteIssueRelatedRecords(ctx, issueId);  // Manual
+    await ctx.db.delete(issueId);
+  }
+});
+
+// AFTER
+import { cascadeDelete } from "./lib/relationships";
+
+export const bulkDelete = mutation({
+  handler: async (ctx, args) => {
+    await cascadeDelete(ctx, "issues", issueId);  // Automatic!
+    await ctx.db.delete(issueId);
+  }
+});
+
+// Can delete deleteIssueRelatedRecords function entirely!
+```
+
+### Step 3: Test & Document (15 mins)
+
+**Write tests:**
+```typescript
+test("cascadeDelete handles multi-level cascading", async () => {
+  // Create: Project → Issue → Comment
+  const projectId = await createProject();
+  const issueId = await createIssue(projectId);
+  const commentId = await createComment(issueId);
+  
+  // Delete project
+  await cascadeDelete(ctx, "projects", projectId);
+  
+  // Verify all deleted
+  expect(await ctx.db.get(projectId)).toBeNull();
+  expect(await ctx.db.get(issueId)).toBeNull();      // ✅ Cascaded
+  expect(await ctx.db.get(commentId)).toBeNull();    // ✅ Multi-level!
+});
+```
+
+**Update documentation:**
+```typescript
+// CLAUDE.md - Add section:
+## Cascading Deletes
+
+When deleting records, use `cascadeDelete()` from `convex/lib/relationships.ts`:
+
+```typescript
+import { cascadeDelete } from "./lib/relationships";
+
+// Automatically deletes all related records
+await cascadeDelete(ctx, "issues", issueId);
+await ctx.db.delete(issueId);
+```
+
+To add new relationship:
+1. Add to RELATIONSHIPS array in relationships.ts
+2. Choose strategy: "cascade", "set_null", or "restrict"
+3. That's it! Automatic everywhere.
+```
+
+---
+
+## 🔢 Effort Breakdown
+
+| Step | Time | Complexity | Lines of Code |
+|------|------|-----------|---------------|
+| 1. Create registry | 30 mins | Low | ~150 lines |
+| 2. Update deletes | 30 mins | Low | -40 lines |
+| 3. Test & docs | 15 mins | Low | +50 lines |
+| **Total** | **75 mins** | **Low** | **Net: +160 lines** |
+
+---
+
+## 🚨 Why This Matters (Real Impact)
+
+### Without Registry (Current):
+❌ Add `issueAttachments` table → **Forget to update cascade → orphaned data**  
+❌ 6 separate delete loops → **Hard to maintain**  
+❌ Add relationship in 3 places (issues, projects, sprints) → **Repetitive**  
+❌ No audit of relationships → **Can't see what cascades**  
+❌ Manually track multi-level → **Easy to miss grandchildren**
+
+### With Registry (After):
+✅ Add table → **Add 5-line entry → done**  
+✅ Single implementation → **Easy to maintain**  
+✅ Works everywhere automatically → **DRY principle**  
+✅ Clear audit trail → **See all relationships in one file**  
+✅ Multi-level cascading automatic → **No grandchildren orphaned**
+
+---
+
+## 🎯 Relationship Strategies
+
+### 1. CASCADE (Most Common)
+**Use when**: Child has no meaning without parent
+```typescript
+{ parent: "issues", child: "issueComments", onDelete: "cascade" }
+// Delete issue → delete all comments (comments are meaningless without issue)
+```
+
+### 2. SET_NULL (Decouple)
+**Use when**: Child can exist independently
+```typescript
+{ parent: "sprints", child: "issues", onDelete: "set_null" }
+// Delete sprint → move issues to backlog (issues still valid)
+```
+
+### 3. RESTRICT (Safety)
+**Use when**: Prevent accidental deletion
+```typescript
+{ parent: "projects", child: "issues", onDelete: "restrict" }
+// Can't delete project if issues exist (force user to handle first)
+```
+
+---
+
+## 📦 Example: Adding New Relationship
+
+**Scenario**: Add attachments feature
+
+```typescript
+// 1. Define table in schema.ts
+issueAttachments: defineTable({
+  issueId: v.id("issues"),
+  fileUrl: v.string(),
+  uploadedBy: v.id("users"),
+})
+  .index("by_issue", ["issueId"])
+  .index("by_user", ["uploadedBy"])
+
+// 2. Add to registry (relationships.ts) - 30 seconds!
+{
+  parent: "issues",
+  child: "issueAttachments",
+  foreignKey: "issueId",
+  index: "by_issue",
+  onDelete: "cascade",  // Delete attachments when issue deleted
+}
+
+// 3. Done! No other changes needed
+// cascadeDelete() automatically handles it everywhere
+```
+
+**Old way would require:**
+- Update `deleteIssueRelatedRecords` (easy to forget)
+- Update `deleteProjectRelatedRecords`
+- Update soft delete versions
+- Test all 3 places
+- Risk: Forget one = orphaned data
+
+---
+
+## 🎯 Success Metrics
+
+**Before Implementation:**
+- Time to add relationship: 30 mins (update 3 functions)
+- Risk of forgetting: High
+- Maintenance burden: High
+- Code duplication: 3x
+
+**After Implementation:**
+- Time to add relationship: 30 seconds (one entry)
+- Risk of forgetting: Zero (enforced)
+- Maintenance burden: Low
+- Code duplication: 0x (DRY)
 
 ---
 
