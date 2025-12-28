@@ -1517,13 +1517,14 @@ const applicationTables = {
     .index("by_scheduled_time", ["scheduledTime"])
     .index("by_next_attempt", ["nextAttemptAt"]),
 
-  // System settings for configuration
-  systemSettings: defineTable({
-    key: v.string(), // Setting key: "botServiceApiKeyHash", etc.
-    value: v.string(), // Setting value
-    description: v.optional(v.string()),
+  userSettings: defineTable({
+    userId: v.id("users"),
+    dashboardLayout: v.optional(v.any()), // JSON object for dashboard widget preferences
+    theme: v.optional(v.string()), // "light", "dark", "system"
+    sidebarCollapsed: v.optional(v.boolean()),
+    createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_key", ["key"]),
+  }).index("by_user", ["userId"]),
 
   // Rate limiter tables (from @convex-dev/rate-limiter)
   rateLimits: defineTable({
