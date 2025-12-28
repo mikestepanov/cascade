@@ -178,6 +178,10 @@ const applicationTables = {
     order: v.number(), // For ordering within status columns
     // AI/Semantic Search
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()), // Soft delete flag (undefined = not deleted)
+    deletedAt: v.optional(v.number()), // Timestamp when deleted
+    deletedBy: v.optional(v.id("users")), // User who deleted this issue
   })
     .index("by_workspace", ["projectId"])
     .index("by_workspace_id", ["workspaceId"]) // NEW
@@ -195,6 +199,8 @@ const applicationTables = {
     .index("by_workspace_updated", ["projectId", "updatedAt"])
     .index("by_workspace_id_status", ["workspaceId", "status"]) // NEW
     .index("by_team_status", ["teamId", "status"]) // NEW
+    .index("by_deleted", ["isDeleted"]) // Soft delete index
+    .index("by_workspace_deleted", ["projectId", "isDeleted"]) // Project trash view
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["projectId", "workspaceId", "teamId", "type", "status", "priority"], // Added workspaceId, teamId
