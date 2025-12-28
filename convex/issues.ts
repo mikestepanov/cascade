@@ -13,6 +13,7 @@ import {
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { cascadeDelete } from "./lib/relationships";
+import { queryActive } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
   assertCanAccessProject,
