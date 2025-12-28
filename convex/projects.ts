@@ -3,7 +3,8 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { notDeleted } from "./lib/softDeleteHelpers";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 
 export const create = mutation({
@@ -407,86 +408,11 @@ export const deleteProject = mutation({
       throw new Error("Only project owner can delete the project");
     }
 
-    // Delete all related data using batch operations (parallel deletes)
+    // Soft delete with automatic cascading
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.projectId, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "projects", args.projectId, userId, deletedAt);
 
-    // 1. Get all issues for this project
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .collect();
-
-    const issueIds = issues.map((i) => i._id);
-
-    // 2. Batch fetch all related data for issues in parallel
-    const [allComments, allActivities, allLinksFrom, allLinksTo, sprints, members] =
-      await Promise.all([
-        // Get all comments for all issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueComments")
-              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all activities for all issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueActivity")
-              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all links from issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueLinks")
-              .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all links to issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueLinks")
-              .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all sprints
-        ctx.db
-          .query("sprints")
-          .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-          .collect(),
-        // Get all members
-        ctx.db
-          .query("projectMembers")
-          .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-          .collect(),
-      ]);
-
-    // 3. Batch delete all related data in parallel
-    await Promise.all([
-      // Delete comments
-      ...allComments.map((c) => ctx.db.delete(c._id)),
-      // Delete activities
-      ...allActivities.map((a) => ctx.db.delete(a._id)),
-      // Delete links
-      ...allLinksFrom.map((l) => ctx.db.delete(l._id)),
-      ...allLinksTo.map((l) => ctx.db.delete(l._id)),
-      // Delete sprints
-      ...sprints.map((s) => ctx.db.delete(s._id)),
-      // Delete members
-      ...members.map((m) => ctx.db.delete(m._id)),
-      // Delete issues
-      ...issues.map((i) => ctx.db.delete(i._id)),
-    ]);
-
-    // 4. Delete the project itself
-    await ctx.db.delete(args.projectId);
     return { deleted: true };
   },
 });

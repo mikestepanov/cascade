@@ -10,7 +10,8 @@ import {
   MAX_OFFSET,
   MAX_PAGE_SIZE,
 } from "./lib/queryLimits";
-import { notDeleted } from "./lib/softDeleteHelpers";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
 export const create = mutation({
   args: {
@@ -202,7 +203,10 @@ export const deleteDocument = mutation({
       throw new Error("Not authorized to delete this document");
     }
 
-    await ctx.db.delete(args.id);
+    // Soft delete with automatic cascading
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.id, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "documents", args.id, userId, deletedAt);
   },
 });
 
