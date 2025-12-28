@@ -22,6 +22,9 @@ export const update = mutation({
     dashboardLayout: v.optional(v.any()), // JSON
     theme: v.optional(v.string()),
     sidebarCollapsed: v.optional(v.boolean()),
+    emailNotifications: v.optional(v.boolean()),
+    desktopNotifications: v.optional(v.boolean()),
+    timezone: v.optional(v.string()), // IANA timezone
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

@@ -1553,6 +1553,10 @@ const applicationTables = {
     dashboardLayout: v.optional(v.any()), // JSON object for dashboard widget preferences
     theme: v.optional(v.string()), // "light", "dark", "system"
     sidebarCollapsed: v.optional(v.boolean()),
+    // Preferences moved from users table
+    emailNotifications: v.optional(v.boolean()),
+    desktopNotifications: v.optional(v.boolean()),
+    timezone: v.optional(v.string()), // IANA timezone
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
@@ -1582,10 +1586,7 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     // Custom fields for Nixelo
     defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
-    timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
     bio: v.optional(v.string()), // User bio/description
-    emailNotifications: v.optional(v.boolean()), // Email notification preference
-    desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
     // Invite tracking
     inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
     // E2E Testing fields

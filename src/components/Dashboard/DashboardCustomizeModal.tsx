@@ -1,0 +1,106 @@
+import { api } from "@convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
+import { Settings2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Button } from "../ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/Dialog";
+import { Switch } from "../ui/Switch";
+import { Label } from "../ui/Label";
+
+export function DashboardCustomizeModal() {
+  const userSettings = useQuery(api.userSettings.get);
+  const updateSettings = useMutation(api.userSettings.update);
+  const [open, setOpen] = useState(false);
+
+  // Defaults
+  const [preferences, setPreferences] = useState({
+    showStats: true,
+    showRecentActivity: true,
+    showWorkspaces: true,
+  });
+
+  // Sync with DB
+  useEffect(() => {
+    if (userSettings?.dashboardLayout) {
+      setPreferences((prev) => ({ ...prev, ...userSettings.dashboardLayout }));
+    }
+  }, [userSettings]);
+
+  const handleToggle = (key: keyof typeof preferences) => {
+    const newPrefs = { ...preferences, [key]: !preferences[key] };
+    setPreferences(newPrefs);
+    updateSettings({
+      dashboardLayout: newPrefs,
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-2">
+          <Settings2 className="w-4 h-4" />
+          Customize
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Dashboard Customization</DialogTitle>
+          <DialogDescription>
+            Choose which widgets to display on your personal dashboard.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="show-stats" className="flex flex-col space-y-1">
+              <span>Quick Stats</span>
+              <span className="font-normal text-xs text-muted-foreground">
+                Show issue and project counts
+              </span>
+            </Label>
+            <Switch
+              id="show-stats"
+              checked={preferences.showStats}
+              onCheckedChange={() => handleToggle("showStats")}
+            />
+          </div>
+
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="show-activity" className="flex flex-col space-y-1">
+              <span>Recent Activity</span>
+              <span className="font-normal text-xs text-muted-foreground">
+                Show your latest actions and history
+              </span>
+            </Label>
+            <Switch
+              id="show-activity"
+              checked={preferences.showRecentActivity}
+              onCheckedChange={() => handleToggle("showRecentActivity")}
+            />
+          </div>
+
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="show-workspaces" className="flex flex-col space-y-1">
+              <span>My Workspaces</span>
+              <span className="font-normal text-xs text-muted-foreground">
+                Show list of projects you belong to
+              </span>
+            </Label>
+            <Switch
+              id="show-workspaces"
+              checked={preferences.showWorkspaces}
+              onCheckedChange={() => handleToggle("showWorkspaces")}
+            />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

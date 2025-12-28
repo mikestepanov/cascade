@@ -10,6 +10,7 @@ import { WorkspacesList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
 import { Typography } from "./ui/Typography";
+import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 
 type IssueFilter = "assigned" | "created" | "all";
 
@@ -18,8 +19,15 @@ export function Dashboard() {
   const { companySlug } = useCompany();
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
-  // All hooks must be called unconditionally
-  // Use paginated query for My Issues to improve scalability
+  // User Settings
+  const userSettings = useQuery(api.userSettings.get);
+  const layout = userSettings?.dashboardLayout;
+  const showStats = layout?.showStats ?? true;
+  const showRecentActivity = layout?.showRecentActivity ?? true;
+  const showWorkspaces = layout?.showWorkspaces ?? true;
+  const sidebarVisible = showRecentActivity || showWorkspaces;
+
+  // Data fetching
   const {
     results: myIssues,
     status: myIssuesStatus,
@@ -61,21 +69,24 @@ export function Dashboard() {
     <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-6">
-          <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
-            My Work
-          </Typography>
-          <Typography variant="muted" className="mt-1 sm:text-base">
-            Your personal dashboard and activity center
-          </Typography>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
+              My Work
+            </Typography>
+            <Typography variant="muted" className="mt-1 sm:text-base">
+              Your personal dashboard and activity center
+            </Typography>
+          </div>
+          <DashboardCustomizeModal />
         </div>
 
         {/* Stats Cards */}
-        <QuickStats stats={stats} />
+        {showStats && <QuickStats stats={stats} />}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* My Issues */}
-          <div className="lg:col-span-2">
+          <div className={sidebarVisible ? "lg:col-span-2" : "lg:col-span-3"}>
             <MyIssuesList
               myIssues={myIssues}
               myCreatedIssues={myCreatedIssues}
@@ -89,13 +100,17 @@ export function Dashboard() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* My Workspaces */}
-            <WorkspacesList projects={myProjects} projectNavigation={projectNavigation} />
+          {sidebarVisible && (
+            <div className="space-y-6">
+              {/* My Workspaces */}
+              {showWorkspaces && (
+                <WorkspacesList projects={myProjects} projectNavigation={projectNavigation} />
+              )}
 
-            {/* Recent Activity */}
-            <RecentActivity activities={recentActivity} />
-          </div>
+              {/* Recent Activity */}
+              {showRecentActivity && <RecentActivity activities={recentActivity} />}
+            </div>
+          )}
         </div>
       </div>
     </div>
