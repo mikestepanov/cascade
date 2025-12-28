@@ -210,6 +210,36 @@ export const deleteDocument = mutation({
   },
 });
 
+export const restoreDocument = mutation({
+  args: { id: v.id("documents") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const document = await ctx.db.get(args.id);
+    if (!document) {
+      throw new Error("Document not found");
+    }
+
+    if (!document.isDeleted) {
+      throw new Error("Document is not deleted");
+    }
+
+    if (document.createdBy !== userId) {
+      throw new Error("Not authorized to restore this document");
+    }
+
+    // Restore document
+    await ctx.db.patch(args.id, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+  },
+});
+
 // Helper: Check if document matches search filters
 function matchesDocumentFilters(
   doc: {

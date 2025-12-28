@@ -417,6 +417,44 @@ export const deleteProject = mutation({
   },
 });
 
+export const restoreProject = mutation({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    if (!project.isDeleted) {
+      throw new Error("Project is not deleted");
+    }
+
+    // Only project owner can restore
+    if (project.createdBy !== userId && project.ownerId !== userId) {
+      throw new Error("Only project owner can restore the project");
+    }
+
+    // Restore with automatic cascading
+    await ctx.db.patch(args.projectId, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+    
+    // Note: Cascade restore not implemented yet - would need cascadeRestore function
+    // For now, just restore the project itself
+
+    return { restored: true };
+  },
+});
+
 export const updateWorkflow = mutation({
   args: {
     projectId: v.id("projects"),
