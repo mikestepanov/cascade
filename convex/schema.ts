@@ -10,12 +10,17 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     projectId: v.optional(v.id("projects")), // Link documents to projects - stored as string to avoid table mismatch
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
     .index("by_workspace", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
+    .index("by_deleted", ["isDeleted"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["isPublic", "createdBy", "projectId"],
@@ -114,6 +119,10 @@ const applicationTables = {
     defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
     clientName: v.optional(v.string()), // Client name for agency work
     budget: v.optional(v.number()), // Project budget in currency
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -123,6 +132,7 @@ const applicationTables = {
     .index("by_team", ["teamId"])
     .index("by_owner", ["ownerId"])
     .index("by_company_public", ["companyId", "isPublic"])
+    .index("by_deleted", ["isDeleted"])
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["isPublic", "createdBy", "companyId", "workspaceId"], // Added workspaceId
@@ -134,10 +144,15 @@ const applicationTables = {
     role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
     addedBy: v.id("users"),
     addedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_user", ["projectId", "userId"]),
+    .index("by_workspace_user", ["projectId", "userId"])
+    .index("by_deleted", ["isDeleted"]),
 
   issues: defineTable({
     projectId: v.optional(v.id("projects")), // Issue belongs to project (optional during migration)
@@ -219,9 +234,14 @@ const applicationTables = {
     mentions: v.array(v.id("users")), // User IDs mentioned in comment
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_issue", ["issueId"])
-    .index("by_author", ["authorId"]),
+    .index("by_author", ["authorId"])
+    .index("by_deleted", ["isDeleted"]),
 
   issueLinks: defineTable({
     fromIssueId: v.id("issues"),
@@ -243,9 +263,14 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_deleted", ["isDeleted"]),
 
   issueActivity: defineTable({
     issueId: v.id("issues"),
