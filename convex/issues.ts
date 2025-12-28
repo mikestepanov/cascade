@@ -12,6 +12,7 @@ import {
   projectQuery,
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { cascadeDelete } from "./lib/relationships";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
   assertCanAccessProject,
@@ -1541,63 +1542,6 @@ export const bulkMoveToSprint = authenticatedMutation({
   },
 });
 
-// Helper: Delete all related records for an issue
-async function deleteIssueRelatedRecords(ctx: MutationCtx, issueId: Id<"issues">): Promise<void> {
-  // Delete comments
-  const comments = await ctx.db
-    .query("issueComments")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const comment of comments) {
-    await ctx.db.delete(comment._id);
-  }
-
-  // Delete activities
-  const activities = await ctx.db
-    .query("issueActivity")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const activity of activities) {
-    await ctx.db.delete(activity._id);
-  }
-
-  // Delete outgoing links
-  const links = await ctx.db
-    .query("issueLinks")
-    .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-    .collect();
-  for (const link of links) {
-    await ctx.db.delete(link._id);
-  }
-
-  // Delete incoming links
-  const backlinks = await ctx.db
-    .query("issueLinks")
-    .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-    .collect();
-  for (const link of backlinks) {
-    await ctx.db.delete(link._id);
-  }
-
-  // Delete watchers
-  const watchers = await ctx.db
-    .query("issueWatchers")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const watcher of watchers) {
-    await ctx.db.delete(watcher._id);
-  }
-
-  // Delete time entries
-  const timeEntries = await ctx.db
-    .query("timeEntries")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const entry of timeEntries) {
-    await ctx.db.delete(entry._id);
-  }
-}
-
 export const bulkDelete = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
@@ -1619,10 +1563,10 @@ export const bulkDelete = authenticatedMutation({
         continue; // Only admins can delete
       }
 
-      // Delete all related records
-      await deleteIssueRelatedRecords(ctx, issueId);
+      // Cascade delete all related records automatically
+      await cascadeDelete(ctx, "issues", issueId);
 
-      // Finally delete the issue
+      // Finally delete the issue itself
       await ctx.db.delete(issueId);
       results.push(issueId);
     }
