@@ -10,7 +10,9 @@
  *   .filter(includeDeleted)       // Show all items regardless of delete status
  */
 
-import type { ExpressionOrValue, FilterBuilder } from "convex/server";
+import type { ExpressionOrValue, FilterBuilder, QueryInitializer } from "convex/server";
+import type { GenericQueryCtx } from "convex/server";
+import type { DataModel } from "../_generated/dataModel";
 
 /**
  * Filter to exclude soft-deleted items
@@ -64,6 +66,64 @@ export function onlyDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
  */
 export function includeDeleted(): boolean {
   return true; // No filter applied
+}
+
+/**
+ * WRAPPER: Query with automatic soft delete filtering
+ * 
+ * Use this instead of ctx.db.query() to automatically exclude deleted items.
+ * This is the recommended approach - avoids manually adding .filter(notDeleted) everywhere.
+ * 
+ * @param ctx - Query context
+ * @param tableName - Name of the table to query
+ * @returns Query initializer with automatic soft delete filtering
+ * 
+ * @example
+ * // Old way (manual filter)
+ * const issues = await ctx.db
+ *   .query("issues")
+ *   .filter(notDeleted)
+ *   .collect();
+ * 
+ * // New way (automatic filter)
+ * const issues = await queryActive(ctx, "issues").collect();
+ * 
+ * // Works with indexes
+ * const issues = await queryActive(ctx, "issues")
+ *   .withIndex("by_project", (q) => q.eq("projectId", projectId))
+ *   .collect();
+ * 
+ * // Works with pagination
+ * const result = await queryActive(ctx, "issues")
+ *   .withIndex("by_project", (q) => q.eq("projectId", projectId))
+ *   .paginate(paginationOpts);
+ */
+export function queryActive<TableName extends keyof DataModel>(
+  ctx: GenericQueryCtx<DataModel>,
+  tableName: TableName
+): QueryInitializer<any> {
+  return ctx.db.query(tableName).filter(notDeleted);
+}
+
+/**
+ * WRAPPER: Query only soft-deleted items
+ * 
+ * Use this for "trash" views where users can see and restore deleted items.
+ * 
+ * @param ctx - Query context
+ * @param tableName - Name of the table to query
+ * @returns Query initializer filtered to only deleted items
+ * 
+ * @example
+ * const deletedIssues = await queryDeleted(ctx, "issues")
+ *   .withIndex("by_project", (q) => q.eq("projectId", projectId))
+ *   .collect();
+ */
+export function queryDeleted<TableName extends keyof DataModel>(
+  ctx: GenericQueryCtx<DataModel>,
+  tableName: TableName
+): QueryInitializer<any> {
+  return ctx.db.query(tableName).filter(onlyDeleted);
 }
 
 /**
