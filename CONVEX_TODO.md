@@ -59,12 +59,3 @@ This document outlines remaining architectural improvements for the Convex backe
 
 - Use **`convex-helpers`** or a strict "service layer" pattern where defining a relation automatically registers a deletion hook.
 - For soft deletes, cascading is less critical immediately, but "restoring" an issue must also handle its children (or leave them deleted).
-
----
-
-## 🔍 Future / Low Priority
-
-### 1. Offline Sync Queue Robustness
-
-**Current State**: `offlineSyncQueue` table exists.
-**Recommendation**: Ensure there is a dedicated cron job or processing trigger that actively retries `status: "failed"` items effectively, with exponential backoff, to prevent the queue from growing indefinitely.
