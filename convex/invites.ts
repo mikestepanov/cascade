@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { sendEmail } from "./email/index";
-import { batchFetchUsers, batchFetchWorkspaces } from "./lib/batchHelpers";
+import { batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { getSiteUrl } from "./lib/env";
 
 // Helper: Check if user is a company admin
@@ -535,7 +535,7 @@ export const listInvites = query({
     const [inviterMap, acceptedByMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, inviterIds),
       batchFetchUsers(ctx, acceptedByIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
@@ -582,7 +582,7 @@ export const listUsers = query({
     const userIds = users.map((u) => u._id);
 
     // Parallel queries for all users at once
-    const [allWorkspaceCreations, allMemberships] = await Promise.all([
+    const [allProjectCreations, allMemberships] = await Promise.all([
       Promise.all(
         userIds.map((uid) =>
           ctx.db
@@ -603,7 +603,7 @@ export const listUsers = query({
 
     // Build count maps
     const createdCountMap = new Map(
-      userIds.map((id, i) => [id.toString(), allWorkspaceCreations[i].length]),
+      userIds.map((id, i) => [id.toString(), allProjectCreations[i].length]),
     );
     const membershipCountMap = new Map(
       userIds.map((id, i) => [id.toString(), allMemberships[i].length]),

@@ -223,9 +223,10 @@ it("should throw error when non-owner tries to delete", async () => {
 
 ## Current Status
 
-⚠️ Convex testing is not yet set up in this project. The examples above show the recommended approach when you're ready to add Convex function tests.
+✅ **Infrastructure Ready:** All test utilities, configuration, and helpers are in place.
+⚠️ **Blocked:** Tests fail because they cannot find the `_generated` directory or connect to a local Convex instance during the test run in this environment.
 
-For now, focus on:
-1. Testing React components with Vitest + React Testing Library
-2. Testing utility functions with Vitest
-3. Manual testing of Convex functions through the UI
+To run tests locally:
+
+1. Ensure `npx convex dev` is running
+2. Run `pnpm run test:convex`

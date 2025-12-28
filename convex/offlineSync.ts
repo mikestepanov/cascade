@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 // Add mutation to offline queue
 export const queueMutation = mutation({
@@ -202,6 +202,83 @@ export const retryFailed = mutation({
     }
 
     return { retried: failed.length };
+  },
+});
+
+/**
+ * Automatically retry failed sync items (called by cron)
+ * Uses exponential backoff based on number of attempts
+ */
+export const autoRetryFailed = internalMutation({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const MAX_ATTEMPTS = 5;
+
+    // Get all failed items
+    const failed = await ctx.db
+      .query("offlineSyncQueue")
+      .withIndex("by_status", (q) => q.eq("status", "failed"))
+      .collect();
+
+    let retriedCount = 0;
+    let archivedCount = 0;
+
+    for (const item of failed) {
+      // Give up after MAX_ATTEMPTS
+      if (item.attempts >= MAX_ATTEMPTS) {
+        // Archive by deleting (or could mark as "archived")
+        await ctx.db.delete(item._id);
+        archivedCount++;
+        continue;
+      }
+
+      // Exponential backoff: 5min, 15min, 45min, 2h, 6h
+      const backoffMinutes = [5, 15, 45, 120, 360];
+      const waitTime =
+        backoffMinutes[Math.min(item.attempts, backoffMinutes.length - 1)] * 60 * 1000;
+
+      // Check if enough time has passed since last attempt
+      if (item.lastAttempt && now - item.lastAttempt < waitTime) {
+        continue; // Not ready to retry yet
+      }
+
+      // Reset to pending for retry
+      await ctx.db.patch(item._id, {
+        status: "pending",
+        updatedAt: now,
+      });
+      retriedCount++;
+    }
+
+    return { retriedCount, archivedCount, totalFailed: failed.length };
+  },
+});
+
+/**
+ * Cleanup old completed sync items (called by cron)
+ * Removes items completed more than 7 days ago to prevent table bloat
+ */
+export const cleanupOldItems = internalMutation({
+  handler: async (ctx) => {
+    const now = Date.now();
+    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    const cutoff = now - SEVEN_DAYS;
+
+    const completed = await ctx.db
+      .query("offlineSyncQueue")
+      .withIndex("by_status", (q) => q.eq("status", "completed"))
+      .collect();
+
+    let deletedCount = 0;
+
+    for (const item of completed) {
+      if (item.updatedAt < cutoff) {
+        await ctx.db.delete(item._id);
+        deletedCount++;
+      }
+    }
+
+    return { deletedCount };
   },
 });
 

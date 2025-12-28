@@ -4,8 +4,8 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
 import {
   batchFetchIssues,
+  batchFetchProjects,
   batchFetchUsers,
-  batchFetchWorkspaces,
   getUserName,
 } from "./lib/batchHelpers";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
@@ -418,7 +418,7 @@ export const listTimeEntries = query({
 
     const [userMap, projectMap, issueMap] = await Promise.all([
       batchFetchUsers(ctx, userIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
       batchFetchIssues(ctx, issueIds),
     ]);
 

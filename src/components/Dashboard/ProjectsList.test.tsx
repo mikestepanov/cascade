@@ -222,7 +222,7 @@ describe("WorkspacesList", () => {
 
     render(<WorkspacesList {...defaultProps} projects={zeroIssuesWorkspace} />);
 
-    expect(screen.getByText("0 my issues • 0 total")).toBeInTheDocument();
+    expect(screen.getByText("0 my issues")).toBeInTheDocument();
   });
 
   it("should render with capitalized role badges", () => {

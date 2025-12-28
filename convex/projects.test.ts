@@ -7,7 +7,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createCompanyAdmin, createTestUser } from "./testUtils";
 
-describe("Workspaces", () => {
+describe("Projects", () => {
   describe("create", () => {
     it("should create a project with default workflow states", async () => {
       const t = convexTest(schema, modules);
@@ -285,7 +285,9 @@ describe("Workspaces", () => {
       });
 
       // User 2 should only see their own project (membership-based access)
-      const user2Projects = await asUser2.query(api.projects.list, {});
+      const { page: user2Projects } = await asUser2.query(api.projects.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
       expect(user2Projects).toHaveLength(1);
       const projectNames = user2Projects.map((p) => p.name);
       expect(projectNames).toContain("User 2 Project");
@@ -296,7 +298,9 @@ describe("Workspaces", () => {
     it("should return empty array for unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      const projects = await t.query(api.projects.list, {});
+      const { page: projects } = await t.query(api.projects.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
       expect(projects).toEqual([]);
     });
 
@@ -314,7 +318,9 @@ describe("Workspaces", () => {
         companyId,
       });
 
-      const projects = await asUser.query(api.projects.list, {});
+      const { page: projects } = await asUser.query(api.projects.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
       expect(projects).toHaveLength(1);
       expect(projects[0]).toHaveProperty("issueCount");
       expect(projects[0]).toHaveProperty("userRole");

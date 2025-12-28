@@ -1,5 +1,6 @@
 import type { Id } from "../_generated/dataModel";
-import type { QueryCtx } from "../_generated/server";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { checkApiKeyRateLimit } from "./rateLimiter";
 
 /**
  * API Authentication Utilities
@@ -105,31 +106,24 @@ export function verifyProjectAccess(
 }
 
 /**
- * Rate limiting check
- * Returns null if allowed, or { retryAfter: seconds } if rate limited
+ * Rate limiting check using efficient token bucket algorithm
+ * Returns result indicating if allowed or rate limited with retry time
  */
 export async function checkRateLimit(
-  ctx: { db: QueryCtx["db"] },
+  ctx: MutationCtx | QueryCtx,
   keyId: Id<"apiKeys">,
 ): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> {
-  const now = Date.now();
-  const oneMinuteAgo = now - 60 * 1000;
-
   // Get key to check rate limit
   const key = await ctx.db.get(keyId);
   if (!key) return { allowed: false, retryAfter: 60 };
 
-  // Count requests in last minute
-  const recentRequests = await ctx.db
-    .query("apiUsageLogs")
-    .withIndex("by_api_key_created", (q) => q.eq("apiKeyId", keyId).gt("createdAt", oneMinuteAgo))
-    .collect();
+  // Use the efficient token bucket rate limiter component
+  const result = await checkApiKeyRateLimit(ctx, keyId, key.rateLimit);
 
-  if (recentRequests.length >= key.rateLimit) {
-    // Calculate retry-after (seconds until oldest request expires)
-    const oldestRequest = recentRequests[0];
-    const retryAfter = Math.ceil((oldestRequest.createdAt + 60 * 1000 - now) / 1000);
-    return { allowed: false, retryAfter };
+  if (!result.ok) {
+    // retryAfter is in milliseconds, convert to seconds
+    const retryAfterSeconds = Math.ceil(result.retryAfter / 1000);
+    return { allowed: false, retryAfter: retryAfterSeconds };
   }
 
   return { allowed: true };

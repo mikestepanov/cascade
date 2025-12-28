@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
@@ -19,7 +19,13 @@ export function Dashboard() {
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   // All hooks must be called unconditionally
-  const myIssues = useQuery(api.dashboard.getMyIssues);
+  // Use paginated query for My Issues to improve scalability
+  const {
+    results: myIssues,
+    status: myIssuesStatus,
+    loadMore: loadMoreMyIssues,
+  } = usePaginatedQuery(api.dashboard.getMyIssues, {}, { initialNumItems: 20 });
+
   const myCreatedIssues = useQuery(api.dashboard.getMyCreatedIssues);
   const myProjects = useQuery(api.dashboard.getMyProjects);
   const recentActivity = useQuery(api.dashboard.getMyRecentActivity, { limit: 10 });
@@ -77,6 +83,8 @@ export function Dashboard() {
               issueFilter={issueFilter}
               onFilterChange={setIssueFilter}
               issueNavigation={issueNavigation}
+              loadMore={loadMoreMyIssues}
+              status={myIssuesStatus}
             />
           </div>
 

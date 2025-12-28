@@ -87,7 +87,8 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                   </Badge>
                 </Flex>
                 <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  {project.myIssues} my issues • {project.totalIssues} total
+                  {project.myIssues} my issues
+                  {project.totalIssues > 0 && ` • ${project.totalIssues} total`}
                 </div>
               </button>
             ))}

@@ -203,7 +203,8 @@ const applicationTables = {
       vectorField: "embedding",
       dimensions: 512, // Voyage AI voyage-3-lite embedding dimension
       filterFields: ["projectId", "workspaceId", "teamId"], // Added workspaceId, teamId
-    }),
+    })
+    .index("by_workspace_type", ["projectId", "type"]),
 
   issueComments: defineTable({
     issueId: v.id("issues"),
@@ -1523,6 +1524,15 @@ const applicationTables = {
     description: v.optional(v.string()),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
+
+  // Rate limiter tables (from @convex-dev/rate-limiter)
+  rateLimits: defineTable({
+    key: v.string(), // Rate limit key (e.g., API key ID)
+    value: v.number(), // Current token count
+    expiresAt: v.number(), // Expiration timestamp
+  })
+    .index("by_key", ["key"])
+    .index("by_expiry", ["expiresAt"]),
 };
 
 export default defineSchema({

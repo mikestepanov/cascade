@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
+import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -320,7 +320,7 @@ export const search = query({
 
     const [creatorMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, creatorIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)
