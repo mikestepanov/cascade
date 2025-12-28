@@ -148,7 +148,7 @@ export function useCommands({
 } = {}) {
   const navigate = useNavigate();
   const { companySlug } = useCompany();
-  const _projects = useQuery(api.dashboard.getMyProjects);
+  const projects = useQuery(api.dashboard.getMyProjects);
   const myIssues = useQuery(api.dashboard.getMyIssues);
 
   const commands: CommandItem[] = [
@@ -180,6 +180,17 @@ export function useCommands({
       action: () => navigate({ to: ROUTES.workspaces.list(companySlug) }),
       group: "Navigation",
     },
+
+    // Projects navigation
+    ...(projects?.map((project) => ({
+      id: `project-${project._id}`,
+      label: project.name,
+      icon: "⬜",
+      description: `Go to ${project.name} board`,
+      keywords: [project.key, "board", "project"],
+      action: () => navigate({ to: ROUTES.projects.board(companySlug, project.key) }),
+      group: "Projects",
+    })) || []),
 
     // Create actions
     ...(onCreateIssue
@@ -230,7 +241,7 @@ export function useCommands({
       description: `${issue.key} • ${issue.projectName}`,
       keywords: [issue.key, issue.projectName || ""],
       action: () => {
-        // Navigate to project - will be handled by parent
+        navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
       },
       group: "Recent Issues",
     })) || []),
