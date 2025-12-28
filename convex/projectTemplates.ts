@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import { mutation, query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const list = query({
   handler: async (ctx) => {
@@ -55,7 +55,8 @@ export const createFromTemplate = mutation({
     const existing = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (existing) {
       throw new Error("Project key already exists");

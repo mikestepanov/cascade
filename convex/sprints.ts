@@ -66,7 +66,8 @@ export const listByProject = query({
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
       .order("desc")
-      .filter(notDeleted)      .take(MAX_SPRINTS);
+      .filter(notDeleted)
+      .take(MAX_SPRINTS);
 
     if (sprints.length === 0) {
       return [];
@@ -78,7 +79,8 @@ export const listByProject = query({
       const issues = await ctx.db
         .query("issues")
         .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
-        .filter(notDeleted)        .collect();
+        .filter(notDeleted)
+        .collect();
       return { sprintId, count: issues.length };
     });
     const issueCounts = await Promise.all(issueCountsPromises);
@@ -129,7 +131,8 @@ export const startSprint = mutation({
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("projectId", sprint.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     for (const activeSprint of activeSprints) {
       await ctx.db.patch(activeSprint._id, {

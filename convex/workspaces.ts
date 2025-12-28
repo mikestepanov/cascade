@@ -7,8 +7,8 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import { mutation, query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
  * Create a new workspace (department)
@@ -176,7 +176,8 @@ export const remove = mutation({
     const projects = await ctx.db
       .query("projects")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.id))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (projects) {
       throw new Error(
@@ -200,12 +201,14 @@ export const getStats = query({
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     const projects = await ctx.db
       .query("projects")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     return {
       teamsCount: teams.length,

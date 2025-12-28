@@ -5,7 +5,13 @@ import { toast } from "sonner";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Card } from "../ui/Card";
 import { Label } from "../ui/Label";
-import { ShadcnSelect, ShadcnSelectContent, ShadcnSelectItem, ShadcnSelectTrigger, ShadcnSelectValue } from "../ui/ShadcnSelect";
+import {
+  ShadcnSelect,
+  ShadcnSelectContent,
+  ShadcnSelectItem,
+  ShadcnSelectTrigger,
+  ShadcnSelectValue,
+} from "../ui/ShadcnSelect";
 import { Switch } from "../ui/Switch";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 
@@ -15,24 +21,24 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
  */
 export function PreferencesTab() {
   const { theme, setTheme } = useTheme();
-  
+
   // Settings from DB
   const userSettings = useQuery(api.userSettings.get);
   const updateSettings = useMutation(api.userSettings.update);
 
   // Local state for timezone (defaults to system if not set)
   const [selectedTimezone, setSelectedTimezone] = useState<string>(
-    Intl.DateTimeFormat().resolvedOptions().timeZone
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
 
   useEffect(() => {
     if (userSettings?.timezone) {
       setSelectedTimezone(userSettings.timezone);
     }
-    // Also sync theme from DB if different from local? 
+    // Also sync theme from DB if different from local?
     // Usually theme context handles local storage, but we can respect DB as source of truth on load.
     if (userSettings?.theme && userSettings.theme !== theme) {
-       // We won't force it here to avoid flickering loop, assuming user action drives it.
+      // We won't force it here to avoid flickering loop, assuming user action drives it.
     }
   }, [userSettings]);
 
@@ -46,7 +52,7 @@ export function PreferencesTab() {
     try {
       await updateSettings({ timezone: value });
       toast.success("Timezone updated");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update timezone");
     }
   };
@@ -60,7 +66,7 @@ export function PreferencesTab() {
         return;
       }
     }
-    
+
     await updateSettings({ desktopNotifications: enabled });
     toast.success(`Desktop notifications ${enabled ? "enabled" : "disabled"}`);
   };
@@ -128,7 +134,9 @@ export function PreferencesTab() {
           </h3>
           <div className="flex items-center justify-between">
             <div>
-              <Label htmlFor="timezone" className="text-base">Timezone</Label>
+              <Label htmlFor="timezone" className="text-base">
+                Timezone
+              </Label>
               <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Your timestamp display preference
               </p>
@@ -158,7 +166,9 @@ export function PreferencesTab() {
           </h3>
           <div className="flex items-center justify-between">
             <div>
-              <Label htmlFor="desktop-notifs" className="text-base">Browser Push Notifications</Label>
+              <Label htmlFor="desktop-notifs" className="text-base">
+                Browser Push Notifications
+              </Label>
               <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Receive pop-up notifications when you are active
               </p>

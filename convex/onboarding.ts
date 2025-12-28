@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
@@ -406,7 +406,8 @@ async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) 
   const issues = await ctx.db
     .query("issues")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)    .collect();
+    .filter(notDeleted)
+    .collect();
 
   for (const issue of issues) {
     const comments = await ctx.db
@@ -436,7 +437,8 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
   const sprints = await ctx.db
     .query("sprints")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)    .collect();
+    .filter(notDeleted)
+    .collect();
   for (const sprint of sprints) {
     await ctx.db.delete(sprint._id);
   }
@@ -452,7 +454,8 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
   const members = await ctx.db
     .query("projectMembers")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)    .collect();
+    .filter(notDeleted)
+    .collect();
   for (const member of members) {
     await ctx.db.delete(member._id);
   }
@@ -479,7 +482,8 @@ export const resetOnboarding = mutation({
     const onboarding = await ctx.db
       .query("userOnboarding")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (onboarding) {
       await ctx.db.delete(onboarding._id);
@@ -490,7 +494,8 @@ export const resetOnboarding = mutation({
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (project) {
       await deleteProjectIssues(ctx, project._id);
@@ -516,7 +521,8 @@ export const deleteSampleProject = mutation({
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
       .filter((q) => q.eq(q.field("createdBy"), userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (!project) {
       throw new Error("Sample project not found");
@@ -526,14 +532,16 @@ export const deleteSampleProject = mutation({
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     for (const issue of issues) {
       // Delete comments
       const comments = await ctx.db
         .query("issueComments")
         .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .filter(notDeleted)        .collect();
+        .filter(notDeleted)
+        .collect();
       for (const comment of comments) {
         await ctx.db.delete(comment._id);
       }
@@ -555,7 +563,8 @@ export const deleteSampleProject = mutation({
     const sprints = await ctx.db
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
     }
@@ -573,7 +582,8 @@ export const deleteSampleProject = mutation({
     const members = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);
     }
@@ -585,7 +595,8 @@ export const deleteSampleProject = mutation({
     const onboarding = await ctx.db
       .query("userOnboarding")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (onboarding) {
       await ctx.db.patch(onboarding._id, {
@@ -659,7 +670,8 @@ export const setOnboardingPersona = mutation({
     const existing = await ctx.db
       .query("userOnboarding")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (existing) {
       await ctx.db.patch(existing._id, {
@@ -673,7 +685,8 @@ export const setOnboardingPersona = mutation({
       const doubleCheck = await ctx.db
         .query("userOnboarding")
         .withIndex("by_user", (q) => q.eq("userId", userId))
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (doubleCheck) {
         // Record was created by concurrent request, just patch it

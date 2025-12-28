@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Settings2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/Button";
 import {
   Dialog,
@@ -11,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/Dialog";
-import { Switch } from "../ui/Switch";
 import { Label } from "../ui/Label";
+import { Switch } from "../ui/Switch";
 
 export function DashboardCustomizeModal() {
   const userSettings = useQuery(api.userSettings.get);

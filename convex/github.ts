@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Connect GitHub account (OAuth callback)
 export const connectGitHub = mutation({
@@ -105,7 +105,8 @@ export const linkRepository = mutation({
     const member = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (!member && project.createdBy !== userId) {
       throw new Error("You don't have permission to link repositories to this project");
@@ -163,7 +164,8 @@ export const unlinkRepository = mutation({
     const member = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     const isAdmin = project.createdBy === userId || member?.role === "admin";
     if (!isAdmin) {
@@ -193,7 +195,8 @@ export const listRepositories = query({
         .withIndex("by_workspace_user", (q) =>
           q.eq("projectId", args.projectId).eq("userId", userId),
         )
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (!member && project.createdBy !== userId) {
         return [];
@@ -203,7 +206,8 @@ export const listRepositories = query({
     return await ctx.db
       .query("githubRepositories")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
   },
 });
 
@@ -239,7 +243,8 @@ export const upsertPullRequest = mutation({
         .query("issues")
         .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (issue) {
         issueId = issue._id;
@@ -343,7 +348,8 @@ export const getPullRequests = query({
         .withIndex("by_workspace_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (!member && project.createdBy !== userId) {
         return [];
@@ -353,7 +359,8 @@ export const getPullRequests = query({
     return await ctx.db
       .query("githubPullRequests")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
   },
 });
 
@@ -382,7 +389,8 @@ export const upsertCommit = mutation({
         .query("issues")
         .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (issue) {
         issueId = issue._id;
@@ -442,7 +450,8 @@ export const getCommits = query({
         .withIndex("by_workspace_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
-        .filter(notDeleted)        .first();
+        .filter(notDeleted)
+        .first();
 
       if (!member && project.createdBy !== userId) {
         return [];
@@ -453,6 +462,7 @@ export const getCommits = query({
       .query("githubCommits")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .order("desc")
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
   },
 });

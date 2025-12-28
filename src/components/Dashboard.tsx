@@ -5,12 +5,12 @@ import { useState } from "react";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useListNavigation } from "../hooks/useListNavigation";
+import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
 import { WorkspacesList } from "./Dashboard/ProjectsList";
 import { QuickStats } from "./Dashboard/QuickStats";
 import { RecentActivity } from "./Dashboard/RecentActivity";
 import { Typography } from "./ui/Typography";
-import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 
 type IssueFilter = "assigned" | "created" | "all";
 

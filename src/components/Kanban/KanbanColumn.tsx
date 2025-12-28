@@ -38,6 +38,7 @@ interface KanbanColumnProps {
   onCreateIssue: (stateId: string) => void;
   onIssueClick: (issueId: Id<"issues">) => void;
   onToggleSelect: (issueId: Id<"issues">) => void;
+  focusedIssueId?: Id<"issues"> | null;
   // Pagination props (optional - for done columns)
   hiddenCount?: number;
   totalCount?: number;
@@ -56,6 +57,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   columnIndex,
   selectionMode,
   selectedIssueIds,
+  focusedIssueId,
   canEdit,
   onDragOver,
   onDrop,
@@ -144,6 +146,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               onClick={() => !selectionMode && onIssueClick(issue._id)}
               selectionMode={selectionMode}
               isSelected={selectedIssueIds.has(issue._id)}
+              isFocused={issue._id === focusedIssueId}
               onToggleSelect={onToggleSelect}
               canEdit={canEdit}
             />

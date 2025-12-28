@@ -1,15 +1,15 @@
 /**
  * Soft Delete Helper Utilities
- * 
+ *
  * Provides reusable filter functions for querying soft-deleted records.
  * Use these helpers to ensure consistent soft delete behavior across all queries.
- * 
+ *
  * IMPORTANT: In Convex, .filter() must come AFTER .withIndex()
- * 
+ *
  * Usage:
  *   .filter(notDeleted)           // Exclude deleted items (most common)
  *   .filter(onlyDeleted)          // Only show deleted items (trash view)
- * 
+ *
  * Example:
  *   const issues = await ctx.db
  *     .query("issues")
@@ -23,7 +23,7 @@ import type { ExpressionOrValue, FilterBuilder } from "convex/server";
 /**
  * Filter to exclude soft-deleted items
  * Use this in all normal queries to hide deleted records
- * 
+ *
  * @example
  * const issues = await ctx.db
  *   .query("issues")
@@ -38,13 +38,13 @@ export function notDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
 /**
  * Filter to show ONLY soft-deleted items
  * Use this for "trash" views where users can restore deleted items
- * 
+ *
  * @example
  * const deletedIssues = await ctx.db
  *   .query("issues")
  *   .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
  *   .collect();
- * 
+ *
  * // Or with additional filters
  * const projectTrash = await ctx.db
  *   .query("issues")
@@ -61,10 +61,10 @@ export function onlyDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
 /**
  * No filter - shows all items regardless of delete status
  * Useful for admin views or analytics that need complete data
- * 
+ *
  * Note: This is the default behavior without any filter.
  * This function exists for explicit documentation in code.
- * 
+ *
  * @example
  * const allIssues = await ctx.db
  *   .query("issues")
@@ -77,10 +77,10 @@ export function includeDeleted(): boolean {
 /**
  * Mark a record as soft deleted
  * Sets isDeleted, deletedAt, and deletedBy fields
- * 
+ *
  * @param userId - User ID who is performing the deletion
  * @returns Object with soft delete fields to patch
- * 
+ *
  * @example
  * await ctx.db.patch(issueId, softDeleteFields(userId));
  */
@@ -95,9 +95,9 @@ export function softDeleteFields(userId: any) {
 /**
  * Restore a soft deleted record
  * Removes isDeleted, deletedAt, and deletedBy fields
- * 
+ *
  * @returns Object with fields to clear for restoration
- * 
+ *
  * @example
  * await ctx.db.patch(issueId, restoreFields());
  */
@@ -111,10 +111,10 @@ export function restoreFields() {
 
 /**
  * Check if a record is soft deleted
- * 
+ *
  * @param record - Any database record
  * @returns true if the record is soft deleted
- * 
+ *
  * @example
  * const issue = await ctx.db.get(issueId);
  * if (issue && isSoftDeleted(issue)) {
@@ -128,10 +128,10 @@ export function isSoftDeleted(record: any): boolean {
 /**
  * Get time since deletion in milliseconds
  * Returns null if not deleted
- * 
+ *
  * @param record - Any database record with deletedAt field
  * @returns Milliseconds since deletion, or null if not deleted
- * 
+ *
  * @example
  * const timeSinceDeletion = getTimeSinceDeletion(issue);
  * if (timeSinceDeletion && timeSinceDeletion > THIRTY_DAYS) {
@@ -139,7 +139,7 @@ export function isSoftDeleted(record: any): boolean {
  * }
  */
 export function getTimeSinceDeletion(record: any): number | null {
-  if (!record.isDeleted || !record.deletedAt) {
+  if (!(record.isDeleted && record.deletedAt)) {
     return null;
   }
   return Date.now() - record.deletedAt;
@@ -148,11 +148,11 @@ export function getTimeSinceDeletion(record: any): number | null {
 /**
  * Check if a soft deleted record is eligible for permanent deletion
  * Default threshold is 30 days
- * 
+ *
  * @param record - Any database record
  * @param thresholdMs - Milliseconds threshold (default: 30 days)
  * @returns true if record should be permanently deleted
- * 
+ *
  * @example
  * const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
  * if (isEligibleForPermanentDeletion(issue, THIRTY_DAYS)) {
@@ -161,7 +161,7 @@ export function getTimeSinceDeletion(record: any): number | null {
  */
 export function isEligibleForPermanentDeletion(
   record: any,
-  thresholdMs: number = 30 * 24 * 60 * 60 * 1000 // 30 days default
+  thresholdMs: number = 30 * 24 * 60 * 60 * 1000, // 30 days default
 ): boolean {
   const timeSince = getTimeSinceDeletion(record);
   return timeSince !== null && timeSince > thresholdMs;

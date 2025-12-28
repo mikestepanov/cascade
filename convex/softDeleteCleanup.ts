@@ -5,10 +5,9 @@
  * Runs daily via cron job
  */
 
-import { internalMutation } from "./_generated/server";
-import { query } from "./_generated/server";
-import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { internalMutation, query } from "./_generated/server";
 import { cascadeDelete } from "./lib/relationships";
 import { isEligibleForPermanentDeletion, onlyDeleted } from "./lib/softDeleteHelpers";
 
@@ -40,7 +39,7 @@ export const permanentlyDeleteOld = internalMutation({
 
       // Filter to only those older than 30 days
       const toDelete = deleted.filter((record) =>
-        isEligibleForPermanentDeletion(record, THIRTY_DAYS_MS)
+        isEligibleForPermanentDeletion(record, THIRTY_DAYS_MS),
       );
 
       // Permanently delete each one with cascading
@@ -67,15 +66,10 @@ export const listDeletedProjects = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const deleted = await ctx.db
-      .query("projects")
-      .filter(onlyDeleted)
-      .collect();
+    const deleted = await ctx.db.query("projects").filter(onlyDeleted).collect();
 
     // Filter to projects user has access to
-    return deleted.filter(
-      (p) => p.createdBy === userId || p.ownerId === userId || p.isPublic
-    );
+    return deleted.filter((p) => p.createdBy === userId || p.ownerId === userId || p.isPublic);
   },
 });
 

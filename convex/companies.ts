@@ -1,9 +1,9 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchCompanies, batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -598,7 +598,8 @@ export const getCompanyMembers = query({
     const memberships = await ctx.db
       .query("companyMembers")
       .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Batch fetch all users (members + addedBy)
     const userIds = [...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)];
@@ -656,7 +657,8 @@ export const initializeDefaultCompany = mutation({
     const existingMembership = await ctx.db
       .query("companyMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (existingMembership) {
       const existingCompany = await ctx.db.get(existingMembership.companyId);

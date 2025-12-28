@@ -1,11 +1,11 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -515,7 +515,8 @@ export const list = query({
       return await ctx.db
         .query("projects")
         .withIndex("by_team", (q) => q.eq("teamId", teamId))
-        .filter(notDeleted)        .collect()
+        .filter(notDeleted)
+        .collect()
         .then((p) => p.length);
     });
     const projectCounts = await Promise.all(projectCountsPromises);
@@ -564,7 +565,8 @@ export const getCompanyTeams = query({
     const companyMembership = await ctx.db
       .query("companyMembers")
       .withIndex("by_company_user", (q) => q.eq("companyId", args.companyId).eq("userId", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (!companyMembership) return [];
 
@@ -592,7 +594,8 @@ export const getCompanyTeams = query({
           ctx.db
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
-            .filter(notDeleted)            .collect(),
+            .filter(notDeleted)
+            .collect(),
         ),
       ),
     ]);
@@ -670,7 +673,8 @@ export const getUserTeams = query({
           ctx.db
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
-            .filter(notDeleted)            .collect(),
+            .filter(notDeleted)
+            .collect(),
         ),
       ),
     ]);

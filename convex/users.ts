@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import { internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 
 /**
@@ -94,7 +94,8 @@ export const isCompanyAdmin = query({
     const createdProjects = await ctx.db
       .query("projects")
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     if (createdProjects) return true;
 
@@ -103,7 +104,8 @@ export const isCompanyAdmin = query({
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("role"), "admin"))
-      .filter(notDeleted)      .first();
+      .filter(notDeleted)
+      .first();
 
     return !!adminMembership;
   },
@@ -116,25 +118,29 @@ export const getUserStats = query({
     const issuesCreated = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", args.userId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Get issues assigned
     const issuesAssigned = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", args.userId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Get comments
     const comments = await ctx.db
       .query("issueComments")
       .withIndex("by_author", (q) => q.eq("authorId", args.userId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Get projects (as member)
     const projectMemberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     return {
       issuesCreated: issuesCreated.length,

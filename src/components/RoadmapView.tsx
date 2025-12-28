@@ -1,8 +1,9 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FixedSizeList as List } from "react-window";
+import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -83,14 +84,43 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
     [startOfMonth, endDate],
   );
 
+  // Keyboard navigation
+  const listRef = useRef<List>(null);
+  const { selectedIndex } = useListNavigation({
+    items: filteredIssues,
+    onSelect: (issue) => setSelectedIssue(issue._id),
+  });
+
+  // Sync keyboard selection with scroll
+  useEffect(() => {
+    if (selectedIndex >= 0 && listRef.current) {
+      listRef.current.scrollToItem(selectedIndex);
+    }
+  }, [selectedIndex]);
+
   // Row renderer for virtualization
+  // eslint-disable-next-line react/display-name
   const Row = useCallback(
-    ({ index, style }: { index: number; style: React.CSSProperties }) => {
-      const issue = filteredIssues[index];
+    ({
+      data,
+      index,
+      style,
+    }: {
+      data: { issues: typeof filteredIssues; selectedIndex: number };
+      index: number;
+      style: React.CSSProperties;
+    }) => {
+      const issue = data.issues[index];
+      const isSelected = index === data.selectedIndex;
+
       return (
         <div
           style={style}
-          className="flex items-center p-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+          className={`flex items-center p-3 transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark ${
+            isSelected
+              ? "bg-brand-50/50 dark:bg-brand-900/20 ring-1 ring-inset ring-brand-500/50 z-10"
+              : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
+          }`}
         >
           {/* Issue Info */}
           <div className="w-64 flex-shrink-0 pr-4">
@@ -99,7 +129,11 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               <button
                 type="button"
                 onClick={() => setSelectedIssue(issue._id)}
-                className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400 truncate text-left"
+                className={`text-sm font-medium truncate text-left ${
+                  isSelected
+                    ? "text-brand-700 dark:text-brand-300"
+                    : "text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400"
+                }`}
               >
                 {issue.key}
               </button>
@@ -139,23 +173,66 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         </div>
       );
     },
-    [filteredIssues, getPositionOnTimeline],
+    [getPositionOnTimeline],
   );
 
+  // Loading State
   if (!(project && issues)) {
     return (
-      <div className="flex-1 overflow-auto p-6">
-        <div className="mb-6">
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-64" />
+      <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
+        {/* Skeleton Header */}
+        <div className="mb-6 flex items-center justify-between flex-shrink-0">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-32 rounded-lg" />
+            <Skeleton className="h-8 w-32 rounded-lg" />
+          </div>
         </div>
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-4">
-          <div className="space-y-4">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
+
+        {/* Skeleton Timeline */}
+        <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+          {/* Skeleton Dates Header */}
+          <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
+            <div className="flex">
+              <div className="w-64 flex-shrink-0">
+                <Skeleton className="h-5 w-24" />
+              </div>
+              <div className="flex-1 grid grid-cols-6 gap-2">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="h-5 w-full" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton Rows */}
+          <div className="flex-1 overflow-auto">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center p-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+              >
+                <div className="w-64 flex-shrink-0 pr-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div className="flex-1 relative h-8">
+                  <Skeleton
+                    className={`absolute h-6 rounded-full opacity-50`}
+                    style={{
+                      left: `${(i * 13) % 70}%`, // Deterministic position
+                      width: `${10 + ((i * 3) % 10)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -239,10 +316,12 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             </div>
           ) : (
             <List
+              ref={listRef}
               height={600} // This should ideally be dynamic, but 600 is a safe default for now
               itemCount={filteredIssues.length}
               itemSize={56} // Approximate height of each row
               width="100%"
+              itemData={{ issues: filteredIssues, selectedIndex }}
             >
               {Row}
             </List>

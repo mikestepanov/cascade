@@ -1,9 +1,9 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Helper: Generate next issue key for a project
@@ -15,7 +15,8 @@ async function generateNextIssueKey(
   const existingIssues = await ctx.db
     .query("issues")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)    .collect();
+    .filter(notDeleted)
+    .collect();
 
   const issueNumbers = existingIssues
     .map((issue) => Number.parseInt(issue.key.split("-")[1], 10))
@@ -383,13 +384,15 @@ export const exportAnalytics = query({
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Get all sprints
     const sprints = await ctx.db
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .filter(notDeleted)      .collect();
+      .filter(notDeleted)
+      .collect();
 
     // Calculate metrics
     const totalIssues = issues.length;
@@ -481,7 +484,8 @@ export const exportIssuesJSON = query({
           ctx.db
             .query("issueComments")
             .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-            .filter(notDeleted)            .collect(),
+            .filter(notDeleted)
+            .collect(),
         ),
       ),
     ]);
