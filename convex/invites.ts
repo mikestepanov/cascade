@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { sendEmail } from "./email/index";
@@ -21,7 +22,7 @@ async function isCompanyAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) 
   const createdProjects = await ctx.db
     .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   if (createdProjects) return true;
 
@@ -30,7 +31,7 @@ async function isCompanyAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) 
     .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
-    .first();
+    .filter(notDeleted)    .first();
 
   return !!adminMembership;
 }
@@ -59,7 +60,7 @@ async function isProjectAdmin(
   const membership = await ctx.db
     .query("projectMembers")
     .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   return membership?.role === "admin";
 }
@@ -84,7 +85,7 @@ async function addExistingUserToProject(
     .withIndex("by_workspace_user", (q) =>
       q.eq("projectId", projectId).eq("userId", existingUserId),
     )
-    .first();
+    .filter(notDeleted)    .first();
 
   if (existingMember) {
     throw new Error("User is already a member of this project");
@@ -470,7 +471,7 @@ export const acceptInvite = mutation({
         .withIndex("by_workspace_user", (q) =>
           q.eq("projectId", inviteProjectId).eq("userId", userId),
         )
-        .first();
+        .filter(notDeleted)        .first();
 
       if (!existingMember) {
         await ctx.db.insert("projectMembers", {
@@ -588,7 +589,7 @@ export const listUsers = query({
           ctx.db
             .query("projects")
             .withIndex("by_creator", (q) => q.eq("createdBy", uid))
-            .collect(),
+            .filter(notDeleted)            .collect(),
         ),
       ),
       Promise.all(
@@ -596,7 +597,7 @@ export const listUsers = query({
           ctx.db
             .query("projectMembers")
             .withIndex("by_user", (q) => q.eq("userId", uid))
-            .collect(),
+            .filter(notDeleted)            .collect(),
         ),
       ),
     ]);

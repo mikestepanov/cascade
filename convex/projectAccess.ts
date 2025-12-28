@@ -1,6 +1,7 @@
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { getTeamRole } from "./teams";
 
 // ============================================================================
@@ -78,7 +79,7 @@ async function checkDirectAccess(
   const projectMembership = await ctx.db
     .query("projectMembers")
     .withIndex("by_workspace_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   if (projectMembership) return true;
 
@@ -151,7 +152,7 @@ export async function canEditProject(
   const projectMembership = await ctx.db
     .query("projectMembers")
     .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   if (
     projectMembership &&
@@ -202,7 +203,7 @@ export async function isProjectAdmin(
   const projectMembership = await ctx.db
     .query("projectMembers")
     .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   if (projectMembership && projectMembership.role === "admin") {
     return true;

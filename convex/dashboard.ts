@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server"; // Added
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import {
@@ -29,7 +30,7 @@ export const getMyIssues = query({
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
       .order("desc") // Sort by creation time (descending)
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
@@ -87,7 +88,7 @@ export const getMyCreatedIssues = query({
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
@@ -141,7 +142,7 @@ export const getMyProjects = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     if (memberships.length === 0) return [];
 
@@ -154,7 +155,7 @@ export const getMyProjects = query({
     const myIssues = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     const myIssuesByProject = new Map<string, number>();
     for (const issue of myIssues) {
@@ -202,7 +203,7 @@ export const getMyRecentActivity = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     const projectIdSet = new Set(memberships.map((m) => m.projectId.toString()));
 
@@ -271,7 +272,7 @@ export const getMyStats = query({
     const assignedIssues = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Filter for different stats
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -303,7 +304,7 @@ export const getMyStats = query({
     const createdByMe = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     return {
       assignedToMe: assignedIssues.length,

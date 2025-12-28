@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { mutation, query } from "./_generated/server";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 

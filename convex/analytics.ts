@@ -6,6 +6,7 @@
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import {
@@ -135,7 +136,7 @@ export const getSprintBurndown = query({
     const sprintIssues = await ctx.db
       .query("issues")
       .withIndex("by_sprint", (q) => q.eq("sprintId", args.sprintId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     const project = await ctx.db.get(sprint.projectId);
     if (!project) {
@@ -239,7 +240,7 @@ export const getTeamVelocity = query({
         ctx.db
           .query("issues")
           .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
-          .collect(),
+          .filter(notDeleted)          .collect(),
       ),
     );
 

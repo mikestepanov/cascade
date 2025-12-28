@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { api } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { action, mutation, query } from "./_generated/server";
@@ -43,7 +44,7 @@ export const addWebhook = mutation({
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-        .first();
+        .filter(notDeleted)        .first();
 
       if (!membership && project.createdBy !== userId) {
         throw new Error("Not authorized for this project");
@@ -81,7 +82,7 @@ export const listWebhooks = query({
     return await ctx.db
       .query("pumbleWebhooks")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .filter(notDeleted)      .collect();
   },
 });
 

@@ -10,6 +10,7 @@ import {
   MAX_OFFSET,
   MAX_PAGE_SIZE,
 } from "./lib/queryLimits";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const create = mutation({
   args: {
@@ -58,14 +59,14 @@ export const list = query({
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
-      .take(fetchBuffer);
+      .filter(notDeleted)      .take(fetchBuffer);
 
     // Get public documents (any user's public docs)
     const publicDocuments = await ctx.db
       .query("documents")
       .withIndex("by_public", (q) => q.eq("isPublic", true))
       .order("desc")
-      .take(fetchBuffer);
+      .filter(notDeleted)      .take(fetchBuffer);
 
     // Combine and deduplicate (user's public docs appear in both queries)
     const seenIds = new Set<string>();
@@ -285,7 +286,7 @@ export const search = query({
     const results = await ctx.db
       .query("documents")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .take(fetchLimit);
+      .filter(notDeleted)      .take(fetchLimit);
 
     // Filter results based on access permissions and advanced filters
     const filtered = [];

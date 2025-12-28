@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
@@ -766,7 +767,7 @@ export const createIssueFromActionItem = mutation({
     const existingIssues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .filter(notDeleted)      .collect();
     const nextNumber = existingIssues.length + 1;
 
     const now = Date.now();
@@ -824,7 +825,7 @@ export const triggerBotJob = internalMutation({
     const job = await ctx.db
       .query("meetingBotJobs")
       .withIndex("by_recording", (q) => q.eq("recordingId", args.recordingId))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!job || job.status !== "pending") return;
 

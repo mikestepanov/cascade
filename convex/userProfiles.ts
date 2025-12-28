@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchUsers } from "./lib/batchHelpers";
@@ -10,7 +11,7 @@ async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const createdProjects = await ctx.db
     .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
-    .first();
+    .filter(notDeleted)    .first();
 
   if (createdProjects) return true;
 
@@ -19,7 +20,7 @@ async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
     .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
-    .first();
+    .filter(notDeleted)    .first();
 
   return !!adminMembership;
 }
@@ -336,13 +337,13 @@ export const listUserProfiles = query({
         .withIndex("by_employment_active", (q) =>
           q.eq("employmentType", employmentType).eq("isActive", isActive),
         )
-        .collect();
+        .filter(notDeleted)        .collect();
     } else if (args.employmentType) {
       const employmentType = args.employmentType;
       profiles = await ctx.db
         .query("userProfiles")
         .withIndex("by_employment_type", (q) => q.eq("employmentType", employmentType))
-        .collect();
+        .filter(notDeleted)        .collect();
     } else if (args.isActive !== undefined) {
       const isActive = args.isActive;
       profiles = await ctx.db

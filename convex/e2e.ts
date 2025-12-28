@@ -12,6 +12,7 @@
  */
 
 import { v } from "convex/values";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -899,7 +900,7 @@ export const setupRbacProjectInternal = internalMutation({
     let project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!project) {
       const projectId = await ctx.db.insert("projects", {
@@ -938,7 +939,7 @@ export const setupRbacProjectInternal = internalMutation({
     let workspaceProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", workspaceProjectKey))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!workspaceProject) {
       const wsProjectId = await ctx.db.insert("projects", {
@@ -970,7 +971,7 @@ export const setupRbacProjectInternal = internalMutation({
     let teamProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", teamProjectKey))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!teamProject) {
       const tmProjectId = await ctx.db.insert("projects", {
@@ -1019,7 +1020,7 @@ export const setupRbacProjectInternal = internalMutation({
           .withIndex("by_workspace_user", (q) =>
             q.eq("projectId", proj._id).eq("userId", config.userId),
           )
-          .first();
+          .filter(notDeleted)          .first();
 
         if (existingMember) {
           // Update role if different
@@ -1116,7 +1117,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!project) {
       return {
@@ -1133,7 +1134,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     const members = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .collect();
+      .filter(notDeleted)      .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);
     }
@@ -1142,13 +1143,13 @@ export const cleanupRbacProjectInternal = internalMutation({
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .collect();
+      .filter(notDeleted)      .collect();
     for (const issue of issues) {
       // Delete issue comments
       const comments = await ctx.db
         .query("issueComments")
         .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .collect();
+        .filter(notDeleted)        .collect();
       for (const comment of comments) {
         await ctx.db.delete(comment._id);
       }
@@ -1167,7 +1168,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     const sprints = await ctx.db
       .query("sprints")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .collect();
+      .filter(notDeleted)      .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
     }
@@ -1298,7 +1299,7 @@ export const updateCompanySettingsInternal = internalMutation({
     const company = await ctx.db
       .query("companies")
       .withIndex("by_slug", (q) => q.eq("slug", args.companySlug))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!company) {
       return { success: false, error: `Company not found: ${args.companySlug}` };
@@ -1400,7 +1401,7 @@ export const verifyTestUserInternal = internalMutation({
     const account = await ctx.db
       .query("authAccounts")
       .filter((q) => q.eq(q.field("providerAccountId"), args.email))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!account) {
       return { success: false, verified: false, error: "Account not found" };
@@ -1505,7 +1506,7 @@ export const debugVerifyPasswordInternal = internalMutation({
           q.eq(q.field("providerAccountId"), args.email),
         ),
       )
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!account) {
       return {
@@ -1679,7 +1680,7 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
         const projects = await ctx.db
           .query("projects")
           .withIndex("by_team", (q) => q.eq("teamId", team._id))
-          .collect();
+          .filter(notDeleted)          .collect();
         for (const p of projects) await ctx.db.delete(p._id);
 
         await ctx.db.delete(team._id);
@@ -1689,7 +1690,7 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
       const wsProjects = await ctx.db
         .query("projects")
         .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
-        .collect();
+        .filter(notDeleted)        .collect();
 
       for (const p of wsProjects) await ctx.db.delete(p._id);
 
@@ -1750,7 +1751,7 @@ export const nukeTimersInternal = internalMutation({
       const user = await ctx.db
         .query("users")
         .filter((q) => q.eq(q.field("email"), args.email))
-        .first();
+        .filter(notDeleted)        .first();
       if (user) usersToCheck.push(user);
     } else {
       // All test users
@@ -1889,7 +1890,7 @@ export const nukeWorkspacesInternal = internalMutation({
         const projects = await ctx.db
           .query("projects")
           .withIndex("by_company", (q) => q.eq("companyId", company._id))
-          .collect();
+          .filter(notDeleted)          .collect();
         for (const project of projects) {
           await ctx.db.delete(project._id);
         }
@@ -1973,7 +1974,7 @@ export const resetTestWorkspaceInternal = internalMutation({
       const projects = await ctx.db
         .query("projects")
         .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
-        .collect();
+        .filter(notDeleted)        .collect();
       for (const p of projects) await ctx.db.delete(p._id);
 
       // Delete Teams
@@ -2023,7 +2024,7 @@ export const resetTestWorkspaceInternal = internalMutation({
       const projects = await ctx.db
         .query("projects")
         .withIndex("by_company", (q) => q.eq("companyId", company._id))
-        .collect();
+        .filter(notDeleted)        .collect();
       for (const project of projects) await ctx.db.delete(project._id);
 
       // Delete workspaces (departments)

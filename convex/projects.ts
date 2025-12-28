@@ -3,6 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 
 export const create = mutation({
@@ -30,7 +31,7 @@ export const create = mutation({
     const existingProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.key.toUpperCase()))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (existingProject) {
       throw new Error("Project key already exists");
@@ -93,7 +94,7 @@ export const list = query({
     const results = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
 
     if (results.page.length === 0) {
       return { ...results, page: [] };
@@ -188,7 +189,7 @@ export const listByTeam = query({
     return await ctx.db
       .query("projects")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
   },
 });
 
@@ -223,7 +224,7 @@ export const listOrphanedProjects = query({
       // This works for now as the number of projects per workspace is manageable,
       // but for high scale, we should add an index or a "orphaned" status field.
       .filter((q) => q.eq(q.field("teamId"), undefined))
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
   },
 });
 
@@ -254,7 +255,7 @@ export const get = query({
     const projectMembers = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Batch fetch all members to avoid N+1
     const memberUserIds = projectMembers.map((m) => m.userId);
@@ -294,7 +295,7 @@ export const getByKey = query({
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.key))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!project) {
       return null;
@@ -316,7 +317,7 @@ export const getByKey = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Batch fetch all members to avoid N+1
     const memberUserIds = memberships.map((m) => m.userId);
