@@ -13,7 +13,7 @@ import {
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { cascadeDelete } from "./lib/relationships";
-import { queryActive } from "./lib/softDeleteHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
   assertCanAccessProject,
@@ -63,7 +63,7 @@ async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, pro
     .query("issues")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .order("desc")
-    .first();
+    .filter(notDeleted)    .first();
 
   let issueNumber = 1;
   if (latestIssue) {
@@ -192,7 +192,7 @@ export const listByUser = query({
     const assignedResult = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
 
     // For simplicity, only return assigned issues in first implementation
     // TODO: Could merge with reported issues if needed
@@ -248,7 +248,7 @@ export const listRoadmapIssues = query({
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
-        .collect();
+        .filter(notDeleted)        .collect();
 
       // We still have to memory filter here because we lack a by_sprint_type index
       issues = allSprintIssues.filter((i) =>
@@ -264,7 +264,7 @@ export const listRoadmapIssues = query({
             .withIndex("by_workspace_type", (q) =>
               q.eq("projectId", args.projectId).eq("type", type),
             )
-            .collect(),
+            .filter(notDeleted)            .collect(),
         ),
       );
       issues = outcomes.flat();
@@ -319,7 +319,7 @@ export const listRoadmapIssuesPaginated = query({
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
 
       // Filter to root issues only
       const rootIssues = result.page.filter((i) =>
@@ -340,7 +340,7 @@ export const listRoadmapIssuesPaginated = query({
       .withIndex("by_workspace_type", (q) =>
         q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]),
       )
-      .paginate(args.paginationOpts);
+      .filter(notDeleted)      .paginate(args.paginationOpts);
 
     // Note: This only paginates stories. For full root issue pagination,
     // we'd need to fetch other types or use a better index
@@ -425,7 +425,7 @@ export const listProjectIssues = query({
           q.eq("projectId", args.projectId).eq("sprintId", sprintId),
         )
         .order("desc") // created matches generic sort? standard is usually desc
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
     } else if (args.status) {
       // Filter by status using index
       results = await ctx.db
@@ -434,14 +434,14 @@ export const listProjectIssues = query({
           q.eq("projectId", args.projectId).eq("status", args.status as string),
         )
         .order("desc")
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
     } else {
       // Generic list
       results = await ctx.db
         .query("issues")
         .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
         .order("desc")
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
     }
 
     // Enrich page
@@ -470,7 +470,7 @@ export const listTeamIssues = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!teamMember) {
       return { page: [], isDone: true, continueCursor: "" };
@@ -485,13 +485,13 @@ export const listTeamIssues = query({
           q.eq("teamId", args.teamId).eq("status", args.status as string),
         )
         .order("desc")
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
     } else {
       results = await ctx.db
         .query("issues")
         .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
         .order("desc")
-        .paginate(args.paginationOpts);
+        .filter(notDeleted)        .paginate(args.paginationOpts);
     }
 
     // Enrich page
@@ -675,7 +675,7 @@ export const getByKey = query({
     return await ctx.db
       .query("issues")
       .withIndex("by_key", (q) => q.eq("key", args.key))
-      .first();
+      .filter(notDeleted)      .first();
   },
 });
 
@@ -702,7 +702,7 @@ export const listSubtasks = query({
     const subtasks = await ctx.db
       .query("issues")
       .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     if (subtasks.length === 0) {
       return [];
@@ -1203,7 +1203,7 @@ export const search = query({
     const searchResults = await ctx.db
       .query("issues")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Filter to only issues user has access to and apply advanced filters
     const filtered = [];
@@ -1600,7 +1600,7 @@ function fetchIssuesForState(
         q.eq("projectId", ctx.projectId).eq("status", state.id).gt("updatedAt", doneThreshold),
       )
       .order("desc") // Most recently updated first
-      .collect();
+      .filter(notDeleted)      .collect();
   }
 
   // For todo/inprogress: Fetch up to 500 items
@@ -1660,7 +1660,7 @@ export const listByProjectSmart = projectQuery({
             .eq("projectId", ctx.projectId)
             .eq("sprintId", args.sprintId as Id<"sprints">),
         )
-        .collect();
+        .filter(notDeleted)        .collect();
 
       // Apply smart filtering in memory for sprint view (it's small enough usually)
       const smartFiltered = allSprintIssues.filter((issue) => {
@@ -1715,7 +1715,7 @@ export const listByTeamSmart = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!teamMember) {
       throw new Error("Not authorized to access this team");
@@ -1742,7 +1742,7 @@ export const listByTeamSmart = query({
     const allIssues = await ctx.db
       .query("issues")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     const smartFiltered = allIssues.filter((issue) => {
       const category = statusCategoryMap.get(issue.status) || "todo";
@@ -1802,7 +1802,7 @@ export const getTeamIssueCounts = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
-      .first();
+      .filter(notDeleted)      .first();
 
     if (!teamMember) {
       throw new Error("Not authorized");
@@ -1827,7 +1827,7 @@ export const getTeamIssueCounts = query({
     const allIssues = await ctx.db
       .query("issues")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Aggregate counts by category (mapped from status)
     const byStatus = {
@@ -1930,7 +1930,7 @@ export const getIssueCounts = query({
           .withIndex("by_workspace_status_updated", (q) =>
             q.eq("projectId", args.projectId).eq("status", state.id),
           )
-          .collect();
+          .filter(notDeleted)          .collect();
 
         issues = statusIssues;
 
@@ -1964,7 +1964,7 @@ export const getIssueCounts = query({
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
-        .collect();
+        .filter(notDeleted)        .collect();
 
       // Aggregate sprint issues
       for (const issue of allSprintIssues) {
@@ -2037,7 +2037,7 @@ export const loadMoreDoneIssues = query({
       .query("issues")
       .withIndex("by_workspace_updated", (q) => q.eq("projectId", args.projectId))
       .order("desc")
-      .collect();
+      .filter(notDeleted)      .collect();
 
     // Filter to done statuses only
     issues = issues.filter((i) => doneStatuses.includes(i.status));
