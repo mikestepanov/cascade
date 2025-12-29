@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { showError } from "@/lib/toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
@@ -43,7 +43,11 @@ function formatTime(timestamp: number): string {
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const notifications = useQuery(api.notifications.list, { limit: 20 });
+  const { results: notifications } = usePaginatedQuery(
+    api.notifications.list,
+    {},
+    { initialNumItems: 20 },
+  );
   const unreadCount = useQuery(api.notifications.getUnreadCount, {});
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);

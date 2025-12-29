@@ -9,6 +9,7 @@ import {
   batchFetchUsers,
   getUserName,
 } from "./lib/batchHelpers";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -26,12 +27,14 @@ export const getMyIssues = query({
     }
 
     // Paginate using the by_assignee index
-    const results = await ctx.db
-      .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .order("desc") // Sort by creation time (descending)
-      .filter(notDeleted)
-      .paginate(args.paginationOpts);
+    const results = await fetchPaginatedQuery<Doc<"issues">>(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) =>
+        db
+          .query("issues")
+          .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+          .order("desc"), // Sort by creation time (descending)
+    });
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [

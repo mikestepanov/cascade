@@ -5,10 +5,10 @@
  * and migration-safe issue retrieval
  */
 
-import type { FilterBuilder, PaginationOptions, PaginationResult } from "convex/server";
+import type { PaginationOptions, PaginationResult } from "convex/server";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import type { SoftDeletable } from "./softDeleteHelpers";
+import { fetchPaginatedQuery } from "./queryHelpers";
 
 /**
  * Get an issue and validate it has a projectId (for migration safety)
@@ -202,10 +202,10 @@ export async function fetchPaginatedIssues(
     enrich?: boolean;
   },
 ): Promise<PaginationResult<EnrichedIssue | Doc<"issues">>> {
-  const issuesResult = await opts
-    .query(ctx.db)
-    .filter((q: FilterBuilder<SoftDeletable>) => q.neq(q.field("isDeleted"), true))
-    .paginate(opts.paginationOpts);
+  const issuesResult = await fetchPaginatedQuery<Doc<"issues">>(ctx, {
+    paginationOpts: opts.paginationOpts,
+    query: opts.query,
+  });
 
   if (opts.enrich === false) {
     return issuesResult;

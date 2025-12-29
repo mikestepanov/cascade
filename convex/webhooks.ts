@@ -1,4 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import {
@@ -8,6 +9,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
 
 // Create a webhook
@@ -218,7 +220,7 @@ export const updateLastTriggered = internalMutation({
 export const listExecutions = query({
   args: {
     webhookId: v.id("webhooks"),
-    limit: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -233,13 +235,14 @@ export const listExecutions = query({
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
-    const executions = await ctx.db
-      .query("webhookExecutions")
-      .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
-      .order("desc")
-      .take(args.limit || 50);
-
-    return executions;
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) =>
+        db
+          .query("webhookExecutions")
+          .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
+          .order("desc"),
+    });
   },
 });
 

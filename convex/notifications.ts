@@ -1,46 +1,51 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
-import { DEFAULT_PAGE_SIZE } from "./lib/queryLimits";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 
 // Get notifications for current user
 export const list = query({
   args: {
-    limit: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
     onlyUnread: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
     const onlyUnread = args.onlyUnread ?? false;
 
-    let notificationsQuery = ctx.db
-      .query("notifications")
-      .withIndex("by_user", (q) => q.eq("userId", userId));
-
-    if (onlyUnread) {
-      notificationsQuery = ctx.db
-        .query("notifications")
-        .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false));
-    }
-
-    const notifications = await notificationsQuery.order("desc").take(limit);
+    const results = await fetchPaginatedQuery<Doc<"notifications">>(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (onlyUnread) {
+          return db
+            .query("notifications")
+            .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false));
+        }
+        return db.query("notifications").withIndex("by_user", (q) => q.eq("userId", userId));
+      },
+    });
 
     // Batch fetch all actors (avoid N+1!)
-    const actorIds = notifications.map((n) => n.actorId);
+    const actorIds = results.page.map((n) => n.actorId);
     const actorMap = await batchFetchUsers(ctx, actorIds);
 
     // Enrich with pre-fetched data (no N+1)
-    return notifications.map((notification) => {
+    const enrichedPage = results.page.map((notification) => {
       const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
       return {
         ...notification,
         actorName: actor?.name,
       };
     });
+
+    return {
+      ...results,
+      page: enrichedPage,
+    };
   },
 });
 
