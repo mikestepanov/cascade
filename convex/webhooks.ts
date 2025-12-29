@@ -40,6 +40,18 @@ export const createWebhook = mutation({
       createdAt: Date.now(),
     });
 
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "webhook_created",
+      actorId: userId,
+      targetId: webhookId,
+      targetType: "webhooks",
+      metadata: {
+        projectId: args.projectId,
+        name: args.name,
+        events: args.events,
+      },
+    });
+
     return webhookId;
   },
 });
@@ -100,6 +112,14 @@ export const updateWebhook = mutation({
     if (args.isActive !== undefined) updates.isActive = args.isActive;
 
     await ctx.db.patch(args.id, updates);
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "webhook_updated",
+      actorId: userId,
+      targetId: args.id,
+      targetType: "webhooks",
+      metadata: updates,
+    });
   },
 });
 
@@ -120,6 +140,13 @@ export const softDeleteWebhook = mutation({
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
     await ctx.db.patch(args.id, softDeleteFields(userId));
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "webhook_deleted",
+      actorId: userId,
+      targetId: args.id,
+      targetType: "webhooks",
+    });
   },
 });
 

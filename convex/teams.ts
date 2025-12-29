@@ -227,6 +227,18 @@ export const updateTeam = mutation({
 
     await ctx.db.patch(args.teamId, updates);
 
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.update",
+      actorId: userId,
+      targetId: args.teamId,
+      targetType: "team",
+      metadata: updates,
+    });
+
     return { success: true };
   },
 });

@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -76,6 +77,18 @@ export const createProject = mutation({
       role: "admin",
       addedBy: userId,
       addedAt: now,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "project_created",
+      actorId: userId,
+      targetId: projectId,
+      targetType: "projects",
+      metadata: {
+        name: args.name,
+        key: args.key,
+        companyId: args.companyId,
+      },
     });
 
     return projectId;
@@ -392,6 +405,15 @@ export const updateProject = mutation({
     }
 
     await ctx.db.patch(args.projectId, updates);
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "project_updated",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+      metadata: updates,
+    });
+
     return { projectId: args.projectId };
   },
 });
@@ -420,6 +442,14 @@ export const softDeleteProject = mutation({
     const deletedAt = Date.now();
     await ctx.db.patch(args.projectId, softDeleteFields(userId));
     await cascadeSoftDelete(ctx, "projects", args.projectId, userId, deletedAt);
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "project_deleted",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+      metadata: { deletedAt },
+    });
 
     return { deleted: true };
   },
@@ -459,6 +489,13 @@ export const restoreProject = mutation({
     // Note: Cascade restore not implemented yet - would need cascadeRestore function
     // For now, just restore the project itself
 
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "project_restored",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+    });
+
     return { restored: true };
   },
 });
@@ -492,6 +529,14 @@ export const updateWorkflow = mutation({
     await ctx.db.patch(args.projectId, {
       workflowStates: args.workflowStates,
       updatedAt: Date.now(),
+    });
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "workflow_updated",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+      metadata: { workflowStates: args.workflowStates },
     });
   },
 });
@@ -548,6 +593,17 @@ export const addProjectMember = mutation({
       addedBy: userId,
       addedAt: now,
     });
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "member_added",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+      metadata: {
+        memberId: user._id,
+        role: args.role,
+      },
+    });
   },
 });
 
@@ -591,6 +647,17 @@ export const updateProjectMemberRole = mutation({
     await ctx.db.patch(membership._id, {
       role: args.newRole,
     });
+
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "member_role_updated",
+      actorId: userId,
+      targetId: args.projectId,
+      targetType: "projects",
+      metadata: {
+        memberId: args.memberId,
+        newRole: args.newRole,
+      },
+    });
   },
 });
 
@@ -628,6 +695,16 @@ export const removeProjectMember = mutation({
 
     if (membership) {
       await ctx.db.delete(membership._id);
+
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "member_removed",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: {
+          memberId: args.memberId,
+        },
+      });
     }
   },
 });
