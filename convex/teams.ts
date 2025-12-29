@@ -33,7 +33,7 @@ export async function getTeamRole(
 /**
  * Check if user is team lead
  */
-async function isTeamLead(
+export async function isTeamLead(
   ctx: QueryCtx | MutationCtx,
   teamId: Id<"teams">,
   userId: Id<"users">,
