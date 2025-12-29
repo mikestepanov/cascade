@@ -5,6 +5,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
@@ -457,16 +458,17 @@ export const list = query({
     let results: PaginationResult<Doc<"teams">> | PaginationResult<Doc<"teamMembers">>;
     if (isAdmin) {
       // Admins see all teams in the company
-      results = await ctx.db
-        .query("teams")
-        .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
-        .paginate(args.paginationOpts);
+      results = await fetchPaginatedQuery<Doc<"teams">>(ctx, {
+        paginationOpts: args.paginationOpts,
+        query: (db) =>
+          db.query("teams").withIndex("by_company", (q) => q.eq("companyId", args.companyId)),
+      });
     } else {
       // Non-admins see only teams they are a member of
-      const membershipResults = await ctx.db
-        .query("teamMembers")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
-        .paginate(args.paginationOpts);
+      const membershipResults = await fetchPaginatedQuery<Doc<"teamMembers">>(ctx, {
+        paginationOpts: args.paginationOpts,
+        query: (db) => db.query("teamMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+      });
 
       // Map memberships to teams
       const teamIds = membershipResults.page.map((m) => m.teamId);
@@ -573,6 +575,7 @@ export const getCompanyTeams = query({
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
+      .filter(notDeleted)
       .collect();
 
     const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
@@ -650,6 +653,7 @@ export const getUserTeams = query({
     const memberships = await ctx.db
       .query("teamMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .collect();
 
     if (memberships.length === 0) return [];
@@ -736,6 +740,7 @@ export const getTeamMembers = query({
     const memberships = await ctx.db
       .query("teamMembers")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all users (both members and addedBy) (avoid N+1!)

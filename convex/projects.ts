@@ -3,6 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
@@ -93,11 +94,10 @@ export const list = query({
     }
 
     // Paginate memberships directly via index
-    const results = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter(notDeleted)
-      .paginate(args.paginationOpts);
+    const results = await fetchPaginatedQuery<Doc<"projectMembers">>(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+    });
 
     if (results.page.length === 0) {
       return { ...results, page: [] };
@@ -189,11 +189,10 @@ export const listByTeam = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    return await ctx.db
-      .query("projects")
-      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .filter(notDeleted)
-      .paginate(args.paginationOpts);
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => db.query("projects").withIndex("by_team", (q) => q.eq("teamId", args.teamId)),
+    });
   },
 });
 
@@ -221,15 +220,17 @@ export const listOrphanedProjects = query({
     // without a specific index (by_workspace_no_team?), we rely on filtering stream
     // or we scan.
     // But `filter` in `paginate` is supported.
-    return await ctx.db
-      .query("projects")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      // Note: We use a filter here because we lack a specific `by_workspace_no_team` index.
-      // This works for now as the number of projects per workspace is manageable,
-      // but for high scale, we should add an index or a "orphaned" status field.
-      .filter((q) => q.eq(q.field("teamId"), undefined))
-      .filter(notDeleted)
-      .paginate(args.paginationOpts);
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) =>
+        db
+          .query("projects")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+          // Note: We use a filter here because we lack a specific `by_workspace_no_team` index.
+          // This works for now as the number of projects per workspace is manageable,
+          // but for high scale, we should add an index or a "orphaned" status field.
+          .filter((q) => q.eq(q.field("teamId"), undefined)),
+    });
   },
 });
 
