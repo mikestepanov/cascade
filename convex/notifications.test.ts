@@ -441,7 +441,7 @@ describe("Notifications", () => {
     });
   });
 
-  describe("remove", () => {
+  describe("softDelete", () => {
     it("should delete notification", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -459,7 +459,7 @@ describe("Notifications", () => {
       });
 
       const asUser = asAuthenticatedUser(t, userId);
-      await asUser.mutation(api.notifications.remove, { id: notificationId });
+      await asUser.mutation(api.notifications.softDeleteNotification, { id: notificationId });
 
       const notification = await t.run(async (ctx) => {
         return await ctx.db.get(notificationId);
@@ -488,7 +488,7 @@ describe("Notifications", () => {
       // User2 tries to delete it
       const asUser2 = asAuthenticatedUser(t, user2);
       await expect(async () => {
-        await asUser2.mutation(api.notifications.remove, { id: notificationId });
+        await asUser2.mutation(api.notifications.softDelete, { id: notificationId });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -508,7 +508,7 @@ describe("Notifications", () => {
       });
 
       await expect(async () => {
-        await t.mutation(api.notifications.remove, { id: notificationId });
+        await t.mutation(api.notifications.softDelete, { id: notificationId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -534,7 +534,7 @@ describe("Notifications", () => {
       });
 
       await expect(async () => {
-        await asUser.mutation(api.notifications.remove, { id: notificationId });
+        await asUser.mutation(api.notifications.softDeleteNotification, { id: notificationId });
       }).rejects.toThrow("Notification not found");
     });
   });

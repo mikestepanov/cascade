@@ -24,7 +24,7 @@ export function BulkOperationsBar({
   const [showActions, setShowActions] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const _project = useQuery(api.projects.get, { id: projectId });
+  const _project = useQuery(api.projects.getProject, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
   const members = useQuery(api.projectMembers.list, { projectId });
 

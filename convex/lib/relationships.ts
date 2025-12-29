@@ -131,6 +131,17 @@ export const RELATIONSHIPS: Relationship[] = [
     index: "by_user",
     onDelete: "cascade", // Delete notifications when user deleted
   },
+
+  // ============================================================================
+  // TEAM RELATIONSHIPS
+  // ============================================================================
+  {
+    parent: "teams",
+    child: "teamMembers",
+    foreignKey: "teamId",
+    index: "by_team",
+    onDelete: "cascade", // Delete members when team deleted
+  },
 ];
 
 /**

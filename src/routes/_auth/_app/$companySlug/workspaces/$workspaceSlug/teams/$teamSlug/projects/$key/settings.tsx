@@ -18,7 +18,7 @@ function SettingsPage() {
   const { user } = useCurrentUser();
   const project = useQuery(api.projects.getByKey, { key });
   const userRole = useQuery(
-    api.projects.getUserRole,
+    api.projects.getProjectUserRole,
     project ? { projectId: project._id } : "skip",
   );
 

@@ -6,7 +6,8 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 import { isCompanyAdmin } from "./companies";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
-import { notDeleted } from "./lib/softDeleteHelpers";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -99,6 +100,7 @@ export const createTeam = mutation({
     description: v.optional(v.string()),
     isPrivate: v.boolean(), // Default privacy for team projects
   },
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -222,7 +224,7 @@ export const updateTeam = mutation({
  * Team lead or company admin only
  * Will also delete all team members
  */
-export const deleteTeam = mutation({
+export const softDeleteTeam = mutation({
   args: {
     teamId: v.id("teams"),
   },
@@ -232,18 +234,10 @@ export const deleteTeam = mutation({
 
     await assertCanManageTeam(ctx, args.teamId, userId);
 
-    // Delete all team members
-    const members = await ctx.db
-      .query("teamMembers")
-      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .collect();
-
-    for (const member of members) {
-      await ctx.db.delete(member._id);
-    }
-
-    // Delete team
-    await ctx.db.delete(args.teamId);
+    // Soft delete team and cascade to members
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.teamId, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "teams", args.teamId, userId, deletedAt);
 
     return { success: true };
   },
@@ -387,7 +381,7 @@ export const getTeam = query({
     if (!userId) return null;
 
     const team = await ctx.db.get(args.teamId);
-    if (!team) return null;
+    if (!team || team.isDeleted) return null;
 
     // Check if user has access (team member or company admin)
     const role = await getTeamRole(ctx, args.teamId, userId);
@@ -763,5 +757,20 @@ export const getTeamMembers = query({
     });
 
     return members;
+  },
+});
+
+/**
+ * Get user's role in a team
+ */
+export const getTeamUserRole = query({
+  args: {
+    teamId: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    return await getTeamRole(ctx, args.teamId, userId);
   },
 });

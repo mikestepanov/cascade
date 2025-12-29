@@ -37,7 +37,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const isProjectMode = !!projectId;
 
   const project = useQuery(
-    api.projects.get,
+    api.projects.getProject,
     isProjectMode && projectId ? { id: projectId } : "skip",
   );
 

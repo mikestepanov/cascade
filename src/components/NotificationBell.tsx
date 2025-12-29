@@ -13,7 +13,7 @@ export function NotificationBell() {
   const unreadCount = useQuery(api.notifications.getUnreadCount);
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
-  const removeNotification = useMutation(api.notifications.remove);
+  const removeNotification = useMutation(api.notifications.softDeleteNotification);
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -10,10 +10,11 @@ import {
   query,
 } from "./_generated/server";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
 
 // Create a webhook
-export const create = mutation({
+export const createWebhook = mutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -56,6 +57,7 @@ export const listByProject = query({
     const webhooks = await ctx.db
       .query("webhooks")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
 
     // Don't expose secrets to the client - only show if secret is configured
@@ -68,7 +70,7 @@ export const listByProject = query({
 });
 
 // Update a webhook
-export const update = mutation({
+export const updateWebhook = mutation({
   args: {
     id: v.id("webhooks"),
     name: v.optional(v.string()),
@@ -82,7 +84,7 @@ export const update = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can update webhooks
     if (!webhook.projectId) {
@@ -102,14 +104,14 @@ export const update = mutation({
 });
 
 // Delete a webhook
-export const remove = mutation({
+export const softDeleteWebhook = mutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can delete webhooks
     if (!webhook.projectId) {
@@ -117,7 +119,7 @@ export const remove = mutation({
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
-    await ctx.db.delete(args.id);
+    await ctx.db.patch(args.id, softDeleteFields(userId));
   },
 });
 
@@ -200,6 +202,7 @@ export const getActiveWebhooksForEvent = internalQuery({
     const webhooks = await ctx.db
       .query("webhooks")
       .withIndex("by_active", (q) => q.eq("isActive", true))
+      .filter(notDeleted)
       .collect();
 
     return webhooks.filter((w) => w.projectId === args.projectId && w.events.includes(args.event));
@@ -227,7 +230,7 @@ export const listExecutions = query({
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can view webhook logs
     if (!webhook.projectId) {
@@ -254,7 +257,7 @@ export const test = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can test webhooks
     if (!webhook.projectId) {
@@ -384,7 +387,7 @@ export const retryExecution = mutation({
     if (!execution) throw new Error("Execution not found");
 
     const webhook = await ctx.db.get(execution.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
     if (!webhook.projectId) {

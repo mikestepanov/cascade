@@ -8,7 +8,7 @@ import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 
-export const create = mutation({
+export const createProject = mutation({
   args: {
     name: v.string(),
     key: v.string(),
@@ -196,7 +196,7 @@ export const listByTeam = query({
   },
 });
 
-export const listOrphanedProjects = query({
+export const listTopLevel = query({
   args: {
     workspaceId: v.id("workspaces"),
     paginationOpts: paginationOptsValidator,
@@ -234,7 +234,7 @@ export const listOrphanedProjects = query({
   },
 });
 
-export const get = query({
+export const getProject = query({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -356,7 +356,7 @@ export const getByKey = query({
   },
 });
 
-export const update = mutation({
+export const updateProject = mutation({
   args: {
     projectId: v.id("projects"),
     name: v.optional(v.string()),
@@ -396,7 +396,7 @@ export const update = mutation({
   },
 });
 
-export const deleteProject = mutation({
+export const softDeleteProject = mutation({
   args: {
     projectId: v.id("projects"),
   },
@@ -496,7 +496,7 @@ export const updateWorkflow = mutation({
   },
 });
 
-export const addMember = mutation({
+export const addProjectMember = mutation({
   args: {
     projectId: v.id("projects"),
     userEmail: v.string(),
@@ -551,7 +551,7 @@ export const addMember = mutation({
   },
 });
 
-export const updateMemberRole = mutation({
+export const updateProjectMemberRole = mutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
@@ -594,7 +594,7 @@ export const updateMemberRole = mutation({
   },
 });
 
-export const removeMember = mutation({
+export const removeProjectMember = mutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
@@ -635,7 +635,7 @@ export const removeMember = mutation({
 /**
  * Get user's role in a project
  */
-export const getUserRole = query({
+export const getProjectUserRole = query({
   args: {
     projectId: v.id("projects"),
   },

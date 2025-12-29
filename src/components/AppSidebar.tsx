@@ -52,8 +52,8 @@ export function AppSidebar() {
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createWorkspace = useMutation(api.workspaces.create);
-  // const createTeam = useMutation(api.teams.create); // TODO: Add team creation UI
-  // const createProject = useMutation(api.projects.create); // TODO: Add project creation UI
+  // const createTeam = useMutation(api.teams.createTeam); // TODO: Add team creation UI
+  // const createProject = useMutation(api.projects.createProject); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);

@@ -216,7 +216,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<TabType>("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.projects.getProject, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
 
   if (!project) {

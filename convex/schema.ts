@@ -333,9 +333,14 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     lastTriggered: v.optional(v.number()),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
-    .index("by_active", ["isActive"]),
+    .index("by_active", ["isActive"])
+    .index("by_deleted", ["isDeleted"]),
 
   webhookExecutions: defineTable({
     webhookId: v.id("webhooks"),
@@ -476,10 +481,15 @@ const applicationTables = {
     actorId: v.optional(v.id("users")), // Who triggered the notification
     isRead: v.boolean(),
     createdAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "isRead"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_user_created", ["userId", "createdAt"])
+    .index("by_deleted", ["isDeleted"]),
 
   notificationPreferences: defineTable({
     userId: v.id("users"),
@@ -1264,6 +1274,10 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_company", ["companyId"])
     .index("by_workspace", ["workspaceId"]) // NEW
@@ -1271,6 +1285,7 @@ const applicationTables = {
     .index("by_company_slug", ["companyId", "slug"])
     .index("by_creator", ["createdBy"])
     .index("by_lead", ["leadId"]) // NEW
+    .index("by_deleted", ["isDeleted"]) // Soft delete index
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["companyId", "workspaceId"], // Added workspaceId
@@ -1286,11 +1301,16 @@ const applicationTables = {
     ),
     addedBy: v.id("users"),
     addedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_team", ["teamId"])
     .index("by_user", ["userId"])
     .index("by_team_user", ["teamId", "userId"])
-    .index("by_role", ["role"]),
+    .index("by_role", ["role"])
+    .index("by_deleted", ["isDeleted"]),
 
   // ============================================
   // Meeting Bot / AI Notetaker (Read.ai-like)
