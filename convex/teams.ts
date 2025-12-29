@@ -155,6 +155,18 @@ export const createTeam = mutation({
       addedAt: now,
     });
 
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.create",
+      actorId: userId,
+      targetId: teamId,
+      targetType: "team",
+      metadata: { name: args.name, companyId: args.companyId },
+    });
+
     return { teamId, slug };
   },
 });
@@ -239,6 +251,73 @@ export const softDeleteTeam = mutation({
     await ctx.db.patch(args.teamId, softDeleteFields(userId));
     await cascadeSoftDelete(ctx, "teams", args.teamId, userId, deletedAt);
 
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.softDelete",
+      actorId: userId,
+      targetId: args.teamId,
+      targetType: "team",
+      metadata: { deletedAt },
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Restore a soft-deleted team
+ * Team lead or company admin only
+ */
+export const restoreTeam = mutation({
+  args: {
+    teamId: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const team = await ctx.db.get(args.teamId);
+    if (!team) {
+      throw new Error("Team not found");
+    }
+
+    if (!team.isDeleted) {
+      throw new Error("Team is not deleted");
+    }
+
+    // Must be company admin or the deletedBy user
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
+    if (!isAdmin && team.deletedBy !== userId) {
+      throw new Error("Only company admins or the user who deleted the team can restore it");
+    }
+
+    // Restore with automatic cascading
+    await ctx.db.patch(args.teamId, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+
+    // Import cascadeRestore dynamically
+    const { cascadeRestore } = await import("./lib/relationships");
+    await cascadeRestore(ctx, "teams", args.teamId);
+
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.restore",
+      actorId: userId,
+      targetId: args.teamId,
+      targetType: "team",
+    });
+
     return { success: true };
   },
 });
@@ -298,6 +377,18 @@ export const addTeamMember = mutation({
       addedAt: now,
     });
 
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.member.add",
+      actorId: currentUserId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: { teamId: args.teamId, role: args.role },
+    });
+
     return { success: true };
   },
 });
@@ -331,6 +422,18 @@ export const updateTeamMemberRole = mutation({
       role: args.role,
     });
 
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.member.updateRole",
+      actorId: currentUserId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: { teamId: args.teamId, role: args.role },
+    });
+
     return { success: true };
   },
 });
@@ -360,6 +463,18 @@ export const removeTeamMember = mutation({
     }
 
     await ctx.db.delete(membership._id);
+
+    // Import internal for scheduling
+    const { internal } = await import("./_generated/api");
+
+    // Audit Log
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "team.member.remove",
+      actorId: currentUserId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: { teamId: args.teamId },
+    });
 
     return { success: true };
   },
@@ -433,9 +548,9 @@ export const getBySlug = query({
 });
 
 /**
- * List teams (alias for getCompanyTeams for consistency)
+ * List teams (paginated)
  */
-export const list = query({
+export const getTeams = query({
   args: {
     companyId: v.id("companies"),
     paginationOpts: paginationOptsValidator,

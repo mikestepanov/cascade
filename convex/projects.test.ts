@@ -283,7 +283,7 @@ describe("Projects", () => {
       });
 
       // User 2 should only see their own project (membership-based access)
-      const { page: user2Projects } = await asUser2.query(api.projects.list, {
+      const { page: user2Projects } = await asUser2.query(api.projects.getCurrentUserProjects, {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(user2Projects).toHaveLength(1);
@@ -296,7 +296,7 @@ describe("Projects", () => {
     it("should return empty array for unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      const { page: projects } = await t.query(api.projects.list, {
+      const { page: projects } = await t.query(api.projects.getCurrentUserProjects, {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(projects).toEqual([]);
@@ -316,7 +316,7 @@ describe("Projects", () => {
         companyId,
       });
 
-      const { page: projects } = await asUser.query(api.projects.list, {
+      const { page: projects } = await asUser.query(api.projects.getCurrentUserProjects, {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(projects).toHaveLength(1);

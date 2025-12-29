@@ -1589,6 +1589,20 @@ const applicationTables = {
   })
     .index("by_key", ["key"])
     .index("by_expiry", ["expiresAt"]),
+
+  // Audit Logs
+  auditLogs: defineTable({
+    action: v.string(), // "team.create", "project.delete", "member.add"
+    actorId: v.optional(v.id("users")), // Who performed the action (optional for system actions)
+    targetId: v.string(), // ID of the affected object (generic string to support mixed types)
+    targetType: v.string(), // "team", "project", "user", "webhook", etc.
+    metadata: v.optional(v.any()), // JSON object with details (e.g. old role, new role)
+    timestamp: v.number(),
+  })
+    .index("by_action", ["action"])
+    .index("by_actor", ["actorId"])
+    .index("by_target", ["targetId"])
+    .index("by_timestamp", ["timestamp"]),
 };
 
 export default defineSchema({

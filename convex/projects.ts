@@ -82,7 +82,7 @@ export const createProject = mutation({
   },
 });
 
-export const list = query({
+export const getCurrentUserProjects = query({
   args: {
     companyId: v.optional(v.id("companies")),
     paginationOpts: paginationOptsValidator,
@@ -162,7 +162,7 @@ export const list = query({
   },
 });
 
-export const listByTeam = query({
+export const getTeamProjects = query({
   args: {
     teamId: v.id("teams"),
     paginationOpts: paginationOptsValidator,
@@ -196,7 +196,7 @@ export const listByTeam = query({
   },
 });
 
-export const listTopLevel = query({
+export const getWorkspaceProjects = query({
   args: {
     workspaceId: v.id("workspaces"),
     paginationOpts: paginationOptsValidator,

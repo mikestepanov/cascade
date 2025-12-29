@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
  */
 export function LinkedRepositories() {
   const [selectedWorkspace, setSelectedWorkspace] = useState<Id<"projects"> | null>(null);
-  const projects = useQuery(api.projects.list, {});
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
   const repositories = useQuery(
     api.github.listRepositories,
     selectedWorkspace ? { projectId: selectedWorkspace } : "skip",

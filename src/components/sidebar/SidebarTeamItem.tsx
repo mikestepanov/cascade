@@ -89,7 +89,7 @@ function SidebarTeamProjects({
     results: projects,
     status,
     loadMore,
-  } = usePaginatedQuery(api.projects.listByTeam, { teamId }, { initialNumItems: 10 });
+  } = usePaginatedQuery(api.projects.getTeamProjects, { teamId }, { initialNumItems: 10 });
 
   if (status === "LoadingFirstPage") {
     return <div className="ml-6 text-xs text-ui-text-tertiary px-3 py-1">Loading...</div>;

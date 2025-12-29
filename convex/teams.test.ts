@@ -53,6 +53,39 @@ describe("Teams", () => {
     });
   });
 
+  describe("softDelete and restore", () => {
+    it("should soft delete and restore a team", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t);
+      const asOwner = asAuthenticatedUser(t, ownerId);
+
+      const { companyId } = await asOwner.mutation(api.companies.createCompany, {
+        name: "Company",
+        timezone: "UTC",
+      });
+
+      const { teamId } = await asOwner.mutation(api.teams.createTeam, {
+        companyId,
+        name: "Restore Me",
+        isPrivate: false,
+      });
+
+      // Soft delete
+      await asOwner.mutation(api.teams.softDeleteTeam, { teamId });
+
+      const deletedTeam = await t.run(async (ctx) => ctx.db.get(teamId));
+      expect(deletedTeam?.isDeleted).toBe(true);
+      expect(deletedTeam?.deletedAt).toBeDefined();
+
+      // Restore
+      await asOwner.mutation(api.teams.restoreTeam, { teamId });
+
+      const restoredTeam = await t.run(async (ctx) => ctx.db.get(teamId));
+      expect(restoredTeam?.isDeleted).toBeUndefined();
+      expect(restoredTeam?.deletedAt).toBeUndefined();
+    });
+  });
+
   describe("members", () => {
     it("should add and remove team members", async () => {
       const t = convexTest(schema, modules);

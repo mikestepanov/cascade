@@ -50,7 +50,7 @@ export function CreateEventModal({
   issueId,
 }: CreateEventModalProps) {
   const createEvent = useMutation(api.calendarEvents.create);
-  const projects = useQuery(api.projects.list, {});
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
 
   // Project selection (uses Radix Select, kept outside form)
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"projects"> | undefined>(
