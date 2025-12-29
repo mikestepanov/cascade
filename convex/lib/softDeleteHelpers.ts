@@ -18,8 +18,8 @@
  *     .collect();
  */
 
-import type { Id } from "../_generated/dataModel";
 import type { ExpressionOrValue, FilterBuilder } from "convex/server";
+import type { Id } from "../_generated/dataModel";
 
 export interface SoftDeletable {
   isDeleted?: boolean;
@@ -38,9 +38,7 @@ export interface SoftDeletable {
  *   .filter(notDeleted)
  *   .collect();
  */
-export function notDeleted(
-  q: FilterBuilder<{ isDeleted?: boolean }>
-): ExpressionOrValue<boolean> {
+export function notDeleted(q: FilterBuilder<{ isDeleted?: boolean }>): ExpressionOrValue<boolean> {
   return q.neq(q.field("isDeleted"), true);
 }
 
@@ -63,9 +61,7 @@ export function notDeleted(
  *   ))
  *   .collect();
  */
-export function onlyDeleted(
-  q: FilterBuilder<{ isDeleted?: boolean }>
-): ExpressionOrValue<boolean> {
+export function onlyDeleted(q: FilterBuilder<{ isDeleted?: boolean }>): ExpressionOrValue<boolean> {
   return q.eq(q.field("isDeleted"), true);
 }
 

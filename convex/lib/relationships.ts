@@ -145,11 +145,7 @@ export const RELATIONSHIPS: Relationship[] = [
  * await cascadeDelete(ctx, "issues", issueId);
  * // Deletes issue AND all comments, activities, links, watchers, time entries
  */
-async function handleDeleteRelation(
-  ctx: MutationCtx,
-  rel: Relationship,
-  recordId: Id<TableNames>
-) {
+async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordId: Id<TableNames>) {
   const children = await ctx.db
     .query(rel.child)
     .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
@@ -225,7 +221,7 @@ async function handleSoftDeleteRelation(
   rel: Relationship,
   recordId: Id<TableNames>,
   deletedBy: Id<"users">,
-  deletedAt: number
+  deletedAt: number,
 ) {
   if (rel.onDelete === "cascade") {
     const children = await ctx.db
@@ -235,13 +231,7 @@ async function handleSoftDeleteRelation(
 
     for (const child of children) {
       // Recursively soft delete children
-      await cascadeSoftDelete(
-        ctx,
-        rel.child,
-        child._id as Id<TableNames>,
-        deletedBy,
-        deletedAt
-      );
+      await cascadeSoftDelete(ctx, rel.child, child._id as Id<TableNames>, deletedBy, deletedAt);
 
       // Mark this child as deleted
       await ctx.db.patch(child._id, {
@@ -285,7 +275,7 @@ export async function cascadeSoftDelete<T extends TableNames>(
 async function handleRestoreRelation(
   ctx: MutationCtx,
   rel: Relationship,
-  recordId: Id<TableNames>
+  recordId: Id<TableNames>,
 ) {
   if (rel.onDelete === "cascade") {
     // Find children (including soft-deleted ones)

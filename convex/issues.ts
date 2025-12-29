@@ -12,6 +12,7 @@ import {
   projectQuery,
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { fetchPaginatedIssues } from "./lib/issueHelpers";
 import { cascadeDelete } from "./lib/relationships";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
@@ -420,46 +421,34 @@ export const listProjectIssues = query({
     // We do NOT have by_workspace_sprint visible in file scan (need to check schema).
     // Assuming standard indexes.
 
-    let results: PaginationResult<Doc<"issues">>;
+    // Use fetchPaginatedIssues helper to reduce duplication
+    const enrichedResults = await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.sprintId) {
+          return db
+            .query("issues")
+            .withIndex("by_workspace_sprint_created", (q) =>
+              q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+            )
+            .order("desc");
+        } else if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_workspace_status", (q) =>
+              q.eq("projectId", args.projectId).eq("status", args.status as string),
+            )
+            .order("desc");
+        } else {
+          return db
+            .query("issues")
+            .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+            .order("desc");
+        }
+      },
+    });
 
-    if (args.sprintId) {
-      const sprintId = args.sprintId;
-      // Use specific index for sprint to ensure correct pagination
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", sprintId),
-        )
-        .order("desc") // created matches generic sort? standard is usually desc
-        .filter(notDeleted)
-        .paginate(args.paginationOpts);
-    } else if (args.status) {
-      // Filter by status using index
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_status", (q) =>
-          q.eq("projectId", args.projectId).eq("status", args.status as string),
-        )
-        .order("desc")
-        .filter(notDeleted)
-        .paginate(args.paginationOpts);
-    } else {
-      // Generic list
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-        .order("desc")
-        .filter(notDeleted)
-        .paginate(args.paginationOpts);
-    }
-
-    // Enrich page
-    const enrichedPage = await enrichIssues(ctx, results.page);
-
-    return {
-      ...results,
-      page: enrichedPage,
-    };
+    return enrichedResults;
   },
 });
 
@@ -486,33 +475,27 @@ export const listTeamIssues = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    let results: PaginationResult<Doc<"issues">>;
+    // Use fetchPaginatedIssues helper
+    const enrichedResults = await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_team_status", (q) =>
+              q.eq("teamId", args.teamId).eq("status", args.status as string),
+            )
+            .order("desc");
+        } else {
+          return db
+            .query("issues")
+            .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+            .order("desc");
+        }
+      },
+    });
 
-    if (args.status) {
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_team_status", (q) =>
-          q.eq("teamId", args.teamId).eq("status", args.status as string),
-        )
-        .order("desc")
-        .filter(notDeleted)
-        .paginate(args.paginationOpts);
-    } else {
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-        .order("desc")
-        .filter(notDeleted)
-        .paginate(args.paginationOpts);
-    }
-
-    // Enrich page
-    const enrichedPage = await enrichIssues(ctx, results.page);
-
-    return {
-      ...results,
-      page: enrichedPage,
-    };
+    return enrichedResults;
   },
 });
 
