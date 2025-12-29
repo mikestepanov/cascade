@@ -99,7 +99,6 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   }, [selectedIndex]);
 
   // Row renderer for virtualization
-  // eslint-disable-next-line react/display-name
   const Row = useCallback(
     ({
       data,
@@ -202,6 +201,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               </div>
               <div className="flex-1 grid grid-cols-6 gap-2">
                 {[...Array(6)].map((_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton array
                   <Skeleton key={i} className="h-5 w-full" />
                 ))}
               </div>
@@ -212,6 +212,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           <div className="flex-1 overflow-auto">
             {[...Array(8)].map((_, i) => (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton array
                 key={i}
                 className="flex items-center p-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
               >

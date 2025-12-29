@@ -9,16 +9,15 @@
  *   await cascadeSoftDelete(ctx, "issues", issueId, userId, now);
  */
 
-// biome-ignore lint/suspicious/noExplicitAny: Dynamic table access requires any types for type safety with runtime table names
-import type { Id } from "../_generated/dataModel";
+import type { Id, TableNames } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 
 /**
  * Relationship definition between parent and child tables
  */
 export type Relationship = {
-  parent: string; // Parent table name (e.g., "issues")
-  child: string; // Child table name (e.g., "issueComments")
+  parent: TableNames; // Parent table name (e.g., "issues")
+  child: TableNames; // Child table name (e.g., "issueComments")
   foreignKey: string; // Field in child pointing to parent (e.g., "issueId")
   index: string; // Index name for fast lookup (e.g., "by_issue")
   onDelete: "cascade" | "set_null" | "restrict";
@@ -146,52 +145,110 @@ export const RELATIONSHIPS: Relationship[] = [
  * await cascadeDelete(ctx, "issues", issueId);
  * // Deletes issue AND all comments, activities, links, watchers, time entries
  */
-export async function cascadeDelete(
+async function handleDeleteRelation(
   ctx: MutationCtx,
-  table: string,
-  recordId: Id<any>,
+  rel: Relationship,
+  recordId: Id<TableNames>
+) {
+  const children = await ctx.db
+    .query(rel.child)
+    .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
+    .collect();
+
+  if (rel.onDelete === "cascade") {
+    // Recursively delete children
+    for (const child of children) {
+      // Recursion needs a cast because TS can't prove child[rel.child] matches the recursion
+      await cascadeDelete(ctx, rel.child, child._id as Id<TableNames>);
+      await ctx.db.delete(child._id);
+    }
+  } else if (rel.onDelete === "set_null") {
+    // Set foreign key to null instead of deleting
+    for (const child of children) {
+      await ctx.db.patch(child._id, {
+        [rel.foreignKey]: undefined,
+      } as Record<string, unknown>); // Dynamic field update still requires simple any or Record type
+    }
+  } else if (rel.onDelete === "restrict") {
+    // Don't allow delete if children exist
+    if (children.length > 0) {
+      throw new Error(
+        `Cannot delete ${rel.parent} ${recordId}: ${children.length} ` +
+          `${rel.child} record(s) still reference it`,
+      );
+    }
+  }
+}
+
+/**
+ * Automatically cascade delete all related records
+ * Handles multi-level cascading (parent → child → grandchild)
+ *
+ * @param ctx - Mutation context
+ * @param table - Parent table name
+ * @param recordId - ID of parent record to delete
+ *
+ * @example
+ * await cascadeDelete(ctx, "issues", issueId);
+ * // Deletes issue AND all comments, activities, links, watchers, time entries
+ */
+export async function cascadeDelete<T extends TableNames>(
+  ctx: MutationCtx,
+  table: T,
+  recordId: Id<T>,
 ): Promise<void> {
   // Find all relationships where this table is the parent
   const childRelationships = RELATIONSHIPS.filter((r) => r.parent === table);
 
   for (const rel of childRelationships) {
-    if (rel.onDelete === "cascade") {
-      // Find all child records
-      const children = await ctx.db
-        .query(rel.child as any)
-        .withIndex(rel.index as any, (q: any) => q.eq(rel.foreignKey, recordId))
-        .collect();
+    await handleDeleteRelation(ctx, rel, recordId);
+  }
+}
 
-      // Recursively delete children (handles grandchildren, great-grandchildren, etc.)
-      for (const child of children) {
-        await cascadeDelete(ctx, rel.child, child._id);
-        await ctx.db.delete(child._id);
-      }
-    } else if (rel.onDelete === "set_null") {
-      // Set foreign key to null instead of deleting
-      const children = await ctx.db
-        .query(rel.child as any)
-        .withIndex(rel.index as any, (q: any) => q.eq(rel.foreignKey, recordId))
-        .collect();
+/**
+ * Soft delete version - cascades isDeleted flag to children
+ * Used when implementing soft deletes
+ *
+ * @param ctx - Mutation context
+ * @param table - Parent table name
+ * @param recordId - ID of parent record to soft delete
+ * @param deletedBy - User ID who performed the deletion
+ * @param deletedAt - Timestamp of deletion
+ *
+ * @example
+ * const now = Date.now();
+ * await cascadeSoftDelete(ctx, "issues", issueId, userId, now);
+ * // Marks issue AND all children as deleted
+ */
+async function handleSoftDeleteRelation(
+  ctx: MutationCtx,
+  rel: Relationship,
+  recordId: Id<TableNames>,
+  deletedBy: Id<"users">,
+  deletedAt: number
+) {
+  if (rel.onDelete === "cascade") {
+    const children = await ctx.db
+      .query(rel.child)
+      .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
+      .collect();
 
-      for (const child of children) {
-        await ctx.db.patch(child._id, {
-          [rel.foreignKey]: undefined,
-        } as any);
-      }
-    } else if (rel.onDelete === "restrict") {
-      // Don't allow delete if children exist
-      const children = await ctx.db
-        .query(rel.child as any)
-        .withIndex(rel.index as any, (q: any) => q.eq(rel.foreignKey, recordId))
-        .collect();
+    for (const child of children) {
+      // Recursively soft delete children
+      await cascadeSoftDelete(
+        ctx,
+        rel.child,
+        child._id as Id<TableNames>,
+        deletedBy,
+        deletedAt
+      );
 
-      if (children.length > 0) {
-        throw new Error(
-          `Cannot delete ${table} ${recordId}: ${children.length} ` +
-            `${rel.child} record(s) still reference it`,
-        );
-      }
+      // Mark this child as deleted
+      await ctx.db.patch(child._id, {
+        isDeleted: true,
+        deletedAt,
+        deletedBy,
+      } as Record<string, unknown>); // Partial update of dynamic fields is easier with alias
     }
   }
 }
@@ -211,35 +268,43 @@ export async function cascadeDelete(
  * await cascadeSoftDelete(ctx, "issues", issueId, userId, now);
  * // Marks issue AND all children as deleted
  */
-export async function cascadeSoftDelete(
+export async function cascadeSoftDelete<T extends TableNames>(
   ctx: MutationCtx,
-  table: string,
-  recordId: Id<any>,
+  table: T,
+  recordId: Id<T>,
   deletedBy: Id<"users">,
   deletedAt: number,
 ): Promise<void> {
   const childRelationships = RELATIONSHIPS.filter((r) => r.parent === table);
 
   for (const rel of childRelationships) {
-    if (rel.onDelete === "cascade") {
-      const children = await ctx.db
-        .query(rel.child as any)
-        .withIndex(rel.index as any, (q: any) => q.eq(rel.foreignKey, recordId))
-        .collect();
+    await handleSoftDeleteRelation(ctx, rel, recordId, deletedBy, deletedAt);
+  }
+}
 
-      for (const child of children) {
-        // Recursively soft delete children
-        await cascadeSoftDelete(ctx, rel.child, child._id, deletedBy, deletedAt);
+async function handleRestoreRelation(
+  ctx: MutationCtx,
+  rel: Relationship,
+  recordId: Id<TableNames>
+) {
+  if (rel.onDelete === "cascade") {
+    // Find children (including soft-deleted ones)
+    const children = await ctx.db
+      .query(rel.child)
+      .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
+      .collect();
 
-        // Mark this child as deleted
-        await ctx.db.patch(child._id, {
-          isDeleted: true,
-          deletedAt,
-          deletedBy,
-        } as any);
-      }
+    for (const child of children) {
+      // Recursively restore children
+      await cascadeRestore(ctx, rel.child, child._id as Id<TableNames>);
+
+      // Remove deleted flags
+      await ctx.db.patch(child._id, {
+        isDeleted: undefined,
+        deletedAt: undefined,
+        deletedBy: undefined,
+      } as Record<string, unknown>);
     }
-    // Note: set_null and restrict not applicable for soft deletes
   }
 }
 
@@ -255,32 +320,14 @@ export async function cascadeSoftDelete(
  * await cascadeRestore(ctx, "issues", issueId);
  * // Restores issue AND all children from soft delete
  */
-export async function cascadeRestore(
+export async function cascadeRestore<T extends TableNames>(
   ctx: MutationCtx,
-  table: string,
-  recordId: Id<any>,
+  table: T,
+  recordId: Id<T>,
 ): Promise<void> {
   const childRelationships = RELATIONSHIPS.filter((r) => r.parent === table);
 
   for (const rel of childRelationships) {
-    if (rel.onDelete === "cascade") {
-      // Find children (including soft-deleted ones)
-      const children = await ctx.db
-        .query(rel.child as any)
-        .withIndex(rel.index as any, (q: any) => q.eq(rel.foreignKey, recordId))
-        .collect();
-
-      for (const child of children) {
-        // Recursively restore children
-        await cascadeRestore(ctx, rel.child, child._id);
-
-        // Remove deleted flags
-        await ctx.db.patch(child._id, {
-          isDeleted: undefined,
-          deletedAt: undefined,
-          deletedBy: undefined,
-        } as any);
-      }
-    }
+    await handleRestoreRelation(ctx, rel, recordId);
   }
 }

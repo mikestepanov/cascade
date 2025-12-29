@@ -48,10 +48,11 @@ export const permanentlyDeleteOld = internalMutation({
         totalDeleted++;
       }
 
-      console.log(`Cleaned up ${toDelete.length} old ${table} records`);
+      if (deleted > 0) {
+        totalDeleted += deleted;
+      }
     }
 
-    console.log(`Total records permanently deleted: ${totalDeleted}`);
     return { deleted: totalDeleted };
   },
 });

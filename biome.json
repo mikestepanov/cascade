@@ -88,16 +88,6 @@
           }
         }
       }
-    },
-    {
-      "includes": ["convex/lib/relationships.ts", "convex/lib/softDeleteHelpers.ts"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
     }
   ],
   "formatter": {

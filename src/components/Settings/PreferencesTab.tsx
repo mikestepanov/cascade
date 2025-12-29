@@ -40,7 +40,7 @@ export function PreferencesTab() {
     if (userSettings?.theme && userSettings.theme !== theme) {
       // We won't force it here to avoid flickering loop, assuming user action drives it.
     }
-  }, [userSettings]);
+  }, [userSettings, theme]);
 
   const handleThemeChange = async (value: "light" | "dark" | "system") => {
     setTheme(value); // Update local context

@@ -176,9 +176,15 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
                   selectedIssueIds={selectedIssueIds}
                   focusedIssueId={focusedIssueId}
                   canEdit={canEdit}
-                  onDragOver={() => {}}
-                  onDrop={() => {}}
-                  onDragStart={() => {}}
+                  onDragOver={() => {
+                    /* noop */
+                  }}
+                  onDrop={() => {
+                    /* noop */
+                  }}
+                  onDragStart={() => {
+                    /* noop */
+                  }}
                   onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
                   onIssueClick={setSelectedIssue}
                   onToggleSelect={handleToggleSelect}

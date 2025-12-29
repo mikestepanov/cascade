@@ -1,5 +1,6 @@
-import DOMPurify from "isomorphic-dompurify";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "./Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./Dialog";
 import { Flex } from "./Flex";
@@ -94,11 +95,7 @@ export function MarkdownPreviewModal({
         <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose dark:prose-invert max-w-none">
-              <div
-                className="markdown-preview"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
-                dangerouslySetInnerHTML={{ __html: renderMarkdownPreview(markdown) }}
-              />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
             </div>
           ) : (
             <pre className="p-4 text-sm text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap font-mono">
@@ -119,74 +116,4 @@ export function MarkdownPreviewModal({
       </DialogContent>
     </Dialog>
   );
-}
-
-/**
- * Simple markdown to HTML renderer for preview
- * Basic implementation for common syntax
- * Sanitized with DOMPurify to prevent XSS attacks
- */
-function renderMarkdownPreview(markdown: string): string {
-  let html = markdown;
-
-  // Headings
-  html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
-  html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
-  html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
-
-  // Bold
-  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/__(.*?)__/g, "<strong>$1</strong>");
-
-  // Italic
-  html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
-  html = html.replace(/_(.*?)_/g, "<em>$1</em>");
-
-  // Code blocks
-  html = html.replace(
-    /```(\w+)?\n([\s\S]*?)```/g,
-    '<pre><code class="language-$1">$2</code></pre>',
-  );
-
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-
-  // Images
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-
-  // Lists
-  html = html.replace(/^\* (.*$)/gim, "<li>$1</li>");
-  html = html.replace(/^- (.*$)/gim, "<li>$1</li>");
-  html = html.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
-
-  // Line breaks
-  html = html.replace(/\n\n/g, "</p><p>");
-  html = `<p>${html}</p>`;
-
-  // Sanitize HTML to prevent XSS attacks
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "strong",
-      "em",
-      "code",
-      "pre",
-      "a",
-      "img",
-      "ul",
-      "ol",
-      "li",
-      "blockquote",
-    ],
-    ALLOWED_ATTR: ["href", "src", "alt", "class", "target"],
-  });
 }

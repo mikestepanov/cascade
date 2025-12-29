@@ -18,7 +18,14 @@
  *     .collect();
  */
 
+import type { Id } from "../_generated/dataModel";
 import type { ExpressionOrValue, FilterBuilder } from "convex/server";
+
+export interface SoftDeletable {
+  isDeleted?: boolean;
+  deletedAt?: number;
+  deletedBy?: Id<"users">;
+}
 
 /**
  * Filter to exclude soft-deleted items
@@ -31,7 +38,9 @@ import type { ExpressionOrValue, FilterBuilder } from "convex/server";
  *   .filter(notDeleted)
  *   .collect();
  */
-export function notDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
+export function notDeleted(
+  q: FilterBuilder<{ isDeleted?: boolean }>
+): ExpressionOrValue<boolean> {
   return q.neq(q.field("isDeleted"), true);
 }
 
@@ -54,7 +63,9 @@ export function notDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
  *   ))
  *   .collect();
  */
-export function onlyDeleted(q: FilterBuilder<any>): ExpressionOrValue<boolean> {
+export function onlyDeleted(
+  q: FilterBuilder<{ isDeleted?: boolean }>
+): ExpressionOrValue<boolean> {
   return q.eq(q.field("isDeleted"), true);
 }
 
@@ -84,7 +95,7 @@ export function includeDeleted(): boolean {
  * @example
  * await ctx.db.patch(issueId, softDeleteFields(userId));
  */
-export function softDeleteFields(userId: any) {
+export function softDeleteFields(userId: Id<"users">) {
   return {
     isDeleted: true,
     deletedAt: Date.now(),
@@ -121,7 +132,7 @@ export function restoreFields() {
  *   throw new Error("Cannot modify deleted issue");
  * }
  */
-export function isSoftDeleted(record: any): boolean {
+export function isSoftDeleted(record: Partial<SoftDeletable>): boolean {
   return record.isDeleted === true;
 }
 
@@ -138,7 +149,7 @@ export function isSoftDeleted(record: any): boolean {
  *   // Eligible for permanent deletion
  * }
  */
-export function getTimeSinceDeletion(record: any): number | null {
+export function getTimeSinceDeletion(record: Partial<SoftDeletable>): number | null {
   if (!(record.isDeleted && record.deletedAt)) {
     return null;
   }
@@ -160,7 +171,7 @@ export function getTimeSinceDeletion(record: any): number | null {
  * }
  */
 export function isEligibleForPermanentDeletion(
-  record: any,
+  record: Partial<SoftDeletable>,
   thresholdMs: number = 30 * 24 * 60 * 60 * 1000, // 30 days default
 ): boolean {
   const timeSince = getTimeSinceDeletion(record);

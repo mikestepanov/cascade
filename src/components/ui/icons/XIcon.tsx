@@ -11,7 +11,6 @@ interface XIconProps {
  */
 export function XIcon({ className = "w-6 h-6", "aria-hidden": ariaHidden = true }: XIconProps) {
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: Icon is decorative, parent element provides label
     <svg
       aria-hidden={ariaHidden}
       className={cn(className)}
@@ -19,6 +18,7 @@ export function XIcon({ className = "w-6 h-6", "aria-hidden": ariaHidden = true 
       stroke="currentColor"
       viewBox="0 0 24 24"
     >
+      <title>Close</title>
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
     </svg>
   );

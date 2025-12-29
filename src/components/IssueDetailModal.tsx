@@ -58,8 +58,7 @@ export function IssueDetailModal({
               </div>
             </div>
           </DialogHeader>
-          {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading state */}
-          <div role="status" aria-busy="true" className="space-y-6">
+          <div aria-live="polite" aria-busy="true" className="space-y-6">
             <span className="sr-only">Loading...</span>
             <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
             <div className="space-y-2">

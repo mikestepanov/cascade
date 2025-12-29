@@ -31,9 +31,8 @@ export function WelcomeTour({ onComplete, onSkip }: WelcomeTourProps) {
         if (mounted) {
           setDriverFn(() => driver);
         }
-      } catch (error) {
-        // biome-ignore lint/suspicious/noConsole: Intentional error logging for driver.js load failures
-        console.warn("Failed to load driver.js:", error);
+      } catch (_error) {
+        // Fail silently
       }
     };
 

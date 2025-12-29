@@ -84,8 +84,8 @@ export const KanbanColumn = memo(function KanbanColumn({
   const handleLoadMore = useCallback(() => onLoadMore?.(state.id), [onLoadMore, state.id]);
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop zone requires these event handlers
-    <div
+    <section
+      aria-label={`${state.name} column`}
       data-board-column
       className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
@@ -175,6 +175,6 @@ export const KanbanColumn = memo(function KanbanColumn({
           />
         )}
       </div>
-    </div>
+    </section>
   );
 });

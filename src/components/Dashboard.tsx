@@ -39,12 +39,7 @@ export function Dashboard() {
   const recentActivity = useQuery(api.dashboard.getMyRecentActivity, { limit: 10 });
   const stats = useQuery(api.dashboard.getMyStats);
 
-  const displayIssues =
-    issueFilter === "assigned"
-      ? myIssues
-      : issueFilter === "created"
-        ? myCreatedIssues
-        : [...(myIssues || []), ...(myCreatedIssues || [])];
+  const displayIssues = getDisplayIssues(issueFilter, myIssues, myCreatedIssues);
 
   // Navigation helper for keyboard navigation callbacks
   const navigateToWorkspace = (projectKey: string) => {
@@ -115,4 +110,14 @@ export function Dashboard() {
       </div>
     </div>
   );
+}
+
+function getDisplayIssues<T>(
+  filter: IssueFilter,
+  assigned: T[] | undefined,
+  created: T[] | undefined,
+): T[] | undefined {
+  if (filter === "assigned") return assigned;
+  if (filter === "created") return created;
+  return [...(assigned || []), ...(created || [])];
 }

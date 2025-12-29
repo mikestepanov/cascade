@@ -17,7 +17,8 @@ import { notDeleted } from "./lib/softDeleteHelpers";
  * The bot service uses a dedicated API key stored in environment variables
  * This is simpler than the user API key system since there's only one bot service
  */
-async function validateBotApiKey(_ctx: QueryCtx | MutationCtx, apiKey: string): Promise<boolean> {
+
+function validateBotApiKey(_ctx: QueryCtx | MutationCtx, apiKey: string): boolean {
   // Get the expected API key from environment variables
   const expectedKey = getBotServiceApiKey();
 
@@ -37,14 +38,11 @@ async function validateBotApiKey(_ctx: QueryCtx | MutationCtx, apiKey: string): 
 /**
  * Validate bot API key and throw if invalid
  */
-async function requireBotApiKey(
-  ctx: QueryCtx | MutationCtx,
-  apiKey: string | undefined,
-): Promise<void> {
+function requireBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string | undefined): void {
   if (!apiKey) {
     throw new Error("Bot service API key required");
   }
-  const isValid = await validateBotApiKey(ctx, apiKey);
+  const isValid = validateBotApiKey(ctx, apiKey);
   if (!isValid) {
     throw new Error("Invalid bot service API key");
   }
