@@ -70,7 +70,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -79,7 +79,7 @@ describe("Webhooks", () => {
       // Editor tries to create webhook
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.mutation(api.webhooks.create, {
+        await asEditor.mutation(api.webhooks.createWebhook, {
           projectId,
           name: "Webhook",
           url: "https://example.com/hook",
@@ -94,7 +94,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.mutation(api.webhooks.create, {
+        await t.mutation(api.webhooks.createWebhook, {
           projectId,
           name: "Webhook",
           url: "https://example.com/hook",
@@ -113,13 +113,13 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create multiple webhooks
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook 1",
         url: "https://example.com/hook1",
         events: ["issue.created"],
       });
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook 2",
         url: "https://example.com/hook2",

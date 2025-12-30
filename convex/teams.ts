@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
@@ -8,7 +9,6 @@ import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelper
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
-
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -155,9 +155,6 @@ export const createTeam = mutation({
       addedAt: now,
     });
 
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
-
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
       action: "team.create",
@@ -227,9 +224,6 @@ export const updateTeam = mutation({
 
     await ctx.db.patch(args.teamId, updates);
 
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
-
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
       action: "team.update",
@@ -262,9 +256,6 @@ export const softDeleteTeam = mutation({
     const deletedAt = Date.now();
     await ctx.db.patch(args.teamId, softDeleteFields(userId));
     await cascadeSoftDelete(ctx, "teams", args.teamId, userId, deletedAt);
-
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
 
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
@@ -318,9 +309,6 @@ export const restoreTeam = mutation({
     // Import cascadeRestore dynamically
     const { cascadeRestore } = await import("./lib/relationships");
     await cascadeRestore(ctx, "teams", args.teamId);
-
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
 
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
@@ -389,9 +377,6 @@ export const addTeamMember = mutation({
       addedAt: now,
     });
 
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
-
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
       action: "team.member.add",
@@ -434,9 +419,6 @@ export const updateTeamMemberRole = mutation({
       role: args.role,
     });
 
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
-
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
       action: "team.member.updateRole",
@@ -475,9 +457,6 @@ export const removeTeamMember = mutation({
     }
 
     await ctx.db.delete(membership._id);
-
-    // Import internal for scheduling
-    const { internal } = await import("./_generated/api");
 
     // Audit Log
     await ctx.scheduler.runAfter(0, internal.auditLogs.log, {

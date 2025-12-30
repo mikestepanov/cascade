@@ -28,11 +28,13 @@ describe("Notifications", () => {
       });
 
       const asUser = asAuthenticatedUser(t, userId);
-      const notifications = await asUser.query(api.notifications.list, {});
+      const notifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(notifications).toHaveLength(1);
-      expect(notifications[0]?.type).toBe("issue_assigned");
-      expect(notifications[0]?.actorName).toBeDefined();
+      expect(notifications.page).toHaveLength(1);
+      expect(notifications.page[0]?.type).toBe("issue_assigned");
+      expect(notifications.page[0]?.actorName).toBeDefined();
     });
 
     it("should respect limit parameter", async () => {
@@ -55,10 +57,10 @@ describe("Notifications", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
       const notifications = await asUser.query(api.notifications.list, {
-        limit: 5,
+        paginationOpts: { numItems: 5, cursor: null },
       });
 
-      expect(notifications.length).toBeLessThanOrEqual(5);
+      expect(notifications.page.length).toBeLessThanOrEqual(5);
     });
 
     it("should filter unread notifications when onlyUnread is true", async () => {
@@ -95,11 +97,12 @@ describe("Notifications", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
       const unreadNotifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
         onlyUnread: true,
       });
 
-      expect(unreadNotifications).toHaveLength(2);
-      expect(unreadNotifications.every((n) => !n.isRead)).toBe(true);
+      expect(unreadNotifications.page).toHaveLength(2);
+      expect(unreadNotifications.page.every((n) => !n.isRead)).toBe(true);
     });
 
     it("should return all notifications when onlyUnread is false", async () => {
@@ -127,10 +130,11 @@ describe("Notifications", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
       const allNotifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
         onlyUnread: false,
       });
 
-      expect(allNotifications).toHaveLength(2);
+      expect(allNotifications.page).toHaveLength(2);
     });
 
     it("should return empty array for user with no notifications", async () => {
@@ -138,9 +142,11 @@ describe("Notifications", () => {
       const userId = await createTestUser(t);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const notifications = await asUser.query(api.notifications.list, {});
+      const notifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(notifications).toEqual([]);
+      expect(notifications.page).toEqual([]);
     });
 
     it("should only return notifications for current user", async () => {
@@ -170,17 +176,21 @@ describe("Notifications", () => {
 
       // User 1 queries notifications
       const asUser1 = asAuthenticatedUser(t, user1);
-      const user1Notifications = await asUser1.query(api.notifications.list, {});
+      const user1Notifications = await asUser1.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(user1Notifications).toHaveLength(1);
-      expect(user1Notifications[0]?.title).toBe("For User 1");
+      expect(user1Notifications.page).toHaveLength(1);
+      expect(user1Notifications.page[0]?.title).toBe("For User 1");
     });
 
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
       await expect(async () => {
-        await t.query(api.notifications.list, {});
+        await t.query(api.notifications.list, {
+          paginationOpts: { numItems: 10, cursor: null },
+        });
       }).rejects.toThrow("Not authenticated");
     });
   });
@@ -390,10 +400,12 @@ describe("Notifications", () => {
       const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.notifications.markAllAsRead, {});
 
-      const allNotifications = await asUser.query(api.notifications.list, {});
+      const allNotifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(allNotifications).toHaveLength(2);
-      expect(allNotifications.every((n) => n.isRead)).toBe(true);
+      expect(allNotifications.page).toHaveLength(2);
+      expect(allNotifications.page.every((n) => n.isRead)).toBe(true);
     });
 
     it("should only mark current user's notifications", async () => {
@@ -465,7 +477,7 @@ describe("Notifications", () => {
         return await ctx.db.get(notificationId);
       });
 
-      expect(notification).toBeNull();
+      expect(notification?.isDeleted).toBe(true);
     });
 
     it("should deny deleting other user's notification", async () => {
@@ -488,7 +500,7 @@ describe("Notifications", () => {
       // User2 tries to delete it
       const asUser2 = asAuthenticatedUser(t, user2);
       await expect(async () => {
-        await asUser2.mutation(api.notifications.softDelete, { id: notificationId });
+        await asUser2.mutation(api.notifications.softDeleteNotification, { id: notificationId });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -508,7 +520,7 @@ describe("Notifications", () => {
       });
 
       await expect(async () => {
-        await t.mutation(api.notifications.softDelete, { id: notificationId });
+        await t.mutation(api.notifications.softDeleteNotification, { id: notificationId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -546,7 +558,8 @@ describe("Notifications", () => {
       const actorId = await createTestUser(t, { name: "Actor" });
 
       // Call internal mutation directly
-      await t.mutation(internal.notifications.create, {
+      // @ts-expect-error
+      await t.mutation(internal.notifications.createNotification, {
         userId,
         type: "issue_assigned",
         title: "Issue assigned",
@@ -556,11 +569,13 @@ describe("Notifications", () => {
 
       // Verify notification was created
       const asUser = asAuthenticatedUser(t, userId);
-      const notifications = await asUser.query(api.notifications.list, {});
+      const notifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(notifications).toHaveLength(1);
-      expect(notifications[0]?.type).toBe("issue_assigned");
-      expect(notifications[0]?.actorId).toBe(actorId);
+      expect(notifications.page).toHaveLength(1);
+      expect(notifications.page[0]?.type).toBe("issue_assigned");
+      expect(notifications.page[0]?.actorId).toBe(actorId);
     });
 
     it("create - should not create notification if user is actor", async () => {
@@ -568,7 +583,8 @@ describe("Notifications", () => {
       const userId = await createTestUser(t);
 
       // Call internal mutation with userId === actorId
-      await t.mutation(internal.notifications.create, {
+      // @ts-expect-error
+      await t.mutation(internal.notifications.createNotification, {
         userId,
         type: "test",
         title: "Test",
@@ -578,9 +594,11 @@ describe("Notifications", () => {
 
       // Verify no notification was created
       const asUser = asAuthenticatedUser(t, userId);
-      const notifications = await asUser.query(api.notifications.list, {});
+      const notifications = await asUser.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
 
-      expect(notifications).toHaveLength(0);
+      expect(notifications.page).toHaveLength(0);
     });
 
     it("createBulk - should create notifications for multiple users", async () => {
@@ -601,16 +619,22 @@ describe("Notifications", () => {
 
       // Verify all users got notifications
       const asUser1 = asAuthenticatedUser(t, user1);
-      const user1Notifications = await asUser1.query(api.notifications.list, {});
-      expect(user1Notifications).toHaveLength(1);
+      const user1Notifications = await asUser1.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+      expect(user1Notifications.page).toHaveLength(1);
 
       const asUser2 = asAuthenticatedUser(t, user2);
-      const user2Notifications = await asUser2.query(api.notifications.list, {});
-      expect(user2Notifications).toHaveLength(1);
+      const user2Notifications = await asUser2.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+      expect(user2Notifications.page).toHaveLength(1);
 
       const asUser3 = asAuthenticatedUser(t, user3);
-      const user3Notifications = await asUser3.query(api.notifications.list, {});
-      expect(user3Notifications).toHaveLength(1);
+      const user3Notifications = await asUser3.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+      expect(user3Notifications.page).toHaveLength(1);
     });
 
     it("createBulk - should skip actor in recipients", async () => {
@@ -630,13 +654,17 @@ describe("Notifications", () => {
 
       // Verify actor didn't get notification
       const asActor = asAuthenticatedUser(t, actor);
-      const actorNotifications = await asActor.query(api.notifications.list, {});
-      expect(actorNotifications).toHaveLength(0);
+      const actorNotifications = await asActor.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+      expect(actorNotifications.page).toHaveLength(0);
 
       // But other users did
       const asUser1 = asAuthenticatedUser(t, user1);
-      const user1Notifications = await asUser1.query(api.notifications.list, {});
-      expect(user1Notifications).toHaveLength(1);
+      const user1Notifications = await asUser1.query(api.notifications.list, {
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+      expect(user1Notifications.page).toHaveLength(1);
     });
   });
 });

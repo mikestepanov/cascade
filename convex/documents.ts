@@ -119,7 +119,7 @@ export const get = query({
     const userId = await getAuthUserId(ctx);
     const document = await ctx.db.get(args.id);
 
-    if (!document) {
+    if (!document || document.isDeleted) {
       return null;
     }
 

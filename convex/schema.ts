@@ -1621,6 +1621,9 @@ export default defineSchema({
     // Custom fields for Nixelo
     defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
     bio: v.optional(v.string()), // User bio/description
+    timezone: v.optional(v.string()), // User timezone
+    emailNotifications: v.optional(v.boolean()),
+    desktopNotifications: v.optional(v.boolean()),
     // Invite tracking
     inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
     // E2E Testing fields
