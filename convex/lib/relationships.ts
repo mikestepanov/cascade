@@ -174,7 +174,7 @@ async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordI
     for (const child of children) {
       await ctx.db.patch(child._id, {
         [rel.foreignKey]: undefined,
-      } as Record<string, unknown>); // Dynamic field update still requires simple any or Record type
+      });
     }
   } else if (rel.onDelete === "restrict") {
     // Don't allow delete if children exist

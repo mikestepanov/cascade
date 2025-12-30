@@ -11,7 +11,7 @@ export const log = internalMutation({
     actorId: v.optional(v.id("users")),
     targetId: v.string(),
     targetType: v.string(),
-    metadata: v.optional(v.any()),
+    metadata: v.optional(v.record(v.string(), v.any())),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("auditLogs", {

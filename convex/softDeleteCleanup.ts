@@ -47,10 +47,6 @@ export const permanentlyDeleteOld = internalMutation({
         await cascadeDelete(ctx, table, record._id);
         totalDeleted++;
       }
-
-      if (deleted > 0) {
-        totalDeleted += deleted;
-      }
     }
 
     return { deleted: totalDeleted };
