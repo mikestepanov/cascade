@@ -29,6 +29,8 @@ describe("Teams", () => {
       const team = await t.run(async (ctx) => ctx.db.get(teamId));
       expect(team?.name).toBe("Engineering");
       expect(team?.companyId).toBe(companyId);
+
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-company members", async () => {
@@ -50,6 +52,8 @@ describe("Teams", () => {
           isPrivate: false,
         });
       }).rejects.toThrow("You must be a company member to create a team");
+
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -83,6 +87,8 @@ describe("Teams", () => {
       const restoredTeam = await t.run(async (ctx) => ctx.db.get(teamId));
       expect(restoredTeam?.isDeleted).toBeUndefined();
       expect(restoredTeam?.deletedAt).toBeUndefined();
+
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -129,6 +135,8 @@ describe("Teams", () => {
 
       const membersAfter = await asOwner.query(api.teams.getTeamMembers, { teamId });
       expect(membersAfter).toHaveLength(1);
+
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should enforce company membership constraint", async () => {
@@ -155,6 +163,8 @@ describe("Teams", () => {
           role: "member",
         });
       }).rejects.toThrow("User must be a company member to join this team");
+
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -183,6 +193,8 @@ describe("Teams", () => {
 
       const teams = await asUser.query(api.teams.getCompanyTeams, { companyId });
       expect(teams).toHaveLength(2);
+
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should list user teams", async () => {
@@ -205,6 +217,8 @@ describe("Teams", () => {
       const teams = await asUser.query(api.teams.getUserTeams, {});
       expect(teams).toHaveLength(1);
       expect(teams[0].name).toBe("Team 1");
+
+      await t.finishInProgressScheduledFunctions();
     });
   });
 });

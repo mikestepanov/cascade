@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./Dialog";
 import { Flex } from "./Flex";
 
 interface FormDialogProps {
@@ -45,6 +52,7 @@ export function FormDialog({
       <DialogContent className={sizeClassMap[size]}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className="sr-only">Form dialog</DialogDescription>
         </DialogHeader>
         <Flex direction="column" gap="lg">
           {children}

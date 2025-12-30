@@ -6,11 +6,11 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { Card } from "../ui/Card";
 import { Label } from "../ui/Label";
 import {
-  ShadcnSelect,
-  ShadcnSelectContent,
-  ShadcnSelectItem,
-  ShadcnSelectTrigger,
-  ShadcnSelectValue,
+  Select as ShadcnSelect,
+  SelectContent as ShadcnSelectContent,
+  SelectItem as ShadcnSelectItem,
+  SelectTrigger as ShadcnSelectTrigger,
+  SelectValue as ShadcnSelectValue,
 } from "../ui/ShadcnSelect";
 import { Switch } from "../ui/Switch";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";

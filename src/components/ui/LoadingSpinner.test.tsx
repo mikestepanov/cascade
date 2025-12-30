@@ -214,7 +214,7 @@ describe("LoadingSpinner", () => {
       const wrapper = container.firstChild as HTMLElement;
       const children = wrapper.children;
 
-      expect(children[0]).toHaveAttribute("role", "status");
+      expect(children[0]).toBe(screen.getByRole("status"));
       expect(children[1]).toHaveTextContent("Loading...");
     });
   });

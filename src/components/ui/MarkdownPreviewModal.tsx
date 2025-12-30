@@ -2,7 +2,14 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "./Button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./Dialog";
 import { Flex } from "./Flex";
 
 interface MarkdownPreviewModalProps {
@@ -37,6 +44,9 @@ export function MarkdownPreviewModal({
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Preview Markdown Import</DialogTitle>
+          <DialogDescription className="sr-only">
+            Preview content before importing
+          </DialogDescription>
         </DialogHeader>
         {/* File Info */}
         <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">

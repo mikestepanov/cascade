@@ -7,7 +7,14 @@ import { toggleInArray } from "@/lib/array-utils";
 import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
 import { Select } from "./ui/form";
 
@@ -172,6 +179,7 @@ export function CreateIssueModal({
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create Issue</DialogTitle>
+          <DialogDescription className="sr-only">Form to create a new issue</DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {

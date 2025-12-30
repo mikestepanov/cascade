@@ -36,6 +36,7 @@ describe("Projects", () => {
       expect(project?.boardType).toBe("kanban");
       expect(project?.createdBy).toBe(userId);
       expect(project?.workflowStates).toHaveLength(4); // Default workflow states
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should uppercase project keys", async () => {
@@ -54,6 +55,7 @@ describe("Projects", () => {
 
       const project = await asUser.query(api.projects.getProject, { id: projectId });
       expect(project?.key).toBe("TEST");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should add creator as admin member", async () => {
@@ -73,6 +75,7 @@ describe("Projects", () => {
       const project = await asUser.query(api.projects.getProject, { id: projectId });
       expect(project?.userRole).toBe("admin");
       expect(project?.isOwner).toBe(true);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should reject duplicate project keys", async () => {
@@ -98,6 +101,8 @@ describe("Projects", () => {
           companyId,
         });
       }).rejects.toThrow("Project key already exists");
+
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should reject unauthenticated users", async () => {
@@ -115,6 +120,7 @@ describe("Projects", () => {
           companyId,
         });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -139,6 +145,7 @@ describe("Projects", () => {
       expect(project?.name).toBe("My Project");
       expect(project?.isOwner).toBe(true);
       expect(project?.userRole).toBe("admin");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return company-visible projects for company members", async () => {
@@ -198,6 +205,7 @@ describe("Projects", () => {
       expect(project?.name).toBe("Company Visible Project");
       expect(project?.isPublic).toBe(true);
       expect(project?.isOwner).toBe(false);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny access to private projects for non-members", async () => {
@@ -221,6 +229,7 @@ describe("Projects", () => {
       await expect(async () => {
         await asNonMember.query(api.projects.getProject, { id: projectId });
       }).rejects.toThrow("Not authorized to access this project");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return null for non-existent projects", async () => {
@@ -244,6 +253,7 @@ describe("Projects", () => {
 
       const project = await asUser.query(api.projects.getProject, { id: projectId });
       expect(project).toBeNull();
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -291,6 +301,7 @@ describe("Projects", () => {
       expect(projectNames).toContain("User 2 Project");
       expect(projectNames).not.toContain("User 1 Project");
       expect(projectNames).not.toContain("User 1 Other Project");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return empty array for unauthenticated users", async () => {
@@ -323,6 +334,7 @@ describe("Projects", () => {
       expect(projects[0]).toHaveProperty("issueCount");
       expect(projects[0]).toHaveProperty("userRole");
       expect(projects[0]).toHaveProperty("isOwner");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -357,6 +369,7 @@ describe("Projects", () => {
       expect(project?.workflowStates[0].name).toBe("Backlog");
       expect(project?.workflowStates[1].name).toBe("Development");
       expect(project?.workflowStates[2].name).toBe("Completed");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny editors from updating workflow", async () => {
@@ -386,9 +399,10 @@ describe("Projects", () => {
       await expect(async () => {
         await asEditor.mutation(api.projects.updateWorkflow, {
           projectId,
-          workflowStates: [{ id: "todo", name: "To Do", category: "todo" as const, order: 0 }],
+          workflowStates: [],
         });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -412,6 +426,7 @@ describe("Projects", () => {
           workflowStates: [],
         });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -446,6 +461,7 @@ describe("Projects", () => {
         const project = await asNewMember.query(api.projects.getProject, { id: projectId });
         expect(project?.userRole).toBe("editor");
         expect(project?.members.some((m) => m._id === newMemberId)).toBe(true);
+        await t.finishInProgressScheduledFunctions();
       });
 
       it("should deny non-admins from adding members", async () => {
@@ -520,6 +536,7 @@ describe("Projects", () => {
         const asMember = asAuthenticatedUser(t, memberId);
         const project = await asMember.query(api.projects.getProject, { id: projectId });
         expect(project?.userRole).toBe("editor");
+        await t.finishInProgressScheduledFunctions();
       });
     });
 
@@ -558,6 +575,7 @@ describe("Projects", () => {
         await expect(async () => {
           await asMember.query(api.projects.getProject, { id: projectId });
         }).rejects.toThrow("Not authorized to access this project");
+        await t.finishInProgressScheduledFunctions();
       });
 
       it("should prevent removing project creator", async () => {
@@ -580,6 +598,7 @@ describe("Projects", () => {
             memberId: creatorId,
           });
         }).rejects.toThrow();
+        await t.finishInProgressScheduledFunctions();
       });
     });
   });

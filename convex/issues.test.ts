@@ -36,6 +36,7 @@ describe("Issues", () => {
       expect(issue?.priority).toBe("medium");
       expect(issue?.key).toBe("ISSUE-1"); // First issue in project
       expect(issue?.reporterId).toBe(userId);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should increment issue numbers per project", async () => {
@@ -64,6 +65,7 @@ describe("Issues", () => {
 
       expect(issue1?.key).toBe("AUTO-1");
       expect(issue2?.key).toBe("AUTO-2");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should set default status to first workflow state", async () => {
@@ -81,6 +83,7 @@ describe("Issues", () => {
 
       const issue = await asUser.query(api.issues.get, { id: issueId });
       expect(issue?.status).toBe("todo"); // Default first workflow state
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should allow setting assignee", async () => {
@@ -100,6 +103,7 @@ describe("Issues", () => {
 
       const issue = await asReporter.query(api.issues.get, { id: issueId });
       expect(issue?.assigneeId).toBe(assigneeId);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -114,7 +118,8 @@ describe("Issues", () => {
           type: "task",
           priority: "medium",
         });
-      }).rejects.toThrow("Not authenticated");
+      }).rejects.toThrow("Authentication required");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-editors from creating issues", async () => {
@@ -144,6 +149,7 @@ describe("Issues", () => {
           priority: "medium",
         });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -168,6 +174,7 @@ describe("Issues", () => {
       expect(issue?.description).toBe("Detailed description");
       expect(issue?.type).toBe("story");
       expect(issue?.priority).toBe("high");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return null for deleted issues", async () => {
@@ -188,6 +195,7 @@ describe("Issues", () => {
 
       const issue = await asUser.query(api.issues.get, { id: issueId });
       expect(issue).toBeNull();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny access to issues in private projects", async () => {
@@ -209,6 +217,7 @@ describe("Issues", () => {
       await expect(async () => {
         await asOutsider.query(api.issues.get, { id: issueId });
       }).rejects.toThrow("Not authorized");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -238,6 +247,7 @@ describe("Issues", () => {
       expect(issue?.title).toBe("Updated Title");
       expect(issue?.description).toBe("Updated description");
       expect(issue?.priority).toBe("high");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny viewers from updating issues", async () => {
@@ -271,6 +281,7 @@ describe("Issues", () => {
           title: "Updated by viewer",
         });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -309,6 +320,7 @@ describe("Issues", () => {
       expect(statusChange).toBeDefined();
       expect(statusChange?.oldValue).toBe("todo");
       expect(statusChange?.newValue).toBe("inprogress");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should allow updating status to any value", async () => {
@@ -333,6 +345,7 @@ describe("Issues", () => {
 
       const issue = await asUser.query(api.issues.get, { id: issueId });
       expect(issue?.status).toBe("custom_status");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -370,6 +383,7 @@ describe("Issues", () => {
       expect(issues.map((i: any) => i.title)).toContain("Issue 1");
       expect(issues.map((i: any) => i.title)).toContain("Issue 2");
       expect(issues.map((i: any) => i.title)).toContain("Issue 3");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return empty array for projects with no issues", async () => {
@@ -383,6 +397,7 @@ describe("Issues", () => {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(issues).toEqual([]);
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -418,6 +433,7 @@ describe("Issues", () => {
       expect(comments).toHaveLength(1);
       expect(comments[0].content).toBe("This is a test comment");
       expect(comments[0].authorId).toBe(userId);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users from commenting", async () => {
@@ -439,7 +455,8 @@ describe("Issues", () => {
           issueId,
           content: "Unauthorized comment",
         });
-      }).rejects.toThrow("Not authenticated");
+      }).rejects.toThrow("Authentication required");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -473,6 +490,7 @@ describe("Issues", () => {
 
       expect(issue1?.status).toBe("done");
       expect(issue2?.status).toBe("done");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should bulk update priority", async () => {
@@ -504,6 +522,7 @@ describe("Issues", () => {
 
       expect(issue1?.priority).toBe("highest");
       expect(issue2?.priority).toBe("highest");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should bulk assign issues to a user", async () => {
@@ -536,6 +555,7 @@ describe("Issues", () => {
 
       expect(issue1?.assigneeId).toBe(assigneeId);
       expect(issue2?.assigneeId).toBe(assigneeId);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should skip issues for non-editors in bulk operations", async () => {
@@ -574,6 +594,7 @@ describe("Issues", () => {
       // Issue should remain unchanged
       const issue = await asAdmin.query(api.issues.get, { id: issueId });
       expect(issue?.status).toBe("todo");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -610,6 +631,7 @@ describe("Issues", () => {
       expect(searchResult.results).toHaveLength(2);
       expect(searchResult.results.map((i) => i.title)).toContain("Fix login bug");
       expect(searchResult.results.map((i) => i.title)).toContain("Add login feature");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderHook, waitFor } from "@/test/custom-render";
+import { act, renderHook, waitFor } from "@/test/custom-render";
 import { useModal } from "./useModal";
 
 describe("useModal", () => {
@@ -29,7 +29,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(false);
 
-      result.current.open();
+      act(() => {
+        result.current.open();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
@@ -41,7 +43,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(true);
 
-      result.current.open();
+      act(() => {
+        result.current.open();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
@@ -55,7 +59,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(true);
 
-      result.current.close();
+      act(() => {
+        result.current.close();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
@@ -67,7 +73,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(false);
 
-      result.current.close();
+      act(() => {
+        result.current.close();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
@@ -81,7 +89,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(false);
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
@@ -93,7 +103,9 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(true);
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
@@ -105,17 +117,23 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(false);
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
       });
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
       });
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
       });
@@ -128,22 +146,30 @@ describe("useModal", () => {
 
       expect(result.current.isOpen).toBe(false);
 
-      result.current.open();
+      act(() => {
+        result.current.open();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
       });
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
       });
 
-      result.current.toggle();
+      act(() => {
+        result.current.toggle();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
       });
 
-      result.current.close();
+      act(() => {
+        result.current.close();
+      });
       await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
       });
@@ -152,9 +178,15 @@ describe("useModal", () => {
     it("should handle rapid state changes", async () => {
       const { result } = renderHook(() => useModal());
 
-      result.current.open();
-      result.current.close();
-      result.current.open();
+      act(() => {
+        result.current.open();
+      });
+      act(() => {
+        result.current.close();
+      });
+      act(() => {
+        result.current.open();
+      });
 
       await waitFor(() => {
         expect(result.current.isOpen).toBe(true);
