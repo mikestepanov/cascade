@@ -5,7 +5,7 @@ import { render, screen } from "@/test/custom-render";
 import { ProjectBoard } from "./ProjectBoard";
 
 // Mock ShadcnSelect to use testable native select
-vi.mock("./ui/ShadcnSelect", () => ({
+vi.mock("./ui/Select", () => ({
   Select: ({
     children,
     onValueChange,

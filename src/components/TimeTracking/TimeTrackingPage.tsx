@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { BurnRateDashboard } from "./BurnRateDashboard";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { UserRatesManagement } from "./UserRatesManagement";

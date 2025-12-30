@@ -14,7 +14,7 @@ import {
 } from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 
 type FilterValues = Record<string, unknown>;
 

@@ -7,7 +7,7 @@ import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { IssueDetailModal } from "./IssueDetailModal";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { Skeleton } from "./ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Typography } from "./ui/Typography";

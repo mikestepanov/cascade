@@ -5,13 +5,7 @@ import { toast } from "sonner";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Card } from "../ui/Card";
 import { Label } from "../ui/Label";
-import {
-  Select as ShadcnSelect,
-  SelectContent as ShadcnSelectContent,
-  SelectItem as ShadcnSelectItem,
-  SelectTrigger as ShadcnSelectTrigger,
-  SelectValue as ShadcnSelectValue,
-} from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Switch } from "../ui/Switch";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
 
@@ -142,18 +136,18 @@ export function PreferencesTab() {
               </p>
             </div>
             <div className="w-[240px]">
-              <ShadcnSelect value={selectedTimezone} onValueChange={handleTimezoneChange}>
-                <ShadcnSelectTrigger id="timezone">
-                  <ShadcnSelectValue placeholder="Select timezone" />
-                </ShadcnSelectTrigger>
-                <ShadcnSelectContent>
+              <Select value={selectedTimezone} onValueChange={handleTimezoneChange}>
+                <SelectTrigger id="timezone">
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent>
                   {timezones.map((tz) => (
-                    <ShadcnSelectItem key={tz} value={tz}>
+                    <SelectItem key={tz} value={tz}>
                       {tz}
-                    </ShadcnSelectItem>
+                    </SelectItem>
                   ))}
-                </ShadcnSelectContent>
-              </ShadcnSelect>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

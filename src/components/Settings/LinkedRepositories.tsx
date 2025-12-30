@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Github, Trash2 } from "@/lib/icons";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 /**
  * GitHub linked repositories management

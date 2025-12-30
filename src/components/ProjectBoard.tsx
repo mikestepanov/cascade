@@ -17,7 +17,7 @@ import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { BillingReport } from "./TimeTracker/BillingReport";
 import { Badge } from "./ui/Badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { SkeletonText } from "./ui/Skeleton";
 import { WebhooksManager } from "./WebhooksManager";
 

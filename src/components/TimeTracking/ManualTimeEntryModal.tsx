@@ -11,7 +11,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTimeEntryValidation";
 
 // =============================================================================
