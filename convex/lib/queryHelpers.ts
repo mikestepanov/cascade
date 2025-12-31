@@ -1,19 +1,24 @@
-import type { FilterBuilder, PaginationOptions, PaginationResult } from "convex/server";
+import type {
+  FilterBuilder,
+  GenericTableIndexes,
+  GenericTableSearchIndexes,
+  GenericTableVectorIndexes,
+  PaginationOptions,
+  PaginationResult,
+} from "convex/server";
 import type { QueryCtx } from "../_generated/server";
-import type { SoftDeletable } from "./softDeleteHelpers";
 
-/**
- * Standardized pagination helper that enforces soft-delete filtering
- *
- * Usage:
- * ```ts
- * const results = await fetchPaginatedQuery(ctx, {
- *   paginationOpts: args.paginationOpts,
- *   query: (db) => db.query("tableName").withIndex("by_index", q => q.eq("field", value))
- * });
- * ```
- */
-export async function fetchPaginatedQuery<T>(
+// Helper to wrap T into a TableInfo structure for FilterBuilder
+type TableInfoFor = {
+  // biome-ignore lint/suspicious/noExplicitAny: FilterBuilder needs a permissive type to allow filtering on arbitrary fields
+  document: any; // Keeping document as any for now to avoid 'unknown' issues, or can try T
+  fieldPaths: string;
+  indexes: GenericTableIndexes;
+  searchIndexes: GenericTableSearchIndexes;
+  vectorIndexes: GenericTableVectorIndexes;
+};
+
+export async function fetchPaginatedQuery<T extends Record<string, unknown>>(
   ctx: QueryCtx,
   opts: {
     paginationOpts: PaginationOptions;
@@ -24,6 +29,6 @@ export async function fetchPaginatedQuery<T>(
   return await opts
     .query(ctx.db)
     // Always filter out soft-deleted items
-    .filter((q: FilterBuilder<SoftDeletable>) => q.neq(q.field("isDeleted"), true))
+    .filter((q: FilterBuilder<TableInfoFor>) => q.neq(q.field("isDeleted"), true))
     .paginate(opts.paginationOpts);
 }

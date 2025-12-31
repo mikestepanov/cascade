@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";

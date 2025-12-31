@@ -9,8 +9,28 @@
  *   await cascadeSoftDelete(ctx, "issues", issueId, userId, now);
  */
 
+import type {
+  GenericDatabaseWriter,
+  GenericTableIndexes,
+  GenericTableSearchIndexes,
+  GenericTableVectorIndexes,
+} from "convex/server";
+
 import type { Id, TableNames } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+
+// Loose type for dynamic table access
+
+// Loose type for dynamic table access
+type AnyTableInfo = {
+  // biome-ignore lint/suspicious/noExplicitAny: This loose type allows GenericDatabaseWriter to accept any valid Convex document structure during recursion
+  document: any;
+  fieldPaths: string;
+  indexes: GenericTableIndexes;
+  searchIndexes: GenericTableSearchIndexes;
+  vectorIndexes: GenericTableVectorIndexes;
+};
+type AnyDataModel = Record<string, AnyTableInfo>;
 
 /**
  * Relationship definition between parent and child tables
@@ -144,20 +164,8 @@ export const RELATIONSHIPS: Relationship[] = [
   },
 ];
 
-/**
- * Automatically cascade delete all related records
- * Handles multi-level cascading (parent → child → grandchild)
- *
- * @param ctx - Mutation context
- * @param table - Parent table name
- * @param recordId - ID of parent record to delete
- *
- * @example
- * await cascadeDelete(ctx, "issues", issueId);
- * // Deletes issue AND all comments, activities, links, watchers, time entries
- */
 async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordId: Id<TableNames>) {
-  const children = await ctx.db
+  const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
     .query(rel.child)
     .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
     .collect();
@@ -235,7 +243,7 @@ async function handleSoftDeleteRelation(
   deletedAt: number,
 ) {
   if (rel.onDelete === "cascade") {
-    const children = await ctx.db
+    const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
       .query(rel.child)
       .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
       .collect();
@@ -290,7 +298,7 @@ async function handleRestoreRelation(
 ) {
   if (rel.onDelete === "cascade") {
     // Find children (including soft-deleted ones)
-    const children = await ctx.db
+    const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
       .query(rel.child)
       .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
       .collect();

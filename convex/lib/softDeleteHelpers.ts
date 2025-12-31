@@ -18,8 +18,26 @@
  *     .collect();
  */
 
-import type { ExpressionOrValue, FilterBuilder } from "convex/server";
+import type {
+  ExpressionOrValue,
+  FilterBuilder,
+  GenericTableIndexes,
+  GenericTableSearchIndexes,
+  GenericTableVectorIndexes,
+} from "convex/server";
 import type { Id } from "../_generated/dataModel";
+
+// Loose type for dynamic table access
+
+// Loose type for dynamic table access
+type AnyTableInfo = {
+  // biome-ignore lint/suspicious/noExplicitAny: FilterBuilder needs a permissive type to allow filtering on 'isDeleted' across different tables
+  document: any;
+  fieldPaths: string;
+  indexes: GenericTableIndexes;
+  searchIndexes: GenericTableSearchIndexes;
+  vectorIndexes: GenericTableVectorIndexes;
+};
 
 export interface SoftDeletable {
   isDeleted?: boolean;
@@ -38,7 +56,7 @@ export interface SoftDeletable {
  *   .filter(notDeleted)
  *   .collect();
  */
-export function notDeleted(q: FilterBuilder<{ isDeleted?: boolean }>): ExpressionOrValue<boolean> {
+export function notDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<boolean> {
   return q.neq(q.field("isDeleted"), true);
 }
 
@@ -61,7 +79,7 @@ export function notDeleted(q: FilterBuilder<{ isDeleted?: boolean }>): Expressio
  *   ))
  *   .collect();
  */
-export function onlyDeleted(q: FilterBuilder<{ isDeleted?: boolean }>): ExpressionOrValue<boolean> {
+export function onlyDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<boolean> {
   return q.eq(q.field("isDeleted"), true);
 }
 
