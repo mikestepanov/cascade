@@ -102,7 +102,7 @@ export const createProject = mutation({
 export const getCurrentUserProjects = query({
   args: {
     companyId: v.optional(v.id("companies")),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -110,9 +110,11 @@ export const getCurrentUserProjects = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
+    const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
+
     // Paginate memberships directly via index
     const results = await fetchPaginatedQuery<Doc<"projectMembers">>(ctx, {
-      paginationOpts: args.paginationOpts,
+      paginationOpts,
       query: (db) => db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
     });
 
@@ -182,7 +184,7 @@ export const getCurrentUserProjects = query({
 export const getTeamProjects = query({
   args: {
     teamId: v.id("teams"),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -207,7 +209,7 @@ export const getTeamProjects = query({
     }
 
     return await fetchPaginatedQuery(ctx, {
-      paginationOpts: args.paginationOpts,
+      paginationOpts: args.paginationOpts || { numItems: 20, cursor: null },
       query: (db) => db.query("projects").withIndex("by_team", (q) => q.eq("teamId", args.teamId)),
     });
   },
@@ -216,7 +218,7 @@ export const getTeamProjects = query({
 export const getWorkspaceProjects = query({
   args: {
     workspaceId: v.id("workspaces"),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -238,7 +240,7 @@ export const getWorkspaceProjects = query({
     // or we scan.
     // But `filter` in `paginate` is supported.
     return await fetchPaginatedQuery(ctx, {
-      paginationOpts: args.paginationOpts,
+      paginationOpts: args.paginationOpts || { numItems: 20, cursor: null },
       query: (db) =>
         db
           .query("projects")

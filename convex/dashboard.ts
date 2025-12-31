@@ -15,7 +15,7 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({
-  args: { paginationOpts: paginationOptsValidator }, // Pagination args
+  args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -26,9 +26,11 @@ export const getMyIssues = query({
       };
     }
 
+    const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
+
     // Paginate using the by_assignee index
     const results = await fetchPaginatedQuery<Doc<"issues">>(ctx, {
-      paginationOpts: args.paginationOpts,
+      paginationOpts,
       query: (db) =>
         db
           .query("issues")

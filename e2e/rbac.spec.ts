@@ -53,7 +53,7 @@ rbacTest(
     // 4. Verify settings tab is visible
     // Wait for navigation to fully render (userRole query needs to complete)
     await adminPage.waitForTimeout(2000);
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const settingsTab = workspacesPage.getProjectSettingsTab();
     await expect(settingsTab).toBeVisible({ timeout: 15000 });
     console.log("✓ Admin can see settings tab");
 
@@ -127,7 +127,7 @@ rbacTest(
     console.log("✓ Editor can see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const settingsTab = workspacesPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Editor cannot see settings tab");
@@ -205,7 +205,7 @@ rbacTest(
     console.log("✓ Viewer cannot see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const settingsTab = workspacesPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Viewer cannot see settings tab");

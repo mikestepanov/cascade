@@ -440,7 +440,7 @@ export function ManualTimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.map((project) => (
+                {projects?.page?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>

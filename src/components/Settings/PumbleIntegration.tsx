@@ -492,7 +492,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
               <option value="">All Projects</option>
-              {projects.map((project) => (
+              {projects.page?.map((project) => (
                 <option key={project._id} value={project._id}>
                   {project.name}
                 </option>

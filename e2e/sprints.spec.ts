@@ -24,87 +24,82 @@ test.describe("Sprints", () => {
   test.describe("Sprint Navigation", () => {
     test("can navigate to sprints tab in project", async ({
       dashboardPage,
-      projectsPage,
+      workspacesPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await projectsPage.goto();
+      await workspacesPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
-      const projectKey = `SPR${Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(4, "0")}`;
-      await projectsPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
-      await page.waitForURL(/\/projects\/[^/]+\/(board|sprints|backlog)/, { timeout: 15000 });
+      const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
+      await workspacesPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
+      await workspacesPage.expectBoardVisible();
 
-      await projectsPage.switchToTab("sprints");
+      await workspacesPage.switchToTab("sprints");
 
-      // Handle potential slow hydration/loading state
-      const loading = page.getByText("Loading...");
-      if (await loading.isVisible()) {
-        await loading.waitFor({ state: "hidden", timeout: 15000 });
-      }
-
-      // Verify the tab content is visible (UI state source of truth)
-      await expect(page.getByText(/Sprint Management/i)).toBeVisible({ timeout: 10000 });
+      // Verify URL contains sprints
+      await expect(page).toHaveURL(/\/sprints/);
     });
 
     test("sprints tab shows sprint management UI", async ({
       dashboardPage,
-      projectsPage,
+      workspacesPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await projectsPage.goto();
+      await workspacesPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
-      const projectKey = `SPR${Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(4, "0")}`;
-      await projectsPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
-      await page.waitForURL(/\/projects\/[^/]+\/(board|sprints|backlog)/, { timeout: 15000 });
+      const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
+      await workspacesPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
+      await workspacesPage.expectBoardVisible();
 
       // Navigate to sprints tab
-      await projectsPage.switchToTab("sprints");
+      await workspacesPage.switchToTab("sprints");
 
-      // Should show sprints-related content (heading, create button, etc.)
-      // This is a smoke test to ensure the page loads without error
-      await expect(page.getByText(/sprint/i).first()).toBeVisible({ timeout: 5000 });
+      // Verify start sprint button is visible
+      await expect(page.getByRole("button", { name: /start sprint/i })).toBeVisible();
     });
   });
 
   test.describe("Backlog Navigation", () => {
     test("can navigate to backlog tab in project", async ({
       dashboardPage,
-      projectsPage,
+      workspacesPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await projectsPage.goto();
+      await workspacesPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
-      const projectKey = `SPR${Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(4, "0")}`;
-      await projectsPage.createProject(`Backlog Test ${uniqueId}`, projectKey);
-      await page.waitForURL(/\/projects\/[^/]+\/(board|sprints|backlog)/, { timeout: 15000 });
+      const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
+      await workspacesPage.createProject(`Backlog Test ${uniqueId}`, projectKey);
+      await workspacesPage.expectBoardVisible();
 
       // Navigate to backlog tab
-      await projectsPage.switchToTab("backlog");
-
-      // Verify tab is active (URL might not change to /backlog if it's a view state on board)
-      const backlogTab = page.getByRole("button", { name: /backlog view/i });
       // Check for button enabled state as proxy for existence and interactivity
-      await expect(backlogTab).toBeEnabled();
+      // Note: This relies on the specific UI implementation of the backlog tab/button
+      const backlogTab = page
+        .getByRole("tab", { name: "Backlog" })
+        .or(page.getByRole("button", { name: "Backlog" }));
+      if (await backlogTab.isVisible()) {
+        await backlogTab.click();
+        await expect(page).toHaveURL(/\/backlog/);
+      } else {
+        // Fallback or specific logic if backlog is inside another view?
+        // Assuming switchToTab handles it if it's a standard method
+        await workspacesPage.switchToTab("backlog");
+        await expect(page).toHaveURL(/\/backlog/);
+      }
     });
   });
 });

@@ -234,7 +234,7 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.slice(0, 5).map((issue) => ({
+    ...(myIssues?.page?.slice(0, 5).map((issue) => ({
       id: `issue-${issue._id}`,
       label: issue.title,
       icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",

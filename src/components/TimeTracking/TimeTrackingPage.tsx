@@ -130,7 +130,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Projects</SelectItem>
-                {projects?.map((project) => (
+                {projects?.page?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>
