@@ -16,7 +16,7 @@
  */
 
 import { expect, hasAdminAuth, rbacTest } from "./fixtures";
-import { ProjectsPage } from "./pages/projects.page";
+import { WorkspacesPage } from "./pages/workspaces.page";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -34,7 +34,7 @@ rbacTest(
     // Skip if admin auth not available (known flaky issue with first user creation)
     testInfo.skip(!hasAdminAuth(), "Admin auth state not available (teamLead setup failed)");
 
-    const projectsPage = new ProjectsPage(adminPage, rbacCompanySlug);
+    const workspacesPage = new WorkspacesPage(adminPage, rbacCompanySlug);
 
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
@@ -110,7 +110,7 @@ rbacTest(
 rbacTest(
   "editor has limited project access",
   async ({ editorPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const projectsPage = new ProjectsPage(editorPage, rbacCompanySlug);
+    const workspacesPage = new WorkspacesPage(editorPage, rbacCompanySlug);
 
     // 1. Navigate to project board
     await gotoRbacProject(editorPage);
@@ -187,7 +187,7 @@ rbacTest(
 rbacTest(
   "viewer has read-only project access",
   async ({ viewerPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const projectsPage = new ProjectsPage(viewerPage, rbacCompanySlug);
+    const workspacesPage = new WorkspacesPage(viewerPage, rbacCompanySlug);
 
     // 1. Navigate to project board
     await gotoRbacProject(viewerPage);

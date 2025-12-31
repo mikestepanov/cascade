@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS } from "../config";
-import { ProjectsPage } from "../pages";
+import { WorkspacesPage } from "../pages";
 
 /**
  * RBAC Test Fixtures
@@ -109,17 +109,17 @@ export type RbacFixtures = {
   // Admin (project owner) - can do everything
   adminContext: BrowserContext;
   adminPage: Page;
-  adminProjectsPage: ProjectsPage;
+  adminWorkspacesPage: WorkspacesPage;
 
   // Editor - can create/edit issues, but not manage project
   editorContext: BrowserContext;
   editorPage: Page;
-  editorProjectsPage: ProjectsPage;
+  editorWorkspacesPage: WorkspacesPage;
 
   // Viewer - read-only access
   viewerContext: BrowserContext;
   viewerPage: Page;
-  viewerProjectsPage: ProjectsPage;
+  viewerWorkspacesPage: WorkspacesPage;
 
   // RBAC project info
   rbacProjectKey: string;
@@ -191,8 +191,8 @@ Current auth files: ${fs
     await page.close();
   },
 
-  adminProjectsPage: async ({ adminPage }, use) => {
-    await use(new ProjectsPage(adminPage));
+  adminWorkspacesPage: async ({ adminPage }, use) => {
+    await use(new WorkspacesPage(adminPage));
   },
 
   editorPage: async ({ editorContext }, use) => {
@@ -201,8 +201,8 @@ Current auth files: ${fs
     await page.close();
   },
 
-  editorProjectsPage: async ({ editorPage }, use) => {
-    await use(new ProjectsPage(editorPage));
+  editorWorkspacesPage: async ({ editorPage }, use) => {
+    await use(new WorkspacesPage(editorPage));
   },
 
   viewerPage: async ({ viewerContext }, use) => {
@@ -211,8 +211,8 @@ Current auth files: ${fs
     await page.close();
   },
 
-  viewerProjectsPage: async ({ viewerPage }, use) => {
-    await use(new ProjectsPage(viewerPage));
+  viewerWorkspacesPage: async ({ viewerPage }, use) => {
+    await use(new WorkspacesPage(viewerPage));
   },
 
   // RBAC project info - read from saved config (actual values from API)

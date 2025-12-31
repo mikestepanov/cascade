@@ -4,10 +4,10 @@ import { BasePage } from "./base.page";
 
 /**
  * Projects/Workspaces Page Object
- * Handles the projects view with sidebar and kanban board
- * Note: UI uses "Workspaces" terminology, URLs use /projects/ path
+ * Handles the workspaces view with sidebar and kanban board
+ * Note: UI uses "Workspaces" terminology, URLs use /workspaces/ path
  */
-export class ProjectsPage extends BasePage {
+export class WorkspacesPage extends BasePage {
   // ===================
   // Locators - Sidebar
   // ===================
@@ -190,7 +190,8 @@ export class ProjectsPage extends BasePage {
     const currentUrl = this.page.url();
     const match = currentUrl.match(/\/([^/]+)\/(dashboard|workspaces|projects|settings)/);
     const slug = match ? match[1] : "nixelo-e2e";
-    await this.page.goto(`/${slug}/projects`);
+    if (!slug) throw new Error("Company slug not found in URL");
+    await this.page.goto(`/${slug}/workspaces`);
     await this.page.waitForLoadState("networkidle");
     await this.waitForLoad();
   }

@@ -33,7 +33,7 @@ test.describe("Workspaces", () => {
   test.describe("Workspace Creation", () => {
     test("can create a new workspace via sidebar button", async ({
       dashboardPage,
-      projectsPage,
+      workspacesPage,
       page,
       request,
     }) => {
@@ -73,7 +73,7 @@ test.describe("Workspaces", () => {
       await page.waitForTimeout(1000);
 
       // Create a new workspace with the fixed unique name
-      await projectsPage.createWorkspace(workspaceName, "Engineering department");
+      await workspacesPage.createWorkspace(workspaceName, "Engineering department");
 
       // Should navigate to new workspace teams list
       // URL pattern: /workspaces/$slug/teams
@@ -83,52 +83,52 @@ test.describe("Workspaces", () => {
   });
 
   test.describe("Project Board", () => {
-    test("displays kanban board with columns", async ({ dashboardPage, projectsPage, page }) => {
+    test("displays kanban board with columns", async ({ dashboardPage, workspacesPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to projects page to access Create Project functionality
-      await projectsPage.goto();
+      await workspacesPage.goto();
 
       // Create a new project first
       const projectName = `Project-${Date.now()}`;
       const projectKey = `PROJ${Date.now().toString().slice(-4)}`;
-      await projectsPage.createProject(projectName, projectKey, "E2E Test Project");
+      await workspacesPage.createProject(projectName, projectKey, "E2E Test Project");
 
       // Wait for project board to load (Projects still use /projects/board pattern)
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
-      await projectsPage.expectBoardVisible();
+      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
+      await workspacesPage.expectBoardVisible();
 
       // Board should have columns
-      await expect(projectsPage.boardColumns.first()).toBeVisible({ timeout: 10000 });
+      await expect(workspacesPage.boardColumns.first()).toBeVisible({ timeout: 10000 });
     });
 
-    test("can switch between project tabs", async ({ dashboardPage, projectsPage, page }) => {
+    test("can switch between project tabs", async ({ dashboardPage, workspacesPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to projects page to access Create Project functionality
-      await projectsPage.goto();
+      await workspacesPage.goto();
 
       // Create a project to have access to tabs
       const projectName = `ProjectTabs-${Date.now()}`;
       const projectKey = `TABS${Date.now().toString().slice(-4)}`;
-      await projectsPage.createProject(projectName, projectKey, "E2E Test Project Tabs");
-      await page.waitForURL(/\/projects\/[^/]+\/board/, { timeout: 10000 });
+      await workspacesPage.createProject(projectName, projectKey, "E2E Test Project Tabs");
+      await page.waitForURL(/\/workspaces\/[^/]+\/board/, { timeout: 10000 });
 
       // Test tab navigation
-      await projectsPage.switchToTab("backlog");
+      await workspacesPage.switchToTab("backlog");
       await expect(page).toHaveURL(/\/backlog/);
 
-      await projectsPage.switchToTab("sprints");
+      await workspacesPage.switchToTab("sprints");
       await expect(page).toHaveURL(/\/sprints/);
 
-      await projectsPage.switchToTab("analytics");
+      await workspacesPage.switchToTab("analytics");
       await expect(page).toHaveURL(/\/analytics/);
 
-      await projectsPage.switchToTab("settings");
+      await workspacesPage.switchToTab("settings");
       await expect(page).toHaveURL(/\/settings/);
 
       // Back to board
-      await projectsPage.switchToTab("board");
+      await workspacesPage.switchToTab("board");
       await expect(page).toHaveURL(/\/board/);
     });
   });

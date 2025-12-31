@@ -10,8 +10,8 @@ import {
   DocumentsPage,
   LandingPage,
   OnboardingPage,
-  ProjectsPage,
   SettingsPage,
+  WorkspacesPage,
 } from "../pages";
 import { trySignInUser } from "../utils";
 
@@ -94,7 +94,7 @@ export type AuthFixtures = {
   documentsPage: DocumentsPage;
   landingPage: LandingPage;
   onboardingPage: OnboardingPage;
-  projectsPage: ProjectsPage;
+  workspacesPage: WorkspacesPage;
   calendarPage: CalendarPage;
   settingsPage: SettingsPage;
   saveAuthState: () => Promise<void>;
@@ -253,8 +253,8 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(new OnboardingPage(page));
   },
 
-  projectsPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
-    await use(new ProjectsPage(page));
+  workspacesPage: async ({ page, saveAuthState: _saveAuthState }, use) => {
+    await use(new WorkspacesPage(page));
   },
 
   calendarPage: async ({ page, saveAuthState: _saveAuthState }, use) => {

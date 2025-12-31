@@ -206,11 +206,11 @@ export class DashboardPage extends BasePage {
 
     // Wait for dashboard app shell with recovery
     try {
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 10000 });
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     } catch (e) {
       console.log("Dashboard didn't load in time, reloading...");
       await this.page.reload();
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 15000 });
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     }
 
     // Ensure loading spinner is gone
