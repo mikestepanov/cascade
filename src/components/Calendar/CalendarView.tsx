@@ -271,7 +271,7 @@ function WeekView({
               ))}
 
               {/* Events for this day */}
-              {events
+              {(events ?? [])
                 .filter((event) => isSameDay(new Date(event.startTime), day))
                 .map((event) => {
                   const startHour = new Date(event.startTime).getHours();
@@ -355,7 +355,9 @@ function MonthView({
         {days.map((day) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
-          const dayEvents = events.filter((event) => isSameDay(new Date(event.startTime), day));
+          const dayEvents = (events ?? []).filter((event) =>
+            isSameDay(new Date(event.startTime), day),
+          );
 
           return (
             <div
@@ -379,7 +381,7 @@ function MonthView({
               </div>
 
               <Flex direction="column" gap="xs" className="space-y-0.5 sm:space-y-1">
-                {dayEvents.slice(0, 2).map((event) => (
+                {(dayEvents ?? []).slice(0, 2).map((event) => (
                   <button
                     type="button"
                     key={event._id}

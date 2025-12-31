@@ -194,7 +194,7 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
-              {documents?.slice(0, 10).map((doc) => (
+              {(documents?.documents ?? []).slice(0, 10).map((doc) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTES.documents.detail(companySlug, doc._id)}
@@ -203,9 +203,9 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 />
               ))}
-              {documents && documents.length > 10 && (
+              {(documents?.documents?.length ?? 0) > 10 && (
                 <Typography variant="p" color="tertiary" className="px-3 py-1 text-xs">
-                  +{documents.length - 10} more
+                  +{(documents?.documents?.length ?? 0) - 10} more
                 </Typography>
               )}
             </CollapsibleSection>

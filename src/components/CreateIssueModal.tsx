@@ -156,7 +156,7 @@ export function CreateIssueModal({
         );
       }
 
-      if (suggestions.labels && Array.isArray(suggestions.labels) && labels) {
+      if (suggestions.labels && suggestions.labels.length > 0 && labels) {
         const suggestedLabelIds = labels
           .filter((label) => suggestions.labels.includes(label.name))
           .map((label) => label._id);
