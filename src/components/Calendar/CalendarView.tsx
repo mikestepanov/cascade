@@ -107,6 +107,7 @@ export function CalendarView() {
               <button
                 type="button"
                 onClick={handlePrevious}
+                aria-label="Previous month"
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
@@ -114,6 +115,7 @@ export function CalendarView() {
               <button
                 type="button"
                 onClick={handleNext}
+                aria-label="Next month"
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
@@ -157,7 +159,7 @@ export function CalendarView() {
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" data-calendar="true">
         {viewMode === "week" ? (
           <WeekView startDate={startDate} events={events || []} onEventClick={setSelectedEventId} />
         ) : (

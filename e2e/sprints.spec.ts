@@ -24,82 +24,73 @@ test.describe("Sprints", () => {
   test.describe("Sprint Navigation", () => {
     test("can navigate to sprints tab in project", async ({
       dashboardPage,
-      workspacesPage,
+      projectsPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
       const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
-      await workspacesPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
+      await projectsPage.expectBoardVisible();
 
-      await workspacesPage.switchToTab("sprints");
+      await projectsPage.switchToTab("sprints");
 
-      // Verify URL contains sprints
-      await expect(page).toHaveURL(/\/sprints/);
+      // Verify Sprints heading is visible (state-based UI, URL doesn't change)
+      await expect(page.getByRole("heading", { name: /sprint management/i })).toBeVisible();
     });
 
     test("sprints tab shows sprint management UI", async ({
       dashboardPage,
-      workspacesPage,
+      projectsPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
       const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
-      await workspacesPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.createProject(`Sprint Test ${uniqueId}`, projectKey);
+      await projectsPage.expectBoardVisible();
 
       // Navigate to sprints tab
-      await workspacesPage.switchToTab("sprints");
+      await projectsPage.switchToTab("sprints");
 
-      // Verify start sprint button is visible
-      await expect(page.getByRole("button", { name: /start sprint/i })).toBeVisible();
+      // Verify create sprint button is visible
+      await expect(page.getByRole("button", { name: /create sprint/i })).toBeVisible();
     });
   });
 
   test.describe("Backlog Navigation", () => {
     test("can navigate to backlog tab in project", async ({
       dashboardPage,
-      workspacesPage,
+      projectsPage,
       page,
     }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Use direct URL navigation to access projects
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project first
       const uniqueId = Date.now();
       const projectKey = `PROJ${uniqueId.toString().slice(-4)}`;
-      await workspacesPage.createProject(`Backlog Test ${uniqueId}`, projectKey);
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.createProject(`Backlog Test ${uniqueId}`, projectKey);
+      await projectsPage.expectBoardVisible();
 
       // Navigate to backlog tab
       // Check for button enabled state as proxy for existence and interactivity
       // Note: This relies on the specific UI implementation of the backlog tab/button
-      const backlogTab = page
-        .getByRole("tab", { name: "Backlog" })
-        .or(page.getByRole("button", { name: "Backlog" }));
-      if (await backlogTab.isVisible()) {
-        await backlogTab.click();
-        await expect(page).toHaveURL(/\/backlog/);
-      } else {
-        // Fallback or specific logic if backlog is inside another view?
-        // Assuming switchToTab handles it if it's a standard method
-        await workspacesPage.switchToTab("backlog");
-        await expect(page).toHaveURL(/\/backlog/);
-      }
+      await projectsPage.switchToTab("backlog");
+      // Verify Backlog UI element is visible (the column heading)
+      await expect(page.getByRole("heading", { name: "Backlog", exact: true })).toBeVisible();
     });
   });
 });

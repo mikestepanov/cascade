@@ -16,7 +16,6 @@
  */
 
 import { expect, hasAdminAuth, rbacTest } from "./fixtures";
-import { WorkspacesPage } from "./pages/workspaces.page";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -30,11 +29,12 @@ rbacTest.setTimeout(90000);
  */
 rbacTest(
   "admin has full project access",
-  async ({ adminPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }, testInfo) => {
+  async (
+    { adminPage, adminProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug },
+    testInfo,
+  ) => {
     // Skip if admin auth not available (known flaky issue with first user creation)
     testInfo.skip(!hasAdminAuth(), "Admin auth state not available (teamLead setup failed)");
-
-    const workspacesPage = new WorkspacesPage(adminPage, rbacCompanySlug);
 
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
@@ -53,7 +53,7 @@ rbacTest(
     // 4. Verify settings tab is visible
     // Wait for navigation to fully render (userRole query needs to complete)
     await adminPage.waitForTimeout(2000);
-    const settingsTab = workspacesPage.getProjectSettingsTab();
+    const settingsTab = adminProjectsPage.getProjectSettingsTab();
     await expect(settingsTab).toBeVisible({ timeout: 15000 });
     console.log("✓ Admin can see settings tab");
 
@@ -109,9 +109,7 @@ rbacTest(
  */
 rbacTest(
   "editor has limited project access",
-  async ({ editorPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const workspacesPage = new WorkspacesPage(editorPage, rbacCompanySlug);
-
+  async ({ editorPage, editorProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // 1. Navigate to project board
     await gotoRbacProject(editorPage);
 
@@ -127,7 +125,7 @@ rbacTest(
     console.log("✓ Editor can see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = workspacesPage.getProjectSettingsTab();
+    const settingsTab = editorProjectsPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Editor cannot see settings tab");
@@ -186,9 +184,7 @@ rbacTest(
  */
 rbacTest(
   "viewer has read-only project access",
-  async ({ viewerPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const workspacesPage = new WorkspacesPage(viewerPage, rbacCompanySlug);
-
+  async ({ viewerPage, viewerProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // 1. Navigate to project board
     await gotoRbacProject(viewerPage);
 
@@ -205,7 +201,7 @@ rbacTest(
     console.log("✓ Viewer cannot see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = workspacesPage.getProjectSettingsTab();
+    const settingsTab = viewerProjectsPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Viewer cannot see settings tab");

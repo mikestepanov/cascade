@@ -7,6 +7,7 @@ import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
+  Calendar,
   ChevronDown,
   ChevronRight,
   Clock,
@@ -48,6 +49,8 @@ export function AppSidebar() {
   const documents = documentsResult?.documents;
   const workspaces = useQuery(api.workspaces.list, { companyId });
   const teams = useQuery(api.teams.getCompanyTeams, { companyId });
+  const myProjects = useQuery(api.dashboard.getMyProjects);
+  const defaultProject = myProjects?.[0];
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
@@ -181,6 +184,18 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-dashboard"
             />
+            {/* Calendar - Links to first project's calendar */}
+            {defaultProject && (
+              <NavItem
+                to={ROUTES.projects.calendar(companySlug, defaultProject.key)}
+                icon={Calendar}
+                label="Calendar"
+                isActive={isActive("/calendar")}
+                isCollapsed={isCollapsed}
+                onClick={handleNavClick}
+                data-tour="nav-calendar"
+              />
+            )}
             {/* Documents Section */}
             <CollapsibleSection
               icon={FileText}

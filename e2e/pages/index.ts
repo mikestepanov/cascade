@@ -5,5 +5,6 @@ export { DashboardPage } from "./dashboard.page";
 export { DocumentsPage } from "./documents.page";
 export { LandingPage } from "./landing.page";
 export { OnboardingPage } from "./onboarding.page";
+export { ProjectsPage } from "./projects.page";
 export { SettingsPage } from "./settings.page";
 export { WorkspacesPage } from "./workspaces.page";

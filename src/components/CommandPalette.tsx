@@ -48,10 +48,10 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
       acc[group].push(cmd);
       return acc;
     },
-    {} as Record<string, CommandItem[]>,
+    {} as Record<string, CommandAction[]>,
   );
 
-  const handleSelect = (cmd: CommandItem) => {
+  const handleSelect = (cmd: CommandAction) => {
     cmd.action();
     onClose();
   };
@@ -151,7 +151,7 @@ export function useCommands({
   const projects = useQuery(api.dashboard.getMyProjects);
   const myIssues = useQuery(api.dashboard.getMyIssues);
 
-  const commands: CommandItem[] = [
+  const commands: CommandAction[] = [
     // Navigation
     {
       id: "nav-dashboard",
@@ -234,17 +234,19 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.page ?? []).slice(0, 5).map((issue) => ({
-      id: `issue-${issue._id}`,
-      label: issue.title,
-      icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
-      description: `${issue.key} • ${issue.projectName}`,
-      keywords: [issue.key, issue.projectName || ""],
-      action: () => {
-        navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
-      },
-      group: "Recent Issues",
-    })),
+    ...(myIssues?.page && Array.isArray(myIssues.page)
+      ? myIssues.page.slice(0, 5).map((issue) => ({
+          id: `issue-${issue._id}`,
+          label: issue.title,
+          icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
+          description: `${issue.key} • ${issue.projectName}`,
+          keywords: [issue.key, issue.projectName || ""],
+          action: () => {
+            navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
+          },
+          group: "Recent Issues",
+        }))
+      : []),
   ];
 
   return commands;
