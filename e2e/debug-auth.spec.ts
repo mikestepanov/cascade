@@ -122,20 +122,28 @@ test("debug sign-in flow with full logging", async ({ page, baseURL }) => {
 
   console.log("\n🔧 STEP 9: Click submit and watch what happens");
 
-  // Wait for the button to transition from "Continue with email" to "Sign In"
-  await page.waitForTimeout(1000);
+  // 5. Check if button text changed to "Sign In"
+  // The transition can be fast, so we use toPass with localized expectation
+  await expect(async () => {
+    const buttonText = await submitButton.innerText();
+    console.log(`Current button text: ${buttonText}`);
 
-  const submitText = await submitButton.textContent();
-  console.log(`  Submit button text: "${submitText}"`);
+    // If it says "Continue", we might need to "poke" the input or click again
+    if (buttonText.toLowerCase().includes("continue")) {
+      console.log("  ⚠️ Still on Continue, poking email input and clicking again...");
+      await emailInput.focus();
+      await page.keyboard.press("End");
+      await page.keyboard.press("Space");
+      await page.keyboard.press("Backspace");
+      await submitButton.click();
+      await page.waitForTimeout(2000);
+      throw new Error("Still on Continue button");
+    }
+  }).toPass({ timeout: 15000 });
 
-  // If still showing "Continue with email", credentials weren't recognized
-  if (submitText?.includes("Continue")) {
-    console.log("  ⚠️  Button still shows 'Continue', clicking to trigger sign-in state...");
-    await submitButton.click();
-    await page.waitForTimeout(1000);
-    const newSubmitText = await submitButton.textContent();
-    console.log(`  Button text after click: "${newSubmitText}"`);
-  }
+  await expect(submitButton).toHaveText(/Sign In/i, { timeout: 5000 });
+  const newSubmitText = await submitButton.textContent();
+  console.log(`  Button text after transition: "${newSubmitText}"`);
 
   // Now get actual submit button (might be different after state change)
   const actualSubmitButton = page.locator('button[type="submit"]');

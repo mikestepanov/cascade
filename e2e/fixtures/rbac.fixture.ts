@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS } from "../config";
 import { ProjectsPage, WorkspacesPage } from "../pages";
+import { trySignInUser } from "../utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -189,20 +190,29 @@ export const rbacTest = base.extend<RbacFixtures>({
           currentUrl.endsWith("/")
         ) {
           console.log(`RBAC helper: Redirected to ${currentUrl}, re-authenticating...`);
+
+          await page.goto("/signin");
+          await page.waitForLoadState("domcontentloaded");
+
+          const baseURL = page.url().split("/").slice(0, 3).join("/");
+          // Try to sign in. Since we don't have the specific user role easily mapped to email here without extra state,
+          // we use the teamLead as a safe default for re-auth if the session dropped.
+          await trySignInUser(page, baseURL, TEST_USERS.teamLead);
+
           await page.goto(`/${rbacCompanySlug}/dashboard`);
-          await page.waitForLoadState("networkidle");
+          await page.waitForLoadState("domcontentloaded");
           await page.waitForTimeout(2000);
         }
 
         // Try navigating to target project
         await page.goto(targetUrl);
-        await page.waitForLoadState("networkidle");
+        await page.waitForLoadState("domcontentloaded");
         await page.waitForTimeout(1000);
 
         if (page.url() === "http://localhost:5555/" || page.url().endsWith("/signin")) {
           throw new Error("Still redirected to landing/signin");
         }
-      }).toPass({ timeout: 30000 });
+      }).toPass({ timeout: 45000 }); // Increase timeout for re-auth process
     };
     await use(goto);
   },

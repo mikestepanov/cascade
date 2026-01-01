@@ -113,7 +113,29 @@ export const authenticatedTest = base.extend<AuthFixtures>({
           sessionStorage.clear();
         });
         const baseURL = page.url().split("/").slice(0, 3).join("/");
+
+        // Wait for signin page to be ready
+        await page.goto(`${baseURL}/signin`);
+        await page.waitForLoadState("domcontentloaded");
+
         await trySignInUser(page, baseURL, TEST_USERS.teamLead);
+
+        // Stabilize and verify we are actually on dashboard
+        await page.goto(dashboardUrl);
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(3000); // Give Convex time to hydrate
+
+        const finalUrl = page.url();
+        if (!(finalUrl.includes("/dashboard") || finalUrl.includes("/onboarding"))) {
+          console.error(`  ❌ ensureAuthenticated failed. Still at: ${finalUrl}`);
+          throw new Error("Failed to ensure authentication after retry.");
+        }
+
+        // Save the new state so subsequent tests don't have to re-auth
+        const currentState = await page.context().storageState();
+        fs.writeFileSync(AUTH_STATE_PATH, JSON.stringify(currentState, null, 2));
+
+        console.log("  ✅ ensureAuthenticated: SUCCESS (Saved state)");
       }
     };
     await use(reauth);

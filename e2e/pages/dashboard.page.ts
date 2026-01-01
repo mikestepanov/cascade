@@ -177,7 +177,9 @@ export class DashboardPage extends BasePage {
     this.documentList = page.locator("[data-document-list]");
 
     // Projects sidebar
-    this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
+    this.newProjectButton = page.getByRole("button", {
+      name: /new.*project|add new workspace|\+ new/i,
+    });
     this.projectList = page.locator("[data-project-list]");
   }
 
@@ -190,13 +192,19 @@ export class DashboardPage extends BasePage {
     const slug = companySlug || "nixelo-e2e";
     const dashboardUrl = `/${slug}/dashboard`;
 
+    // Determine baseURL from current URL
+    const urlObj = new URL(this.page.url());
+    const baseUrl = `${urlObj.protocol}//${urlObj.host}`;
+
     // Check if already on dashboard - skip navigation to avoid token rotation
     const currentUrl = this.page.url();
     if (currentUrl.includes(`/${slug}/dashboard`)) {
       // Already on dashboard, just verify it's loaded
       const isLoaded = await this.commandPaletteButton.isVisible().catch(() => false);
       if (isLoaded) {
-        return; // Already on loaded dashboard, no need to navigate
+        // Even if already on page, ensure it's hydrated before returning
+        await this.waitForLoad();
+        return;
       }
     }
 
@@ -207,17 +215,34 @@ export class DashboardPage extends BasePage {
     await this.page.waitForTimeout(1000);
 
     // Check if we got redirected to landing/signin page (auth failure)
-    const finalUrl = this.page.url();
+    let finalUrl = this.page.url();
     if (
       finalUrl.includes("/signin") ||
-      finalUrl === "http://localhost:5555/" ||
+      finalUrl === baseUrl ||
+      finalUrl === `${baseUrl}/` ||
       !finalUrl.includes(slug)
     ) {
-      // Log warning but don't throw - allow ensureAuthenticated in beforeEach to retry
-      console.log(
-        `⚠️  Auth redirect detected: navigated to ${finalUrl} instead of ${dashboardUrl}. Will rely on ensureAuthenticated retry.`,
+      console.warn(
+        "⚠️  Auth redirect detected: navigated to",
+        finalUrl,
+        ". Retrying navigation once...",
       );
-      // Don't throw here - let the commandPaletteButton wait timeout handle it
+      // Wait for a moment to allow any lingering auth state to settle
+      await this.page.waitForTimeout(2000);
+      await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
+      await this.waitForLoad();
+      finalUrl = this.page.url(); // Update finalUrl after retry
+    }
+
+    // Final check after potential retry
+    if (
+      finalUrl.includes("/signin") ||
+      finalUrl === baseUrl ||
+      finalUrl === `${baseUrl}/` ||
+      !finalUrl.includes(slug)
+    ) {
+      console.error("❌ Still on landing page after retry. Auth failed.");
+      throw new Error(`Redirected to landing/signin page: ${finalUrl}. Auth session invalid.`);
     }
 
     // Wait for dashboard app shell with recovery
@@ -238,8 +263,9 @@ export class DashboardPage extends BasePage {
       await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     }
 
-    // Ensure loading spinner is gone
+    // Ensure loading spinner is gone and React is hydrated
     await this.expectLoaded();
+    await this.waitForLoad();
 
     // Explicitly wait for the main content sections to prevent hydration flakes
     await this.myIssuesSection.waitFor({ state: "visible", timeout: 10000 });
@@ -258,8 +284,16 @@ export class DashboardPage extends BasePage {
     };
     // Wait for tab to be visible and stable
     await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
-    // Use force click to bypass potential animation obstructions or layout shifts in sidebar
+
+    // Click and wait for navigation if it's a link-based tab
+    const urlBefore = this.page.url();
     await tabs[tab].click({ force: true });
+
+    // If it's a navigation tab, wait for URL to actually change or for load to complete
+    if (tab !== "dashboard" || !urlBefore.includes("/dashboard")) {
+      await this.page.waitForLoadState("domcontentloaded");
+    }
+
     await this.waitForLoad();
   }
 
@@ -269,7 +303,10 @@ export class DashboardPage extends BasePage {
 
   async openCommandPalette() {
     await expect(async () => {
-      await this.commandPaletteButton.click({ force: true });
+      // Small stabilization wait to ensure hydration is settled and listeners are attached
+      await this.page.waitForTimeout(1000);
+      // Remove force: true to allow Playwright to wait for actionability (event handlers attached)
+      await this.commandPaletteButton.click();
       await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 20000 });
     await this.page.waitForTimeout(500);

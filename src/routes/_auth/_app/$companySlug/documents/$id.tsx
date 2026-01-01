@@ -1,15 +1,9 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { DocumentEditor } from "@/components/DocumentEditor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-
-// Lazy load DocumentEditor (heavy - includes BlockNote)
-const DocumentEditor = lazy(() =>
-  import("@/components/DocumentEditor").then((m) => ({
-    default: m.DocumentEditor,
-  })),
-);
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/documents/$id")({
   component: DocumentPage,

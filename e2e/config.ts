@@ -220,7 +220,7 @@ export const RBAC_TEST_CONFIG = {
    * Uses "dashboard" because that's the auto-created company when test users first log in.
    * The RBAC setup will use this existing company instead of creating a new one.
    */
-  companySlug: "dashboard",
+  companySlug: TEST_COMPANY_SLUG,
 };
 
 /**

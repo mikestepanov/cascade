@@ -150,5 +150,11 @@
     "workbox-strategies": "^7.4.0",
     "workbox-window": "^7.4.0"
   },
-  "packageManager": "pnpm@10.24.0"
+  "packageManager": "pnpm@10.24.0",
+  "pnpm": {
+    "overrides": {
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0"
+    }
+  }
 }
