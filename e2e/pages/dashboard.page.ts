@@ -201,12 +201,36 @@ export class DashboardPage extends BasePage {
     }
 
     // Navigate directly to dashboard URL
-    await this.page.goto(dashboardUrl);
+    await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
+
+    // Wait a bit for potential auth redirect to settle
+    await this.page.waitForTimeout(1000);
+
+    // Check if we got redirected to landing/signin page (auth failure)
+    const finalUrl = this.page.url();
+    if (
+      finalUrl.includes("/signin") ||
+      finalUrl === "http://localhost:5555/" ||
+      !finalUrl.includes(slug)
+    ) {
+      throw new Error(
+        `Auth redirect detected: navigated to ${finalUrl} instead of ${dashboardUrl}. Auth token may have expired.`,
+      );
+    }
 
     // Wait for dashboard app shell with recovery
     try {
       await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     } catch (e) {
+      // Check again if redirected to landing after timeout
+      const currentUrl = this.page.url();
+      if (
+        currentUrl.includes("/signin") ||
+        currentUrl === "http://localhost:5555/" ||
+        !currentUrl.includes(slug)
+      ) {
+        throw new Error(`Redirected to landing/signin page: ${currentUrl}. Auth session invalid.`);
+      }
       console.log("Dashboard didn't load in time, reloading...");
       await this.page.reload();
       await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
