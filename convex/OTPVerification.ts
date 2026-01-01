@@ -49,7 +49,11 @@ export const OTPVerification = Resend({
   },
 
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest({ identifier: email, token }, _ctx) {
+  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
+  async sendVerificationRequest(
+    { identifier: email, token }: { identifier: string; token: string },
+    _ctx: any,
+  ) {
     const ctx = _ctx as QueryCtx;
     // Check if user is already verified (e.g., E2E test users)
     const existingUser = await ctx.db

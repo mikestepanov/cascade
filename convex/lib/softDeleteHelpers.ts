@@ -21,6 +21,7 @@
 import type {
   ExpressionOrValue,
   FilterBuilder,
+  GenericDocument,
   GenericTableIndexes,
   GenericTableSearchIndexes,
   GenericTableVectorIndexes,
@@ -31,7 +32,7 @@ import type { Id } from "../_generated/dataModel";
 
 // Loose type for dynamic table access
 type AnyTableInfo = {
-  document: Record<string, unknown>;
+  document: GenericDocument;
   fieldPaths: string;
   indexes: GenericTableIndexes;
   searchIndexes: GenericTableSearchIndexes;

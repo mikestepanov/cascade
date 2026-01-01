@@ -38,7 +38,11 @@ export const OTPPasswordReset = Resend({
   },
 
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest({ identifier: email, token }, ctx) {
+  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
+  async sendVerificationRequest(
+    { identifier: email, token }: { identifier: string; token: string },
+    ctx: any,
+  ) {
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Reset your password",

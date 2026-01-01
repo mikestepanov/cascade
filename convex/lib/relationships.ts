@@ -11,6 +11,7 @@
 
 import type {
   GenericDatabaseWriter,
+  GenericDocument,
   GenericTableIndexes,
   GenericTableSearchIndexes,
   GenericTableVectorIndexes,
@@ -23,7 +24,7 @@ import type { MutationCtx } from "../_generated/server";
 
 // Loose type for dynamic table access
 type AnyTableInfo = {
-  document: Record<string, unknown>;
+  document: GenericDocument;
   fieldPaths: string;
   indexes: GenericTableIndexes;
   searchIndexes: GenericTableSearchIndexes;
@@ -174,12 +175,12 @@ async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordI
     for (const child of children) {
       // Recursion needs a cast because TS can't prove child[rel.child] matches the recursion
       await cascadeDelete(ctx, rel.child, child._id as Id<TableNames>);
-      await ctx.db.delete(child._id);
+      await ctx.db.delete(child._id as any);
     }
   } else if (rel.onDelete === "set_null") {
     // Set foreign key to null instead of deleting
     for (const child of children) {
-      await ctx.db.patch(child._id, {
+      await ctx.db.patch(child._id as any, {
         [rel.foreignKey]: undefined,
       });
     }
@@ -252,11 +253,14 @@ async function handleSoftDeleteRelation(
       await cascadeSoftDelete(ctx, rel.child, child._id as Id<TableNames>, deletedBy, deletedAt);
 
       // Mark this child as deleted
-      await ctx.db.patch(child._id, {
-        isDeleted: true,
-        deletedAt,
-        deletedBy,
-      } as Record<string, unknown>); // Partial update of dynamic fields is easier with alias
+      await ctx.db.patch(
+        child._id as any,
+        {
+          isDeleted: true,
+          deletedAt,
+          deletedBy,
+        } as Record<string, unknown>,
+      ); // Partial update of dynamic fields is easier with alias
     }
   }
 }
@@ -307,11 +311,14 @@ async function handleRestoreRelation(
       await cascadeRestore(ctx, rel.child, child._id as Id<TableNames>);
 
       // Remove deleted flags
-      await ctx.db.patch(child._id, {
-        isDeleted: undefined,
-        deletedAt: undefined,
-        deletedBy: undefined,
-      } as Record<string, unknown>);
+      await ctx.db.patch(
+        child._id as any,
+        {
+          isDeleted: undefined,
+          deletedAt: undefined,
+          deletedBy: undefined,
+        } as Record<string, unknown>,
+      );
     }
   }
 }

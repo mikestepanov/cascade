@@ -29,13 +29,13 @@ export const rateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunMutationCtx,
   name: Name,
   options?: Parameters<typeof rateLimiter.limit<Name>>[2],
-) => rateLimiter.limit(ctx, name, options);
+) => rateLimiter.limit(ctx, name, ...(options as any));
 
 export const checkRateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunQueryCtx,
   name: Name,
   options?: Parameters<typeof rateLimiter.check<Name>>[2],
-) => rateLimiter.check(ctx, name, options);
+) => rateLimiter.check(ctx, name, ...(options as any));
 
 export const resetRateLimit = <Name extends keyof typeof rateLimiter.limits>(
   ctx: RunMutationCtx,
