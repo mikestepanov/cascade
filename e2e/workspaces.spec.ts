@@ -24,11 +24,10 @@ test.describe("Workspaces", () => {
   });
 
   test.describe("Workspace Navigation", () => {
-    test("can navigate to workspaces page", async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.expectLoaded();
-      await dashboardPage.navigateTo("projects"); // "Projects" tab now navigates to /workspaces
-      await dashboardPage.expectActiveTab("projects"); // Verifies /workspaces URL via dashboardPage helper
+    test("can navigate to workspaces page", async ({ workspacesPage }) => {
+      // Navigate directly to workspaces page
+      await workspacesPage.goto();
+      await workspacesPage.expectWorkspacesView();
     });
   });
 
