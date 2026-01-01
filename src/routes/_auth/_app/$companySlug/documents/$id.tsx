@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Lazy load DocumentEditor (heavy - includes BlockNote)
@@ -19,16 +20,18 @@ function DocumentPage() {
 
   return (
     <div className="h-full overflow-auto">
-      <Suspense
-        key={id} // Force remount on document change to avoid stale error states
-        fallback={
-          <div className="flex h-full items-center justify-center">
-            <LoadingSpinner size="lg" />
-          </div>
-        }
-      >
-        <DocumentEditor documentId={id as Id<"documents">} />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense
+          key={id} // Force remount on document change to avoid stale error states
+          fallback={
+            <div className="flex h-full items-center justify-center">
+              <LoadingSpinner size="lg" />
+            </div>
+          }
+        >
+          <DocumentEditor documentId={id as Id<"documents">} />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
