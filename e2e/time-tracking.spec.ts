@@ -30,12 +30,7 @@ test.describe("Time Tracking", () => {
     }
   });
 
-  test("user can track time on an issue", async ({
-    dashboardPage,
-    workspacesPage,
-    page,
-    ensureAuthenticated,
-  }) => {
+  test("user can track time on an issue", async ({ workspacesPage, page }) => {
     const now = Date.now();
     const projectKey = `TT${now.toString().slice(-4)}`;
     const issueTitle = `Time Track Issue ${now}`;

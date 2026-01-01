@@ -242,9 +242,10 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async openCommandPalette() {
-    await this.commandPaletteButton.click({ force: true });
-    // Aggressive wait for dialog to stabilize after hydration
-    await expect(this.commandPalette).toBeVisible({ timeout: 10000 });
+    await expect(async () => {
+      await this.commandPaletteButton.click({ force: true });
+      await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
     await this.page.waitForTimeout(500);
   }
 

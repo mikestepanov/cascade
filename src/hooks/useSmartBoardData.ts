@@ -37,9 +37,7 @@ function mergeIssuesByStatus(
 
   if (smartIssues) {
     for (const [status, issues] of Object.entries(smartIssues)) {
-      if (isEnrichedIssueArray(issues)) {
-        result[status] = [...issues];
-      }
+      result[status] = Array.isArray(issues) ? [...issues] : [];
     }
   }
 
@@ -134,9 +132,7 @@ function getAllLoadedIssues(
   const issues: EnrichedIssue[] = [...additionalDoneIssues];
   if (smartData?.issuesByStatus) {
     for (const statusIssues of Object.values(smartData.issuesByStatus)) {
-      if (isEnrichedIssueArray(statusIssues)) {
-        issues.push(...statusIssues);
-      }
+      issues.push(...(Array.isArray(statusIssues) ? statusIssues : []));
     }
   }
   return issues;

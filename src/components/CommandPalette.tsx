@@ -234,19 +234,17 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.page && Array.isArray(myIssues.page)
-      ? myIssues.page.slice(0, 5).map((issue) => ({
-          id: `issue-${issue._id}`,
-          label: issue.title,
-          icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
-          description: `${issue.key} • ${issue.projectName}`,
-          keywords: [issue.key, issue.projectName || ""],
-          action: () => {
-            navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
-          },
-          group: "Recent Issues",
-        }))
-      : []),
+    ...(myIssues?.page?.slice(0, 5)?.map((issue) => ({
+      id: `issue-${issue._id}`,
+      label: issue.title,
+      icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
+      description: `${issue.key} • ${issue.projectName}`,
+      keywords: [issue.key, issue.projectName || ""],
+      action: () => {
+        navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
+      },
+      group: "Recent Issues",
+    })) ?? []),
   ];
 
   return commands;

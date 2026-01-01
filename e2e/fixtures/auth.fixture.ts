@@ -80,7 +80,8 @@ export type AuthFixtures = {
 };
 
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: async (_, use, _testInfo) => {
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright requires {} for injection
+  storageState: async ({}, use, _testInfo) => {
     let state: any;
     try {
       if (fs.existsSync(AUTH_STATE_PATH)) {
@@ -144,7 +145,8 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await save();
   },
 
-  companySlug: async (_, use, testInfo) => {
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright requires {} for injection
+  companySlug: async ({}, use, testInfo) => {
     const config = loadDashboardConfig();
     if (!config?.companySlug) testInfo.skip(true, "Default user config not found.");
     await use(config?.companySlug || "");

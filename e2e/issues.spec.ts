@@ -55,7 +55,7 @@ test.describe("Issues", () => {
   });
 
   test.describe("Issue Detail", () => {
-    test("can open issue detail dialog", async ({ dashboardPage, workspacesPage, page }) => {
+    test("can open issue detail dialog", async ({ workspacesPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
@@ -82,7 +82,7 @@ test.describe("Issues", () => {
       await expect(workspacesPage.issueDetailDialog).toBeVisible({ timeout: 5000 });
     });
 
-    test("issue detail shows timer controls", async ({ dashboardPage, workspacesPage, page }) => {
+    test("issue detail shows timer controls", async ({ workspacesPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
