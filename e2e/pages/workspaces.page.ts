@@ -26,9 +26,7 @@ export class WorkspacesPage extends BasePage {
   }
 
   async goto() {
-    const currentUrl = this.page.url();
-    const match = currentUrl.match(/\/([^/]+)\//);
-    const slug = match ? match[1] : "nixelo-e2e";
+    const slug = this.getCompanySlug();
     await this.page.goto(`/${slug}/workspaces`);
     await this.page.waitForLoadState("networkidle");
   }

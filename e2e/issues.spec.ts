@@ -23,7 +23,7 @@ test.describe("Issues", () => {
   });
 
   test.describe("Issue Creation", () => {
-    test("can create an issue from board view", async ({ dashboardPage, workspacesPage, page }) => {
+    test("can create an issue from board view", async ({ dashboardPage, projectsPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Create project first
@@ -32,81 +32,81 @@ test.describe("Issues", () => {
       const issueTitle = "Test Issue";
 
       // Use direct URL navigation to projects page to access Create Project functionality
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project
-      await workspacesPage.createProject(`Project ${uniqueId}`, projectKey);
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
       // Verify board loaded
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.expectBoardVisible();
 
       // Create an issue
       // We need to wait for the board to be fully interactive
       await page.waitForTimeout(1000);
-      await workspacesPage.createIssue(issueTitle);
+      await projectsPage.createIssue(issueTitle);
 
       // Verify modal closes
-      await expect(workspacesPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
       // Verify issue appears on board
-      const issueCard = workspacesPage.getIssueCard(issueTitle);
+      const issueCard = projectsPage.getIssueCard(issueTitle);
       await expect(issueCard).toBeVisible({ timeout: 5000 });
     });
   });
 
   test.describe("Issue Detail", () => {
-    test("can open issue detail dialog", async ({ workspacesPage, page }) => {
+    test("can open issue detail dialog", async ({ projectsPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
       const issueTitle = "Detail Test Issue";
 
       // Use direct URL navigation to projects page to access Create Project functionality
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project
-      await workspacesPage.createProject(`Project ${uniqueId}`, projectKey);
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
       // Verify board loaded
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.expectBoardVisible();
 
       // Create an issue
       await page.waitForTimeout(1000);
-      await workspacesPage.createIssue(issueTitle);
-      await expect(workspacesPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await projectsPage.createIssue(issueTitle);
+      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
       // Open detail dialog
-      await workspacesPage.openIssueDetail(issueTitle);
+      await projectsPage.openIssueDetail(issueTitle);
 
       // Verify dialog visible
-      await expect(workspacesPage.issueDetailDialog).toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.issueDetailDialog).toBeVisible({ timeout: 5000 });
     });
 
-    test("issue detail shows timer controls", async ({ workspacesPage, page }) => {
+    test("issue detail shows timer controls", async ({ projectsPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
       const issueTitle = "Timer Test Issue";
 
       // Use direct URL navigation to projects page to access Create Project functionality
-      await workspacesPage.goto();
+      await projectsPage.goto();
 
       // Create a project
-      await workspacesPage.createProject(`Project ${uniqueId}`, projectKey);
+      await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
       // Verify board loaded
-      await workspacesPage.expectBoardVisible();
+      await projectsPage.expectBoardVisible();
 
       // Create an issue
       await page.waitForTimeout(1000);
-      await workspacesPage.createIssue(issueTitle);
-      await expect(workspacesPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await projectsPage.createIssue(issueTitle);
+      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
       // Open detail dialog
-      await workspacesPage.openIssueDetail(issueTitle);
+      await projectsPage.openIssueDetail(issueTitle);
 
       // Verify timer controls
-      await expect(workspacesPage.startTimerButton).toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.startTimerButton).toBeVisible({ timeout: 5000 });
       await page.waitForTimeout(1000);
 
       // Timer start button should be visible

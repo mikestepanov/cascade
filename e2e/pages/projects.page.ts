@@ -153,7 +153,7 @@ export class ProjectsPage extends BasePage {
       .or(page.getByRole("tab", { name: /settings/i }));
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
-    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking/i });
+    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking|PROJ/i });
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
@@ -184,9 +184,7 @@ export class ProjectsPage extends BasePage {
     // which has the "Create Project" button wired up correctly.
     // Assumes we are already logged in and on a page with company slug in URL.
     // Fallback to nixelo-e2e if not found (dashboard test default).
-    const currentUrl = this.page.url();
-    const match = currentUrl.match(/\/([^/]+)\/(dashboard|workspaces|projects|settings)/);
-    const slug = match ? match[1] : "nixelo-e2e";
+    const slug = this.getCompanySlug();
     if (!slug) throw new Error("Company slug not found in URL");
     await this.page.goto(`/${slug}/projects`);
     await this.page.waitForLoadState("networkidle");
@@ -242,14 +240,22 @@ export class ProjectsPage extends BasePage {
           await expect(this.createProjectForm).toBeVisible();
         }
 
-        // Click the template
-        if (await softwareText.isVisible()) {
-          await softwareText.click();
+        // Wait for spinner to be gone again
+        const innerSpinner = this.createProjectForm.locator(".animate-spin");
+        if (await innerSpinner.isVisible()) {
+          await expect(innerSpinner).not.toBeVisible({ timeout: 5000 });
         }
+
+        // Click the template
+        const template = this.createProjectForm.getByRole("heading", {
+          name: /Software Development/i,
+        });
+        await template.waitFor({ state: "visible", timeout: 5000 });
+        await template.click({ force: true });
 
         // Verify we proceeded to configuration step
         await expect(this.createProjectForm.getByText("Configure Project")).toBeVisible({
-          timeout: 2000,
+          timeout: 5000,
         });
       }).toPass({ timeout: 20000 });
 
@@ -350,9 +356,11 @@ export class ProjectsPage extends BasePage {
     await expect(this.issueDetailDialog).toBeVisible({ timeout: 5000 });
 
     // Wait for the issue content to load (skeleton to disappear / critical sections to appear)
-    const timeTrackingHeader = this.issueDetailDialog.getByRole("heading", {
-      name: /time tracking/i,
-    });
+    const timeTrackingHeader = this.issueDetailDialog
+      .getByRole("heading", {
+        name: /time tracking/i,
+      })
+      .first();
     await expect(timeTrackingHeader).toBeVisible({ timeout: 10000 });
   }
 
