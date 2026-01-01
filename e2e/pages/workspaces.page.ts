@@ -17,8 +17,9 @@ export class WorkspacesPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    this.newWorkspaceButton = page.getByRole("button", {
-      name: /\+ Create Workspace|Add new workspace|\+ New/i,
+    // Scope to main content to avoid sidebar's "Add new workspace" button
+    this.newWorkspaceButton = page.locator("main").getByRole("button", {
+      name: /\+ Create Workspace|Create Workspace/i,
     });
     this.workspaceNameInput = page.getByLabel(/workspace name/i);
     this.workspaceDescriptionInput = page.getByLabel(/description/i);
@@ -39,21 +40,10 @@ export class WorkspacesPage extends BasePage {
   }
 
   async goto() {
-    const slug = this.getCompanySlug();
-    const workspacesUrl = `/${slug}/workspaces`;
+    // Use hardcoded slug for E2E tests since getCompanySlug() fails on fresh pages
+    const workspacesUrl = `/nixelo-e2e/workspaces`;
 
-    // Navigate with retry logic to handle redirects
-    await expect(async () => {
-      await this.page.goto(workspacesUrl, { waitUntil: "domcontentloaded" });
-      await this.page.waitForTimeout(1000);
-
-      const currentUrl = this.page.url();
-      if (!currentUrl.includes("/workspaces")) {
-        console.log(`  ⚠️ WorkspacesPage.goto: Redirected to ${currentUrl}, retrying...`);
-        throw new Error("Redirected away from workspaces page");
-      }
-    }).toPass({ timeout: 15000 });
-
+    await this.page.goto(workspacesUrl, { waitUntil: "domcontentloaded" });
     await this.expectLoaded();
     await this.waitForLoad();
   }
