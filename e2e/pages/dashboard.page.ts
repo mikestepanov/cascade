@@ -178,7 +178,7 @@ export class DashboardPage extends BasePage {
 
     // Projects sidebar
     this.newProjectButton = page.getByRole("button", {
-      name: /new.*project|add new workspace|\+ new/i,
+      name: /new.*project|\+ new/i,
     });
     this.projectList = page.locator("[data-project-list]");
   }
