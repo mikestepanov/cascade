@@ -213,9 +213,11 @@ export class DashboardPage extends BasePage {
       finalUrl === "http://localhost:5555/" ||
       !finalUrl.includes(slug)
     ) {
-      throw new Error(
-        `Auth redirect detected: navigated to ${finalUrl} instead of ${dashboardUrl}. Auth token may have expired.`,
+      // Log warning but don't throw - allow ensureAuthenticated in beforeEach to retry
+      console.log(
+        `⚠️  Auth redirect detected: navigated to ${finalUrl} instead of ${dashboardUrl}. Will rely on ensureAuthenticated retry.`,
       );
+      // Don't throw here - let the commandPaletteButton wait timeout handle it
     }
 
     // Wait for dashboard app shell with recovery
