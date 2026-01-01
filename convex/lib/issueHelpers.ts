@@ -197,8 +197,8 @@ export async function fetchPaginatedIssues(
   ctx: QueryCtx,
   opts: {
     paginationOpts: PaginationOptions;
-    // biome-ignore lint/suspicious/noExplicitAny: Query builder return type is complex
-    query: (db: QueryCtx["db"]) => any; // Query builder keeps specific type implicitly
+
+    query: (db: QueryCtx["db"]) => unknown; // Query builder keeps specific type implicitly
     enrich?: boolean;
   },
 ): Promise<PaginationResult<EnrichedIssue | Doc<"issues">>> {

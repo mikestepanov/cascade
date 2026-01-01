@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
+    globalThis.console.error("Uncaught error:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }
 

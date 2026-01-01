@@ -10,8 +10,7 @@ import type { QueryCtx } from "../_generated/server";
 
 // Helper to wrap T into a TableInfo structure for FilterBuilder
 type TableInfoFor = {
-  // biome-ignore lint/suspicious/noExplicitAny: FilterBuilder needs a permissive type to allow filtering on arbitrary fields
-  document: any; // Keeping document as any for now to avoid 'unknown' issues, or can try T
+  document: Record<string, unknown>; // Keeping document as generic record
   fieldPaths: string;
   indexes: GenericTableIndexes;
   searchIndexes: GenericTableSearchIndexes;
@@ -22,8 +21,8 @@ export async function fetchPaginatedQuery<T extends Record<string, unknown>>(
   ctx: QueryCtx,
   opts: {
     paginationOpts: PaginationOptions;
-    // biome-ignore lint/suspicious/noExplicitAny: Query builder types are complex in Convex
-    query: (db: QueryCtx["db"]) => any;
+
+    query: (db: QueryCtx["db"]) => unknown;
   },
 ): Promise<PaginationResult<T>> {
   return await opts

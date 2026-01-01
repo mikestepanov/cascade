@@ -200,9 +200,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 <Skeleton className="h-5 w-24" />
               </div>
               <div className="flex-1 grid grid-cols-6 gap-2">
-                {[...Array(6)].map((_, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton array
-                  <Skeleton key={i} className="h-5 w-full" />
+                {[1, 2, 3, 4, 5, 6].map((id) => (
+                  <Skeleton key={id} className="h-5 w-full" />
                 ))}
               </div>
             </div>
@@ -210,9 +209,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
 
           {/* Skeleton Rows */}
           <div className="flex-1 overflow-auto">
-            {[...Array(8)].map((_, i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton array
                 key={i}
                 className="flex items-center p-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
               >

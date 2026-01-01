@@ -12,6 +12,7 @@ import {
   projectQuery,
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { calculateIssueCounts } from "./lib/issueCalculation";
 import { fetchPaginatedIssues } from "./lib/issueHelpers";
 import { cascadeDelete } from "./lib/relationships";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -1794,7 +1795,7 @@ export const getTeamIssueCounts = query({
     teamId: v.id("teams"),
     doneColumnDays: v.optional(v.number()),
   },
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -1833,36 +1834,10 @@ export const getTeamIssueCounts = query({
       .filter(notDeleted)
       .collect();
 
-    // Aggregate counts by category (mapped from status)
-    const byStatus = {
-      total: {} as Record<string, number>,
-      visible: {} as Record<string, number>,
-      hidden: {} as Record<string, number>,
+    // Calculate counts
+    const { byStatus } = {
+      byStatus: calculateIssueCounts(allIssues, statusCategoryMap, doneThreshold),
     };
-
-    // Initialize categories
-    const categories = ["todo", "inprogress", "done"];
-    for (const cat of categories) {
-      byStatus.total[cat] = 0;
-      byStatus.visible[cat] = 0;
-      byStatus.hidden[cat] = 0;
-    }
-
-    for (const issue of allIssues) {
-      const category = statusCategoryMap.get(issue.status) || "todo";
-
-      byStatus.total[category] = (byStatus.total[category] || 0) + 1;
-
-      if (category === "done") {
-        if (issue.updatedAt >= doneThreshold) {
-          byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
-        } else {
-          byStatus.hidden[category] = (byStatus.hidden[category] || 0) + 1;
-        }
-      } else {
-        byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
-      }
-    }
 
     return { byStatus };
   },
@@ -1878,7 +1853,7 @@ export const getIssueCounts = query({
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -1895,40 +1870,45 @@ export const getIssueCounts = query({
     const workflowStates = project.workflowStates || [];
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
 
-    // Build a map of status -> category
-    const statusToCategory: Record<string, string> = {};
-    for (const state of workflowStates) {
-      statusToCategory[state.id] = state.category;
+    // Initialize result
+    const result = {
+      total: 0,
+      visible: 0,
+      hidden: 0,
+      byStatus: {
+        total: {} as Record<string, number>,
+        visible: {} as Record<string, number>,
+        hidden: {} as Record<string, number>,
+      },
+    };
+
+    // Helper to add counts to result
+    const addCounts = (
+      statusId: string,
+      counts: { total: number; visible: number; hidden: number },
+    ) => {
+      result.byStatus.total[statusId] = counts.total;
+      result.byStatus.visible[statusId] = counts.visible;
+      result.byStatus.hidden[statusId] = counts.hidden;
+      result.total += counts.total;
+      result.visible += counts.visible;
+      result.hidden += counts.hidden;
+    };
+
+    // Sprint View
+    if (args.sprintId) {
+      return await getSprintIssueCounts(
+        ctx,
+        args.projectId,
+        args.sprintId,
+        workflowStates,
+        doneThreshold,
+      );
     }
 
-    // Initialize counters
-    const totalByStatus: Record<string, number> = {};
-    const visibleByStatus: Record<string, number> = {};
-    const hiddenByStatus: Record<string, number> = {};
-    let total = 0;
-    let visibleTotal = 0;
-    let hiddenTotal = 0;
-
-    // Use parallel queries for each status to avoid loading all items at once
-    // This is much safer for large projects
+    // Full Board: Query per status
     await Promise.all(
       workflowStates.map(async (state) => {
-        let issues: { updatedAt: number; sprintId?: Id<"sprints"> }[] = [];
-
-        // If sprint is specified, use sprint index (usually smaller dataset)
-        if (args.sprintId) {
-          // For sprint view, we just rely on the main sprint query pattern or per-status logic
-          // Since we can't easily combine "by_sprint" and "by_status" in one index efficiently without "by_workspace_sprint_status" (which we don't have)
-          // We will use existing behavior for sprint-filtered counts (filtering in memory after fetching sprint),
-          // BUT since sprints are small, this is fine.
-          // However, to keep it parallelized, we could query by workspace_sprint_created and filter by status in memory?
-          // Actually, for specific status counts, we can stick to status index + filter by sprint?
-          // No, filtering 10k done items for 1 sprint item is bad.
-          // BETTER: If sprintId is present, fetch ALL sprint items once (small set) and aggregate in memory.
-          return;
-        }
-
-        // Full Board: Query by status
         const statusIssues = await ctx.db
           .query("issues")
           .withIndex("by_workspace_status_updated", (q) =>
@@ -1937,74 +1917,17 @@ export const getIssueCounts = query({
           .filter(notDeleted)
           .collect();
 
-        issues = statusIssues;
+        const total = statusIssues.length;
+        const visible =
+          state.category === "done"
+            ? statusIssues.filter((i) => i.updatedAt >= doneThreshold).length
+            : total;
 
-        const totalCount = issues.length;
-        let visibleCount = 0;
-
-        if (state.category === "done") {
-          // Done column: Check threshold
-          visibleCount = issues.filter((i) => i.updatedAt >= doneThreshold).length;
-        } else {
-          // Todo/Inprogress: All visible
-          visibleCount = totalCount;
-        }
-
-        const hiddenCount = totalCount - visibleCount;
-
-        // Update aggregators
-        totalByStatus[state.id] = totalCount;
-        visibleByStatus[state.id] = visibleCount;
-        hiddenByStatus[state.id] = hiddenCount;
-        total += totalCount;
-        visibleTotal += visibleCount;
-        hiddenTotal += hiddenCount;
+        addCounts(state.id, { total, visible, hidden: total - visible });
       }),
     );
 
-    // Special handling for Sprint View (if sprintId was provided)
-    if (args.sprintId) {
-      const allSprintIssues = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
-        )
-        .filter(notDeleted)
-        .collect();
-
-      // Aggregate sprint issues
-      for (const issue of allSprintIssues) {
-        const stateId = issue.status;
-        const category = statusToCategory[stateId] || "todo";
-
-        totalByStatus[stateId] = (totalByStatus[stateId] || 0) + 1;
-        total++;
-
-        let isVisible = true;
-        if (category === "done") {
-          isVisible = issue.updatedAt >= doneThreshold;
-        }
-
-        if (isVisible) {
-          visibleByStatus[stateId] = (visibleByStatus[stateId] || 0) + 1;
-          visibleTotal++;
-        } else {
-          hiddenByStatus[stateId] = (hiddenByStatus[stateId] || 0) + 1;
-          hiddenTotal++;
-        }
-      }
-    }
-
-    return {
-      total,
-      visible: visibleTotal,
-      hidden: hiddenTotal,
-      byStatus: {
-        total: totalByStatus,
-        visible: visibleByStatus,
-        hidden: hiddenByStatus,
-      },
-    };
+    return result;
   },
 });
 
@@ -2082,3 +2005,64 @@ export const loadMoreDoneIssues = query({
     };
   },
 });
+
+// Helper for getIssueCounts sprint view
+async function getSprintIssueCounts(
+  ctx: QueryCtx,
+  projectId: Id<"projects">,
+  sprintId: Id<"sprints">,
+  workflowStates: { id: string; category: string }[],
+  doneThreshold: number,
+) {
+  // Initialize result
+  const result = {
+    total: 0,
+    visible: 0,
+    hidden: 0,
+    byStatus: {
+      total: {} as Record<string, number>,
+      visible: {} as Record<string, number>,
+      hidden: {} as Record<string, number>,
+    },
+  };
+
+  const allSprintIssues = await ctx.db
+    .query("issues")
+    .withIndex("by_workspace_sprint_created", (q) =>
+      q.eq("projectId", projectId).eq("sprintId", sprintId),
+    )
+    .filter(notDeleted)
+    .collect();
+
+  const statusToCategory: Record<string, string> = {};
+  for (const state of workflowStates) {
+    statusToCategory[state.id] = state.category;
+  }
+
+  // We must aggregate per status manually as before.
+  for (const issue of allSprintIssues) {
+    const stateId = issue.status;
+    const category = statusToCategory[stateId] || "todo";
+
+    // Initialize if needed
+    if (!result.byStatus.total[stateId]) {
+      result.byStatus.total[stateId] = 0;
+      result.byStatus.visible[stateId] = 0;
+      result.byStatus.hidden[stateId] = 0;
+    }
+
+    result.byStatus.total[stateId]++;
+    result.total++;
+
+    const isVisible = category !== "done" || issue.updatedAt >= doneThreshold;
+    if (isVisible) {
+      result.byStatus.visible[stateId]++;
+      result.visible++;
+    } else {
+      result.byStatus.hidden[stateId]++;
+      result.hidden++;
+    }
+  }
+
+  return result;
+}

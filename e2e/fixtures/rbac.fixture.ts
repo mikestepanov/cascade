@@ -165,11 +165,10 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(new WorkspacesPage(viewerPage));
   },
 
-  // biome-ignore lint/correctness/noEmptyPattern: Playwright requires {} for injection
   rbacProjectKey: async ({}, use) => {
     await use(getRbacConfig().projectKey);
   },
-  // biome-ignore lint/correctness/noEmptyPattern: Playwright requires {} for injection
+
   rbacCompanySlug: async ({}, use) => {
     await use(getRbacConfig().companySlug);
   },

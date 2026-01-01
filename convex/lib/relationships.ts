@@ -23,8 +23,7 @@ import type { MutationCtx } from "../_generated/server";
 
 // Loose type for dynamic table access
 type AnyTableInfo = {
-  // biome-ignore lint/suspicious/noExplicitAny: This loose type allows GenericDatabaseWriter to accept any valid Convex document structure during recursion
-  document: any;
+  document: Record<string, unknown>;
   fieldPaths: string;
   indexes: GenericTableIndexes;
   searchIndexes: GenericTableSearchIndexes;

@@ -558,7 +558,7 @@ describe("Notifications", () => {
       const actorId = await createTestUser(t, { name: "Actor" });
 
       // Call internal mutation directly
-      // @ts-expect-error
+
       await t.mutation(internal.notifications.createNotification, {
         userId,
         type: "issue_assigned",
@@ -583,7 +583,7 @@ describe("Notifications", () => {
       const userId = await createTestUser(t);
 
       // Call internal mutation with userId === actorId
-      // @ts-expect-error
+
       await t.mutation(internal.notifications.createNotification, {
         userId,
         type: "test",

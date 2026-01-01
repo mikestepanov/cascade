@@ -31,8 +31,7 @@ import type { Id } from "../_generated/dataModel";
 
 // Loose type for dynamic table access
 type AnyTableInfo = {
-  // biome-ignore lint/suspicious/noExplicitAny: FilterBuilder needs a permissive type to allow filtering on 'isDeleted' across different tables
-  document: any;
+  document: Record<string, unknown>;
   fieldPaths: string;
   indexes: GenericTableIndexes;
   searchIndexes: GenericTableSearchIndexes;

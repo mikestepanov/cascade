@@ -126,7 +126,7 @@ export abstract class BasePage {
   getCompanySlug(): string {
     const url = this.page.url();
     // Match the first path segment if it's not a known system route
-    const match = url.match(/^https?:\/\/[^\/]+\/([^\/]+)/);
+    const match = url.match(/^https?:\/\/[^/]+\/([^/]+)/);
     const slug = match ? match[1] : null;
 
     const systemRoutes = ["signin", "signup", "onboarding", "terms", "privacy", ""];
