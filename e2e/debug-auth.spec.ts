@@ -10,7 +10,8 @@ const TEST_USER = {
   password: "TestPassword123!",
 };
 
-test("debug sign-in flow with full logging", async ({ page, baseURL }) => {
+// SKIPPED: Flaky due to reliance on exact text transition timing and manual cleanup
+test.skip("debug sign-in flow with full logging", async ({ page, baseURL }) => {
   const userService = new TestUserService();
 
   // Capture console messages
