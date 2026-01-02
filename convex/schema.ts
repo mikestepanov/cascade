@@ -93,7 +93,7 @@ const applicationTables = {
     description: v.optional(v.string()),
     // NEW: Hierarchy
     workspaceId: v.id("workspaces"), // Project belongs to workspace (department)
-    teamId: v.optional(v.id("teams")), // Project belongs to team (optional)
+    teamId: v.optional(v.id("teams")), // Project belongs to team (optional - null for workspace projects)
     // Ownership
     companyId: v.id("companies"), // Company this project belongs to
     ownerId: v.id("users"), // User that owns this project
@@ -155,9 +155,9 @@ const applicationTables = {
     .index("by_deleted", ["isDeleted"]),
 
   issues: defineTable({
-    projectId: v.id("projects"), // Issue belongs to project
-    workspaceId: v.id("workspaces"), // Issue belongs to workspace
-    teamId: v.optional(v.id("teams")), // Issue belongs to team (optional)
+    projectId: v.id("projects"), // Issue belongs to project (required)
+    workspaceId: v.id("workspaces"), // Cached from project.workspaceId
+    teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),

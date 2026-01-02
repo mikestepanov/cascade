@@ -932,7 +932,7 @@ export const setupRbacProjectInternal = internalMutation({
           { id: "review", name: "Review", category: "inprogress", order: 3 },
           { id: "done", name: "Done", category: "done", order: 4 },
         ],
-        teamId: undefined,
+        teamId,
       });
 
       project = await ctx.db.get(projectId);
@@ -959,7 +959,7 @@ export const setupRbacProjectInternal = internalMutation({
         description: "E2E test project for RBAC - Workspace level",
         companyId: company._id,
         workspaceId,
-        teamId: undefined, // Workspace level, no specific team
+        teamId, // Workspace level
         ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,

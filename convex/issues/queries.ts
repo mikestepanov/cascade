@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
-import { query } from "../_generated/server";
+import { type QueryCtx, query } from "../_generated/server";
 import { type ProjectQueryCtx, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import { enrichIssues, fetchPaginatedIssues } from "../lib/issueHelpers";
@@ -642,7 +642,7 @@ export const listByTeamSmart = query({
       workflowStates.map(async (state: { id: string; category: string }) => {
         let q = ctx.db
           .query("issues")
-          .withIndex("by_team_status_updated", (q: any) =>
+          .withIndex("by_team_status", (q: any) =>
             q.eq("teamId", args.teamId).eq("status", state.id),
           )
           .filter(notDeleted);
@@ -673,7 +673,7 @@ export const getTeamIssueCounts = query({
     if (!team) return null;
 
     const workspace = await ctx.db.get(team.workspaceId);
-    const workflowStates = workspace?.defaultWorkflowStates || [
+    const workflowStates = [
       { id: "todo", name: "To Do", category: "todo", order: 0 },
       { id: "inprogress", name: "In Progress", category: "inprogress", order: 1 },
       { id: "done", name: "Done", category: "done", order: 2 },
@@ -834,7 +834,7 @@ async function getSprintIssueCounts(
     workflowStates.map(async (state: { id: string; category: string }) => {
       const allIssues = await ctx.db
         .query("issues")
-        .withIndex("by_project_sprint_created", (q) =>
+        .withIndex("by_project_sprint_created", (q: any) =>
           q.eq("projectId", projectId).eq("sprintId", sprintId),
         )
         .filter((q: any) => q.eq(q.field("status"), state.id))

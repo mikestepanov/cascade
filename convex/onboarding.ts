@@ -138,6 +138,17 @@ export const createSampleProject = mutation({
       updatedAt: now,
     });
 
+    const teamId = await ctx.db.insert("teams", {
+      companyId,
+      workspaceId,
+      name: "Engineering",
+      slug: "engineering",
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+      isPrivate: false,
+    });
+
     // Create sample project
     const projectId = await ctx.db.insert("projects", {
       name: "Sample Project",
@@ -146,6 +157,7 @@ export const createSampleProject = mutation({
         "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
       companyId,
       workspaceId,
+      teamId,
       ownerId: userId,
       createdBy: userId,
       createdAt: now,
@@ -321,7 +333,7 @@ export const createSampleProject = mutation({
       const issueId = await ctx.db.insert("issues", {
         projectId,
         workspaceId,
-        teamId: undefined, // Sample project has no team
+        teamId,
         key: `SAMPLE-${createdIssues.length + 1}`,
         title: issue.title,
         description: issue.description,

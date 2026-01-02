@@ -21,7 +21,7 @@ export const createProject = mutation({
     companyId: v.id("companies"), // Company this project belongs to
     workspaceId: v.id("workspaces"), // Workspace this project belongs to
     // Optional ownership overrides
-    teamId: v.optional(v.id("teams")), // Team owner (if team-owned)
+    teamId: v.optional(v.id("teams")), // Team owner (optional - null for workspace projects)
     ownerId: v.optional(v.id("users")), // User owner (defaults to creator)
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all company members
@@ -42,6 +42,17 @@ export const createProject = mutation({
 
     if (existingProject) {
       throw new Error("Project key already exists");
+    }
+
+    // Validate: if teamId provided, ensure it belongs to the workspace
+    if (args.teamId) {
+      const team = await ctx.db.get(args.teamId);
+      if (!team) {
+        throw new Error("Team not found");
+      }
+      if (team.workspaceId !== args.workspaceId) {
+        throw new Error("Team must belong to the specified workspace");
+      }
     }
 
     const now = Date.now();
@@ -148,7 +159,7 @@ export const getCurrentUserProjects = query({
       };
     });
     const issueCounts = await Promise.all(issueCountsPromises);
-    const issueCountByWorkspace = new Map(
+    const issueCountByProject = new Map(
       issueCounts.map(({ projectId, count }) => [projectId.toString(), count]),
     );
 
@@ -169,7 +180,7 @@ export const getCurrentUserProjects = query({
         return {
           ...project,
           creatorName: getUserName(creator),
-          issueCount: issueCountByWorkspace.get(projId) ?? 0,
+          issueCount: issueCountByProject.get(projId) ?? 0,
           isOwner: project.ownerId === userId || project.createdBy === userId,
           userRole: roleMap.get(projId) ?? null,
         };

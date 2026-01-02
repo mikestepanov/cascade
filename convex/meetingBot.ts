@@ -769,8 +769,8 @@ export const createIssueFromActionItem = mutation({
     // Create the issue
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
-      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">),
-      teamId: project.teamId ?? ("" as Id<"teams">),
+      workspaceId: project.workspaceId,
+      teamId: project.teamId,
       key: `${project.key}-${nextNumber}`,
       title: actionItem.description,
       description: `Created from meeting action item`,

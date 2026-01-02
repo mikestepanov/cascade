@@ -132,13 +132,14 @@ export const updateStatusByCategory = issueMutation({
     newOrder: v.number(),
   },
   handler: async (ctx, args) => {
-    const targetState = ctx.project.workflowStates
+    const workflowStates = ctx.project?.workflowStates || [];
+    const targetState = [...workflowStates]
       .sort((a, b) => a.order - b.order)
       .find((s) => s.category === args.category);
 
     if (!targetState) {
       throw new Error(
-        `No workflow state found for category ${args.category} in project ${ctx.project.name}`,
+        `No workflow state found for category ${args.category}${ctx.project ? ` in project ${ctx.project.name}` : ""}`,
       );
     }
 
@@ -200,7 +201,7 @@ export const update = issueMutation({
       args.assigneeId &&
       args.assigneeId !== ctx.userId
     ) {
-      // @ts-expect-error
+      // Dynamic import to avoid cycles
       const { sendEmailNotification } = await import("../email/helpers");
       await sendEmailNotification(ctx, {
         userId: args.assigneeId,
@@ -254,7 +255,7 @@ export const addComment = issueViewerMutation({
     });
 
     const author = await ctx.db.get(ctx.userId);
-    // @ts-expect-error
+    // Dynamic import to avoid cycles
     const { sendEmailNotification } = await import("../email/helpers");
 
     for (const mentionedUserId of mentions) {

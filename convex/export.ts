@@ -53,7 +53,7 @@ async function processJSONIssue(
   projectId: Id<"projects">,
   projectKey: string,
   workspaceId: Id<"workspaces">,
-  teamId: Id<"teams">,
+  teamId: Id<"teams"> | undefined,
   userId: Id<"users">,
   defaultStatus: string,
 ): Promise<string> {
@@ -149,7 +149,7 @@ function parseCSVRow(
   indices: ReturnType<typeof parseCSVHeaders>,
   projectId: Id<"projects">,
   workspaceId: Id<"workspaces">,
-  teamId: Id<"teams">,
+  teamId: Id<"teams"> | undefined,
   issueKey: string,
   userId: Id<"users">,
   defaultStatus: string,
@@ -157,7 +157,7 @@ function parseCSVRow(
 ): {
   projectId: Id<"projects">;
   workspaceId: Id<"workspaces">;
-  teamId: Id<"teams">;
+  teamId: Id<"teams"> | undefined;
   key: string;
   title: string;
   description?: string;
@@ -217,7 +217,7 @@ async function createIssueWithActivity(
   issueData: {
     projectId: Id<"projects">;
     workspaceId: Id<"workspaces">;
-    teamId: Id<"teams">;
+    teamId: Id<"teams"> | undefined;
     key: string;
     title: string;
     description?: string;
@@ -557,8 +557,8 @@ export const importIssuesJSON = mutation({
           issue,
           args.projectId,
           project.key,
-          project.workspaceId ?? ("" as Id<"workspaces">),
-          project.teamId ?? ("" as Id<"teams">),
+          project.workspaceId,
+          project.teamId,
           userId,
           project.workflowStates[0].id,
         );
@@ -622,8 +622,8 @@ export const importIssuesCSV = mutation({
           values,
           indices,
           args.projectId,
-          project.workspaceId ?? ("" as Id<"workspaces">),
-          project.teamId ?? ("" as Id<"teams">),
+          project.workspaceId,
+          project.teamId,
           issueKey,
           userId,
           project.workflowStates[0].id,

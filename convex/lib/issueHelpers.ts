@@ -13,7 +13,7 @@ import { fetchPaginatedQuery } from "./queryHelpers";
 /**
  * Get an issue and validate it has a projectId (for migration safety)
  */
-export async function getIssueWithWorkspace(
+export async function getIssueWithProject(
   ctx: QueryCtx | MutationCtx,
   issueId: Id<"issues">,
 ): Promise<Doc<"issues"> & { projectId: Id<"projects"> }> {
