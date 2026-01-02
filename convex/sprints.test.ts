@@ -249,6 +249,7 @@ describe("Sprints", () => {
           name: "Company Visible Project",
           key: "COMPVIS",
           companyId,
+          workspaceId,
           ownerId: owner,
           createdBy: owner,
           createdAt: now,

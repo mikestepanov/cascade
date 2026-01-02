@@ -149,6 +149,7 @@ describe("RBAC Utilities", () => {
           name: "Company Visible Project",
           key: "COMPVIS",
           companyId,
+          workspaceId,
           ownerId: creatorId,
           createdBy: creatorId,
           createdAt: now,

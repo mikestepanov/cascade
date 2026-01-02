@@ -1,5 +1,5 @@
 import { convexTest } from "convex-test";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
@@ -46,6 +46,7 @@ describe("Invites", () => {
       const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newuser@example.com",
         role: "user",
+        companyId,
       });
 
       expect(inviteId).toBeDefined();
@@ -62,10 +63,14 @@ describe("Invites", () => {
       const projectId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
-      // Creator is project admin automatically
+      // Creator is project admin automatically - need companyId from project
+      const project = await t.run(async (ctx) => ctx.db.get(projectId));
+      if (!project) throw new Error("Project not found");
+
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "collab@example.com",
         role: "user",
+        companyId: project.companyId,
         projectId,
         projectRole: "editor",
       });
@@ -87,12 +92,14 @@ describe("Invites", () => {
       await asAdmin.mutation(api.invites.sendInvite, {
         email: "dupe@example.com",
         role: "user",
+        companyId,
       });
 
       await expect(async () => {
         await asAdmin.mutation(api.invites.sendInvite, {
           email: "dupe@example.com",
           role: "user",
+          companyId,
         });
       }).rejects.toThrow("An invitation has already been sent");
     });
@@ -110,6 +117,7 @@ describe("Invites", () => {
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "new@example.com",
         role: "user",
+        companyId,
       });
 
       // Create the new user who will accept
@@ -139,9 +147,14 @@ describe("Invites", () => {
       const projectId = await createTestProject(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
+      // Get companyId from project
+      const project = await t.run(async (ctx) => ctx.db.get(projectId));
+      if (!project) throw new Error("Project not found");
+
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "project@example.com",
         role: "user",
+        companyId: project.companyId,
         projectId,
         projectRole: "viewer",
       });
@@ -177,6 +190,7 @@ describe("Invites", () => {
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "revoke@example.com",
         role: "user",
+        companyId,
       });
 
       await asAdmin.mutation(api.invites.revokeInvite, { inviteId });

@@ -66,19 +66,45 @@ const convexTopLevel = findFiles("convex", /\.ts$/).filter((f) => {
 
 const exportedFuncs = new Map();
 
-for (const file of convexTopLevel) {
-  const moduleName = path.basename(file, ".ts");
+function getExportsFromFile(file) {
+  const funcs = new Set();
   try {
     const content = fs.readFileSync(file, "utf8");
-    const matches = content.matchAll(/export const (\w+)\s*=/g);
-    const funcs = new Set();
-    for (const match of matches) {
+    
+    // Direct exports: export const name = ...
+    const directMatches = content.matchAll(/export const (\w+)\s*=/g);
+    for (const match of directMatches) {
       funcs.add(match[1]);
     }
-    exportedFuncs.set(moduleName, funcs);
-  } catch {
-    // File not readable, skip
+
+    // Re-exports: export * from "./..."
+    const reExportMatches = content.matchAll(/export \* from\s+["'](\.\/[^"']+)["']/g);
+    for (const match of reExportMatches) {
+      let subPath = path.join(path.dirname(file), match[1]);
+      if (!subPath.endsWith(".ts")) {
+        if (fs.existsSync(subPath + ".ts")) {
+          subPath += ".ts";
+        } else if (fs.existsSync(path.join(subPath, "index.ts"))) {
+          subPath = path.join(subPath, "index.ts");
+        }
+      }
+      
+      if (fs.existsSync(subPath)) {
+        const subExports = getExportsFromFile(subPath);
+        for (const f of subExports) {
+          funcs.add(f);
+        }
+      }
+    }
+  } catch (e) {
+    // console.log(`Error reading ${file}: ${e.message}`);
   }
+  return funcs;
+}
+
+for (const file of convexTopLevel) {
+  const moduleName = path.basename(file, ".ts");
+  exportedFuncs.set(moduleName, getExportsFromFile(file));
 }
 
 // Check subdirectories like ai/, email/, etc.
@@ -90,17 +116,7 @@ for (const subdir of subdirs) {
   const subFiles = findFiles(subPath, /\.ts$/);
   for (const file of subFiles) {
     const submodule = path.basename(file, ".ts");
-    try {
-      const content = fs.readFileSync(file, "utf8");
-      const matches = content.matchAll(/export const (\w+)\s*=/g);
-      const funcs = new Set();
-      for (const match of matches) {
-        funcs.add(match[1]);
-      }
-      exportedFuncs.set(`${subdir}.${submodule}`, funcs);
-    } catch {
-      // File not readable, skip
-    }
+    exportedFuncs.set(`${subdir}.${submodule}`, getExportsFromFile(file));
   }
 }
 

@@ -261,7 +261,7 @@ export async function createTestIssue(
 
     return await ctx.db.insert("issues", {
       projectId,
-      workspaceId: project.workspaceId!,
+      workspaceId: project.workspaceId,
       teamId: project.teamId,
       key,
       title: issueData?.title || `Test Issue ${now}`,

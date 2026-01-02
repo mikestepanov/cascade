@@ -272,14 +272,17 @@ async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordI
     for (const child of children) {
       // Recursion needs a cast because TS can't prove child[rel.child] matches the recursion
       await cascadeDelete(ctx, rel.child, child._id as Id<TableNames>);
-      await ctx.db.delete(child._id as any);
+      await ctx.db.delete(child._id as Id<TableNames>);
     }
   } else if (rel.onDelete === "set_null") {
     // Set foreign key to null instead of deleting
     for (const child of children) {
-      await ctx.db.patch(child._id as any, {
-        [rel.foreignKey]: undefined,
-      });
+      await ctx.db.patch(
+        child._id as Id<TableNames>,
+        {
+          [rel.foreignKey]: undefined,
+        } as Record<string, unknown>,
+      );
     }
   } else if (rel.onDelete === "restrict") {
     // Don't allow delete if children exist
@@ -351,7 +354,7 @@ async function handleSoftDeleteRelation(
 
       // Mark this child as deleted
       await ctx.db.patch(
-        child._id as any,
+        child._id as Id<TableNames>,
         {
           isDeleted: true,
           deletedAt,
@@ -409,7 +412,7 @@ async function handleRestoreRelation(
 
       // Remove deleted flags
       await ctx.db.patch(
-        child._id as any,
+        child._id as Id<TableNames>,
         {
           isDeleted: undefined,
           deletedAt: undefined,

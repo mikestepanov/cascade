@@ -91,11 +91,11 @@ export const listRoadmapIssues = query({
       );
     } else {
       const outcomes = await Promise.all(
-        ROOT_ISSUE_TYPES.map((type: string) =>
+        ROOT_ISSUE_TYPES.map((type) =>
           ctx.db
             .query("issues")
-            .withIndex("by_project_type", (q: any) =>
-              q.eq("projectId", args.projectId).eq("type", type),
+            .withIndex("by_project_type", (q) =>
+              q.eq("projectId", args.projectId).eq("type", type as Doc<"issues">["type"]),
             )
             .filter(notDeleted)
             .collect(),
@@ -232,27 +232,27 @@ export const listProjectIssues = query({
 
     return await fetchPaginatedIssues(ctx, {
       paginationOpts: args.paginationOpts,
-      query: (db: any) => {
+      query: (db) => {
         if (args.sprintId) {
           return db
             .query("issues")
-            .withIndex("by_project_sprint_created", (q: any) =>
+            .withIndex("by_project_sprint_created", (q) =>
               q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
             )
             .order("desc");
-        } else if (args.status) {
+        }
+        if (args.status) {
           return db
             .query("issues")
-            .withIndex("by_project_status", (q: any) =>
+            .withIndex("by_project_status", (q) =>
               q.eq("projectId", args.projectId).eq("status", args.status as string),
             )
             .order("desc");
-        } else {
-          return db
-            .query("issues")
-            .withIndex("by_project", (q: any) => q.eq("projectId", args.projectId))
-            .order("desc");
         }
+        return db
+          .query("issues")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+          .order("desc");
       },
     });
   },
@@ -282,20 +282,19 @@ export const listTeamIssues = query({
 
     return await fetchPaginatedIssues(ctx, {
       paginationOpts: args.paginationOpts,
-      query: (db: any) => {
+      query: (db) => {
         if (args.status) {
           return db
             .query("issues")
-            .withIndex("by_team_status", (q: any) =>
+            .withIndex("by_team_status", (q) =>
               q.eq("teamId", args.teamId).eq("status", args.status as string),
             )
             .order("desc");
-        } else {
-          return db
-            .query("issues")
-            .withIndex("by_team", (q: any) => q.eq("teamId", args.teamId))
-            .order("desc");
         }
+        return db
+          .query("issues")
+          .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+          .order("desc");
       },
     });
   },
@@ -564,14 +563,14 @@ export const search = query({
     if (args.query) {
       issues = await ctx.db
         .query("issues")
-        .withSearchIndex("search_title", (q) => q.search("title", args.query))
+        .withSearchIndex("search_title", (q) => q.search("title", args.query as string))
         .filter(notDeleted)
         .collect();
     } else if (args.projectId) {
       // If no query but projectId, use by_project index
       issues = await ctx.db
         .query("issues")
-        .withIndex("by_project", (q) => q.eq("projectId", args.projectId!))
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId as Id<"projects">))
         .filter(notDeleted)
         .order("desc")
         .collect();
@@ -583,7 +582,7 @@ export const search = query({
 
     // Apply advanced filters in memory
     const filteredIssues = issues.filter((issue: Doc<"issues">) =>
-      matchesSearchFilters(issue as any, args, userId),
+      matchesSearchFilters(issue, args, userId),
     );
 
     // Return paginated slice
@@ -621,11 +620,11 @@ export const listByProjectSmart = projectQuery({
           .filter(notDeleted);
 
         if (args.sprintId) {
-          q = q.filter((q: any) => q.eq(q.field("sprintId"), args.sprintId));
+          q = q.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
         }
 
         if (state.category === "done") {
-          q = q.filter((q: any) => q.gte(q.field("updatedAt"), doneThreshold));
+          q = q.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
         }
 
         issuesByColumn[state.id] = await q.take(DEFAULT_PAGE_SIZE);
@@ -658,8 +657,12 @@ export const listByTeamSmart = query({
     if (!team) return [];
 
     const workspace = await ctx.db.get(team.workspaceId);
-    // @ts-expect-error
-    const workflowStates: any[] = workspace?.defaultWorkflowStates || [
+    // Workspace may have custom workflow states, fallback to defaults
+    const workflowStates: { id: string; name: string; category: string; order: number }[] = (
+      workspace as {
+        defaultWorkflowStates?: { id: string; name: string; category: string; order: number }[];
+      }
+    )?.defaultWorkflowStates || [
       { id: "todo", name: "To Do", category: "todo", order: 0 },
       { id: "inprogress", name: "In Progress", category: "inprogress", order: 1 },
       { id: "done", name: "Done", category: "done", order: 2 },
@@ -672,13 +675,11 @@ export const listByTeamSmart = query({
       workflowStates.map(async (state: { id: string; category: string }) => {
         let q = ctx.db
           .query("issues")
-          .withIndex("by_team_status", (q: any) =>
-            q.eq("teamId", args.teamId).eq("status", state.id),
-          )
+          .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
           .filter(notDeleted);
 
         if (state.category === "done") {
-          q = q.filter((q: any) => q.gte(q.field("updatedAt"), doneThreshold));
+          q = q.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
         }
 
         issuesByColumn[state.id] = await q.take(DEFAULT_PAGE_SIZE);
@@ -780,7 +781,7 @@ export const getIssueCounts = query({
         project.workflowStates.map(async (state: { id: string; category: string }) => {
           const allIssues = await ctx.db
             .query("issues")
-            .withIndex("by_project_status", (q: any) =>
+            .withIndex("by_project_status", (q) =>
               q.eq("projectId", args.projectId).eq("status", state.id),
             )
             .filter(notDeleted)
@@ -829,17 +830,17 @@ export const loadMoreDoneIssues = query({
       doneStates.map(async (status) => {
         let q = ctx.db
           .query("issues")
-          .withIndex("by_project_status_updated", (q: any) =>
+          .withIndex("by_project_status_updated", (q) =>
             q.eq("projectId", args.projectId).eq("status", status),
           )
           .filter(notDeleted);
 
         if (args.sprintId) {
-          q = q.filter((q: any) => q.eq(q.field("sprintId"), args.sprintId));
+          q = q.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
         }
 
         if (args.beforeTimestamp) {
-          q = q.filter((q: any) => q.lt(q.field("updatedAt"), args.beforeTimestamp!));
+          q = q.filter((q) => q.lt(q.field("updatedAt"), args.beforeTimestamp as number));
         }
 
         return await q.take(args.limit ?? DEFAULT_PAGE_SIZE);
@@ -863,10 +864,10 @@ async function getSprintIssueCounts(
     workflowStates.map(async (state: { id: string; category: string }) => {
       const allIssues = await ctx.db
         .query("issues")
-        .withIndex("by_project_sprint_created", (q: any) =>
+        .withIndex("by_project_sprint_created", (q) =>
           q.eq("projectId", projectId).eq("sprintId", sprintId),
         )
-        .filter((q: any) => q.eq(q.field("status"), state.id))
+        .filter((q) => q.eq(q.field("status"), state.id))
         .filter(notDeleted)
         .collect();
 
