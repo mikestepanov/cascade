@@ -702,7 +702,6 @@ export const getTeamIssueCounts = query({
     const team = await ctx.db.get(args.teamId);
     if (!team) return null;
 
-    const _workspace = await ctx.db.get(team.workspaceId);
     const workflowStates = [
       { id: "todo", name: "To Do", category: "todo", order: 0 },
       { id: "inprogress", name: "In Progress", category: "inprogress", order: 1 },
