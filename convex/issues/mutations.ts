@@ -60,8 +60,8 @@ export const create = editorMutation({
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: ctx.projectId,
-      workspaceId: ctx.project.workspaceId!,
-      teamId: ctx.project.teamId,
+      workspaceId: ctx.project.workspaceId, // Always present since projects require workspaceId
+      teamId: ctx.project.teamId, // Cached from project (can be undefined for workspace-level projects)
       key: issueKey,
       title: args.title,
       description: args.description,
@@ -211,7 +211,7 @@ export const update = issueMutation({
       });
     }
 
-    if (Object.keys(updates).length > 1) {
+    if (Object.keys(updates).length > 0) {
       await ctx.db.patch(ctx.issue._id, updates);
 
       for (const change of changes) {

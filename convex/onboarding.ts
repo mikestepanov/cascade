@@ -132,7 +132,7 @@ export const createSampleProject = mutation({
     const workspaceId = await ctx.db.insert("workspaces", {
       companyId,
       name: "Sample Workspace",
-      slug: "sample-workspace",
+      slug: `sample-workspace-${userId}`, // Make unique per user to avoid conflicts
       createdBy: userId,
       createdAt: now,
       updatedAt: now,

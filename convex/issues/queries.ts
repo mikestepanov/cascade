@@ -184,6 +184,13 @@ export const listSelectableIssues = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
+    // Check if user has access to the project
+    const { canAccessProject } = await import("../projectAccess");
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
+      return [];
+    }
+
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
@@ -447,11 +454,34 @@ export const listComments = query({
 export const getByKey = query({
   args: { key: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const userId = await getAuthUserId(ctx);
+    
+    const issue = await ctx.db
       .query("issues")
       .withIndex("by_key", (q) => q.eq("key", args.key))
       .filter(notDeleted)
       .first();
+    
+    if (!issue) {
+      return null;
+    }
+    
+    // Check if user has access to the project
+    if (userId) {
+      const { canAccessProject } = await import("../projectAccess");
+      const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
+      if (!hasAccess) {
+        return null;
+      }
+    } else {
+      // Unauthenticated users can only see issues in public projects
+      const project = await ctx.db.get(issue.projectId);
+      if (!project?.isPublic) {
+        return null;
+      }
+    }
+    
+    return issue;
   },
 });
 

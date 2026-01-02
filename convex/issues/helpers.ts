@@ -12,8 +12,9 @@ export async function validateParentIssue(
   epicId: Id<"issues"> | undefined,
 ) {
   if (!parentId) {
-    if (issueType === "epic" && parentId) {
-      throw new Error("Epics cannot be sub-tasks");
+    // No parent - epics are root-level issues and can't be subtasks
+    if (issueType === "epic") {
+      return epicId; // Epics don't have parents or epicId
     }
     return epicId;
   }
@@ -45,6 +46,7 @@ export async function generateIssueKey(
 ) {
   // Get the most recent issue to determine the next number
   // Order by _creationTime desc to get the latest issue
+  // TODO: Potential race condition - consider using atomic counter for guaranteed uniqueness
   const latestIssue = await ctx.db
     .query("issues")
     .withIndex("by_project", (q) => q.eq("projectId", projectId))
@@ -77,7 +79,9 @@ export async function getMaxOrderForStatus(
     .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", status))
     .take(MAX_ISSUES_PER_STATUS);
 
-  return Math.max(...issuesInStatus.map((i) => i.order), -1);
+  // Handle empty array case - return -1 if no issues
+  if (issuesInStatus.length === 0) return -1;
+  return Math.max(...issuesInStatus.map((i) => i.order));
 }
 
 // Helper: Track field change and add to changes array
