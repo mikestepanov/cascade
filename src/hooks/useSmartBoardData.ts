@@ -29,6 +29,32 @@ function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
   return true; // Empty array is valid
 }
 
+function mergeIssuesByStatus(
+  smartIssues: Record<string, EnrichedIssue[]> | undefined,
+  additionalIssues: EnrichedIssue[],
+) {
+  const result: Record<string, EnrichedIssue[]> = {};
+
+  if (smartIssues) {
+    for (const [status, issues] of Object.entries(smartIssues)) {
+      result[status] = Array.isArray(issues) ? [...issues] : [];
+    }
+  }
+
+  // Merge additional done issues into their respective statuses
+  for (const issue of additionalIssues) {
+    if (!result[issue.status]) {
+      result[issue.status] = [];
+    }
+    // Avoid duplicates
+    if (!result[issue.status].some((i) => i._id === issue._id)) {
+      result[issue.status].push(issue);
+    }
+  }
+
+  return result;
+}
+
 export interface UseSmartBoardDataOptions {
   projectId?: Id<"projects">;
   teamId?: Id<"teams">;
@@ -59,6 +85,94 @@ export interface SmartBoardData {
   }[];
 }
 
+function calculateStatusCounts(
+  countsData:
+    | {
+        byStatus: {
+          total: Record<string, number>;
+          visible: Record<string, number>;
+          hidden: Record<string, number>;
+        };
+      }
+    | undefined,
+  issuesByStatus: Record<string, EnrichedIssue[]>,
+) {
+  const result: Record<string, { total: number; loaded: number; hidden: number }> = {};
+
+  if (countsData?.byStatus) {
+    const { total, visible, hidden } = countsData.byStatus;
+
+    // Get all unique statuses
+    const allStatuses = new Set([
+      ...Object.keys(total),
+      ...Object.keys(visible),
+      ...Object.keys(hidden),
+    ]);
+
+    for (const status of allStatuses) {
+      const totalCount = total[status] || 0;
+      const loadedInView = issuesByStatus[status]?.length || 0;
+      const hiddenCount = Math.max(0, totalCount - loadedInView);
+
+      result[status] = {
+        total: totalCount,
+        loaded: loadedInView,
+        hidden: hiddenCount,
+      };
+    }
+  }
+
+  return result;
+}
+
+function getAllLoadedIssues(
+  additionalDoneIssues: EnrichedIssue[],
+  smartData?: { issuesByStatus?: Record<string, EnrichedIssue[]> },
+) {
+  const issues: EnrichedIssue[] = [...additionalDoneIssues];
+  if (smartData?.issuesByStatus) {
+    for (const statusIssues of Object.values(smartData.issuesByStatus)) {
+      issues.push(...(Array.isArray(statusIssues) ? statusIssues : []));
+    }
+  }
+  return issues;
+}
+
+function getSmartQueryArgs(
+  isTeamMode: boolean,
+  isProjectMode: boolean,
+  teamId?: Id<"teams">,
+  projectId?: Id<"projects">,
+  sprintId?: Id<"sprints">,
+  doneColumnDays?: number,
+) {
+  if (isTeamMode && teamId) {
+    return { teamId, doneColumnDays };
+  }
+  if (isProjectMode && projectId) {
+    return { projectId, sprintId, doneColumnDays };
+  }
+  return "skip";
+}
+
+function getLoadMoreArgs(
+  isTeamMode: boolean,
+  loadMoreCursor: { timestamp: number; id: string } | undefined,
+  projectId?: Id<"projects">,
+  sprintId?: Id<"sprints">,
+) {
+  if (!isTeamMode && loadMoreCursor !== undefined && projectId) {
+    return {
+      projectId,
+      sprintId,
+      beforeTimestamp: loadMoreCursor.timestamp,
+      beforeId: loadMoreCursor.id,
+      limit: 50,
+    };
+  }
+  return "skip";
+}
+
 export function useSmartBoardData({
   projectId,
   teamId,
@@ -76,36 +190,29 @@ export function useSmartBoardData({
   const isTeamMode = !!teamId;
   const isProjectMode = !!projectId;
 
+  const queryArgs = getSmartQueryArgs(
+    isTeamMode,
+    isProjectMode,
+    teamId,
+    projectId,
+    sprintId,
+    doneColumnDays,
+  );
+
   // Fetch smart-loaded issues
   const smartData = useQuery(
     isTeamMode ? api.issues.listByTeamSmart : api.issues.listByProjectSmart,
-    isTeamMode && teamId
-      ? { teamId, doneColumnDays }
-      : isProjectMode && projectId
-        ? { projectId, sprintId, doneColumnDays }
-        : "skip",
+    queryArgs,
   );
 
   const countsData = useQuery(
     isTeamMode ? api.issues.getTeamIssueCounts : api.issues.getIssueCounts,
-    isTeamMode && teamId
-      ? { teamId, doneColumnDays }
-      : isProjectMode && projectId
-        ? { projectId, sprintId, doneColumnDays }
-        : "skip",
+    queryArgs,
   );
 
   const moreDoneData = useQuery(
     api.issues.loadMoreDoneIssues,
-    !isTeamMode && loadMoreCursor !== undefined && projectId
-      ? {
-          projectId,
-          sprintId,
-          beforeTimestamp: loadMoreCursor.timestamp,
-          beforeId: loadMoreCursor.id,
-          limit: 50,
-        }
-      : "skip",
+    getLoadMoreArgs(isTeamMode, loadMoreCursor, projectId, sprintId),
   );
 
   // When more done issues arrive, merge them
@@ -117,69 +224,25 @@ export function useSmartBoardData({
     }
   }, [moreDoneData]);
 
-  // Reset additional issues when project/sprint changes
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset state on scope change
-  useEffect(() => {
+  // Reset additional issues when project/sprint changes (Derived State Pattern)
+  const currentKey = `${projectId || ""}-${sprintId || ""}-${teamId || ""}`;
+  const [prevKey, setPrevKey] = useState(currentKey);
+
+  if (currentKey !== prevKey) {
+    setPrevKey(currentKey);
     setAdditionalDoneIssues([]);
     setLoadMoreCursor(undefined);
-  }, [projectId, sprintId, teamId]); // Added teamId
+  }
 
   // Build issues by status
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: data merging logic
   const issuesByStatus = useMemo(() => {
-    const result: Record<string, EnrichedIssue[]> = {};
-
-    if (smartData?.issuesByStatus) {
-      for (const [status, issues] of Object.entries(smartData.issuesByStatus)) {
-        if (isEnrichedIssueArray(issues)) {
-          result[status] = [...issues];
-        }
-      }
-    }
-
-    // Merge additional done issues into their respective statuses
-    for (const issue of additionalDoneIssues) {
-      if (!result[issue.status]) {
-        result[issue.status] = [];
-      }
-      // Avoid duplicates
-      if (!result[issue.status].some((i) => i._id === issue._id)) {
-        result[issue.status].push(issue);
-      }
-    }
-
-    return result;
+    return mergeIssuesByStatus(smartData?.issuesByStatus, additionalDoneIssues);
   }, [smartData?.issuesByStatus, additionalDoneIssues]);
 
   // Build status counts from countsData.byStatus
   const statusCounts = useMemo(() => {
-    const result: Record<string, { total: number; loaded: number; hidden: number }> = {};
-
-    if (countsData?.byStatus) {
-      const { total, visible, hidden } = countsData.byStatus;
-
-      // Get all unique statuses
-      const allStatuses = new Set([
-        ...Object.keys(total),
-        ...Object.keys(visible),
-        ...Object.keys(hidden),
-      ]);
-
-      for (const status of allStatuses) {
-        const totalCount = total[status] || 0;
-        const loadedInView = issuesByStatus[status]?.length || 0;
-        const hiddenCount = Math.max(0, totalCount - loadedInView);
-
-        result[status] = {
-          total: totalCount,
-          loaded: loadedInView,
-          hidden: hiddenCount,
-        };
-      }
-    }
-
-    return result;
-  }, [countsData?.byStatus, issuesByStatus]);
+    return calculateStatusCounts(countsData, issuesByStatus);
+  }, [countsData, issuesByStatus]);
 
   // Find done statuses that have more items to load
   const doneStatusesWithMore = useMemo(() => {
@@ -201,26 +264,16 @@ export function useSmartBoardData({
     return total;
   }, [statusCounts]);
 
-  const allLoadedIssues = useMemo(() => {
-    const issues: EnrichedIssue[] = [...additionalDoneIssues];
-    if (smartData?.issuesByStatus) {
-      for (const statusIssues of Object.values(smartData.issuesByStatus)) {
-        if (isEnrichedIssueArray(statusIssues)) {
-          issues.push(...statusIssues);
-        }
-      }
-    }
-    return issues;
-  }, [additionalDoneIssues, smartData?.issuesByStatus]);
-
-  const findOldestIssue = useCallback((): { timestamp: number; id: string } | undefined => {
+  // Helper for loadMoreDone
+  const findOldestIssue = useCallback(() => {
+    const allLoadedIssues = getAllLoadedIssues(additionalDoneIssues, smartData);
     if (allLoadedIssues.length === 0) return undefined;
 
     const oldest = allLoadedIssues.reduce((min, issue) =>
       issue.updatedAt < min.updatedAt ? issue : min,
     );
     return { timestamp: oldest.updatedAt, id: oldest._id.toString() };
-  }, [allLoadedIssues]);
+  }, [additionalDoneIssues, smartData]);
 
   const loadMoreDone = useCallback(
     (_status: string) => {

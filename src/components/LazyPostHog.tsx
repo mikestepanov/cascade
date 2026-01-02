@@ -35,9 +35,8 @@ export function LazyPostHog({ apiKey, options, children }: LazyPostHogProps) {
         if (mounted) {
           setPostHogProvider(() => Provider);
         }
-      } catch (error) {
-        // biome-ignore lint/suspicious/noConsole: Intentional error logging for PostHog load failures
-        console.warn("Failed to load PostHog:", error);
+      } catch (_error) {
+        // Fail silently
       }
     };
 

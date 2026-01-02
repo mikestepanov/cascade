@@ -15,14 +15,12 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
 
   return (
     <Flex direction="column" align="center" justify="center" gap="md">
-      {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading spinner */}
-      <div
+      <output
         className={`animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent ${sizeClasses[size]} ${className}`}
-        role="status"
         aria-label="Loading"
       >
         <span className="sr-only">Loading...</span>
-      </div>
+      </output>
       {message && (
         <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
       )}

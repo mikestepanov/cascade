@@ -7,7 +7,7 @@ import { render, screen, waitFor } from "@/test/custom-render";
 import { FilterBar } from "./FilterBar";
 
 // Mock ShadcnSelect to use testable native select
-vi.mock("./ui/ShadcnSelect", () => {
+vi.mock("./ui/Select", () => {
   // Track items to render in the select
   const items: Array<{ value: string; children: React.ReactNode }> = [];
 

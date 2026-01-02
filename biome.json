@@ -34,7 +34,8 @@
             "useAwait": "off"
           },
           "correctness": {
-            "noUnusedVariables": "off"
+            "noUnusedVariables": "off",
+            "noEmptyPattern": "off"
           },
           "complexity": {
             "noExcessiveCognitiveComplexity": "off"

@@ -367,21 +367,13 @@ function GenerateKeyModal({
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {availableScopes.map((scope) => (
-                    // biome-ignore lint/a11y/useSemanticElements: Can't use button here as it contains a checkbox (nested interactive elements)
-                    <div
+                    <label
                       key={scope.value}
-                      role="button"
-                      tabIndex={0}
+                      htmlFor={`scope-${scope.value}`}
                       className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                      onClick={() => toggleScope(scope.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          toggleScope(scope.value);
-                        }
-                      }}
                     >
                       <Checkbox
+                        id={`scope-${scope.value}`}
                         checked={selectedScopes.includes(scope.value)}
                         onChange={() => toggleScope(scope.value)}
                         className="mt-0.5"
@@ -394,7 +386,7 @@ function GenerateKeyModal({
                           {scope.description}
                         </p>
                       </div>
-                    </div>
+                    </label>
                   ))}
                 </div>
               </div>

@@ -15,7 +15,7 @@
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",
     "dev:backend": "convex dev",
-    "build": "vite build",
+    "build": "npx convex codegen && vite build",
     "lint": "biome check --write .",
     "lint:check": "biome check .",
     "format": "biome format --write .",
@@ -150,5 +150,11 @@
     "workbox-strategies": "^7.4.0",
     "workbox-window": "^7.4.0"
   },
-  "packageManager": "pnpm@10.24.0"
+  "packageManager": "pnpm@10.24.0",
+  "pnpm": {
+    "overrides": {
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0"
+    }
+  }
 }

@@ -43,13 +43,17 @@ function generateOTP(): string {
 export const OTPVerification = Resend({
   id: "otp-verification",
   apiKey: "unused", // Required by interface but we use our own email system
-  // biome-ignore lint/suspicious/useAwait: Required by @auth/core provider interface
-  async generateVerificationToken() {
+
+  generateVerificationToken() {
     return generateOTP();
   },
-  // @ts-expect-error - ctx IS passed at runtime by @convex-dev/auth (see signIn.ts:92-95)
+
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest({ identifier: email, token }, _ctx) {
+  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
+  async sendVerificationRequest(
+    { identifier: email, token }: { identifier: string; token: string },
+    _ctx: any,
+  ) {
     const ctx = _ctx as QueryCtx;
     // Check if user is already verified (e.g., E2E test users)
     const existingUser = await ctx.db

@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
 import { useBoardHistory } from "@/hooks/useBoardHistory";
+import { useListNavigation } from "@/hooks/useListNavigation";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
@@ -36,7 +37,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const isProjectMode = !!projectId;
 
   const project = useQuery(
-    api.projects.get,
+    api.projects.getProject,
     isProjectMode && projectId ? { id: projectId } : "skip",
   );
 
@@ -55,6 +56,13 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const allIssues = useMemo(() => {
     return Object.values(issuesByStatus).flat();
   }, [issuesByStatus]);
+
+  // Keyboard Navigation
+  const { selectedIndex } = useListNavigation({
+    items: allIssues,
+    onSelect: (issue) => setSelectedIssue(issue._id),
+  });
+  const focusedIssueId = allIssues[selectedIndex]?._id;
 
   const { handleDragStart, handleDragOver, handleDrop } = useBoardDragAndDrop({
     allIssues,
@@ -166,10 +174,17 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
                   columnIndex={0}
                   selectionMode={selectionMode}
                   selectedIssueIds={selectedIssueIds}
+                  focusedIssueId={focusedIssueId}
                   canEdit={canEdit}
-                  onDragOver={() => {}}
-                  onDrop={() => {}}
-                  onDragStart={() => {}}
+                  onDragOver={() => {
+                    /* noop */
+                  }}
+                  onDrop={() => {
+                    /* noop */
+                  }}
+                  onDragStart={() => {
+                    /* noop */
+                  }}
                   onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
                   onIssueClick={setSelectedIssue}
                   onToggleSelect={handleToggleSelect}
@@ -194,6 +209,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
                 columnIndex={columnIndex}
                 selectionMode={selectionMode}
                 selectedIssueIds={selectedIssueIds}
+                focusedIssueId={focusedIssueId}
                 canEdit={canEdit}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}

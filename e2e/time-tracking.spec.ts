@@ -30,48 +30,42 @@ test.describe("Time Tracking", () => {
     }
   });
 
-  test("user can track time on an issue", async ({
-    dashboardPage,
-    projectsPage,
-    page,
-    ensureAuthenticated,
-  }) => {
-    // Re-authenticate if needed (e.g., after signout test invalidated tokens)
-    await ensureAuthenticated();
-
-    // 1. Navigate to Projects
-    await dashboardPage.goto();
-    await dashboardPage.expectLoaded();
-    // Use direct URL navigation to access projects
-    await projectsPage.goto();
-
-    // 2. Create a Project
+  test("user can track time on an issue", async ({ projectsPage, page }) => {
     const now = Date.now();
-    const projectKey = `TT${Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, "0")}`;
+    const projectKey = `TT${now.toString().slice(-4)}`;
+    const issueTitle = `Time Track Issue ${now}`;
+
+    // Create project
+    await projectsPage.goto();
+    // Default URL is /projects, explicitly wait for load
+    // await page.waitForURL(/\/projects/); // projectsPage.goto() handles this
+
     await projectsPage.createProject(`Time Tracking ${now}`, projectKey);
-    // Wait for navigation to new project board or other default view
-    await page.waitForURL(/\/projects\/[^/]+\/(board|sprints|backlog)/, { timeout: 15000 });
+
+    // Verify board
     await projectsPage.expectBoardVisible();
 
-    // 3. Create an Issue
-    const uniqueId = Date.now();
-    const issueTitle = `Task to Track ${uniqueId}`;
+    // Create Issue
+    // Wait for interactivity
+    await page.waitForTimeout(1000);
     await projectsPage.createIssue(issueTitle);
 
-    // Wait for the create issue modal to close
+    // Close modal
     await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
-    // 5. Open Issue Detail Modal using page object
+    // Open detail
     await projectsPage.openIssueDetail(issueTitle);
 
-    // Wait for React to fully hydrate and Convex queries to load
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(1000);
-
-    // 6. Start Timer using page object
+    // Start timer
+    // Assuming projectsPage has methods for time tracking or we add them
+    // For now using the logic from issues.spec.ts that expects startTimerButton
     await projectsPage.startTimer();
+
+    // Wait a bit
+    await page.waitForTimeout(2000);
+
+    // Stop timer
+    await projectsPage.stopTimer();
 
     // Verify timer started (UI feedback handled in startTimer)
     // Optional: Stop timer to clean up

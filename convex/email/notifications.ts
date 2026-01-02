@@ -7,7 +7,14 @@
 import { render } from "@react-email/render";
 import { v } from "convex/values";
 import { api, internal } from "../_generated/api";
-import { internalAction } from "../_generated/server";
+import type { Doc } from "../_generated/dataModel";
+import {
+  internalAction,
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "../_generated/server";
 import { getSiteUrl } from "../lib/env";
 import { sendEmail } from "./index";
 
@@ -311,8 +318,13 @@ export const sendDigestEmail = internalAction({
     const { DigestEmail } = await import("../../emails/DigestEmail");
 
     // Format notifications into digest items
-    // biome-ignore lint/suspicious/noExplicitAny: Notification query result type is complex union
-    const items = notifications.map((n: any) => ({
+
+    type DigestNotification = Doc<"notifications"> & {
+      actorName?: string;
+      issueKey?: string;
+    };
+
+    const items = notifications.map((n: DigestNotification) => ({
       type: n.type as "mention" | "assignment" | "comment",
       issueKey: n.issueKey || "Unknown",
       issueTitle: n.title,
@@ -340,8 +352,8 @@ export const sendDigestEmail = internalAction({
       to: user.email,
       subject: `Your ${frequency} digest: ${items.length} notification${items.length !== 1 ? "s" : ""}`,
       html,
-      // biome-ignore lint/suspicious/noExplicitAny: Digest item type inferred from map above
-      text: `Your ${frequency} digest:\n\n${items.map((i: any) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
+
+      text: `Your ${frequency} digest:\n\n${items.map((i: { issueKey: string; actorName: string; message: string }) => `${i.issueKey}: ${i.actorName} ${i.message}`).join("\n")}\n\nUnsubscribe: ${unsubscribeUrl}`,
     });
 
     return result;

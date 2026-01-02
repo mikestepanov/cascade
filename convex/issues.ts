@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { type PaginationResult, paginationOptsValidator } from "convex/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import {
   authenticatedMutation,
   editorMutation,
@@ -12,6 +12,10 @@ import {
   projectQuery,
 } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { calculateIssueCounts } from "./lib/issueCalculation";
+import { fetchPaginatedIssues } from "./lib/issueHelpers";
+import { cascadeDelete } from "./lib/relationships";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 import {
   assertCanAccessProject,
@@ -61,6 +65,7 @@ async function generateIssueKey(ctx: MutationCtx, projectId: Id<"projects">, pro
     .query("issues")
     .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
     .order("desc")
+    .filter(notDeleted)
     .first();
 
   let issueNumber = 1;
@@ -190,6 +195,7 @@ export const listByUser = query({
     const assignedResult = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .filter(notDeleted)
       .paginate(args.paginationOpts);
 
     // For simplicity, only return assigned issues in first implementation
@@ -246,6 +252,7 @@ export const listRoadmapIssues = query({
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
+        .filter(notDeleted)
         .collect();
 
       // We still have to memory filter here because we lack a by_sprint_type index
@@ -262,6 +269,7 @@ export const listRoadmapIssues = query({
             .withIndex("by_workspace_type", (q) =>
               q.eq("projectId", args.projectId).eq("type", type),
             )
+            .filter(notDeleted)
             .collect(),
         ),
       );
@@ -317,6 +325,7 @@ export const listRoadmapIssuesPaginated = query({
         .withIndex("by_workspace_sprint_created", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
+        .filter(notDeleted)
         .paginate(args.paginationOpts);
 
       // Filter to root issues only
@@ -338,6 +347,7 @@ export const listRoadmapIssuesPaginated = query({
       .withIndex("by_workspace_type", (q) =>
         q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]),
       )
+      .filter(notDeleted)
       .paginate(args.paginationOpts);
 
     // Note: This only paginates stories. For full root issue pagination,
@@ -412,43 +422,34 @@ export const listProjectIssues = query({
     // We do NOT have by_workspace_sprint visible in file scan (need to check schema).
     // Assuming standard indexes.
 
-    let results: PaginationResult<Doc<"issues">>;
+    // Use fetchPaginatedIssues helper to reduce duplication
+    const enrichedResults = await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.sprintId) {
+          return db
+            .query("issues")
+            .withIndex("by_workspace_sprint_created", (q) =>
+              q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+            )
+            .order("desc");
+        } else if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_workspace_status", (q) =>
+              q.eq("projectId", args.projectId).eq("status", args.status as string),
+            )
+            .order("desc");
+        } else {
+          return db
+            .query("issues")
+            .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+            .order("desc");
+        }
+      },
+    });
 
-    if (args.sprintId) {
-      const sprintId = args.sprintId;
-      // Use specific index for sprint to ensure correct pagination
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", sprintId),
-        )
-        .order("desc") // created matches generic sort? standard is usually desc
-        .paginate(args.paginationOpts);
-    } else if (args.status) {
-      // Filter by status using index
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_status", (q) =>
-          q.eq("projectId", args.projectId).eq("status", args.status as string),
-        )
-        .order("desc")
-        .paginate(args.paginationOpts);
-    } else {
-      // Generic list
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-        .order("desc")
-        .paginate(args.paginationOpts);
-    }
-
-    // Enrich page
-    const enrichedPage = await enrichIssues(ctx, results.page);
-
-    return {
-      ...results,
-      page: enrichedPage,
-    };
+    return enrichedResults;
   },
 });
 
@@ -468,37 +469,34 @@ export const listTeamIssues = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (!teamMember) {
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    let results: PaginationResult<Doc<"issues">>;
+    // Use fetchPaginatedIssues helper
+    const enrichedResults = await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_team_status", (q) =>
+              q.eq("teamId", args.teamId).eq("status", args.status as string),
+            )
+            .order("desc");
+        } else {
+          return db
+            .query("issues")
+            .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+            .order("desc");
+        }
+      },
+    });
 
-    if (args.status) {
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_team_status", (q) =>
-          q.eq("teamId", args.teamId).eq("status", args.status as string),
-        )
-        .order("desc")
-        .paginate(args.paginationOpts);
-    } else {
-      results = await ctx.db
-        .query("issues")
-        .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-        .order("desc")
-        .paginate(args.paginationOpts);
-    }
-
-    // Enrich page
-    const enrichedPage = await enrichIssues(ctx, results.page);
-
-    return {
-      ...results,
-      page: enrichedPage,
-    };
+    return enrichedResults;
   },
 });
 
@@ -673,6 +671,7 @@ export const getByKey = query({
     return await ctx.db
       .query("issues")
       .withIndex("by_key", (q) => q.eq("key", args.key))
+      .filter(notDeleted)
       .first();
   },
 });
@@ -700,6 +699,7 @@ export const listSubtasks = query({
     const subtasks = await ctx.db
       .query("issues")
       .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
+      .filter(notDeleted)
       .collect();
 
     if (subtasks.length === 0) {
@@ -1201,6 +1201,7 @@ export const search = query({
     const searchResults = await ctx.db
       .query("issues")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
+      .filter(notDeleted)
       .collect();
 
     // Filter to only issues user has access to and apply advanced filters
@@ -1541,63 +1542,6 @@ export const bulkMoveToSprint = authenticatedMutation({
   },
 });
 
-// Helper: Delete all related records for an issue
-async function deleteIssueRelatedRecords(ctx: MutationCtx, issueId: Id<"issues">): Promise<void> {
-  // Delete comments
-  const comments = await ctx.db
-    .query("issueComments")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const comment of comments) {
-    await ctx.db.delete(comment._id);
-  }
-
-  // Delete activities
-  const activities = await ctx.db
-    .query("issueActivity")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const activity of activities) {
-    await ctx.db.delete(activity._id);
-  }
-
-  // Delete outgoing links
-  const links = await ctx.db
-    .query("issueLinks")
-    .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-    .collect();
-  for (const link of links) {
-    await ctx.db.delete(link._id);
-  }
-
-  // Delete incoming links
-  const backlinks = await ctx.db
-    .query("issueLinks")
-    .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-    .collect();
-  for (const link of backlinks) {
-    await ctx.db.delete(link._id);
-  }
-
-  // Delete watchers
-  const watchers = await ctx.db
-    .query("issueWatchers")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const watcher of watchers) {
-    await ctx.db.delete(watcher._id);
-  }
-
-  // Delete time entries
-  const timeEntries = await ctx.db
-    .query("timeEntries")
-    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-    .collect();
-  for (const entry of timeEntries) {
-    await ctx.db.delete(entry._id);
-  }
-}
-
 export const bulkDelete = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
@@ -1619,10 +1563,10 @@ export const bulkDelete = authenticatedMutation({
         continue; // Only admins can delete
       }
 
-      // Delete all related records
-      await deleteIssueRelatedRecords(ctx, issueId);
+      // Cascade delete all related records automatically
+      await cascadeDelete(ctx, "issues", issueId);
 
-      // Finally delete the issue
+      // Finally delete the issue itself
       await ctx.db.delete(issueId);
       results.push(issueId);
     }
@@ -1655,6 +1599,7 @@ function fetchIssuesForState(
         q.eq("projectId", ctx.projectId).eq("status", state.id).gt("updatedAt", doneThreshold),
       )
       .order("desc") // Most recently updated first
+      .filter(notDeleted)
       .collect();
   }
 
@@ -1715,6 +1660,7 @@ export const listByProjectSmart = projectQuery({
             .eq("projectId", ctx.projectId)
             .eq("sprintId", args.sprintId as Id<"sprints">),
         )
+        .filter(notDeleted)
         .collect();
 
       // Apply smart filtering in memory for sprint view (it's small enough usually)
@@ -1770,6 +1716,7 @@ export const listByTeamSmart = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (!teamMember) {
@@ -1797,6 +1744,7 @@ export const listByTeamSmart = query({
     const allIssues = await ctx.db
       .query("issues")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .filter(notDeleted)
       .collect();
 
     const smartFiltered = allIssues.filter((issue) => {
@@ -1847,7 +1795,7 @@ export const getTeamIssueCounts = query({
     teamId: v.id("teams"),
     doneColumnDays: v.optional(v.number()),
   },
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -1857,6 +1805,7 @@ export const getTeamIssueCounts = query({
     const teamMember = await ctx.db
       .query("teamMembers")
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (!teamMember) {
@@ -1882,38 +1831,13 @@ export const getTeamIssueCounts = query({
     const allIssues = await ctx.db
       .query("issues")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .filter(notDeleted)
       .collect();
 
-    // Aggregate counts by category (mapped from status)
-    const byStatus = {
-      total: {} as Record<string, number>,
-      visible: {} as Record<string, number>,
-      hidden: {} as Record<string, number>,
+    // Calculate counts
+    const { byStatus } = {
+      byStatus: calculateIssueCounts(allIssues, statusCategoryMap, doneThreshold),
     };
-
-    // Initialize categories
-    const categories = ["todo", "inprogress", "done"];
-    for (const cat of categories) {
-      byStatus.total[cat] = 0;
-      byStatus.visible[cat] = 0;
-      byStatus.hidden[cat] = 0;
-    }
-
-    for (const issue of allIssues) {
-      const category = statusCategoryMap.get(issue.status) || "todo";
-
-      byStatus.total[category] = (byStatus.total[category] || 0) + 1;
-
-      if (category === "done") {
-        if (issue.updatedAt >= doneThreshold) {
-          byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
-        } else {
-          byStatus.hidden[category] = (byStatus.hidden[category] || 0) + 1;
-        }
-      } else {
-        byStatus.visible[category] = (byStatus.visible[category] || 0) + 1;
-      }
-    }
 
     return { byStatus };
   },
@@ -1929,7 +1853,7 @@ export const getIssueCounts = query({
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: query requires complex aggregation
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -1946,114 +1870,64 @@ export const getIssueCounts = query({
     const workflowStates = project.workflowStates || [];
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays ?? DONE_COLUMN_DAYS);
 
-    // Build a map of status -> category
-    const statusToCategory: Record<string, string> = {};
-    for (const state of workflowStates) {
-      statusToCategory[state.id] = state.category;
+    // Initialize result
+    const result = {
+      total: 0,
+      visible: 0,
+      hidden: 0,
+      byStatus: {
+        total: {} as Record<string, number>,
+        visible: {} as Record<string, number>,
+        hidden: {} as Record<string, number>,
+      },
+    };
+
+    // Helper to add counts to result
+    const addCounts = (
+      statusId: string,
+      counts: { total: number; visible: number; hidden: number },
+    ) => {
+      result.byStatus.total[statusId] = counts.total;
+      result.byStatus.visible[statusId] = counts.visible;
+      result.byStatus.hidden[statusId] = counts.hidden;
+      result.total += counts.total;
+      result.visible += counts.visible;
+      result.hidden += counts.hidden;
+    };
+
+    // Sprint View
+    if (args.sprintId) {
+      return await getSprintIssueCounts(
+        ctx,
+        args.projectId,
+        args.sprintId,
+        workflowStates,
+        doneThreshold,
+      );
     }
 
-    // Initialize counters
-    const totalByStatus: Record<string, number> = {};
-    const visibleByStatus: Record<string, number> = {};
-    const hiddenByStatus: Record<string, number> = {};
-    let total = 0;
-    let visibleTotal = 0;
-    let hiddenTotal = 0;
-
-    // Use parallel queries for each status to avoid loading all items at once
-    // This is much safer for large projects
+    // Full Board: Query per status
     await Promise.all(
       workflowStates.map(async (state) => {
-        let issues: { updatedAt: number; sprintId?: Id<"sprints"> }[] = [];
-
-        // If sprint is specified, use sprint index (usually smaller dataset)
-        if (args.sprintId) {
-          // For sprint view, we just rely on the main sprint query pattern or per-status logic
-          // Since we can't easily combine "by_sprint" and "by_status" in one index efficiently without "by_workspace_sprint_status" (which we don't have)
-          // We will use existing behavior for sprint-filtered counts (filtering in memory after fetching sprint),
-          // BUT since sprints are small, this is fine.
-          // However, to keep it parallelized, we could query by workspace_sprint_created and filter by status in memory?
-          // Actually, for specific status counts, we can stick to status index + filter by sprint?
-          // No, filtering 10k done items for 1 sprint item is bad.
-          // BETTER: If sprintId is present, fetch ALL sprint items once (small set) and aggregate in memory.
-          return;
-        }
-
-        // Full Board: Query by status
         const statusIssues = await ctx.db
           .query("issues")
           .withIndex("by_workspace_status_updated", (q) =>
             q.eq("projectId", args.projectId).eq("status", state.id),
           )
+          .filter(notDeleted)
           .collect();
 
-        issues = statusIssues;
+        const total = statusIssues.length;
+        const visible =
+          state.category === "done"
+            ? statusIssues.filter((i) => i.updatedAt >= doneThreshold).length
+            : total;
 
-        const totalCount = issues.length;
-        let visibleCount = 0;
-
-        if (state.category === "done") {
-          // Done column: Check threshold
-          visibleCount = issues.filter((i) => i.updatedAt >= doneThreshold).length;
-        } else {
-          // Todo/Inprogress: All visible
-          visibleCount = totalCount;
-        }
-
-        const hiddenCount = totalCount - visibleCount;
-
-        // Update aggregators
-        totalByStatus[state.id] = totalCount;
-        visibleByStatus[state.id] = visibleCount;
-        hiddenByStatus[state.id] = hiddenCount;
-        total += totalCount;
-        visibleTotal += visibleCount;
-        hiddenTotal += hiddenCount;
+        addCounts(state.id, { total, visible, hidden: total - visible });
       }),
     );
 
-    // Special handling for Sprint View (if sprintId was provided)
-    if (args.sprintId) {
-      const allSprintIssues = await ctx.db
-        .query("issues")
-        .withIndex("by_workspace_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
-        )
-        .collect();
-
-      // Aggregate sprint issues
-      for (const issue of allSprintIssues) {
-        const stateId = issue.status;
-        const category = statusToCategory[stateId] || "todo";
-
-        totalByStatus[stateId] = (totalByStatus[stateId] || 0) + 1;
-        total++;
-
-        let isVisible = true;
-        if (category === "done") {
-          isVisible = issue.updatedAt >= doneThreshold;
-        }
-
-        if (isVisible) {
-          visibleByStatus[stateId] = (visibleByStatus[stateId] || 0) + 1;
-          visibleTotal++;
-        } else {
-          hiddenByStatus[stateId] = (hiddenByStatus[stateId] || 0) + 1;
-          hiddenTotal++;
-        }
-      }
-    }
-
-    return {
-      total,
-      visible: visibleTotal,
-      hidden: hiddenTotal,
-      byStatus: {
-        total: totalByStatus,
-        visible: visibleByStatus,
-        hidden: hiddenByStatus,
-      },
-    };
+    return result;
   },
 });
 
@@ -2092,6 +1966,7 @@ export const loadMoreDoneIssues = query({
       .query("issues")
       .withIndex("by_workspace_updated", (q) => q.eq("projectId", args.projectId))
       .order("desc")
+      .filter(notDeleted)
       .collect();
 
     // Filter to done statuses only
@@ -2130,3 +2005,64 @@ export const loadMoreDoneIssues = query({
     };
   },
 });
+
+// Helper for getIssueCounts sprint view
+async function getSprintIssueCounts(
+  ctx: QueryCtx,
+  projectId: Id<"projects">,
+  sprintId: Id<"sprints">,
+  workflowStates: { id: string; category: string }[],
+  doneThreshold: number,
+) {
+  // Initialize result
+  const result = {
+    total: 0,
+    visible: 0,
+    hidden: 0,
+    byStatus: {
+      total: {} as Record<string, number>,
+      visible: {} as Record<string, number>,
+      hidden: {} as Record<string, number>,
+    },
+  };
+
+  const allSprintIssues = await ctx.db
+    .query("issues")
+    .withIndex("by_workspace_sprint_created", (q) =>
+      q.eq("projectId", projectId).eq("sprintId", sprintId),
+    )
+    .filter(notDeleted)
+    .collect();
+
+  const statusToCategory: Record<string, string> = {};
+  for (const state of workflowStates) {
+    statusToCategory[state.id] = state.category;
+  }
+
+  // We must aggregate per status manually as before.
+  for (const issue of allSprintIssues) {
+    const stateId = issue.status;
+    const category = statusToCategory[stateId] || "todo";
+
+    // Initialize if needed
+    if (!result.byStatus.total[stateId]) {
+      result.byStatus.total[stateId] = 0;
+      result.byStatus.visible[stateId] = 0;
+      result.byStatus.hidden[stateId] = 0;
+    }
+
+    result.byStatus.total[stateId]++;
+    result.total++;
+
+    const isVisible = category !== "done" || issue.updatedAt >= doneThreshold;
+    if (isVisible) {
+      result.byStatus.visible[stateId]++;
+      result.visible++;
+    } else {
+      result.byStatus.hidden[stateId]++;
+      result.hidden++;
+    }
+  }
+
+  return result;
+}

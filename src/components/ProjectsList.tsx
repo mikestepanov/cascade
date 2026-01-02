@@ -22,7 +22,11 @@ export function ProjectsList() {
     results: projects,
     status,
     loadMore,
-  } = usePaginatedQuery(api.projects.list, { companyId }, { initialNumItems: 20 });
+  } = usePaginatedQuery(
+    api.projects.getCurrentUserProjects,
+    { companyId },
+    { initialNumItems: 20 },
+  );
 
   const handleProjectCreated = async (_projectId: string, projectKey: string) => {
     setIsCreateOpen(false);

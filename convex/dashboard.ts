@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server"; // Added
 import { v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import {
   batchFetchIssues,
@@ -9,11 +9,13 @@ import {
   batchFetchUsers,
   getUserName,
 } from "./lib/batchHelpers";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = query({
-  args: { paginationOpts: paginationOptsValidator }, // Pagination args
+  args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -24,12 +26,17 @@ export const getMyIssues = query({
       };
     }
 
+    const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
+
     // Paginate using the by_assignee index
-    const results = await ctx.db
-      .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
-      .order("desc") // Sort by creation time (descending)
-      .paginate(args.paginationOpts);
+    const results = await fetchPaginatedQuery<Doc<"issues">>(ctx, {
+      paginationOpts,
+      query: (db) =>
+        db
+          .query("issues")
+          .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+          .order("desc"), // Sort by creation time (descending)
+    });
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
@@ -87,6 +94,7 @@ export const getMyCreatedIssues = query({
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all related data to avoid N+1 queries
@@ -141,6 +149,7 @@ export const getMyProjects = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .collect();
 
     if (memberships.length === 0) return [];
@@ -154,6 +163,7 @@ export const getMyProjects = query({
     const myIssues = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .filter(notDeleted)
       .collect();
 
     const myIssuesByProject = new Map<string, number>();
@@ -202,6 +212,7 @@ export const getMyRecentActivity = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .collect();
 
     const projectIdSet = new Set(memberships.map((m) => m.projectId.toString()));
@@ -271,6 +282,7 @@ export const getMyStats = query({
     const assignedIssues = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .filter(notDeleted)
       .collect();
 
     // Filter for different stats
@@ -303,6 +315,7 @@ export const getMyStats = query({
     const createdByMe = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .filter(notDeleted)
       .collect();
 
     return {

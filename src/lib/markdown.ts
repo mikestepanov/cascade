@@ -89,9 +89,7 @@ async function blocksToMarkdown(blocks: Block[]): Promise<string> {
 
 // Helper to get text content from block
 function getTextContent(content: unknown): string {
-  return Array.isArray(content) && content.length > 0
-    ? content.map((item: ContentItem) => item.text || "").join("")
-    : "";
+  return Array.isArray(content) ? content.map((item: ContentItem) => item.text || "").join("") : "";
 }
 
 // Helper to convert block type to markdown
@@ -182,7 +180,7 @@ async function markdownToBlocks(
         tryParseMarkdownToBlocks: (content: string) => Promise<PartialBlock[]>;
       };
       const blocks = await editorWithMarkdown.tryParseMarkdownToBlocks(content);
-      if (blocks && Array.isArray(blocks)) {
+      if (Array.isArray(blocks)) {
         return blocks;
       }
     } catch (_error) {

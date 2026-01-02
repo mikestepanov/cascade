@@ -9,7 +9,7 @@ import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 /**
  * User row component for displaying user information in table

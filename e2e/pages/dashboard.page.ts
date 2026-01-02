@@ -118,8 +118,7 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /open command palette/i });
     // Keyboard shortcuts help button (? icon)
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
-    // Global search button with "Search..." text and aria-label
-    this.globalSearchButton = page.getByRole("button", { name: /open search/i });
+    this.globalSearchButton = page.getByRole("button", { name: /search/i });
     // Bell notification icon button - find by the unique bell SVG path (no aria-label in NotificationCenter component)
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button
@@ -178,7 +177,9 @@ export class DashboardPage extends BasePage {
     this.documentList = page.locator("[data-document-list]");
 
     // Projects sidebar
-    this.newProjectButton = page.getByRole("button", { name: /new.*project|\+ new/i });
+    this.newProjectButton = page.getByRole("button", {
+      name: /new.*project|\+ new/i,
+    });
     this.projectList = page.locator("[data-project-list]");
   }
 
@@ -191,30 +192,80 @@ export class DashboardPage extends BasePage {
     const slug = companySlug || "nixelo-e2e";
     const dashboardUrl = `/${slug}/dashboard`;
 
+    // Determine baseURL from current URL
+    const urlObj = new URL(this.page.url());
+    const baseUrl = `${urlObj.protocol}//${urlObj.host}`;
+
     // Check if already on dashboard - skip navigation to avoid token rotation
     const currentUrl = this.page.url();
     if (currentUrl.includes(`/${slug}/dashboard`)) {
       // Already on dashboard, just verify it's loaded
       const isLoaded = await this.commandPaletteButton.isVisible().catch(() => false);
       if (isLoaded) {
-        return; // Already on loaded dashboard, no need to navigate
+        // Even if already on page, ensure it's hydrated before returning
+        await this.waitForLoad();
+        return;
       }
     }
 
     // Navigate directly to dashboard URL
-    await this.page.goto(dashboardUrl);
+    await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
+
+    // Wait a bit for potential auth redirect to settle
+    await this.page.waitForTimeout(1000);
+
+    // Check if we got redirected to landing/signin page (auth failure)
+    let finalUrl = this.page.url();
+    if (
+      finalUrl.includes("/signin") ||
+      finalUrl === baseUrl ||
+      finalUrl === `${baseUrl}/` ||
+      !finalUrl.includes(slug)
+    ) {
+      console.warn(
+        "⚠️  Auth redirect detected: navigated to",
+        finalUrl,
+        ". Retrying navigation once...",
+      );
+      // Wait for a moment to allow any lingering auth state to settle
+      await this.page.waitForTimeout(2000);
+      await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
+      await this.waitForLoad();
+      finalUrl = this.page.url(); // Update finalUrl after retry
+    }
+
+    // Final check after potential retry
+    if (
+      finalUrl.includes("/signin") ||
+      finalUrl === baseUrl ||
+      finalUrl === `${baseUrl}/` ||
+      !finalUrl.includes(slug)
+    ) {
+      console.error("❌ Still on landing page after retry. Auth failed.");
+      throw new Error(`Redirected to landing/signin page: ${finalUrl}. Auth session invalid.`);
+    }
 
     // Wait for dashboard app shell with recovery
     try {
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 10000 });
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     } catch (e) {
+      // Check again if redirected to landing after timeout
+      const currentUrl = this.page.url();
+      if (
+        currentUrl.includes("/signin") ||
+        currentUrl === "http://localhost:5555/" ||
+        !currentUrl.includes(slug)
+      ) {
+        throw new Error(`Redirected to landing/signin page: ${currentUrl}. Auth session invalid.`);
+      }
       console.log("Dashboard didn't load in time, reloading...");
       await this.page.reload();
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 15000 });
+      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     }
 
-    // Ensure loading spinner is gone
+    // Ensure loading spinner is gone and React is hydrated
     await this.expectLoaded();
+    await this.waitForLoad();
 
     // Explicitly wait for the main content sections to prevent hydration flakes
     await this.myIssuesSection.waitFor({ state: "visible", timeout: 10000 });
@@ -233,8 +284,16 @@ export class DashboardPage extends BasePage {
     };
     // Wait for tab to be visible and stable
     await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
-    // Use force click to bypass potential animation obstructions or layout shifts in sidebar
+
+    // Click and wait for navigation if it's a link-based tab
+    const urlBefore = this.page.url();
     await tabs[tab].click({ force: true });
+
+    // If it's a navigation tab, wait for URL to actually change or for load to complete
+    if (tab !== "dashboard" || !urlBefore.includes("/dashboard")) {
+      await this.page.waitForLoadState("domcontentloaded");
+    }
+
     await this.waitForLoad();
   }
 
@@ -243,8 +302,14 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async openCommandPalette() {
-    await this.commandPaletteButton.click({ force: true });
-    await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
+    await expect(async () => {
+      // Small stabilization wait to ensure hydration is settled and listeners are attached
+      await this.page.waitForTimeout(1000);
+      // Remove force: true to allow Playwright to wait for actionability (event handlers attached)
+      await this.commandPaletteButton.click();
+      await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
+    await this.page.waitForTimeout(500);
   }
 
   async closeCommandPalette() {

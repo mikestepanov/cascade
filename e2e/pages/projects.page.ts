@@ -3,9 +3,9 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./base.page";
 
 /**
- * Projects/Workspaces Page Object
+ * Projects Page Object
  * Handles the projects view with sidebar and kanban board
- * Note: UI uses "Workspaces" terminology, URLs use /projects/ path
+ * Note: UI uses "Projects" terminology, URLs use /projects/ path
  */
 export class ProjectsPage extends BasePage {
   // ===================
@@ -76,14 +76,11 @@ export class ProjectsPage extends BasePage {
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
-    // Updated to match "Project" terminology in UI (now "Workspaces")
-    this.newProjectButton = page
-      .getByRole("button", {
-        name: /\+ create project/i,
-      })
-      .first();
+    // Updated to distinguish between Project and Workspace
+    this.newProjectButton = page.getByRole("button", { name: "+ Create Project" });
+    this.newWorkspaceButton = page.getByRole("button", { name: "+ Create Workspace" });
     this.createEntityButton = this.sidebar.getByRole("button", {
-      name: /add new (project|workspace)|create (workspace|project)|\+ create (workspace|project)/i,
+      name: /add new|create|\+/i,
     });
     this.projectList = page
       .locator("[data-project-list]")
@@ -137,26 +134,15 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs - updated to be more specific and avoid collision with role-based buttons
-    this.boardTab = page
-      .getByRole("button", { name: /board view/i })
-      .or(page.getByRole("tab", { name: /board/i }));
-    this.backlogTab = page
-      .getByRole("button", { name: /backlog view/i })
-      .or(page.getByRole("tab", { name: /backlog/i }));
-    this.sprintsTab = page
-      .getByRole("button", { name: /sprints view/i })
-      .or(page.getByRole("tab", { name: /sprint/i }));
-    this.analyticsTab = page
-      .getByRole("button", { name: /analytics view/i })
-      .or(page.getByRole("tab", { name: /analytics/i }));
-    // Use a method for settings tab to allow scoping to main content if needed
-    this.settingsTab = page
-      .getByRole("button", { name: /settings view/i })
-      .or(page.getByRole("tab", { name: /settings/i }));
+    // Project tabs - updated to use 'link' role (TanStack Link)
+    this.boardTab = page.getByRole("link", { name: /^board$/i });
+    this.backlogTab = page.getByRole("link", { name: /^backlog$/i });
+    this.sprintsTab = page.getByRole("link", { name: /^sprint.*$/i });
+    this.analyticsTab = page.getByRole("link", { name: /^analytics$/i });
+    this.settingsTab = page.getByRole("link", { name: /^settings$/i });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
-    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking/i });
+    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking|PROJ/i });
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
@@ -187,9 +173,8 @@ export class ProjectsPage extends BasePage {
     // which has the "Create Project" button wired up correctly.
     // Assumes we are already logged in and on a page with company slug in URL.
     // Fallback to nixelo-e2e if not found (dashboard test default).
-    const currentUrl = this.page.url();
-    const match = currentUrl.match(/\/([^/]+)\/(dashboard|workspaces|projects|settings)/);
-    const slug = match ? match[1] : "nixelo-e2e";
+    const slug = this.getCompanySlug();
+    if (!slug) throw new Error("Company slug not found in URL");
     await this.page.goto(`/${slug}/projects`);
     await this.page.waitForLoadState("networkidle");
     await this.waitForLoad();
@@ -229,13 +214,12 @@ export class ProjectsPage extends BasePage {
 
       // Step 1: Wait for templates to load and select Software Project
       // Step 1: Wait for templates to load and select Software Development
-      // We click the title text which is most reliable.
-      // Note: Selection immediately transitions to the "Configure Project" step, so we verify that transition.
-      // Use case-insensitive regex for robustness
-      const softwareText = this.createProjectForm.getByText(/Software Development/i).first();
+      const softwareText = this.createProjectForm.getByRole("heading", {
+        name: /Software Development/i,
+      });
 
       await softwareText.waitFor({ state: "visible", timeout: 10000 });
-      await softwareText.scrollIntoViewIfNeeded();
+      // Playwright's click() will auto-scroll. Explicit scroll can be brittle in some layouts.
 
       // Retry click if step transition doesn't happen
       await expect(async () => {
@@ -245,14 +229,22 @@ export class ProjectsPage extends BasePage {
           await expect(this.createProjectForm).toBeVisible();
         }
 
-        // Click the template
-        if (await softwareText.isVisible()) {
-          await softwareText.click();
+        // Wait for spinner to be gone again
+        const innerSpinner = this.createProjectForm.locator(".animate-spin");
+        if (await innerSpinner.isVisible()) {
+          await expect(innerSpinner).not.toBeVisible({ timeout: 5000 });
         }
+
+        // Click the template
+        const template = this.createProjectForm.getByRole("heading", {
+          name: /Software Development/i,
+        });
+        await template.waitFor({ state: "visible", timeout: 5000 });
+        await template.click({ force: true });
 
         // Verify we proceeded to configuration step
         await expect(this.createProjectForm.getByText("Configure Project")).toBeVisible({
-          timeout: 2000,
+          timeout: 5000,
         });
       }).toPass({ timeout: 20000 });
 
@@ -285,7 +277,7 @@ export class ProjectsPage extends BasePage {
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.createEntityButton.click();
+    await this.newWorkspaceButton.click();
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 5000 });
     await this.workspaceNameInput.fill(name);
     if (description) {
@@ -353,9 +345,11 @@ export class ProjectsPage extends BasePage {
     await expect(this.issueDetailDialog).toBeVisible({ timeout: 5000 });
 
     // Wait for the issue content to load (skeleton to disappear / critical sections to appear)
-    const timeTrackingHeader = this.issueDetailDialog.getByRole("heading", {
-      name: /time tracking/i,
-    });
+    const timeTrackingHeader = this.issueDetailDialog
+      .getByRole("heading", {
+        name: /time tracking/i,
+      })
+      .first();
     await expect(timeTrackingHeader).toBeVisible({ timeout: 10000 });
   }
 

@@ -107,6 +107,7 @@ export function CalendarView() {
               <button
                 type="button"
                 onClick={handlePrevious}
+                aria-label="Previous month"
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
@@ -114,6 +115,7 @@ export function CalendarView() {
               <button
                 type="button"
                 onClick={handleNext}
+                aria-label="Next month"
                 className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
@@ -157,7 +159,7 @@ export function CalendarView() {
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" data-calendar="true">
         {viewMode === "week" ? (
           <WeekView startDate={startDate} events={events || []} onEventClick={setSelectedEventId} />
         ) : (
@@ -271,7 +273,7 @@ function WeekView({
               ))}
 
               {/* Events for this day */}
-              {events
+              {(events ?? [])
                 .filter((event) => isSameDay(new Date(event.startTime), day))
                 .map((event) => {
                   const startHour = new Date(event.startTime).getHours();
@@ -355,7 +357,9 @@ function MonthView({
         {days.map((day) => {
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
-          const dayEvents = events.filter((event) => isSameDay(new Date(event.startTime), day));
+          const dayEvents = (events ?? []).filter((event) =>
+            isSameDay(new Date(event.startTime), day),
+          );
 
           return (
             <div
@@ -379,7 +383,7 @@ function MonthView({
               </div>
 
               <Flex direction="column" gap="xs" className="space-y-0.5 sm:space-y-1">
-                {dayEvents.slice(0, 2).map((event) => (
+                {(dayEvents ?? []).slice(0, 2).map((event) => (
                   <button
                     type="button"
                     key={event._id}

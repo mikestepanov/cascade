@@ -17,7 +17,7 @@ import { SprintManager } from "./SprintManager";
 import { TemplatesManager } from "./TemplatesManager";
 import { BillingReport } from "./TimeTracker/BillingReport";
 import { Badge } from "./ui/Badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { SkeletonText } from "./ui/Skeleton";
 import { WebhooksManager } from "./WebhooksManager";
 
@@ -216,7 +216,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const [activeTab, setActiveTab] = useState<TabType>("board");
   const [selectedSprintId, setSelectedSprintId] = useState<Id<"sprints"> | undefined>();
 
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.projects.getProject, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
 
   if (!project) {

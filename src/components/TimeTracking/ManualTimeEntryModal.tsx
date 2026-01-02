@@ -11,7 +11,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTimeEntryValidation";
 
 // =============================================================================
@@ -111,7 +111,7 @@ export function ManualTimeEntryModal({
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.projects.getCurrentUserProjects);
 
   // Mode and derived state (kept outside form due to complexity)
   const [entryMode, setEntryMode] = useState<EntryMode>("duration");
@@ -440,7 +440,7 @@ export function ManualTimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.map((project) => (
+                {projects?.page?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>

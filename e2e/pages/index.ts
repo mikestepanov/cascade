@@ -7,3 +7,4 @@ export { LandingPage } from "./landing.page";
 export { OnboardingPage } from "./onboarding.page";
 export { ProjectsPage } from "./projects.page";
 export { SettingsPage } from "./settings.page";
+export { WorkspacesPage } from "./workspaces.page";

@@ -50,8 +50,8 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
   // Events array (kept outside form due to checkbox array pattern)
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
 
-  const createWebhook = useMutation(api.webhooks.create);
-  const updateWebhook = useMutation(api.webhooks.update);
+  const createWebhook = useMutation(api.webhooks.createWebhook);
+  const updateWebhook = useMutation(api.webhooks.updateWebhook);
 
   const form = useAppForm({
     defaultValues: {

@@ -32,13 +32,17 @@ function generateOTP(): string {
 export const OTPPasswordReset = Resend({
   id: "otp-password-reset",
   apiKey: "unused", // Required by interface but we use our own email system
-  // biome-ignore lint/suspicious/useAwait: Required by @auth/core provider interface
-  async generateVerificationToken() {
+
+  generateVerificationToken() {
     return generateOTP();
   },
-  // @ts-expect-error - ctx IS passed at runtime by @convex-dev/auth (see signIn.ts:92-95)
+
   // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest({ identifier: email, token }, ctx) {
+  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
+  async sendVerificationRequest(
+    { identifier: email, token }: { identifier: string; token: string },
+    ctx: any,
+  ) {
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Reset your password",

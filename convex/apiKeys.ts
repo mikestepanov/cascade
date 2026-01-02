@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { ApiAuthContext } from "./lib/apiAuth";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
  * API Key Management
@@ -92,6 +93,7 @@ export const generate = mutation({
       const membership = await ctx.db
         .query("projectMembers")
         .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .filter(notDeleted)
         .first();
 
       if (!membership && project.createdBy !== userId) {
@@ -157,6 +159,7 @@ export const list = query({
     const keys = await ctx.db
       .query("apiKeys")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .collect();
 
     // Return keys with sensitive data removed

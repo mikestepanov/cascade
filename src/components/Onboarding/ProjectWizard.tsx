@@ -26,7 +26,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
     { id: "done", name: "Done", category: "done" as const, order: 2 },
   ]);
 
-  const createWorkspace = useMutation(api.projects.create);
+  const createWorkspace = useMutation(api.projects.createProject);
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
   const handleNext = () => {

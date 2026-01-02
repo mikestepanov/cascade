@@ -242,8 +242,7 @@ describe("Hybrid Search Integration", () => {
     it("should handle malformed data gracefully", async () => {
       const malformedData = [
         { _id: "1", name: "John", email: "john@example.com" },
-        // @ts-expect-error Testing malformed data
-        { _id: "2" }, // Missing name and email
+        { _id: "2" } as any, // Missing name and email
         { _id: "3", name: "Jane", email: "jane@example.com" },
       ];
 

@@ -3,12 +3,14 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
   const createdProjects = await ctx.db
     .query("projects")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
+    .filter(notDeleted)
     .first();
 
   if (createdProjects) return true;
@@ -17,6 +19,7 @@ async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
     .query("projectMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
     .filter((q) => q.eq(q.field("role"), "admin"))
+    .filter(notDeleted)
     .first();
 
   return !!adminMembership;
@@ -168,6 +171,7 @@ async function checkUserComplianceInternal(
     .filter((q) =>
       q.and(q.gte(q.field("date"), args.periodStart), q.lte(q.field("date"), args.periodEnd)),
     )
+    .filter(notDeleted)
     .collect();
 
   // Calculate hours
@@ -372,6 +376,7 @@ export const checkAllUsersCompliance = mutation({
     const profiles = await ctx.db
       .query("userProfiles")
       .withIndex("by_active", (q) => q.eq("isActive", true))
+      .filter(notDeleted)
       .collect();
 
     const results = [];

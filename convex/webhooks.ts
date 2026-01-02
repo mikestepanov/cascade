@@ -1,6 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
@@ -8,10 +10,13 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
+import { isTest } from "./testConfig";
 
 // Create a webhook
-export const create = mutation({
+export const createWebhook = mutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -37,6 +42,20 @@ export const create = mutation({
       createdAt: Date.now(),
     });
 
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "webhook_created",
+        actorId: userId,
+        targetId: webhookId,
+        targetType: "webhooks",
+        metadata: {
+          projectId: args.projectId,
+          name: args.name,
+          events: args.events,
+        },
+      });
+    }
+
     return webhookId;
   },
 });
@@ -54,6 +73,7 @@ export const listByProject = query({
     const webhooks = await ctx.db
       .query("webhooks")
       .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
 
     // Don't expose secrets to the client - only show if secret is configured
@@ -66,7 +86,7 @@ export const listByProject = query({
 });
 
 // Update a webhook
-export const update = mutation({
+export const updateWebhook = mutation({
   args: {
     id: v.id("webhooks"),
     name: v.optional(v.string()),
@@ -80,7 +100,7 @@ export const update = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can update webhooks
     if (!webhook.projectId) {
@@ -96,18 +116,28 @@ export const update = mutation({
     if (args.isActive !== undefined) updates.isActive = args.isActive;
 
     await ctx.db.patch(args.id, updates);
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "webhook_updated",
+        actorId: userId,
+        targetId: args.id,
+        targetType: "webhooks",
+        metadata: updates,
+      });
+    }
   },
 });
 
 // Delete a webhook
-export const remove = mutation({
+export const softDeleteWebhook = mutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can delete webhooks
     if (!webhook.projectId) {
@@ -115,7 +145,16 @@ export const remove = mutation({
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
-    await ctx.db.delete(args.id);
+    await ctx.db.patch(args.id, softDeleteFields(userId));
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "webhook_deleted",
+        actorId: userId,
+        targetId: args.id,
+        targetType: "webhooks",
+      });
+    }
   },
 });
 
@@ -198,6 +237,7 @@ export const getActiveWebhooksForEvent = internalQuery({
     const webhooks = await ctx.db
       .query("webhooks")
       .withIndex("by_active", (q) => q.eq("isActive", true))
+      .filter(notDeleted)
       .collect();
 
     return webhooks.filter((w) => w.projectId === args.projectId && w.events.includes(args.event));
@@ -208,6 +248,7 @@ export const getActiveWebhooksForEvent = internalQuery({
 export const updateLastTriggered = internalMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
+    if (isTest) return;
     await ctx.db.patch(args.id, {
       lastTriggered: Date.now(),
     });
@@ -218,14 +259,14 @@ export const updateLastTriggered = internalMutation({
 export const listExecutions = query({
   args: {
     webhookId: v.id("webhooks"),
-    limit: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can view webhook logs
     if (!webhook.projectId) {
@@ -233,13 +274,14 @@ export const listExecutions = query({
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
-    const executions = await ctx.db
-      .query("webhookExecutions")
-      .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
-      .order("desc")
-      .take(args.limit || 50);
-
-    return executions;
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) =>
+        db
+          .query("webhookExecutions")
+          .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
+          .order("desc"),
+    });
   },
 });
 
@@ -251,7 +293,7 @@ export const test = mutation({
     if (!userId) throw new Error("Not authenticated");
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can test webhooks
     if (!webhook.projectId) {
@@ -339,6 +381,9 @@ export const createExecution = internalMutation({
     requestPayload: v.string(),
   },
   handler: async (ctx, args) => {
+    if (isTest) {
+      return "webhookExecutions:00000000000000000000000000000000" as Id<"webhookExecutions">;
+    }
     return await ctx.db.insert("webhookExecutions", {
       webhookId: args.webhookId,
       event: args.event,
@@ -360,6 +405,7 @@ export const updateExecution = internalMutation({
     error: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (isTest) return;
     await ctx.db.patch(args.id, {
       status: args.status,
       responseStatus: args.responseStatus,
@@ -381,7 +427,7 @@ export const retryExecution = mutation({
     if (!execution) throw new Error("Execution not found");
 
     const webhook = await ctx.db.get(execution.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
 
     // Only admins can retry webhooks
     if (!webhook.projectId) {
@@ -470,6 +516,7 @@ export const incrementExecutionAttempt = internalMutation({
     error: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (isTest) return;
     const execution = await ctx.db.get(args.id);
     if (!execution) return;
 

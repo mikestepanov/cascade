@@ -99,10 +99,12 @@ export function FuzzySearchInput<T>({
   const showDropdown = isOpen && isDropdownOpen && (query.length > 0 || results.length > 0);
 
   // Reset selected index when results change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Reset index when results update
-  useEffect(() => {
+  // Reset selected index when results change (Derived State Pattern)
+  const [prevResults, setPrevResults] = useState(results);
+  if (results !== prevResults) {
+    setPrevResults(results);
     setSelectedIndex(0);
-  }, [results.length]);
+  }
 
   // Open dropdown when query changes
   useEffect(() => {

@@ -117,4 +117,23 @@ export abstract class BasePage {
       await toasts.nth(i).click();
     }
   }
+
+  /**
+   * Get current company slug from URL robustly.
+   * Extracts slug from paths like /slug/dashboard or /slug/projects/...
+   * Defaults to 'nixelo-e2e' if no valid slug is found or if on signin/landing.
+   */
+  getCompanySlug(): string {
+    const url = this.page.url();
+    // Match the first path segment if it's not a known system route
+    const match = url.match(/^https?:\/\/[^/]+\/([^/]+)/);
+    const slug = match ? match[1] : null;
+
+    const systemRoutes = ["signin", "signup", "onboarding", "terms", "privacy", ""];
+    if (!slug || systemRoutes.includes(slug) || slug === "localhost:5555") {
+      return "nixelo-e2e";
+    }
+
+    return slug;
+  }
 }

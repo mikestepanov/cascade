@@ -2,7 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
 import { ExportPanel } from "./import-export/ExportPanel";
 import { ImportPanel } from "./import-export/ImportPanel";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/Dialog";
 
 interface ImportExportModalProps {
   open: boolean;
@@ -42,6 +42,7 @@ export function ImportExportModal({
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Import / Export Issues</DialogTitle>
+          <DialogDescription className="sr-only">Manage issue import and export</DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
           {/* Mode Selection */}

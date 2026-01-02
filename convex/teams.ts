@@ -1,11 +1,15 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
+import { isTest } from "./testConfig";
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -30,7 +34,7 @@ export async function getTeamRole(
 /**
  * Check if user is team lead
  */
-async function isTeamLead(
+export async function isTeamLead(
   ctx: QueryCtx | MutationCtx,
   teamId: Id<"teams">,
   userId: Id<"users">,
@@ -97,6 +101,7 @@ export const createTeam = mutation({
     description: v.optional(v.string()),
     isPrivate: v.boolean(), // Default privacy for team projects
   },
+
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -150,6 +155,17 @@ export const createTeam = mutation({
       addedBy: userId,
       addedAt: now,
     });
+
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.create",
+        actorId: userId,
+        targetId: teamId,
+        targetType: "team",
+        metadata: { name: args.name, companyId: args.companyId },
+      });
+    }
 
     return { teamId, slug };
   },
@@ -211,6 +227,17 @@ export const updateTeam = mutation({
 
     await ctx.db.patch(args.teamId, updates);
 
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.update",
+        actorId: userId,
+        targetId: args.teamId,
+        targetType: "team",
+        metadata: updates,
+      });
+    }
+
     return { success: true };
   },
 });
@@ -220,7 +247,7 @@ export const updateTeam = mutation({
  * Team lead or company admin only
  * Will also delete all team members
  */
-export const deleteTeam = mutation({
+export const softDeleteTeam = mutation({
   args: {
     teamId: v.id("teams"),
   },
@@ -230,18 +257,75 @@ export const deleteTeam = mutation({
 
     await assertCanManageTeam(ctx, args.teamId, userId);
 
-    // Delete all team members
-    const members = await ctx.db
-      .query("teamMembers")
-      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .collect();
+    // Soft delete team and cascade to members
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.teamId, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "teams", args.teamId, userId, deletedAt);
 
-    for (const member of members) {
-      await ctx.db.delete(member._id);
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.softDelete",
+        actorId: userId,
+        targetId: args.teamId,
+        targetType: "team",
+        metadata: { deletedAt },
+      });
     }
 
-    // Delete team
-    await ctx.db.delete(args.teamId);
+    return { success: true };
+  },
+});
+
+/**
+ * Restore a soft-deleted team
+ * Team lead or company admin only
+ */
+export const restoreTeam = mutation({
+  args: {
+    teamId: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const team = await ctx.db.get(args.teamId);
+    if (!team) {
+      throw new Error("Team not found");
+    }
+
+    if (!team.isDeleted) {
+      throw new Error("Team is not deleted");
+    }
+
+    // Must be company admin or the deletedBy user
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
+    if (!isAdmin && team.deletedBy !== userId) {
+      throw new Error("Only company admins or the user who deleted the team can restore it");
+    }
+
+    // Restore with automatic cascading
+    await ctx.db.patch(args.teamId, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+
+    // Import cascadeRestore dynamically
+    const { cascadeRestore } = await import("./lib/relationships");
+    await cascadeRestore(ctx, "teams", args.teamId);
+
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.restore",
+        actorId: userId,
+        targetId: args.teamId,
+        targetType: "team",
+      });
+    }
 
     return { success: true };
   },
@@ -302,6 +386,17 @@ export const addTeamMember = mutation({
       addedAt: now,
     });
 
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.member.add",
+        actorId: currentUserId,
+        targetId: args.userId,
+        targetType: "user",
+        metadata: { teamId: args.teamId, role: args.role },
+      });
+    }
+
     return { success: true };
   },
 });
@@ -335,6 +430,17 @@ export const updateTeamMemberRole = mutation({
       role: args.role,
     });
 
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.member.updateRole",
+        actorId: currentUserId,
+        targetId: args.userId,
+        targetType: "user",
+        metadata: { teamId: args.teamId, role: args.role },
+      });
+    }
+
     return { success: true };
   },
 });
@@ -365,6 +471,17 @@ export const removeTeamMember = mutation({
 
     await ctx.db.delete(membership._id);
 
+    // Audit Log
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "team.member.remove",
+        actorId: currentUserId,
+        targetId: args.userId,
+        targetType: "user",
+        metadata: { teamId: args.teamId },
+      });
+    }
+
     return { success: true };
   },
 });
@@ -385,7 +502,7 @@ export const getTeam = query({
     if (!userId) return null;
 
     const team = await ctx.db.get(args.teamId);
-    if (!team) return null;
+    if (!team || team.isDeleted) return null;
 
     // Check if user has access (team member or company admin)
     const role = await getTeamRole(ctx, args.teamId, userId);
@@ -437,9 +554,9 @@ export const getBySlug = query({
 });
 
 /**
- * List teams (alias for getCompanyTeams for consistency)
+ * List teams (paginated)
  */
-export const list = query({
+export const getTeams = query({
   args: {
     companyId: v.id("companies"),
     paginationOpts: paginationOptsValidator,
@@ -456,16 +573,17 @@ export const list = query({
     let results: PaginationResult<Doc<"teams">> | PaginationResult<Doc<"teamMembers">>;
     if (isAdmin) {
       // Admins see all teams in the company
-      results = await ctx.db
-        .query("teams")
-        .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
-        .paginate(args.paginationOpts);
+      results = await fetchPaginatedQuery<Doc<"teams">>(ctx, {
+        paginationOpts: args.paginationOpts,
+        query: (db) =>
+          db.query("teams").withIndex("by_company", (q) => q.eq("companyId", args.companyId)),
+      });
     } else {
       // Non-admins see only teams they are a member of
-      const membershipResults = await ctx.db
-        .query("teamMembers")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
-        .paginate(args.paginationOpts);
+      const membershipResults = await fetchPaginatedQuery<Doc<"teamMembers">>(ctx, {
+        paginationOpts: args.paginationOpts,
+        query: (db) => db.query("teamMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+      });
 
       // Map memberships to teams
       const teamIds = membershipResults.page.map((m) => m.teamId);
@@ -514,6 +632,7 @@ export const list = query({
       return await ctx.db
         .query("projects")
         .withIndex("by_team", (q) => q.eq("teamId", teamId))
+        .filter(notDeleted)
         .collect()
         .then((p) => p.length);
     });
@@ -563,6 +682,7 @@ export const getCompanyTeams = query({
     const companyMembership = await ctx.db
       .query("companyMembers")
       .withIndex("by_company_user", (q) => q.eq("companyId", args.companyId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (!companyMembership) return [];
@@ -570,6 +690,7 @@ export const getCompanyTeams = query({
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
+      .filter(notDeleted)
       .collect();
 
     const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
@@ -591,6 +712,7 @@ export const getCompanyTeams = query({
           ctx.db
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .filter(notDeleted)
             .collect(),
         ),
       ),
@@ -646,6 +768,7 @@ export const getUserTeams = query({
     const memberships = await ctx.db
       .query("teamMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .collect();
 
     if (memberships.length === 0) return [];
@@ -669,6 +792,7 @@ export const getUserTeams = query({
           ctx.db
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
+            .filter(notDeleted)
             .collect(),
         ),
       ),
@@ -731,6 +855,7 @@ export const getTeamMembers = query({
     const memberships = await ctx.db
       .query("teamMembers")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all users (both members and addedBy) (avoid N+1!)
@@ -753,5 +878,20 @@ export const getTeamMembers = query({
     });
 
     return members;
+  },
+});
+
+/**
+ * Get user's role in a team
+ */
+export const getTeamUserRole = query({
+  args: {
+    teamId: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    return await getTeamRole(ctx, args.teamId, userId);
   },
 });

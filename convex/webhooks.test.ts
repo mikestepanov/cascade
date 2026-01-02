@@ -11,12 +11,14 @@ describe("Webhooks", () => {
   describe("create", () => {
     it("should create a webhook with all fields", async () => {
       const t = convexTest(schema, modules);
+      // Verify swap
+
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Issue Webhook",
         url: "https://example.com/webhook",
@@ -36,6 +38,7 @@ describe("Webhooks", () => {
       expect(webhook?.secret).toBe("secret123");
       expect(webhook?.isActive).toBe(true);
       expect(webhook?.createdBy).toBe(userId);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should create webhook without secret", async () => {
@@ -45,7 +48,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Simple Webhook",
         url: "https://example.com/hook",
@@ -57,6 +60,7 @@ describe("Webhooks", () => {
       });
 
       expect(webhook?.secret).toBeUndefined();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -70,7 +74,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -79,13 +83,14 @@ describe("Webhooks", () => {
       // Editor tries to create webhook
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.mutation(api.webhooks.create, {
+        await asEditor.mutation(api.webhooks.createWebhook, {
           projectId,
           name: "Webhook",
           url: "https://example.com/hook",
           events: ["issue.created"],
         });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -94,13 +99,14 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       await expect(async () => {
-        await t.mutation(api.webhooks.create, {
+        await t.mutation(api.webhooks.createWebhook, {
           projectId,
           name: "Webhook",
           url: "https://example.com/hook",
           events: ["issue.created"],
         });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -113,13 +119,13 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create multiple webhooks
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook 1",
         url: "https://example.com/hook1",
         events: ["issue.created"],
       });
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook 2",
         url: "https://example.com/hook2",
@@ -133,6 +139,7 @@ describe("Webhooks", () => {
       expect(webhooks).toHaveLength(2);
       expect(webhooks.map((w) => w.name)).toContain("Webhook 1");
       expect(webhooks.map((w) => w.name)).toContain("Webhook 2");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should return empty array for project with no webhooks", async () => {
@@ -147,6 +154,7 @@ describe("Webhooks", () => {
       });
 
       expect(webhooks).toEqual([]);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -160,7 +168,7 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -171,6 +179,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await asEditor.query(api.webhooks.listByProject, { projectId });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -181,6 +190,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await t.query(api.webhooks.listByProject, { projectId });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -192,14 +202,14 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Original Name",
         url: "https://example.com/original",
         events: ["issue.created"],
       });
 
-      await asUser.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.updateWebhook, {
         id: webhookId,
         name: "Updated Name",
         url: "https://example.com/updated",
@@ -213,6 +223,7 @@ describe("Webhooks", () => {
       expect(webhook?.name).toBe("Updated Name");
       expect(webhook?.url).toBe("https://example.com/updated");
       expect(webhook?.events).toEqual(["issue.created", "issue.updated", "issue.deleted"]);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should toggle isActive status", async () => {
@@ -222,7 +233,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -230,7 +241,7 @@ describe("Webhooks", () => {
       });
 
       // Deactivate
-      await asUser.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.updateWebhook, {
         id: webhookId,
         isActive: false,
       });
@@ -241,7 +252,7 @@ describe("Webhooks", () => {
       expect(webhook?.isActive).toBe(false);
 
       // Reactivate
-      await asUser.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.updateWebhook, {
         id: webhookId,
         isActive: true,
       });
@@ -250,6 +261,7 @@ describe("Webhooks", () => {
         return await ctx.db.get(webhookId);
       });
       expect(webhook?.isActive).toBe(true);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should update only specified fields", async () => {
@@ -259,7 +271,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Original Name",
         url: "https://example.com/original",
@@ -267,7 +279,7 @@ describe("Webhooks", () => {
       });
 
       // Update only name
-      await asUser.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.updateWebhook, {
         id: webhookId,
         name: "New Name",
       });
@@ -278,6 +290,7 @@ describe("Webhooks", () => {
 
       expect(webhook?.name).toBe("New Name");
       expect(webhook?.url).toBe("https://example.com/original"); // Unchanged
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -291,13 +304,13 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await asOwner.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -307,11 +320,12 @@ describe("Webhooks", () => {
       // Editor tries to update
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.mutation(api.webhooks.update, {
+        await asEditor.mutation(api.webhooks.updateWebhook, {
           id: webhookId,
           name: "Hacked",
         });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -320,7 +334,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -328,11 +342,12 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.update, {
+        await t.mutation(api.webhooks.updateWebhook, {
           id: webhookId,
           name: "Hacked",
         });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should throw error for non-existent webhook", async () => {
@@ -343,7 +358,7 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Temp",
         url: "https://example.com/temp",
@@ -354,15 +369,16 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await asUser.mutation(api.webhooks.update, {
+        await asUser.mutation(api.webhooks.updateWebhook, {
           id: webhookId,
           name: "Test",
         });
       }).rejects.toThrow("Webhook not found");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
-  describe("remove", () => {
+  describe("softDelete", () => {
     it("should delete webhook", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -370,20 +386,21 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "To Delete",
         url: "https://example.com/hook",
         events: ["issue.created"],
       });
 
-      await asUser.mutation(api.webhooks.remove, { id: webhookId });
+      await asUser.mutation(api.webhooks.softDeleteWebhook, { id: webhookId });
 
       const webhook = await t.run(async (ctx) => {
         return await ctx.db.get(webhookId);
       });
 
-      expect(webhook).toBeNull();
+      expect(webhook?.isDeleted).toBe(true);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -397,13 +414,13 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await asOwner.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -413,8 +430,9 @@ describe("Webhooks", () => {
       // Editor tries to delete
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.mutation(api.webhooks.remove, { id: webhookId });
+        await asEditor.mutation(api.webhooks.softDeleteWebhook, { id: webhookId });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -423,7 +441,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -431,8 +449,9 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await t.mutation(api.webhooks.remove, { id: webhookId });
+        await t.mutation(api.webhooks.softDeleteWebhook, { id: webhookId });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should throw error for non-existent webhook", async () => {
@@ -443,7 +462,7 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Temp",
         url: "https://example.com/temp",
@@ -454,8 +473,9 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await asUser.mutation(api.webhooks.remove, { id: webhookId });
+        await asUser.mutation(api.webhooks.softDeleteWebhook, { id: webhookId });
       }).rejects.toThrow("Webhook not found");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -467,7 +487,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -500,9 +520,11 @@ describe("Webhooks", () => {
 
       const executions = await asUser.query(api.webhooks.listExecutions, {
         webhookId,
+        paginationOpts: { numItems: 20, cursor: null },
       });
 
-      expect(executions).toHaveLength(2);
+      expect(executions.page).toHaveLength(2);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should respect limit parameter", async () => {
@@ -512,7 +534,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -536,10 +558,11 @@ describe("Webhooks", () => {
 
       const executions = await asUser.query(api.webhooks.listExecutions, {
         webhookId,
-        limit: 5,
+        paginationOpts: { numItems: 5, cursor: null },
       });
 
-      expect(executions.length).toBeLessThanOrEqual(5);
+      expect(executions.page.length).toBeLessThanOrEqual(5);
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -553,13 +576,13 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await asOwner.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -569,8 +592,12 @@ describe("Webhooks", () => {
       // Editor tries to view executions
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
-        await asEditor.query(api.webhooks.listExecutions, { webhookId });
+        await asEditor.query(api.webhooks.listExecutions, {
+          webhookId,
+          paginationOpts: { numItems: 20, cursor: null },
+        });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -579,7 +606,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -587,8 +614,12 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await t.query(api.webhooks.listExecutions, { webhookId });
+        await t.query(api.webhooks.listExecutions, {
+          webhookId,
+          paginationOpts: { numItems: 20, cursor: null },
+        });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should throw error for non-existent webhook", async () => {
@@ -599,7 +630,7 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Temp",
         url: "https://example.com/temp",
@@ -610,8 +641,12 @@ describe("Webhooks", () => {
       });
 
       await expect(async () => {
-        await asUser.query(api.webhooks.listExecutions, { webhookId });
+        await asUser.query(api.webhooks.listExecutions, {
+          webhookId,
+          paginationOpts: { numItems: 20, cursor: null },
+        });
       }).rejects.toThrow("Webhook not found");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -631,7 +666,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -644,6 +679,7 @@ describe("Webhooks", () => {
 
       // Don't run the scheduled actions - they make HTTP calls to external URLs
       // The test only verifies the mutation returns success (scheduling works)
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -657,13 +693,13 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await asOwner.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -675,6 +711,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await asEditor.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -683,7 +720,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -693,6 +730,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await t.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should throw error for non-existent webhook", async () => {
@@ -703,7 +741,7 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a webhook to get a valid but non-existent ID
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Temp",
         url: "https://example.com/temp",
@@ -716,6 +754,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await asUser.mutation(api.webhooks.test, { id: webhookId });
       }).rejects.toThrow("Webhook not found");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -735,7 +774,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Test Webhook",
         url: "https://example.com/hook",
@@ -762,8 +801,8 @@ describe("Webhooks", () => {
 
       expect(result.success).toBe(true);
 
-      // Don't run the scheduled actions - they make HTTP calls to external URLs
       // The test only verifies the mutation returns success (scheduling works)
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny non-admin users", async () => {
@@ -777,13 +816,13 @@ describe("Webhooks", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
       });
 
-      const webhookId = await asOwner.mutation(api.webhooks.create, {
+      const webhookId = await asOwner.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -806,6 +845,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await asEditor.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should deny unauthenticated users", async () => {
@@ -814,7 +854,7 @@ describe("Webhooks", () => {
       const projectId = await createTestProject(t, userId);
 
       const asUser = asAuthenticatedUser(t, userId);
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Webhook",
         url: "https://example.com/hook",
@@ -835,6 +875,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await t.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow("Not authenticated");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("should throw error for non-existent execution", async () => {
@@ -844,7 +885,7 @@ describe("Webhooks", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      const webhookId = await asUser.mutation(api.webhooks.create, {
+      const webhookId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Temp",
         url: "https://example.com/temp",
@@ -869,6 +910,7 @@ describe("Webhooks", () => {
       await expect(async () => {
         await asUser.mutation(api.webhooks.retryExecution, { id: executionId });
       }).rejects.toThrow("Execution not found");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 
@@ -881,13 +923,13 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create webhooks for different events
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Issue Webhook",
         url: "https://example.com/hook1",
         events: ["issue.created", "issue.updated"],
       });
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Comment Webhook",
         url: "https://example.com/hook2",
@@ -902,6 +944,7 @@ describe("Webhooks", () => {
 
       expect(webhooks).toHaveLength(1);
       expect(webhooks[0]?.name).toBe("Issue Webhook");
+      await t.finishInProgressScheduledFunctions();
     });
 
     it("getActiveWebhooksForEvent - should only return active webhooks", async () => {
@@ -912,7 +955,7 @@ describe("Webhooks", () => {
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create active webhook
-      await asUser.mutation(api.webhooks.create, {
+      await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Active Webhook",
         url: "https://example.com/hook1",
@@ -920,13 +963,13 @@ describe("Webhooks", () => {
       });
 
       // Create and deactivate webhook
-      const inactiveId = await asUser.mutation(api.webhooks.create, {
+      const inactiveId = await asUser.mutation(api.webhooks.createWebhook, {
         projectId,
         name: "Inactive Webhook",
         url: "https://example.com/hook2",
         events: ["issue.created"],
       });
-      await asUser.mutation(api.webhooks.update, {
+      await asUser.mutation(api.webhooks.updateWebhook, {
         id: inactiveId,
         isActive: false,
       });
@@ -939,6 +982,7 @@ describe("Webhooks", () => {
 
       expect(webhooks).toHaveLength(1);
       expect(webhooks[0]?.name).toBe("Active Webhook");
+      await t.finishInProgressScheduledFunctions();
     });
   });
 });

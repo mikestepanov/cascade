@@ -28,7 +28,7 @@ function TeamsList() {
     results: teams,
     status,
     loadMore,
-  } = usePaginatedQuery(api.teams.list, { companyId }, { initialNumItems: 20 });
+  } = usePaginatedQuery(api.teams.getTeams, { companyId }, { initialNumItems: 20 });
 
   if (!(workspace && teams)) {
     return (

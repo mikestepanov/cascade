@@ -8,6 +8,7 @@ import { useState } from "react";
 import { handleMarkdownExport, importFromMarkdown, readMarkdownForPreview } from "@/lib/markdown";
 import { showError, showSuccess } from "@/lib/toast";
 import { DocumentHeader } from "./DocumentHeader";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
 import { VersionHistory } from "./VersionHistory";
@@ -160,7 +161,20 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           {sync.isLoading ? (
             <SkeletonText lines={8} />
           ) : sync.editor ? (
-            <BlockNoteView editor={sync.editor} theme="light" className="min-h-96" />
+            <div className="relative min-h-[500px]">
+              <ErrorBoundary
+                fallback={
+                  <div className="p-4 border border-status-error/20 bg-status-error/5 rounded-md text-status-error text-center">
+                    <p className="font-medium">Editor failed to load</p>
+                    <p className="text-sm opacity-80">
+                      There was an issue initializing the rich text editor.
+                    </p>
+                  </div>
+                }
+              >
+                <BlockNoteView editor={sync.editor} theme="light" className="min-h-96" />
+              </ErrorBoundary>
+            </div>
           ) : (
             <div className="text-center py-8 sm:py-12">
               <button

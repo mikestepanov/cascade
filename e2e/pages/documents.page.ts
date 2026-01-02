@@ -155,6 +155,21 @@ export class DocumentsPage extends BasePage {
   }
 
   async expectEditorVisible() {
+    // Wait for React to be ready (avoid dispatcher errors)
+    await this.page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+    await this.page.waitForTimeout(500);
+
+    // Check for React error boundary
+    const errorBoundary = this.page.locator("text=/Something went wrong/i");
+    const hasError = await errorBoundary.isVisible().catch(() => false);
+    if (hasError) {
+      const errorMsg = await this.page
+        .locator("code")
+        .textContent()
+        .catch(() => "Unknown error");
+      throw new Error(`React error boundary displayed: ${errorMsg}`);
+    }
+
     // Handle "Initialize Document" empty state if present (for new documents)
     const initButton = this.page.getByRole("button", { name: /initialize.*document/i });
     try {
@@ -163,7 +178,7 @@ export class DocumentsPage extends BasePage {
     } catch {
       // Button didn't appear, proceed to check for editor
     }
-    await expect(this.editor).toBeVisible();
+    await expect(this.editor).toBeVisible({ timeout: 10000 });
   }
 
   async expectDocumentCount(count: number) {

@@ -15,7 +15,7 @@ import { IssueWatchers } from "./IssueWatchers";
 import { TimeTracker } from "./TimeTracker";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { Typography } from "./ui/Typography";
@@ -58,8 +58,8 @@ export function IssueDetailModal({
               </div>
             </div>
           </DialogHeader>
-          {/* biome-ignore lint/a11y/useSemanticElements: role="status" is correct for loading state */}
-          <div role="status" aria-busy="true" className="space-y-6">
+          <DialogDescription className="sr-only">Loading content...</DialogDescription>
+          <output aria-live="polite" aria-busy="true" className="space-y-6 block">
             <span className="sr-only">Loading...</span>
             <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
             <div className="space-y-2">
@@ -73,7 +73,7 @@ export function IssueDetailModal({
               <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
               <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
             </div>
-          </div>
+          </output>
         </DialogContent>
       </Dialog>
     );
@@ -117,6 +117,7 @@ export function IssueDetailModal({
             </div>
           </div>
         </DialogHeader>
+        <DialogDescription className="sr-only">View and edit issue details</DialogDescription>
         {/* Content */}
         <div className="space-y-6">
           {/* Title */}

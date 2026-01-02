@@ -86,11 +86,14 @@ function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <body
+        className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-primary-dark"
+        suppressHydrationWarning
+      >
         {children}
         <Scripts />
       </body>

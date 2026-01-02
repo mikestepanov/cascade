@@ -7,7 +7,7 @@ import { render, screen, waitFor } from "@/test/custom-render";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 
 // Mock Radix Select to use native select for testability
-vi.mock("./ui/ShadcnSelect", () => ({
+vi.mock("./ui/Select", () => ({
   Select: ({
     children,
     onValueChange,

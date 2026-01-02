@@ -5,8 +5,10 @@
  * and migration-safe issue retrieval
  */
 
+import type { PaginationOptions, PaginationResult } from "convex/server";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { fetchPaginatedQuery } from "./queryHelpers";
 
 /**
  * Get an issue and validate it has a projectId (for migration safety)
@@ -180,4 +182,37 @@ export function countIssuesByStatus<T extends { status: string }>(
     counts[issue.status] = (counts[issue.status] || 0) + 1;
   }
   return counts;
+}
+
+/**
+ * Standardized issue pagination helper
+ * Handles:
+ * 1. Auth & Admin checks (optional)
+ * 2. Query construction with index
+ * 3. Soft delete filtering
+ * 4. Pagination
+ * 5. Enrichment
+ */
+export async function fetchPaginatedIssues(
+  ctx: QueryCtx,
+  opts: {
+    paginationOpts: PaginationOptions;
+
+    query: (db: QueryCtx["db"]) => unknown; // Query builder keeps specific type implicitly
+    enrich?: boolean;
+  },
+): Promise<PaginationResult<EnrichedIssue | Doc<"issues">>> {
+  const issuesResult = await fetchPaginatedQuery<Doc<"issues">>(ctx, {
+    paginationOpts: opts.paginationOpts,
+    query: opts.query,
+  });
+
+  if (opts.enrich === false) {
+    return issuesResult;
+  }
+
+  return {
+    ...issuesResult,
+    page: await enrichIssues(ctx, issuesResult.page),
+  };
 }

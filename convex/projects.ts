@@ -1,11 +1,17 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
+import { isTest } from "./testConfig";
 
-export const create = mutation({
+export const createProject = mutation({
   args: {
     name: v.string(),
     key: v.string(),
@@ -30,6 +36,7 @@ export const create = mutation({
     const existingProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.key.toUpperCase()))
+      .filter(notDeleted)
       .first();
 
     if (existingProject) {
@@ -74,14 +81,28 @@ export const create = mutation({
       addedAt: now,
     });
 
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "project_created",
+        actorId: userId,
+        targetId: projectId,
+        targetType: "projects",
+        metadata: {
+          name: args.name,
+          key: args.key,
+          companyId: args.companyId,
+        },
+      });
+    }
+
     return projectId;
   },
 });
 
-export const list = query({
+export const getCurrentUserProjects = query({
   args: {
     companyId: v.optional(v.id("companies")),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -89,11 +110,13 @@ export const list = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
+    const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
+
     // Paginate memberships directly via index
-    const results = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .paginate(args.paginationOpts);
+    const results = await fetchPaginatedQuery<Doc<"projectMembers">>(ctx, {
+      paginationOpts,
+      query: (db) => db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+    });
 
     if (results.page.length === 0) {
       return { ...results, page: [] };
@@ -158,10 +181,10 @@ export const list = query({
   },
 });
 
-export const listByTeam = query({
+export const getTeamProjects = query({
   args: {
     teamId: v.id("teams"),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -185,17 +208,17 @@ export const listByTeam = query({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    return await ctx.db
-      .query("projects")
-      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
-      .paginate(args.paginationOpts);
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts || { numItems: 20, cursor: null },
+      query: (db) => db.query("projects").withIndex("by_team", (q) => q.eq("teamId", args.teamId)),
+    });
   },
 });
 
-export const listOrphanedProjects = query({
+export const getWorkspaceProjects = query({
   args: {
     workspaceId: v.id("workspaces"),
-    paginationOpts: paginationOptsValidator,
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -216,18 +239,21 @@ export const listOrphanedProjects = query({
     // without a specific index (by_workspace_no_team?), we rely on filtering stream
     // or we scan.
     // But `filter` in `paginate` is supported.
-    return await ctx.db
-      .query("projects")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
-      // Note: We use a filter here because we lack a specific `by_workspace_no_team` index.
-      // This works for now as the number of projects per workspace is manageable,
-      // but for high scale, we should add an index or a "orphaned" status field.
-      .filter((q) => q.eq(q.field("teamId"), undefined))
-      .paginate(args.paginationOpts);
+    return await fetchPaginatedQuery(ctx, {
+      paginationOpts: args.paginationOpts || { numItems: 20, cursor: null },
+      query: (db) =>
+        db
+          .query("projects")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+          // Note: We use a filter here because we lack a specific `by_workspace_no_team` index.
+          // This works for now as the number of projects per workspace is manageable,
+          // but for high scale, we should add an index or a "orphaned" status field.
+          .filter((q) => q.eq(q.field("teamId"), undefined)),
+    });
   },
 });
 
-export const get = query({
+export const getProject = query({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -254,6 +280,7 @@ export const get = query({
     const projectMembers = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all members to avoid N+1
@@ -294,6 +321,7 @@ export const getByKey = query({
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.key))
+      .filter(notDeleted)
       .first();
 
     if (!project) {
@@ -316,6 +344,7 @@ export const getByKey = query({
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all members to avoid N+1
@@ -346,7 +375,7 @@ export const getByKey = query({
   },
 });
 
-export const update = mutation({
+export const updateProject = mutation({
   args: {
     projectId: v.id("projects"),
     name: v.optional(v.string()),
@@ -382,11 +411,22 @@ export const update = mutation({
     }
 
     await ctx.db.patch(args.projectId, updates);
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "project_updated",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: updates,
+      });
+    }
+
     return { projectId: args.projectId };
   },
 });
 
-export const deleteProject = mutation({
+export const softDeleteProject = mutation({
   args: {
     projectId: v.id("projects"),
   },
@@ -406,87 +446,69 @@ export const deleteProject = mutation({
       throw new Error("Only project owner can delete the project");
     }
 
-    // Delete all related data using batch operations (parallel deletes)
+    // Soft delete with automatic cascading
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.projectId, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "projects", args.projectId, userId, deletedAt);
 
-    // 1. Get all issues for this project
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-      .collect();
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "project_deleted",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: { deletedAt },
+      });
+    }
 
-    const issueIds = issues.map((i) => i._id);
-
-    // 2. Batch fetch all related data for issues in parallel
-    const [allComments, allActivities, allLinksFrom, allLinksTo, sprints, members] =
-      await Promise.all([
-        // Get all comments for all issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueComments")
-              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all activities for all issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueActivity")
-              .withIndex("by_issue", (q) => q.eq("issueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all links from issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueLinks")
-              .withIndex("by_from_issue", (q) => q.eq("fromIssueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all links to issues
-        Promise.all(
-          issueIds.map((issueId) =>
-            ctx.db
-              .query("issueLinks")
-              .withIndex("by_to_issue", (q) => q.eq("toIssueId", issueId))
-              .collect(),
-          ),
-        ).then((arrays) => arrays.flat()),
-        // Get all sprints
-        ctx.db
-          .query("sprints")
-          .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-          .collect(),
-        // Get all members
-        ctx.db
-          .query("projectMembers")
-          .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
-          .collect(),
-      ]);
-
-    // 3. Batch delete all related data in parallel
-    await Promise.all([
-      // Delete comments
-      ...allComments.map((c) => ctx.db.delete(c._id)),
-      // Delete activities
-      ...allActivities.map((a) => ctx.db.delete(a._id)),
-      // Delete links
-      ...allLinksFrom.map((l) => ctx.db.delete(l._id)),
-      ...allLinksTo.map((l) => ctx.db.delete(l._id)),
-      // Delete sprints
-      ...sprints.map((s) => ctx.db.delete(s._id)),
-      // Delete members
-      ...members.map((m) => ctx.db.delete(m._id)),
-      // Delete issues
-      ...issues.map((i) => ctx.db.delete(i._id)),
-    ]);
-
-    // 4. Delete the project itself
-    await ctx.db.delete(args.projectId);
     return { deleted: true };
+  },
+});
+
+export const restoreProject = mutation({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    if (!project.isDeleted) {
+      throw new Error("Project is not deleted");
+    }
+
+    // Only project owner can restore
+    if (project.createdBy !== userId && project.ownerId !== userId) {
+      throw new Error("Only project owner can restore the project");
+    }
+
+    // Restore with automatic cascading
+    await ctx.db.patch(args.projectId, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
+
+    // Note: Cascade restore not implemented yet - would need cascadeRestore function
+    // For now, just restore the project itself
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "project_restored",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+      });
+    }
+
+    return { restored: true };
   },
 });
 
@@ -520,10 +542,20 @@ export const updateWorkflow = mutation({
       workflowStates: args.workflowStates,
       updatedAt: Date.now(),
     });
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "workflow_updated",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: { workflowStates: args.workflowStates },
+      });
+    }
   },
 });
 
-export const addMember = mutation({
+export const addProjectMember = mutation({
   args: {
     projectId: v.id("projects"),
     userEmail: v.string(),
@@ -575,10 +607,23 @@ export const addMember = mutation({
       addedBy: userId,
       addedAt: now,
     });
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "member_added",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: {
+          memberId: user._id,
+          role: args.role,
+        },
+      });
+    }
   },
 });
 
-export const updateMemberRole = mutation({
+export const updateProjectMemberRole = mutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
@@ -618,10 +663,23 @@ export const updateMemberRole = mutation({
     await ctx.db.patch(membership._id, {
       role: args.newRole,
     });
+
+    if (!isTest) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "member_role_updated",
+        actorId: userId,
+        targetId: args.projectId,
+        targetType: "projects",
+        metadata: {
+          memberId: args.memberId,
+          newRole: args.newRole,
+        },
+      });
+    }
   },
 });
 
-export const removeMember = mutation({
+export const removeProjectMember = mutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
@@ -655,6 +713,18 @@ export const removeMember = mutation({
 
     if (membership) {
       await ctx.db.delete(membership._id);
+
+      if (!isTest) {
+        await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+          action: "member_removed",
+          actorId: userId,
+          targetId: args.projectId,
+          targetType: "projects",
+          metadata: {
+            memberId: args.memberId,
+          },
+        });
+      }
     }
   },
 });
@@ -662,7 +732,7 @@ export const removeMember = mutation({
 /**
  * Get user's role in a project
  */
-export const getUserRole = query({
+export const getProjectUserRole = query({
   args: {
     projectId: v.id("projects"),
   },

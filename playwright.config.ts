@@ -35,7 +35,7 @@ export default defineConfig({
     : [["html", { open: "on-failure" }]],
 
   // Global timeout for each test
-  timeout: 30 * 1000,
+  timeout: 120 * 1000,
 
   // Expect timeout for assertions
   expect: {

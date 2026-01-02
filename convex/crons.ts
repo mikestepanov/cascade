@@ -55,4 +55,15 @@ crons.daily(
   internal.offlineSync.cleanupOldItems,
 );
 
+/**
+ * Permanently delete soft-deleted records older than 30 days
+ * Runs daily at 2:00 AM UTC
+ * Applies to: projects, documents, issues, sprints, projectMembers
+ */
+crons.daily(
+  "cleanup soft deletes",
+  { hourUTC: 2, minuteUTC: 0 },
+  internal.softDeleteCleanup.permanentlyDeleteOld,
+);
+
 export default crons;

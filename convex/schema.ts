@@ -10,12 +10,17 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     projectId: v.optional(v.id("projects")), // Link documents to projects - stored as string to avoid table mismatch
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
     .index("by_workspace", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
+    .index("by_deleted", ["isDeleted"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["isPublic", "createdBy", "projectId"],
@@ -114,6 +119,10 @@ const applicationTables = {
     defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
     clientName: v.optional(v.string()), // Client name for agency work
     budget: v.optional(v.number()), // Project budget in currency
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
@@ -123,6 +132,7 @@ const applicationTables = {
     .index("by_team", ["teamId"])
     .index("by_owner", ["ownerId"])
     .index("by_company_public", ["companyId", "isPublic"])
+    .index("by_deleted", ["isDeleted"])
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["isPublic", "createdBy", "companyId", "workspaceId"], // Added workspaceId
@@ -134,10 +144,15 @@ const applicationTables = {
     role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
     addedBy: v.id("users"),
     addedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_user", ["projectId", "userId"]),
+    .index("by_workspace_user", ["projectId", "userId"])
+    .index("by_deleted", ["isDeleted"]),
 
   issues: defineTable({
     projectId: v.optional(v.id("projects")), // Issue belongs to project (optional during migration)
@@ -178,6 +193,10 @@ const applicationTables = {
     order: v.number(), // For ordering within status columns
     // AI/Semantic Search
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()), // Soft delete flag (undefined = not deleted)
+    deletedAt: v.optional(v.number()), // Timestamp when deleted
+    deletedBy: v.optional(v.id("users")), // User who deleted this issue
   })
     .index("by_workspace", ["projectId"])
     .index("by_workspace_id", ["workspaceId"]) // NEW
@@ -195,6 +214,8 @@ const applicationTables = {
     .index("by_workspace_updated", ["projectId", "updatedAt"])
     .index("by_workspace_id_status", ["workspaceId", "status"]) // NEW
     .index("by_team_status", ["teamId", "status"]) // NEW
+    .index("by_deleted", ["isDeleted"]) // Soft delete index
+    .index("by_workspace_deleted", ["projectId", "isDeleted"]) // Project trash view
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["projectId", "workspaceId", "teamId", "type", "status", "priority"], // Added workspaceId, teamId
@@ -213,9 +234,14 @@ const applicationTables = {
     mentions: v.array(v.id("users")), // User IDs mentioned in comment
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_issue", ["issueId"])
-    .index("by_author", ["authorId"]),
+    .index("by_author", ["authorId"])
+    .index("by_deleted", ["isDeleted"]),
 
   issueLinks: defineTable({
     fromIssueId: v.id("issues"),
@@ -237,9 +263,14 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_deleted", ["isDeleted"]),
 
   issueActivity: defineTable({
     issueId: v.id("issues"),
@@ -302,9 +333,14 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     lastTriggered: v.optional(v.number()),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_workspace", ["projectId"])
-    .index("by_active", ["isActive"]),
+    .index("by_active", ["isActive"])
+    .index("by_deleted", ["isDeleted"]),
 
   webhookExecutions: defineTable({
     webhookId: v.id("webhooks"),
@@ -445,10 +481,15 @@ const applicationTables = {
     actorId: v.optional(v.id("users")), // Who triggered the notification
     isRead: v.boolean(),
     createdAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "isRead"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_user_created", ["userId", "createdAt"])
+    .index("by_deleted", ["isDeleted"]),
 
   notificationPreferences: defineTable({
     userId: v.id("users"),
@@ -1233,6 +1274,10 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_company", ["companyId"])
     .index("by_workspace", ["workspaceId"]) // NEW
@@ -1240,6 +1285,7 @@ const applicationTables = {
     .index("by_company_slug", ["companyId", "slug"])
     .index("by_creator", ["createdBy"])
     .index("by_lead", ["leadId"]) // NEW
+    .index("by_deleted", ["isDeleted"]) // Soft delete index
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["companyId", "workspaceId"], // Added workspaceId
@@ -1255,11 +1301,16 @@ const applicationTables = {
     ),
     addedBy: v.id("users"),
     addedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
   })
     .index("by_team", ["teamId"])
     .index("by_user", ["userId"])
     .index("by_team_user", ["teamId", "userId"])
-    .index("by_role", ["role"]),
+    .index("by_role", ["role"])
+    .index("by_deleted", ["isDeleted"]),
 
   // ============================================
   // Meeting Bot / AI Notetaker (Read.ai-like)
@@ -1517,13 +1568,18 @@ const applicationTables = {
     .index("by_scheduled_time", ["scheduledTime"])
     .index("by_next_attempt", ["nextAttemptAt"]),
 
-  // System settings for configuration
-  systemSettings: defineTable({
-    key: v.string(), // Setting key: "botServiceApiKeyHash", etc.
-    value: v.string(), // Setting value
-    description: v.optional(v.string()),
+  userSettings: defineTable({
+    userId: v.id("users"),
+    dashboardLayout: v.optional(v.any()), // JSON object for dashboard widget preferences
+    theme: v.optional(v.string()), // "light", "dark", "system"
+    sidebarCollapsed: v.optional(v.boolean()),
+    // Preferences moved from users table
+    emailNotifications: v.optional(v.boolean()),
+    desktopNotifications: v.optional(v.boolean()),
+    timezone: v.optional(v.string()), // IANA timezone
+    createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_key", ["key"]),
+  }).index("by_user", ["userId"]),
 
   // Rate limiter tables (from @convex-dev/rate-limiter)
   rateLimits: defineTable({
@@ -1533,6 +1589,20 @@ const applicationTables = {
   })
     .index("by_key", ["key"])
     .index("by_expiry", ["expiresAt"]),
+
+  // Audit Logs
+  auditLogs: defineTable({
+    action: v.string(), // "team.create", "project.delete", "member.add"
+    actorId: v.optional(v.id("users")), // Who performed the action (optional for system actions)
+    targetId: v.string(), // ID of the affected object (generic string to support mixed types)
+    targetType: v.string(), // "team", "project", "user", "webhook", etc.
+    metadata: v.optional(v.any()), // JSON object with details (e.g. old role, new role)
+    timestamp: v.number(),
+  })
+    .index("by_action", ["action"])
+    .index("by_actor", ["actorId"])
+    .index("by_target", ["targetId"])
+    .index("by_timestamp", ["timestamp"]),
 };
 
 export default defineSchema({
@@ -1550,10 +1620,10 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     // Custom fields for Nixelo
     defaultCompanyId: v.optional(v.id("companies")), // User's primary/default company
-    timezone: v.optional(v.string()), // IANA timezone: "America/New_York", "Europe/London", "Asia/Tokyo"
     bio: v.optional(v.string()), // User bio/description
-    emailNotifications: v.optional(v.boolean()), // Email notification preference
-    desktopNotifications: v.optional(v.boolean()), // Desktop notification preference
+    timezone: v.optional(v.string()), // User timezone
+    emailNotifications: v.optional(v.boolean()),
+    desktopNotifications: v.optional(v.boolean()),
     // Invite tracking
     inviteId: v.optional(v.id("invites")), // Link to original invite (tracks "was invited" vs "self-signup")
     // E2E Testing fields

@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchCompanies, batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
 // Helper Functions
@@ -597,6 +598,7 @@ export const getCompanyMembers = query({
     const memberships = await ctx.db
       .query("companyMembers")
       .withIndex("by_company", (q) => q.eq("companyId", args.companyId))
+      .filter(notDeleted)
       .collect();
 
     // Batch fetch all users (members + addedBy)
@@ -655,6 +657,7 @@ export const initializeDefaultCompany = mutation({
     const existingMembership = await ctx.db
       .query("companyMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (existingMembership) {

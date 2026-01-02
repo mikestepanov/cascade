@@ -7,6 +7,7 @@ import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
+  Calendar,
   ChevronDown,
   ChevronRight,
   Clock,
@@ -47,13 +48,15 @@ export function AppSidebar() {
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
   const workspaces = useQuery(api.workspaces.list, { companyId });
-  const teams = useQuery(api.teams.list, { companyId });
+  const teams = useQuery(api.teams.getCompanyTeams, { companyId });
+  const myProjects = useQuery(api.dashboard.getMyProjects);
+  const defaultProject = myProjects?.[0];
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createWorkspace = useMutation(api.workspaces.create);
-  // const createTeam = useMutation(api.teams.create); // TODO: Add team creation UI
-  // const createProject = useMutation(api.projects.create); // TODO: Add project creation UI
+  // const createTeam = useMutation(api.teams.createTeam); // TODO: Add team creation UI
+  // const createProject = useMutation(api.projects.createProject); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -181,6 +184,18 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-dashboard"
             />
+            {/* Calendar - Links to first project's calendar */}
+            {defaultProject && (
+              <NavItem
+                to={ROUTES.projects.calendar(companySlug, defaultProject.key)}
+                icon={Calendar}
+                label="Calendar"
+                isActive={isActive("/calendar")}
+                isCollapsed={isCollapsed}
+                onClick={handleNavClick}
+                data-tour="nav-calendar"
+              />
+            )}
             {/* Documents Section */}
             <CollapsibleSection
               icon={FileText}
@@ -194,7 +209,7 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
-              {documents?.slice(0, 10).map((doc) => (
+              {(documents?.documents ?? []).slice(0, 10).map((doc) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTES.documents.detail(companySlug, doc._id)}
@@ -203,9 +218,9 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 />
               ))}
-              {documents && documents.length > 10 && (
+              {(documents?.documents?.length ?? 0) > 10 && (
                 <Typography variant="p" color="tertiary" className="px-3 py-1 text-xs">
-                  +{documents.length - 10} more
+                  +{(documents?.documents?.length ?? 0) - 10} more
                 </Typography>
               )}
             </CollapsibleSection>
