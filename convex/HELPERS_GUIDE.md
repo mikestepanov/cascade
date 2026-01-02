@@ -16,6 +16,25 @@ This guide explains how to use `convex-helpers` in the Nixelo project for cleane
 
 ---
 
+## 📋 Index Naming Convention
+
+**Standard Pattern:** `by_{foreignKey}` for single-field indexes
+
+**Compound indexes:** `by_{table}_{field}` or `by_{field1}_{field2}`
+
+### Legacy Note: `by_workspace`
+
+Many tables use `by_workspace` as the index name for `projectId` fields. This is **legacy naming** from before workspaces existed as a concept. The naming is:
+
+| Index Name     | Actual Field  | Should Be                                     |
+| -------------- | ------------- | --------------------------------------------- |
+| `by_workspace` | `projectId`   | `by_project` (legacy, kept for compatibility) |
+| `by_workspace` | `workspaceId` | Correct                                       |
+
+These are documented in `lib/relationships.ts` with `// Legacy index name` comments.
+
+---
+
 ## 🎯 What We're Using
 
 ### 1. **Custom Functions** ⭐ Primary Feature
@@ -24,17 +43,18 @@ Located in: `convex/customFunctions.ts`
 
 **Pre-built authentication & permission wrappers:**
 
-| Function | Auth | RBAC | Use For |
-|----------|------|------|---------|
-| `authenticatedQuery` | ✅ | ❌ | Any query requiring login |
-| `authenticatedMutation` | ✅ | ❌ | Any mutation requiring login |
-| `projectQuery` | ✅ | Viewer+ | Reading project data |
-| `viewerMutation` | ✅ | Viewer+ | Commenting, watching |
-| `editorMutation` | ✅ | Editor+ | Creating/editing issues |
-| `adminMutation` | ✅ | Admin | Project settings, members |
-| `issueMutation` | ✅ | Editor+ | Issue-specific operations |
+| Function                | Auth | RBAC    | Use For                      |
+| ----------------------- | ---- | ------- | ---------------------------- |
+| `authenticatedQuery`    | ✅   | ❌      | Any query requiring login    |
+| `authenticatedMutation` | ✅   | ❌      | Any mutation requiring login |
+| `projectQuery`          | ✅   | Viewer+ | Reading project data         |
+| `viewerMutation`        | ✅   | Viewer+ | Commenting, watching         |
+| `editorMutation`        | ✅   | Editor+ | Creating/editing issues      |
+| `adminMutation`         | ✅   | Admin   | Project settings, members    |
+| `issueMutation`         | ✅   | Editor+ | Issue-specific operations    |
 
 **Context injected automatically:**
+
 - `ctx.userId` - Current user ID
 - `ctx.projectId` - Project ID (project mutations)
 - `ctx.role` - User's role in project
@@ -47,12 +67,12 @@ Located in: `convex/rateLimiting.ts`
 
 **Pre-configured rate limiters:**
 
-| Limiter | Limit | Use For |
-|---------|-------|---------|
-| `strictRateLimitedMutation` | 10/min | Creating issues, invites |
-| `moderateRateLimitedMutation` | 30/min | Updates, comments |
-| `lenientRateLimitedMutation` | 100/min | Lightweight operations |
-| `apiRateLimitedMutation` | 60/min | Public API endpoints |
+| Limiter                       | Limit   | Use For                  |
+| ----------------------------- | ------- | ------------------------ |
+| `strictRateLimitedMutation`   | 10/min  | Creating issues, invites |
+| `moderateRateLimitedMutation` | 30/min  | Updates, comments        |
+| `lenientRateLimitedMutation`  | 100/min | Lightweight operations   |
+| `apiRateLimitedMutation`      | 60/min  | Public API endpoints     |
 
 ---
 
@@ -357,11 +377,13 @@ export const myMutation = projectQuery({
 ### Migrating Existing Mutations
 
 **Step 1:** Identify the pattern
+
 - Does it need auth? → `authenticatedMutation`
 - Does it need project permissions? → `editorMutation` or `adminMutation`
 - Does it work on specific issue? → `issueMutation`
 
 **Step 2:** Update the function signature
+
 ```typescript
 // Before
 export const myMutation = mutation({
@@ -377,6 +399,7 @@ export const myMutation = editorMutation({
 ```
 
 **Step 3:** Remove boilerplate
+
 ```typescript
 // Remove these lines:
 const userId = await getAuthUserId(ctx);
@@ -392,6 +415,7 @@ await assertMinimumRole(ctx, args.projectId, userId, "editor");
 ```
 
 **Step 4:** Test thoroughly
+
 - Verify auth still works
 - Verify permissions still enforced
 - Test error cases
@@ -450,6 +474,7 @@ describe("Custom Functions", () => {
 ## 📋 Summary
 
 **With convex-helpers you get:**
+
 - ✅ 30-60% less boilerplate code
 - ✅ Consistent auth & permission patterns
 - ✅ Type-safe context injection
@@ -459,6 +484,7 @@ describe("Custom Functions", () => {
 - ✅ Fewer bugs from missed auth checks
 
 **Next Steps:**
+
 1. Review `convex/issuesRefactored.example.ts` for complete examples
 2. Start migrating mutations one at a time
 3. Add rate limiting to public endpoints

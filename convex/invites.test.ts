@@ -157,9 +157,7 @@ describe("Invites", () => {
       const member = await t.run(async (ctx) =>
         ctx.db
           .query("projectMembers")
-          .withIndex("by_workspace_user", (q) =>
-            q.eq("projectId", projectId).eq("userId", newUserId),
-          )
+          .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", newUserId))
           .first(),
       );
       expect(member).toBeDefined();

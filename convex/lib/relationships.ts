@@ -103,7 +103,7 @@ export const RELATIONSHIPS: Relationship[] = [
     parent: "projects",
     child: "issues",
     foreignKey: "projectId",
-    index: "by_workspace",
+    index: "by_project",
     onDelete: "cascade", // Delete all issues when project deleted
   },
   {
@@ -126,6 +126,74 @@ export const RELATIONSHIPS: Relationship[] = [
     foreignKey: "projectId",
     index: "by_project",
     onDelete: "cascade", // Delete labels when project deleted
+  },
+  {
+    parent: "projects",
+    child: "webhooks",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade", // Delete webhooks when project deleted
+  },
+  {
+    parent: "projects",
+    child: "savedFilters",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade", // Delete saved filters when project deleted
+  },
+  {
+    parent: "projects",
+    child: "automationRules",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade", // Delete automation rules when project deleted
+  },
+  {
+    parent: "projects",
+    child: "customFields",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade", // Delete custom fields when project deleted
+  },
+  {
+    parent: "projects",
+    child: "issueTemplates",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "cascade", // Delete issue templates when project deleted
+  },
+  {
+    parent: "projects",
+    child: "documents",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "set_null", // Keep documents, just unlink from project
+  },
+  {
+    parent: "projects",
+    child: "calendarEvents",
+    foreignKey: "projectId",
+    index: "by_project",
+    onDelete: "set_null", // Keep events, just unlink from project
+  },
+
+  // ============================================================================
+  // WORKSPACE RELATIONSHIPS (Department level)
+  // ============================================================================
+
+  {
+    parent: "workspaces",
+    child: "teams",
+    foreignKey: "workspaceId",
+    index: "by_workspace",
+    onDelete: "cascade", // Delete teams when workspace deleted
+  },
+  {
+    parent: "workspaces",
+    child: "projects",
+    foreignKey: "workspaceId",
+    index: "by_workspace",
+    onDelete: "cascade", // Delete projects when workspace deleted
   },
 
   // ============================================================================
@@ -161,6 +229,35 @@ export const RELATIONSHIPS: Relationship[] = [
     foreignKey: "teamId",
     index: "by_team",
     onDelete: "cascade", // Delete members when team deleted
+  },
+  {
+    parent: "teams",
+    child: "projects",
+    foreignKey: "teamId",
+    index: "by_team",
+    onDelete: "set_null", // Keep projects, just unlink from team
+  },
+
+  // ============================================================================
+  // WEBHOOK RELATIONSHIPS
+  // ============================================================================
+  {
+    parent: "webhooks",
+    child: "webhookExecutions",
+    foreignKey: "webhookId",
+    index: "by_webhook",
+    onDelete: "cascade", // Delete executions when webhook deleted
+  },
+
+  // ============================================================================
+  // CUSTOM FIELD RELATIONSHIPS
+  // ============================================================================
+  {
+    parent: "customFields",
+    child: "customFieldValues",
+    foreignKey: "fieldId",
+    index: "by_field",
+    onDelete: "cascade", // Delete values when field deleted
   },
 ];
 

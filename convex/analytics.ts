@@ -226,7 +226,7 @@ export const getTeamVelocity = query({
     // Get completed sprints
     const completedSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
       .take(MAX_VELOCITY_SPRINTS);

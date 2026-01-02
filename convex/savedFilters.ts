@@ -80,9 +80,7 @@ export const list = query({
     // Get public filters from other users
     const publicFilters = await ctx.db
       .query("savedFilters")
-      .withIndex("by_workspace_public", (q) =>
-        q.eq("projectId", args.projectId).eq("isPublic", true),
-      )
+      .withIndex("by_project_public", (q) => q.eq("projectId", args.projectId).eq("isPublic", true))
       .filter((q) => q.neq(q.field("userId"), userId))
       .collect();
 

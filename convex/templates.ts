@@ -64,14 +64,14 @@ export const listByProject = query({
       const templateType = args.type; // Store in variable for type narrowing
       templates = await ctx.db
         .query("issueTemplates")
-        .withIndex("by_workspace_type", (q) =>
+        .withIndex("by_project_type", (q) =>
           q.eq("projectId", args.projectId).eq("type", templateType),
         )
         .collect();
     } else {
       templates = await ctx.db
         .query("issueTemplates")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
         .collect();
     }
 

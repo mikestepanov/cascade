@@ -14,7 +14,7 @@ async function generateNextIssueKey(
 ): Promise<{ key: string; order: number }> {
   const existingIssues = await ctx.db
     .query("issues")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .filter(notDeleted)
     .collect();
 
@@ -276,7 +276,7 @@ export const exportIssuesCSV = query({
     // Get issues
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
     let issues = await issuesQuery.collect();
 
@@ -383,14 +383,14 @@ export const exportAnalytics = query({
     // Get all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
 
     // Get all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
 
@@ -456,7 +456,7 @@ export const exportIssuesJSON = query({
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
     let issues = await issuesQuery.collect();
 

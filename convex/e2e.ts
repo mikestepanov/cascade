@@ -904,11 +904,22 @@ export const setupRbacProjectInternal = internalMutation({
       .first();
 
     if (!project) {
+      // Create a default workspace for the company-level project
+      const workspaceId = await ctx.db.insert("workspaces", {
+        companyId: company._id,
+        name: "Organization Workspace",
+        slug: "org-workspace",
+        createdBy: adminUser._id,
+        createdAt: now,
+        updatedAt: now,
+      });
+
       const projectId = await ctx.db.insert("projects", {
-        name: `RBAC Test Project (${args.projectKey})`,
-        key: args.projectKey,
+        name: `${args.projectKey}-Company`,
+        key: `${args.projectKey}-COMP`,
         description: "E2E test project for RBAC permission testing - Company level",
         companyId: company._id,
+        workspaceId,
         ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,
@@ -921,8 +932,6 @@ export const setupRbacProjectInternal = internalMutation({
           { id: "review", name: "Review", category: "inprogress", order: 3 },
           { id: "done", name: "Done", category: "done", order: 4 },
         ],
-        // Explicitly undefined for company-level project
-        workspaceId: undefined,
         teamId: undefined,
       });
 
@@ -1020,7 +1029,7 @@ export const setupRbacProjectInternal = internalMutation({
       for (const config of memberConfigs) {
         const existingMember = await ctx.db
           .query("projectMembers")
-          .withIndex("by_workspace_user", (q) =>
+          .withIndex("by_project_user", (q) =>
             q.eq("projectId", proj._id).eq("userId", config.userId),
           )
           .filter(notDeleted)
@@ -1138,7 +1147,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all project members
     const members = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
     for (const member of members) {
@@ -1148,7 +1157,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
     for (const issue of issues) {
@@ -1175,7 +1184,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
     for (const sprint of sprints) {

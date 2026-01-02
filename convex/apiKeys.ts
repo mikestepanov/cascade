@@ -92,7 +92,7 @@ export const generate = mutation({
       // Check if user is a member
       const membership = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
         .filter(notDeleted)
         .first();
 

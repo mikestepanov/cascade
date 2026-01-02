@@ -29,6 +29,7 @@ export const createFromTemplate = mutation({
     projectKey: v.string(),
     description: v.optional(v.string()),
     companyId: v.id("companies"), // Required: company this project belongs to
+    workspaceId: v.id("workspaces"), // Required: workspace this project belongs to
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -70,6 +71,7 @@ export const createFromTemplate = mutation({
       key: args.projectKey,
       description: args.description,
       companyId: args.companyId,
+      workspaceId: args.workspaceId,
       ownerId: userId,
       createdBy: userId,
       createdAt: now,

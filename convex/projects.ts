@@ -19,6 +19,7 @@ export const createProject = mutation({
     boardType: v.union(v.literal("kanban"), v.literal("scrum")),
     // Ownership (required)
     companyId: v.id("companies"), // Company this project belongs to
+    workspaceId: v.id("workspaces"), // Workspace this project belongs to
     // Optional ownership overrides
     teamId: v.optional(v.id("teams")), // Team owner (if team-owned)
     ownerId: v.optional(v.id("users")), // User owner (defaults to creator)
@@ -65,6 +66,7 @@ export const createProject = mutation({
       workflowStates: defaultWorkflowStates,
       // Ownership (required)
       companyId: args.companyId,
+      workspaceId: args.workspaceId,
       ownerId,
       // Optional
       teamId: args.teamId,
@@ -138,7 +140,7 @@ export const getCurrentUserProjects = query({
     const issueCountsPromises = projectIds.map(async (projectId) => {
       const issues = await ctx.db
         .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", projectId))
         .take(MAX_ISSUE_COUNT + 1);
       return {
         projectId,
@@ -279,7 +281,7 @@ export const getProject = query({
     // Get members with their roles from projectMembers table
     const projectMembers = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
 
@@ -343,7 +345,7 @@ export const getByKey = query({
     // Get members with their roles from projectMembers table
     const memberships = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
 
@@ -588,9 +590,7 @@ export const addProjectMember = mutation({
     // Check if already a member
     const existingMembership = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", user._id),
-      )
+      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
       .first();
 
     if (existingMembership) {
@@ -651,7 +651,7 @@ export const updateProjectMemberRole = mutation({
     // Find membership
     const membership = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
+      .withIndex("by_project_user", (q) =>
         q.eq("projectId", args.projectId).eq("userId", args.memberId),
       )
       .first();
@@ -706,7 +706,7 @@ export const removeProjectMember = mutation({
     // Find and delete membership
     const membership = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) =>
+      .withIndex("by_project_user", (q) =>
         q.eq("projectId", args.projectId).eq("userId", args.memberId),
       )
       .first();

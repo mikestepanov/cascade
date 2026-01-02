@@ -128,6 +128,16 @@ export const createSampleProject = mutation({
 
     const now = Date.now();
 
+    // Create sample workspace first
+    const workspaceId = await ctx.db.insert("workspaces", {
+      companyId,
+      name: "Sample Workspace",
+      slug: "sample-workspace",
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
     // Create sample project
     const projectId = await ctx.db.insert("projects", {
       name: "Sample Project",
@@ -135,6 +145,7 @@ export const createSampleProject = mutation({
       description:
         "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
       companyId,
+      workspaceId,
       ownerId: userId,
       createdBy: userId,
       createdAt: now,
@@ -309,8 +320,8 @@ export const createSampleProject = mutation({
     for (const issue of issues) {
       const issueId = await ctx.db.insert("issues", {
         projectId,
-        workspaceId: "" as Id<"workspaces">, // Sample project has no workspace
-        teamId: "" as Id<"teams">, // Sample project has no team
+        workspaceId,
+        teamId: undefined, // Sample project has no team
         key: `SAMPLE-${createdIssues.length + 1}`,
         title: issue.title,
         description: issue.description,
@@ -405,7 +416,7 @@ export const createSampleProject = mutation({
 async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
   const issues = await ctx.db
     .query("issues")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .filter(notDeleted)
     .collect();
 
@@ -436,7 +447,7 @@ async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) 
 async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
   const sprints = await ctx.db
     .query("sprints")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .filter(notDeleted)
     .collect();
   for (const sprint of sprints) {
@@ -445,7 +456,7 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
 
   const labels = await ctx.db
     .query("labels")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .collect();
   for (const label of labels) {
     await ctx.db.delete(label._id);
@@ -453,7 +464,7 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
 
   const members = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .filter(notDeleted)
     .collect();
   for (const member of members) {
@@ -531,7 +542,7 @@ export const deleteSampleProject = mutation({
     // Delete all related data (issues, comments, sprints, etc.)
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
 
@@ -562,7 +573,7 @@ export const deleteSampleProject = mutation({
     // Delete sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
     for (const sprint of sprints) {
@@ -572,7 +583,7 @@ export const deleteSampleProject = mutation({
     // Delete labels
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .collect();
     for (const label of labels) {
       await ctx.db.delete(label._id);
@@ -581,7 +592,7 @@ export const deleteSampleProject = mutation({
     // Delete project members
     const members = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
       .collect();
     for (const member of members) {

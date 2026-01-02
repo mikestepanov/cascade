@@ -102,7 +102,7 @@ export const listDeletedIssues = query({
 
     return await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(onlyDeleted)
       .collect();
   },

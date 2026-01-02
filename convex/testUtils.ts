@@ -253,7 +253,7 @@ export async function createTestIssue(
     // Count existing issues to generate key
     const issueCount = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
       .collect()
       .then((issues) => issues.length);
 
@@ -261,7 +261,7 @@ export async function createTestIssue(
 
     return await ctx.db.insert("issues", {
       projectId,
-      workspaceId: project.workspaceId,
+      workspaceId: project.workspaceId!,
       teamId: project.teamId,
       key,
       title: issueData?.title || `Test Issue ${now}`,

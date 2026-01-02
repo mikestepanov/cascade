@@ -61,7 +61,7 @@ async function isProjectAdmin(
   // Check project membership
   const membership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
@@ -85,9 +85,7 @@ async function addExistingUserToProject(
   // Check if already a member
   const existingMember = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) =>
-      q.eq("projectId", projectId).eq("userId", existingUserId),
-    )
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", existingUserId))
     .filter(notDeleted)
     .first();
 
@@ -179,6 +177,7 @@ export const sendInvite = mutation({
   args: {
     email: v.string(),
     role: v.union(v.literal("user"), v.literal("superAdmin")),
+    companyId: v.id("companies"),
     // Optional project-level invite fields
     projectId: v.optional(v.id("projects")),
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
@@ -241,6 +240,7 @@ export const sendInvite = mutation({
     const inviteId = await ctx.db.insert("invites", {
       email: args.email,
       role: args.role,
+      companyId: args.companyId,
       projectId: args.projectId,
       projectRole: args.projectId ? effectiveProjectRole : undefined,
       invitedBy: userId,
@@ -472,7 +472,7 @@ export const acceptInvite = mutation({
       // Check if user is not already a member (edge case: manually added after invite sent)
       const existingMember = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
+        .withIndex("by_project_user", (q) =>
           q.eq("projectId", inviteProjectId).eq("userId", userId),
         )
         .filter(notDeleted)

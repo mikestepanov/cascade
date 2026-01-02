@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  Copy,
   FileText,
   FolderKanban,
   Home,
@@ -209,6 +210,14 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
+              <NavSubItem
+                to={ROUTES.documents.templates(companySlug)}
+                label="Templates"
+                isActive={location.pathname.includes("/documents/templates")}
+                onClick={handleNavClick}
+                icon={Copy}
+              />
+              <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
               {(documents?.documents ?? []).slice(0, 10).map((doc) => (
                 <NavSubItem
                   key={doc._id}
@@ -487,21 +496,23 @@ interface NavSubItemProps {
   label: string;
   isActive: boolean;
   onClick?: () => void;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
-function NavSubItem({ to, label, isActive, onClick }: NavSubItemProps) {
+function NavSubItem({ to, label, isActive, onClick, icon: Icon }: NavSubItemProps) {
   return (
     <Link
       to={to}
       onClick={onClick}
       className={cn(
-        "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
+        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive
           ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400"
           : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
       )}
     >
-      {label}
+      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
