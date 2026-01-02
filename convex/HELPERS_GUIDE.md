@@ -18,20 +18,9 @@ This guide explains how to use `convex-helpers` in the Nixelo project for cleane
 
 ## 📋 Index Naming Convention
 
-**Standard Pattern:** `by_{foreignKey}` for single-field indexes
+**Standard Pattern:** `by_{foreignKey}` for single-field indexes (e.g., `by_project` for `projectId`, `by_workspace` for `workspaceId`)
 
 **Compound indexes:** `by_{table}_{field}` or `by_{field1}_{field2}`
-
-### Legacy Note: `by_workspace`
-
-Many tables use `by_workspace` as the index name for `projectId` fields. This is **legacy naming** from before workspaces existed as a concept. The naming is:
-
-| Index Name     | Actual Field  | Should Be                                     |
-| -------------- | ------------- | --------------------------------------------- |
-| `by_workspace` | `projectId`   | `by_project` (legacy, kept for compatibility) |
-| `by_workspace` | `workspaceId` | Correct                                       |
-
-These are documented in `lib/relationships.ts` with `// Legacy index name` comments.
 
 ---
 
