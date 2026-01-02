@@ -8,13 +8,7 @@ import { render } from "@react-email/render";
 import { v } from "convex/values";
 import { api, internal } from "../_generated/api";
 import type { Doc } from "../_generated/dataModel";
-import {
-  internalAction,
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-} from "../_generated/server";
+import { internalAction } from "../_generated/server";
 import { getSiteUrl } from "../lib/env";
 import { sendEmail } from "./index";
 

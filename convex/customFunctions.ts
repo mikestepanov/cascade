@@ -13,9 +13,7 @@ import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
-import { isCompanyAdmin } from "./companies";
 import { getProjectRole } from "./projectAccess";
-import { getTeamRole } from "./teams";
 
 /**
  * Authenticated Query

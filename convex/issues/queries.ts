@@ -3,12 +3,12 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import { type QueryCtx, query } from "../_generated/server";
-import { type ProjectQueryCtx, projectQuery } from "../customFunctions";
+import { projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import { enrichIssues, fetchPaginatedIssues } from "../lib/issueHelpers";
 import { notDeleted } from "../lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "../lib/userUtils";
-import { canAccessProject, getProjectRole } from "../projectAccess";
+import { canAccessProject } from "../projectAccess";
 import { matchesSearchFilters, ROOT_ISSUE_TYPES } from "./helpers";
 
 /**
@@ -455,17 +455,17 @@ export const getByKey = query({
   args: { key: v.string() },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    
+
     const issue = await ctx.db
       .query("issues")
       .withIndex("by_key", (q) => q.eq("key", args.key))
       .filter(notDeleted)
       .first();
-    
+
     if (!issue) {
       return null;
     }
-    
+
     // Check if user has access to the project
     if (userId) {
       const { canAccessProject } = await import("../projectAccess");
@@ -480,7 +480,7 @@ export const getByKey = query({
         return null;
       }
     }
-    
+
     return issue;
   },
 });
@@ -702,7 +702,7 @@ export const getTeamIssueCounts = query({
     const team = await ctx.db.get(args.teamId);
     if (!team) return null;
 
-    const workspace = await ctx.db.get(team.workspaceId);
+    const _workspace = await ctx.db.get(team.workspaceId);
     const workflowStates = [
       { id: "todo", name: "To Do", category: "todo", order: 0 },
       { id: "inprogress", name: "In Progress", category: "inprogress", order: 1 },
