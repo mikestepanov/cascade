@@ -39,7 +39,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
 
       // Create company admin status (proper way, not relying on fallback)
-      await createCompanyAdmin(t, adminId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
 
@@ -80,7 +80,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin rights via company
       // Setup admin rights
-      await createCompanyAdmin(t, adminId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
 
@@ -104,7 +104,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      await createCompanyAdmin(t, adminId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
@@ -171,7 +171,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      await createCompanyAdmin(t, adminId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {

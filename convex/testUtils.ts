@@ -189,7 +189,7 @@ export async function createTestProject(
   },
 ): Promise<Id<"projects">> {
   // Create a company first for backward compatibility
-  const companyId = await createCompanyAdmin(t, creatorId);
+  const { companyId } = await createCompanyAdmin(t, creatorId);
   return createProjectInCompany(t, creatorId, companyId, projectData);
 }
 
@@ -328,7 +328,11 @@ export async function createCompanyAdmin(
     name?: string;
     slug?: string;
   },
-): Promise<Id<"companies">> {
+): Promise<{
+  companyId: Id<"companies">;
+  workspaceId: Id<"workspaces">;
+  teamId: Id<"teams">;
+}> {
   return await t.run(async (ctx) => {
     const now = Date.now();
     const name = companyData?.name || `Test Company ${now}`;
@@ -359,6 +363,37 @@ export async function createCompanyAdmin(
       addedAt: now,
     });
 
-    return companyId;
+    // Create default workspace for tests
+    const workspaceId = await ctx.db.insert("workspaces", {
+      companyId,
+      name: `Default Workspace`,
+      slug: `default-ws-${now}`,
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create default team for tests
+    const teamId = await ctx.db.insert("teams", {
+      companyId,
+      workspaceId,
+      name: `Default Team`,
+      slug: `default-team-${now}`,
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+      isPrivate: false,
+    });
+
+    // Add user as team member
+    await ctx.db.insert("teamMembers", {
+      teamId,
+      userId,
+      role: "lead",
+      addedBy: userId,
+      addedAt: now,
+    });
+
+    return { companyId, workspaceId, teamId };
   });
 }

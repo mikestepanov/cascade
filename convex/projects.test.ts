@@ -12,7 +12,7 @@ describe("Projects", () => {
     it("should create a project with default workflow states", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -21,7 +21,7 @@ describe("Projects", () => {
         description: "A test project",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       expect(projectId).toBeDefined();
@@ -42,7 +42,7 @@ describe("Projects", () => {
     it("should uppercase project keys", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -50,7 +50,7 @@ describe("Projects", () => {
         key: "test",
         isPublic: false,
         boardType: "scrum",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       const project = await asUser.query(api.projects.getProject, { id: projectId });
@@ -61,7 +61,7 @@ describe("Projects", () => {
     it("should add creator as admin member", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -69,7 +69,7 @@ describe("Projects", () => {
         key: "ADMIN",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       const project = await asUser.query(api.projects.getProject, { id: projectId });
@@ -81,7 +81,7 @@ describe("Projects", () => {
     it("should reject duplicate project keys", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       await asUser.mutation(api.projects.createProject, {
@@ -89,7 +89,7 @@ describe("Projects", () => {
         key: "DUP",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       await expect(async () => {
@@ -98,7 +98,7 @@ describe("Projects", () => {
           key: "DUP",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
       }).rejects.toThrow("Project key already exists");
 
@@ -109,7 +109,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       // Create a user and company for the companyId, but don't authenticate
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
 
       await expect(async () => {
         await t.mutation(api.projects.createProject, {
@@ -117,7 +117,7 @@ describe("Projects", () => {
           key: "UNAUTH",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
       }).rejects.toThrow("Not authenticated");
       await t.finishInProgressScheduledFunctions();
@@ -128,7 +128,7 @@ describe("Projects", () => {
     it("should return project details for owner", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t, { name: "Owner" });
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -137,7 +137,7 @@ describe("Projects", () => {
         description: "Owner's project",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       const project = await asUser.query(api.projects.getProject, { id: projectId });
@@ -196,7 +196,7 @@ describe("Projects", () => {
         name: "Company Visible Project",
         key: "COMPVIS",
         isPublic: true, // isPublic means company-visible
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
         boardType: "kanban",
       }); // Access as different company member
       const asMember = asAuthenticatedUser(t, companyMember);
@@ -212,7 +212,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const nonMember = await createTestUser(t, { name: "Non-Member" });
-      const companyId = await createCompanyAdmin(t, owner);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, owner);
 
       // Create private project
       const asOwner = asAuthenticatedUser(t, owner);
@@ -221,7 +221,7 @@ describe("Projects", () => {
         key: "PRIVATE",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       // Try to access as non-member
@@ -235,7 +235,7 @@ describe("Projects", () => {
     it("should return null for non-existent projects", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a project to test non-existent ID behavior
@@ -244,7 +244,7 @@ describe("Projects", () => {
         key: "DELETE",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       await t.run(async (ctx) => {
@@ -262,8 +262,8 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       const user1 = await createTestUser(t, { name: "User 1" });
       const user2 = await createTestUser(t, { name: "User 2" });
-      const companyId1 = await createCompanyAdmin(t, user1);
-      const companyId2 = await createCompanyAdmin(t, user2);
+      const { companyId: companyId1, workspaceId: workspaceId1, teamId: teamId1 } = await createCompanyAdmin(t, user1);
+      const { companyId: companyId2, workspaceId: workspaceId2, teamId: teamId2 } = await createCompanyAdmin(t, user2);
 
       // User 1 creates two projects (one private, one with isPublic flag - legacy)
       const asUser1 = asAuthenticatedUser(t, user1);
@@ -316,7 +316,7 @@ describe("Projects", () => {
     it("should include project metadata (issue count, role)", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, userId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       await asUser.mutation(api.projects.createProject, {
@@ -324,7 +324,7 @@ describe("Projects", () => {
         key: "META",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       const { page: projects } = await asUser.query(api.projects.getCurrentUserProjects, {
@@ -342,7 +342,7 @@ describe("Projects", () => {
     it("should allow admins to update workflow states", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t, { name: "Admin" });
-      const companyId = await createCompanyAdmin(t, adminId);
+      const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -350,7 +350,7 @@ describe("Projects", () => {
         key: "WF",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       const customWorkflow = [
@@ -376,7 +376,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t, { name: "Admin" });
       const editorId = await createTestUser(t, { name: "Editor", email: "editor@test.com" });
-      const companyId = await createCompanyAdmin(t, adminId);
+      const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -384,7 +384,7 @@ describe("Projects", () => {
         key: "DENY",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       // Add editor as member
@@ -408,7 +408,7 @@ describe("Projects", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const companyId = await createCompanyAdmin(t, adminId);
+      const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -416,7 +416,7 @@ describe("Projects", () => {
         key: "UNAUTH",
         isPublic: false,
         boardType: "kanban",
-        companyId,
+        companyId,`n        workspaceId,`n        teamId,
       });
 
       // Try without authentication
@@ -439,7 +439,7 @@ describe("Projects", () => {
           name: "New Member",
           email: "newmember@test.com",
         });
-        const companyId = await createCompanyAdmin(t, adminId);
+        const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -447,7 +447,7 @@ describe("Projects", () => {
           key: "TEAM",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
 
         await asAdmin.mutation(api.projects.addProjectMember, {
@@ -472,7 +472,7 @@ describe("Projects", () => {
           email: "editor@test.com",
         });
         await createTestUser(t, { name: "New", email: "new@test.com" });
-        const companyId = await createCompanyAdmin(t, adminId);
+        const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -480,7 +480,7 @@ describe("Projects", () => {
           key: "NOADD",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
 
         await asAdmin.mutation(api.projects.addProjectMember, {
@@ -509,7 +509,7 @@ describe("Projects", () => {
           name: "Member",
           email: "member@test.com",
         });
-        const companyId = await createCompanyAdmin(t, adminId);
+        const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -517,7 +517,7 @@ describe("Projects", () => {
           key: "ROLE",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
 
         await asAdmin.mutation(api.projects.addProjectMember, {
@@ -548,7 +548,7 @@ describe("Projects", () => {
           name: "Member",
           email: "member@test.com",
         });
-        const companyId = await createCompanyAdmin(t, adminId);
+        const { companyId } = const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -556,7 +556,7 @@ describe("Projects", () => {
           key: "REMOVE",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
 
         await asAdmin.mutation(api.projects.addProjectMember, {
@@ -581,7 +581,7 @@ describe("Projects", () => {
       it("should prevent removing project creator", async () => {
         const t = convexTest(schema, modules);
         const creatorId = await createTestUser(t, { name: "Creator" });
-        const companyId = await createCompanyAdmin(t, creatorId);
+        const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, creatorId);
 
         const asCreator = asAuthenticatedUser(t, creatorId);
         const projectId = await asCreator.mutation(api.projects.createProject, {
@@ -589,7 +589,7 @@ describe("Projects", () => {
           key: "NOCREATOR",
           isPublic: false,
           boardType: "kanban",
-          companyId,
+          companyId,`n        workspaceId,`n        teamId,
         });
 
         await expect(async () => {

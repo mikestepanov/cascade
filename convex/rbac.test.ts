@@ -129,7 +129,7 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const companyMemberId = await createTestUser(t, { name: "Company Member" });
-      const companyId = await createCompanyAdmin(t, creatorId);
+      const { companyId, workspaceId, teamId } = await createCompanyAdmin(t, creatorId);
 
       // Add company member (not project member)
       const now = Date.now();
