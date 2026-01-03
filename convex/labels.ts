@@ -21,9 +21,7 @@ export const create = mutation({
     // Check if label with same name already exists in project
     const existing = await ctx.db
       .query("labels")
-      .withIndex("by_workspace_name", (q) =>
-        q.eq("projectId", args.projectId).eq("name", args.name),
-      )
+      .withIndex("by_project_name", (q) => q.eq("projectId", args.projectId).eq("name", args.name))
       .first();
 
     if (existing) {
@@ -54,7 +52,7 @@ export const list = query({
 
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     return labels;
@@ -87,9 +85,7 @@ export const update = mutation({
       const newName = args.name; // Store in variable for type narrowing
       const existing = await ctx.db
         .query("labels")
-        .withIndex("by_workspace_name", (q) =>
-          q.eq("projectId", label.projectId).eq("name", newName),
-        )
+        .withIndex("by_project_name", (q) => q.eq("projectId", label.projectId).eq("name", newName))
         .first();
 
       if (existing) {
@@ -126,7 +122,7 @@ export const remove = mutation({
     const MAX_ISSUES_TO_UPDATE = 5000;
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", label.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", label.projectId))
       .take(MAX_ISSUES_TO_UPDATE);
 
     // Filter to issues that have this label, then batch update in parallel

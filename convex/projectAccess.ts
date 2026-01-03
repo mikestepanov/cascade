@@ -78,7 +78,7 @@ async function checkDirectAccess(
   // 3. User is individual collaborator (projectMembers)
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
@@ -152,7 +152,7 @@ export async function canEditProject(
   // 4. User is admin or editor in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
@@ -204,7 +204,7 @@ export async function isProjectAdmin(
   // 5. User is admin in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 

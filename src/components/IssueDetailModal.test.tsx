@@ -95,7 +95,10 @@ describe("IssueDetailModal", () => {
     status: "in-progress",
     assignee: { name: "John Doe" },
     reporter: { name: "Jane Smith" },
-    labels: ["backend", "urgent"],
+    labels: [
+      { name: "backend", color: "#3B82F6" },
+      { name: "urgent", color: "#EF4444" },
+    ],
     estimatedHours: 8,
     loggedHours: 3.5,
     storyPoints: 5,

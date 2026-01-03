@@ -195,18 +195,16 @@ export const issueMutation = customMutation(mutation, {
       throw new Error("Issue not found");
     }
 
-    if (!issue.projectId) {
-      throw new Error("Issue has no project");
-    }
-
+    // Issues always belong to projects now
     const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
+    // Get role from project (handles both team and workspace-level projects)
     const role = await getProjectRole(ctx, issue.projectId, userId);
 
-    // Check minimum role
+    // Check minimum role (editor required for issueMutation)
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
     const userRoleLevel = role ? roleHierarchy[role] : 0;
     const requiredRoleLevel = roleHierarchy.editor;
@@ -247,20 +245,18 @@ export const issueViewerMutation = customMutation(mutation, {
       throw new Error("Issue not found");
     }
 
-    if (!issue.projectId) {
-      throw new Error("Issue has no project");
-    }
-
+    // Issues always belong to projects now
     const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
+    // Get role from project (handles both team and workspace-level projects)
     const role = await getProjectRole(ctx, issue.projectId, userId);
 
     // Check minimum role (viewer or higher)
     if (!role) {
-      throw new Error("Access denied - must be a project member");
+      throw new Error("Access denied - not authorized for this issue");
     }
 
     return {

@@ -49,6 +49,8 @@ export const ROUTES = {
     list: (slug: string) => `/${slug}/documents` as const,
     /** Document detail: /:slug/documents/:id */
     detail: (slug: string, id: string) => `/${slug}/documents/${id}` as const,
+    /** Document templates: /:slug/documents/templates */
+    templates: (slug: string) => `/${slug}/documents/templates` as const,
   },
 
   // NEW HIERARCHY: Workspaces → Teams → Projects
@@ -164,6 +166,7 @@ export const ROUTE_PATTERNS = {
   documents: {
     list: "/_auth/_app/$companySlug/documents/" as const,
     detail: "/_auth/_app/$companySlug/documents/$id" as const,
+    templates: "/_auth/_app/$companySlug/documents/templates" as const,
   },
 
   // NEW HIERARCHY: Workspaces → Teams → Projects

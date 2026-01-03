@@ -26,8 +26,15 @@ export async function fetchPaginatedQuery<T extends GenericDocument>(
     query: (db: QueryCtx["db"]) => unknown;
   },
 ): Promise<PaginationResult<T>> {
-  return await (opts.query(ctx.db) as any)
-    // Always filter out soft-deleted items
-    .filter((q: FilterBuilder<TableInfoFor>) => q.neq(q.field("isDeleted"), true))
-    .paginate(opts.paginationOpts);
+  // Cast through unknown as the query builder types are complex
+  const queryResult = opts.query(ctx.db) as unknown as {
+    filter: (fn: (q: FilterBuilder<TableInfoFor>) => unknown) => unknown;
+  };
+  return await (
+    queryResult
+      // Always filter out soft-deleted items
+      .filter((q: FilterBuilder<TableInfoFor>) => q.neq(q.field("isDeleted"), true)) as unknown as {
+      paginate: (opts: PaginationOptions) => Promise<PaginationResult<T>>;
+    }
+  ).paginate(opts.paginationOpts);
 }

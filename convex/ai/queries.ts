@@ -79,7 +79,7 @@ export const getProjectContext = query({
     // Check access
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
       .first();
 
     if (!member && project.createdBy !== userId && !project.isPublic) {
@@ -89,14 +89,14 @@ export const getProjectContext = query({
     // Get active sprint
     const activeSprint = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
     // Get issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Calculate stats
@@ -119,7 +119,7 @@ export const getProjectContext = query({
     // Get project members with details
     const memberRecords = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     // Batch fetch users to avoid N+1 queries
@@ -135,7 +135,7 @@ export const getProjectContext = query({
     // Get labels
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     return {
@@ -193,7 +193,7 @@ export const getProjectSuggestions = query({
 
     const query = ctx.db
       .query("aiSuggestions")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
     const suggestions = await query.collect();
 

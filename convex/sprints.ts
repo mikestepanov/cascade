@@ -64,7 +64,7 @@ export const listByProject = query({
     const MAX_SPRINTS = 100;
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .order("desc")
       .filter(notDeleted)
       .take(MAX_SPRINTS);
@@ -129,7 +129,7 @@ export const startSprint = mutation({
     // End any currently active sprint
     const activeSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", sprint.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", sprint.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .filter(notDeleted)
       .collect();

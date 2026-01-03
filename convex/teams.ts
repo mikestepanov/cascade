@@ -97,6 +97,7 @@ function generateSlug(name: string): string {
 export const createTeam = mutation({
   args: {
     companyId: v.id("companies"),
+    workspaceId: v.id("workspaces"),
     name: v.string(),
     description: v.optional(v.string()),
     isPrivate: v.boolean(), // Default privacy for team projects
@@ -138,6 +139,7 @@ export const createTeam = mutation({
     // Create team
     const teamId = await ctx.db.insert("teams", {
       companyId: args.companyId,
+      workspaceId: args.workspaceId,
       name: args.name,
       slug,
       description: args.description,

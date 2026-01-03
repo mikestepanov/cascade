@@ -67,7 +67,7 @@ export const list = query({
 
     return await ctx.db
       .query("customFields")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
   },
 });
@@ -102,7 +102,7 @@ export const create = mutation({
     // Check if field key already exists for this project
     const existing = await ctx.db
       .query("customFields")
-      .withIndex("by_workspace_key", (q) =>
+      .withIndex("by_project_key", (q) =>
         q.eq("projectId", args.projectId).eq("fieldKey", args.fieldKey),
       )
       .first();

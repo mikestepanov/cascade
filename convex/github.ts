@@ -104,7 +104,7 @@ export const linkRepository = mutation({
     // Check permission (at least editor)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
       .filter(notDeleted)
       .first();
 
@@ -163,7 +163,7 @@ export const unlinkRepository = mutation({
     // Check permission (admin only)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
       .filter(notDeleted)
       .first();
 
@@ -192,9 +192,7 @@ export const listRepositories = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", args.projectId).eq("userId", userId),
-        )
+        .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
         .filter(notDeleted)
         .first();
 
@@ -205,7 +203,7 @@ export const listRepositories = query({
 
     return await ctx.db
       .query("githubRepositories")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
   },
@@ -241,7 +239,7 @@ export const upsertPullRequest = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
         .filter(notDeleted)
         .first();
@@ -345,7 +343,7 @@ export const getPullRequests = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
+        .withIndex("by_project_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
         .filter(notDeleted)
@@ -387,7 +385,7 @@ export const upsertCommit = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
         .filter(notDeleted)
         .first();
@@ -447,7 +445,7 @@ export const getCommits = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
+        .withIndex("by_project_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
         .filter(notDeleted)

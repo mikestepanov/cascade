@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { DocumentEditor } from "@/components/DocumentEditor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";

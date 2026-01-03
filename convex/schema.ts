@@ -18,7 +18,7 @@ const applicationTables = {
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
     .index("by_deleted", ["isDeleted"])
     .searchIndex("search_title", {
@@ -56,7 +56,7 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"])
     .index("by_public", ["isPublic"])
     .index("by_creator", ["createdBy"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["category", "isPublic", "isBuiltIn"],
@@ -92,14 +92,14 @@ const applicationTables = {
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
     // NEW: Hierarchy
-    workspaceId: v.optional(v.id("workspaces")), // Project belongs to workspace (department)
-    teamId: v.optional(v.id("teams")), // Project belongs to team (optional)
+    workspaceId: v.id("workspaces"), // Project belongs to workspace (department)
+    teamId: v.optional(v.id("teams")), // Project belongs to team (optional - null for workspace projects)
     // Ownership
-    companyId: v.optional(v.id("companies")), // Company this project belongs to (optional for old data)
-    ownerId: v.optional(v.id("users")), // User that owns this project (optional for old data)
+    companyId: v.id("companies"), // Company this project belongs to
+    ownerId: v.id("users"), // User that owns this project
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all company members (company-public)
-    isCompanyPublic: v.optional(v.boolean()), // Legacy field (kept for migration)
+    // isCompanyPublic removed (legacy)
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
     // Audit
     createdBy: v.id("users"), // Who created it (for audit trail)
@@ -149,15 +149,15 @@ const applicationTables = {
     deletedAt: v.optional(v.number()),
     deletedBy: v.optional(v.id("users")),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_user", ["projectId", "userId"])
+    .index("by_project_user", ["projectId", "userId"])
     .index("by_deleted", ["isDeleted"]),
 
   issues: defineTable({
-    projectId: v.optional(v.id("projects")), // Issue belongs to project (optional during migration)
-    workspaceId: v.optional(v.id("workspaces")), // Issue belongs to workspace (optional during migration)
-    teamId: v.optional(v.id("teams")), // Issue belongs to team (optional during migration)
+    projectId: v.id("projects"), // Issue belongs to project (required)
+    workspaceId: v.id("workspaces"), // Cached from project.workspaceId
+    teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
@@ -198,8 +198,8 @@ const applicationTables = {
     deletedAt: v.optional(v.number()), // Timestamp when deleted
     deletedBy: v.optional(v.id("users")), // User who deleted this issue
   })
-    .index("by_workspace", ["projectId"])
-    .index("by_workspace_id", ["workspaceId"]) // NEW
+    .index("by_project", ["projectId"])
+    .index("by_workspace", ["workspaceId"]) // Standardized
     .index("by_team", ["teamId"]) // NEW
     .index("by_key", ["key"])
     .index("by_assignee", ["assigneeId"])
@@ -208,14 +208,14 @@ const applicationTables = {
     .index("by_sprint", ["sprintId"])
     .index("by_epic", ["epicId"])
     .index("by_parent", ["parentId"])
-    .index("by_workspace_status", ["projectId", "status"])
-    .index("by_workspace_status_updated", ["projectId", "status", "updatedAt"])
-    .index("by_workspace_sprint_created", ["projectId", "sprintId", "createdAt"])
-    .index("by_workspace_updated", ["projectId", "updatedAt"])
-    .index("by_workspace_id_status", ["workspaceId", "status"]) // NEW
+    .index("by_project_status", ["projectId", "status"])
+    .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
+    .index("by_project_sprint_created", ["projectId", "sprintId", "createdAt"])
+    .index("by_project_updated", ["projectId", "updatedAt"])
+    .index("by_workspace_status", ["workspaceId", "status"]) // Standardized
     .index("by_team_status", ["teamId", "status"]) // NEW
     .index("by_deleted", ["isDeleted"]) // Soft delete index
-    .index("by_workspace_deleted", ["projectId", "isDeleted"]) // Project trash view
+    .index("by_project_deleted", ["projectId", "isDeleted"]) // Project trash view
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["projectId", "workspaceId", "teamId", "type", "status", "priority"], // Added workspaceId, teamId
@@ -225,7 +225,7 @@ const applicationTables = {
       dimensions: 512, // Voyage AI voyage-3-lite embedding dimension
       filterFields: ["projectId", "workspaceId", "teamId"], // Added workspaceId, teamId
     })
-    .index("by_workspace_type", ["projectId", "type"]),
+    .index("by_project_type", ["projectId", "type"]),
 
   issueComments: defineTable({
     issueId: v.id("issues"),
@@ -254,7 +254,7 @@ const applicationTables = {
     .index("by_to_issue", ["toIssueId"]),
 
   sprints: defineTable({
-    projectId: v.optional(v.id("projects")), // Sprint belongs to project (optional during migration)
+    projectId: v.id("projects"), // Sprint belongs to project
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
@@ -268,7 +268,7 @@ const applicationTables = {
     deletedAt: v.optional(v.number()),
     deletedBy: v.optional(v.id("users")),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_status", ["status"])
     .index("by_deleted", ["isDeleted"]),
 
@@ -294,17 +294,17 @@ const applicationTables = {
     .index("by_issue_user", ["issueId", "userId"]),
 
   labels: defineTable({
-    projectId: v.optional(v.id("projects")), // Label belongs to project (optional during migration)
+    projectId: v.id("projects"), // Label belongs to project
     name: v.string(),
     color: v.string(), // Hex color code like "#3B82F6"
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["projectId"])
-    .index("by_workspace_name", ["projectId", "name"]),
+    .index("by_project", ["projectId"])
+    .index("by_project_name", ["projectId", "name"]),
 
   issueTemplates: defineTable({
-    projectId: v.optional(v.id("projects")), // Template belongs to project (optional during migration)
+    projectId: v.id("projects"), // Template belongs to project
     name: v.string(),
     type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
     titleTemplate: v.string(),
@@ -320,11 +320,11 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["projectId"])
-    .index("by_workspace_type", ["projectId", "type"]),
+    .index("by_project", ["projectId"])
+    .index("by_project_type", ["projectId", "type"]),
 
   webhooks: defineTable({
-    projectId: v.optional(v.id("projects")), // Webhook belongs to project (optional during migration)
+    projectId: v.id("projects"), // Webhook belongs to project
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()), // e.g., ["issue.created", "issue.updated"]
@@ -338,7 +338,7 @@ const applicationTables = {
     deletedAt: v.optional(v.number()),
     deletedBy: v.optional(v.id("users")),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_active", ["isActive"])
     .index("by_deleted", ["isDeleted"]),
 
@@ -359,7 +359,7 @@ const applicationTables = {
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
-    projectId: v.optional(v.id("projects")), // Filter belongs to project (optional during migration)
+    projectId: v.id("projects"), // Filter belongs to project
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
@@ -389,9 +389,9 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_user", ["userId"])
-    .index("by_workspace_public", ["projectId", "isPublic"]),
+    .index("by_project_public", ["projectId", "isPublic"]),
 
   projectTemplates: defineTable({
     name: v.string(),
@@ -421,7 +421,7 @@ const applicationTables = {
     .index("by_built_in", ["isBuiltIn"]),
 
   automationRules: defineTable({
-    projectId: v.optional(v.id("projects")), // Automation rule belongs to project (optional during migration)
+    projectId: v.id("projects"), // Automation rule
     name: v.string(),
     description: v.optional(v.string()),
     isActive: v.boolean(),
@@ -434,12 +434,12 @@ const applicationTables = {
     updatedAt: v.number(),
     executionCount: v.number(),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_active", ["isActive"])
-    .index("by_workspace_active", ["projectId", "isActive"]),
+    .index("by_project_active", ["projectId", "isActive"]),
 
   customFields: defineTable({
-    projectId: v.optional(v.id("projects")), // Custom field belongs to project (optional during migration)
+    projectId: v.id("projects"), // Custom field belongs to project
     name: v.string(),
     fieldKey: v.string(), // Unique key like "customer_id"
     fieldType: v.union(
@@ -457,8 +457,8 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
-    .index("by_workspace", ["projectId"])
-    .index("by_workspace_key", ["projectId", "fieldKey"]),
+    .index("by_project", ["projectId"])
+    .index("by_project_key", ["projectId", "fieldKey"]),
 
   customFieldValues: defineTable({
     issueId: v.id("issues"),
@@ -571,7 +571,7 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_issue", ["issueId"])
     .index("by_start_time", ["startTime"])
     .index("by_status", ["status"])
@@ -759,7 +759,7 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_repo_id", ["repoId"])
     .index("by_repo_full_name", ["repoFullName"]),
 
@@ -789,7 +789,7 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_issue", ["issueId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_repository", ["repositoryId"])
     .index("by_pr_id", ["prId"])
     .index("by_repository_pr_number", ["repositoryId", "prNumber"]),
@@ -809,7 +809,7 @@ const applicationTables = {
     createdAt: v.number(),
   })
     .index("by_issue", ["issueId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_repository", ["repositoryId"])
     .index("by_sha", ["sha"]),
 
@@ -844,7 +844,7 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_user_created", ["userId", "createdAt"]),
 
   aiMessages: defineTable({
@@ -893,9 +893,9 @@ const applicationTables = {
     respondedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_type", ["suggestionType"])
-    .index("by_workspace_type", ["projectId", "suggestionType"])
+    .index("by_project_type", ["projectId", "suggestionType"])
     .index("by_target", ["targetId"]),
 
   aiUsage: defineTable({
@@ -923,7 +923,7 @@ const applicationTables = {
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_provider", ["provider"])
     .index("by_operation", ["operation"])
     .index("by_created_at", ["createdAt"])
@@ -1000,7 +1000,7 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_active", ["isActive"])
     .index("by_user_active", ["userId", "isActive"]),
 
@@ -1038,14 +1038,14 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_issue", ["issueId"])
     .index("by_date", ["date"])
     .index("by_user_date", ["userId", "date"])
-    .index("by_workspace_date", ["projectId", "date"])
+    .index("by_project_date", ["projectId", "date"])
     .index("by_billable", ["billable"])
     .index("by_billed", ["billed"])
-    .index("by_user_workspace", ["userId", "projectId"])
+    .index("by_user_project", ["userId", "projectId"])
     .index("by_equity", ["isEquityHour"]),
 
   // User Hourly Rates (for cost calculation)
@@ -1069,8 +1069,8 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_workspace", ["projectId"])
-    .index("by_user_workspace", ["userId", "projectId"])
+    .index("by_project", ["projectId"])
+    .index("by_user_project", ["userId", "projectId"])
     .index("by_effective_from", ["effectiveFrom"])
     .index("by_rate_type", ["rateType"]),
 
@@ -1181,7 +1181,7 @@ const applicationTables = {
   invites: defineTable({
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("superAdmin")), // Platform role: superAdmin = full system access
-    companyId: v.optional(v.id("companies")), // Company to invite user to (optional for backward compatibility)
+    companyId: v.id("companies"), // Company to invite user to
     projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))), // Role in project if projectId is set
     invitedBy: v.id("users"), // Admin who sent the invite
@@ -1206,7 +1206,7 @@ const applicationTables = {
     .index("by_invited_by", ["invitedBy"])
     .index("by_email_status", ["email", "status"])
     .index("by_company", ["companyId"])
-    .index("by_workspace", ["projectId"]),
+    .index("by_project", ["projectId"]),
 
   // Companies/Organizations (Multi-tenant support)
   companies: defineTable({
@@ -1253,7 +1253,7 @@ const applicationTables = {
   // Teams (within a company - for data isolation and grouping)
   teams: defineTable({
     companyId: v.id("companies"), // Company this team belongs to
-    workspaceId: v.optional(v.id("workspaces")), // NEW: Team belongs to workspace (optional for migration)
+    workspaceId: v.id("workspaces"), // Team belongs to workspace
     name: v.string(), // Team name: "Product Team", "Dev Team", "Design Team"
     slug: v.string(), // URL-friendly slug: "product-team", "dev-team"
     description: v.optional(v.string()),
@@ -1364,7 +1364,7 @@ const applicationTables = {
   })
     .index("by_calendar_event", ["calendarEventId"])
     .index("by_creator", ["createdBy"])
-    .index("by_workspace", ["projectId"])
+    .index("by_project", ["projectId"])
     .index("by_status", ["status"])
     .index("by_scheduled_time", ["scheduledStartTime"])
     .index("by_platform", ["meetingPlatform"]),

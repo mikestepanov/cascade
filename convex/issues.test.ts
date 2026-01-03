@@ -628,9 +628,9 @@ describe("Issues", () => {
         query: "login",
       });
 
-      expect(searchResult.results).toHaveLength(2);
-      expect(searchResult.results.map((i) => i.title)).toContain("Fix login bug");
-      expect(searchResult.results.map((i) => i.title)).toContain("Add login feature");
+      expect(searchResult.page).toHaveLength(2);
+      expect(searchResult.page.map((i) => i.title)).toContain("Fix login bug");
+      expect(searchResult.page.map((i) => i.title)).toContain("Add login feature");
       await t.finishInProgressScheduledFunctions();
     });
   });

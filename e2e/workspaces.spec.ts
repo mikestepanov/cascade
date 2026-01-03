@@ -37,7 +37,6 @@ test.describe("Workspaces", () => {
     // accumulate in the DB, likely due to encoding/whitespace differences or API not being called.
     // TODO: Debug the Convex mutation and fix the cleanup logic.
     test.skip("can create a new workspace via sidebar button", async ({
-      dashboardPage,
       workspacesPage,
       page,
       request,
@@ -55,9 +54,12 @@ test.describe("Workspaces", () => {
         data: {},
       });
       if (!nukeResponse.ok()) {
-        console.error(`Nuke workspaces failed: ${await nukeResponse.text()}`);
+        // Response will be checked by expect below
       }
-      expect(nukeResponse.ok(), "Failed to nuke workspaces").toBeTruthy();
+      expect(
+        nukeResponse.ok(),
+        `Failed to nuke workspaces: ${await nukeResponse.text()}`,
+      ).toBeTruthy();
 
       // Define the workspace name for creation
       const workspaceName = "🧪 E2E Testing Workspace";
