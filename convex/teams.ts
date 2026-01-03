@@ -59,7 +59,7 @@ async function canManageTeam(
   if (isLead) return true;
 
   // Company admin can manage
-  return team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+  return await isCompanyAdmin(ctx, team.companyId, userId);
 }
 
 /**
@@ -303,7 +303,7 @@ export const restoreTeam = mutation({
     }
 
     // Must be company admin or the deletedBy user
-    const isAdmin = team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
     if (!isAdmin && team.deletedBy !== userId) {
       throw new Error("Only company admins or the user who deleted the team can restore it");
     }
@@ -367,14 +367,12 @@ export const addTeamMember = mutation({
     const team = await ctx.db.get(args.teamId);
     if (!team) throw new Error("Team not found");
 
-    const companyMembership = team.companyId
-      ? await ctx.db
-          .query("companyMembers")
-          .withIndex("by_company_user", (q) =>
-            q.eq("companyId", team.companyId!).eq("userId", args.userId),
-          )
-          .first()
-      : null;
+    const companyMembership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_company_user", (q) =>
+        q.eq("companyId", team.companyId).eq("userId", args.userId),
+      )
+      .first();
 
     if (!companyMembership) {
       throw new Error("User must be a company member to join this team");
@@ -510,7 +508,7 @@ export const getTeam = query({
 
     // Check if user has access (team member or company admin)
     const role = await getTeamRole(ctx, args.teamId, userId);
-    const isAdmin = team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
 
     if (!(role || isAdmin)) return null;
 
@@ -545,7 +543,7 @@ export const getBySlug = query({
 
     // Check if user has access (team member or company admin)
     const role = await getTeamRole(ctx, team._id, userId);
-    const isAdmin = team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
 
     if (!(role || isAdmin)) return null;
 
@@ -850,7 +848,7 @@ export const getTeamMembers = query({
 
     // Check access
     const role = await getTeamRole(ctx, args.teamId, userId);
-    const isAdmin = team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
 
     if (!(role || isAdmin)) {
       throw new Error("Only team members or company admins can view team members");

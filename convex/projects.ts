@@ -215,7 +215,7 @@ export const getTeamProjects = query({
     const { isCompanyAdmin } = await import("./companies");
 
     const role = await getTeamRole(ctx, args.teamId, userId);
-    const isAdmin = team.companyId ? await isCompanyAdmin(ctx, team.companyId, userId) : false;
+    const isAdmin = await isCompanyAdmin(ctx, team.companyId, userId);
 
     if (!(role || isAdmin)) {
       return { page: [], isDone: true, continueCursor: "" };

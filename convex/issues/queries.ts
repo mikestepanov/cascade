@@ -652,7 +652,7 @@ export const listByTeamSmart = query({
     const team = await ctx.db.get(args.teamId);
     if (!team) return [];
 
-    const workspace = team.workspaceId ? await ctx.db.get(team.workspaceId) : null;
+    const workspace = await ctx.db.get(team.workspaceId);
     // Workspace may have custom workflow states, fallback to defaults
     const workflowStates: { id: string; name: string; category: string; order: number }[] = (
       workspace as {
