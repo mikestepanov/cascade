@@ -70,6 +70,7 @@ import type * as issues_queries from "../issues/queries.js";
 import type * as labels from "../labels.js";
 import type * as lib_aiHelpers from "../lib/aiHelpers.js";
 import type * as lib_apiAuth from "../lib/apiAuth.js";
+import type * as lib_authTypes from "../lib/authTypes.js";
 import type * as lib_batchHelpers from "../lib/batchHelpers.js";
 import type * as lib_env from "../lib/env.js";
 import type * as lib_issueCalculation from "../lib/issueCalculation.js";
@@ -185,6 +186,7 @@ declare const fullApi: ApiFromModules<{
   labels: typeof labels;
   "lib/aiHelpers": typeof lib_aiHelpers;
   "lib/apiAuth": typeof lib_apiAuth;
+  "lib/authTypes": typeof lib_authTypes;
   "lib/batchHelpers": typeof lib_batchHelpers;
   "lib/env": typeof lib_env;
   "lib/issueCalculation": typeof lib_issueCalculation;
