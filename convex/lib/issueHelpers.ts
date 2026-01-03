@@ -59,7 +59,7 @@ export interface LabelInfo {
 /**
  * Enriched issue with related data
  */
-export interface EnrichedIssue extends Doc<"issues"> {
+export interface EnrichedIssue extends Omit<Doc<"issues">, "labels"> {
   assignee: UserInfo | null;
   reporter: UserInfo | null;
   epic: EpicInfo | null;
