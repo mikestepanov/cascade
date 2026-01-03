@@ -75,6 +75,35 @@
 
 ---
 
+## 🎯 Feature Gaps (from Competitor Analysis)
+
+> Source: [FEATURE_DEEP_DIVE.md](./research/FEATURE_DEEP_DIVE.md)
+
+### P1 - Quick Wins (Low Effort, High Impact)
+
+- [ ] **Search descriptions** - Currently only searches titles, not issue descriptions
+- [ ] **Comment reactions** - 👍 👎 ❤️ 🎉 (simple `commentReactions` table)
+- [ ] **Verify rich text comments** - Document editor supports it, do comments?
+
+### P2 - Medium Priority (Worth Doing)
+
+- [ ] **Label groups** - Like Linear: organize labels into groups (Priority, Component, Area)
+- [ ] **User picker custom field** - For "Reviewer", "QA", "Designer" fields
+- [ ] **Velocity charts** - Track story points per sprint, show average velocity
+- [ ] **Timer widget** - Start/stop timer from issue detail page
+- [ ] **Slack integration** - Extend existing `pumbleWebhooks` to Slack
+- [ ] **Description search** - Add description to search index
+
+### P3 - Nice to Have (Later)
+
+- [ ] **Label descriptions** - Show on hover
+- [ ] **Query language** - Simple `status:done priority:high` syntax
+- [ ] **Swimlanes** - Group board rows by assignee/epic
+- [ ] **WIP limits** - Warn when column exceeds limit
+- [ ] **Auto-cycles** - Like Linear: auto-create next sprint
+
+---
+
 ## Phase 2: Growth (Post-Launch)
 
 ### Calendar Sync

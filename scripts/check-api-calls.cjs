@@ -66,11 +66,24 @@ const convexTopLevel = findFiles("convex", /\.ts$/).filter((f) => {
 
 const exportedFuncs = new Map();
 
+function resolveSubPath(basePath, relativePath) {
+  const subPath = path.join(path.dirname(basePath), relativePath);
+  if (!subPath.endsWith(".ts")) {
+    if (fs.existsSync(subPath + ".ts")) {
+      return subPath + ".ts";
+    }
+    if (fs.existsSync(path.join(subPath, "index.ts"))) {
+      return path.join(subPath, "index.ts");
+    }
+  }
+  return subPath;
+}
+
 function getExportsFromFile(file) {
   const funcs = new Set();
   try {
     const content = fs.readFileSync(file, "utf8");
-    
+
     // Direct exports: export const name = ...
     const directMatches = content.matchAll(/export const (\w+)\s*=/g);
     for (const match of directMatches) {
@@ -80,15 +93,7 @@ function getExportsFromFile(file) {
     // Re-exports: export * from "./..."
     const reExportMatches = content.matchAll(/export \* from\s+["'](\.\/[^"']+)["']/g);
     for (const match of reExportMatches) {
-      let subPath = path.join(path.dirname(file), match[1]);
-      if (!subPath.endsWith(".ts")) {
-        if (fs.existsSync(subPath + ".ts")) {
-          subPath += ".ts";
-        } else if (fs.existsSync(path.join(subPath, "index.ts"))) {
-          subPath = path.join(subPath, "index.ts");
-        }
-      }
-      
+      const subPath = resolveSubPath(file, match[1]);
       if (fs.existsSync(subPath)) {
         const subExports = getExportsFromFile(subPath);
         for (const f of subExports) {
@@ -96,8 +101,8 @@ function getExportsFromFile(file) {
         }
       }
     }
-  } catch (e) {
-    // console.log(`Error reading ${file}: ${e.message}`);
+  } catch {
+    // Silently ignore read errors
   }
   return funcs;
 }
