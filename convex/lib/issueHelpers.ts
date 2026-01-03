@@ -49,12 +49,21 @@ export interface EpicInfo {
 }
 
 /**
+ * Label info with color for display
+ */
+export interface LabelInfo {
+  name: string;
+  color: string;
+}
+
+/**
  * Enriched issue with related data
  */
 export interface EnrichedIssue extends Doc<"issues"> {
   assignee: UserInfo | null;
   reporter: UserInfo | null;
   epic: EpicInfo | null;
+  labels: LabelInfo[];
 }
 
 /**
@@ -83,7 +92,7 @@ function toEpicInfo(epic: Doc<"issues"> | null): EpicInfo | null {
 }
 
 /**
- * Enrich a single issue with assignee, reporter, and epic info
+ * Enrich a single issue with assignee, reporter, epic, and label info
  */
 export async function enrichIssue(ctx: QueryCtx, issue: Doc<"issues">): Promise<EnrichedIssue> {
   const [assignee, reporter, epic] = await Promise.all([
@@ -92,16 +101,32 @@ export async function enrichIssue(ctx: QueryCtx, issue: Doc<"issues">): Promise<
     issue.epicId ? ctx.db.get(issue.epicId) : null,
   ]);
 
+  // Fetch label metadata if issue has labels and projectId
+  let labelInfos: LabelInfo[] = [];
+  if (issue.labels && issue.labels.length > 0 && issue.projectId) {
+    const projectLabels = await ctx.db
+      .query("labels")
+      .withIndex("by_project", (q) => q.eq("projectId", issue.projectId))
+      .collect();
+
+    const labelMap = new Map(projectLabels.map((l) => [l.name, l.color]));
+    labelInfos = issue.labels.map((name) => ({
+      name,
+      color: labelMap.get(name) ?? "#6b7280", // Default gray if not found
+    }));
+  }
+
   return {
     ...issue,
     assignee: toUserInfo(assignee),
     reporter: toUserInfo(reporter),
     epic: toEpicInfo(epic),
+    labels: labelInfos,
   };
 }
 
 /**
- * Enrich multiple issues with assignee, reporter, and epic info
+ * Enrich multiple issues with assignee, reporter, epic, and label info
  * Uses batching to avoid N+1 queries
  */
 export async function enrichIssues(
@@ -110,22 +135,30 @@ export async function enrichIssues(
 ): Promise<EnrichedIssue[]> {
   if (issues.length === 0) return [];
 
-  // Collect unique IDs
+  // Collect unique IDs and project IDs for labels
   const assigneeIds = new Set<Id<"users">>();
   const reporterIds = new Set<Id<"users">>();
   const epicIds = new Set<Id<"issues">>();
+  const projectIds = new Set<Id<"projects">>();
 
   for (const issue of issues) {
     if (issue.assigneeId) assigneeIds.add(issue.assigneeId);
     reporterIds.add(issue.reporterId);
     if (issue.epicId) epicIds.add(issue.epicId);
+    if (issue.projectId) projectIds.add(issue.projectId);
   }
 
-  // Batch fetch all users and epics
-  const [assignees, reporters, epics] = await Promise.all([
+  // Batch fetch all users, epics, and labels
+  const [assignees, reporters, epics, ...projectLabelsArrays] = await Promise.all([
     Promise.all([...assigneeIds].map((id) => ctx.db.get(id))),
     Promise.all([...reporterIds].map((id) => ctx.db.get(id))),
     Promise.all([...epicIds].map((id) => ctx.db.get(id))),
+    ...[...projectIds].map((projectId) =>
+      ctx.db
+        .query("labels")
+        .withIndex("by_project", (q) => q.eq("projectId", projectId))
+        .collect(),
+    ),
   ]);
 
   // Build lookup maps
@@ -144,15 +177,40 @@ export async function enrichIssues(
     if (epic) epicMap.set(epic._id.toString(), epic);
   }
 
+  // Build label map: projectId -> (labelName -> color)
+  const labelsByProject = new Map<string, Map<string, string>>();
+  const projectIdList = [...projectIds];
+  for (let i = 0; i < projectIdList.length; i++) {
+    const projectId = projectIdList[i];
+    const labels = projectLabelsArrays[i] as Doc<"labels">[];
+    const labelMap = new Map<string, string>();
+    for (const label of labels) {
+      labelMap.set(label.name, label.color);
+    }
+    labelsByProject.set(projectId.toString(), labelMap);
+  }
+
   // Enrich issues using maps
-  return issues.map((issue) => ({
-    ...issue,
-    assignee: issue.assigneeId
-      ? toUserInfo(assigneeMap.get(issue.assigneeId.toString()) ?? null)
-      : null,
-    reporter: toUserInfo(reporterMap.get(issue.reporterId.toString()) ?? null),
-    epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
-  }));
+  return issues.map((issue) => {
+    // Get enriched labels for this issue
+    const projectLabelMap = issue.projectId
+      ? labelsByProject.get(issue.projectId.toString())
+      : undefined;
+    const labelInfos: LabelInfo[] = (issue.labels || []).map((name) => ({
+      name,
+      color: projectLabelMap?.get(name) ?? "#6b7280",
+    }));
+
+    return {
+      ...issue,
+      assignee: issue.assigneeId
+        ? toUserInfo(assigneeMap.get(issue.assigneeId.toString()) ?? null)
+        : null,
+      reporter: toUserInfo(reporterMap.get(issue.reporterId.toString()) ?? null),
+      epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
+      labels: labelInfos,
+    };
+  });
 }
 
 /**

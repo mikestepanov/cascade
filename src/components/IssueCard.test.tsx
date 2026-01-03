@@ -45,7 +45,10 @@ describe("IssueCard", () => {
       name: "Alice Johnson",
       image: "https://example.com/avatar.jpg",
     },
-    labels: ["backend", "urgent"],
+    labels: [
+      { name: "backend", color: "#3b82f6" },
+      { name: "urgent", color: "#ef4444" },
+    ],
     storyPoints: 5,
   };
 

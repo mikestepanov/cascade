@@ -15,7 +15,7 @@ interface Issue {
     name: string;
     image?: string;
   } | null;
-  labels: string[];
+  labels: { name: string; color: string }[];
   storyPoints?: number;
 }
 
@@ -114,9 +114,13 @@ export const IssueCard = memo(function IssueCard({
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
           {issue.labels.slice(0, 3).map((label) => (
-            <Badge key={label} variant="neutral">
-              {label}
-            </Badge>
+            <span
+              key={label.name}
+              className="px-1.5 py-0.5 text-xs font-medium rounded-md text-white"
+              style={{ backgroundColor: label.color }}
+            >
+              {label.name}
+            </span>
           ))}
           {issue.labels.length > 3 && (
             <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
