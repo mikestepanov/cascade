@@ -126,6 +126,53 @@ export async function enrichIssue(ctx: QueryCtx, issue: Doc<"issues">): Promise<
 }
 
 /**
+ * Build a lookup map from an array of documents
+ */
+function buildLookupMap<T extends { _id: { toString(): string } }>(
+  items: (T | null)[],
+): Map<string, T> {
+  const map = new Map<string, T>();
+  for (const item of items) {
+    if (item) map.set(item._id.toString(), item);
+  }
+  return map;
+}
+
+/**
+ * Build a map of projectId -> (labelName -> color)
+ */
+function buildLabelsByProject(
+  projectIds: Id<"projects">[],
+  projectLabelsArrays: Doc<"labels">[][],
+): Map<string, Map<string, string>> {
+  const labelsByProject = new Map<string, Map<string, string>>();
+  for (let i = 0; i < projectIds.length; i++) {
+    const labelMap = new Map<string, string>();
+    for (const label of projectLabelsArrays[i]) {
+      labelMap.set(label.name, label.color);
+    }
+    labelsByProject.set(projectIds[i].toString(), labelMap);
+  }
+  return labelsByProject;
+}
+
+/**
+ * Get label infos for an issue from the project label map
+ */
+function getLabelInfos(
+  issue: Doc<"issues">,
+  labelsByProject: Map<string, Map<string, string>>,
+): LabelInfo[] {
+  const projectLabelMap = issue.projectId
+    ? labelsByProject.get(issue.projectId.toString())
+    : undefined;
+  return (issue.labels || []).map((name) => ({
+    name,
+    color: projectLabelMap?.get(name) ?? "#6b7280",
+  }));
+}
+
+/**
  * Enrich multiple issues with assignee, reporter, epic, and label info
  * Uses batching to avoid N+1 queries
  */
@@ -135,7 +182,7 @@ export async function enrichIssues(
 ): Promise<EnrichedIssue[]> {
   if (issues.length === 0) return [];
 
-  // Collect unique IDs and project IDs for labels
+  // Collect unique IDs
   const assigneeIds = new Set<Id<"users">>();
   const reporterIds = new Set<Id<"users">>();
   const epicIds = new Set<Id<"issues">>();
@@ -148,12 +195,13 @@ export async function enrichIssues(
     if (issue.projectId) projectIds.add(issue.projectId);
   }
 
-  // Batch fetch all users, epics, and labels
+  // Batch fetch all data
+  const projectIdList = [...projectIds];
   const [assignees, reporters, epics, ...projectLabelsArrays] = await Promise.all([
     Promise.all([...assigneeIds].map((id) => ctx.db.get(id))),
     Promise.all([...reporterIds].map((id) => ctx.db.get(id))),
     Promise.all([...epicIds].map((id) => ctx.db.get(id))),
-    ...[...projectIds].map((projectId) =>
+    ...projectIdList.map((projectId) =>
       ctx.db
         .query("labels")
         .withIndex("by_project", (q) => q.eq("projectId", projectId))
@@ -162,55 +210,24 @@ export async function enrichIssues(
   ]);
 
   // Build lookup maps
-  const assigneeMap = new Map<string, Doc<"users">>();
-  for (const user of assignees) {
-    if (user) assigneeMap.set(user._id.toString(), user);
-  }
+  const assigneeMap = buildLookupMap(assignees);
+  const reporterMap = buildLookupMap(reporters);
+  const epicMap = buildLookupMap(epics);
+  const labelsByProject = buildLabelsByProject(
+    projectIdList,
+    projectLabelsArrays as Doc<"labels">[][],
+  );
 
-  const reporterMap = new Map<string, Doc<"users">>();
-  for (const user of reporters) {
-    if (user) reporterMap.set(user._id.toString(), user);
-  }
-
-  const epicMap = new Map<string, Doc<"issues">>();
-  for (const epic of epics) {
-    if (epic) epicMap.set(epic._id.toString(), epic);
-  }
-
-  // Build label map: projectId -> (labelName -> color)
-  const labelsByProject = new Map<string, Map<string, string>>();
-  const projectIdList = [...projectIds];
-  for (let i = 0; i < projectIdList.length; i++) {
-    const projectId = projectIdList[i];
-    const labels = projectLabelsArrays[i] as Doc<"labels">[];
-    const labelMap = new Map<string, string>();
-    for (const label of labels) {
-      labelMap.set(label.name, label.color);
-    }
-    labelsByProject.set(projectId.toString(), labelMap);
-  }
-
-  // Enrich issues using maps
-  return issues.map((issue) => {
-    // Get enriched labels for this issue
-    const projectLabelMap = issue.projectId
-      ? labelsByProject.get(issue.projectId.toString())
-      : undefined;
-    const labelInfos: LabelInfo[] = (issue.labels || []).map((name) => ({
-      name,
-      color: projectLabelMap?.get(name) ?? "#6b7280",
-    }));
-
-    return {
-      ...issue,
-      assignee: issue.assigneeId
-        ? toUserInfo(assigneeMap.get(issue.assigneeId.toString()) ?? null)
-        : null,
-      reporter: toUserInfo(reporterMap.get(issue.reporterId.toString()) ?? null),
-      epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
-      labels: labelInfos,
-    };
-  });
+  // Enrich issues
+  return issues.map((issue) => ({
+    ...issue,
+    assignee: issue.assigneeId
+      ? toUserInfo(assigneeMap.get(issue.assigneeId.toString()) ?? null)
+      : null,
+    reporter: toUserInfo(reporterMap.get(issue.reporterId.toString()) ?? null),
+    epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
+    labels: getLabelInfos(issue, labelsByProject),
+  }));
 }
 
 /**

@@ -1,7 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
-import { Badge } from "./ui/Badge";
 import { Typography } from "./ui/Typography";
 
 interface Issue {
