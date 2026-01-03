@@ -15,7 +15,7 @@
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",
     "dev:backend": "convex dev",
-    "build": "vite build",
+    "build": "convex codegen --typecheck disable || echo 'Codegen skipped' && vite build",
     "lint": "biome check --write .",
     "lint:check": "biome check .",
     "format": "biome format --write .",
