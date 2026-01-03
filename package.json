@@ -76,7 +76,7 @@
     "@react-email/render": "^2.0.1",
     "@tanstack/react-form": "^1.27.7",
     "@tanstack/react-router": "^1.144.0",
-    "@tanstack/react-start": "^1.139.14",
+    "@tanstack/react-start": "^1.144.0",
     "@tanstack/zod-form-adapter": "^0.42.1",
     "ai": "^6.0.5",
     "class-variance-authority": "^0.7.1",
