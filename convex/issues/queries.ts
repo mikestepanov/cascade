@@ -5,7 +5,12 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { type QueryCtx, query } from "../_generated/server";
 import { projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
-import { enrichIssues, fetchPaginatedIssues } from "../lib/issueHelpers";
+import {
+  type EnrichedIssue,
+  enrichIssue,
+  enrichIssues,
+  fetchPaginatedIssues,
+} from "../lib/issueHelpers";
 import { notDeleted } from "../lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "../lib/userUtils";
 import { canAccessProject } from "../projectAccess";
@@ -326,23 +331,23 @@ export const get = query({
       }
     }
 
-    const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
-    const reporter = await ctx.db.get(issue.reporterId);
-    const epic = issue.epicId ? await ctx.db.get(issue.epicId) : null;
-
-    const [comments, activities]: [Doc<"issueComments">[], Doc<"issueActivity">[]] =
-      await Promise.all([
-        ctx.db
-          .query("issueComments")
-          .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-          .order("asc")
-          .take(200),
-        ctx.db
-          .query("issueActivity")
-          .withIndex("by_issue", (q) => q.eq("issueId", args.id))
-          .order("desc")
-          .take(20),
-      ]);
+    const [comments, activities, enriched]: [
+      Doc<"issueComments">[],
+      Doc<"issueActivity">[],
+      EnrichedIssue,
+    ] = await Promise.all([
+      ctx.db
+        .query("issueComments")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("asc")
+        .take(200),
+      ctx.db
+        .query("issueActivity")
+        .withIndex("by_issue", (q) => q.eq("issueId", args.id))
+        .order("desc")
+        .take(20),
+      enrichIssue(ctx, issue),
+    ]);
 
     const commentAuthorIds = comments.map((c) => c.authorId);
     const activityUserIds = activities.map((a) => a.userId);
@@ -373,17 +378,8 @@ export const get = query({
     });
 
     return {
-      ...issue,
+      ...enriched,
       project,
-      assignee: sanitizeUserForAuth(assignee),
-      reporter: sanitizeUserForAuth(reporter),
-      epic: epic
-        ? {
-            _id: epic._id,
-            key: epic.key,
-            title: epic.title,
-          }
-        : null,
       comments: commentsWithAuthors,
       activity,
     };
@@ -480,7 +476,7 @@ export const getByKey = query({
       }
     }
 
-    return issue;
+    return await enrichIssue(ctx, issue);
   },
 });
 

@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Id } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import { mutation } from "../_generated/server";
 import {
   authenticatedMutation,
@@ -57,6 +57,13 @@ export const create = editorMutation({
     // Get max order for the status column
     const maxOrder = await getMaxOrderForStatus(ctx, ctx.projectId, defaultStatus);
 
+    // Get label names from IDs
+    let labelNames: string[] = [];
+    if (args.labels && args.labels.length > 0) {
+      const labels = await Promise.all(args.labels.map((id) => ctx.db.get(id)));
+      labelNames = labels.filter((l): l is Doc<"labels"> => l !== null).map((l) => l.name);
+    }
+
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: ctx.projectId,
@@ -72,7 +79,7 @@ export const create = editorMutation({
       reporterId: ctx.userId,
       createdAt: now,
       updatedAt: now,
-      labels: args.labels || [],
+      labels: labelNames,
       sprintId: args.sprintId,
       epicId: inheritedEpicId,
       parentId: args.parentId,

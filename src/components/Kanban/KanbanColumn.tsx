@@ -13,16 +13,18 @@ interface WorkflowState {
   order: number;
 }
 
+import type { LabelInfo } from "../../../convex/lib/issueHelpers";
+
 interface Issue {
   _id: Id<"issues">;
   title: string;
   key: string;
   status: string;
-  priority: string;
-  type: string;
+  priority: "lowest" | "low" | "medium" | "high" | "highest";
+  type: "task" | "bug" | "story" | "epic";
   order: number;
   assignee?: { name: string } | null;
-  labels: string[];
+  labels: LabelInfo[];
 }
 
 interface KanbanColumnProps {
