@@ -68,7 +68,7 @@ const applicationTables = {
     slug: v.string(), // "engineering", "marketing", "product"
     description: v.optional(v.string()),
     icon: v.optional(v.string()), // Emoji like 🏗️, 📱, 🎨
-    companyId: v.id("companies"),
+    companyId: v.optional(v.id("companies")),
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -92,13 +92,14 @@ const applicationTables = {
     key: v.string(), // Project key like "PROJ"
     description: v.optional(v.string()),
     // NEW: Hierarchy
-    workspaceId: v.id("workspaces"), // Project belongs to workspace (department)
+    workspaceId: v.optional(v.id("workspaces")), // Project belongs to workspace (department)
     teamId: v.optional(v.id("teams")), // Project belongs to team (optional - null for workspace projects)
     // Ownership
-    companyId: v.id("companies"), // Company this project belongs to
-    ownerId: v.id("users"), // User that owns this project
+    companyId: v.optional(v.id("companies")), // Company this project belongs to
+    ownerId: v.optional(v.id("users")), // User that owns this project
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all company members (company-public)
+    isCompanyPublic: v.optional(v.boolean()), // Deprecated: Use isPublic
     // isCompanyPublic removed (legacy)
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
     // Audit
@@ -156,7 +157,7 @@ const applicationTables = {
 
   issues: defineTable({
     projectId: v.id("projects"), // Issue belongs to project (required)
-    workspaceId: v.id("workspaces"), // Cached from project.workspaceId
+    workspaceId: v.optional(v.id("workspaces")), // Cached from project.workspaceId
     teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
@@ -1181,7 +1182,7 @@ const applicationTables = {
   invites: defineTable({
     email: v.string(), // Email address to invite
     role: v.union(v.literal("user"), v.literal("superAdmin")), // Platform role: superAdmin = full system access
-    companyId: v.optional(v.id("companies")), // Temporarily optional for migration
+    companyId: v.id("companies"), // Company to invite user to
     projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))), // Role in project if projectId is set
     invitedBy: v.id("users"), // Admin who sent the invite
@@ -1252,8 +1253,8 @@ const applicationTables = {
 
   // Teams (within a company - for data isolation and grouping)
   teams: defineTable({
-    companyId: v.id("companies"), // Company this team belongs to
-    workspaceId: v.id("workspaces"), // Team belongs to workspace
+    companyId: v.optional(v.id("companies")), // Company this team belongs to
+    workspaceId: v.optional(v.id("workspaces")), // Team belongs to workspace
     name: v.string(), // Team name: "Product Team", "Dev Team", "Design Team"
     slug: v.string(), // URL-friendly slug: "product-team", "dev-team"
     description: v.optional(v.string()),

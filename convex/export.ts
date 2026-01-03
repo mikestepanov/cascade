@@ -52,7 +52,7 @@ async function processJSONIssue(
   issue: unknown,
   projectId: Id<"projects">,
   projectKey: string,
-  workspaceId: Id<"workspaces">,
+  workspaceId: Id<"workspaces"> | undefined,
   teamId: Id<"teams"> | undefined,
   userId: Id<"users">,
   defaultStatus: string,
@@ -148,7 +148,7 @@ function parseCSVRow(
   values: string[],
   indices: ReturnType<typeof parseCSVHeaders>,
   projectId: Id<"projects">,
-  workspaceId: Id<"workspaces">,
+  workspaceId: Id<"workspaces"> | undefined,
   teamId: Id<"teams"> | undefined,
   issueKey: string,
   userId: Id<"users">,
@@ -156,7 +156,7 @@ function parseCSVRow(
   order: number,
 ): {
   projectId: Id<"projects">;
-  workspaceId: Id<"workspaces">;
+  workspaceId: Id<"workspaces"> | undefined;
   teamId: Id<"teams"> | undefined;
   key: string;
   title: string;
@@ -216,7 +216,7 @@ async function createIssueWithActivity(
   ctx: MutationCtx,
   issueData: {
     projectId: Id<"projects">;
-    workspaceId: Id<"workspaces">;
+    workspaceId: Id<"workspaces"> | undefined;
     teamId: Id<"teams"> | undefined;
     key: string;
     title: string;
