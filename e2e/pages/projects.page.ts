@@ -266,8 +266,24 @@ export class ProjectsPage extends BasePage {
       await expect(this.createButton).toBeEnabled({ timeout: 5000 });
       await this.createButton.click();
 
+      // Wait for success toast - this confirms the backend operation finished
+      // This is more robust than just waiting for the modal to close, as it handles slow backend responses better
+      try {
+        await expect(this.page.getByText("Project created successfully")).toBeVisible({
+          timeout: 20000,
+        });
+      } catch (e) {
+        // If success toast didn't appear, check if we have an error toast to report better failure
+        const errorToast = this.page.locator('[data-sonner-toast][data-type="error"]');
+        if (await errorToast.isVisible()) {
+          const errorText = await errorToast.textContent();
+          console.error("Project Creation Failed with Toast:", errorText);
+          throw new Error(`Project Creation Failed: ${errorText}`);
+        }
+        throw e;
+      }
+
       // Wait for the modal to close to confirm successful submission
-      // Increased timeout for CI environments where backend/network might be slower
       await expect(this.createProjectForm).not.toBeVisible({ timeout: 30000 });
 
       // Wait for the new page to stabilize (redirect and hydration)
