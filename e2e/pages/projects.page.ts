@@ -263,15 +263,19 @@ export class ProjectsPage extends BasePage {
 
       // Create project
       await this.createButton.waitFor({ state: "visible", timeout: 15000 });
-      await this.createButton.click({ force: true });
+      await expect(this.createButton).toBeEnabled({ timeout: 5000 });
+      await this.createButton.click();
 
       // Wait for the modal to close to confirm successful submission
-      await expect(this.createProjectForm).not.toBeVisible({ timeout: 10000 });
+      // Increased timeout for CI environments where backend/network might be slower
+      await expect(this.createProjectForm).not.toBeVisible({ timeout: 30000 });
 
       // Wait for the new page to stabilize (redirect and hydration)
       await this.page.waitForLoadState("networkidle");
     } catch (e) {
       console.error("Failed to create project from template:", e);
+      // Log the current URL to help debugging
+      console.log("Current URL:", this.page.url());
       throw e;
     }
   }
