@@ -101,7 +101,7 @@ export function IssueDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-4xl" data-testid="issue-detail-modal">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">

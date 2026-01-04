@@ -190,7 +190,6 @@ export const listSelectableIssues = query({
     if (!userId) return [];
 
     // Check if user has access to the project
-    const { canAccessProject } = await import("../projectAccess");
     const hasAccess = await canAccessProject(ctx, args.projectId, userId);
     if (!hasAccess) {
       return [];
@@ -463,7 +462,6 @@ export const getByKey = query({
 
     // Check if user has access to the project
     if (userId) {
-      const { canAccessProject } = await import("../projectAccess");
       const hasAccess = await canAccessProject(ctx, issue.projectId, userId);
       if (!hasAccess) {
         return null;

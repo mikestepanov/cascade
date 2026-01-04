@@ -142,7 +142,7 @@ export class ProjectsPage extends BasePage {
     this.settingsTab = page.getByRole("button", { name: "Settings view" });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
-    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking|PROJ/i });
+    this.issueDetailDialog = page.getByTestId("issue-detail-modal");
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
