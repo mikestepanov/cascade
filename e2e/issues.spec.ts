@@ -34,6 +34,13 @@ test.describe("Issues", () => {
       // Use direct URL navigation to projects page to access Create Project functionality
       await projectsPage.goto();
 
+      // Create a unique workspace for this test run to avoid dependency on global state
+      // which might be cleared by other tests (e.g., cleanup-workspaces)
+      await projectsPage.createWorkspace(`WS ${uniqueId}`);
+
+      // Go back to projects page as createWorkspace navigates away
+      await projectsPage.goto();
+
       // Create a project
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 

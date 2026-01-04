@@ -297,13 +297,25 @@ export class ProjectsPage extends BasePage {
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.newWorkspaceButton.click();
+    // Navigate to workspaces page using sidebar to ensure correct context
+    await this.page.locator("nav").getByText("Workspaces", { exact: true }).click();
+    await this.page.waitForURL(/\/workspaces/);
+
+    await this.page.getByRole("button", { name: "+ Create Workspace" }).click();
+
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 5000 });
     await this.workspaceNameInput.fill(name);
     if (description) {
       await this.workspaceDescriptionInput.fill(description);
     }
     await this.submitWorkspaceButton.click();
+
+    // Verify success
+    await expect(this.page.getByText("Workspace created successfully")).toBeVisible({
+      timeout: 10000,
+    });
+    // Verify modal closed
+    await expect(this.page.getByRole("dialog")).not.toBeVisible();
   }
 
   async cancelCreateProject() {
