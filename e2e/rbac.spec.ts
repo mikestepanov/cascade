@@ -15,6 +15,7 @@
  * - Viewer: e2e-viewer@inbox.mailtrap.io
  */
 
+import { RBAC_TEST_CONFIG } from "./config";
 import { expect, hasAdminAuth, rbacTest } from "./fixtures";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
@@ -41,8 +42,10 @@ rbacTest(
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
 
-    // 2. Verify board is visible - check for project name heading (matches "RBAC-Company")
-    await expect(adminPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading (matches config)
+    await expect(
+      adminPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+    ).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Admin can view project board");
@@ -117,8 +120,10 @@ rbacTest(
     await gotoRbacProject(editorPage);
 
     // 2. Verify board is visible - check for project name heading
-    // Note: Backend generates name as "${key}-Company", e.g., "RBAC-Company"
-    await expect(editorPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading
+    await expect(
+      editorPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+    ).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Editor can view project board");
@@ -205,7 +210,10 @@ rbacTest(
     await gotoRbacProject(viewerPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(viewerPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading
+    await expect(
+      viewerPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+    ).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Viewer can view project board");

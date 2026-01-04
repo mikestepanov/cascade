@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url";
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS } from "../config";
 import { ProjectsPage, WorkspacesPage } from "../pages";
-import { trySignInUser } from "../utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -199,10 +198,6 @@ export const rbacTest = base.extend<RbacFixtures>({
           throw new Error(
             `Session lost or redirected to signin for role test. Current URL: ${currentUrl}`,
           );
-
-          await page.goto(`/${rbacCompanySlug}/dashboard`);
-          await page.waitForLoadState("domcontentloaded");
-          await page.waitForTimeout(2000);
         }
 
         // Try navigating to target project

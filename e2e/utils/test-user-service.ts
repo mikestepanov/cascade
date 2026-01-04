@@ -16,6 +16,7 @@ export interface CreateUserResult {
 
 export interface RbacProjectConfig {
   projectKey: string;
+  projectName: string;
   adminEmail: string;
   editorEmail: string;
   viewerEmail: string;

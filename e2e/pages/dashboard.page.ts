@@ -430,11 +430,15 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async pressCommandPaletteShortcut() {
+    // Ensure focus is on the page before pressing keys
+    await this.page.click("body").catch(() => {});
     // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
     await this.page.keyboard.press("ControlOrMeta+k");
   }
 
   async pressShortcutsHelpShortcut() {
+    // Ensure focus is on the page before pressing keys
+    await this.page.click("body").catch(() => {});
     await this.page.keyboard.press("Shift+?");
   }
 
