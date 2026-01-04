@@ -48,10 +48,10 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
       acc[group].push(cmd);
       return acc;
     },
-    {} as Record<string, CommandItem[]>,
+    {} as Record<string, CommandAction[]>,
   );
 
-  const handleSelect = (cmd: CommandItem) => {
+  const handleSelect = (cmd: CommandAction) => {
     cmd.action();
     onClose();
   };
@@ -59,6 +59,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
   return (
     <CommandDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Command
+        data-testid="command-palette"
         className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
         filter={(value, search) => {
           const cmd = commands.find((c) => c.id === value);
@@ -148,10 +149,10 @@ export function useCommands({
 } = {}) {
   const navigate = useNavigate();
   const { companySlug } = useCompany();
-  const _projects = useQuery(api.dashboard.getMyProjects);
+  const projects = useQuery(api.dashboard.getMyProjects);
   const myIssues = useQuery(api.dashboard.getMyIssues);
 
-  const commands: CommandItem[] = [
+  const commands: CommandAction[] = [
     // Navigation
     {
       id: "nav-dashboard",
@@ -180,6 +181,17 @@ export function useCommands({
       action: () => navigate({ to: ROUTES.workspaces.list(companySlug) }),
       group: "Navigation",
     },
+
+    // Projects navigation
+    ...(projects?.map((project) => ({
+      id: `project-${project._id}`,
+      label: project.name,
+      icon: "⬜",
+      description: `Go to ${project.name} board`,
+      keywords: [project.key, "board", "project"],
+      action: () => navigate({ to: ROUTES.projects.board(companySlug, project.key) }),
+      group: "Projects",
+    })) || []),
 
     // Create actions
     ...(onCreateIssue
@@ -223,17 +235,17 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.slice(0, 5).map((issue) => ({
+    ...(myIssues?.page?.slice(0, 5)?.map((issue) => ({
       id: `issue-${issue._id}`,
       label: issue.title,
       icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
       description: `${issue.key} • ${issue.projectName}`,
       keywords: [issue.key, issue.projectName || ""],
       action: () => {
-        // Navigate to project - will be handled by parent
+        navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
       },
       group: "Recent Issues",
-    })) || []),
+    })) ?? []),
   ];
 
   return commands;

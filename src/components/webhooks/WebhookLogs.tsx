@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
@@ -16,7 +16,11 @@ interface WebhookLogsProps {
 export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps) {
   const [selectedExecution, setSelectedExecution] = useState<string | null>(null);
 
-  const executions = useQuery(api.webhooks.listExecutions, { webhookId });
+  const { results: executions } = usePaginatedQuery(
+    api.webhooks.listExecutions,
+    { webhookId },
+    { initialNumItems: 50 },
+  );
   const retryExecution = useMutation(api.webhooks.retryExecution);
 
   const handleRetry = async (executionId: Id<"webhookExecutions">) => {

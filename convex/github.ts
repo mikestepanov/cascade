@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Connect GitHub account (OAuth callback)
 export const connectGitHub = mutation({
@@ -103,7 +104,8 @@ export const linkRepository = mutation({
     // Check permission (at least editor)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     if (!member && project.createdBy !== userId) {
@@ -161,7 +163,8 @@ export const unlinkRepository = mutation({
     // Check permission (admin only)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
+      .filter(notDeleted)
       .first();
 
     const isAdmin = project.createdBy === userId || member?.role === "admin";
@@ -189,9 +192,8 @@ export const listRepositories = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
-          q.eq("projectId", args.projectId).eq("userId", userId),
-        )
+        .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+        .filter(notDeleted)
         .first();
 
       if (!member && project.createdBy !== userId) {
@@ -201,7 +203,8 @@ export const listRepositories = query({
 
     return await ctx.db
       .query("githubRepositories")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
   },
 });
@@ -236,8 +239,9 @@ export const upsertPullRequest = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
+        .filter(notDeleted)
         .first();
 
       if (issue) {
@@ -339,9 +343,10 @@ export const getPullRequests = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
+        .withIndex("by_project_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
+        .filter(notDeleted)
         .first();
 
       if (!member && project.createdBy !== userId) {
@@ -352,6 +357,7 @@ export const getPullRequests = query({
     return await ctx.db
       .query("githubPullRequests")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+      .filter(notDeleted)
       .collect();
   },
 });
@@ -379,8 +385,9 @@ export const upsertCommit = mutation({
     if (args.issueKey) {
       const issue = await ctx.db
         .query("issues")
-        .withIndex("by_workspace", (q) => q.eq("projectId", repo.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", repo.projectId))
         .filter((q) => q.eq(q.field("key"), args.issueKey))
+        .filter(notDeleted)
         .first();
 
       if (issue) {
@@ -438,9 +445,10 @@ export const getCommits = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_workspace_user", (q) =>
+        .withIndex("by_project_user", (q) =>
           q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
         )
+        .filter(notDeleted)
         .first();
 
       if (!member && project.createdBy !== userId) {
@@ -452,6 +460,7 @@ export const getCommits = query({
       .query("githubCommits")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .order("desc")
+      .filter(notDeleted)
       .collect();
   },
 });

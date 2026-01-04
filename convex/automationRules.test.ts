@@ -80,7 +80,7 @@ describe("Automation Rules", () => {
 
       // Add member
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "member@test.com",
         role: "viewer",
@@ -170,7 +170,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -317,7 +317,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -427,7 +427,7 @@ describe("Automation Rules", () => {
 
       // Add editor
       const asOwner = asAuthenticatedUser(t, owner);
-      await asOwner.mutation(api.projects.addMember, {
+      await asOwner.mutation(api.projects.addProjectMember, {
         projectId,
         userEmail: "editor@test.com",
         role: "editor",
@@ -601,7 +601,7 @@ describe("Automation Rules", () => {
 
       // Check if label was added
       const issue = await asUser.query(api.issues.get, { id: issueId });
-      expect(issue?.labels).toContain("automated");
+      expect(issue?.labels.map((l) => l.name)).toContain("automated");
     });
 
     it("should execute add_comment action", async () => {

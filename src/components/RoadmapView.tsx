@@ -1,11 +1,13 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FixedSizeList as List } from "react-window";
+import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { IssueDetailModal } from "./IssueDetailModal";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { Skeleton } from "./ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Typography } from "./ui/Typography";
@@ -33,8 +35,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const [viewMode, setViewMode] = useState<"months" | "weeks">("months");
   const [filterEpic, setFilterEpic] = useState<Id<"issues"> | "all">("all");
 
-  const issues = useQuery(api.issues.listByProject, { projectId, sprintId });
-  const project = useQuery(api.projects.get, { id: projectId });
+  const issues = useQuery(api.issues.listRoadmapIssues, { projectId, sprintId });
+  const project = useQuery(api.projects.getProject, { id: projectId });
 
   // Filter epics and regular issues
   const epics = issues?.filter((issue) => issue.type === "epic") || [];
@@ -82,20 +84,154 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
     [startOfMonth, endDate],
   );
 
+  // Keyboard navigation
+  const listRef = useRef<List>(null);
+  const { selectedIndex } = useListNavigation({
+    items: filteredIssues,
+    onSelect: (issue) => setSelectedIssue(issue._id),
+  });
+
+  // Sync keyboard selection with scroll
+  useEffect(() => {
+    if (selectedIndex >= 0 && listRef.current) {
+      listRef.current.scrollToItem(selectedIndex);
+    }
+  }, [selectedIndex]);
+
+  // Row renderer for virtualization
+  const Row = useCallback(
+    ({
+      data,
+      index,
+      style,
+    }: {
+      data: { issues: typeof filteredIssues; selectedIndex: number };
+      index: number;
+      style: React.CSSProperties;
+    }) => {
+      const issue = data.issues[index];
+      const isSelected = index === data.selectedIndex;
+
+      return (
+        <div
+          style={style}
+          className={`flex items-center p-3 transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark ${
+            isSelected
+              ? "bg-brand-50/50 dark:bg-brand-900/20 ring-1 ring-inset ring-brand-500/50 z-10"
+              : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
+          }`}
+        >
+          {/* Issue Info */}
+          <div className="w-64 flex-shrink-0 pr-4">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-sm">{getTypeIcon(issue.type)}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedIssue(issue._id)}
+                className={`text-sm font-medium truncate text-left ${
+                  isSelected
+                    ? "text-brand-700 dark:text-brand-300"
+                    : "text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400"
+                }`}
+              >
+                {issue.key}
+              </button>
+            </div>
+            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+              {issue.title}
+            </p>
+          </div>
+
+          {/* Timeline Bar */}
+          <div className="flex-1 relative h-8">
+            {issue.dueDate && (
+              <button
+                type="button"
+                className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
+                style={{
+                  left: `${getPositionOnTimeline(issue.dueDate)}%`,
+                  width: "5%", // Default width for single date
+                }}
+                onClick={() => setSelectedIssue(issue._id)}
+                title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
+                aria-label={`View issue ${issue.key}`}
+              >
+                <span className="text-xs text-white font-medium truncate">
+                  {issue.assignee?.name.split(" ")[0]}
+                </span>
+              </button>
+            )}
+
+            {/* Today Indicator */}
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-status-error z-10"
+              style={{ left: `${getPositionOnTimeline(Date.now())}%` }}
+              title="Today"
+            />
+          </div>
+        </div>
+      );
+    },
+    [getPositionOnTimeline],
+  );
+
+  // Loading State
   if (!(project && issues)) {
     return (
-      <div className="flex-1 overflow-auto p-6">
-        <div className="mb-6">
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-64" />
+      <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
+        {/* Skeleton Header */}
+        <div className="mb-6 flex items-center justify-between flex-shrink-0">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-32 rounded-lg" />
+            <Skeleton className="h-8 w-32 rounded-lg" />
+          </div>
         </div>
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-4">
-          <div className="space-y-4">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
+
+        {/* Skeleton Timeline */}
+        <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+          {/* Skeleton Dates Header */}
+          <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
+            <div className="flex">
+              <div className="w-64 flex-shrink-0">
+                <Skeleton className="h-5 w-24" />
+              </div>
+              <div className="flex-1 grid grid-cols-6 gap-2">
+                {[1, 2, 3, 4, 5, 6].map((id) => (
+                  <Skeleton key={id} className="h-5 w-full" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton Rows */}
+          <div className="flex-1 overflow-auto">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="flex items-center p-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
+              >
+                <div className="w-64 flex-shrink-0 pr-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div className="flex-1 relative h-8">
+                  <Skeleton
+                    className={`absolute h-6 rounded-full opacity-50`}
+                    style={{
+                      left: `${(i * 13) % 70}%`, // Deterministic position
+                      width: `${10 + ((i * 3) % 10)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -103,9 +239,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between flex-shrink-0">
         <div>
           <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
@@ -149,10 +285,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden">
-        {/* Timeline Header */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4">
+      {/* Timeline Container */}
+      <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+        {/* Timeline Header (Fixed) */}
+        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
           <div className="flex">
             <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Issue
@@ -170,65 +306,24 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           </div>
         </div>
 
-        {/* Timeline Body */}
-        <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+        {/* Timeline Body (Virtualized) */}
+        <div className="flex-1">
           {filteredIssues.length === 0 ? (
             <div className="p-12 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <p>No issues with due dates to display</p>
               <p className="text-sm mt-1">Add due dates to issues to see them on the roadmap</p>
             </div>
           ) : (
-            filteredIssues.map((issue) => (
-              <div
-                key={issue._id}
-                className="flex items-center p-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
-              >
-                {/* Issue Info */}
-                <div className="w-64 flex-shrink-0 pr-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedIssue(issue._id)}
-                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400 truncate text-left"
-                    >
-                      {issue.key}
-                    </button>
-                  </div>
-                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
-                    {issue.title}
-                  </p>
-                </div>
-
-                {/* Timeline Bar */}
-                <div className="flex-1 relative h-8">
-                  {issue.dueDate && (
-                    <button
-                      type="button"
-                      className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
-                      style={{
-                        left: `${getPositionOnTimeline(issue.dueDate)}%`,
-                        width: "5%", // Default width for single date
-                      }}
-                      onClick={() => setSelectedIssue(issue._id)}
-                      title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
-                      aria-label={`View issue ${issue.key}`}
-                    >
-                      <span className="text-xs text-white font-medium truncate">
-                        {issue.assignee?.name.split(" ")[0]}
-                      </span>
-                    </button>
-                  )}
-
-                  {/* Today Indicator */}
-                  <div
-                    className="absolute top-0 bottom-0 w-0.5 bg-status-error z-10"
-                    style={{ left: `${getPositionOnTimeline(Date.now())}%` }}
-                    title="Today"
-                  />
-                </div>
-              </div>
-            ))
+            <List
+              ref={listRef}
+              height={600} // This should ideally be dynamic, but 600 is a safe default for now
+              itemCount={filteredIssues.length}
+              itemSize={56} // Approximate height of each row
+              width="100%"
+              itemData={{ issues: filteredIssues, selectedIndex }}
+            >
+              {Row}
+            </List>
           )}
         </div>
       </div>

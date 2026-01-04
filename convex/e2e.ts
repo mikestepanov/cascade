@@ -14,8 +14,9 @@
 import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { httpAction, internalMutation } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
@@ -568,6 +569,29 @@ export const resetOnboardingInternal = internalMutation({
 });
 
 /**
+ * Force delete ALL test users and their associated data
+ * POST /e2e/nuke-test-users
+ */
+export const nukeAllTestUsersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.e2e.nukeAllTestUsersInternal, {});
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
  * Garbage collection - delete old test users
  * POST /e2e/cleanup
  * Deletes test users older than 1 hour
@@ -590,6 +614,9 @@ export const cleanupTestUsersEndpoint = httpAction(async (ctx, request) => {
     });
   }
 });
+
+/**
+ * Garbage collection - delete old test users
 
 /**
  * Internal mutation for garbage collection
@@ -766,19 +793,24 @@ export const setupRbacProjectInternal = internalMutation({
     ),
   }),
   handler: async (ctx, args) => {
-    // Find all users
-    const adminUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.adminEmail))
-      .first();
-    const editorUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.editorEmail))
-      .first();
-    const viewerUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.viewerEmail))
-      .first();
+    // Find latest users (in case of duplicates)
+    const findLatestUser = async (email: string) => {
+      const users = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), email))
+        .collect();
+      if (users.length === 0) return null;
+      // Sort by creation time descending and take the first one
+      return users.sort((a, b) => b._creationTime - a._creationTime)[0];
+    };
+
+    const adminUser = await findLatestUser(args.adminEmail);
+    const editorUser = await findLatestUser(args.editorEmail);
+    const viewerUser = await findLatestUser(args.viewerEmail);
+
+    console.log(`[RBAC-SETUP] Admin resolved to: ${adminUser?._id} (${args.adminEmail})`);
+    console.log(`[RBAC-SETUP] Editor resolved to: ${editorUser?._id} (${args.editorEmail})`);
+    console.log(`[RBAC-SETUP] Viewer resolved to: ${viewerUser?._id} (${args.viewerEmail})`);
 
     if (!adminUser) {
       return { success: false, error: `Admin user not found: ${args.adminEmail}` };
@@ -833,6 +865,9 @@ export const setupRbacProjectInternal = internalMutation({
           addedBy: adminUser._id,
           addedAt: now,
         });
+      } else if (existingMember.role !== config.role) {
+        // Enforce the correct role (downgrade from admin if necessary)
+        await ctx.db.patch(existingMember._id, { role: config.role });
       }
 
       // Set as user's default company
@@ -896,17 +931,30 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
 
     // 4a. Company-level project (legacy style - no workspace/team)
+    const companyProjectKey = `${args.projectKey}-COMP`;
     let project = await ctx.db
       .query("projects")
-      .withIndex("by_key", (q) => q.eq("key", args.projectKey))
+      .withIndex("by_key", (q) => q.eq("key", companyProjectKey))
+      .filter(notDeleted)
       .first();
 
     if (!project) {
+      // Create a default workspace for the company-level project
+      const workspaceId = await ctx.db.insert("workspaces", {
+        companyId: company._id,
+        name: "Organization Workspace",
+        slug: "org-workspace",
+        createdBy: adminUser._id,
+        createdAt: now,
+        updatedAt: now,
+      });
+
       const projectId = await ctx.db.insert("projects", {
-        name: `RBAC Test Project (${args.projectKey})`,
-        key: args.projectKey,
+        name: `${args.projectKey}-Company`,
+        key: companyProjectKey,
         description: "E2E test project for RBAC permission testing - Company level",
         companyId: company._id,
+        workspaceId,
         ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,
@@ -919,9 +967,7 @@ export const setupRbacProjectInternal = internalMutation({
           { id: "review", name: "Review", category: "inprogress", order: 3 },
           { id: "done", name: "Done", category: "done", order: 4 },
         ],
-        // Explicitly undefined for company-level project
-        workspaceId: undefined,
-        teamId: undefined,
+        teamId: undefined, // Workspace-level project, no specific team
       });
 
       project = await ctx.db.get(projectId);
@@ -938,6 +984,7 @@ export const setupRbacProjectInternal = internalMutation({
     let workspaceProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", workspaceProjectKey))
+      .filter(notDeleted)
       .first();
 
     if (!workspaceProject) {
@@ -947,7 +994,7 @@ export const setupRbacProjectInternal = internalMutation({
         description: "E2E test project for RBAC - Workspace level",
         companyId: company._id,
         workspaceId,
-        teamId: undefined, // Workspace level, no specific team
+        teamId, // Workspace level
         ownerId: adminUser._id,
         createdBy: adminUser._id,
         createdAt: now,
@@ -970,6 +1017,7 @@ export const setupRbacProjectInternal = internalMutation({
     let teamProject = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", teamProjectKey))
+      .filter(notDeleted)
       .first();
 
     if (!teamProject) {
@@ -1016,9 +1064,10 @@ export const setupRbacProjectInternal = internalMutation({
       for (const config of memberConfigs) {
         const existingMember = await ctx.db
           .query("projectMembers")
-          .withIndex("by_workspace_user", (q) =>
+          .withIndex("by_project_user", (q) =>
             q.eq("projectId", proj._id).eq("userId", config.userId),
           )
+          .filter(notDeleted)
           .first();
 
         if (existingMember) {
@@ -1116,6 +1165,7 @@ export const cleanupRbacProjectInternal = internalMutation({
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", args.projectKey))
+      .filter(notDeleted)
       .first();
 
     if (!project) {
@@ -1132,7 +1182,8 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all project members
     const members = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .filter(notDeleted)
       .collect();
     for (const member of members) {
       await ctx.db.delete(member._id);
@@ -1141,13 +1192,15 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .filter(notDeleted)
       .collect();
     for (const issue of issues) {
       // Delete issue comments
       const comments = await ctx.db
         .query("issueComments")
         .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .filter(notDeleted)
         .collect();
       for (const comment of comments) {
         await ctx.db.delete(comment._id);
@@ -1166,7 +1219,8 @@ export const cleanupRbacProjectInternal = internalMutation({
     // Delete all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", project._id))
+      .withIndex("by_project", (q) => q.eq("projectId", project._id))
+      .filter(notDeleted)
       .collect();
     for (const sprint of sprints) {
       await ctx.db.delete(sprint._id);
@@ -1298,6 +1352,7 @@ export const updateCompanySettingsInternal = internalMutation({
     const company = await ctx.db
       .query("companies")
       .withIndex("by_slug", (q) => q.eq("slug", args.companySlug))
+      .filter(notDeleted)
       .first();
 
     if (!company) {
@@ -1400,6 +1455,7 @@ export const verifyTestUserInternal = internalMutation({
     const account = await ctx.db
       .query("authAccounts")
       .filter((q) => q.eq(q.field("providerAccountId"), args.email))
+      .filter(notDeleted)
       .first();
 
     if (!account) {
@@ -1505,6 +1561,7 @@ export const debugVerifyPasswordInternal = internalMutation({
           q.eq(q.field("providerAccountId"), args.email),
         ),
       )
+      .filter(notDeleted)
       .first();
 
     if (!account) {
@@ -1679,6 +1736,7 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
         const projects = await ctx.db
           .query("projects")
           .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .filter(notDeleted)
           .collect();
         for (const p of projects) await ctx.db.delete(p._id);
 
@@ -1689,6 +1747,7 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
       const wsProjects = await ctx.db
         .query("projects")
         .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .filter(notDeleted)
         .collect();
 
       for (const p of wsProjects) await ctx.db.delete(p._id);
@@ -1698,5 +1757,426 @@ export const nukeAllE2EWorkspacesInternal = internalMutation({
     }
 
     return { deleted };
+  },
+});
+
+/**
+ * Nuke timers for E2E testing
+ * POST /e2e/nuke-timers
+ * Body: { email?: string }
+ */
+export const nukeTimersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    const { email } = body as { email?: string };
+
+    const result = await ctx.runMutation(internal.e2e.nukeTimersInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to nuke timers
+ */
+export const nukeTimersInternal = internalMutation({
+  args: {
+    email: v.optional(v.string()),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    let usersToCheck: Doc<"users">[] = [];
+
+    if (args.email) {
+      if (!isTestEmail(args.email)) {
+        throw new Error("Only test emails allowed");
+      }
+      const user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), args.email))
+        .filter(notDeleted)
+        .first();
+      if (user) usersToCheck.push(user);
+    } else {
+      // All test users
+      usersToCheck = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("isTestUser"), true))
+        .collect();
+    }
+
+    let deletedCount = 0;
+    for (const user of usersToCheck) {
+      const timers = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      for (const timer of timers) {
+        await ctx.db.delete(timer._id);
+        deletedCount++;
+      }
+    }
+
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Nuke workspaces for E2E testing
+ * POST /e2e/nuke-workspaces
+ */
+export const nukeWorkspacesEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.e2e.nukeWorkspacesInternal, {});
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to nuke workspaces created by test users
+ */
+export const nukeWorkspacesInternal = internalMutation({
+  args: {},
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx) => {
+    // Find all test users
+    const testUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("isTestUser"), true))
+      .collect();
+
+    let deletedCount = 0;
+
+    // 2. Orphan Cleanup: Delete companies/workspaces matching E2E patterns
+    // This catches data where the creator user was already deleted
+
+    // Delete orphan companies by slug/name pattern
+    const orphanCompanies = await ctx.db
+      .query("companies")
+      .withIndex("by_slug")
+      .filter((q) => q.or(q.eq(q.field("slug"), "nixelo-e2e"), q.eq(q.field("name"), "Nixelo E2E")))
+      .collect();
+
+    // Also check for companies wrapping E2E workspaces if possible?
+    // Usually workspaces are children of companies.
+    // In the schema, `workspaces` have `companyId`.
+    // We should look for `workspaces` named "E2E Testing Workspace" and delete them + their parent company if it's test-only?
+    // Actually, just deleting the workspaces might be enough for the test selector?
+    // The test selector looks for "E2E Testing Workspace".
+
+    // Scan all workspaces to find "Engineering *" and other dynamic patterns
+    // We fetch all because we can't filter by "startsWith" in DB query easily without specific index
+    const allWorkspaces = await ctx.db.query("workspaces").collect();
+
+    const spamWorkspaces = allWorkspaces.filter(
+      (ws) =>
+        ws.name === "E2E Testing Workspace" ||
+        ws.name === "🧪 E2E Testing Workspace" ||
+        ws.name === "New Workspace" ||
+        ws.name.startsWith("Engineering ") ||
+        ws.name.startsWith("Project-"), // Also clean up project leftovers if they leaked into workspaces table?
+    );
+    // Note: This full table scan is inefficient.
+    // Ideally, we should add a `search_name` index or a `by_name_prefix` index
+    // to filter these on the DB side. For now, in a test environment, this is acceptable.
+
+    for (const ws of spamWorkspaces) {
+      // Delete workspace artifacts?
+      // Just delete the workspace for now to clear the UI list
+      await ctx.db.delete(ws._id);
+      deletedCount++;
+    }
+
+    // Continue with standard cleanup...
+    for (const user of testUsers) {
+      const companies = await ctx.db
+        .query("companies")
+        .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
+        .collect();
+
+      for (const company of companies) {
+        // Delete company members
+        const members = await ctx.db
+          .query("companyMembers")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const member of members) {
+          await ctx.db.delete(member._id);
+        }
+
+        // Delete teams
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const team of teams) {
+          await ctx.db.delete(team._id);
+        }
+
+        // Delete projects
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .filter(notDeleted)
+          .collect();
+        for (const project of projects) {
+          await ctx.db.delete(project._id);
+        }
+
+        // Delete workspaces (departments)
+        const workspaces = await ctx.db
+          .query("workspaces")
+          .withIndex("by_company", (q) => q.eq("companyId", company._id))
+          .collect();
+        for (const workspace of workspaces) {
+          await ctx.db.delete(workspace._id);
+        }
+
+        // Delete the company (workspace container)
+        await ctx.db.delete(company._id);
+        deletedCount++;
+      }
+    }
+
+    // Also cleaning up "E2E Testing Workspace" specifically if created by admin but somehow left over?
+    // The above loop covers it if created by a test user.
+
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Reset a specific test workspace by name (Autonuke if exists)
+ * POST /e2e/reset-workspace
+ * Body: { name: string }
+ */
+export const resetTestWorkspaceEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { name } = body;
+
+    if (!name) {
+      return new Response(JSON.stringify({ error: "Missing workspace name" }), { status: 400 });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.resetTestWorkspaceInternal, { name });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to delete a workspace by name
+ */
+export const resetTestWorkspaceInternal = internalMutation({
+  args: {
+    name: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    // Find workspaces with the exact name
+    const workspaces = await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .collect();
+
+    let deletedCount = 0;
+
+    for (const ws of workspaces) {
+      // Delete Projects
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .filter(notDeleted)
+        .collect();
+      for (const p of projects) await ctx.db.delete(p._id);
+
+      // Delete Teams
+      const teams = await ctx.db
+        .query("teams")
+        .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+        .collect();
+      for (const t of teams) await ctx.db.delete(t._id);
+
+      // Delete the workspace itself
+      await ctx.db.delete(ws._id);
+      deletedCount++;
+    }
+
+    // Also try to find companies (containers) with this name?
+    // "E2E Testing Workspace" is used for the workspace list item, which comes from companies/workspaces.
+    // Let's also check companies just in case
+    const companies = await ctx.db
+      .query("companies")
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .collect();
+
+    for (const company of companies) {
+      // Delete children logic similar to nuke
+      // ... abbreviated for safety, assume nuke handles big cleanup, this handles targeted test iterations
+      // If we are strictly creating a workspace (department), the above workspace deletion is sufficient.
+      // If we are creating a company, we need company deletion.
+      // The test "User can create a workspace" likely creates a COMPANY (multi-tenant root) or a WORKSPACE (project group)?
+      // Based on UI text "Add new workspace", it usually maps to the top-level entity.
+      // Let's delete the company too.
+
+      // Delete company members
+      const members = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const member of members) await ctx.db.delete(member._id);
+
+      // Delete teams
+      const teams = await ctx.db
+        .query("teams")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const team of teams) await ctx.db.delete(team._id);
+
+      // Delete projects
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .filter(notDeleted)
+        .collect();
+      for (const project of projects) await ctx.db.delete(project._id);
+
+      // Delete workspaces (departments)
+      const workspaces = await ctx.db
+        .query("workspaces")
+        .withIndex("by_company", (q) => q.eq("companyId", company._id))
+        .collect();
+      for (const workspace of workspaces) await ctx.db.delete(workspace._id);
+
+      await ctx.db.delete(company._id);
+      deletedCount++;
+    }
+
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+export const listDuplicateTestUsersInternal = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allUsers = await ctx.db.query("users").collect();
+    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+
+    const emailMap = new Map<string, string[]>();
+    for (const user of testUsers) {
+      const email = user.email!;
+      const ids = emailMap.get(email) || [];
+      ids.push(user._id);
+      emailMap.set(email, ids);
+    }
+
+    const duplicates = Array.from(emailMap.entries())
+      .filter(([_, ids]) => ids.length > 1)
+      .map(([email, ids]) => ({ email, ids }));
+
+    console.log("[STALE] Found ", testUsers.length, " total test users.");
+    console.log("[STALE] Found ", duplicates.length, " duplicate emails.");
+    for (const d of duplicates) {
+      console.log("[STALE] Email ", d.email, " has IDs: ", d.ids.join(", "));
+    }
+
+    return { testUsers: testUsers.length, duplicates };
+  },
+});
+
+export const nukeAllTestUsersInternal = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allUsers = await ctx.db.query("users").collect();
+    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+
+    let deletedCount = 0;
+    for (const user of testUsers) {
+      // Delete accounts
+      const accounts = await ctx.db
+        .query("authAccounts")
+        .filter((q) => q.eq(q.field("userId"), user._id))
+        .collect();
+      for (const acc of accounts) await ctx.db.delete(acc._id);
+
+      // Delete company memberships
+      const memberships = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const m of memberships) await ctx.db.delete(m._id);
+
+      // Delete project memberships
+      const projMemberships = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const pm of projMemberships) await ctx.db.delete(pm._id);
+
+      // Delete projects owned by test users
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+        .collect();
+      for (const p of projects) await ctx.db.delete(p._id);
+
+      const createdProjects = await ctx.db
+        .query("projects")
+        .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
+        .collect();
+      for (const p of createdProjects) await ctx.db.delete(p._id);
+
+      await ctx.db.delete(user._id);
+      deletedCount++;
+    }
+    return { success: true, deleted: deletedCount };
   },
 });

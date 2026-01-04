@@ -6,7 +6,7 @@ import { Clock, DollarSign, Download, TrendingUp, Users } from "@/lib/icons";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 // Pure functions - no need to be inside component
 function formatCurrency(amount: number): string {
@@ -26,7 +26,7 @@ interface BillingReportProps {
 
 export function BillingReport({ projectId }: BillingReportProps) {
   const [dateRange, setDateRange] = useState<"week" | "month" | "all">("month");
-  const project = useQuery(api.projects.get, { id: projectId });
+  const project = useQuery(api.projects.getProject, { id: projectId });
 
   // Memoize date range calculation to prevent query key changes
   const dateRangeParams = useMemo(() => {

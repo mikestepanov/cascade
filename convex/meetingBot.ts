@@ -6,6 +6,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
+import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ===========================================
 // Bot Service Authentication
@@ -16,39 +17,32 @@ import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
  * The bot service uses a dedicated API key stored in environment variables
  * This is simpler than the user API key system since there's only one bot service
  */
-async function validateBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string): Promise<boolean> {
-  // Get the expected API key from system settings or environment
-  // For now, we store the hashed key in a systemSettings table
-  const settings = await ctx.db
-    .query("systemSettings")
-    .withIndex("by_key", (q) => q.eq("key", "botServiceApiKeyHash"))
-    .first();
 
-  if (!settings) {
+function validateBotApiKey(_ctx: QueryCtx | MutationCtx, apiKey: string): boolean {
+  // Get the expected API key from environment variables
+  const expectedKey = getBotServiceApiKey();
+
+  // Simple constant-time comparison to prevent timing attacks
+  if (apiKey.length !== expectedKey.length) {
     return false;
   }
 
-  // Hash the provided key and compare
-  const encoder = new TextEncoder();
-  const data = encoder.encode(apiKey);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const keyHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  let result = 0;
+  for (let i = 0; i < apiKey.length; i++) {
+    result |= apiKey.charCodeAt(i) ^ expectedKey.charCodeAt(i);
+  }
 
-  return keyHash === settings.value;
+  return result === 0;
 }
 
 /**
  * Validate bot API key and throw if invalid
  */
-async function requireBotApiKey(
-  ctx: QueryCtx | MutationCtx,
-  apiKey: string | undefined,
-): Promise<void> {
+function requireBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string | undefined): void {
   if (!apiKey) {
     throw new Error("Bot service API key required");
   }
-  const isValid = await validateBotApiKey(ctx, apiKey);
+  const isValid = validateBotApiKey(ctx, apiKey);
   if (!isValid) {
     throw new Error("Invalid bot service API key");
   }
@@ -119,7 +113,7 @@ export const listRecordings = query({
     if (args.projectId) {
       recordings = await ctx.db
         .query("meetingRecordings")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
         .order("desc")
         .take(limit);
     } else {
@@ -765,7 +759,8 @@ export const createIssueFromActionItem = mutation({
     // Get next issue number
     const existingIssues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
     const nextNumber = existingIssues.length + 1;
 
@@ -774,8 +769,8 @@ export const createIssueFromActionItem = mutation({
     // Create the issue
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
-      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">),
-      teamId: project.teamId ?? ("" as Id<"teams">),
+      workspaceId: project.workspaceId,
+      teamId: project.teamId,
       key: `${project.key}-${nextNumber}`,
       title: actionItem.description,
       description: `Created from meeting action item`,
@@ -824,6 +819,7 @@ export const triggerBotJob = internalMutation({
     const job = await ctx.db
       .query("meetingBotJobs")
       .withIndex("by_recording", (q) => q.eq("recordingId", args.recordingId))
+      .filter(notDeleted)
       .first();
 
     if (!job || job.status !== "pending") return;

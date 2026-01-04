@@ -6,7 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 
 interface BulkOperationsBarProps {
   projectId: Id<"projects">;
@@ -24,7 +24,7 @@ export function BulkOperationsBar({
   const [showActions, setShowActions] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const _project = useQuery(api.projects.get, { id: projectId });
+  const _project = useQuery(api.projects.getProject, { id: projectId });
   const sprints = useQuery(api.sprints.listByProject, { projectId });
   const members = useQuery(api.projectMembers.list, { projectId });
 

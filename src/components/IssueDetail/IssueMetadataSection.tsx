@@ -1,4 +1,4 @@
-import { Badge } from "../ui/Badge";
+import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { Flex } from "../ui/Flex";
 
 interface IssueMetadataProps {
@@ -7,7 +7,7 @@ interface IssueMetadataProps {
   assignee?: { name: string } | null;
   reporter?: { name: string } | null;
   storyPoints?: number | null;
-  labels: string[];
+  labels: LabelInfo[];
 }
 
 /**
@@ -74,9 +74,13 @@ export function IssueMetadataSection({
           </h3>
           <Flex wrap gap="sm">
             {labels.map((label) => (
-              <Badge key={label} variant="neutral" shape="pill" size="md">
-                {label}
-              </Badge>
+              <span
+                key={label.name}
+                className="px-2 py-0.5 text-xs font-medium rounded-md text-white"
+                style={{ backgroundColor: label.color }}
+              >
+                {label.name}
+              </span>
             ))}
           </Flex>
         </div>

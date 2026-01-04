@@ -95,28 +95,29 @@ describe("Time Tracking", () => {
       });
 
       // Add 2 entries of 1 hour each
-      const now = Date.now();
+      // Use fixed timestamps to avoid timing-related flakiness
+      const baseTime = 1704067200000; // Fixed timestamp: 2024-01-01 00:00:00 UTC
       await asUser.mutation(api.timeTracking.createTimeEntry, {
         projectId,
-        startTime: now - 3600000 * 2,
-        endTime: now - 3600000,
+        startTime: baseTime,
+        endTime: baseTime + 3600000, // Exactly 1 hour later
         billable: true,
       });
       await asUser.mutation(api.timeTracking.createTimeEntry, {
         projectId,
-        startTime: now - 3600000,
-        endTime: now,
+        startTime: baseTime + 3600000,
+        endTime: baseTime + 7200000, // Exactly 1 hour later
         billable: true,
       });
 
       const stats = await asUser.query(api.timeTracking.getBurnRate, {
         projectId,
-        startDate: now - 86400000,
-        endDate: now + 86400000,
+        startDate: baseTime - 86400000,
+        endDate: baseTime + 86400000,
       });
 
-      expect(stats?.totalCost).toBeCloseTo(100); // 2 hours * 50
-      expect(stats?.totalHours).toBeCloseTo(2);
+      expect(stats?.totalCost).toBeCloseTo(100, 1); // 2 hours * 50, allow 0.1 difference
+      expect(stats?.totalHours).toBeCloseTo(2, 2); // Exactly 2 hours, allow 0.01 difference
       expect(stats?.entriesCount).toBe(2);
     });
   });

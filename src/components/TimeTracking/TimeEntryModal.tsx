@@ -9,7 +9,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import {
   calculateEntryTimes,
   validateContext,
@@ -311,7 +311,7 @@ export function TimeEntryModal({
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const startTimerMutation = useMutation(api.timeTracking.startTimer);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.projects.getCurrentUserProjects);
 
   const { state, actions, computed } = useTimeEntryForm({
     initialProjectId,
@@ -321,7 +321,7 @@ export function TimeEntryModal({
   });
 
   const projectIssues = useQuery(
-    api.issues.listByProject,
+    api.issues.listSelectableIssues,
     state.projectId ? { projectId: state.projectId } : "skip",
   );
 
@@ -449,7 +449,7 @@ export function TimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.map((project) => (
+                {projects?.page?.map((project) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>

@@ -58,7 +58,7 @@ export async function batchFetchIssues(
 /**
  * Batch fetch projects by ID
  */
-export async function batchFetchWorkspaces(
+export async function batchFetchProjects(
   ctx: QueryCtx,
   projectIds: (Id<"projects"> | undefined)[],
 ): Promise<Map<Id<"projects">, Doc<"projects">>> {
@@ -212,7 +212,7 @@ export function getUserName(user: Doc<"users"> | undefined | null): string {
 /**
  * Format project/project for API response
  */
-export function formatWorkspace(project: Doc<"projects"> | undefined | null) {
+export function formatProject(project: Doc<"projects"> | undefined | null) {
   if (!project) return null;
   return {
     _id: project._id,

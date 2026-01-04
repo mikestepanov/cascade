@@ -11,8 +11,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
-import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import type { Doc, Id } from "./_generated/dataModel";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { getProjectRole } from "./projectAccess";
 
 /**
@@ -195,18 +195,16 @@ export const issueMutation = customMutation(mutation, {
       throw new Error("Issue not found");
     }
 
-    if (!issue.projectId) {
-      throw new Error("Issue has no project");
-    }
-
+    // Issues always belong to projects now
     const project = await ctx.db.get(issue.projectId);
     if (!project) {
       throw new Error("Project not found");
     }
 
+    // Get role from project (handles both team and workspace-level projects)
     const role = await getProjectRole(ctx, issue.projectId, userId);
 
-    // Check minimum role
+    // Check minimum role (editor required for issueMutation)
     const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
     const userRoleLevel = role ? roleHierarchy[role] : 0;
     const requiredRoleLevel = roleHierarchy.editor;
@@ -230,47 +228,69 @@ export const issueMutation = customMutation(mutation, {
 });
 
 /**
+ * Issue Viewer Mutation - automatically loads issue and checks viewer access
+ * Requires viewer role or higher (any project member can use this)
+ * Use for operations like commenting where viewers should have access
+ */
+export const issueViewerMutation = customMutation(mutation, {
+  args: { issueId: v.id("issues") },
+  input: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Authentication required");
+    }
+
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) {
+      throw new Error("Issue not found");
+    }
+
+    // Issues always belong to projects now
+    const project = await ctx.db.get(issue.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Get role from project (handles both team and workspace-level projects)
+    const role = await getProjectRole(ctx, issue.projectId, userId);
+
+    // Check minimum role (viewer or higher)
+    if (!role) {
+      throw new Error("Access denied - not authorized for this issue");
+    }
+
+    return {
+      ctx: {
+        ...ctx,
+        userId,
+        projectId: issue.projectId,
+        role,
+        project,
+        issue,
+      },
+      args: {},
+    };
+  },
+});
+
+/**
  * Helper type to extract custom context from custom functions
  */
 export type AuthenticatedQueryCtx = {
   userId: Id<"users">;
 };
 
-export type ProjectQueryCtx = AuthenticatedQueryCtx & {
-  projectId: Id<"projects">;
-  role: "viewer" | "editor" | "admin" | null;
-  project: {
-    _id: Id<"projects">;
-    _creationTime: number;
-    name: string;
-    key: string;
-    description?: string;
-    isPublic: boolean;
-    createdBy: Id<"users">;
-    workflowStates: Array<{
-      id: string;
-      name: string;
-      category: "todo" | "inProgress" | "done";
-      color: string;
-    }>;
-    boardType: "kanban" | "scrum";
-  };
-};
-
-export type IssueMutationCtx = ProjectQueryCtx & {
-  issue: {
-    _id: Id<"issues">;
-    _creationTime: number;
+export type ProjectQueryCtx = QueryCtx &
+  AuthenticatedQueryCtx & {
     projectId: Id<"projects">;
-    key: string;
-    title: string;
-    description?: string;
-    type: "story" | "bug" | "task" | "epic";
-    status: string;
-    priority: "lowest" | "low" | "medium" | "high" | "highest";
-    assigneeId?: Id<"users">;
-    reporterId: Id<"users">;
-    sprintId?: Id<"sprints">;
-    epicId?: Id<"issues">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
   };
-};
+
+export type IssueMutationCtx = MutationCtx &
+  AuthenticatedQueryCtx & {
+    projectId: Id<"projects">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
+    issue: Doc<"issues">;
+  };

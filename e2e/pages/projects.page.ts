@@ -3,9 +3,9 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./base.page";
 
 /**
- * Projects/Workspaces Page Object
+ * Projects Page Object
  * Handles the projects view with sidebar and kanban board
- * Note: UI uses "Workspaces" terminology, URLs use /projects/ path
+ * Note: UI uses "Projects" terminology, URLs use /projects/ path
  */
 export class ProjectsPage extends BasePage {
   // ===================
@@ -76,12 +76,11 @@ export class ProjectsPage extends BasePage {
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
-    // Updated to match "Project" terminology in UI (now "Workspaces")
-    this.newProjectButton = page.getByRole("button", {
-      name: /\+ create project/i,
-    });
-    this.createEntityButton = page.getByRole("button", {
-      name: /add new project|create (workspace|project)|\+ create (workspace|project)/i,
+    // Updated to distinguish between Project and Workspace
+    this.newProjectButton = page.getByRole("button", { name: "+ Create Project" });
+    this.newWorkspaceButton = page.getByRole("button", { name: "+ Create Workspace" });
+    this.createEntityButton = this.sidebar.getByRole("button", {
+      name: /add new|create|\+/i,
     });
     this.projectList = page
       .locator("[data-project-list]")
@@ -91,7 +90,8 @@ export class ProjectsPage extends BasePage {
       .or(this.sidebar.getByRole("button").filter({ hasNotText: /new|add/i }));
 
     // Create project form - look for dialog content
-    this.createProjectForm = page.getByTestId("create-project-modal");
+    // Fallback to role since test-id might be stripped or unreliable in some interactions
+    this.createProjectForm = page.getByRole("dialog");
 
     // Template selection
     // We'll pick the first template by default or look for specific one
@@ -134,27 +134,17 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs - updated to be more specific and avoid collision with role-based buttons
-    this.boardTab = page
-      .getByRole("button", { name: /board view/i })
-      .or(page.getByRole("tab", { name: /board/i }));
-    this.backlogTab = page
-      .getByRole("button", { name: /backlog view/i })
-      .or(page.getByRole("tab", { name: /backlog/i }));
-    this.sprintsTab = page
-      .getByRole("button", { name: /sprints view/i })
-      .or(page.getByRole("tab", { name: /sprint/i }));
-    this.analyticsTab = page
-      .getByRole("button", { name: /analytics view/i })
-      .or(page.getByRole("tab", { name: /analytics/i }));
-    // Use a method for settings tab to allow scoping to main content if needed
-    this.settingsTab = page
-      .getByRole("button", { name: /settings view/i })
-      .or(page.getByRole("tab", { name: /settings/i }));
+    // Project tabs - rendered as buttons in ProjectBoard.tsx with "X view" aria-labels
+    this.boardTab = page.getByRole("button", { name: "Board view" });
+    this.backlogTab = page.getByRole("button", { name: "Backlog view" });
+    this.sprintsTab = page.getByRole("button", { name: "Sprints view" });
+    this.analyticsTab = page.getByRole("button", { name: "Analytics view" });
+    this.settingsTab = page.getByRole("button", { name: "Settings view" });
     // Issue detail dialog
-    this.issueDetailDialog = page.getByRole("dialog");
+    // Issue detail dialog - distinct from Create Issue modal
+    this.issueDetailDialog = page.getByTestId("issue-detail-modal");
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
-    this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: "Stop Timer" });
+    this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
 
     // Workspace creation
@@ -183,9 +173,8 @@ export class ProjectsPage extends BasePage {
     // which has the "Create Project" button wired up correctly.
     // Assumes we are already logged in and on a page with company slug in URL.
     // Fallback to nixelo-e2e if not found (dashboard test default).
-    const currentUrl = this.page.url();
-    const match = currentUrl.match(/\/([^/]+)\/(dashboard|workspaces|projects|settings)/);
-    const slug = match ? match[1] : "nixelo-e2e";
+    const slug = this.getCompanySlug();
+    if (!slug) throw new Error("Company slug not found in URL");
     await this.page.goto(`/${slug}/projects`);
     await this.page.waitForLoadState("networkidle");
     await this.waitForLoad();
@@ -200,8 +189,17 @@ export class ProjectsPage extends BasePage {
     await this.page.waitForLoadState("networkidle");
     await this.page.waitForTimeout(500);
 
-    await this.newProjectButton.click();
-    await expect(this.createProjectForm).toBeVisible({ timeout: 5000 });
+    console.log("Clicking 'Create Project' button...");
+
+    // Robust open: Retry clicking if modal doesn't appear (handles hydration misses)
+    await expect(async () => {
+      if (!(await this.createProjectForm.isVisible())) {
+        await this.newProjectButton.click();
+      }
+      await expect(this.createProjectForm).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 15000 });
+
+    console.log("Create project modal visible.");
   }
 
   async createProject(name: string, key: string, description?: string) {
@@ -215,23 +213,40 @@ export class ProjectsPage extends BasePage {
       }
 
       // Step 1: Wait for templates to load and select Software Project
-      // Using a broader locator in case the text is slightly different or nested
-      const softwareTemplate = this.createProjectForm
-        .getByRole("button")
-        .filter({ hasText: /software/i })
-        .first();
+      // Step 1: Wait for templates to load and select Software Development
+      const softwareText = this.createProjectForm.getByRole("heading", {
+        name: /Software Development/i,
+      });
 
-      // Ensure at least one template button is present before trying to click
-      const anyButton = this.createProjectForm.getByRole("button").first();
-      await expect(anyButton).toBeVisible({ timeout: 10000 });
+      await softwareText.waitFor({ state: "visible", timeout: 10000 });
+      // Playwright's click() will auto-scroll. Explicit scroll can be brittle in some layouts.
 
-      await softwareTemplate.waitFor({ state: "visible", timeout: 10000 });
-      await softwareTemplate.scrollIntoViewIfNeeded();
-      await softwareTemplate.click({ force: true });
+      // Retry click if step transition doesn't happen
+      await expect(async () => {
+        // Recovery: If modal closed (flakiness), re-open it
+        if (!(await this.createProjectForm.isVisible())) {
+          await this.newProjectButton.click();
+          await expect(this.createProjectForm).toBeVisible();
+        }
 
-      // Verify visual selection state (border-brand-500 indicates selection)
-      // This ensures we don't proceed with a null template
-      await expect(softwareTemplate).toHaveClass(/border-brand-500/, { timeout: 5000 });
+        // Wait for spinner to be gone again
+        const innerSpinner = this.createProjectForm.locator(".animate-spin");
+        if (await innerSpinner.isVisible()) {
+          await expect(innerSpinner).not.toBeVisible({ timeout: 5000 });
+        }
+
+        // Click the template
+        const template = this.createProjectForm.getByRole("heading", {
+          name: /Software Development/i,
+        });
+        await template.waitFor({ state: "visible", timeout: 5000 });
+        await template.click({ force: true });
+
+        // Verify we proceeded to configuration step
+        await expect(this.createProjectForm.getByText("Configure Project")).toBeVisible({
+          timeout: 5000,
+        });
+      }).toPass({ timeout: 20000 });
 
       // Step 2: Fill in project details
       await this.projectNameInput.waitFor({ state: "visible", timeout: 5000 });
@@ -248,27 +263,59 @@ export class ProjectsPage extends BasePage {
 
       // Create project
       await this.createButton.waitFor({ state: "visible", timeout: 15000 });
-      await this.createButton.click({ force: true });
+      await expect(this.createButton).toBeEnabled({ timeout: 5000 });
+      await this.createButton.click();
+
+      // Wait for success toast - this confirms the backend operation finished
+      // This is more robust than just waiting for the modal to close, as it handles slow backend responses better
+      try {
+        await expect(this.page.getByText("Project created successfully")).toBeVisible({
+          timeout: 20000,
+        });
+      } catch (e) {
+        // If success toast didn't appear, check if we have an error toast to report better failure
+        const errorToast = this.page.locator('[data-sonner-toast][data-type="error"]');
+        if (await errorToast.isVisible()) {
+          const errorText = await errorToast.textContent();
+          console.error("Project Creation Failed with Toast:", errorText);
+          throw new Error(`Project Creation Failed: ${errorText}`);
+        }
+        throw e;
+      }
 
       // Wait for the modal to close to confirm successful submission
-      await expect(this.createProjectForm).not.toBeVisible({ timeout: 10000 });
+      await expect(this.createProjectForm).not.toBeVisible({ timeout: 30000 });
 
       // Wait for the new page to stabilize (redirect and hydration)
       await this.page.waitForLoadState("networkidle");
     } catch (e) {
       console.error("Failed to create project from template:", e);
+      // Log the current URL to help debugging
+      console.log("Current URL:", this.page.url());
       throw e;
     }
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.createEntityButton.click();
+    // Navigate to workspaces page using sidebar to ensure correct context
+    await this.page.locator("nav").getByText("Workspaces", { exact: true }).click();
+    await this.page.waitForURL(/\/workspaces/);
+
+    await this.page.getByRole("button", { name: "+ Create Workspace" }).click();
+
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 5000 });
     await this.workspaceNameInput.fill(name);
     if (description) {
       await this.workspaceDescriptionInput.fill(description);
     }
     await this.submitWorkspaceButton.click();
+
+    // Verify success
+    await expect(this.page.getByText("Workspace created successfully")).toBeVisible({
+      timeout: 10000,
+    });
+    // Verify modal closed
+    await expect(this.page.getByRole("dialog")).not.toBeVisible();
   }
 
   async cancelCreateProject() {
@@ -328,26 +375,56 @@ export class ProjectsPage extends BasePage {
     await issueCard.waitFor({ state: "visible", timeout: 5000 });
     await issueCard.click();
     await expect(this.issueDetailDialog).toBeVisible({ timeout: 5000 });
+
+    // Wait for the issue content to load (skeleton to disappear / critical sections to appear)
+    const timeTrackingHeader = this.issueDetailDialog
+      .getByRole("heading", {
+        name: /time tracking/i,
+      })
+      .first();
+    await expect(timeTrackingHeader).toBeVisible({ timeout: 10000 });
   }
 
   /**
    * Start timer in issue detail dialog
    */
   async startTimer() {
-    await expect(this.startTimerButton).toBeVisible({ timeout: 5000 });
-    await this.startTimerButton.scrollIntoViewIfNeeded();
-    await this.startTimerButton.click();
-    await expect(this.stopTimerButton).toBeVisible({ timeout: 5000 });
+    await expect(async () => {
+      if (await this.stopTimerButton.isVisible()) {
+        return;
+      }
+
+      // Robust interaction: Scroll into view, hover, then click
+      await this.startTimerButton.scrollIntoViewIfNeeded();
+      await this.startTimerButton.hover();
+
+      try {
+        // Try standard click first (most realistic)
+        await this.startTimerButton.click({ timeout: 2000 });
+      } catch (e) {
+        console.log("Standard click failed/timed out, trying force click...");
+        await this.startTimerButton.click({ force: true });
+      }
+
+      // If still not working, the test will retry this block via toPass
+      // No need to dispatchEvent yet, force click usually covers it.
+      // But we will wait for the UI update longer inside the expectation
+      await expect(this.stopTimerButton).toBeVisible({ timeout: 5000 });
+    }).toPass({ intervals: [1000], timeout: 15000 });
   }
 
-  /**
-   * Stop timer in issue detail dialog
-   */
   async stopTimer() {
-    await this.stopTimerButton.scrollIntoViewIfNeeded();
-    await this.stopTimerButton.click();
-    await expect(this.timerStoppedToast).toBeVisible({ timeout: 5000 });
-    await expect(this.startTimerButton).toBeVisible({ timeout: 5000 });
+    await expect(async () => {
+      if (await this.startTimerButton.isVisible()) {
+        return;
+      }
+
+      await expect(this.stopTimerButton).toBeVisible({ timeout: 5000 });
+      await expect(this.stopTimerButton).toBeEnabled();
+      await this.stopTimerButton.click();
+
+      await expect(this.startTimerButton).toBeVisible({ timeout: 2000 });
+    }).toPass({ intervals: [1000], timeout: 15000 });
   }
 
   // ===================

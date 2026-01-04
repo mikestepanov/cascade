@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Helper: Generate next issue key for a project
@@ -13,7 +14,8 @@ async function generateNextIssueKey(
 ): Promise<{ key: string; order: number }> {
   const existingIssues = await ctx.db
     .query("issues")
-    .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .filter(notDeleted)
     .collect();
 
   const issueNumbers = existingIssues
@@ -51,7 +53,7 @@ async function processJSONIssue(
   projectId: Id<"projects">,
   projectKey: string,
   workspaceId: Id<"workspaces">,
-  teamId: Id<"teams">,
+  teamId: Id<"teams"> | undefined,
   userId: Id<"users">,
   defaultStatus: string,
 ): Promise<string> {
@@ -147,7 +149,7 @@ function parseCSVRow(
   indices: ReturnType<typeof parseCSVHeaders>,
   projectId: Id<"projects">,
   workspaceId: Id<"workspaces">,
-  teamId: Id<"teams">,
+  teamId: Id<"teams"> | undefined,
   issueKey: string,
   userId: Id<"users">,
   defaultStatus: string,
@@ -155,7 +157,7 @@ function parseCSVRow(
 ): {
   projectId: Id<"projects">;
   workspaceId: Id<"workspaces">;
-  teamId: Id<"teams">;
+  teamId: Id<"teams"> | undefined;
   key: string;
   title: string;
   description?: string;
@@ -215,7 +217,7 @@ async function createIssueWithActivity(
   issueData: {
     projectId: Id<"projects">;
     workspaceId: Id<"workspaces">;
-    teamId: Id<"teams">;
+    teamId: Id<"teams"> | undefined;
     key: string;
     title: string;
     description?: string;
@@ -274,7 +276,7 @@ export const exportIssuesCSV = query({
     // Get issues
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
     let issues = await issuesQuery.collect();
 
@@ -381,13 +383,15 @@ export const exportAnalytics = query({
     // Get all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
 
     // Get all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
 
     // Calculate metrics
@@ -452,7 +456,7 @@ export const exportIssuesJSON = query({
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
 
     let issues = await issuesQuery.collect();
 
@@ -480,6 +484,7 @@ export const exportIssuesJSON = query({
           ctx.db
             .query("issueComments")
             .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+            .filter(notDeleted)
             .collect(),
         ),
       ),
@@ -552,8 +557,8 @@ export const importIssuesJSON = mutation({
           issue,
           args.projectId,
           project.key,
-          project.workspaceId ?? ("" as Id<"workspaces">),
-          project.teamId ?? ("" as Id<"teams">),
+          project.workspaceId,
+          project.teamId,
           userId,
           project.workflowStates[0].id,
         );
@@ -617,8 +622,8 @@ export const importIssuesCSV = mutation({
           values,
           indices,
           args.projectId,
-          project.workspaceId ?? ("" as Id<"workspaces">),
-          project.teamId ?? ("" as Id<"teams">),
+          project.workspaceId,
+          project.teamId,
           issueKey,
           userId,
           project.workflowStates[0].id,

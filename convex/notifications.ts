@@ -1,46 +1,57 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
-import { DEFAULT_PAGE_SIZE } from "./lib/queryLimits";
+import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
 // Get notifications for current user
 export const list = query({
   args: {
-    limit: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
     onlyUnread: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    const limit = args.limit ?? DEFAULT_PAGE_SIZE;
     const onlyUnread = args.onlyUnread ?? false;
 
-    let notificationsQuery = ctx.db
-      .query("notifications")
-      .withIndex("by_user", (q) => q.eq("userId", userId));
-
-    if (onlyUnread) {
-      notificationsQuery = ctx.db
-        .query("notifications")
-        .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false));
-    }
-
-    const notifications = await notificationsQuery.order("desc").take(limit);
+    const results = await fetchPaginatedQuery<Doc<"notifications">>(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (onlyUnread) {
+          return db
+            .query("notifications")
+            .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+            .filter(notDeleted);
+        }
+        return db
+          .query("notifications")
+          .withIndex("by_user", (q) => q.eq("userId", userId))
+          .filter(notDeleted);
+      },
+    });
 
     // Batch fetch all actors (avoid N+1!)
-    const actorIds = notifications.map((n) => n.actorId);
+    const actorIds = results.page.map((n) => n.actorId);
     const actorMap = await batchFetchUsers(ctx, actorIds);
 
     // Enrich with pre-fetched data (no N+1)
-    return notifications.map((notification) => {
+    const enrichedPage = results.page.map((notification) => {
       const actor = notification.actorId ? actorMap.get(notification.actorId) : null;
       return {
         ...notification,
         actorName: actor?.name,
       };
     });
+
+    return {
+      ...results,
+      page: enrichedPage,
+    };
   },
 });
 
@@ -56,6 +67,7 @@ export const getUnreadCount = query({
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+      .filter(notDeleted)
       .take(MAX_UNREAD_COUNT);
 
     return unread.length;
@@ -93,6 +105,7 @@ export const markAllAsRead = mutation({
     const unread = await ctx.db
       .query("notifications")
       .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+      .filter(notDeleted)
       .take(MAX_TO_MARK);
 
     // Batch update all notifications in parallel
@@ -104,7 +117,7 @@ export const markAllAsRead = mutation({
 });
 
 // Delete a notification
-export const remove = mutation({
+export const softDeleteNotification = mutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -117,12 +130,12 @@ export const remove = mutation({
       throw new Error("Not authorized");
     }
 
-    await ctx.db.delete(args.id);
+    await ctx.db.patch(args.id, softDeleteFields(userId));
   },
 });
 
 // Internal mutation to create a notification
-export const create = internalMutation({
+export const createNotification = internalMutation({
   args: {
     userId: v.id("users"),
     type: v.string(),

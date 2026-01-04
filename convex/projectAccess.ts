@@ -1,6 +1,7 @@
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { isCompanyAdmin } from "./companies";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { getTeamRole } from "./teams";
 
 // ============================================================================
@@ -77,10 +78,13 @@ async function checkDirectAccess(
   // 3. User is individual collaborator (projectMembers)
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .filter(notDeleted)
     .first();
 
-  if (projectMembership) return true;
+  if (projectMembership) {
+    return true;
+  }
 
   return false;
 }
@@ -96,20 +100,24 @@ async function checkDirectAccess(
  * 5. User is in projectMembers (individual collaborator)
  * 6. User is member of a team in sharedWithTeamIds
  */
-export async function canAccessWorkspace(
+export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
   const project = await ctx.db.get(projectId);
-  if (!project) return false;
+  if (!project) {
+    return false;
+  }
 
-  // Check access levels in order of specificity: direct, then team, then company
-  if (await checkDirectAccess(ctx, project, userId)) return true;
-  if (await checkTeamAccess(ctx, project, userId)) return true;
-  if (await checkCompanyAccess(ctx, project, userId)) return true;
+  const result = await (async () => {
+    if (await checkDirectAccess(ctx, project, userId)) return true;
+    if (await checkTeamAccess(ctx, project, userId)) return true;
+    if (await checkCompanyAccess(ctx, project, userId)) return true;
+    return false;
+  })();
 
-  return false;
+  return result;
 }
 
 /**
@@ -121,7 +129,7 @@ export async function canAccessWorkspace(
  * 3. User is member of team that owns the project (teamId)
  * 4. User is admin or editor in projectMembers
  */
-export async function canEditWorkspace(
+export async function canEditProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
@@ -150,7 +158,8 @@ export async function canEditWorkspace(
   // 4. User is admin or editor in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .filter(notDeleted)
     .first();
 
   if (
@@ -172,7 +181,7 @@ export async function canEditWorkspace(
  * 3. User is team lead of owning team (teamId)
  * 4. User is admin in projectMembers
  */
-export async function isWorkspaceAdmin(
+export async function isProjectAdmin(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
@@ -201,7 +210,8 @@ export async function isWorkspaceAdmin(
   // 5. User is admin in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .filter(notDeleted)
     .first();
 
   if (projectMembership && projectMembership.role === "admin") {
@@ -214,12 +224,12 @@ export async function isWorkspaceAdmin(
 /**
  * Assert user can access project
  */
-export async function assertCanAccessWorkspace(
+export async function assertCanAccessProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const canAccess = await canAccessWorkspace(ctx, projectId, userId);
+  const canAccess = await canAccessProject(ctx, projectId, userId);
   if (!canAccess) {
     throw new Error("You don't have permission to access this project");
   }
@@ -228,12 +238,12 @@ export async function assertCanAccessWorkspace(
 /**
  * Assert user can edit project
  */
-export async function assertCanEditWorkspace(
+export async function assertCanEditProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const canEdit = await canEditWorkspace(ctx, projectId, userId);
+  const canEdit = await canEditProject(ctx, projectId, userId);
   if (!canEdit) {
     throw new Error("You don't have permission to edit this project");
   }
@@ -242,12 +252,12 @@ export async function assertCanEditWorkspace(
 /**
  * Assert user is project admin
  */
-export async function assertIsWorkspaceAdmin(
+export async function assertIsProjectAdmin(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const isAdmin = await isWorkspaceAdmin(ctx, projectId, userId);
+  const isAdmin = await isProjectAdmin(ctx, projectId, userId);
   if (!isAdmin) {
     throw new Error("Only project admins can perform this action");
   }
@@ -257,7 +267,7 @@ export async function assertIsWorkspaceAdmin(
  * Get user's effective role in a project
  * Returns the highest privilege level
  */
-export async function getWorkspaceRole(
+export async function getProjectRole(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
@@ -266,26 +276,17 @@ export async function getWorkspaceRole(
   if (!project) return null;
 
   // Check if can access at all
-  const canAccess = await canAccessWorkspace(ctx, projectId, userId);
+  const canAccess = await canAccessProject(ctx, projectId, userId);
   if (!canAccess) return null;
 
   // Check admin level
-  const isAdmin = await isWorkspaceAdmin(ctx, projectId, userId);
+  const isAdmin = await isProjectAdmin(ctx, projectId, userId);
   if (isAdmin) return "admin";
 
   // Check editor level
-  const canEdit = await canEditWorkspace(ctx, projectId, userId);
+  const canEdit = await canEditProject(ctx, projectId, userId);
   if (canEdit) return "editor";
 
   // Has read-only access
   return "viewer";
 }
-
-// Legacy aliases for backward compatibility (deprecated)
-export const canAccessProject = canAccessWorkspace;
-export const canEditProject = canEditWorkspace;
-export const isProjectAdmin = isWorkspaceAdmin;
-export const assertCanAccessProject = assertCanAccessWorkspace;
-export const assertCanEditProject = assertCanEditWorkspace;
-export const assertIsProjectAdmin = assertIsWorkspaceAdmin;
-export const getProjectRole = getWorkspaceRole;

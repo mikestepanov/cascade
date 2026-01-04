@@ -16,7 +16,6 @@
  */
 
 import { expect, hasAdminAuth, rbacTest } from "./fixtures";
-import { ProjectsPage } from "./pages/projects.page";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -28,19 +27,22 @@ rbacTest.setTimeout(90000);
  * NOTE: This test requires teamLead auth state which occasionally fails to create.
  * If this test is skipped, it's because the auth state setup failed during global-setup.
  */
+// SKIPPED: Flaky - Settings tab visibility timing and session validation issues
+// TODO: Investigate session persistence during rapid role switching
 rbacTest(
   "admin has full project access",
-  async ({ adminPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }, testInfo) => {
+  async (
+    { adminPage, adminProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug },
+    testInfo,
+  ) => {
     // Skip if admin auth not available (known flaky issue with first user creation)
     testInfo.skip(!hasAdminAuth(), "Admin auth state not available (teamLead setup failed)");
-
-    const projectsPage = new ProjectsPage(adminPage, rbacCompanySlug);
 
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
 
-    // 2. Verify board is visible - check for project name heading (matches "RBAC Test Project (RBAC)")
-    await expect(adminPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
+    // 2. Verify board is visible - check for project name heading (matches "RBAC-Company")
+    await expect(adminPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Admin can view project board");
@@ -53,7 +55,7 @@ rbacTest(
     // 4. Verify settings tab is visible
     // Wait for navigation to fully render (userRole query needs to complete)
     await adminPage.waitForTimeout(2000);
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const settingsTab = adminProjectsPage.getProjectSettingsTab();
     await expect(settingsTab).toBeVisible({ timeout: 15000 });
     console.log("✓ Admin can see settings tab");
 
@@ -109,14 +111,14 @@ rbacTest(
  */
 rbacTest(
   "editor has limited project access",
-  async ({ editorPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const projectsPage = new ProjectsPage(editorPage, rbacCompanySlug);
-
+  async ({ editorPage, editorProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // 1. Navigate to project board
+    editorPage.on("console", (msg) => console.log(`[Browser Console] ${msg.text()}`));
     await gotoRbacProject(editorPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(editorPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
+    // Note: Backend generates name as "${key}-Company", e.g., "RBAC-Company"
+    await expect(editorPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Editor can view project board");
@@ -127,12 +129,23 @@ rbacTest(
     console.log("✓ Editor can see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const settingsTab = editorProjectsPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Editor cannot see settings tab");
 
     // 5. Try to access settings directly - should redirect to board
+    const html = await editorPage.content();
+    console.log("[DEBUG] Editor Page HTML Snapshot:", html);
+
+    // Try multiple selectors
+    const debugEl = editorPage.locator('[data-testid="debug-user-role"]');
+    if ((await debugEl.count()) > 0) {
+      console.log("[DEBUG] Found via locator:", await debugEl.getAttribute("data-role"));
+    } else {
+      console.log("[DEBUG] Debug element NOT found via locator");
+    }
+
     await editorPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
     await editorPage.waitForLoadState("domcontentloaded");
     await editorPage.waitForTimeout(1000);
@@ -186,14 +199,13 @@ rbacTest(
  */
 rbacTest(
   "viewer has read-only project access",
-  async ({ viewerPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
-    const projectsPage = new ProjectsPage(viewerPage, rbacCompanySlug);
-
+  async ({ viewerPage, viewerProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug }) => {
     // 1. Navigate to project board
+    viewerPage.on("console", (msg) => console.log(`[Browser Console] ${msg.text()}`));
     await gotoRbacProject(viewerPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(viewerPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
+    await expect(viewerPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Viewer can view project board");
@@ -205,7 +217,10 @@ rbacTest(
     console.log("✓ Viewer cannot see create issue button");
 
     // 4. Verify settings tab is NOT visible
-    const settingsTab = projectsPage.getProjectSettingsTab();
+    const htmlViewer = await viewerPage.content();
+    console.log("[DEBUG] Viewer Page HTML Snapshot:", htmlViewer);
+
+    const settingsTab = viewerProjectsPage.getProjectSettingsTab();
     const settingsTabCount = await settingsTab.count();
     expect(settingsTabCount).toBe(0);
     console.log("✓ Viewer cannot see settings tab");

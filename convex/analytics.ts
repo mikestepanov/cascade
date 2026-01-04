@@ -16,6 +16,7 @@ import {
 } from "./aggregates";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { canAccessProject } from "./projectAccess";
 
 // Helper: Build issues by status from workflow states and counts
@@ -135,6 +136,7 @@ export const getSprintBurndown = query({
     const sprintIssues = await ctx.db
       .query("issues")
       .withIndex("by_sprint", (q) => q.eq("sprintId", args.sprintId))
+      .filter(notDeleted)
       .collect();
 
     const project = await ctx.db.get(sprint.projectId);
@@ -224,7 +226,7 @@ export const getTeamVelocity = query({
     // Get completed sprints
     const completedSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
       .take(MAX_VELOCITY_SPRINTS);
@@ -239,6 +241,7 @@ export const getTeamVelocity = query({
         ctx.db
           .query("issues")
           .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
+          .filter(notDeleted)
           .collect(),
       ),
     );

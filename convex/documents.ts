@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { batchFetchUsers, batchFetchWorkspaces, getUserName } from "./lib/batchHelpers";
+import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -10,6 +10,8 @@ import {
   MAX_OFFSET,
   MAX_PAGE_SIZE,
 } from "./lib/queryLimits";
+import { cascadeSoftDelete } from "./lib/relationships";
+import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
 export const create = mutation({
   args: {
@@ -58,6 +60,7 @@ export const list = query({
       .withIndex("by_creator", (q) => q.eq("createdBy", userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
+      .filter(notDeleted)
       .take(fetchBuffer);
 
     // Get public documents (any user's public docs)
@@ -65,6 +68,7 @@ export const list = query({
       .query("documents")
       .withIndex("by_public", (q) => q.eq("isPublic", true))
       .order("desc")
+      .filter(notDeleted)
       .take(fetchBuffer);
 
     // Combine and deduplicate (user's public docs appear in both queries)
@@ -115,7 +119,7 @@ export const get = query({
     const userId = await getAuthUserId(ctx);
     const document = await ctx.db.get(args.id);
 
-    if (!document) {
+    if (!document || document.isDeleted) {
       return null;
     }
 
@@ -201,7 +205,40 @@ export const deleteDocument = mutation({
       throw new Error("Not authorized to delete this document");
     }
 
-    await ctx.db.delete(args.id);
+    // Soft delete with automatic cascading
+    const deletedAt = Date.now();
+    await ctx.db.patch(args.id, softDeleteFields(userId));
+    await cascadeSoftDelete(ctx, "documents", args.id, userId, deletedAt);
+  },
+});
+
+export const restoreDocument = mutation({
+  args: { id: v.id("documents") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    const document = await ctx.db.get(args.id);
+    if (!document) {
+      throw new Error("Document not found");
+    }
+
+    if (!document.isDeleted) {
+      throw new Error("Document is not deleted");
+    }
+
+    if (document.createdBy !== userId) {
+      throw new Error("Not authorized to restore this document");
+    }
+
+    // Restore document
+    await ctx.db.patch(args.id, {
+      isDeleted: undefined,
+      deletedAt: undefined,
+      deletedBy: undefined,
+    });
   },
 });
 
@@ -285,6 +322,7 @@ export const search = query({
     const results = await ctx.db
       .query("documents")
       .withSearchIndex("search_title", (q) => q.search("title", args.query))
+      .filter(notDeleted)
       .take(fetchLimit);
 
     // Filter results based on access permissions and advanced filters
@@ -320,7 +358,7 @@ export const search = query({
 
     const [creatorMap, projectMap] = await Promise.all([
       batchFetchUsers(ctx, creatorIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
     ]);
 
     // Enrich with pre-fetched data (no N+1)

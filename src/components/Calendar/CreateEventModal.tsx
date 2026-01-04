@@ -9,7 +9,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 // =============================================================================
 // Schema
@@ -50,7 +50,7 @@ export function CreateEventModal({
   issueId,
 }: CreateEventModalProps) {
   const createEvent = useMutation(api.calendarEvents.create);
-  const projects = useQuery(api.projects.list, {});
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
 
   // Project selection (uses Radix Select, kept outside form)
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"projects"> | undefined>(
@@ -106,10 +106,6 @@ export function CreateEventModal({
     },
   });
 
-  const eventType = form.useStore((state) => state.values.eventType);
-  const allDay = form.useStore((state) => state.values.allDay);
-  const isRequired = form.useStore((state) => state.values.isRequired);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
@@ -122,272 +118,284 @@ export function CreateEventModal({
             form.handleSubmit();
           }}
         >
-          <Flex direction="column" gap="lg" className="p-6">
-            {/* Title */}
-            <form.Field name="title">
-              {(field) => (
-                <FormInput
-                  field={field}
-                  label="Event Title *"
-                  placeholder="Team standup, Client call, etc."
-                  required
-                />
-              )}
-            </form.Field>
-
-            {/* Event Type */}
-            <div>
-              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-                Event Type
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {eventTypes.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => form.setFieldValue("eventType", type)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
-                      eventType === type
-                        ? "bg-brand-600 text-white"
-                        : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Date and Time */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-3 sm:col-span-1">
-                <form.Field name="startDate">
+          <form.Subscribe
+            selector={(state) => [
+              state.values.eventType,
+              state.values.allDay,
+              state.values.isRequired,
+            ]}
+          >
+            {([eventType, allDay, isRequired]) => (
+              <Flex direction="column" gap="lg" className="p-6">
+                {/* Title */}
+                <form.Field name="title">
                   {(field) => (
-                    <div>
-                      <label
-                        htmlFor="event-date"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                      >
-                        <Calendar className="w-4 h-4 inline mr-1" />
-                        Date *
-                      </label>
-                      <input
-                        id="event-date"
-                        type="date"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        required
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                      />
-                    </div>
+                    <FormInput
+                      field={field}
+                      label="Event Title *"
+                      placeholder="Team standup, Client call, etc."
+                      required
+                    />
                   )}
                 </form.Field>
-              </div>
-              <div>
-                <form.Field name="startTime">
-                  {(field) => (
-                    <div>
-                      <label
-                        htmlFor="event-start-time"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                      >
-                        <Clock className="w-4 h-4 inline mr-1" />
-                        Start Time
-                      </label>
-                      <input
-                        id="event-start-time"
-                        type="time"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        disabled={allDay}
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-                      />
-                    </div>
-                  )}
-                </form.Field>
-              </div>
-              <div>
-                <form.Field name="endTime">
-                  {(field) => (
-                    <div>
-                      <label
-                        htmlFor="event-end-time"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                      >
-                        End Time
-                      </label>
-                      <input
-                        id="event-end-time"
-                        type="time"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        disabled={allDay}
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
-                      />
-                    </div>
-                  )}
-                </form.Field>
-              </div>
-            </div>
 
-            {/* All Day Toggle */}
-            <form.Field name="allDay">
-              {(field) => (
+                {/* Event Type */}
                 <div>
-                  <label>
-                    <Flex gap="sm" align="center" className="cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.checked)}
-                        className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                      />
-                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                        All day event
-                      </span>
-                    </Flex>
-                  </label>
-                </div>
-              )}
-            </form.Field>
-
-            {/* Required Attendance (only for meetings) */}
-            {eventType === "meeting" && (
-              <form.Field name="isRequired">
-                {(field) => (
-                  <div>
-                    <label>
-                      <Flex gap="sm" align="center" className="cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.checked)}
-                          className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
-                        />
-                        <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                          Required attendance (track who attends)
-                        </span>
-                      </Flex>
-                    </label>
-                    {isRequired && (
-                      <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
-                        Admins can mark who attended, was tardy, or missed this meeting
-                      </p>
-                    )}
+                  <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                    Event Type
                   </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {eventTypes.map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => form.setFieldValue("eventType", type)}
+                        className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
+                          eventType === type
+                            ? "bg-brand-600 text-white"
+                            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Date and Time */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-3 sm:col-span-1">
+                    <form.Field name="startDate">
+                      {(field) => (
+                        <div>
+                          <label
+                            htmlFor="event-date"
+                            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                          >
+                            <Calendar className="w-4 h-4 inline mr-1" />
+                            Date *
+                          </label>
+                          <input
+                            id="event-date"
+                            type="date"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            required
+                            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
+                  <div>
+                    <form.Field name="startTime">
+                      {(field) => (
+                        <div>
+                          <label
+                            htmlFor="event-start-time"
+                            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                          >
+                            <Clock className="w-4 h-4 inline mr-1" />
+                            Start Time
+                          </label>
+                          <input
+                            id="event-start-time"
+                            type="time"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            disabled={allDay as boolean}
+                            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
+                  <div>
+                    <form.Field name="endTime">
+                      {(field) => (
+                        <div>
+                          <label
+                            htmlFor="event-end-time"
+                            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                          >
+                            End Time
+                          </label>
+                          <input
+                            id="event-end-time"
+                            type="time"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            onBlur={field.handleBlur}
+                            disabled={allDay as boolean}
+                            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark disabled:opacity-50"
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
+                </div>
+
+                {/* All Day Toggle */}
+                <form.Field name="allDay">
+                  {(field) => (
+                    <div>
+                      <label>
+                        <Flex gap="sm" align="center" className="cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.checked)}
+                            className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                          />
+                          <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                            All day event
+                          </span>
+                        </Flex>
+                      </label>
+                    </div>
+                  )}
+                </form.Field>
+
+                {/* Required Attendance (only for meetings) */}
+                {eventType === "meeting" && (
+                  <form.Field name="isRequired">
+                    {(field) => (
+                      <div>
+                        <label>
+                          <Flex gap="sm" align="center" className="cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.checked)}
+                              className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                            />
+                            <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                              Required attendance (track who attends)
+                            </span>
+                          </Flex>
+                        </label>
+                        {isRequired && (
+                          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
+                            Admins can mark who attended, was tardy, or missed this meeting
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </form.Field>
                 )}
-              </form.Field>
-            )}
 
-            {/* Description */}
-            <form.Field name="description">
-              {(field) => (
-                <FormTextarea
-                  field={field}
-                  label="Description"
-                  rows={3}
-                  placeholder="Add notes, agenda, or details..."
-                />
-              )}
-            </form.Field>
+                {/* Description */}
+                <form.Field name="description">
+                  {(field) => (
+                    <FormTextarea
+                      field={field}
+                      label="Description"
+                      rows={3}
+                      placeholder="Add notes, agenda, or details..."
+                    />
+                  )}
+                </form.Field>
 
-            {/* Location */}
-            <form.Field name="location">
-              {(field) => (
+                {/* Location */}
+                <form.Field name="location">
+                  {(field) => (
+                    <div>
+                      <label
+                        htmlFor="event-location"
+                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                      >
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        Location
+                      </label>
+                      <input
+                        id="event-location"
+                        type="text"
+                        value={field.state.value ?? ""}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        onBlur={field.handleBlur}
+                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                        placeholder="Office, Zoom, Google Meet, etc."
+                      />
+                    </div>
+                  )}
+                </form.Field>
+
+                {/* Meeting URL */}
+                {eventType === "meeting" && (
+                  <form.Field name="meetingUrl">
+                    {(field) => (
+                      <div>
+                        <label
+                          htmlFor="event-meeting-url"
+                          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                        >
+                          <LinkIcon className="w-4 h-4 inline mr-1" />
+                          Meeting Link
+                        </label>
+                        <input
+                          id="event-meeting-url"
+                          type="url"
+                          value={field.state.value ?? ""}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                          placeholder="https://zoom.us/j/..."
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+                )}
+
+                {/* Link to Project */}
                 <div>
                   <label
-                    htmlFor="event-location"
+                    htmlFor="event-project"
                     className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
                   >
-                    <MapPin className="w-4 h-4 inline mr-1" />
-                    Location
+                    Link to Project (optional)
                   </label>
-                  <input
-                    id="event-location"
-                    type="text"
-                    value={field.state.value ?? ""}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                    className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                    placeholder="Office, Zoom, Google Meet, etc."
-                  />
+                  <Select
+                    value={selectedWorkspaceId || "none"}
+                    onValueChange={(value) =>
+                      setSelectedWorkspaceId(
+                        value === "none" ? undefined : (value as Id<"projects">),
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <SelectValue placeholder="No project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No project</SelectItem>
+                      {projects?.map((project) => (
+                        <SelectItem key={project._id} value={project._id}>
+                          {project.name} ({project.key})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
-            </form.Field>
 
-            {/* Meeting URL */}
-            {eventType === "meeting" && (
-              <form.Field name="meetingUrl">
-                {(field) => (
-                  <div>
-                    <label
-                      htmlFor="event-meeting-url"
-                      className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-                    >
-                      <LinkIcon className="w-4 h-4 inline mr-1" />
-                      Meeting Link
-                    </label>
-                    <input
-                      id="event-meeting-url"
-                      type="url"
-                      value={field.state.value ?? ""}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      onBlur={field.handleBlur}
-                      className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                      placeholder="https://zoom.us/j/..."
-                    />
-                  </div>
-                )}
-              </form.Field>
+                {/* Actions */}
+                <DialogFooter className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+                  <form.Subscribe selector={(state) => state.isSubmitting}>
+                    {(isSubmitting) => (
+                      <>
+                        <Button onClick={() => onOpenChange(false)} variant="secondary">
+                          Cancel
+                        </Button>
+                        <Button type="submit" variant="primary" isLoading={isSubmitting}>
+                          {isSubmitting ? "Creating..." : "Create Event"}
+                        </Button>
+                      </>
+                    )}
+                  </form.Subscribe>
+                </DialogFooter>
+              </Flex>
             )}
-
-            {/* Link to Project */}
-            <div>
-              <label
-                htmlFor="event-project"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-              >
-                Link to Project (optional)
-              </label>
-              <Select
-                value={selectedWorkspaceId || "none"}
-                onValueChange={(value) =>
-                  setSelectedWorkspaceId(value === "none" ? undefined : (value as Id<"projects">))
-                }
-              >
-                <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
-                  <SelectValue placeholder="No project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No project</SelectItem>
-                  {projects?.map((project) => (
-                    <SelectItem key={project._id} value={project._id}>
-                      {project.name} ({project.key})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Actions */}
-            <DialogFooter className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-              <form.Subscribe selector={(state) => state.isSubmitting}>
-                {(isSubmitting) => (
-                  <>
-                    <Button onClick={() => onOpenChange(false)} variant="secondary">
-                      Cancel
-                    </Button>
-                    <Button type="submit" variant="primary" isLoading={isSubmitting}>
-                      {isSubmitting ? "Creating..." : "Create Event"}
-                    </Button>
-                  </>
-                )}
-              </form.Subscribe>
-            </DialogFooter>
-          </Flex>
+          </form.Subscribe>
         </form>
       </DialogContent>
     </Dialog>

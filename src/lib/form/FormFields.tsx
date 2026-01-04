@@ -27,8 +27,7 @@ function getFieldError(
  * Props for form field wrappers
  */
 interface BaseFieldProps<TData, TName extends string> {
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type is complex
-  field: FieldApi<TData, TName, any, any, any>;
+  field: FieldApi<TData, TName, unknown, unknown, unknown>;
   label?: string;
   helperText?: string;
 }

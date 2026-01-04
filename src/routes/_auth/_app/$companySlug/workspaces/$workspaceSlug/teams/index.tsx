@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -24,18 +24,19 @@ function TeamsList() {
   });
 
   // For now, teams are company-wide, but we'll filter by workspace later
-  const allTeams = useQuery(api.teams.list, { companyId });
+  const {
+    results: teams,
+    status,
+    loadMore,
+  } = usePaginatedQuery(api.teams.getTeams, { companyId }, { initialNumItems: 20 });
 
-  if (!workspace || allTeams === undefined) {
+  if (!(workspace && teams)) {
     return (
       <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
         <LoadingSpinner />
       </Flex>
     );
   }
-
-  // TODO: Filter teams by workspaceId once we migrate data
-  const teams = allTeams || [];
 
   return (
     <Flex direction="column" gap="lg">
@@ -87,6 +88,14 @@ function TeamsList() {
             </Link>
           ))}
         </div>
+      )}
+
+      {status === "CanLoadMore" && (
+        <Flex justify="center" className="mt-8">
+          <Button variant="outline" onClick={() => loadMore(20)}>
+            Load More Teams
+          </Button>
+        </Flex>
       )}
     </Flex>
   );

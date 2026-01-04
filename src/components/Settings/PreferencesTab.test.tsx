@@ -37,6 +37,12 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
+// Mock Convex hooks
+vi.mock("convex/react", () => ({
+  useQuery: vi.fn(),
+  useMutation: vi.fn(() => vi.fn()),
+}));
+
 describe("PreferencesTab", () => {
   it("renders theme selection", () => {
     render(

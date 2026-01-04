@@ -24,6 +24,7 @@ ports.forEach((port) => {
     lines.forEach((line) => {
       // Line format: TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       12345
       const parts = line.trim().split(/\s+/);
+      const _state = parts[3]; // LISTENING, ESTABLISHED, etc. (optional check)
       const pid = parts[parts.length - 1]; // PID is the last column
 
       if (pid && /^\d+$/.test(pid) && pid !== "0") {

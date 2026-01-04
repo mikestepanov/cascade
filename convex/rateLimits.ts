@@ -4,7 +4,7 @@
  * Protects endpoints from abuse and controls costs
  */
 
-import { RateLimiter, type RunMutationCtx, type RunQueryCtx } from "@convex-dev/rate-limiter";
+import { RateLimiter } from "@convex-dev/rate-limiter";
 
 import { components } from "./_generated/api";
 
@@ -25,24 +25,17 @@ const rateLimiter = new RateLimiter(components.rateLimiter, {
   apiEndpoint: { kind: "fixed window", rate: 100, period: 60_000 }, // 100/min
 });
 
-export const rateLimit = <Name extends keyof typeof rateLimiter.limits>(
-  ctx: RunMutationCtx,
-  name: Name,
-  options?: Parameters<typeof rateLimiter.limit<Name>>[2],
-) =>
-  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
-  rateLimiter.limit(ctx, name, options);
+/**
+ * Rate limit an operation - throws if limit exceeded (unless throws: false)
+ */
+export const rateLimit = rateLimiter.limit.bind(rateLimiter);
 
-export const checkRateLimit = <Name extends keyof typeof rateLimiter.limits>(
-  ctx: RunQueryCtx,
-  name: Name,
-  options?: Parameters<typeof rateLimiter.check<Name>>[2],
-) =>
-  // @ts-expect-error - Complex generic type inference limitation in rate-limiter library
-  rateLimiter.check(ctx, name, options);
+/**
+ * Check rate limit without consuming tokens
+ */
+export const checkRateLimit = rateLimiter.check.bind(rateLimiter);
 
-export const resetRateLimit = <Name extends keyof typeof rateLimiter.limits>(
-  ctx: RunMutationCtx,
-  name: Name,
-  args?: { key?: string },
-) => rateLimiter.reset(ctx, name, args);
+/**
+ * Reset rate limit for a key
+ */
+export const resetRateLimit = rateLimiter.reset.bind(rateLimiter);

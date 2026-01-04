@@ -27,7 +27,7 @@ export function GeneralSettings({
   const [editDescription, setEditDescription] = useState(description || "");
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateProject = useMutation(api.projects.update);
+  const updateProject = useMutation(api.projects.updateProject);
 
   const handleEdit = () => {
     setEditName(name);

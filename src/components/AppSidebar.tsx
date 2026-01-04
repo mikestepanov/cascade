@@ -2,13 +2,16 @@ import { api } from "@convex/_generated/api";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
+  Calendar,
   ChevronDown,
   ChevronRight,
   Clock,
+  Copy,
   FileText,
   FolderKanban,
   Home,
@@ -46,14 +49,15 @@ export function AppSidebar() {
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
   const workspaces = useQuery(api.workspaces.list, { companyId });
-  const teams = useQuery(api.teams.list, { companyId });
-  const projects = useQuery(api.projects.list);
+  const teams = useQuery(api.teams.getCompanyTeams, { companyId });
+  const myProjects = useQuery(api.dashboard.getMyProjects);
+  const defaultProject = myProjects?.[0];
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createWorkspace = useMutation(api.workspaces.create);
-  // const createTeam = useMutation(api.teams.create); // TODO: Add team creation UI
-  // const createProject = useMutation(api.projects.create); // TODO: Add project creation UI
+  // const createTeam = useMutation(api.teams.createTeam); // TODO: Add team creation UI
+  // const createProject = useMutation(api.projects.createProject); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
     return location.pathname.includes(pathPart);
@@ -181,7 +185,18 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-dashboard"
             />
-
+            {/* Calendar - Links to first project's calendar */}
+            {defaultProject && (
+              <NavItem
+                to={ROUTES.projects.calendar(companySlug, defaultProject.key)}
+                icon={Calendar}
+                label="Calendar"
+                isActive={isActive("/calendar")}
+                isCollapsed={isCollapsed}
+                onClick={handleNavClick}
+                data-tour="nav-calendar"
+              />
+            )}
             {/* Documents Section */}
             <CollapsibleSection
               icon={FileText}
@@ -195,7 +210,15 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
-              {documents?.slice(0, 10).map((doc) => (
+              <NavSubItem
+                to={ROUTES.documents.templates(companySlug)}
+                label="Templates"
+                isActive={location.pathname.includes("/documents/templates")}
+                onClick={handleNavClick}
+                icon={Copy}
+              />
+              <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
+              {(documents?.documents ?? []).slice(0, 10).map((doc) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTES.documents.detail(companySlug, doc._id)}
@@ -204,13 +227,12 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 />
               ))}
-              {documents && documents.length > 10 && (
+              {(documents?.documents?.length ?? 0) > 10 && (
                 <Typography variant="p" color="tertiary" className="px-3 py-1 text-xs">
-                  +{documents.length - 10} more
+                  +{(documents?.documents?.length ?? 0) - 10} more
                 </Typography>
               )}
             </CollapsibleSection>
-
             {/* Workspaces Section */}
             <CollapsibleSection
               icon={FolderKanban}
@@ -254,65 +276,21 @@ export function AppSidebar() {
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
-                      workspaceTeams.map((team) => {
-                        const teamProjects = projects?.filter((p) => p.teamId === team._id) || [];
-                        const isTeamExpanded = expandedTeams.has(team.slug);
-
-                        return (
-                          <div key={team._id} className="ml-4">
-                            {/* Team Item */}
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => toggleTeam(team.slug)}
-                                className="h-6 w-6 p-0.5"
-                              >
-                                {isTeamExpanded ? (
-                                  <ChevronDown className="w-4 h-4" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4" />
-                                )}
-                              </Button>
-                              <NavSubItem
-                                to={ROUTES.workspaces.teams.detail(
-                                  companySlug,
-                                  workspace.slug,
-                                  team.slug,
-                                )}
-                                label={team.name}
-                                isActive={location.pathname.includes(`/teams/${team.slug}`)}
-                                onClick={handleNavClick}
-                              />
-                            </div>
-
-                            {/* Projects under team */}
-                            {isTeamExpanded &&
-                              teamProjects.map((project) => (
-                                <div key={project._id} className="ml-6">
-                                  <NavSubItem
-                                    to={ROUTES.workspaces.teams.projects.board(
-                                      companySlug,
-                                      workspace.slug,
-                                      team.slug,
-                                      project.key,
-                                    )}
-                                    label={`${project.key} - ${project.name}`}
-                                    isActive={location.pathname.includes(
-                                      `/projects/${project.key}`,
-                                    )}
-                                    onClick={handleNavClick}
-                                  />
-                                </div>
-                              ))}
-                          </div>
-                        );
-                      })}
+                      workspaceTeams.map((team) => (
+                        <SidebarTeamItem
+                          key={team._id}
+                          team={team}
+                          workspaceSlug={workspace.slug}
+                          companySlug={companySlug}
+                          isExpanded={expandedTeams.has(team.slug)}
+                          onToggle={toggleTeam}
+                          onNavClick={handleNavClick}
+                        />
+                      ))}
                   </div>
                 );
               })}
             </CollapsibleSection>
-
             {/* Time Tracking (admin only) */}
             {showTimeTracking && (
               <NavItem
@@ -518,21 +496,23 @@ interface NavSubItemProps {
   label: string;
   isActive: boolean;
   onClick?: () => void;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
-function NavSubItem({ to, label, isActive, onClick }: NavSubItemProps) {
+function NavSubItem({ to, label, isActive, onClick, icon: Icon }: NavSubItemProps) {
   return (
     <Link
       to={to}
       onClick={onClick}
       className={cn(
-        "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
+        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive
           ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400"
           : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
       )}
     >
-      {label}
+      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+      <span className="truncate">{label}</span>
     </Link>
   );
 }

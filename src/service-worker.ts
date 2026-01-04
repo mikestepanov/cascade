@@ -18,8 +18,7 @@ interface Mutation {
   status: string;
   timestamp: number;
   syncedAt?: number;
-  // biome-ignore lint/suspicious/noExplicitAny: generic payload
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Take control of all pages immediately

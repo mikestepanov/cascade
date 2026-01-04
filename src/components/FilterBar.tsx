@@ -4,10 +4,17 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/Button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/Dialog";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 
 type FilterValues = Record<string, unknown>;
 
@@ -143,6 +150,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Save Filter</DialogTitle>
+            <DialogDescription className="sr-only">Save current filter settings</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <Input

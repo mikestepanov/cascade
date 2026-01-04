@@ -1,7 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
-import { Badge } from "./ui/Badge";
 import { Typography } from "./ui/Typography";
 
 interface Issue {
@@ -15,7 +14,7 @@ interface Issue {
     name: string;
     image?: string;
   } | null;
-  labels: string[];
+  labels: { name: string; color: string }[];
   storyPoints?: number;
 }
 
@@ -25,6 +24,7 @@ interface IssueCardProps {
   onClick?: () => void;
   selectionMode?: boolean;
   isSelected?: boolean;
+  isFocused?: boolean;
   onToggleSelect?: (issueId: Id<"issues">) => void;
   canEdit?: boolean;
 }
@@ -35,9 +35,18 @@ export const IssueCard = memo(function IssueCard({
   onClick,
   selectionMode = false,
   isSelected = false,
+  isFocused = false,
   onToggleSelect,
   canEdit = true,
 }: IssueCardProps) {
+  const cardRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isFocused && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [isFocused]);
+
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (selectionMode && onToggleSelect) {
       e.stopPropagation();
@@ -56,6 +65,7 @@ export const IssueCard = memo(function IssueCard({
 
   return (
     <button
+      ref={cardRef}
       type="button"
       draggable={canEdit && !selectionMode}
       onDragStart={canEdit && !selectionMode ? onDragStart : undefined}
@@ -63,7 +73,9 @@ export const IssueCard = memo(function IssueCard({
       className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
         isSelected
           ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
-          : "border-ui-border-primary dark:border-ui-border-primary-dark"
+          : isFocused
+            ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-500/50"
+            : "border-ui-border-primary dark:border-ui-border-primary-dark"
       }`}
     >
       {/* Header */}
@@ -101,9 +113,13 @@ export const IssueCard = memo(function IssueCard({
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
           {issue.labels.slice(0, 3).map((label) => (
-            <Badge key={label} variant="neutral">
-              {label}
-            </Badge>
+            <span
+              key={label.name}
+              className="px-1.5 py-0.5 text-xs font-medium rounded-md text-white"
+              style={{ backgroundColor: label.color }}
+            >
+              {label.name}
+            </span>
           ))}
           {issue.labels.length > 3 && (
             <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">

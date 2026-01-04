@@ -7,11 +7,11 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
-  const projects = useQuery(api.projects.list);
+  const projects = useQuery(api.projects.getCurrentUserProjects);
   const userRates = useQuery(api.timeTracking.listUserRates, {});
 
   const setUserRate = useMutation(api.timeTracking.setUserRate);
@@ -191,7 +191,7 @@ export function UserRatesManagement() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="default">All Projects (Default)</SelectItem>
-                  {projects?.map((project) => (
+                  {projects?.page?.map((project) => (
                     <SelectItem key={project._id} value={project._id}>
                       {project.name} (Override)
                     </SelectItem>

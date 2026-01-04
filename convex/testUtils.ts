@@ -88,7 +88,7 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
  * @param projectData - Optional project data
  * @returns Project ID
  */
-export async function createTestWorkspace(
+export async function createProjectInCompany(
   t: TestCtx,
   creatorId: Id<"users">,
   companyId: Id<"companies">,
@@ -175,7 +175,7 @@ export async function createTestWorkspace(
 }
 
 /**
- * @deprecated Use createTestWorkspace instead
+ * @deprecated Use createProjectInCompany instead
  */
 export async function createTestProject(
   t: TestCtx,
@@ -189,8 +189,8 @@ export async function createTestProject(
   },
 ): Promise<Id<"projects">> {
   // Create a company first for backward compatibility
-  const companyId = await createCompanyAdmin(t, creatorId);
-  return createTestWorkspace(t, creatorId, companyId, projectData);
+  const { companyId } = await createCompanyAdmin(t, creatorId);
+  return createProjectInCompany(t, creatorId, companyId, projectData);
 }
 
 /**
@@ -253,7 +253,7 @@ export async function createTestIssue(
     // Count existing issues to generate key
     const issueCount = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
       .collect()
       .then((issues) => issues.length);
 
@@ -328,7 +328,11 @@ export async function createCompanyAdmin(
     name?: string;
     slug?: string;
   },
-): Promise<Id<"companies">> {
+): Promise<{
+  companyId: Id<"companies">;
+  workspaceId: Id<"workspaces">;
+  teamId: Id<"teams">;
+}> {
   return await t.run(async (ctx) => {
     const now = Date.now();
     const name = companyData?.name || `Test Company ${now}`;
@@ -359,6 +363,37 @@ export async function createCompanyAdmin(
       addedAt: now,
     });
 
-    return companyId;
+    // Create default workspace for tests
+    const workspaceId = await ctx.db.insert("workspaces", {
+      companyId,
+      name: `Default Workspace`,
+      slug: `default-ws-${now}`,
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create default team for tests
+    const teamId = await ctx.db.insert("teams", {
+      companyId,
+      workspaceId,
+      name: `Default Team`,
+      slug: `default-team-${now}`,
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+      isPrivate: false,
+    });
+
+    // Add user as team member
+    await ctx.db.insert("teamMembers", {
+      teamId,
+      userId,
+      role: "lead",
+      addedBy: userId,
+      addedAt: now,
+    });
+
+    return { companyId, workspaceId, teamId };
   });
 }

@@ -4,8 +4,8 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
 import {
   batchFetchIssues,
+  batchFetchProjects,
   batchFetchUsers,
-  batchFetchWorkspaces,
   getUserName,
 } from "./lib/batchHelpers";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
@@ -380,7 +380,7 @@ export const listTimeEntries = query({
       const projectId = args.projectId;
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_workspace_date", (q) =>
+        .withIndex("by_project_date", (q) =>
           q.eq("projectId", projectId).gte("date", startDate).lte("date", endDate),
         )
         .filter((q) => q.eq(q.field("userId"), userId))
@@ -418,7 +418,7 @@ export const listTimeEntries = query({
 
     const [userMap, projectMap, issueMap] = await Promise.all([
       batchFetchUsers(ctx, userIds),
-      batchFetchWorkspaces(ctx, projectIds),
+      batchFetchProjects(ctx, projectIds),
       batchFetchIssues(ctx, issueIds),
     ]);
 
@@ -542,7 +542,7 @@ export const getBurnRate = query({
     // Get all time entries in date range
     const entries = await ctx.db
       .query("timeEntries")
-      .withIndex("by_workspace_date", (q) =>
+      .withIndex("by_project_date", (q) =>
         q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
       )
       .collect();
@@ -626,7 +626,7 @@ export const getTeamCosts = query({
       await assertCanAccessProject(ctx, args.projectId, userId);
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_workspace_date", (q) =>
+        .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
         )
         .collect();
@@ -721,7 +721,7 @@ export const setUserRate = mutation({
     // End current rate for this user/project/type combination
     const currentRates = await ctx.db
       .query("userRates")
-      .withIndex("by_user_workspace", (q) =>
+      .withIndex("by_user_project", (q) =>
         q.eq("userId", args.userId).eq("projectId", args.projectId),
       )
       .collect();
@@ -785,7 +785,7 @@ export const listUserRates = query({
     const rates = args.projectId
       ? await ctx.db
           .query("userRates")
-          .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
           .collect()
       : await ctx.db
@@ -842,14 +842,14 @@ export const getProjectBilling = query({
     if (startDate !== undefined && endDate !== undefined) {
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_workspace_date", (q) =>
+        .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
         )
         .collect();
     } else {
       entries = await ctx.db
         .query("timeEntries")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
         .collect();
     }
 
@@ -931,7 +931,7 @@ async function getUserCurrentRate(
   if (projectId) {
     const projectRate = await ctx.db
       .query("userRates")
-      .withIndex("by_user_workspace", (q) => q.eq("userId", userId).eq("projectId", projectId))
+      .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", projectId))
       .filter((q) => q.eq(q.field("effectiveTo"), undefined))
       .first();
 
@@ -943,7 +943,7 @@ async function getUserCurrentRate(
   // Fall back to default user rate
   const defaultRate = await ctx.db
     .query("userRates")
-    .withIndex("by_user_workspace", (q) => q.eq("userId", userId).eq("projectId", undefined))
+    .withIndex("by_user_project", (q) => q.eq("userId", userId).eq("projectId", undefined))
     .filter((q) => q.eq(q.field("effectiveTo"), undefined))
     .first();
 

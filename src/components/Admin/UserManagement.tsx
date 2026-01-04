@@ -3,13 +3,14 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { useCompany } from "../../hooks/useCompanyContext";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 /**
  * User row component for displaying user information in table
@@ -72,6 +73,7 @@ function UserRow({
 }
 
 export function UserManagement() {
+  const { companyId } = useCompany();
   const [activeTab, setActiveTab] = useState<"invites" | "users">("invites");
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [email, setEmail] = useState("");
@@ -93,7 +95,7 @@ export function UserManagement() {
 
     setIsSubmitting(true);
     try {
-      await sendInvite({ email: email.trim(), role });
+      await sendInvite({ email: email.trim(), role, companyId });
       showSuccess(`Invitation sent to ${email}`);
       setEmail("");
       setRole("user");

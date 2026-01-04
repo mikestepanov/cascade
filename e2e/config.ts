@@ -207,6 +207,8 @@ export const E2E_ENDPOINTS = {
   updateCompanySettings: `${CONVEX_SITE_URL}/e2e/update-company-settings`,
   // Seed project templates (POST)
   seedTemplates: `${CONVEX_SITE_URL}/e2e/seed-templates`,
+  // Force delete ALL test users (POST)
+  nukeTestUsers: `${CONVEX_SITE_URL}/e2e/nuke-test-users`,
 };
 
 /**
@@ -220,7 +222,7 @@ export const RBAC_TEST_CONFIG = {
    * Uses "dashboard" because that's the auto-created company when test users first log in.
    * The RBAC setup will use this existing company instead of creating a new one.
    */
-  companySlug: "dashboard",
+  companySlug: TEST_COMPANY_SLUG,
 };
 
 /**

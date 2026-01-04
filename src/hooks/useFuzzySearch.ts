@@ -299,7 +299,7 @@ export function useUserFuzzySearch(users: Array<{ name?: string; email?: string 
  *
  * @example
  * ```typescript
- * const projects = useQuery(api.projects.listUserProjects);
+ * const projects = useQuery(api.projects.getCurrentUserProjects);
  * const { results, search, query } = useProjectFuzzySearch(projects);
  * ```
  */

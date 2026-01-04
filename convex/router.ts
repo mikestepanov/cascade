@@ -9,7 +9,10 @@ import {
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
   nukeAllE2EWorkspacesEndpoint,
+  nukeAllTestUsersEndpoint,
+  nukeTimersEndpoint,
   resetOnboardingEndpoint,
+  resetTestWorkspaceEndpoint,
   seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
   updateCompanySettingsEndpoint,
@@ -105,6 +108,13 @@ http.route({
   handler: cleanupTestUsersEndpoint,
 });
 
+// Force delete ALL test users and their associated data
+http.route({
+  path: "/e2e/nuke-test-users",
+  method: "POST",
+  handler: nukeAllTestUsersEndpoint,
+});
+
 // Set up RBAC test project with users in different roles
 http.route({
   path: "/e2e/setup-rbac-project",
@@ -159,6 +169,20 @@ http.route({
   path: "/e2e/nuke-workspaces",
   method: "POST",
   handler: nukeAllE2EWorkspacesEndpoint,
+});
+
+// Nuke timers
+http.route({
+  path: "/e2e/nuke-timers",
+  method: "POST",
+  handler: nukeTimersEndpoint,
+});
+
+// Reset specific test workspace
+http.route({
+  path: "/e2e/reset-workspace",
+  method: "POST",
+  handler: resetTestWorkspaceEndpoint,
 });
 
 export default http;

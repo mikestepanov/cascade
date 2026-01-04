@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject } from "./projectAccess";
 
 // List all members of a project with user details
@@ -15,7 +16,8 @@ export const list = query({
 
     const members = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
       .collect();
 
     // Fetch user details for each member, filter out members with deleted users

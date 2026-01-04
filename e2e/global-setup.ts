@@ -164,6 +164,11 @@ async function globalSetup(config: FullConfig): Promise<void> {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
+  // Force delete ALL test users and associated data to ensure a fresh state
+  console.log("\n🧹 Nuking stale test users...");
+  const nukeResult = await testUserService.nukeTestUsers();
+  console.log(`  ✓ Deleted ${nukeResult.deleted} test users\n`);
+
   const browser = await chromium.launch();
 
   // Wait for React app to be ready before starting user setup

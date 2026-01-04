@@ -140,6 +140,7 @@ window.addEventListener('message', async (message) => {
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@convex": path.resolve(__dirname, "./convex"),
+      "react-window": path.resolve(__dirname, "node_modules/react-window/dist/react-window.cjs"),
     },
   },
   build: {
@@ -152,8 +153,6 @@ window.addEventListener('message', async (message) => {
   },
   optimizeDeps: {
     include: [
-      "react",
-      "react-dom",
       "convex/react",
       "sonner",
       "clsx",

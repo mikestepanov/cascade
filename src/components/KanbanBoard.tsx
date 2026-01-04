@@ -1,11 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
+import { useBoardHistory } from "@/hooks/useBoardHistory";
+import { useListNavigation } from "@/hooks/useListNavigation";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
-import { DISPLAY_LIMITS } from "@/lib/constants";
-import { showError, showSuccess } from "@/lib/toast";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -14,188 +14,57 @@ import { KanbanColumn } from "./Kanban/KanbanColumn";
 import { SkeletonKanbanCard, SkeletonText } from "./ui/Skeleton";
 
 interface KanbanBoardProps {
-  projectId: Id<"projects">;
+  projectId?: Id<"projects">;
+  teamId?: Id<"teams">;
   sprintId?: Id<"sprints">;
 }
 
-interface BoardAction {
-  issueId: Id<"issues">;
-  oldStatus: string;
-  newStatus: string;
-  oldOrder: number;
-  newOrder: number;
-  issueTitle: string; // For toast message
-}
-
-export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
+export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
-  const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIssueIds, setSelectedIssueIds] = useState<Set<Id<"issues">>>(new Set());
 
-  // Undo/Redo state
-  const [historyStack, setHistoryStack] = useState<BoardAction[]>([]);
-  const [redoStack, setRedoStack] = useState<BoardAction[]>([]);
+  const isTeamMode = !!teamId;
+  const isProjectMode = !!projectId;
 
-  const project = useQuery(api.projects.get, { id: projectId });
-  const updateIssueStatus = useMutation(api.issues.updateStatus);
+  const project = useQuery(
+    api.projects.getProject,
+    isProjectMode && projectId ? { id: projectId } : "skip",
+  );
 
-  // Use smart board data with pagination for done columns
+  // Custom Hooks
   const {
     issuesByStatus,
     statusCounts,
     isLoading: isLoadingIssues,
     loadMoreDone,
     isLoadingMore,
-  } = useSmartBoardData({ projectId, sprintId });
+    workflowStates: smartWorkflowStates,
+  } = useSmartBoardData({ projectId, teamId, sprintId });
 
-  // Flatten issues for drag/drop operations
+  const { historyStack, redoStack, handleUndo, handleRedo, pushAction } = useBoardHistory();
+
   const allIssues = useMemo(() => {
     return Object.values(issuesByStatus).flat();
   }, [issuesByStatus]);
 
-  // Undo/Redo handlers wrapped in useCallback
-  const handleUndo = useCallback(async () => {
-    if (historyStack.length === 0) {
-      toast.info("Nothing to undo");
-      return;
-    }
+  // Keyboard Navigation
+  const { selectedIndex } = useListNavigation({
+    items: allIssues,
+    onSelect: (issue) => setSelectedIssue(issue._id),
+  });
+  const focusedIssueId = allIssues[selectedIndex]?._id;
 
-    // Pop the last action from history
-    const lastAction = historyStack[historyStack.length - 1];
-    const newHistory = historyStack.slice(0, -1);
+  const { handleDragStart, handleDragOver, handleDrop } = useBoardDragAndDrop({
+    allIssues,
+    issuesByStatus,
+    isTeamMode,
+    pushHistoryAction: pushAction,
+    boardOptions: { projectId, teamId, sprintId, doneColumnDays: 14 },
+  });
 
-    try {
-      // Revert the action (swap old/new)
-      await updateIssueStatus({
-        issueId: lastAction.issueId,
-        newStatus: lastAction.oldStatus,
-        newOrder: lastAction.oldOrder,
-      });
-
-      // Update stacks
-      setHistoryStack(newHistory);
-      setRedoStack((prev) => [...prev, lastAction].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
-
-      // Show toast
-      showSuccess(`Undid move of "${lastAction.issueTitle}"`);
-    } catch (error) {
-      showError(error, "Failed to undo");
-    }
-  }, [historyStack, updateIssueStatus]);
-
-  const handleRedo = useCallback(async () => {
-    if (redoStack.length === 0) {
-      toast.info("Nothing to redo");
-      return;
-    }
-
-    // Pop the last action from redo stack
-    const lastRedo = redoStack[redoStack.length - 1];
-    const newRedoStack = redoStack.slice(0, -1);
-
-    try {
-      // Re-apply the action
-      await updateIssueStatus({
-        issueId: lastRedo.issueId,
-        newStatus: lastRedo.newStatus,
-        newOrder: lastRedo.newOrder,
-      });
-
-      // Update stacks
-      setRedoStack(newRedoStack);
-      setHistoryStack((prev) => [...prev, lastRedo].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
-
-      // Show toast
-      showSuccess(`Redid move of "${lastRedo.issueTitle}"`);
-    } catch (error) {
-      showError(error, "Failed to redo");
-    }
-  }, [redoStack, updateIssueStatus]);
-
-  // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Check for Cmd (Mac) or Ctrl (Windows/Linux)
-      const isMod = e.metaKey || e.ctrlKey;
-
-      // Ctrl+Z or Cmd+Z → Undo
-      if (isMod && e.key === "z" && !e.shiftKey) {
-        e.preventDefault();
-        handleUndo();
-      }
-
-      // Ctrl+Shift+Z or Cmd+Shift+Z → Redo
-      if (isMod && e.key === "z" && e.shiftKey) {
-        e.preventDefault();
-        handleRedo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleRedo, handleUndo]);
-
-  // Memoized drag handlers - must be before early return to follow hooks rules
-  const handleDragStart = useCallback((e: React.DragEvent, issueId: Id<"issues">) => {
-    setDraggedIssue(issueId);
-    e.dataTransfer.effectAllowed = "move";
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  }, []);
-
-  const handleDrop = useCallback(
-    async (e: React.DragEvent, newStatus: string) => {
-      e.preventDefault();
-
-      if (!(draggedIssue && allIssues.length > 0)) return;
-
-      // Find the dragged issue to get its current state
-      const issue = allIssues.find((i) => i._id === draggedIssue);
-      if (!issue) return;
-
-      // If dropping in same column, do nothing
-      if (issue.status === newStatus) {
-        setDraggedIssue(null);
-        return;
-      }
-
-      const issuesInNewStatus = issuesByStatus[newStatus] || [];
-      const newOrder = Math.max(...issuesInNewStatus.map((i) => i.order), -1) + 1;
-
-      // Save to history before making the change
-      const action: BoardAction = {
-        issueId: draggedIssue,
-        oldStatus: issue.status,
-        newStatus,
-        oldOrder: issue.order,
-        newOrder,
-        issueTitle: issue.title,
-      };
-
-      try {
-        await updateIssueStatus({
-          issueId: draggedIssue,
-          newStatus,
-          newOrder,
-        });
-
-        // Add to history and clear redo stack (new action invalidates redo)
-        setHistoryStack((prev) => [...prev, action].slice(-DISPLAY_LIMITS.MAX_HISTORY_SIZE));
-        setRedoStack([]);
-      } catch (error) {
-        showError(error, "Failed to update issue status");
-      }
-
-      setDraggedIssue(null);
-    },
-    [draggedIssue, allIssues, issuesByStatus, updateIssueStatus],
-  );
-
+  // Handlers
   const handleCreateIssue = useCallback((_status: string) => {
     setShowCreateIssue(true);
   }, []);
@@ -212,27 +81,37 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     });
   }, []);
 
-  if (!project || isLoadingIssues) {
+  const handleClearSelection = useCallback(() => {
+    setSelectedIssueIds(new Set());
+    setSelectionMode(false);
+  }, []);
+
+  const handleToggleSelectionMode = useCallback(() => {
+    setSelectionMode((prev) => {
+      if (!prev) setSelectedIssueIds(new Set());
+      return !prev;
+    });
+  }, []);
+
+  // Loading State
+  const isLoading = isLoadingIssues || (isProjectMode && !project);
+
+  if (isLoading) {
     return (
       <div className="flex-1 overflow-x-auto">
-        {/* Header skeleton */}
         <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between">
           <SkeletonText lines={1} className="w-32" />
           <SkeletonText lines={1} className="w-32" />
         </div>
-
-        {/* Kanban columns skeleton */}
-        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
+        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="flex-shrink-0 w-72 sm:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
             >
-              {/* Column header skeleton */}
               <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
                 <SkeletonText lines={1} className="w-24" />
               </div>
-              {/* Column cards skeleton */}
               <div className="p-2 space-y-2 min-h-96">
                 <SkeletonKanbanCard />
                 <SkeletonKanbanCard />
@@ -245,26 +124,25 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
     );
   }
 
-  const workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
+  // Determine Workflow States
+  let workflowStates: typeof project.workflowStates = [];
 
-  // Only admin and editor roles can edit (create/move issues)
-  const canEdit = project.userRole !== "viewer";
+  if (isProjectMode && project) {
+    workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
+  } else if (isTeamMode && smartWorkflowStates) {
+    workflowStates = smartWorkflowStates.map((s) => ({
+      ...s,
+      color:
+        s.category === "todo" ? "#94a3b8" : s.category === "inprogress" ? "#3b82f6" : "#22c55e",
+      description: "",
+      order: s.order,
+    }));
+  }
 
-  const handleClearSelection = () => {
-    setSelectedIssueIds(new Set());
-    setSelectionMode(false);
-  };
-
-  const handleToggleSelectionMode = () => {
-    setSelectionMode(!selectionMode);
-    if (selectionMode) {
-      setSelectedIssueIds(new Set());
-    }
-  };
+  const canEdit = isProjectMode ? project?.userRole !== "viewer" : true;
 
   return (
     <div className="flex-1 overflow-x-auto" data-tour="kanban-board">
-      {/* Header with bulk operations toggle and undo/redo buttons */}
       <BoardToolbar
         sprintId={sprintId}
         selectionMode={selectionMode}
@@ -273,11 +151,16 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         onUndo={handleUndo}
         onRedo={handleRedo}
         onToggleSelectionMode={handleToggleSelectionMode}
+        showControls={!isTeamMode}
       />
 
-      <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto -webkit-overflow-scrolling-touch">
+      <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6 px-4 lg:px-6 pb-6 lg:overflow-x-auto -webkit-overflow-scrolling-touch">
         {workflowStates.map((state, columnIndex) => {
-          const counts = statusCounts[state.id] || { total: 0, loaded: 0, hidden: 0 };
+          const counts = statusCounts[state.id] || {
+            total: 0,
+            loaded: 0,
+            hidden: 0,
+          };
           return (
             <KanbanColumn
               key={state.id}
@@ -286,14 +169,14 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
               columnIndex={columnIndex}
               selectionMode={selectionMode}
               selectedIssueIds={selectedIssueIds}
+              focusedIssueId={focusedIssueId}
               canEdit={canEdit}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onDragStart={handleDragStart}
-              onCreateIssue={handleCreateIssue}
+              onCreateIssue={isTeamMode || !canEdit ? undefined : handleCreateIssue}
               onIssueClick={setSelectedIssue}
               onToggleSelect={handleToggleSelect}
-              // Pagination props for done columns
               hiddenCount={counts.hidden}
               totalCount={counts.total}
               onLoadMore={loadMoreDone}
@@ -303,12 +186,14 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         })}
       </div>
 
-      <CreateIssueModal
-        projectId={projectId}
-        sprintId={sprintId}
-        open={showCreateIssue}
-        onOpenChange={setShowCreateIssue}
-      />
+      {isProjectMode && (
+        <CreateIssueModal
+          projectId={projectId}
+          sprintId={sprintId}
+          open={showCreateIssue}
+          onOpenChange={setShowCreateIssue}
+        />
+      )}
 
       {selectedIssue && (
         <IssueDetailModal
@@ -323,8 +208,7 @@ export function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
         />
       )}
 
-      {/* Bulk Operations Bar */}
-      {selectionMode && (
+      {selectionMode && isProjectMode && projectId && (
         <BulkOperationsBar
           projectId={projectId}
           selectedIssueIds={selectedIssueIds}

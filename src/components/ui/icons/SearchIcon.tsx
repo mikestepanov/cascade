@@ -14,7 +14,6 @@ export function SearchIcon({
   "aria-hidden": ariaHidden = true,
 }: SearchIconProps) {
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: Icon is decorative, parent element provides label
     <svg
       aria-hidden={ariaHidden}
       className={cn(className)}
@@ -22,6 +21,7 @@ export function SearchIcon({
       stroke="currentColor"
       viewBox="0 0 24 24"
     >
+      <title>Search</title>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

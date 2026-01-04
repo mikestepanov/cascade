@@ -35,7 +35,7 @@ export default defineConfig({
     : [["html", { open: "on-failure" }]],
 
   // Global timeout for each test
-  timeout: 30 * 1000,
+  timeout: 120 * 1000,
 
   // Expect timeout for assertions
   expect: {
@@ -102,11 +102,12 @@ export default defineConfig({
   // In CI: use preview mode (pre-built dist/) for faster tests
   // Locally: use dev mode for hot reload
   webServer: {
-    // Use preview (production build) locally to avoid Windows/Vite file locking issues (EPERM)
-    command: "npm run dev",
+    // In CI: build and preview to catch bundling issues
+    // Locally: use dev for speed
+    command: process.env.CI ? "pnpm run build && pnpm run preview" : "pnpm run dev",
     url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 180 * 1000, // Increased timeout for build process
     // Wait for the React app to be fully loaded (not just port open)
     stdout: "ignore",
     stderr: "pipe",

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Github, Trash2 } from "@/lib/icons";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ShadcnSelect";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 
 /**
  * GitHub linked repositories management
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
  */
 export function LinkedRepositories() {
   const [selectedWorkspace, setSelectedWorkspace] = useState<Id<"projects"> | null>(null);
-  const projects = useQuery(api.projects.list, {});
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
   const repositories = useQuery(
     api.github.listRepositories,
     selectedWorkspace ? { projectId: selectedWorkspace } : "skip",
@@ -57,7 +57,7 @@ export function LinkedRepositories() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">-- Select a project --</SelectItem>
-            {projects?.map((project) => (
+            {projects?.page?.map((project) => (
               <SelectItem key={project._id} value={project._id}>
                 {project.name} ({project.key})
               </SelectItem>

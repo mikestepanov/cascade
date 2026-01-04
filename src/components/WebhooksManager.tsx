@@ -33,7 +33,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
   const [editingWebhook, setEditingWebhook] = useState<Webhook | null>(null);
 
   const webhooks = useQuery(api.webhooks.listByProject, { projectId });
-  const deleteWebhookMutation = useMutation(api.webhooks.remove);
+  const deleteWebhookMutation = useMutation(api.webhooks.softDeleteWebhook);
 
   // Delete confirmation
   const deleteConfirm = useDeleteConfirmation<"webhooks">({
