@@ -243,6 +243,9 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
   return (
     <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+      <div data-testid="debug-user-role" data-role={project.userRole} style={{ display: "none" }}>
+        {project.userRole}
+      </div>
       {/* Header */}
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
@@ -345,13 +348,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <div className="flex-1" />
 
           {/* Settings Tab - Separated */}
-          <TabButton
-            activeTab={activeTab}
-            tab="settings"
-            icon="⚙️"
-            label="Settings"
-            onClick={() => setActiveTab("settings")}
-          />
+          {project.userRole === "admin" && (
+            <TabButton
+              activeTab={activeTab}
+              tab="settings"
+              icon="⚙️"
+              label="Settings"
+              onClick={() => setActiveTab("settings")}
+            />
+          )}
         </div>
 
         {/* Sprint Selector for Board */}

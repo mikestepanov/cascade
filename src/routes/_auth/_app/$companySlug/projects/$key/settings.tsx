@@ -61,5 +61,18 @@ function SettingsPage() {
     );
   }
 
-  return <ProjectSettings projectId={project._id} />;
+  return (
+    <ProjectSettings
+      projectId={project._id}
+      name={project.name}
+      projectKey={project.key}
+      description={project.description}
+      workflowStates={project.workflowStates}
+      members={project.members}
+      createdBy={project.createdBy}
+      ownerId={project.ownerId}
+      isOwner={project.isOwner}
+      companySlug={companySlug}
+    />
+  );
 }

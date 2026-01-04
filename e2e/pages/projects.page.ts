@@ -134,15 +134,15 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs - updated to use 'link' role (TanStack Link)
-    this.boardTab = page.getByRole("link", { name: /^board$/i });
-    this.backlogTab = page.getByRole("link", { name: /^backlog$/i });
-    this.sprintsTab = page.getByRole("link", { name: /^sprint.*$/i });
-    this.analyticsTab = page.getByRole("link", { name: /^analytics$/i });
-    this.settingsTab = page.getByRole("link", { name: /^settings$/i });
+    // Project tabs - rendered as buttons in ProjectBoard.tsx with "X view" aria-labels
+    this.boardTab = page.getByRole("button", { name: "Board view" });
+    this.backlogTab = page.getByRole("button", { name: "Backlog view" });
+    this.sprintsTab = page.getByRole("button", { name: "Sprints view" });
+    this.analyticsTab = page.getByRole("button", { name: "Analytics view" });
+    this.settingsTab = page.getByRole("button", { name: "Settings view" });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
-    this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking|PROJ/i });
+    this.issueDetailDialog = page.getByTestId("issue-detail-modal");
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);
@@ -263,27 +263,59 @@ export class ProjectsPage extends BasePage {
 
       // Create project
       await this.createButton.waitFor({ state: "visible", timeout: 15000 });
-      await this.createButton.click({ force: true });
+      await expect(this.createButton).toBeEnabled({ timeout: 5000 });
+      await this.createButton.click();
+
+      // Wait for success toast - this confirms the backend operation finished
+      // This is more robust than just waiting for the modal to close, as it handles slow backend responses better
+      try {
+        await expect(this.page.getByText("Project created successfully")).toBeVisible({
+          timeout: 20000,
+        });
+      } catch (e) {
+        // If success toast didn't appear, check if we have an error toast to report better failure
+        const errorToast = this.page.locator('[data-sonner-toast][data-type="error"]');
+        if (await errorToast.isVisible()) {
+          const errorText = await errorToast.textContent();
+          console.error("Project Creation Failed with Toast:", errorText);
+          throw new Error(`Project Creation Failed: ${errorText}`);
+        }
+        throw e;
+      }
 
       // Wait for the modal to close to confirm successful submission
-      await expect(this.createProjectForm).not.toBeVisible({ timeout: 10000 });
+      await expect(this.createProjectForm).not.toBeVisible({ timeout: 30000 });
 
       // Wait for the new page to stabilize (redirect and hydration)
       await this.page.waitForLoadState("networkidle");
     } catch (e) {
       console.error("Failed to create project from template:", e);
+      // Log the current URL to help debugging
+      console.log("Current URL:", this.page.url());
       throw e;
     }
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.newWorkspaceButton.click();
+    // Navigate to workspaces page using sidebar to ensure correct context
+    await this.page.locator("nav").getByText("Workspaces", { exact: true }).click();
+    await this.page.waitForURL(/\/workspaces/);
+
+    await this.page.getByRole("button", { name: "+ Create Workspace" }).click();
+
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 5000 });
     await this.workspaceNameInput.fill(name);
     if (description) {
       await this.workspaceDescriptionInput.fill(description);
     }
     await this.submitWorkspaceButton.click();
+
+    // Verify success
+    await expect(this.page.getByText("Workspace created successfully")).toBeVisible({
+      timeout: 10000,
+    });
+    // Verify modal closed
+    await expect(this.page.getByRole("dialog")).not.toBeVisible();
   }
 
   async cancelCreateProject() {

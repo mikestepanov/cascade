@@ -113,7 +113,7 @@ export const listRecordings = query({
     if (args.projectId) {
       recordings = await ctx.db
         .query("meetingRecordings")
-        .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
         .order("desc")
         .take(limit);
     } else {
@@ -759,7 +759,7 @@ export const createIssueFromActionItem = mutation({
     // Get next issue number
     const existingIssues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
     const nextNumber = existingIssues.length + 1;
@@ -769,8 +769,8 @@ export const createIssueFromActionItem = mutation({
     // Create the issue
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
-      workspaceId: project.workspaceId ?? ("" as Id<"workspaces">),
-      teamId: project.teamId ?? ("" as Id<"teams">),
+      workspaceId: project.workspaceId,
+      teamId: project.teamId,
       key: `${project.key}-${nextNumber}`,
       title: actionItem.description,
       description: `Created from meeting action item`,

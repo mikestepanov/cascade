@@ -128,9 +128,6 @@ export class TestUserService {
     }
   }
 
-  /**
-   * Cleanup old test users (garbage collection)
-   */
   async cleanupOldTestUsers(): Promise<{ deleted: number }> {
     try {
       const response = await fetch(E2E_ENDPOINTS.cleanup, {
@@ -142,6 +139,22 @@ export class TestUserService {
     } catch (error) {
       console.warn(`  ⚠️ Failed to cleanup old test users:`, error);
       return { deleted: 0 };
+    }
+  }
+
+  /**
+   * Force delete ALL test users and their associated data
+   */
+  async nukeTestUsers(): Promise<{ success: boolean; deleted: number }> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.nukeTestUsers || `${E2E_ENDPOINTS.cleanup}-nuke`, {
+        method: "POST",
+        headers: getE2EHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to nuke test users:`, error);
+      return { success: false, deleted: 0 };
     }
   }
 

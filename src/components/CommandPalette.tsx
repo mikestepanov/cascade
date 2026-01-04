@@ -59,6 +59,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
   return (
     <CommandDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Command
+        data-testid="command-palette"
         className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
         filter={(value, search) => {
           const cmd = commands.find((c) => c.id === value);

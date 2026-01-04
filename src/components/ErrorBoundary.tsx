@@ -23,6 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // biome-ignore lint/suspicious/noConsole: Error boundaries should log errors
     globalThis.console.error("Uncaught error:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }

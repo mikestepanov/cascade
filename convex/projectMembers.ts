@@ -16,7 +16,7 @@ export const list = query({
 
     const members = await ctx.db
       .query("projectMembers")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
 

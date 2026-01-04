@@ -13,16 +13,18 @@ interface WorkflowState {
   order: number;
 }
 
+import type { LabelInfo } from "../../../convex/lib/issueHelpers";
+
 interface Issue {
   _id: Id<"issues">;
   title: string;
   key: string;
   status: string;
-  priority: string;
-  type: string;
+  priority: "lowest" | "low" | "medium" | "high" | "highest";
+  type: "task" | "bug" | "story" | "epic";
   order: number;
   assignee?: { name: string } | null;
-  labels: string[];
+  labels: LabelInfo[];
 }
 
 interface KanbanColumnProps {
@@ -87,7 +89,7 @@ export const KanbanColumn = memo(function KanbanColumn({
     <section
       aria-label={`${state.name} column`}
       data-board-column
-      className="flex-shrink-0 w-64 sm:w-72 md:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
+      className="flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
       style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
       onDragOver={onDragOver}
       onDrop={handleDrop}

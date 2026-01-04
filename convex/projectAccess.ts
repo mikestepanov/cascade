@@ -78,11 +78,13 @@ async function checkDirectAccess(
   // 3. User is individual collaborator (projectMembers)
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
-  if (projectMembership) return true;
+  if (projectMembership) {
+    return true;
+  }
 
   return false;
 }
@@ -104,14 +106,18 @@ export async function canAccessProject(
   userId: Id<"users">,
 ): Promise<boolean> {
   const project = await ctx.db.get(projectId);
-  if (!project) return false;
+  if (!project) {
+    return false;
+  }
 
-  // Check access levels in order of specificity: direct, then team, then company
-  if (await checkDirectAccess(ctx, project, userId)) return true;
-  if (await checkTeamAccess(ctx, project, userId)) return true;
-  if (await checkCompanyAccess(ctx, project, userId)) return true;
+  const result = await (async () => {
+    if (await checkDirectAccess(ctx, project, userId)) return true;
+    if (await checkTeamAccess(ctx, project, userId)) return true;
+    if (await checkCompanyAccess(ctx, project, userId)) return true;
+    return false;
+  })();
 
-  return false;
+  return result;
 }
 
 /**
@@ -152,7 +158,7 @@ export async function canEditProject(
   // 4. User is admin or editor in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
@@ -204,7 +210,7 @@ export async function isProjectAdmin(
   // 5. User is admin in projectMembers
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_workspace_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 

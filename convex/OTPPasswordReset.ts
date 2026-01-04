@@ -1,13 +1,8 @@
-/**
- * OTP Password Reset Provider
- *
- * Sends password reset emails using the universal email provider system.
- * Provider rotation and usage tracking are handled automatically.
- */
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
 import { sendEmail } from "./email";
+import type { ConvexAuthContext } from "./lib/authTypes";
 
 /**
  * Generate an 8-digit OTP code
@@ -37,12 +32,12 @@ export const OTPPasswordReset = Resend({
     return generateOTP();
   },
 
-  // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest(
+  // Convex Auth passes ctx as second param, but @auth/core types don't include it
+  // Using type assertion to handle the library integration mismatch
+  sendVerificationRequest: (async (
     { identifier: email, token }: { identifier: string; token: string },
-    ctx: any,
-  ) {
+    ctx: ConvexAuthContext,
+  ) => {
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Reset your password",
@@ -59,5 +54,5 @@ export const OTPPasswordReset = Resend({
     if (!result.success) {
       throw new Error(`Could not send password reset email: ${result.error}`);
     }
-  },
+  }) as (params: { identifier: string }) => Promise<void>,
 });

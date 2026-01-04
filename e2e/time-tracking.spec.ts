@@ -40,6 +40,12 @@ test.describe("Time Tracking", () => {
     // Default URL is /projects, explicitly wait for load
     // await page.waitForURL(/\/projects/); // projectsPage.goto() handles this
 
+    // Create a new workspace to ensure isolation
+    await projectsPage.createWorkspace(`TT WS ${now}`);
+
+    // Go back to projects page
+    await projectsPage.goto();
+
     await projectsPage.createProject(`Time Tracking ${now}`, projectKey);
 
     // Verify board

@@ -373,7 +373,7 @@ export const getProjectLabels = query({
   handler: async (ctx, args) => {
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .collect();
 
     return labels.map((label) => label.name);

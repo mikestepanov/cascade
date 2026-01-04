@@ -151,14 +151,14 @@ export const getProjectContext = internalQuery({
     // Get active sprint
     const activeSprint = await ctx.db
       .query("sprints")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
     // Get issues summary
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .take(100); // Limit for context
 
     const issuesByStatus = issues.reduce(

@@ -34,6 +34,13 @@ test.describe("Issues", () => {
       // Use direct URL navigation to projects page to access Create Project functionality
       await projectsPage.goto();
 
+      // Create a unique workspace for this test run to avoid dependency on global state
+      // which might be cleared by other tests (e.g., cleanup-workspaces)
+      await projectsPage.createWorkspace(`WS ${uniqueId}`);
+
+      // Go back to projects page as createWorkspace navigates away
+      await projectsPage.goto();
+
       // Create a project
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
@@ -48,7 +55,14 @@ test.describe("Issues", () => {
       // Verify modal closes
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
-      // Verify issue appears on board
+      // For Scrum projects (default template), new issues go to Backlog
+      // Switch to Backlog tab to verify
+      await projectsPage.switchToTab("backlog");
+
+      // Wait for backlog board to fully render
+      await page.waitForTimeout(2000);
+
+      // Verify issue appears in backlog
       const issueCard = projectsPage.getIssueCard(issueTitle);
       await expect(issueCard).toBeVisible({ timeout: 5000 });
     });

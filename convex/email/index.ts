@@ -12,11 +12,17 @@
  * Total free capacity: 19,000 emails/month
  */
 
-import type { MutationCtx, QueryCtx } from "../_generated/server";
+import type { DatabaseReader, MutationCtx, QueryCtx } from "../_generated/server";
 import { MailtrapProvider } from "./mailtrap";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 import { ResendProvider } from "./resend";
 import { SendPulseProvider } from "./sendpulse";
+
+/**
+ * Context type for functions that need database access.
+ * More permissive than MutationCtx/QueryCtx to support auth provider callbacks.
+ */
+export type DbContext = { db: DatabaseReader } | QueryCtx | MutationCtx;
 
 // =============================================================================
 // Provider Configuration (hardcoded - no DB seed needed)
@@ -207,7 +213,7 @@ async function recordUsage(ctx: MutationCtx, providerName: string, count: number
  * });
  */
 export async function sendEmail(
-  ctx: MutationCtx | QueryCtx | null,
+  ctx: DbContext | null,
   params: EmailSendParams,
 ): Promise<EmailSendResult & { provider?: string }> {
   // Select provider

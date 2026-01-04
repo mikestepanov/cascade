@@ -12,8 +12,8 @@
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
-import type { QueryCtx } from "./_generated/server";
 import { sendEmail } from "./email";
+import type { ConvexAuthContext } from "./lib/authTypes";
 
 /**
  * Generate an 8-digit OTP code
@@ -48,13 +48,12 @@ export const OTPVerification = Resend({
     return generateOTP();
   },
 
-  // but types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  // @ts-expect-error Types are incomplete. Convex issue: https://github.com/get-convex/convex-auth
-  async sendVerificationRequest(
+  // Convex Auth passes ctx as second param, but @auth/core types don't include it
+  // Using type assertion to handle the library integration mismatch
+  sendVerificationRequest: (async (
     { identifier: email, token }: { identifier: string; token: string },
-    _ctx: any,
-  ) {
-    const ctx = _ctx as QueryCtx;
+    ctx: ConvexAuthContext,
+  ) => {
     // Check if user is already verified (e.g., E2E test users)
     const existingUser = await ctx.db
       .query("users")
@@ -63,7 +62,7 @@ export const OTPVerification = Resend({
 
     if (existingUser?.emailVerificationTime) {
       // User already verified - skip sending email
-      return; // Don't send email
+      return;
     }
 
     // Send verification email through the email provider system
@@ -84,5 +83,5 @@ export const OTPVerification = Resend({
     if (!result.success) {
       throw new Error(`Could not send verification email: ${result.error}`);
     }
-  },
+  }) as (params: { identifier: string }) => Promise<void>,
 });

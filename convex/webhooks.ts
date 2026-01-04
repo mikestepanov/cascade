@@ -72,7 +72,7 @@ export const listByProject = query({
 
     const webhooks = await ctx.db
       .query("webhooks")
-      .withIndex("by_workspace", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
       .collect();
 
