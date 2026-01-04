@@ -37,18 +37,36 @@ function mergeIssuesByStatus(
 
   if (smartIssues) {
     for (const [status, issues] of Object.entries(smartIssues)) {
-      result[status] = Array.isArray(issues) ? [...issues] : [];
+      // Optimization: Preserve the original array reference
+      // instead of creating a shallow copy with [...issues]
+      // This allows downstream memoized components (KanbanColumn) to skip re-renders
+      // if the issue list for a column hasn't changed.
+      result[status] = issues;
     }
   }
 
   // Merge additional done issues into their respective statuses
   for (const issue of additionalIssues) {
-    if (!result[issue.status]) {
-      result[issue.status] = [];
+    const status = issue.status;
+    const existingIssues = result[status];
+
+    // Check for duplicates to avoid adding the same issue twice
+    if (existingIssues?.some((i) => i._id === issue._id)) {
+      continue;
     }
-    // Avoid duplicates
-    if (!result[issue.status].some((i) => i._id === issue._id)) {
-      result[issue.status].push(issue);
+
+    // Determine if the current array is the original reference from smartIssues
+    // If so, we MUST copy it before modifying to avoid mutating the source data
+    const isOriginalRef = smartIssues && smartIssues[status] === existingIssues;
+
+    if (!existingIssues) {
+      result[status] = [issue];
+    } else if (isOriginalRef) {
+      // It's the original reference, so we MUST copy before modifying
+      result[status] = [...existingIssues, issue];
+    } else {
+      // It's already a copy or a new array we created in this loop, so we can safely mutate
+      (result[status] as EnrichedIssue[]).push(issue);
     }
   }
 
