@@ -569,6 +569,29 @@ export const resetOnboardingInternal = internalMutation({
 });
 
 /**
+ * Force delete ALL test users and their associated data
+ * POST /e2e/nuke-test-users
+ */
+export const nukeAllTestUsersEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const result = await ctx.runMutation(internal.e2e.nukeAllTestUsersInternal, {});
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
  * Garbage collection - delete old test users
  * POST /e2e/cleanup
  * Deletes test users older than 1 hour
@@ -591,6 +614,9 @@ export const cleanupTestUsersEndpoint = httpAction(async (ctx, request) => {
     });
   }
 });
+
+/**
+ * Garbage collection - delete old test users
 
 /**
  * Internal mutation for garbage collection
@@ -767,19 +793,24 @@ export const setupRbacProjectInternal = internalMutation({
     ),
   }),
   handler: async (ctx, args) => {
-    // Find all users
-    const adminUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.adminEmail))
-      .first();
-    const editorUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.editorEmail))
-      .first();
-    const viewerUser = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.viewerEmail))
-      .first();
+    // Find latest users (in case of duplicates)
+    const findLatestUser = async (email: string) => {
+      const users = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), email))
+        .collect();
+      if (users.length === 0) return null;
+      // Sort by creation time descending and take the first one
+      return users.sort((a, b) => b._creationTime - a._creationTime)[0];
+    };
+
+    const adminUser = await findLatestUser(args.adminEmail);
+    const editorUser = await findLatestUser(args.editorEmail);
+    const viewerUser = await findLatestUser(args.viewerEmail);
+
+    console.log(`[RBAC-SETUP] Admin resolved to: ${adminUser?._id} (${args.adminEmail})`);
+    console.log(`[RBAC-SETUP] Editor resolved to: ${editorUser?._id} (${args.editorEmail})`);
+    console.log(`[RBAC-SETUP] Viewer resolved to: ${viewerUser?._id} (${args.viewerEmail})`);
 
     if (!adminUser) {
       return { success: false, error: `Admin user not found: ${args.adminEmail}` };
@@ -834,6 +865,9 @@ export const setupRbacProjectInternal = internalMutation({
           addedBy: adminUser._id,
           addedAt: now,
         });
+      } else if (existingMember.role !== config.role) {
+        // Enforce the correct role (downgrade from admin if necessary)
+        await ctx.db.patch(existingMember._id, { role: config.role });
       }
 
       // Set as user's default company
@@ -897,9 +931,10 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
 
     // 4a. Company-level project (legacy style - no workspace/team)
+    const companyProjectKey = `${args.projectKey}-COMP`;
     let project = await ctx.db
       .query("projects")
-      .withIndex("by_key", (q) => q.eq("key", args.projectKey))
+      .withIndex("by_key", (q) => q.eq("key", companyProjectKey))
       .filter(notDeleted)
       .first();
 
@@ -916,7 +951,7 @@ export const setupRbacProjectInternal = internalMutation({
 
       const projectId = await ctx.db.insert("projects", {
         name: `${args.projectKey}-Company`,
-        key: `${args.projectKey}-COMP`,
+        key: companyProjectKey,
         description: "E2E test project for RBAC permission testing - Company level",
         companyId: company._id,
         workspaceId,
@@ -2065,6 +2100,83 @@ export const resetTestWorkspaceInternal = internalMutation({
       deletedCount++;
     }
 
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+export const listDuplicateTestUsersInternal = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allUsers = await ctx.db.query("users").collect();
+    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+
+    const emailMap = new Map<string, string[]>();
+    for (const user of testUsers) {
+      const email = user.email!;
+      const ids = emailMap.get(email) || [];
+      ids.push(user._id);
+      emailMap.set(email, ids);
+    }
+
+    const duplicates = Array.from(emailMap.entries())
+      .filter(([_, ids]) => ids.length > 1)
+      .map(([email, ids]) => ({ email, ids }));
+
+    console.log("[STALE] Found ", testUsers.length, " total test users.");
+    console.log("[STALE] Found ", duplicates.length, " duplicate emails.");
+    for (const d of duplicates) {
+      console.log("[STALE] Email ", d.email, " has IDs: ", d.ids.join(", "));
+    }
+
+    return { testUsers: testUsers.length, duplicates };
+  },
+});
+
+export const nukeAllTestUsersInternal = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const allUsers = await ctx.db.query("users").collect();
+    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+
+    let deletedCount = 0;
+    for (const user of testUsers) {
+      // Delete accounts
+      const accounts = await ctx.db
+        .query("authAccounts")
+        .filter((q) => q.eq(q.field("userId"), user._id))
+        .collect();
+      for (const acc of accounts) await ctx.db.delete(acc._id);
+
+      // Delete company memberships
+      const memberships = await ctx.db
+        .query("companyMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const m of memberships) await ctx.db.delete(m._id);
+
+      // Delete project memberships
+      const projMemberships = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const pm of projMemberships) await ctx.db.delete(pm._id);
+
+      // Delete projects owned by test users
+      const projects = await ctx.db
+        .query("projects")
+        .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+        .collect();
+      for (const p of projects) await ctx.db.delete(p._id);
+
+      const createdProjects = await ctx.db
+        .query("projects")
+        .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
+        .collect();
+      for (const p of createdProjects) await ctx.db.delete(p._id);
+
+      await ctx.db.delete(user._id);
+      deletedCount++;
+    }
     return { success: true, deleted: deletedCount };
   },
 });

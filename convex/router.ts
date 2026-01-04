@@ -9,6 +9,7 @@ import {
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
   nukeAllE2EWorkspacesEndpoint,
+  nukeAllTestUsersEndpoint,
   nukeTimersEndpoint,
   resetOnboardingEndpoint,
   resetTestWorkspaceEndpoint,
@@ -105,6 +106,13 @@ http.route({
   path: "/e2e/cleanup",
   method: "POST",
   handler: cleanupTestUsersEndpoint,
+});
+
+// Force delete ALL test users and their associated data
+http.route({
+  path: "/e2e/nuke-test-users",
+  method: "POST",
+  handler: nukeAllTestUsersEndpoint,
 });
 
 // Set up RBAC test project with users in different roles

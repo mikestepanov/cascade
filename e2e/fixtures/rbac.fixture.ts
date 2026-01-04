@@ -195,9 +195,10 @@ export const rbacTest = base.extend<RbacFixtures>({
           await page.waitForLoadState("domcontentloaded");
 
           const baseURL = page.url().split("/").slice(0, 3).join("/");
-          // Try to sign in. Since we don't have the specific user role easily mapped to email here without extra state,
-          // we use the teamLead as a safe default for re-auth if the session dropped.
-          await trySignInUser(page, baseURL, TEST_USERS.teamLead);
+          // Do not auto-login as teamLead, as that breaks RBAC tests for other roles.
+          throw new Error(
+            `Session lost or redirected to signin for role test. Current URL: ${currentUrl}`,
+          );
 
           await page.goto(`/${rbacCompanySlug}/dashboard`);
           await page.waitForLoadState("domcontentloaded");
