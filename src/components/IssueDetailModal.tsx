@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { Check, Copy } from "@/lib/icons";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { CustomFieldValues } from "./CustomFieldValues";
@@ -18,6 +19,7 @@ import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
+import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
 interface IssueDetailModalProps {
@@ -36,6 +38,7 @@ export function IssueDetailModal({
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [hasCopied, setHasCopied] = useState(false);
 
   // Get billing setting from company context
   const { billingEnabled } = useCompany();
@@ -99,6 +102,18 @@ export function IssueDetailModal({
     setIsEditing(true);
   };
 
+  const handleCopyKey = () => {
+    navigator.clipboard
+      .writeText(issue.key)
+      .then(() => {
+        setHasCopied(true);
+        setTimeout(() => setHasCopied(false), 2000);
+      })
+      .catch((err) => {
+        showError(err, "Failed to copy issue key");
+      });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl" data-testid="issue-detail-modal">
@@ -108,7 +123,23 @@ export function IssueDetailModal({
               <span className="text-2xl">{getTypeIcon(issue.type)}</span>
               <div>
                 <DialogTitle className="flex items-center space-x-2">
-                  <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
+                    <Tooltip content={hasCopied ? "Copied!" : "Copy issue key"}>
+                      <button
+                        type="button"
+                        onClick={handleCopyKey}
+                        className="text-ui-text-tertiary hover:text-ui-text-secondary transition-colors p-1 rounded hover:bg-ui-bg-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        aria-label="Copy issue key"
+                      >
+                        {hasCopied ? (
+                          <Check className="w-3.5 h-3.5 text-green-500" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </Tooltip>
+                  </div>
                   <Badge size="md" className={getPriorityColor(issue.priority, "badge")}>
                     {issue.priority}
                   </Badge>
