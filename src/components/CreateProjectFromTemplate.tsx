@@ -1,12 +1,12 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCompany } from "../hooks/useCompanyContext";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
-import { Input, Textarea } from "./ui/form";
+import { Input, Select, Textarea } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 interface CreateProjectFromTemplateProps {
@@ -23,15 +23,26 @@ export function CreateProjectFromTemplate({
   const { companyId } = useCompany();
   const [step, setStep] = useState<"select" | "configure">("select");
   const [selectedTemplateId, setSelectedTemplateId] = useState<Id<"projectTemplates"> | null>(null);
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"workspaces"> | null>(null);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
+
+  const workspaces = useQuery(api.workspaces.list, { companyId });
 
   const templates = useQuery(api.projectTemplates.list);
   const selectedTemplate = useQuery(
     api.projectTemplates.get,
     selectedTemplateId ? { id: selectedTemplateId } : "skip",
   );
+
+  // Auto-select first workspace if available
+  useEffect(() => {
+    if (workspaces && workspaces.length > 0 && !selectedWorkspaceId) {
+      setSelectedWorkspaceId(workspaces[0]._id);
+    }
+  }, [workspaces, selectedWorkspaceId]);
+
   const createProject = useMutation(api.projectTemplates.createFromTemplate);
 
   const handleSelectTemplate = (templateId: Id<"projectTemplates">) => {
@@ -45,7 +56,7 @@ export function CreateProjectFromTemplate({
   };
 
   const handleCreate = async () => {
-    if (!(selectedTemplateId && projectName.trim() && projectKey.trim())) {
+    if (!(selectedTemplateId && selectedWorkspaceId && projectName.trim() && projectKey.trim())) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -57,6 +68,7 @@ export function CreateProjectFromTemplate({
         projectKey: projectKey.trim().toUpperCase(),
         description: description.trim() || undefined,
         companyId,
+        workspaceId: selectedWorkspaceId,
       });
 
       toast.success("Project created successfully");
@@ -170,6 +182,16 @@ export function CreateProjectFromTemplate({
 
             {/* Form */}
             <div className="space-y-4">
+              {workspaces && workspaces.length > 1 && (
+                <Select
+                  label="Workspace"
+                  value={selectedWorkspaceId || ""}
+                  onChange={(e) => setSelectedWorkspaceId(e.target.value as Id<"workspaces">)}
+                  options={workspaces.map((ws) => ({ value: ws._id, label: ws.name }))}
+                  required
+                />
+              )}
+
               <Input
                 label="Project Name"
                 value={projectName}
@@ -268,7 +290,7 @@ export function CreateProjectFromTemplate({
                 </Button>
                 <Button
                   onClick={handleCreate}
-                  disabled={!(projectName.trim() && projectKey.trim())}
+                  disabled={!(projectName.trim() && projectKey.trim() && selectedWorkspaceId)}
                   className="flex-1 sm:flex-none"
                 >
                   Create Project

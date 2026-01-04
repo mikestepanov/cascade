@@ -48,7 +48,14 @@ test.describe("Issues", () => {
       // Verify modal closes
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
-      // Verify issue appears on board
+      // For Scrum projects (default template), new issues go to Backlog
+      // Switch to Backlog tab to verify
+      await projectsPage.switchToTab("backlog");
+
+      // Wait for backlog board to fully render
+      await page.waitForTimeout(2000);
+
+      // Verify issue appears in backlog
       const issueCard = projectsPage.getIssueCard(issueTitle);
       await expect(issueCard).toBeVisible({ timeout: 5000 });
     });

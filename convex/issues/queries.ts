@@ -627,8 +627,16 @@ export const listByProjectSmart = projectQuery({
       }),
     );
 
-    const allIssues = Object.values(issuesByColumn).flat();
-    return await enrichIssues(ctx, allIssues);
+    // Enrich all issues by status
+    const enrichedIssuesByStatus: Record<string, EnrichedIssue[]> = {};
+    for (const [statusId, issues] of Object.entries(issuesByColumn)) {
+      enrichedIssuesByStatus[statusId] = await enrichIssues(ctx, issues);
+    }
+
+    return {
+      issuesByStatus: enrichedIssuesByStatus,
+      workflowStates: workflowStates,
+    };
   },
 });
 

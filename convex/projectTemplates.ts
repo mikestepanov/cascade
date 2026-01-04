@@ -30,7 +30,7 @@ export const createFromTemplate = mutation({
     description: v.optional(v.string()),
     companyId: v.id("companies"), // Required: company this project belongs to
     workspaceId: v.id("workspaces"), // Required: workspace this project belongs to
-    teamId: v.id("teams"), // Required: team this project belongs to
+    teamId: v.optional(v.id("teams")), // Required: team this project belongs to
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

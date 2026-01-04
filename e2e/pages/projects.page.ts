@@ -134,12 +134,12 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs - updated to use 'link' role (TanStack Link)
-    this.boardTab = page.getByRole("link", { name: /^board$/i });
-    this.backlogTab = page.getByRole("link", { name: /^backlog$/i });
-    this.sprintsTab = page.getByRole("link", { name: /^sprint.*$/i });
-    this.analyticsTab = page.getByRole("link", { name: /^analytics$/i });
-    this.settingsTab = page.getByRole("link", { name: /^settings$/i });
+    // Project tabs - rendered as buttons in ProjectBoard.tsx with "X view" aria-labels
+    this.boardTab = page.getByRole("button", { name: "Board view" });
+    this.backlogTab = page.getByRole("button", { name: "Backlog view" });
+    this.sprintsTab = page.getByRole("button", { name: "Sprints view" });
+    this.analyticsTab = page.getByRole("button", { name: "Analytics view" });
+    this.settingsTab = page.getByRole("button", { name: "Settings view" });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
     this.issueDetailDialog = page.getByRole("dialog").filter({ hasText: /Time Tracking|PROJ/i });
