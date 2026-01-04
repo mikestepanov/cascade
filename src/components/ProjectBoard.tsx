@@ -345,13 +345,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <div className="flex-1" />
 
           {/* Settings Tab - Separated */}
-          <TabButton
-            activeTab={activeTab}
-            tab="settings"
-            icon="⚙️"
-            label="Settings"
-            onClick={() => setActiveTab("settings")}
-          />
+          {project.userRole === "admin" && (
+            <TabButton
+              activeTab={activeTab}
+              tab="settings"
+              icon="⚙️"
+              label="Settings"
+              onClick={() => setActiveTab("settings")}
+            />
+          )}
         </div>
 
         {/* Sprint Selector for Board */}

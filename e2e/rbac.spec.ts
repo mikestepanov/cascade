@@ -116,7 +116,8 @@ rbacTest(
     await gotoRbacProject(editorPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(editorPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
+    // Note: Backend generates name as "${key}-Company", e.g., "RBAC-Company"
+    await expect(editorPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Editor can view project board");
@@ -191,7 +192,7 @@ rbacTest(
     await gotoRbacProject(viewerPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(viewerPage.getByRole("heading", { name: /RBAC Test Project/i })).toBeVisible({
+    await expect(viewerPage.getByRole("heading", { name: /RBAC-Company/i })).toBeVisible({
       timeout: 10000,
     });
     console.log("✓ Viewer can view project board");

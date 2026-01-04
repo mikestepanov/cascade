@@ -185,7 +185,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
                   onDragStart={() => {
                     /* noop */
                   }}
-                  onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
+                  onCreateIssue={isTeamMode || !canEdit ? undefined : handleCreateIssue}
                   onIssueClick={setSelectedIssue}
                   onToggleSelect={handleToggleSelect}
                   hiddenCount={counts.hidden}
@@ -214,7 +214,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onDragStart={handleDragStart}
-                onCreateIssue={isTeamMode ? undefined : handleCreateIssue}
+                onCreateIssue={isTeamMode || !canEdit ? undefined : handleCreateIssue}
                 onIssueClick={setSelectedIssue}
                 onToggleSelect={handleToggleSelect}
                 hiddenCount={counts.hidden}
