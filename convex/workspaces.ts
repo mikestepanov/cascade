@@ -8,6 +8,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { isCompanyAdmin } from "./companies";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -26,9 +27,9 @@ export const create = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // TODO: Check if user is company admin
-    // const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
-    // if (!isAdmin) throw new Error("Only company admins can create workspaces");
+    // Check if user is company admin
+    const isAdmin = await isCompanyAdmin(ctx, args.companyId, userId);
+    if (!isAdmin) throw new Error("Only company admins can create workspaces");
 
     // Check if slug is unique within company
     const existing = await ctx.db
