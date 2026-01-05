@@ -15,9 +15,11 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 function generateApiKey(): string {
   const prefix = "sk_casc";
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const randomPart = Array.from({ length: 32 }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length)),
-  ).join("");
+  const randomValues = new Uint32Array(32);
+  crypto.getRandomValues(randomValues);
+  const randomPart = Array.from(randomValues)
+    .map((val) => chars.charAt(val % chars.length))
+    .join("");
   return `${prefix}_${randomPart}`;
 }
 
