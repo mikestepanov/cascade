@@ -145,6 +145,7 @@ window.addEventListener('message', async (message) => {
     },
   },
   build: {
+    outDir: "dist/client",
     target: "esnext",
     minify: "esbuild",
     sourcemap: mode === "production" ? "hidden" : true,
