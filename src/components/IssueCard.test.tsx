@@ -1,4 +1,5 @@
 import type { Id } from "@convex/_generated/dataModel";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
 import { IssueCard } from "./IssueCard";
@@ -76,5 +77,18 @@ describe("IssueCard", () => {
 
     expect(screen.getByText("3.5")).toBeInTheDocument();
     expect(screen.getByText("pts")).toBeInTheDocument();
+  });
+
+  it("should display tooltip with assignee name on hover", async () => {
+    const user = userEvent.setup();
+    render(<IssueCard issue={mockIssue} onDragStart={mockOnDragStart} />);
+
+    const avatar = screen.getByAltText("Alice Johnson");
+    expect(avatar).toBeInTheDocument();
+
+    await user.hover(avatar);
+
+    const tooltipText = await screen.findByRole("tooltip", { name: "Assigned to: Alice Johnson" });
+    expect(tooltipText).toBeInTheDocument();
   });
 });

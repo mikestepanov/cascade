@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
+import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
 interface Issue {
@@ -133,19 +134,21 @@ export const IssueCard = memo(function IssueCard({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
           {issue.assignee && (
-            <div className="flex items-center space-x-1">
-              {issue.assignee.image ? (
-                <img
-                  src={issue.assignee.image}
-                  alt={issue.assignee.name}
-                  className="w-5 h-5 rounded-full"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  {issue.assignee.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
+            <Tooltip content={`Assigned to: ${issue.assignee.name}`}>
+              <div className="flex items-center space-x-1">
+                {issue.assignee.image ? (
+                  <img
+                    src={issue.assignee.image}
+                    alt={issue.assignee.name}
+                    className="w-5 h-5 rounded-full"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    {issue.assignee.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+            </Tooltip>
           )}
         </div>
         {issue.storyPoints !== undefined && (
