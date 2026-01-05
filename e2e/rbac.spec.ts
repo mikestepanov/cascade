@@ -46,7 +46,7 @@ rbacTest(
 
     // 2. Verify board is visible - check for project name heading (matches config)
     await expect(
-      adminPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+      adminPage.getByRole("heading", { name: RBAC_TEST_CONFIG.projectName }),
     ).toBeVisible({
       timeout: 30000,
     });
@@ -134,7 +134,7 @@ rbacTest(
 
     // 2. Verify board is visible - check for project name heading
     await expect(
-      editorPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+      editorPage.getByRole("heading", { name: RBAC_TEST_CONFIG.projectName }),
     ).toBeVisible({
       timeout: 30000,
     });
@@ -223,7 +223,7 @@ rbacTest(
 
     // 2. Verify board is visible - check for project name heading
     await expect(
-      viewerPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
+      viewerPage.getByRole("heading", { name: RBAC_TEST_CONFIG.projectName }),
     ).toBeVisible({
       timeout: 30000,
     });

@@ -27,8 +27,8 @@ interface ProjectSettingsProps {
   name: string;
   projectKey: string;
   description: string | undefined;
-  workflowStates: WorkflowState[];
-  members: Member[];
+  workflowStates?: WorkflowState[];
+  members?: Member[];
   createdBy: Id<"users">;
   ownerId: Id<"users"> | undefined;
   isOwner: boolean;
