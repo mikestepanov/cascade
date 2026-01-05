@@ -680,9 +680,10 @@ export const cleanupTestUsersInternal = internalMutation({
  * Set up RBAC test project with users assigned to specific roles
  * POST /e2e/setup-rbac-project
  * Body: {
- *   projectKey: string,
- *   adminEmail: string,
- *   editorEmail: string,
+ *   projectKey: string;
+ *   projectName: string;
+ *   adminEmail: string;
+ *   editorEmail: string;
  *   viewerEmail: string
  * }
  *
@@ -696,12 +697,13 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 
   try {
     const body = await request.json();
-    const { projectKey, adminEmail, editorEmail, viewerEmail } = body;
+    const { projectKey, projectName, adminEmail, editorEmail, viewerEmail } = body;
 
-    if (!(projectKey && adminEmail && editorEmail && viewerEmail)) {
+    if (!(projectKey && projectName && adminEmail && editorEmail && viewerEmail)) {
       return new Response(
         JSON.stringify({
-          error: "Missing required fields: projectKey, adminEmail, editorEmail, viewerEmail",
+          error:
+            "Missing required fields: projectKey, projectName, adminEmail, editorEmail, viewerEmail",
         }),
         { status: 400, headers: { "Content-Type": "application/json" } },
       );
@@ -719,6 +721,7 @@ export const setupRbacProjectEndpoint = httpAction(async (ctx, request) => {
 
     const result = await ctx.runMutation(internal.e2e.setupRbacProjectInternal, {
       projectKey,
+      projectName,
       adminEmail,
       editorEmail,
       viewerEmail,
@@ -766,6 +769,7 @@ export const seedTemplatesEndpoint = httpAction(async (ctx, request) => {
 export const setupRbacProjectInternal = internalMutation({
   args: {
     projectKey: v.string(),
+    projectName: v.string(),
     adminEmail: v.string(),
     editorEmail: v.string(),
     viewerEmail: v.string(),
@@ -950,7 +954,7 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       const projectId = await ctx.db.insert("projects", {
-        name: `${args.projectKey}-Company`,
+        name: args.projectName,
         key: companyProjectKey,
         description: "E2E test project for RBAC permission testing - Company level",
         companyId: company._id,
@@ -2108,11 +2112,12 @@ export const listDuplicateTestUsersInternal = internalMutation({
   args: {},
   handler: async (ctx) => {
     const allUsers = await ctx.db.query("users").collect();
-    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+    const testUsers = allUsers.filter((u) => u.email?.includes("@inbox.mailtrap.io"));
 
     const emailMap = new Map<string, string[]>();
     for (const user of testUsers) {
-      const email = user.email!;
+      const email = user.email;
+      if (!email) continue;
       const ids = emailMap.get(email) || [];
       ids.push(user._id);
       emailMap.set(email, ids);
@@ -2136,7 +2141,7 @@ export const nukeAllTestUsersInternal = internalMutation({
   args: {},
   handler: async (ctx) => {
     const allUsers = await ctx.db.query("users").collect();
-    const testUsers = allUsers.filter((u) => u.email && u.email.includes("@inbox.mailtrap.io"));
+    const testUsers = allUsers.filter((u) => u.email?.includes("@inbox.mailtrap.io"));
 
     let deletedCount = 0;
     for (const user of testUsers) {

@@ -14,8 +14,7 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/set
 });
 
 function SettingsPage() {
-  const { key } = Route.useParams();
-  const { companySlug } = Route.useParams();
+  const { key, companySlug } = Route.useParams();
   const { user } = useCurrentUser();
   const navigate = useNavigate();
   const project = useQuery(api.projects.getByKey, { key });
@@ -24,55 +23,46 @@ function SettingsPage() {
     project ? { projectId: project._id } : "skip",
   );
 
-  // Check if user is admin
-  const isAdmin =
-    project && userRole ? userRole === "admin" || project.createdBy === user?._id : false;
-
-  // Redirect non-admin users to board
-  React.useEffect(() => {
-    if (project && userRole !== undefined && !isAdmin) {
-      navigate({ to: ROUTES.projects.board(companySlug, key), replace: true });
-    }
-  }, [project, userRole, isAdmin, navigate, companySlug, key]);
-
   if (project === undefined || userRole === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
-        <LoadingSpinner message="Loading settings..." />
+        <LoadingSpinner message="Loading project settings..." />
       </Flex>
     );
   }
 
   if (!project) {
-    return (
-      <Flex align="center" justify="center" className="h-full">
-        <Typography variant="p" color="secondary">
-          Project not found
-        </Typography>
-      </Flex>
-    );
+    navigate({ to: ROUTES.projects.board(companySlug, key) });
+    return null;
   }
 
+  // Check if user is admin (via role OR ownership)
+  const isAdmin = userRole === "admin" || project.ownerId === user?._id;
+
+  // Redirect non-admins to board
   if (!isAdmin) {
-    return (
-      <Flex align="center" justify="center" className="h-full">
-        <LoadingSpinner message="Redirecting..." />
-      </Flex>
-    );
+    navigate({ to: ROUTES.projects.board(companySlug, key) });
+    return null;
   }
+
+  // Defensive: Ensure arrays exist (should always be the case, but prevents crashes)
+  const safeMembers = project.members ?? [];
+  const safeWorkflowStates = project.workflowStates ?? [];
 
   return (
-    <ProjectSettings
-      projectId={project._id}
-      name={project.name}
-      projectKey={project.key}
-      description={project.description}
-      workflowStates={project.workflowStates}
-      members={project.members}
-      createdBy={project.createdBy}
-      ownerId={project.ownerId}
-      isOwner={project.isOwner}
-      companySlug={companySlug}
-    />
+    <div className="p-6">
+      <ProjectSettings
+        projectId={project._id}
+        name={project.name}
+        projectKey={project.key}
+        description={project.description}
+        workflowStates={safeWorkflowStates}
+        members={safeMembers}
+        createdBy={project.createdBy}
+        ownerId={project.ownerId}
+        isOwner={project.ownerId === user?._id || project.createdBy === user?._id}
+        companySlug={companySlug}
+      />
+    </div>
   );
 }

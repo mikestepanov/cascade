@@ -245,6 +245,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
   console.log("\n🔐 Setting up RBAC test project...\n");
   const rbacResult = await testUserService.setupRbacProject({
     projectKey: RBAC_TEST_CONFIG.projectKey,
+    projectName: RBAC_TEST_CONFIG.projectName,
     adminEmail: TEST_USERS.teamLead.email,
     editorEmail: TEST_USERS.teamMember.email,
     viewerEmail: TEST_USERS.viewer.email,
