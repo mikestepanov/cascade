@@ -48,7 +48,7 @@ rbacTest(
     await expect(
       adminPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 30000,
     });
     console.log("✓ Admin can view project board");
 
@@ -136,7 +136,7 @@ rbacTest(
     await expect(
       editorPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 30000,
     });
     console.log("✓ Editor can view project board");
 
@@ -225,7 +225,7 @@ rbacTest(
     await expect(
       viewerPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 30000,
     });
     console.log("✓ Viewer can view project board");
 

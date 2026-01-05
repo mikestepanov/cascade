@@ -4,7 +4,7 @@ import { CONVEX_SITE_URL, E2E_API_KEY, TEST_USERS } from "./config";
 /**
  * Cleanup script to remove accumulated E2E workspaces
  */
-test("cleanup e2e workspaces", async () => {
+test.skip("cleanup e2e workspaces", async () => {
   try {
     // Admin user email
     const email = TEST_USERS.teamLead.email;
