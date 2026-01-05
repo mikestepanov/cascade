@@ -41,6 +41,8 @@ function mergeIssuesByStatus(
       // instead of creating a shallow copy with [...issues]
       // This allows downstream memoized components (KanbanColumn) to skip re-renders
       // if the issue list for a column hasn't changed.
+      // Note: This reference may be replaced with a copy later if additional issues
+      // need to be merged (see isOriginalRef check below)
       result[status] = issues;
     }
   }
@@ -50,8 +52,14 @@ function mergeIssuesByStatus(
     const status = issue.status;
     const existingIssues = result[status];
 
+    // If no existing issues for this status, create a new array
+    if (!existingIssues) {
+      result[status] = [issue];
+      continue;
+    }
+
     // Check for duplicates to avoid adding the same issue twice
-    if (existingIssues?.some((i) => i._id === issue._id)) {
+    if (existingIssues.some((i) => i._id === issue._id)) {
       continue;
     }
 
@@ -59,14 +67,12 @@ function mergeIssuesByStatus(
     // If so, we MUST copy it before modifying to avoid mutating the source data
     const isOriginalRef = smartIssues && smartIssues[status] === existingIssues;
 
-    if (!existingIssues) {
-      result[status] = [issue];
-    } else if (isOriginalRef) {
+    if (isOriginalRef) {
       // It's the original reference, so we MUST copy before modifying
       result[status] = [...existingIssues, issue];
     } else {
       // It's already a copy or a new array we created in this loop, so we can safely mutate
-      (result[status] as EnrichedIssue[]).push(issue);
+      existingIssues.push(issue);
     }
   }
 
