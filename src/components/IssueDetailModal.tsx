@@ -126,10 +126,10 @@ export function IssueDetailModal({
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
                     <Tooltip content={hasCopied ? "Copied!" : "Copy issue key"}>
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={handleCopyKey}
-                        className="text-ui-text-tertiary hover:text-ui-text-secondary transition-colors p-1 rounded hover:bg-ui-bg-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                         aria-label="Copy issue key"
                       >
                         {hasCopied ? (
@@ -137,7 +137,7 @@ export function IssueDetailModal({
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
-                      </button>
+                      </Button>
                     </Tooltip>
                   </div>
                   <Badge size="md" className={getPriorityColor(issue.priority, "badge")}>
@@ -167,13 +167,9 @@ export function IssueDetailModal({
                   {issue.title}
                 </Typography>
                 {canEdit && (
-                  <button
-                    type="button"
-                    onClick={handleEdit}
-                    className="text-sm text-brand-600 hover:text-brand-700"
-                  >
+                  <Button variant="ghost" size="sm" onClick={handleEdit}>
                     Edit
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
