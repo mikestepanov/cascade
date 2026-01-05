@@ -20,8 +20,8 @@ interface Issue {
 
 interface IssueCardProps {
   issue: Issue;
-  onDragStart: (e: React.DragEvent) => void;
-  onClick?: () => void;
+  onDragStart: (e: React.DragEvent, issueId: Id<"issues">) => void;
+  onClick?: (issueId: Id<"issues">) => void;
   selectionMode?: boolean;
   isSelected?: boolean;
   isFocused?: boolean;
@@ -52,7 +52,7 @@ export const IssueCard = memo(function IssueCard({
       e.stopPropagation();
       onToggleSelect(issue._id);
     } else if (onClick) {
-      onClick();
+      onClick(issue._id);
     }
   };
 
@@ -68,7 +68,7 @@ export const IssueCard = memo(function IssueCard({
       ref={cardRef}
       type="button"
       draggable={canEdit && !selectionMode}
-      onDragStart={canEdit && !selectionMode ? onDragStart : undefined}
+      onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
       onClick={handleClick}
       className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
         isSelected

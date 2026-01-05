@@ -144,8 +144,8 @@ export const KanbanColumn = memo(function KanbanColumn({
           >
             <IssueCard
               issue={issue}
-              onDragStart={(e) => onDragStart(e, issue._id)}
-              onClick={() => !selectionMode && onIssueClick(issue._id)}
+              onDragStart={onDragStart}
+              onClick={onIssueClick}
               selectionMode={selectionMode}
               isSelected={selectedIssueIds.has(issue._id)}
               isFocused={issue._id === focusedIssueId}

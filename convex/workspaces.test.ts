@@ -31,7 +31,7 @@ describe("Workspaces", () => {
     });
 
     it("should allow company owner to create workspace", async () => {
-        // Owner is also an admin
+      // Owner is also an admin
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
@@ -80,9 +80,9 @@ describe("Workspaces", () => {
 
       await expect(async () => {
         await asMember.mutation(api.workspaces.create, {
-            name: "Test Workspace",
-            slug: "test-workspace",
-            companyId,
+          name: "Test Workspace",
+          slug: "test-workspace",
+          companyId,
         });
       }).rejects.toThrow("Only company admins can create workspaces");
     });
