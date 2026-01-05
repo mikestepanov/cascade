@@ -39,6 +39,8 @@ rbacTest(
     // Skip if admin auth not available (known flaky issue with first user creation)
     testInfo.skip(!hasAdminAuth(), "Admin auth state not available (teamLead setup failed)");
 
+    adminPage.on("console", (msg) => console.log(`BROWSER: ${msg.text()}`));
+
     // 1. Navigate to project board
     await gotoRbacProject(adminPage);
 
@@ -63,13 +65,24 @@ rbacTest(
     console.log("✓ Admin can see settings tab");
 
     // 5. Navigate to settings and verify access
-    await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
-    await adminPage.waitForLoadState("domcontentloaded");
-    await adminPage.waitForTimeout(1000);
-    await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible({
-      timeout: 10000,
-    });
-    console.log("✓ Admin can access project settings page");
+    // Use UI navigation (click tab) instead of goto URL to act more like a real user
+    await settingsTab.click();
+
+    // Verify we actually reached the settings page
+    try {
+      await expect(adminPage).toHaveURL(/.*\/settings/, { timeout: 10000 });
+      await adminPage.waitForLoadState("domcontentloaded");
+      await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible({
+        timeout: 10000,
+      });
+      console.log("✓ Admin can access project settings page");
+    } catch (e) {
+      console.log(`❌ Admin Settings Navigation Failed. Current URL: ${adminPage.url()}`);
+      console.log(`Title: ${await adminPage.title()}`);
+      const bodyText = await adminPage.evaluate(() => document.body.innerText.substring(0, 500));
+      console.log(`Body Snippet: ${bodyText}`);
+      throw e;
+    }
 
     // 6. Navigate back to board and check sprints
     await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);

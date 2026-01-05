@@ -14,7 +14,7 @@ export const Route = createFileRoute(
 });
 
 function SettingsPage() {
-  const { key } = Route.useParams();
+  const { key, companySlug } = Route.useParams();
   const { user } = useCurrentUser();
   const project = useQuery(api.projects.getByKey, { key });
   const userRole = useQuery(
@@ -58,5 +58,22 @@ function SettingsPage() {
     );
   }
 
-  return <ProjectSettings projectId={project._id} />;
+  // Defensive: Ensure arrays exist
+  const safeMembers = project.members ?? [];
+  const safeWorkflowStates = project.workflowStates ?? [];
+
+  return (
+    <ProjectSettings
+      projectId={project._id}
+      name={project.name}
+      projectKey={project.key}
+      description={project.description}
+      workflowStates={safeWorkflowStates}
+      members={safeMembers}
+      createdBy={project.createdBy}
+      ownerId={project.ownerId}
+      isOwner={project.ownerId === user?._id || project.createdBy === user?._id}
+      companySlug={companySlug}
+    />
+  );
 }

@@ -180,35 +180,32 @@ export const rbacTest = base.extend<RbacFixtures>({
     const goto = async (page: Page) => {
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
-      // Aggressive re-auth check for RBAC (handle redirect to landing page)
-      await expect(async () => {
-        const currentUrl = page.url();
-        if (
-          currentUrl === "http://localhost:5555/" ||
-          currentUrl.endsWith("/signin") ||
-          currentUrl.endsWith("/")
-        ) {
-          console.log(`RBAC helper: Redirected to ${currentUrl}, re-authenticating...`);
+      // Navigate to project
+      await page.goto(targetUrl);
 
-          await page.goto("/signin");
-          await page.waitForLoadState("domcontentloaded");
-
-          const baseURL = page.url().split("/").slice(0, 3).join("/");
-          // Do not auto-login as teamLead, as that breaks RBAC tests for other roles.
+      // Wait for either the board to load OR a redirect to signin
+      // This is faster and avoids infinite "re-authenticating" loops
+      try {
+        await expect(async () => {
+          const url = page.url();
+          if (url.includes("/signin") || url === "http://localhost:5555/" || url.endsWith("/")) {
+            throw new Error("Redirected to signin");
+          }
+          expect(url).toContain("/board");
+        }).toPass({ timeout: 15000 });
+      } catch (e) {
+        // If we failed, check if it was an auth issue
+        const url = page.url();
+        if (url.includes("/signin") || url === "http://localhost:5555/") {
+          console.error(`❌ RBAC navigation failed: Redirected to ${url}. Session invalid.`);
           throw new Error(
-            `Session lost or redirected to signin for role test. Current URL: ${currentUrl}`,
+            `Session lost: Redirected to signin during RBAC navigation to ${targetUrl}`,
           );
         }
+        throw e; // Re-throw other errors
+      }
 
-        // Try navigating to target project
-        await page.goto(targetUrl);
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(1000);
-
-        if (page.url() === "http://localhost:5555/" || page.url().endsWith("/signin")) {
-          throw new Error("Still redirected to landing/signin");
-        }
-      }).toPass({ timeout: 45000 }); // Increase timeout for re-auth process
+      await page.waitForLoadState("domcontentloaded");
     };
     await use(goto);
   },
