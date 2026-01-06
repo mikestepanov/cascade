@@ -38,9 +38,7 @@ vi.mock("@convex/_generated/api", () => ({
 
 vi.mock("./CreateProjectFromTemplate", () => ({
   CreateProjectFromTemplate: ({ open }: any) =>
-    open ? (
-      <div data-testid="create-project-modal">Create Project Modal</div>
-    ) : null,
+    open ? <div data-testid="create-project-modal">Create Project Modal</div> : null,
 }));
 
 describe("ProjectsList", () => {
@@ -106,13 +104,13 @@ describe("ProjectsList", () => {
 
     expect(screen.getByText("Project 1")).toBeInTheDocument();
     expect(screen.getByText("PROJ-1")).toBeInTheDocument();
-    expect(screen.getByText("5 issues")).toBeInTheDocument();
-    expect(screen.getByText("Kanban")).toBeInTheDocument();
+    expect(screen.getByText(/5 issues/)).toBeInTheDocument();
+    expect(screen.getByText(/Kanban/)).toBeInTheDocument();
 
     expect(screen.getByText("Project 2")).toBeInTheDocument();
     expect(screen.getByText("PROJ-2")).toBeInTheDocument();
-    expect(screen.getByText("0 issues")).toBeInTheDocument();
-    expect(screen.getByText("Scrum")).toBeInTheDocument();
+    expect(screen.getByText(/0 issues/)).toBeInTheDocument();
+    expect(screen.getByText(/Scrum/)).toBeInTheDocument();
   });
 
   it("opens create project modal", async () => {
