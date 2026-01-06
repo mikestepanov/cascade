@@ -26,17 +26,19 @@ export function FeatureHighlights() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <FeatureCard
-        icon={<Kanban className="w-6 h-6 text-blue-500" />}
+        icon={<Kanban className="w-6 h-6 text-brand-500 dark:text-brand-400" />}
         title="Kanban Boards"
         description="Visualize work with drag-and-drop boards"
       />
       <FeatureCard
-        icon={<FileText className="w-6 h-6 text-green-500" />}
+        icon={
+          <FileText className="w-6 h-6 text-status-success dark:text-status-success-text-dark" />
+        }
         title="Documents"
         description="Collaborate on docs in real-time"
       />
       <FeatureCard
-        icon={<Zap className="w-6 h-6 text-amber-500" />}
+        icon={<Zap className="w-6 h-6 text-status-warning dark:text-status-warning-text-dark" />}
         title="Sprint Planning"
         description="Plan and track team velocity"
       />

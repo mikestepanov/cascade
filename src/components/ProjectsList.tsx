@@ -75,7 +75,7 @@ export function ProjectsList() {
                 <Flex direction="column" gap="md">
                   <Flex justify="space-between" align="start">
                     <Typography variant="h3">{project.name}</Typography>
-                    <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
+                    <span className="text-xs font-mono bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded text-ui-text-primary dark:text-ui-text-primary-dark">
                       {project.key}
                     </span>
                   </Flex>
@@ -86,7 +86,10 @@ export function ProjectsList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md" className="text-sm text-gray-500">
+                  <Flex
+                    gap="md"
+                    className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                  >
                     <span>{project.myIssues || 0} issues</span>
                     <span>•</span>
                     <span>{project.boardType === "kanban" ? "Kanban" : "Scrum"}</span>
