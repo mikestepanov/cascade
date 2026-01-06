@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 
 interface ActivityFeedProps {
   projectId: Id<"projects">;
@@ -137,8 +138,12 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p>No activity yet</p>
-        <p className="text-sm mt-1">Activity will appear here as work progresses</p>
+        <Typography variant="p" className="mb-0">
+          No activity yet
+        </Typography>
+        <Typography variant="muted" className="mt-1">
+          Activity will appear here as work progresses
+        </Typography>
       </div>
     );
   }
@@ -169,32 +174,36 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
           <div className="flex-1 min-w-0">
             <Flex align="start" justify="between" gap="sm">
               <div className="flex-1 min-w-0">
-                <p
-                  className={`${compact ? "text-sm" : "text-base"} text-ui-text-primary dark:text-ui-text-primary-dark`}
+                <Typography
+                  variant="p"
+                  className={`${compact ? "text-sm" : "text-base"} mb-0 mt-0`}
                 >
-                  <span className="font-medium">{activity.userName}</span>{" "}
-                  <span className={getActionColor(activity.action)}>
+                  <Typography as="span" className="font-medium">
+                    {activity.userName}
+                  </Typography>{" "}
+                  <Typography as="span" className={getActionColor(activity.action)}>
                     {formatActivityMessage(activity)}
-                  </span>
+                  </Typography>
                   {activity.issueKey && (
-                    <span className="ml-1">
-                      <span className="font-mono text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography as="span" className="ml-1">
+                      <Typography as="span" className="font-mono text-sm" color="secondary">
                         {activity.issueKey}
-                      </span>
-                    </span>
+                      </Typography>
+                    </Typography>
                   )}
-                </p>
+                </Typography>
                 {!compact && activity.field && activity.newValue && (
-                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 truncate">
+                  <Typography variant="muted" className="mt-1 truncate" color="secondary">
                     {activity.field}: {activity.newValue}
-                  </p>
+                  </Typography>
                 )}
               </div>
-              <span
-                className={`${compact ? "text-xs" : "text-sm"} text-ui-text-tertiary dark:text-ui-text-tertiary-dark flex-shrink-0`}
+              <Typography
+                variant="muted"
+                className={`${compact ? "text-xs" : "text-sm"} flex-shrink-0`}
               >
                 {formatRelativeTime(activity.createdAt)}
-              </span>
+              </Typography>
             </Flex>
           </div>
         </Flex>
