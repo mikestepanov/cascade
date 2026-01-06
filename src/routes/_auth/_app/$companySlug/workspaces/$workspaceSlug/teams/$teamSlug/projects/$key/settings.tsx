@@ -59,8 +59,8 @@ function SettingsPage() {
   }
 
   // Defensive: Ensure arrays exist
-  const safeMembers = project.members ?? [];
-  const safeWorkflowStates = project.workflowStates ?? [];
+  const safeMembers = project.members;
+  const safeWorkflowStates = project.workflowStates;
 
   return (
     <ProjectSettings

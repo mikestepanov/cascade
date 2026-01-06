@@ -316,6 +316,7 @@ export const getProject = query({
 
     return {
       ...project,
+
       creatorName: creator?.name || creator?.email || "Unknown",
       members,
       isOwner: project.ownerId === userId || project.createdBy === userId,
@@ -380,6 +381,7 @@ export const getByKey = query({
 
     return {
       ...project,
+
       creatorName: creator?.name || creator?.email || "Unknown",
       members,
       isOwner: project.ownerId === userId || project.createdBy === userId,
