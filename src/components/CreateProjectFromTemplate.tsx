@@ -28,6 +28,8 @@ export function CreateProjectFromTemplate({
   const [projectKey, setProjectKey] = useState("");
   const [description, setDescription] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const workspaces = useQuery(api.workspaces.list, { companyId });
 
   const templates = useQuery(api.projectTemplates.list);
@@ -61,6 +63,7 @@ export function CreateProjectFromTemplate({
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const projectId = await createProject({
         templateId: selectedTemplateId,
@@ -77,6 +80,8 @@ export function CreateProjectFromTemplate({
       resetForm();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to create project");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,6 +91,7 @@ export function CreateProjectFromTemplate({
     setProjectName("");
     setProjectKey("");
     setDescription("");
+    setIsSubmitting(false); // Reset submitting state too
   };
 
   const handleClose = () => {
@@ -281,19 +287,39 @@ export function CreateProjectFromTemplate({
             )}
 
             <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-3">
-              <Button onClick={handleBack} variant="secondary" className="w-full sm:w-auto">
+              <Button
+                onClick={handleBack}
+                variant="secondary"
+                className="w-full sm:w-auto"
+                disabled={isSubmitting}
+              >
                 ← Back to Templates
               </Button>
               <div className="flex gap-3 w-full sm:w-auto">
-                <Button onClick={handleClose} variant="secondary" className="flex-1 sm:flex-none">
+                <Button
+                  onClick={handleClose}
+                  variant="secondary"
+                  className="flex-1 sm:flex-none"
+                  disabled={isSubmitting}
+                >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleCreate}
-                  disabled={!(projectName.trim() && projectKey.trim() && selectedWorkspaceId)}
+                  disabled={
+                    !(projectName.trim() && projectKey.trim() && selectedWorkspaceId) ||
+                    isSubmitting
+                  }
                   className="flex-1 sm:flex-none"
                 >
-                  Create Project
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <LoadingSpinner size="sm" />
+                      <span>Creating...</span>
+                    </div>
+                  ) : (
+                    "Create Project"
+                  )}
                 </Button>
               </div>
             </DialogFooter>

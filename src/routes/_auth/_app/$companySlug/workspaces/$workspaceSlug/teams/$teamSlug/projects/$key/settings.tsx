@@ -58,9 +58,7 @@ function SettingsPage() {
     );
   }
 
-  // Defensive: Ensure arrays exist
-  const safeMembers = project.members ?? [];
-  const safeWorkflowStates = project.workflowStates ?? [];
+  const { members, workflowStates } = project;
 
   return (
     <ProjectSettings
@@ -68,8 +66,8 @@ function SettingsPage() {
       name={project.name}
       projectKey={project.key}
       description={project.description}
-      workflowStates={safeWorkflowStates}
-      members={safeMembers}
+      workflowStates={workflowStates}
+      members={members}
       createdBy={project.createdBy}
       ownerId={project.ownerId}
       isOwner={project.ownerId === user?._id || project.createdBy === user?._id}
