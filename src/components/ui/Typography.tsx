@@ -29,6 +29,7 @@ const typographyVariants = cva("text-ui-text-primary dark:text-ui-text-primary-d
       success: "text-status-success dark:text-status-success-text-dark",
       warning: "text-status-warning dark:text-status-warning-text-dark",
       info: "text-status-info dark:text-status-info-text-dark",
+      accent: "text-accent-600 dark:text-accent-400",
     },
   },
   defaultVariants: {

@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
-import { Typography } from "./ui/Typography";
+import { Typography, type TypographyProps } from "./ui/Typography";
 
 interface ActivityFeedProps {
   projectId: Id<"projects">;
@@ -38,21 +38,21 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     }
   };
 
-  const getActionColor = (action: string) => {
+  const getActionColor = (action: string): TypographyProps["color"] => {
     switch (action) {
       case "created":
-        return "text-status-success";
+        return "success";
       case "updated":
-        return "text-brand-600 dark:text-brand-400";
+        return "primary";
       case "commented":
-        return "text-accent-600 dark:text-accent-400";
+        return "accent";
       case "assigned":
-        return "text-status-warning";
+        return "warning";
       case "linked":
       case "unlinked":
-        return "text-brand-500 dark:text-brand-300";
+        return "primary";
       default:
-        return "text-ui-text-secondary dark:text-ui-text-secondary-dark";
+        return "secondary";
     }
   };
 
@@ -181,7 +181,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   <Typography as="span" className="font-medium">
                     {activity.userName}
                   </Typography>{" "}
-                  <Typography as="span" className={getActionColor(activity.action)}>
+                  <Typography as="span" color={getActionColor(activity.action)}>
                     {formatActivityMessage(activity)}
                   </Typography>
                   {activity.issueKey && (
