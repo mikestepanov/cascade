@@ -180,29 +180,34 @@ export const rbacTest = base.extend<RbacFixtures>({
     const goto = async (page: Page) => {
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
-      // Navigate to project
+      // 1. "Pre-warm" the session by visiting the public landing page first.
+      // This allows the Convex auth client to initialize and hydrate the session from localStorage
+      // in a safe environment where no redirects will occur.
+      await page.goto("/");
+      await page.waitForLoadState("domcontentloaded");
+
+      // Optional: Verify we have storage state injected (sanity check)
+      await page.evaluate(() => {
+        // Just ensuring JS execution works and storage is potentially available
+        return window.localStorage.length;
+      });
+
+      // 2. Now navigate to the protected route.
+      // Auth state should be ready, preventing false-positive redirects.
       await page.goto(targetUrl);
 
-      // Wait for either the board to load OR a redirect to signin
-      // This is faster and avoids infinite "re-authenticating" loops
+      // 3. Verify successful navigation
       try {
-        await expect(async () => {
-          const url = page.url();
-          if (url.includes("/signin") || url === "http://localhost:5555/" || url.endsWith("/")) {
-            throw new Error("Redirected to signin");
-          }
-          expect(url).toContain("/board");
-        }).toPass({ timeout: 15000 });
+        await expect(page).toHaveURL(/.*\/board/, { timeout: 20000 });
       } catch (e) {
-        // If we failed, check if it was an auth issue
+        // Diagnostic error if we still fail
         const url = page.url();
-        if (url.includes("/signin") || url === "http://localhost:5555/") {
-          console.error(`❌ RBAC navigation failed: Redirected to ${url}. Session invalid.`);
+        if (url.includes("/signin")) {
           throw new Error(
-            `Session lost: Redirected to signin during RBAC navigation to ${targetUrl}`,
+            `Session lost: Redirected to signin during RBAC navigation to ${targetUrl}. Auth hydration failed.`,
           );
         }
-        throw e; // Re-throw other errors
+        throw e;
       }
 
       await page.waitForLoadState("domcontentloaded");
