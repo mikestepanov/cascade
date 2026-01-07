@@ -283,10 +283,11 @@ export class ProjectsPage extends BasePage {
         throw e;
       }
 
-      // Wait for the modal to close to confirm successful submission
-      await expect(this.createProjectForm).not.toBeVisible({ timeout: 30000 });
+      // Wait for navigation to the new project page
+      // This is more robust than waiting for modal close, which can race with navigation
+      await this.page.waitForURL(/\/projects\/[A-Z0-9-]+/, { timeout: 30000 });
 
-      // Wait for the new page to stabilize (redirect and hydration)
+      // Wait for the new page to stabilize
       await this.page.waitForLoadState("networkidle");
     } catch (e) {
       console.error("Failed to create project from template:", e);
