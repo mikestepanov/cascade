@@ -90,18 +90,16 @@ export type RbacFixtures = {
 
 // Helper for client-side navigation to preserve WebSocket connection
 export async function clientSideNavigate(page: Page, url: string) {
-  await page.evaluate(async (targetUrl) => {
-    // Robust navigation via TanStack Router instance
-    // This avoids full page reloads and DOM hacks
-    const router = window.router;
-    if (router) {
-      await router.navigate({ to: targetUrl });
-    } else {
-      // Fallback if router not exposed (shouldn't happen in test env)
-      console.warn("Router not found on window, falling back to history API");
-      window.history.pushState({}, "", targetUrl);
-      window.dispatchEvent(new Event("popstate"));
-    }
+  await page.evaluate((targetUrl) => {
+    // "Black-box" navigation: Simulate a user clicking a link.
+    // This works with TanStack Router (which intercepts clicks)
+    // without needing to expose internal instances.
+    const a = document.createElement("a");
+    a.href = targetUrl;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }, url);
 }
 
