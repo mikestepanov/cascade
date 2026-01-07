@@ -93,7 +93,7 @@ export async function clientSideNavigate(page: Page, url: string) {
   await page.evaluate(async (targetUrl) => {
     // Robust navigation via TanStack Router instance
     // This avoids full page reloads and DOM hacks
-    const router = (window as any).router;
+    const router = window.router;
     if (router) {
       await router.navigate({ to: targetUrl });
     } else {
@@ -207,7 +207,7 @@ export const rbacTest = base.extend<RbacFixtures>({
         await page.waitForFunction(
           () => {
             const hasToken = window.localStorage.length > 0;
-            const convex = (window as any).__convex_test_client;
+            const convex = window.__convex_test_client;
             const isConnected = convex?.connectionState().isWebSocketConnected === true;
             return hasToken && isConnected;
           },
