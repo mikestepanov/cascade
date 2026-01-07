@@ -16,7 +16,7 @@
  */
 
 import { RBAC_TEST_CONFIG } from "./config";
-import { expect, hasAdminAuth, rbacTest } from "./fixtures";
+import { clientSideNavigate, expect, hasAdminAuth, rbacTest } from "./fixtures";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -85,7 +85,7 @@ rbacTest(
     }
 
     // 6. Navigate back to board and check sprints
-    await adminPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+    await clientSideNavigate(adminPage, `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
     await adminPage.waitForLoadState("domcontentloaded");
 
     const sprintsTab = adminPage
@@ -163,7 +163,7 @@ rbacTest(
       console.log("[DEBUG] Debug element NOT found via locator");
     }
 
-    await editorPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
+    await clientSideNavigate(editorPage, `/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
     await editorPage.waitForLoadState("domcontentloaded");
     await editorPage.waitForTimeout(1000);
 
@@ -174,7 +174,7 @@ rbacTest(
     console.log("✓ Editor is redirected from settings to board");
 
     // 6. Check sprints access
-    await editorPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+    await clientSideNavigate(editorPage, `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
     await editorPage.waitForLoadState("domcontentloaded");
 
     const sprintsTab = editorPage
@@ -245,7 +245,7 @@ rbacTest(
     console.log("✓ Viewer cannot see settings tab");
 
     // 5. Try to access settings directly - should redirect to board
-    await viewerPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
+    await clientSideNavigate(viewerPage, `/${rbacCompanySlug}/projects/${rbacProjectKey}/settings`);
     await viewerPage.waitForLoadState("domcontentloaded");
     await viewerPage.waitForTimeout(1000);
 
@@ -256,7 +256,7 @@ rbacTest(
     console.log("✓ Viewer is redirected from settings to board");
 
     // 6. Check analytics access (viewers can view analytics)
-    await viewerPage.goto(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
+    await clientSideNavigate(viewerPage, `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
     await viewerPage.waitForLoadState("domcontentloaded");
 
     const analyticsTab = viewerPage

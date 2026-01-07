@@ -88,6 +88,23 @@ export type RbacFixtures = {
   gotoRbacProject: (page: Page) => Promise<void>;
 };
 
+// Helper for client-side navigation to preserve WebSocket connection
+export async function clientSideNavigate(page: Page, url: string) {
+  await page.evaluate(async (targetUrl) => {
+    // Robust navigation via TanStack Router instance
+    // This avoids full page reloads and DOM hacks
+    const router = (window as any).router;
+    if (router) {
+      await router.navigate({ to: targetUrl });
+    } else {
+      // Fallback if router not exposed (shouldn't happen in test env)
+      console.warn("Router not found on window, falling back to history API");
+      window.history.pushState({}, "", targetUrl);
+      window.dispatchEvent(new Event("popstate"));
+    }
+  }, url);
+}
+
 export const rbacTest = base.extend<RbacFixtures>({
   adminContext: async ({ browser }, use) => {
     if (!isAuthStateValid("admin")) throw new Error("Admin auth state not found.");
@@ -190,7 +207,7 @@ export const rbacTest = base.extend<RbacFixtures>({
         await page.waitForFunction(
           () => {
             const hasToken = window.localStorage.length > 0;
-            const convex = window.__convex_test_client;
+            const convex = (window as any).__convex_test_client;
             const isConnected = convex?.connectionState().isWebSocketConnected === true;
             return hasToken && isConnected;
           },
@@ -198,21 +215,14 @@ export const rbacTest = base.extend<RbacFixtures>({
           { timeout: 20000 },
         );
       } catch (e) {
-        // Log diagnostic info if it times out
-        const state = await page.evaluate(() => ({
-          tokenCount: window.localStorage.length,
-          hasClient: !!window.__convex_test_client,
-          wsState: window.__convex_test_client?.connectionState(),
-        }));
-        console.log("⚠️ Auth Pre-warm Timeout:", JSON.stringify(state));
-        // Proceed anyway, let the test fail naturally with a better error if needed
+        console.warn("⚠️ Auth Pre-warm Timeout. Proceeding anyway.");
       }
 
-      // 2. Now navigate to the protected route.
-      // Auth state should be ready, preventing false-positive redirects.
-      await page.goto(targetUrl);
+      // 3. Now navigate to the protected route using Client-Side Navigation
+      console.log(`Navigating to ${targetUrl} via client-side routing...`);
+      await clientSideNavigate(page, targetUrl);
 
-      // 3. Verify successful navigation
+      // 4. Verify successful navigation
       try {
         await expect(page).toHaveURL(/.*\/board/, { timeout: 20000 });
       } catch (e) {
