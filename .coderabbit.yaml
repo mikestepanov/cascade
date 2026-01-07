@@ -1,0 +1,10 @@
+language: en-US
+high_level_summary: true
+walkthrough: true
+auto_review:
+  enabled: true
+
+policy:
+  - "Focus on logic errors, security vulnerabilities, and hallucinations."
+  - "Ignore minor style/formatting issues (let Biome handle that)."
+  - "Verify that server/client boundaries are respected (Convex backend functions vs React frontend)."
