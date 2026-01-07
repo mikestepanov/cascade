@@ -75,9 +75,7 @@ export function ProjectsList() {
                 <Flex direction="column" gap="md">
                   <Flex justify="space-between" align="start">
                     <Typography variant="h3">{project.name}</Typography>
-                    <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
-                      {project.key}
-                    </span>
+                    <Typography variant="inlineCode">{project.key}</Typography>
                   </Flex>
 
                   {project.description && (
@@ -86,11 +84,10 @@ export function ProjectsList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md" className="text-sm text-gray-500">
-                    <span>{project.myIssues || 0} issues</span>
-                    <span>•</span>
-                    <span>{project.boardType === "kanban" ? "Kanban" : "Scrum"}</span>
-                  </Flex>
+                  <Typography variant="muted" className="text-sm">
+                    {project.myIssues || 0} issues •{" "}
+                    {project.boardType === "kanban" ? "Kanban" : "Scrum"}
+                  </Typography>
                 </Flex>
               </Card>
             </Link>

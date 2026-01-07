@@ -975,8 +975,13 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       project = await ctx.db.get(projectId);
-    } else if (!project.companyId) {
-      await ctx.db.patch(project._id, { companyId: company._id });
+    } else {
+      // Always update project metadata to match current test config
+      await ctx.db.patch(project._id, {
+        name: args.projectName,
+        companyId: company._id,
+        description: "E2E test project for RBAC permission testing - Company level",
+      });
     }
 
     if (!project) {
@@ -1014,6 +1019,11 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       workspaceProject = await ctx.db.get(wsProjectId);
+    } else {
+      await ctx.db.patch(workspaceProject._id, {
+        name: `RBAC Workspace Project (${workspaceProjectKey})`,
+        description: "E2E test project for RBAC - Workspace level",
+      });
     }
 
     // 4c. Team-level project
@@ -1047,6 +1057,11 @@ export const setupRbacProjectInternal = internalMutation({
       });
 
       teamProject = await ctx.db.get(tmProjectId);
+    } else {
+      await ctx.db.patch(teamProject._id, {
+        name: `RBAC Team Project (${teamProjectKey})`,
+        description: "E2E test project for RBAC - Team level",
+      });
     }
 
     // =========================================================================
