@@ -181,17 +181,32 @@ export const rbacTest = base.extend<RbacFixtures>({
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
       // 1. "Pre-warm" the session by visiting the public landing page first.
-      // This allows the Convex auth client to initialize and hydrate the session from localStorage
-      // in a safe environment where no redirects will occur.
       await page.goto("/");
-      await page.waitForLoadState("domcontentloaded");
 
-      // Optional: Verify we have storage state injected (sanity check)
-      const localStorageLength = await page.evaluate(() => {
-        // Just ensuring JS execution works and storage is potentially available
-        return window.localStorage.length;
-      });
-      expect(localStorageLength).toBeGreaterThanOrEqual(0);
+      // 2. Wait for EVERYTHING to be strictly ready (Combined Check):
+      // - LocalStorage must be populated (Auth token present)
+      // - Convex WebSocket must be connected (Client ready to validate token)
+      try {
+        await page.waitForFunction(
+          () => {
+            const hasToken = window.localStorage.length > 0;
+            const convex = window.__convex_test_client;
+            const isConnected = convex?.connectionState().isWebSocketConnected === true;
+            return hasToken && isConnected;
+          },
+          undefined,
+          { timeout: 20000 },
+        );
+      } catch (e) {
+        // Log diagnostic info if it times out
+        const state = await page.evaluate(() => ({
+          tokenCount: window.localStorage.length,
+          hasClient: !!window.__convex_test_client,
+          wsState: window.__convex_test_client?.connectionState(),
+        }));
+        console.log("⚠️ Auth Pre-warm Timeout:", JSON.stringify(state));
+        // Proceed anyway, let the test fail naturally with a better error if needed
+      }
 
       // 2. Now navigate to the protected route.
       // Auth state should be ready, preventing false-positive redirects.
