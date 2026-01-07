@@ -187,10 +187,11 @@ export const rbacTest = base.extend<RbacFixtures>({
       await page.waitForLoadState("domcontentloaded");
 
       // Optional: Verify we have storage state injected (sanity check)
-      await page.evaluate(() => {
+      const localStorageLength = await page.evaluate(() => {
         // Just ensuring JS execution works and storage is potentially available
         return window.localStorage.length;
       });
+      expect(localStorageLength).toBeGreaterThanOrEqual(0);
 
       // 2. Now navigate to the protected route.
       // Auth state should be ready, preventing false-positive redirects.

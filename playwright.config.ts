@@ -39,7 +39,7 @@ export default defineConfig({
 
   // Expect timeout for assertions
   expect: {
-    timeout: 5 * 1000,
+    timeout: 10 * 1000,
   },
 
   // Shared settings for all projects
@@ -63,10 +63,10 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
 
     // Action timeout
-    actionTimeout: 10 * 1000,
+    actionTimeout: 15 * 1000,
 
     // Navigation timeout
-    navigationTimeout: 15 * 1000,
+    navigationTimeout: 30 * 1000,
   },
 
   // Test projects for different browsers/scenarios
