@@ -8,8 +8,8 @@ const router = getRouter();
 
 const rootElement = document.getElementById("root");
 if (rootElement && !rootElement.innerHTML) {
-  // Expose router for E2E testing
-  if (import.meta.env.DEV) {
+  // Expose router for E2E testing (in dev or explicit e2e mode)
+  if (import.meta.env.DEV || import.meta.env.MODE === "e2e") {
     (window as any).router = router;
   }
 

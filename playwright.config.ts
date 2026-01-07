@@ -104,7 +104,7 @@ export default defineConfig({
   webServer: {
     // In CI: build and preview to catch bundling issues
     // Locally: use dev for speed
-    command: process.env.CI ? "pnpm run build && pnpm run preview" : "pnpm run dev",
+    command: process.env.CI ? "pnpm run build:e2e && pnpm run preview:e2e" : "pnpm run dev",
     url: "http://localhost:5555",
     reuseExistingServer: !process.env.CI,
     timeout: 180 * 1000, // Increased timeout for build process
