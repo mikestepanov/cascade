@@ -127,7 +127,7 @@ export function AppSidebar() {
       {isMobileOpen && (
         <button
           type="button"
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-ui-bg-overlay dark:bg-ui-bg-overlay-dark z-40 lg:hidden"
           onClick={closeMobile}
           onKeyDown={(e) => e.key === "Escape" && closeMobile()}
           aria-label="Close sidebar"
