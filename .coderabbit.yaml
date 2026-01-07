@@ -1,4 +1,4 @@
-language: yaml
+language: en-US
 high_level_summary: true
 walkthrough: true
 auto_review:
