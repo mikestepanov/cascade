@@ -136,7 +136,12 @@ export const update = mutation({
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw new Error("Workspace not found");
 
-    // TODO: Check permissions (workspace admin or company admin)
+    // Check permissions: Only company admins can update workspaces
+    // Check permissions: Only company admins can delete workspaces
+    const isAdmin = await isCompanyAdmin(ctx, workspace.companyId, userId);
+    if (!isAdmin) {
+      throw new Error("Only company admins can perform this action");
+    }
 
     await ctx.db.patch(args.id, {
       ...Object.fromEntries(
@@ -166,7 +171,7 @@ export const remove = mutation({
     const isCreator = workspace.createdBy === userId;
     const isCompAdmin = await isCompanyAdmin(ctx, workspace.companyId, userId);
 
-    if (!isCreator && !isCompAdmin) {
+    if (!(isCreator || isCompAdmin)) {
       throw new Error("Only workspace admins or company admins can delete workspaces");
     }
 

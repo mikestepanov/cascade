@@ -149,7 +149,7 @@ describe("Workspaces", () => {
       await asOwner.mutation(api.companies.updateMemberRole, {
         companyId,
         userId: creatorId,
-        role: "member"
+        role: "member",
       });
 
       const role = await asCreator.query(api.companies.getUserRole, { companyId });
@@ -222,7 +222,7 @@ describe("Workspaces", () => {
           createdBy: userId,
           createdAt: Date.now(),
           updatedAt: Date.now(),
-          isPrivate: false
+          isPrivate: false,
         });
       });
 
@@ -259,13 +259,15 @@ describe("Workspaces", () => {
           createdAt: Date.now(),
           updatedAt: Date.now(),
           boardType: "kanban",
-          workflowStates: []
+          workflowStates: [],
         });
       });
 
       await expect(async () => {
         await asUser.mutation(api.workspaces.remove, { id: workspaceId });
-      }).rejects.toThrow("Cannot delete workspace with projects. Please delete or move projects first.");
+      }).rejects.toThrow(
+        "Cannot delete workspace with projects. Please delete or move projects first.",
+      );
     });
   });
 });

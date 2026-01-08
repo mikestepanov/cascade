@@ -243,11 +243,11 @@ export const TIMEOUTS = {
  * Auth state file paths for each test user
  */
 export const AUTH_PATHS = {
-  admin: ".auth/user-admin.json",
-  teamLead: ".auth/user-teamlead.json",
-  teamMember: ".auth/user-member.json",
-  viewer: ".auth/user-viewer.json",
-  onboarding: ".auth/user-onboarding.json",
+  admin: (workerIndex = 0) => `.auth/user-admin-${workerIndex}.json`,
+  teamLead: (workerIndex = 0) => `.auth/user-teamlead-${workerIndex}.json`,
+  teamMember: (workerIndex = 0) => `.auth/user-member-${workerIndex}.json`,
+  viewer: (workerIndex = 0) => `.auth/user-viewer-${workerIndex}.json`,
+  onboarding: (workerIndex = 0) => `.auth/user-onboarding-${workerIndex}.json`,
 };
 
 /**

@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 dev-dist
+build-output
 temp/
 *.local
 .env
@@ -50,3 +51,5 @@ src/routeTree.gen.ts
 # Windows reserved names (created by cross-platform issues)
 nul
 NUL
+
+build-output/
