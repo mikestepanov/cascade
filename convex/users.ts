@@ -5,6 +5,12 @@ import { batchFetchUsers } from "./lib/batchHelpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 
+// Helper: Validate email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 /**
  * Get a user by ID (sanitized for authenticated users)
  * Note: Does not check if requester should see this user.
@@ -55,7 +61,25 @@ export const updateProfile = mutation({
     } = {};
 
     if (args.name !== undefined) updates.name = args.name;
-    if (args.email !== undefined) updates.email = args.email;
+
+    if (args.email !== undefined) {
+      if (!isValidEmail(args.email)) {
+        throw new Error("Invalid email address");
+      }
+
+      // Check if email is already in use by another user
+      const existingUser = await ctx.db
+        .query("users")
+        .withIndex("email", (q) => q.eq("email", args.email))
+        .first();
+
+      if (existingUser && existingUser._id !== userId) {
+        throw new Error("Email already in use");
+      }
+
+      updates.email = args.email;
+    }
+
     if (args.avatar !== undefined) updates.image = args.avatar;
     if (args.bio !== undefined) updates.bio = args.bio;
     if (args.timezone !== undefined) updates.timezone = args.timezone;
