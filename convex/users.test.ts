@@ -23,6 +23,73 @@ describe("Users", () => {
       expect(user?.bio).toBe("New Bio");
       expect(user?.timezone).toBe("Europe/London");
     });
+
+    it("should allow updating email to a valid unused email", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await asUser.mutation(api.users.updateProfile, {
+        email: "new.email@example.com",
+      });
+
+      const user = await t.run(async (ctx) => ctx.db.get(userId));
+      expect(user?.email).toBe("new.email@example.com");
+    });
+
+    it("should reject invalid email format", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await expect(
+        asUser.mutation(api.users.updateProfile, {
+          email: "invalid-email",
+        }),
+      ).rejects.toThrow("Invalid email address");
+    });
+
+    it("should reject email already in use by another user", async () => {
+      const t = convexTest(schema, modules);
+      const user1Id = await createTestUser(t);
+      const user2Id = await createTestUser(t); // Automatically gets a different email if testUtils handles it, or we set it
+
+      // Ensure user2 has a specific email
+      await t.run(async (ctx) => {
+        await ctx.db.patch(user2Id, { email: "taken@example.com" });
+      });
+
+      const asUser1 = asAuthenticatedUser(t, user1Id);
+
+      await expect(
+        asUser1.mutation(api.users.updateProfile, {
+          email: "taken@example.com",
+        }),
+      ).rejects.toThrow("Email already in use");
+    });
+
+    it("should allow updating to own email (no-op but valid)", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+
+      // Get current email
+      const user = await t.run(async (ctx) => ctx.db.get(userId));
+      const currentEmail = user?.email || "test@example.com";
+
+      // Ensure email is set
+      await t.run(async (ctx) => {
+        await ctx.db.patch(userId, { email: currentEmail });
+      });
+
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await asUser.mutation(api.users.updateProfile, {
+        email: currentEmail,
+      });
+
+      const updatedUser = await t.run(async (ctx) => ctx.db.get(userId));
+      expect(updatedUser?.email).toBe(currentEmail);
+    });
   });
 
   describe("getUserStats", () => {
