@@ -16,18 +16,44 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
-  const issues = useQuery(api.issues.listRoadmapIssues, { projectId, sprintId });
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-  // Get calendar data
-  const { daysInMonth, firstDayOfMonth, issuesByDate } = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+  // Calculate the visible date range (including padding days)
+  const { startTimestamp, endTimestamp, firstDayOfMonth, daysInMonth } = useMemo(() => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysCount = lastDay.getDate();
-    const firstDayOfWeek = firstDay.getDay();
+    const firstDayOfWeek = firstDay.getDay(); // 0 = Sunday
 
-    // Group issues by date
+    // Start from the beginning of the first week row
+    // (subtract days to get to previous Sunday if needed, though here we just render empty cells,
+    // but for data fetching we might want to include them if we were rendering them)
+    // The current UI renders empty cells for previous month days:
+    // for (let i = 0; i < firstDayOfMonth; i++) { ... }
+    // So we strictly need data starting from the 1st of the month.
+    // However, to be safe and cover full days, we use start of 1st day to end of last day.
+
+    const start = new Date(year, month, 1, 0, 0, 0, 0);
+    const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+
+    return {
+      startTimestamp: start.getTime(),
+      endTimestamp: end.getTime(),
+      firstDayOfMonth: firstDayOfWeek,
+      daysInMonth: daysCount,
+    };
+  }, [year, month]);
+
+  const issues = useQuery(api.issues.listIssuesByDateRange, {
+    projectId,
+    sprintId,
+    from: startTimestamp,
+    to: endTimestamp,
+  });
+
+  // Group issues by date
+  const issuesByDate = useMemo(() => {
     const byDate: Record<string, typeof issues> = {};
     issues?.forEach((issue) => {
       if (issue.dueDate) {
@@ -36,13 +62,8 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
         byDate[dateKey].push(issue);
       }
     });
-
-    return {
-      daysInMonth: daysCount,
-      firstDayOfMonth: firstDayOfWeek,
-      issuesByDate: byDate,
-    };
-  }, [currentDate, issues]);
+    return byDate;
+  }, [issues]);
 
   const previousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
