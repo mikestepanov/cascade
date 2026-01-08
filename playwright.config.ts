@@ -26,9 +26,9 @@ export default defineConfig({
   // Retries: 2 on CI, 0 locally to catch flakiness during development
   retries: process.env.CI ? 2 : 0,
 
-  // Use 1 worker on CI to opt out of parallel tests, 4 locally to match the number of isolated auth states provisioned in global-setup
+  // Use 4 workers always - Blacksmith CI runner (4 vCPU) matches local dev capacity!
   // This ensures consistency between local dev and CI
-  workers: process.env.CI ? 1 : 4,
+  workers: 4,
 
   // Reporter configuration
   reporter: process.env.CI
