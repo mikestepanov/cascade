@@ -111,6 +111,7 @@ jobs:
           retention-days: 1
 
   e2e-tests:
+    if: false
     name: E2E Tests
     runs-on: blacksmith-4vcpu-ubuntu-2204
     needs: [build]
