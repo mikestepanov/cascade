@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ROUTES } from "@/config/routes";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 
 export function NotFoundPage() {
   return (
@@ -11,10 +11,7 @@ export function NotFoundPage() {
       >
         404
       </Typography>
-      <Typography
-        variant="lead"
-        className="mt-4"
-      >
+      <Typography variant="lead" className="mt-4">
         Page not found
       </Typography>
       <Link

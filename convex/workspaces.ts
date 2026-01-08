@@ -167,13 +167,15 @@ export const remove = mutation({
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw new Error("Workspace not found");
 
-    // TODO: Check permissions (workspace admin or company admin)
-    const isAdmin = await isCompanyAdmin(ctx, workspace.companyId, userId);
-    if (!isAdmin) {
-      throw new Error("Only company admins can perform this action");
+    // Check permissions (workspace admin or company admin)
+    const isCreator = workspace.createdBy === userId;
+    const isCompAdmin = await isCompanyAdmin(ctx, workspace.companyId, userId);
+
+    if (!(isCreator || isCompAdmin)) {
+      throw new Error("Only workspace admins or company admins can delete workspaces");
     }
 
-    // TODO: Check if workspace has teams or projects
+    // Check if workspace has teams or projects
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.id))
