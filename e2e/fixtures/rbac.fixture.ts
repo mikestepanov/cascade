@@ -8,21 +8,13 @@ import { ProjectsPage, WorkspacesPage } from "../pages";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
-const RBAC_CONFIG_PATH = path.join(AUTH_DIR, "rbac-config.json");
+const RBAC_CONFIG_DIR = AUTH_DIR;
 
-type UserRole = "admin" | "editor" | "viewer";
-
-interface SavedRbacConfig {
-  projectKey: string;
-  companySlug: string;
-  projectId?: string;
-  companyId?: string;
-}
-
-function getRbacConfig(): { projectKey: string; companySlug: string } {
+function getRbacConfig(workerIndex = 0): { projectKey: string; companySlug: string } {
   try {
-    if (fs.existsSync(RBAC_CONFIG_PATH)) {
-      const content = fs.readFileSync(RBAC_CONFIG_PATH, "utf-8");
+    const configPath = path.join(RBAC_CONFIG_DIR, `rbac-config-${workerIndex}.json`);
+    if (fs.existsSync(configPath)) {
+      const content = fs.readFileSync(configPath, "utf-8");
       const config: SavedRbacConfig = JSON.parse(content);
       if (config.projectKey && config.companySlug) {
         return { projectKey: config.projectKey, companySlug: config.companySlug };
@@ -32,18 +24,22 @@ function getRbacConfig(): { projectKey: string; companySlug: string } {
   return { projectKey: RBAC_TEST_CONFIG.projectKey, companySlug: RBAC_TEST_CONFIG.companySlug };
 }
 
-function getAuthPath(role: UserRole): string {
+function getAuthPath(role: UserRole, workerIndex = 0): string {
   const paths: Record<UserRole, string> = {
-    admin: AUTH_PATHS.teamLead,
-    editor: AUTH_PATHS.teamMember,
-    viewer: AUTH_PATHS.viewer,
+    admin: AUTH_PATHS.teamLead(workerIndex),
+    editor: AUTH_PATHS.teamMember(workerIndex),
+    viewer: AUTH_PATHS.viewer(workerIndex),
   };
-  return path.join(AUTH_DIR, path.basename(paths[role]));
+  const filename = path.basename(paths[role]);
+  const fullPath = path.join(AUTH_DIR, filename);
+  return fullPath;
 }
 
-function isAuthStateValid(role: UserRole): boolean {
-  const authPath = getAuthPath(role);
-  if (!fs.existsSync(authPath)) return false;
+function assertAuthStateValid(role: UserRole, workerIndex = 0): void {
+  const authPath = getAuthPath(role, workerIndex);
+  if (!fs.existsSync(authPath)) {
+    throw new Error(`[AuthState] File not found: ${authPath} (Worker: ${workerIndex})`);
+  }
   try {
     const content = fs.readFileSync(authPath, "utf-8");
     const state = JSON.parse(content);
@@ -56,13 +52,13 @@ function isAuthStateValid(role: UserRole): boolean {
               item.name.includes("token") ||
               item.name.includes("convex"),
           );
-          if (hasAuthToken) return true;
+          if (hasAuthToken) return;
         }
       }
     }
-    return false;
-  } catch {
-    return false;
+    throw new Error(`[AuthState] Token not found in structure. Path: ${authPath}`);
+  } catch (e) {
+    throw new Error(`[AuthState] Exception: ${(e as Error).message}. Path: ${authPath}`);
   }
 }
 
@@ -104,27 +100,42 @@ export async function clientSideNavigate(page: Page, url: string) {
 }
 
 export const rbacTest = base.extend<RbacFixtures>({
-  adminContext: async ({ browser }, use) => {
-    if (!isAuthStateValid("admin")) throw new Error("Admin auth state not found.");
-    const context = await browser.newContext({ storageState: getAuthPath("admin") });
+  adminContext: async ({ browser }, use, testInfo) => {
+    const workerIndex = testInfo.parallelIndex;
+    const authPath = getAuthPath("admin", workerIndex);
+    assertAuthStateValid("admin", workerIndex);
+
+    const context = await browser.newContext({ storageState: authPath });
+    (context as any)._role = "admin";
+    (context as any)._workerIndex = workerIndex;
     await use(context);
     await context.close();
   },
-  editorContext: async ({ browser }, use) => {
-    if (!isAuthStateValid("editor")) throw new Error("Editor auth state not found.");
-    const context = await browser.newContext({ storageState: getAuthPath("editor") });
+  editorContext: async ({ browser }, use, testInfo) => {
+    const workerIndex = testInfo.parallelIndex;
+    assertAuthStateValid("editor", workerIndex);
+    const authPath = getAuthPath("editor", workerIndex);
+    const context = await browser.newContext({ storageState: authPath });
+    (context as any)._role = "editor";
+    (context as any)._workerIndex = workerIndex;
     await use(context);
     await context.close();
   },
-  viewerContext: async ({ browser }, use) => {
-    if (!isAuthStateValid("viewer")) throw new Error("Viewer auth state not found.");
-    const context = await browser.newContext({ storageState: getAuthPath("viewer") });
+  viewerContext: async ({ browser }, use, testInfo) => {
+    const workerIndex = testInfo.parallelIndex;
+    assertAuthStateValid("viewer", workerIndex);
+    const authPath = getAuthPath("viewer", workerIndex);
+    const context = await browser.newContext({ storageState: authPath });
+    (context as any)._role = "viewer";
+    (context as any)._workerIndex = workerIndex;
     await use(context);
     await context.close();
   },
 
   adminPage: async ({ adminContext }, use) => {
     const page = await adminContext.newPage();
+    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]: ${msg.text()}`));
+    page.on("pageerror", (err) => console.log(`BROWSER ERROR: ${err.message}`));
     await use(page);
     await page.close();
   },
@@ -144,6 +155,8 @@ export const rbacTest = base.extend<RbacFixtures>({
 
   editorPage: async ({ editorContext }, use) => {
     const page = await editorContext.newPage();
+    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]: ${msg.text()}`));
+    page.on("pageerror", (err) => console.log(`BROWSER ERROR: ${err.message}`));
     await use(page);
     await page.close();
   },
@@ -163,6 +176,8 @@ export const rbacTest = base.extend<RbacFixtures>({
 
   viewerPage: async ({ viewerContext }, use) => {
     const page = await viewerContext.newPage();
+    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]: ${msg.text()}`));
+    page.on("pageerror", (err) => console.log(`BROWSER ERROR: ${err.message}`));
     await use(page);
     await page.close();
   },
@@ -180,12 +195,12 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(new WorkspacesPage(viewerPage));
   },
 
-  rbacProjectKey: async ({}, use) => {
-    await use(getRbacConfig().projectKey);
+  rbacProjectKey: async ({}, use, testInfo) => {
+    await use(getRbacConfig(testInfo.workerIndex).projectKey);
   },
 
-  rbacCompanySlug: async ({}, use) => {
-    await use(getRbacConfig().companySlug);
+  rbacCompanySlug: async ({}, use, testInfo) => {
+    await use(getRbacConfig(testInfo.workerIndex).companySlug);
   },
   rbacProjectUrl: async ({ rbacCompanySlug, rbacProjectKey }, use) => {
     await use(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
@@ -195,46 +210,63 @@ export const rbacTest = base.extend<RbacFixtures>({
     const goto = async (page: Page) => {
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
-      // 1. "Pre-warm" the session by visiting the public landing page first.
-      await page.goto("/");
+      // 1. Identify role and prepare JWT
+      const role = (page.context() as any)._role as UserRole;
+      const workerIndex = (page.context() as any)._workerIndex ?? 0;
 
-      // 2. Wait for EVERYTHING to be strictly ready (Combined Check):
-      // - LocalStorage must be populated (Auth token present)
-      // - Convex WebSocket must be connected (Client ready to validate token)
-      try {
-        await page.waitForFunction(
-          () => {
-            const hasToken = window.localStorage.length > 0;
-            const convex = window.__convex_test_client;
-            const isConnected = convex?.connectionState().isWebSocketConnected === true;
-            return hasToken && isConnected;
-          },
-          undefined,
-          { timeout: 20000 },
-        );
-      } catch (e) {
-        console.warn("⚠️ Auth Pre-warm Timeout. Proceeding anyway.");
-      }
+      if (role) {
+        const authPath = getAuthPath(role, workerIndex);
+        try {
+          const authContent = JSON.parse(fs.readFileSync(authPath, "utf-8"));
+          const originState = authContent.origins?.[0];
 
-      // 3. Now navigate to the protected route using Client-Side Navigation
-      console.log(`Navigating to ${targetUrl} via client-side routing...`);
-      await clientSideNavigate(page, targetUrl);
+          if (originState?.localStorage) {
+            // Convex uses dynamic keys like __convexAuthJWT_httpsmajestic...
+            // Find any key that looks like a JWT store
+            const convexJwt = originState.localStorage.find((item: any) =>
+              item.name.includes("__convexAuthJWT_"),
+            );
 
-      // 4. Verify successful navigation
-      try {
-        await expect(page).toHaveURL(/.*\/board/, { timeout: 20000 });
-      } catch (e) {
-        // Diagnostic error if we still fail
-        const url = page.url();
-        if (url.includes("/signin")) {
-          throw new Error(
-            `Session lost: Redirected to signin during RBAC navigation to ${targetUrl}. Auth hydration failed.`,
-          );
+            if (convexJwt) {
+              console.log(
+                `[Test Manual] Preparing initScript for ${role} (Worker ${workerIndex})...`,
+              );
+              // Use context.addInitScript to inject token before ANY page code runs
+              // This is much faster and more reliable than navigating to / first
+              await page.context().addInitScript(
+                ({ name, value }) => {
+                  window.localStorage.setItem(name, value);
+                },
+                { name: convexJwt.name, value: convexJwt.value },
+              );
+            } else {
+              console.warn(`[Test Manual] No JWT found in ${authPath}`);
+            }
+          }
+        } catch (e: any) {
+          console.error(`[Test Manual] Token prep failed: ${e?.message || e}`);
         }
-        throw e;
       }
 
-      await page.waitForLoadState("domcontentloaded");
+      console.log(`Navigating to ${targetUrl}...`);
+      await page.goto(targetUrl);
+
+      // 2. Wait for Convex WebSocket synchronization
+      await page
+        .waitForFunction(
+          () => {
+            const convex = (window as any).__convex_test_client;
+            return convex?.connectionState().isWebSocketConnected;
+          },
+          { timeout: 15000 },
+        )
+        .catch(() => {
+          console.warn("⚠️ Convex WebSocket timed out, proceeding anyway...");
+        });
+
+      // Final check: URL should contain /board
+      await expect(page).toHaveURL(/.*\/board/, { timeout: 15000 });
+      console.log(`✓ Navigated to ${page.url()}`);
     };
     await use(goto);
   },
@@ -243,13 +275,28 @@ export const rbacTest = base.extend<RbacFixtures>({
 export { expect };
 
 export function hasAdminAuth(): boolean {
-  return isAuthStateValid("admin");
+  try {
+    assertAuthStateValid("admin");
+    return true;
+  } catch {
+    return false;
+  }
 }
 export function hasEditorAuth(): boolean {
-  return isAuthStateValid("editor");
+  try {
+    assertAuthStateValid("editor");
+    return true;
+  } catch {
+    return false;
+  }
 }
 export function hasViewerAuth(): boolean {
-  return isAuthStateValid("viewer");
+  try {
+    assertAuthStateValid("viewer");
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export const RBAC_USERS = {

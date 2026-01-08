@@ -19,46 +19,22 @@ import { trySignInUser } from "../utils";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AUTH_DIR = path.join(__dirname, "../.auth");
-const AUTH_STATE_PATH = path.join(AUTH_DIR, path.basename(AUTH_PATHS.teamLead));
-const DASHBOARD_CONFIG_PATH = path.join(AUTH_DIR, "dashboard-config.json");
 
-function loadDashboardConfig(): { companySlug: string; email: string } | null {
+function getAuthStatePath(workerIndex = 0): string {
+  return path.join(AUTH_DIR, path.basename(AUTH_PATHS.teamLead(workerIndex)));
+}
+
+function loadDashboardConfig(workerIndex = 0): { companySlug: string; email: string } | null {
   try {
-    if (fs.existsSync(DASHBOARD_CONFIG_PATH)) {
-      const content = fs.readFileSync(DASHBOARD_CONFIG_PATH, "utf-8");
+    const configPath = path.join(AUTH_DIR, `dashboard-config-${workerIndex}.json`);
+    if (fs.existsSync(configPath)) {
+      const content = fs.readFileSync(configPath, "utf-8");
       return JSON.parse(content);
     }
   } catch {
     // Ignore errors
   }
   return null;
-}
-
-function isAuthStateValid(): boolean {
-  if (!fs.existsSync(AUTH_STATE_PATH)) {
-    return false;
-  }
-  try {
-    const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
-    const state = JSON.parse(content);
-    if (state.origins && Array.isArray(state.origins)) {
-      for (const origin of state.origins) {
-        if (origin.localStorage && Array.isArray(origin.localStorage)) {
-          const hasAuthToken = origin.localStorage.some(
-            (item: { name: string; value: string }) =>
-              item.name.includes("auth") ||
-              item.name.includes("token") ||
-              item.name.includes("convex") ||
-              item.name.includes("session"),
-          );
-          if (hasAuthToken) return true;
-        }
-      }
-    }
-    return false;
-  } catch {
-    return false;
-  }
 }
 
 export type AuthFixtures = {
@@ -80,11 +56,12 @@ export type AuthFixtures = {
 };
 
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: async ({}, use, _testInfo) => {
+  storageState: async ({}, use, testInfo) => {
     let state: any;
     try {
-      if (fs.existsSync(AUTH_STATE_PATH)) {
-        const content = fs.readFileSync(AUTH_STATE_PATH, "utf-8");
+      const authPath = getAuthStatePath(testInfo.parallelIndex);
+      if (fs.existsSync(authPath)) {
+        const content = fs.readFileSync(authPath, "utf-8");
         state = JSON.parse(content);
       }
     } catch (e) {
@@ -95,7 +72,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   skipAuthSave: [false, { option: true }],
 
-  ensureAuthenticated: async ({ page, companySlug }, use) => {
+  ensureAuthenticated: async ({ page, companySlug }, use, testInfo) => {
     const reauth = async () => {
       const dashboardUrl = companySlug ? `/${companySlug}/dashboard` : "/";
       await page.goto(dashboardUrl);
@@ -118,6 +95,11 @@ export const authenticatedTest = base.extend<AuthFixtures>({
         await page.goto(`${baseURL}/signin`);
         await page.waitForLoadState("domcontentloaded");
 
+        // NOTE: This uses the static TEST_USERS.teamLead, which might not match the worker-specific email
+        // if global-setup created e2e-teamlead-wX...
+        // For basic tests, this might fall back to a fresh login which is fine, but for strict isolation
+        // we might want to synthesize the user email here too.
+        // For now, let's keep it simple as trySignInUser handles the login flow.
         await trySignInUser(page, baseURL, TEST_USERS.teamLead);
 
         // Stabilize and verify we are actually on dashboard
@@ -133,7 +115,8 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
         // Save the new state so subsequent tests don't have to re-auth
         const currentState = await page.context().storageState();
-        fs.writeFileSync(AUTH_STATE_PATH, JSON.stringify(currentState, null, 2));
+        const authPath = getAuthStatePath(testInfo.parallelIndex);
+        fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
 
         console.log("  ✅ ensureAuthenticated: SUCCESS (Saved state)");
       }
@@ -141,7 +124,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(reauth);
   },
 
-  saveAuthState: async ({ context, skipAuthSave }, use) => {
+  saveAuthState: async ({ context, skipAuthSave }, use, testInfo) => {
     const save = async () => {
       if (skipAuthSave) return;
       try {
@@ -153,7 +136,8 @@ export const authenticatedTest = base.extend<AuthFixtures>({
         );
         if (hasAuthTokens) {
           try {
-            fs.writeFileSync(AUTH_STATE_PATH, JSON.stringify(currentState, null, 2));
+            const authPath = getAuthStatePath(testInfo.parallelIndex);
+            fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
           } catch (writeError) {
             console.warn("⚠️ Failed to save auth state.");
           }
@@ -167,7 +151,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   },
 
   companySlug: async ({}, use, testInfo) => {
-    const config = loadDashboardConfig();
+    const config = loadDashboardConfig(testInfo.parallelIndex);
     if (!config?.companySlug) testInfo.skip(true, "Default user config not found.");
     await use(config?.companySlug || "");
   },
