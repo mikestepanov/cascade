@@ -399,12 +399,12 @@ export const deleteTestUserInternal = internalMutation({
     // Note: authVerificationCodes doesn't have an identifier field we can filter on
     // Orphaned verification codes will be garbage collected by the auth system
 
-    const user = await ctx.db
+    const users = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("email"), args.email))
-      .first();
+      .collect();
 
-    if (user) {
+    for (const user of users) {
       // Delete user's onboarding record
       const onboarding = await ctx.db
         .query("userOnboarding")
@@ -1023,6 +1023,7 @@ export const setupRbacProjectInternal = internalMutation({
       await ctx.db.patch(workspaceProject._id, {
         name: `RBAC Workspace Project (${workspaceProjectKey})`,
         description: "E2E test project for RBAC - Workspace level",
+        ownerId: adminUser._id, // Ensure ownership is updated
       });
     }
 
@@ -1061,6 +1062,7 @@ export const setupRbacProjectInternal = internalMutation({
       await ctx.db.patch(teamProject._id, {
         name: `RBAC Team Project (${teamProjectKey})`,
         description: "E2E test project for RBAC - Team level",
+        ownerId: adminUser._id, // Ensure ownership is updated
       });
     }
 
