@@ -8,6 +8,7 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 interface UnsubscribePageProps {
   token: string;
@@ -53,12 +54,10 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
         {status === "loading" && (
           <div className="text-center">
             <LoadingSpinner size="lg" className="mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <Typography variant="h4" as="h2" className="mb-2">
               Processing...
-            </h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              Unsubscribing you from email notifications
-            </p>
+            </Typography>
+            <Typography color="secondary">Unsubscribing you from email notifications</Typography>
           </div>
         )}
 
@@ -81,15 +80,15 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <Typography variant="h4" as="h2" className="mb-2">
               Successfully Unsubscribed
-            </h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+            </Typography>
+            <Typography color="secondary" className="mb-6">
               You have been unsubscribed from all email notifications.
-            </p>
-            <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            </Typography>
+            <Typography variant="muted">
               You can update your notification preferences anytime by logging into your account.
-            </p>
+            </Typography>
           </div>
         )}
 
@@ -112,12 +111,12 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <Typography variant="h4" as="h2" className="mb-2">
               Invalid or Expired Link
-            </h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            </Typography>
+            <Typography color="secondary">
               This unsubscribe link is invalid or has expired. Links expire after 30 days.
-            </p>
+            </Typography>
           </div>
         )}
 
@@ -140,16 +139,20 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <Typography variant="h4" as="h2" className="mb-2">
               Something Went Wrong
-            </h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+            </Typography>
+            <Typography color="secondary" className="mb-2">
               We couldn't process your unsubscribe request.
-            </p>
+            </Typography>
             {errorMessage && (
-              <p className="text-sm text-status-error dark:text-status-error-dark bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md">
+              <Typography
+                variant="muted"
+                color="error"
+                className="bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md"
+              >
                 {errorMessage}
-              </p>
+              </Typography>
             )}
           </div>
         )}
