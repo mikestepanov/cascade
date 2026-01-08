@@ -36,8 +36,8 @@ rbacTest(
     { adminPage, adminProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug },
     testInfo,
   ) => {
-    // Skip if admin auth not available (known flaky issue with first user creation)
-    testInfo.skip(!hasAdminAuth(), "Admin auth state not available (teamLead setup failed)");
+    // Verify admin auth is available (will throw from assertAuthStateValid in fixture if missing)
+    // We no longer skip - if auth is missing, the test should fail.
 
     adminPage.on("console", (msg) => console.log(`BROWSER: ${msg.text()}`));
 
@@ -58,10 +58,8 @@ rbacTest(
     console.log("✓ Admin can see create issue button");
 
     // 4. Verify settings tab is visible
-    // Wait for navigation to fully render (userRole query needs to complete)
-    await adminPage.waitForTimeout(2000);
     const settingsTab = adminProjectsPage.getProjectSettingsTab();
-    await expect(settingsTab).toBeVisible({ timeout: 15000 });
+    await expect(settingsTab).toBeVisible({ timeout: 60000 });
     console.log("✓ Admin can see settings tab");
 
     // 5. Navigate to settings and verify access

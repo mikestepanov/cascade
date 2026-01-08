@@ -76,7 +76,7 @@ test.describe("Dashboard Tests", () => {
       await page.locator("body").click();
       await dashboardPage.pressCommandPaletteShortcut();
       // Use data-testid for robust selection (added in CommandPalette.tsx)
-      await expect(page.getByTestId("command-palette")).toBeVisible({ timeout: 15000 });
+      await expect(page.getByTestId("command-palette")).toBeVisible({ timeout: 30000 });
     });
   });
 

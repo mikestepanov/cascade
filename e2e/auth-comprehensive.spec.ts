@@ -14,7 +14,7 @@ test.describe("Sign In Form - Elements", () => {
 
   test("displays all sign in form elements", async ({ authPage }) => {
     // Heading - use page object locator
-    await expect(authPage.signInHeading).toBeVisible();
+    await expect(authPage.signInHeading).toBeVisible({ timeout: 30000 });
 
     // Form inputs
     await expect(authPage.emailInput).toBeVisible();

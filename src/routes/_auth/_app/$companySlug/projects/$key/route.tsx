@@ -19,7 +19,7 @@ function ProjectLayout() {
     project ? { projectId: project._id } : "skip",
   );
 
-  if (project === undefined || userRole === undefined) {
+  if (project === undefined || userRole === undefined || user === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner message="Loading project..." />

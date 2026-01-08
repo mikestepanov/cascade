@@ -196,11 +196,11 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
 
   rbacProjectKey: async ({}, use, testInfo) => {
-    await use(getRbacConfig(testInfo.workerIndex).projectKey);
+    await use(getRbacConfig(testInfo.parallelIndex).projectKey);
   },
 
   rbacCompanySlug: async ({}, use, testInfo) => {
-    await use(getRbacConfig(testInfo.workerIndex).companySlug);
+    await use(getRbacConfig(testInfo.parallelIndex).companySlug);
   },
   rbacProjectUrl: async ({ rbacCompanySlug, rbacProjectKey }, use) => {
     await use(`/${rbacCompanySlug}/projects/${rbacProjectKey}/board`);
@@ -274,25 +274,25 @@ export const rbacTest = base.extend<RbacFixtures>({
 
 export { expect };
 
-export function hasAdminAuth(): boolean {
+export function hasAdminAuth(workerIndex = 0): boolean {
   try {
-    assertAuthStateValid("admin");
+    assertAuthStateValid("admin", workerIndex);
     return true;
   } catch {
     return false;
   }
 }
-export function hasEditorAuth(): boolean {
+export function hasEditorAuth(workerIndex = 0): boolean {
   try {
-    assertAuthStateValid("editor");
+    assertAuthStateValid("editor", workerIndex);
     return true;
   } catch {
     return false;
   }
 }
-export function hasViewerAuth(): boolean {
+export function hasViewerAuth(workerIndex = 0): boolean {
   try {
-    assertAuthStateValid("viewer");
+    assertAuthStateValid("viewer", workerIndex);
     return true;
   } catch {
     return false;

@@ -158,10 +158,10 @@ export class ProjectsPage extends BasePage {
    * Scoped to "main" to avoid confusing it with global settings or sidebar items
    */
   getProjectSettingsTab() {
+    // Robust selector: match either the navigation link (sidebar/topbar) or the tab  getProjectSettingsTab() {
     return this.page
-      .getByRole("main")
-      .getByRole("link", { name: /settings/i })
-      .first();
+      .getByRole("navigation", { name: "Tabs" })
+      .getByRole("link", { name: "Settings" });
   }
 
   // ===================
