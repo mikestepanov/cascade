@@ -892,3 +892,38 @@ async function getSprintIssueCounts(
     }),
   );
 }
+
+export const listIssuesByDateRange = query({
+  args: {
+    projectId: v.id("projects"),
+    sprintId: v.optional(v.id("sprints")),
+    from: v.number(),
+    to: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    if (!hasAccess) {
+      return [];
+    }
+
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project_due_date", (q) =>
+        q.eq("projectId", args.projectId).gte("dueDate", args.from).lte("dueDate", args.to),
+      )
+      .filter(notDeleted)
+      .collect();
+
+    // If sprintId is provided, filter in memory
+    const filteredIssues = args.sprintId
+      ? issues.filter((i) => i.sprintId === args.sprintId)
+      : issues;
+
+    return await enrichIssues(ctx, filteredIssues);
+  },
+});
