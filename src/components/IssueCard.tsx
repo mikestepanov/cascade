@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
-import { getPriorityColor, getPriorityIcon, getTypeIcon } from "@/lib/issue-utils";
+import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
@@ -86,20 +86,33 @@ export const IssueCard = memo(function IssueCard({
           {selectionMode && (
             <input
               type="checkbox"
+              aria-label={`Select issue ${issue.key}`}
               checked={isSelected}
               onChange={handleCheckboxClick}
               onClick={handleCheckboxClick}
               className="w-4 h-4 text-brand-600 border-ui-border-primary rounded focus:ring-brand-500 cursor-pointer"
             />
           )}
-          <span className="text-sm">{getTypeIcon(issue.type)}</span>
+          <Tooltip content={getTypeLabel(issue.type)}>
+            <span role="img" aria-label={getTypeLabel(issue.type)} className="text-sm cursor-help">
+              {getTypeIcon(issue.type)}
+            </span>
+          </Tooltip>
           <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
             {issue.key}
           </span>
         </div>
-        <div className={`text-xs ${getPriorityColor(issue.priority)}`}>
-          {getPriorityIcon(issue.priority)}
-        </div>
+        <Tooltip
+          content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
+        >
+          <div
+            role="img"
+            aria-label={`Priority: ${issue.priority}`}
+            className={`text-xs ${getPriorityColor(issue.priority)} cursor-help`}
+          >
+            {getPriorityIcon(issue.priority)}
+          </div>
+        </Tooltip>
       </div>
 
       {/* Title */}
