@@ -1,5 +1,4 @@
 import path from "node:path";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 
@@ -10,11 +9,6 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    tanstackStart({
-      spa: {
-        enabled: true,
-      },
-    }),
     TanStackRouterVite({
       routesDirectory: "./src/routes",
       generatedRouteTree: "./src/routeTree.gen.ts",
