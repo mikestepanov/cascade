@@ -95,12 +95,16 @@ export const authenticatedTest = base.extend<AuthFixtures>({
         await page.goto(`${baseURL}/signin`);
         await page.waitForLoadState("domcontentloaded");
 
-        // NOTE: This uses the static TEST_USERS.teamLead, which might not match the worker-specific email
-        // if global-setup created e2e-teamlead-wX...
-        // For basic tests, this might fall back to a fresh login which is fine, but for strict isolation
-        // we might want to synthesize the user email here too.
-        // For now, let's keep it simple as trySignInUser handles the login flow.
-        await trySignInUser(page, baseURL, TEST_USERS.teamLead);
+        // Dynamically construct the worker-specific user to ensure isolation
+        // This matches the logic in global-setup.ts
+        const workerSuffix = `w${testInfo.parallelIndex}`;
+        const workerUser = {
+          ...TEST_USERS.teamLead,
+          email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+        };
+
+        console.log(`  🔐 ensureAuthenticated: Re-authenticating as ${workerUser.email}...`);
+        await trySignInUser(page, baseURL, workerUser);
 
         // Stabilize and verify we are actually on dashboard
         await page.goto(dashboardUrl);
