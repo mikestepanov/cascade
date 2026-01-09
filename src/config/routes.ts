@@ -30,6 +30,12 @@ export const ROUTES = {
   /** Invite acceptance page */
   invite: (token: string) => `/invite/${token}` as const,
 
+  /** Terms & Conditions page */
+  terms: "/terms" as const,
+
+  /** Privacy Policy page */
+  privacy: "/privacy" as const,
+
   // ============================================
   // Auth routes (auth required, no company)
   // ============================================
