@@ -865,7 +865,7 @@ export const getProjectBilling = query({
     // FIX: Group by userId (not userName) to avoid merging different users with same name
     const byUserData: Record<
       string,
-      { userId: string; userName: string; hours: number; billableHours: number; revenue: number }
+      { name: string; hours: number; billableHours: number; revenue: number }
     > = {};
 
     for (const entry of entries) {
@@ -882,8 +882,7 @@ export const getProjectBilling = query({
       if (!byUserData[userIdStr]) {
         const user = userMap.get(entry.userId);
         byUserData[userIdStr] = {
-          userId: userIdStr,
-          userName: getUserName(user),
+          name: getUserName(user),
           hours: 0,
           billableHours: 0,
           revenue: 0,
@@ -897,24 +896,13 @@ export const getProjectBilling = query({
       }
     }
 
-    // Convert to byUser format keyed by userName (for backward compatibility)
-    // but now it's correctly aggregated by userId first
-    const byUser: Record<string, { hours: number; billableHours: number; revenue: number }> = {};
-    for (const data of Object.values(byUserData)) {
-      byUser[data.userName] = {
-        hours: data.hours,
-        billableHours: data.billableHours,
-        revenue: data.revenue,
-      };
-    }
-
     return {
       totalHours,
       billableHours,
       nonBillableHours: totalHours - billableHours,
       totalRevenue,
       entries: entries.length,
-      byUser,
+      byUser: byUserData,
     };
   },
 });

@@ -54,7 +54,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
       return {
         utilizationRate: 0,
         averageRate: 0,
-        sortedUsers: [] as [string, { hours: number; billableHours: number; revenue: number }][],
+          sortedUsers: [] as [
+            string,
+            { name: string; hours: number; billableHours: number; revenue: number },
+          ][],
       };
     }
 
@@ -203,19 +206,19 @@ export function BillingReport({ projectId }: BillingReportProps) {
           </div>
         ) : (
           <Flex direction="column" gap="md">
-            {sortedUsers.map(([userName, stats]) => {
+            {sortedUsers.map(([userId, stats]) => {
               const userUtilization =
                 stats.hours > 0 ? (stats.billableHours / stats.hours) * 100 : 0;
 
               return (
                 <div
-                  key={userName}
+                  key={userId}
                   className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
                 >
                   <Flex justify="between" align="center" className="mb-2">
                     <div>
                       <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {userName}
+                        {stats.name}
                       </div>
                       <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         {formatHours(stats.billableHours)} / {formatHours(stats.hours)} hours (
