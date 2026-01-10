@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { AuthLink, AuthPageLayout, PostAuthRedirect, ResetPasswordForm } from "@/components/auth";
+import { AuthLink, AuthPageLayout, ResetPasswordForm, SmartAuthGuard } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -15,7 +15,7 @@ function ForgotPasswordRoute() {
   return (
     <>
       <Authenticated>
-        <PostAuthRedirect />
+        <SmartAuthGuard />
       </Authenticated>
       <Unauthenticated>
         <ForgotPasswordPage />
