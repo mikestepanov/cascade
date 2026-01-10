@@ -137,7 +137,7 @@ describe("dates utility functions", () => {
         day: "numeric",
       };
 
-      expect(formatDateCustom(timestamp, options)).toBe("Wed, Jan 15");
+      expect(formatDateCustom(timestamp, options)).toBe("Thu, Jan 15");
     });
   });
 
@@ -194,7 +194,7 @@ describe("dates utility functions", () => {
     });
 
     it("should handle year boundaries", () => {
-      const date = new Date("2024-12-30T12:00:00");
+      const date = new Date("2025-12-30T12:00:00");
       const result = addDays(date, 5);
 
       expect(formatDateForInput(result)).toBe("2026-01-04");
