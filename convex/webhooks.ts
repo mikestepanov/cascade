@@ -552,59 +552,63 @@ async function generateSignature(payload: string, secret: string): Promise<strin
     .join("");
 }
 
+/** Check if hostname is a loopback address */
+function isLoopbackAddress(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "::1" ||
+    hostname === "[::1]" ||
+    hostname.startsWith("127.")
+  );
+}
+
+/** Check if hostname is a private IPv4 address */
+function isPrivateIPv4(hostname: string): boolean {
+  const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+  if (!isIPv4) return false;
+
+  // 10.0.0.0/8
+  if (hostname.startsWith("10.")) return true;
+  // 192.168.0.0/16
+  if (hostname.startsWith("192.168.")) return true;
+  // 172.16.0.0/12
+  if (hostname.startsWith("172.")) {
+    const parts = hostname.split(".");
+    const secondOctet = parseInt(parts[1], 10);
+    if (secondOctet >= 16 && secondOctet <= 31) return true;
+  }
+
+  return false;
+}
+
+/** Check if hostname is AWS/cloud metadata endpoint */
+function isMetadataEndpoint(hostname: string): boolean {
+  return hostname === "169.254.169.254";
+}
+
 function validateWebhookUrl(url: string) {
+  let parsed: URL;
   try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      throw new Error("Invalid URL protocol. Must be http or https.");
-    }
-    const hostname = parsed.hostname.toLowerCase();
-
-    // Block localhost (including 127.x.x.x and IPv6 loopback)
-    // Note: URL.hostname for IPv6 includes brackets e.g., "[::1]"
-    if (
-      hostname === "localhost" ||
-      hostname === "::1" ||
-      hostname === "[::1]" ||
-      hostname.startsWith("127.")
-    ) {
-      throw new Error("Localhost URLs are not allowed.");
-    }
-
-    // Simple check to see if hostname looks like an IPv4 address
-    // (IPv6 is handled by [::1] check or generic private IP blocks if needed,
-    // but here we focus on preventing common IPv4 private ranges)
-    const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
-
-    if (isIPv4) {
-      // Block private IPs
-      // 10.0.0.0/8
-      if (hostname.startsWith("10.")) {
-        throw new Error("Private IP addresses are not allowed.");
-      }
-      // 192.168.0.0/16
-      if (hostname.startsWith("192.168.")) {
-        throw new Error("Private IP addresses are not allowed.");
-      }
-      // 172.16.0.0/12
-      if (hostname.startsWith("172.")) {
-        const parts = hostname.split(".");
-        const secondOctet = parseInt(parts[1], 10);
-        if (secondOctet >= 16 && secondOctet <= 31) {
-          throw new Error("Private IP addresses are not allowed.");
-        }
-      }
-    }
-
-    // Block AWS metadata
-    if (hostname === "169.254.169.254") {
-      throw new Error("Metadata service URLs are not allowed.");
-    }
-  } catch (e) {
-    // Re-throw specific errors, otherwise generic invalid format
-    if (e instanceof Error && (e.message.includes("allowed") || e.message.includes("protocol"))) {
-      throw e;
-    }
+    parsed = new URL(url);
+  } catch {
     throw new Error("Invalid URL format");
+  }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error("Invalid URL protocol. Must be http or https.");
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  if (isLoopbackAddress(hostname)) {
+    throw new Error("Localhost URLs are not allowed.");
+  }
+
+  if (isPrivateIPv4(hostname)) {
+    throw new Error("Private IP addresses are not allowed.");
+  }
+
+  if (isMetadataEndpoint(hostname)) {
+    throw new Error("Metadata service URLs are not allowed.");
   }
 }

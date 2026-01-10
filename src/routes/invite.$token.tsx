@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { PostAuthRedirect, SignInForm } from "@/components/auth";
+import { SignInForm, SmartAuthGuard } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
@@ -51,7 +51,7 @@ function InviteRoute() {
 
   // After accepting invite, redirect to user's company dashboard
   if (inviteAccepted) {
-    return <PostAuthRedirect />;
+    return <SmartAuthGuard />;
   }
 
   // Loading state
