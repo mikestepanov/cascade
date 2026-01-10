@@ -9,32 +9,28 @@ import { LoadingSpinner } from "../ui/LoadingSpinner";
  * SmartAuthGuard - Centralized "bouncer" for authenticated routes.
  * It ensures the user is on the correct page based on their onboarding and company status.
  */
-export function SmartAuthGuard({ children }: { children: React.ReactNode }) {
+export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectPath = useQuery(api.auth.getRedirectDestination);
 
   useEffect(() => {
-    if (redirectPath === undefined) return;
+    if (redirectPath === undefined || !redirectPath) return;
 
-    // Follow the backend's recommendation if it doesn't match current location
-    const currentPath = location.pathname;
+    const isOnboarding = location.pathname === ROUTES.onboarding;
+    const shouldBeOnboarding = redirectPath === ROUTES.onboarding;
 
-    if (redirectPath) {
-      // Check if the current path matches the intended state
-      // 1. If we should be on onboarding, we must be exactly on /onboarding
-      // 2. If we should be on a dashboard, the path must be a dashboard path (not /onboarding)
-      const isCorrectPath =
-        (redirectPath === ROUTES.onboarding && currentPath === ROUTES.onboarding) ||
-        (redirectPath !== ROUTES.onboarding && currentPath !== ROUTES.onboarding);
-
-      if (!isCorrectPath) {
-        navigate({ to: redirectPath, replace: true });
-      }
+    if (isOnboarding !== shouldBeOnboarding) {
+      navigate({ to: redirectPath, replace: true });
     }
   }, [redirectPath, location.pathname, navigate]);
 
-  if (redirectPath === undefined) {
+  // Show loading while we determine the destination or if we are in the middle of a redirect
+  const isOnboarding = location.pathname === ROUTES.onboarding;
+  const shouldBeOnboarding = redirectPath === ROUTES.onboarding;
+  const needsRedirect = redirectPath && isOnboarding !== shouldBeOnboarding;
+
+  if (redirectPath === undefined || needsRedirect) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />
