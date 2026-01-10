@@ -1,7 +1,9 @@
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { CreateTeamModal } from "@/components/CreateTeamModal";
 import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
@@ -44,6 +46,10 @@ export function AppSidebar() {
   const [workspacesExpanded, setWorkspacesExpanded] = useState(true);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+  const [createTeamWorkspace, setCreateTeamWorkspace] = useState<{
+    id: Id<"workspaces">;
+    slug: string;
+  } | null>(null);
 
   // Data
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
@@ -56,7 +62,6 @@ export function AppSidebar() {
   // Mutations
   const createDocument = useMutation(api.documents.create);
   const createWorkspace = useMutation(api.workspaces.create);
-  // const createTeam = useMutation(api.teams.createTeam); // TODO: Add team creation UI
   // const createProject = useMutation(api.projects.createProject); // TODO: Add project creation UI
 
   const isActive = (pathPart: string) => {
@@ -251,7 +256,7 @@ export function AppSidebar() {
                 const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
 
                 return (
-                  <div key={workspace._id} className="ml-2">
+                  <div key={workspace._id} className="ml-2 group">
                     {/* Workspace Item */}
                     <div className="flex items-center gap-1">
                       <Button
@@ -272,6 +277,18 @@ export function AppSidebar() {
                         isActive={location.pathname.includes(`/workspaces/${workspace.slug}`)}
                         onClick={handleNavClick}
                       />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCreateTeamWorkspace({ id: workspace._id, slug: workspace.slug });
+                        }}
+                        className="h-6 w-6 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Create new team"
+                      >
+                        <Plus className="w-4 h-4 text-ui-text-tertiary" />
+                      </Button>
                     </div>
 
                     {/* Teams under workspace */}
@@ -318,6 +335,13 @@ export function AppSidebar() {
             />
           </div>
         </Flex>
+
+        <CreateTeamModal
+          isOpen={!!createTeamWorkspace}
+          onClose={() => setCreateTeamWorkspace(null)}
+          workspaceId={createTeamWorkspace?.id}
+          workspaceSlug={createTeamWorkspace?.slug}
+        />
       </aside>
     </TooltipProvider>
   );
