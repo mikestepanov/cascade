@@ -316,7 +316,11 @@ export function GlobalSearch() {
 
       {/* Search Modal */}
       <CommandDialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
-        <Command className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark" shouldFilter={false}>
+        <Command
+          data-testid="global-search-modal"
+          className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+          shouldFilter={false}
+        >
           <CommandInput
             placeholder="Search issues and documents..."
             value={query}

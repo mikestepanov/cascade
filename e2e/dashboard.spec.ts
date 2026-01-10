@@ -103,9 +103,7 @@ test.describe("Dashboard Tests", () => {
   });
 
   test.describe("Global Search", () => {
-    // SKIPPED: Flaky - globalSearchModal locator doesn't reliably match the search popup
-    // TODO: Investigate the actual DOM structure of the search modal
-    test.skip("can open and close", async ({ dashboardPage }) => {
+    test("can open and close", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.openGlobalSearch();
       await expect(dashboardPage.globalSearchModal).toBeVisible();
