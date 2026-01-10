@@ -4,6 +4,11 @@ import { notDeleted } from "../lib/softDeleteHelpers";
 
 export const ROOT_ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
 
+// Helper: Combined searchable content for issues
+export function getSearchContent(title: string, description?: string) {
+  return `${title} ${description || ""}`.trim();
+}
+
 // Helper: Validate parent issue and get inherited epic
 export async function validateParentIssue(
   ctx: MutationCtx,
@@ -172,6 +177,13 @@ export function processIssueUpdates(
   }
   if (trackFieldChange(changes, "priority", issue.priority, args.priority)) {
     updates.priority = args.priority;
+  }
+
+  // Update search content if title or description changed
+  if (args.title !== undefined || args.description !== undefined) {
+    const newTitle = args.title ?? issue.title;
+    const newDescription = args.description !== undefined ? args.description : issue.description;
+    updates.searchContent = getSearchContent(newTitle, newDescription);
   }
 
   // Track nullable field changes

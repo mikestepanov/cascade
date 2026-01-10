@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
+import { getSearchContent } from "./issues/helpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
@@ -350,6 +351,7 @@ export const createSampleProject = mutation({
         attachments: [],
         loggedHours: 0,
         order: issue.order,
+        searchContent: getSearchContent(issue.title, issue.description),
       });
       createdIssues.push(issueId);
 

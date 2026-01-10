@@ -557,7 +557,7 @@ export const search = query({
     if (args.query) {
       issues = await ctx.db
         .query("issues")
-        .withSearchIndex("search_title", (q) => q.search("title", args.query as string))
+        .withSearchIndex("search_title", (q) => q.search("searchContent", args.query as string))
         .filter(notDeleted)
         .collect();
     } else if (args.projectId) {
