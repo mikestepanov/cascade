@@ -212,6 +212,7 @@ const applicationTables = {
     .index("by_project_status", ["projectId", "status"])
     .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
     .index("by_project_sprint_created", ["projectId", "sprintId", "createdAt"])
+    .index("by_project_sprint_status", ["projectId", "sprintId", "status"]) // Optimized for sprint board counts
     .index("by_project_updated", ["projectId", "updatedAt"])
     .index("by_project_due_date", ["projectId", "dueDate"])
     .index("by_workspace_status", ["workspaceId", "status"]) // Standardized

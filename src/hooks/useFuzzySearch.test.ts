@@ -1,3 +1,4 @@
+import { act } from "react";
 import { describe, expect, it } from "vitest";
 import { renderHook, waitFor } from "@/test/custom-render";
 import {
@@ -36,7 +37,9 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       expect(result.current.results.length).toBeGreaterThan(0);
@@ -52,7 +55,9 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("jon"); // Typo: "jon" instead of "john"
+    act(() => {
+      result.current.search("jon"); // Typo: "jon" instead of "john"
+    });
 
     await waitFor(() => {
       expect(result.current.results.length).toBeGreaterThan(0);
@@ -70,7 +75,9 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("j");
+    act(() => {
+      result.current.search("j");
+    });
 
     await waitFor(() => {
       expect(result.current.results).toHaveLength(1);
@@ -84,13 +91,17 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       expect(result.current.query).toBe("john");
     });
 
-    result.current.clear();
+    act(() => {
+      result.current.clear();
+    });
 
     await waitFor(() => {
       expect(result.current.query).toBe("");
@@ -106,7 +117,9 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       // Immediately after search, debounced query should be empty
@@ -134,7 +147,9 @@ describe("useFuzzySearch", () => {
 
     expect(result.current.isSearching).toBe(false);
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       expect(result.current.isSearching).toBe(true);
@@ -150,7 +165,9 @@ describe("useFuzzySearch", () => {
 
     expect(result.current.hasResults).toBe(true);
 
-    result.current.search("xyz123nonexistent");
+    act(() => {
+      result.current.search("xyz123nonexistent");
+    });
 
     await waitFor(() => {
       expect(result.current.hasResults).toBe(false);
@@ -198,7 +215,9 @@ describe("useFuzzySearch", () => {
       }),
     );
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       // Name match should rank higher than email match
@@ -216,7 +235,9 @@ describe("useUserFuzzySearch", () => {
   it("should search users by name and email", async () => {
     const { result } = renderHook(() => useUserFuzzySearch(users));
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       expect(result.current.results.length).toBeGreaterThan(0);
@@ -227,7 +248,9 @@ describe("useUserFuzzySearch", () => {
   it("should have debounce enabled", async () => {
     const { result } = renderHook(() => useUserFuzzySearch(users));
 
-    result.current.search("john");
+    act(() => {
+      result.current.search("john");
+    });
 
     await waitFor(() => {
       expect(result.current.isDebouncing).toBe(true);
@@ -248,7 +271,9 @@ describe("useProjectFuzzySearch", () => {
   it("should search projects by name, key, and description", async () => {
     const { result } = renderHook(() => useProjectFuzzySearch(projects));
 
-    result.current.search("alpha");
+    act(() => {
+      result.current.search("alpha");
+    });
 
     await waitFor(() => {
       expect(result.current.results[0].item.name).toBe("Project Alpha");
@@ -258,7 +283,9 @@ describe("useProjectFuzzySearch", () => {
   it("should match project keys", async () => {
     const { result } = renderHook(() => useProjectFuzzySearch(projects));
 
-    result.current.search("BETA");
+    act(() => {
+      result.current.search("BETA");
+    });
 
     await waitFor(() => {
       // Should find BETA project
@@ -278,7 +305,9 @@ describe("useIssueFuzzySearch", () => {
   it("should search issues by title and key", async () => {
     const { result } = renderHook(() => useIssueFuzzySearch(issues));
 
-    result.current.search("PROJ-123");
+    act(() => {
+      result.current.search("PROJ-123");
+    });
 
     await waitFor(() => {
       expect(result.current.results[0].item.key).toBe("PROJ-123");
@@ -288,7 +317,9 @@ describe("useIssueFuzzySearch", () => {
   it("should match issue titles", async () => {
     const { result } = renderHook(() => useIssueFuzzySearch(issues));
 
-    result.current.search("dark mode");
+    act(() => {
+      result.current.search("dark mode");
+    });
 
     await waitFor(() => {
       // Should find "Add dark mode" issue
@@ -308,7 +339,9 @@ describe("useSprintFuzzySearch", () => {
   it("should search sprints by name", async () => {
     const { result } = renderHook(() => useSprintFuzzySearch(sprints));
 
-    result.current.search("sprint 1");
+    act(() => {
+      result.current.search("sprint 1");
+    });
 
     await waitFor(() => {
       expect(result.current.results[0].item.name).toBe("Sprint 1");
@@ -322,7 +355,9 @@ describe("useLabelFuzzySearch", () => {
   it("should search labels", async () => {
     const { result } = renderHook(() => useLabelFuzzySearch(labels));
 
-    result.current.search("bug");
+    act(() => {
+      result.current.search("bug");
+    });
 
     await waitFor(() => {
       expect(result.current.results[0].item.label).toBe("bug");
@@ -332,7 +367,9 @@ describe("useLabelFuzzySearch", () => {
   it("should handle typos in labels", async () => {
     const { result } = renderHook(() => useLabelFuzzySearch(labels));
 
-    result.current.search("enhanc"); // Partial match
+    act(() => {
+      result.current.search("enhanc"); // Partial match
+    });
 
     await waitFor(() => {
       // Should find "enhancement"
@@ -351,7 +388,9 @@ describe("useDocumentFuzzySearch", () => {
   it("should search documents by title", async () => {
     const { result } = renderHook(() => useDocumentFuzzySearch(documents));
 
-    result.current.search("getting started");
+    act(() => {
+      result.current.search("getting started");
+    });
 
     await waitFor(() => {
       expect(result.current.results[0].item.title).toBe("Getting Started");

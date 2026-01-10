@@ -105,7 +105,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
             <button
               type="button"
               onClick={handleCreateSubtask}
-              className="px-3 py-1 bg-brand-600 text-white rounded hover:bg-brand-700 text-sm"
+              className="px-3 py-1 bg-brand-main text-ui-bg-primary rounded hover:bg-brand-secondary text-sm"
             >
               Add
             </button>
