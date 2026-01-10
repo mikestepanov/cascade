@@ -8,6 +8,7 @@ import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select } from "./ui/form";
+import { Typography } from "./ui/Typography";
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
@@ -129,13 +130,15 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-sm">{getTypeIcon(link.issue.type)}</span>
-                      <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      <Typography variant="span" className="text-sm">
+                        {getTypeIcon(link.issue.type)}
+                      </Typography>
+                      <Typography variant="span" color="tertiary" className="text-sm font-mono">
                         {link.issue.key}
-                      </span>
-                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                      </Typography>
+                      <Typography variant="span" className="text-sm truncate">
                         {link.issue.title}
-                      </span>
+                      </Typography>
                     </div>
                   )}
                 </div>
@@ -171,13 +174,15 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-sm">{getTypeIcon(link.issue.type)}</span>
-                      <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      <Typography variant="span" className="text-sm">
+                        {getTypeIcon(link.issue.type)}
+                      </Typography>
+                      <Typography variant="span" color="tertiary" className="text-sm font-mono">
                         {link.issue.key}
-                      </span>
-                      <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                      </Typography>
+                      <Typography variant="span" className="text-sm truncate">
                         {link.issue.title}
-                      </span>
+                      </Typography>
                     </div>
                   )}
                 </div>
@@ -197,8 +202,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
       {/* Empty State */}
       {links && links.outgoing.length === 0 && links.incoming.length === 0 && (
-        <div className="text-center py-6 text-ui-text-secondary dark:text-ui-text-secondary-dark text-sm">
-          No dependencies yet
+        <div className="text-center py-6">
+          <Typography variant="p" color="secondary" className="text-sm">
+            No dependencies yet
+          </Typography>
         </div>
       )}
 
@@ -239,9 +246,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             />
 
             {/* Search Results */}
-            {searchResults && searchResults.length > 0 && (
+            {searchResults?.page && searchResults.page.length > 0 && (
               <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-                {searchResults
+                {searchResults.page
                   .filter((issue) => issue._id !== issueId)
                   .map((issue) => (
                     <button
@@ -256,13 +263,15 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">{getTypeIcon(issue.type)}</span>
-                        <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <Typography variant="span" className="text-sm">
+                          {getTypeIcon(issue.type)}
+                        </Typography>
+                        <Typography variant="span" color="tertiary" className="text-sm font-mono">
                           {issue.key}
-                        </span>
-                        <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                        </Typography>
+                        <Typography variant="span" className="text-sm truncate">
                           {issue.title}
-                        </span>
+                        </Typography>
                       </div>
                     </button>
                   ))}

@@ -168,8 +168,8 @@ function InviteRoute() {
       {/* Header */}
       <header className="p-6 flex items-center justify-center">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">N</span>
+          <div className="h-8 w-8 rounded-lg bg-brand-main flex items-center justify-center">
+            <span className="text-ui-bg-primary font-bold text-sm">N</span>
           </div>
           <span className="font-semibold text-lg text-ui-text-primary dark:text-ui-text-primary-dark">
             Nixelo

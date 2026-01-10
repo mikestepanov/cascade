@@ -112,26 +112,7 @@ export const isCompanyAdmin = query({
       .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
       .first();
 
-    if (companyMembership) return true;
-
-    // Fallback: Check if user has created a project (backward compatibility)
-    const createdProjects = await ctx.db
-      .query("projects")
-      .withIndex("by_creator", (q) => q.eq("createdBy", userId))
-      .filter(notDeleted)
-      .first();
-
-    if (createdProjects) return true;
-
-    // Fallback: Check if user has admin role in any project (backward compatibility)
-    const adminMembership = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("role"), "admin"))
-      .filter(notDeleted)
-      .first();
-
-    return !!adminMembership;
+    return !!companyMembership;
   },
 });
 

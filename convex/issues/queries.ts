@@ -569,9 +569,8 @@ export const search = query({
         .order("desc")
         .collect();
     } else {
-      // Fallback: list all visible issues (slow, only for small datasets or admin)
-      // Real app would require some top-level filter
-      issues = await ctx.db.query("issues").filter(notDeleted).order("desc").collect();
+      // Return empty if no filter is provided to prevent scanning the entire table
+      return { page: [], total: 0 };
     }
 
     // Apply advanced filters in memory
@@ -866,10 +865,9 @@ async function getSprintIssueCounts(
     workflowStates.map(async (state: { id: string; category: string }) => {
       const allIssues = await ctx.db
         .query("issues")
-        .withIndex("by_project_sprint_created", (q) =>
-          q.eq("projectId", projectId).eq("sprintId", sprintId),
+        .withIndex("by_project_sprint_status", (q) =>
+          q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
         )
-        .filter((q) => q.eq(q.field("status"), state.id))
         .filter(notDeleted)
         .collect();
 
