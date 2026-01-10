@@ -1,0 +1,118 @@
+import { v } from "convex/values";
+import { mutation } from "./_generated/server";
+
+const TABLES = [
+  "documents",
+  "documentVersions",
+  "documentTemplates",
+  "workspaces",
+  "projects",
+  "projectMembers",
+  "issues",
+  "issueComments",
+  "issueLinks",
+  "sprints",
+  "issueActivity",
+  "issueWatchers",
+  "labels",
+  "issueTemplates",
+  "webhooks",
+  "webhookExecutions",
+  "savedFilters",
+  "projectTemplates",
+  "automationRules",
+  "customFields",
+  "customFieldValues",
+  "notifications",
+  "notificationPreferences",
+  "unsubscribeTokens",
+  "userOnboarding",
+  "calendarEvents",
+  "meetingAttendance",
+  "availabilitySlots",
+  "bookingPages",
+  "bookings",
+  "calendarConnections",
+  "githubConnections",
+  "githubRepositories",
+  "githubPullRequests",
+  "githubCommits",
+  "offlineSyncQueue",
+  "aiChats",
+  "aiMessages",
+  "aiSuggestions",
+  "aiUsage",
+  "apiKeys",
+  "apiUsageLogs",
+  "pumbleWebhooks",
+  "timeEntries",
+  "userRates",
+  "userProfiles",
+  "employmentTypeConfigs",
+  "hourComplianceRecords",
+  "invites",
+  "companies",
+  "companyMembers",
+  "teams",
+  "teamMembers",
+  "meetingRecordings",
+  "meetingTranscripts",
+  "meetingSummaries",
+  "meetingParticipants",
+  "serviceUsage",
+  "serviceProviders",
+  "meetingBotJobs",
+  "userSettings",
+  "rateLimits",
+  "auditLogs",
+  "users",
+  "authAccounts",
+  "authSessions",
+  "authRefreshTokens",
+  "authVerificationCodes",
+] as const;
+
+/**
+ * Purge all data from the database.
+ * This is a mutation that can be called via CLI: npx convex run purge:purgeData
+ */
+export const purgeData = mutation({
+  args: {
+    confirm: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    if (!args.confirm) {
+      throw new Error("Confirmation required to purge data.");
+    }
+
+    let totalDeleted = 0;
+    const TARGET_DELETES = 3000; // Increased to 3000 for faster final push
+    let totalTablesProcessed = 0;
+
+    for (const table of TABLES) {
+      const records = await ctx.db.query(table as any).take(TARGET_DELETES - totalDeleted);
+
+      if (records.length > 0) {
+      }
+
+      for (const record of records) {
+        await ctx.db.delete(record._id);
+        totalDeleted++;
+      }
+
+      if (records.length > 0) {
+      }
+
+      totalTablesProcessed++;
+      if (totalDeleted >= TARGET_DELETES) {
+        break;
+      }
+    }
+
+    return {
+      success: true,
+      totalDeleted,
+      tablesProcessed: totalTablesProcessed,
+    };
+  },
+});

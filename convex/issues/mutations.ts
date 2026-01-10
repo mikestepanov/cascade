@@ -13,6 +13,7 @@ import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import {
   generateIssueKey,
   getMaxOrderForStatus,
+  getSearchContent,
   processIssueUpdates,
   validateParentIssue,
 } from "./helpers";
@@ -88,6 +89,7 @@ export const create = editorMutation({
       estimatedHours: args.estimatedHours,
       dueDate: args.dueDate,
       storyPoints: args.storyPoints,
+      searchContent: getSearchContent(args.title, args.description),
       loggedHours: 0,
       order: maxOrder + 1,
     });

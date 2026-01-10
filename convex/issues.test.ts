@@ -633,5 +633,58 @@ describe("Issues", () => {
       expect(searchResult.page.map((i) => i.title)).toContain("Add login feature");
       await t.finishInProgressScheduledFunctions();
     });
+
+    it("should search issues by description", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
+
+      const asUser = asAuthenticatedUser(t, userId);
+      await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Normal Title",
+        description: "Contains unique_word_in_desc",
+        type: "task",
+        priority: "medium",
+      });
+
+      const searchResult = await asUser.query(api.issues.search, {
+        query: "unique_word_in_desc",
+      });
+
+      expect(searchResult.page).toHaveLength(1);
+      expect(searchResult.page[0].title).toBe("Normal Title");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should update search results when description is modified", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
+
+      const asUser = asAuthenticatedUser(t, userId);
+      const issueId = await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Update Test",
+        description: "Initial description",
+        type: "task",
+        priority: "medium",
+      });
+
+      // Update description
+      await asUser.mutation(api.issues.update, {
+        issueId,
+        description: "Updated unique_update_word",
+      });
+
+      // Search for new word
+      const searchResult = await asUser.query(api.issues.search, {
+        query: "unique_update_word",
+      });
+
+      expect(searchResult.page).toHaveLength(1);
+      expect(searchResult.page[0].title).toBe("Update Test");
+      await t.finishInProgressScheduledFunctions();
+    });
   });
 });

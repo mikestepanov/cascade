@@ -26,7 +26,6 @@ function OnboardingPage() {
 
   // Queries
   const inviteStatus = useQuery(api.onboarding.checkInviteStatus);
-  const onboardingStatus = useQuery(api.onboarding.getOnboardingStatus);
   const userCompanies = useQuery(api.companies.getUserCompanies);
 
   // Mutations
@@ -35,7 +34,7 @@ function OnboardingPage() {
 
   // Determine initial step based on data
   useEffect(() => {
-    if (inviteStatus !== undefined && onboardingStatus !== undefined && step === "loading") {
+    if (inviteStatus !== undefined && step === "loading") {
       if (inviteStatus?.wasInvited) {
         // Invited users go to welcome screen (no role selection needed - role set by inviter)
         setStep("invited");
@@ -44,7 +43,7 @@ function OnboardingPage() {
         setStep("role-select");
       }
     }
-  }, [inviteStatus, onboardingStatus, step]);
+  }, [inviteStatus, step]);
 
   const handleRoleSelect = async (persona: "team_lead" | "team_member") => {
     setSelectedPersona(persona);

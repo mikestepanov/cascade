@@ -193,6 +193,7 @@ const applicationTables = {
     order: v.number(), // For ordering within status columns
     // AI/Semantic Search
     embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
+    searchContent: v.optional(v.string()), // Combined title and description for search
     // Soft Delete
     isDeleted: v.optional(v.boolean()), // Soft delete flag (undefined = not deleted)
     deletedAt: v.optional(v.number()), // Timestamp when deleted
@@ -218,7 +219,7 @@ const applicationTables = {
     .index("by_deleted", ["isDeleted"]) // Soft delete index
     .index("by_project_deleted", ["projectId", "isDeleted"]) // Project trash view
     .searchIndex("search_title", {
-      searchField: "title",
+      searchField: "searchContent",
       filterFields: ["projectId", "workspaceId", "teamId", "type", "status", "priority"], // Added workspaceId, teamId
     })
     .vectorIndex("by_embedding", {

@@ -49,6 +49,16 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             </Typography>
           </div>
           {children}
+          <div className="mt-6 text-center text-xs text-ui-text-tertiary">
+            By continuing, you acknowledge that you understand and agree to the{" "}
+            <Link to={ROUTES.terms} className="underline hover:text-ui-text-secondary">
+              Terms & Conditions
+            </Link>{" "}
+            and{" "}
+            <Link to={ROUTES.privacy} className="underline hover:text-ui-text-secondary">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </div>

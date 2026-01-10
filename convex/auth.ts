@@ -44,3 +44,45 @@ export const loggedInUser = query({
     return user;
   },
 });
+
+import { ROUTES } from "./shared/routes";
+
+/**
+ * Get the recommended destination for a user after they authenticate.
+ * This is the smart logic that decides between onboarding and dashboard.
+ */
+export const getRedirectDestination = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    // 1. Check onboarding status
+    const onboarding = await ctx.db
+      .query("userOnboarding")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    const onboardingIncomplete = !onboarding?.onboardingCompleted;
+
+    if (onboardingIncomplete) {
+      return ROUTES.onboarding;
+    }
+
+    // 2. Check for companies
+    const membership = await ctx.db
+      .query("companyMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (membership) {
+      const company = await ctx.db.get(membership.companyId);
+      if (company?.slug) {
+        return ROUTES.dashboard(company.slug);
+      }
+    }
+
+    // Fallback: This shouldn't happen if onboarding is completed correctly
+    return ROUTES.onboarding;
+  },
+});
