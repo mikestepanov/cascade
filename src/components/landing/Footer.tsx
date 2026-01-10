@@ -68,7 +68,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-ui-text-secondary text-sm">© 2025 Nixelo. All rights reserved.</p>
+          <p className="text-ui-text-secondary text-sm">© 2026 Nixelo. All rights reserved.</p>
           <div className="flex items-center gap-6">
             {/* Social Links */}
             <a

@@ -6,7 +6,7 @@ import { ROUTES } from "@/config/routes";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { AuthLinkButton } from "./AuthLink";
-import { GoogleSignInButton } from "./GoogleSignInButton";
+import { GoogleAuthButton } from "./GoogleAuthButton";
 
 export function SignInForm() {
   const { signIn } = useAuthActions();
@@ -43,7 +43,7 @@ export function SignInForm() {
 
   return (
     <div className="w-full">
-      <GoogleSignInButton />
+      <GoogleAuthButton text="Sign in with Google" />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>

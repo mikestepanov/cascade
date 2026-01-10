@@ -7,20 +7,24 @@ This document describes the authentication and user management features in Nixel
 Nixelo supports two authentication methods:
 
 ### 1. Email & Password
+
 Users can sign up and sign in using their email and password.
 
 **Sign Up Flow:**
+
 1. User enters email and password on sign-in page
 2. Clicks "Sign up" button
 3. Account is created automatically
 4. User is logged in
 
 **Sign In Flow:**
+
 1. User enters email and password
 2. Clicks "Sign in" button
 3. User is logged in
 
 **Password Reset Flow:**
+
 1. User clicks "Forgot password?" on sign-in page
 2. User enters their email address
 3. System sends an 8-digit OTP code via email
@@ -28,10 +32,12 @@ Users can sign up and sign in using their email and password.
 5. Password is updated and user can sign in
 
 **Configuration Required for Password Reset:**
+
 - `RESEND_API_KEY` - Resend API key for sending emails
 - `RESEND_FROM_EMAIL` - Verified sender email (e.g., "Nixelo <notifications@nixelo.com>")
 
 ### 2. Google OAuth
+
 Users can sign in using their Google account.
 
 **Configuration Required:**
@@ -45,6 +51,7 @@ To enable Google OAuth, you need to:
    - `AUTH_GOOGLE_CLIENT_SECRET` - Your Google OAuth Client Secret
 
 **Sign In Flow:**
+
 1. User clicks "Sign in with Google" button
 2. Redirected to Google for authentication
 3. User grants permissions
@@ -57,6 +64,7 @@ Admins can invite new users to the platform via email.
 ### Who Can Send Invites?
 
 Only platform admins can send invitations. A user is considered an admin if they:
+
 - Have created at least one project, OR
 - Have an "admin" role in any project
 
@@ -96,17 +104,18 @@ In the **User Management** interface, you can:
 **Route:** `src/routes/invite.$token.tsx`
 
 **Components used:**
+
 - `PostAuthRedirect` - handles post-auth navigation to company dashboard
 - Invite page shows accept button for authenticated users
 
 ### Invitation States
 
-| Status | Description |
-|--------|-------------|
-| **Pending** | Invitation sent, waiting for acceptance |
+| Status       | Description                                  |
+| ------------ | -------------------------------------------- |
+| **Pending**  | Invitation sent, waiting for acceptance      |
 | **Accepted** | User created account and accepted invitation |
-| **Revoked** | Admin revoked the invitation |
-| **Expired** | Invitation expired after 7 days |
+| **Revoked**  | Admin revoked the invitation                 |
+| **Expired**  | Invitation expired after 7 days              |
 
 ## User Management
 
@@ -153,22 +162,22 @@ await useQuery(api.invites.listUsers, {});
 // Send an invitation (admin only)
 await useMutation(api.invites.sendInvite, {
   email: "user@example.com",
-  role: "user" // or "admin"
+  role: "user", // or "admin"
 });
 
 // Revoke an invitation (admin only)
 await useMutation(api.invites.revokeInvite, {
-  inviteId: "xxx"
+  inviteId: "xxx",
 });
 
 // Resend an invitation (admin only)
 await useMutation(api.invites.resendInvite, {
-  inviteId: "xxx"
+  inviteId: "xxx",
 });
 
 // Accept an invitation (authenticated user)
 await useMutation(api.invites.acceptInvite, {
-  token: "invite_xxx"
+  token: "invite_xxx",
 });
 ```
 
@@ -177,9 +186,10 @@ await useMutation(api.invites.acceptInvite, {
 The `/invite/:token` page is implemented. To enable automatic invitation emails:
 
 1. Configure Resend (already in dependencies):
+
    ```typescript
    // Add to environment variables
-   RESEND_API_KEY=re_xxx
+   RESEND_API_KEY = re_xxx;
    ```
 
 2. Create email template in `convex/email/templates/invite.ts`
@@ -193,22 +203,26 @@ The `/invite/:token` page is implemented. To enable automatic invitation emails:
 ## Troubleshooting
 
 **Q: I can't send invitations**
+
 - Verify you have admin privileges (created a project or have admin role)
 - Check browser console for errors
 
 **Q: Google sign-in doesn't work**
+
 - Ensure `AUTH_GOOGLE_CLIENT_ID` and `AUTH_GOOGLE_CLIENT_SECRET` are set
 - Verify redirect URI in Google Console matches your app URL
 - Check that Google+ API is enabled
 
 **Q: Invitation shows as expired**
+
 - Invitations are valid for 7 days
 - Admin can resend the invitation to extend expiration
 
 **Q: Can I change a user's role after they join?**
+
 - Currently not implemented in UI
 - Can be added as a future feature in UserManagement component
 
 ---
 
-*Last Updated: 2025-12-09*
+_Last Updated: 2026-01-10_

@@ -16,9 +16,9 @@ import {
 describe("dates utility functions", () => {
   describe("formatRelativeTime", () => {
     beforeEach(() => {
-      // Mock current time to 2025-01-15 12:00:00
+      // Mock current time to 2026-01-15 12:00:00
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-15T12:00:00"));
+      vi.setSystemTime(new Date("2026-01-15T12:00:00"));
     });
 
     afterEach(() => {
@@ -26,27 +26,27 @@ describe("dates utility functions", () => {
     });
 
     it('should return "Just now" for timestamps within the last minute', () => {
-      const timestamp = new Date("2025-01-15T11:59:30").getTime();
+      const timestamp = new Date("2026-01-15T11:59:30").getTime();
       expect(formatRelativeTime(timestamp)).toBe("Just now");
     });
 
     it("should return minutes ago for timestamps within the last hour", () => {
-      const timestamp = new Date("2025-01-15T11:30:00").getTime();
+      const timestamp = new Date("2026-01-15T11:30:00").getTime();
       expect(formatRelativeTime(timestamp)).toBe("30m ago");
     });
 
     it("should return hours ago for timestamps within the last 24 hours", () => {
-      const timestamp = new Date("2025-01-15T09:00:00").getTime();
+      const timestamp = new Date("2026-01-15T09:00:00").getTime();
       expect(formatRelativeTime(timestamp)).toBe("3h ago");
     });
 
     it("should return days ago for timestamps within the last week", () => {
-      const timestamp = new Date("2025-01-12T12:00:00").getTime();
+      const timestamp = new Date("2026-01-12T12:00:00").getTime();
       expect(formatRelativeTime(timestamp)).toBe("3d ago");
     });
 
     it("should return weeks ago for timestamps within the last month", () => {
-      const timestamp = new Date("2025-01-01T12:00:00").getTime();
+      const timestamp = new Date("2026-01-01T12:00:00").getTime();
       expect(formatRelativeTime(timestamp)).toBe("2w ago");
     });
 
@@ -57,50 +57,50 @@ describe("dates utility functions", () => {
     });
 
     it("should handle edge case of exactly 1 hour ago", () => {
-      const timestamp = new Date("2025-01-15T11:00:00").getTime();
+      const timestamp = new Date("2026-01-15T11:00:00").getTime();
       expect(formatRelativeTime(timestamp)).toBe("1h ago");
     });
   });
 
   describe("formatDate", () => {
     it("should format timestamp as locale date string", () => {
-      const timestamp = new Date("2025-01-15T12:00:00").getTime();
+      const timestamp = new Date("2026-01-15T12:00:00").getTime();
       const result = formatDate(timestamp);
-      expect(result).toMatch(/1\/15\/2025|15\/1\/2025/); // Different locales
+      expect(result).toMatch(/1\/15\/2026|15\/1\/2026/); // Different locales
     });
 
     it("should handle timestamp at midnight", () => {
-      const timestamp = new Date("2025-01-15T00:00:00").getTime();
+      const timestamp = new Date("2026-01-15T00:00:00").getTime();
       const result = formatDate(timestamp);
-      expect(result).toMatch(/1\/15\/2025|15\/1\/2025/);
+      expect(result).toMatch(/1\/15\/2026|15\/1\/2026/);
     });
   });
 
   describe("formatDateTime", () => {
     it("should format timestamp as locale date and time string", () => {
-      const timestamp = new Date("2025-01-15T14:30:00").getTime();
+      const timestamp = new Date("2026-01-15T14:30:00").getTime();
       const result = formatDateTime(timestamp);
-      expect(result).toContain("2025");
+      expect(result).toContain("2026");
       expect(result.length).toBeGreaterThan(10); // Should include time
     });
   });
 
   describe("formatDateForInput", () => {
     it("should format date as YYYY-MM-DD for HTML inputs", () => {
-      const date = new Date("2025-01-15T12:00:00");
-      expect(formatDateForInput(date)).toBe("2025-01-15");
+      const date = new Date("2026-01-15T12:00:00");
+      expect(formatDateForInput(date)).toBe("2026-01-15");
     });
 
     it("should format date with single digit month and day correctly", () => {
-      const date = new Date("2025-03-05T12:00:00");
-      expect(formatDateForInput(date)).toBe("2025-03-05");
+      const date = new Date("2026-03-05T12:00:00");
+      expect(formatDateForInput(date)).toBe("2026-03-05");
     });
 
     it("should use current date when no argument provided", () => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-15T12:00:00"));
+      vi.setSystemTime(new Date("2026-01-15T12:00:00"));
 
-      expect(formatDateForInput()).toBe("2025-01-15");
+      expect(formatDateForInput()).toBe("2026-01-15");
 
       vi.useRealTimers();
     });
@@ -109,9 +109,9 @@ describe("dates utility functions", () => {
   describe("getTodayString", () => {
     it("should return today's date in YYYY-MM-DD format", () => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-15T12:00:00"));
+      vi.setSystemTime(new Date("2026-01-15T12:00:00"));
 
-      expect(getTodayString()).toBe("2025-01-15");
+      expect(getTodayString()).toBe("2026-01-15");
 
       vi.useRealTimers();
     });
@@ -119,53 +119,53 @@ describe("dates utility functions", () => {
 
   describe("formatDateCustom", () => {
     it("should format date with custom options", () => {
-      const timestamp = new Date("2025-01-15T12:00:00").getTime();
+      const timestamp = new Date("2026-01-15T12:00:00").getTime();
       const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "long",
         day: "numeric",
       };
 
-      expect(formatDateCustom(timestamp, options)).toBe("January 15, 2025");
+      expect(formatDateCustom(timestamp, options)).toBe("January 15, 2026");
     });
 
     it("should format date with short month and weekday", () => {
-      const timestamp = new Date("2025-01-15T12:00:00").getTime();
+      const timestamp = new Date("2026-01-15T12:00:00").getTime();
       const options: Intl.DateTimeFormatOptions = {
         weekday: "short",
         month: "short",
         day: "numeric",
       };
 
-      expect(formatDateCustom(timestamp, options)).toBe("Wed, Jan 15");
+      expect(formatDateCustom(timestamp, options)).toBe("Thu, Jan 15");
     });
   });
 
   describe("daysBetween", () => {
     it("should calculate days between two timestamps", () => {
-      const start = new Date("2025-01-01T00:00:00").getTime();
-      const end = new Date("2025-01-15T00:00:00").getTime();
+      const start = new Date("2026-01-01T00:00:00").getTime();
+      const end = new Date("2026-01-15T00:00:00").getTime();
 
       expect(daysBetween(start, end)).toBe(14);
     });
 
     it("should return positive number regardless of order", () => {
-      const start = new Date("2025-01-15T00:00:00").getTime();
-      const end = new Date("2025-01-01T00:00:00").getTime();
+      const start = new Date("2026-01-15T00:00:00").getTime();
+      const end = new Date("2026-01-01T00:00:00").getTime();
 
       expect(daysBetween(start, end)).toBe(14);
     });
 
     it("should return 0 for same day", () => {
-      const start = new Date("2025-01-15T08:00:00").getTime();
-      const end = new Date("2025-01-15T18:00:00").getTime();
+      const start = new Date("2026-01-15T08:00:00").getTime();
+      const end = new Date("2026-01-15T18:00:00").getTime();
 
       expect(daysBetween(start, end)).toBe(0);
     });
 
     it("should handle partial days by flooring", () => {
-      const start = new Date("2025-01-01T00:00:00").getTime();
-      const end = new Date("2025-01-02T12:00:00").getTime();
+      const start = new Date("2026-01-01T00:00:00").getTime();
+      const end = new Date("2026-01-02T12:00:00").getTime();
 
       expect(daysBetween(start, end)).toBe(1);
     });
@@ -173,35 +173,35 @@ describe("dates utility functions", () => {
 
   describe("addDays", () => {
     it("should add positive days to a date", () => {
-      const date = new Date("2025-01-15T12:00:00");
+      const date = new Date("2026-01-15T12:00:00");
       const result = addDays(date, 5);
 
-      expect(formatDateForInput(result)).toBe("2025-01-20");
+      expect(formatDateForInput(result)).toBe("2026-01-20");
     });
 
     it("should subtract days with negative number", () => {
-      const date = new Date("2025-01-15T12:00:00");
+      const date = new Date("2026-01-15T12:00:00");
       const result = addDays(date, -5);
 
-      expect(formatDateForInput(result)).toBe("2025-01-10");
+      expect(formatDateForInput(result)).toBe("2026-01-10");
     });
 
     it("should handle month boundaries", () => {
-      const date = new Date("2025-01-30T12:00:00");
+      const date = new Date("2026-01-30T12:00:00");
       const result = addDays(date, 5);
 
-      expect(formatDateForInput(result)).toBe("2025-02-04");
+      expect(formatDateForInput(result)).toBe("2026-02-04");
     });
 
     it("should handle year boundaries", () => {
-      const date = new Date("2024-12-30T12:00:00");
+      const date = new Date("2025-12-30T12:00:00");
       const result = addDays(date, 5);
 
-      expect(formatDateForInput(result)).toBe("2025-01-04");
+      expect(formatDateForInput(result)).toBe("2026-01-04");
     });
 
     it("should not mutate original date", () => {
-      const date = new Date("2025-01-15T12:00:00");
+      const date = new Date("2026-01-15T12:00:00");
       const original = date.getTime();
 
       addDays(date, 5);
@@ -213,7 +213,7 @@ describe("dates utility functions", () => {
   describe("isPast", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-15T12:00:00"));
+      vi.setSystemTime(new Date("2026-01-15T12:00:00"));
     });
 
     afterEach(() => {
@@ -221,17 +221,17 @@ describe("dates utility functions", () => {
     });
 
     it("should return true for past timestamps", () => {
-      const timestamp = new Date("2025-01-14T12:00:00").getTime();
+      const timestamp = new Date("2026-01-14T12:00:00").getTime();
       expect(isPast(timestamp)).toBe(true);
     });
 
     it("should return false for future timestamps", () => {
-      const timestamp = new Date("2025-01-16T12:00:00").getTime();
+      const timestamp = new Date("2026-01-16T12:00:00").getTime();
       expect(isPast(timestamp)).toBe(false);
     });
 
     it("should return false for current timestamp", () => {
-      const timestamp = new Date("2025-01-15T12:00:00").getTime();
+      const timestamp = new Date("2026-01-15T12:00:00").getTime();
       expect(isPast(timestamp)).toBe(false);
     });
   });
@@ -239,7 +239,7 @@ describe("dates utility functions", () => {
   describe("isFuture", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date("2025-01-15T12:00:00"));
+      vi.setSystemTime(new Date("2026-01-15T12:00:00"));
     });
 
     afterEach(() => {
@@ -247,17 +247,17 @@ describe("dates utility functions", () => {
     });
 
     it("should return true for future timestamps", () => {
-      const timestamp = new Date("2025-01-16T12:00:00").getTime();
+      const timestamp = new Date("2026-01-16T12:00:00").getTime();
       expect(isFuture(timestamp)).toBe(true);
     });
 
     it("should return false for past timestamps", () => {
-      const timestamp = new Date("2025-01-14T12:00:00").getTime();
+      const timestamp = new Date("2026-01-14T12:00:00").getTime();
       expect(isFuture(timestamp)).toBe(false);
     });
 
     it("should return false for current timestamp", () => {
-      const timestamp = new Date("2025-01-15T12:00:00").getTime();
+      const timestamp = new Date("2026-01-15T12:00:00").getTime();
       expect(isFuture(timestamp)).toBe(false);
     });
   });

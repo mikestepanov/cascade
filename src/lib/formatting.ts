@@ -38,7 +38,7 @@ export function formatHours(seconds: number, decimals = 2): string {
  * Format timestamp to readable date string
  * @param timestamp - Unix timestamp in milliseconds
  * @param options - Intl.DateTimeFormatOptions
- * @returns Formatted date like "Jan 15, 2025"
+ * @returns Formatted date like "Jan 15, 2026"
  */
 export function formatDate(
   timestamp: number,
@@ -70,7 +70,7 @@ export function formatTime(
 /**
  * Format timestamp to date and time string
  * @param timestamp - Unix timestamp in milliseconds
- * @returns Formatted string like "Jan 15, 2025 at 2:30 PM"
+ * @returns Formatted string like "Jan 15, 2026 at 2:30 PM"
  */
 export function formatDateTime(timestamp: number): string {
   return `${formatDate(timestamp)} at ${formatTime(timestamp)}`;
@@ -92,7 +92,7 @@ export function formatCurrency(amount: number, currency = "USD"): string {
 /**
  * Format date as ISO string for input[type="date"]
  * @param timestamp - Unix timestamp in milliseconds
- * @returns ISO date string like "2025-01-15"
+ * @returns ISO date string like "2026-01-15"
  */
 export function formatDateForInput(timestamp: number): string {
   return new Date(timestamp).toISOString().split("T")[0];

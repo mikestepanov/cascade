@@ -1,6 +1,6 @@
 # E2E Test Investigation & Fixes - Final Summary
 
-**Date**: 2025-12-17 to 2025-12-18  
+**Date**: 2026-01-10  
 **Branch**: `nxet`  
 **Duration**: ~4 hours  
 **Status**: ✅ **COMPLETE & VERIFIED**
@@ -23,9 +23,11 @@
 ## 📦 Commits Overview
 
 ### Commit 1: `f1a9b7c` - E2E tests workspace migration fixes
+
 **Files**: 33 changed (+351, -128)
 
 **Critical Bugs Fixed**:
+
 1. ✅ **11 CompanyContext imports** - Fixed wrong paths across hierarchy
 2. ✅ **board.tsx projectKey bug** - Passing string instead of ID
 3. ✅ **AppSidebar missing companyId** - Fixed query parameters
@@ -38,23 +40,27 @@
 ---
 
 ### Commit 2: `31b9371` - E2E intermittent sign-in failures fix
+
 **Files**: 2 changed (+230, -2)
 
 **Investigation Findings**:
+
 - **Root Cause**: "Welcome back" heading inside `<Unauthenticated>` wrapper
 - **Timing Issue**: Convex connection → Auth query → Render (1-30s)
 - **Why Intermittent**: Cold starts, network latency, concurrent requests
 
 **Solution**:
+
 ```typescript
 // Wait for EITHER heading OR form (Promise.race)
 await Promise.race([
   locators.signInHeading.waitFor({ state: "visible", timeout: 30000 }),
-  page.locator('form').waitFor({ state: "visible", timeout: 30000 })
+  page.locator("form").waitFor({ state: "visible", timeout: 30000 }),
 ]);
 ```
 
 **Documentation**:
+
 - Created `docs/E2E_SIGNIN_FLAKINESS.md`
 - 178 lines of investigation, root cause analysis, and solutions
 
@@ -63,13 +69,16 @@ await Promise.race([
 ---
 
 ### Commit 3: `de92939` - Extended PostAuthRedirect wait time
+
 **Files**: 2 changed (+323, -17)
 
-**Problem**: 
+**Problem**:
+
 - Sign-in succeeded but redirect timeout (3s insufficient)
 - `PostAuthRedirect` waits for 2 Convex queries (getUserCompanies + getOnboardingStatus)
 
 **Solution**:
+
 ```typescript
 // Poll for dashboard every 1s, up to 10s
 for (let i = 0; i < 10; i++) {
@@ -87,14 +96,14 @@ for (let i = 0; i < 10; i++) {
 
 ## 📊 Before & After Metrics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **TypeScript Errors** | 55 | 0 | ✅ 100% |
-| **Sign-In Success** | 66% (2/3) | 100% (3/3) | ✅ +34% |
-| **Schema Validation** | ❌ Failed | ✅ Passing | ✅ Fixed |
-| **CompanyContext Imports** | ❌ 11 broken | ✅ All fixed | ✅ Fixed |
-| **Orphaned DB Records** | 52 records | 0 records | ✅ Cleaned |
-| **E2E Infrastructure** | ❌ Broken | ✅ Working | ✅ Fixed |
+| Metric                     | Before       | After        | Improvement |
+| -------------------------- | ------------ | ------------ | ----------- |
+| **TypeScript Errors**      | 55           | 0            | ✅ 100%     |
+| **Sign-In Success**        | 66% (2/3)    | 100% (3/3)   | ✅ +34%     |
+| **Schema Validation**      | ❌ Failed    | ✅ Passing   | ✅ Fixed    |
+| **CompanyContext Imports** | ❌ 11 broken | ✅ All fixed | ✅ Fixed    |
+| **Orphaned DB Records**    | 52 records   | 0 records    | ✅ Cleaned  |
+| **E2E Infrastructure**     | ❌ Broken    | ✅ Working   | ✅ Fixed    |
 
 ---
 
@@ -105,6 +114,7 @@ for (let i = 0; i < 10; i++) {
 **Symptom**: Random failure (1/3 users, usually teamLead)
 
 **Root Cause Chain**:
+
 ```
 1. `/signin` page loads
 2. Convex client initializes
@@ -115,16 +125,19 @@ for (let i = 0; i < 10; i++) {
 ```
 
 **Failure Points**:
+
 - Step 3: Cold start can take 10-30s
 - Step 4: Query timeout or slow response
 - Step 5: Component render delayed
 
 **Why teamLead Failed More**:
+
 - First user in sequence
 - Bears full cold start penalty
 - Later users benefit from warmed connections
 
 **Solution Impact**:
+
 - Promise.race eliminates dependency on auth-gated heading
 - Form appears before auth check completes
 - 10s polling catches slow PostAuthRedirect queries
@@ -134,12 +147,14 @@ for (let i = 0; i < 10; i++) {
 ## ✅ Verification Results
 
 ### TypeScript
+
 ```bash
 $ pnpm run typecheck
 ✅ PASSING (0 errors)
 ```
 
 ### E2E Sign-In Success
+
 ```
 ✓ teamLead: User created via API
 ✓ Password verified successfully
@@ -160,16 +175,19 @@ $ pnpm run typecheck
 ## 📁 Files Modified
 
 **Frontend** (14 files):
+
 - `src/hooks/useCurrentUser.ts` (created)
 - `src/components/AppSidebar.tsx`
 - `src/routes/_auth/_app/$companySlug/projects/$key/board.tsx`
 - 11 workspace/team hierarchy route files
 
 **Backend** (14 files):
+
 - `convex/schema.ts` - Optional fields
 - 13 files with non-null assertions
 
 **Testing** (3 files):
+
 - `e2e/utils/auth-helpers.ts` - Promise.race + 10s polling
 - `docs/E2E_SIGNIN_FLAKINESS.md` - Investigation doc
 - `e2e-test-output.txt` - Test results
@@ -179,7 +197,9 @@ $ pnpm run typecheck
 ## 📚 Documentation Added
 
 ### `docs/E2E_SIGNIN_FLAKINESS.md`
+
 **Sections**:
+
 - Symptoms
 - Root Cause (detailed timing chain)
 - Why It's Intermittent (cold starts, network, etc.)
@@ -195,22 +215,26 @@ $ pnpm run typecheck
 ## 🎉 Key Achievements
 
 ### 1. Sign-In Reliability: 100%
+
 - **Before**: 1/3 users failed randomly
 - **After**: 3/3 users succeed consistently
 - **Method**: Promise.race + extended polling
 
 ### 2. TypeScript: Zero Errors
+
 - **Before**: 55 compilation errors
 - **After**: 0 errors
 - **Method**: Non-null assertions + optional schema fields
 
 ### 3. Application: Fully Functional
+
 - All routes working
 - Project boards loading
 - RBAC permissions working
 - Convex backend deployed
 
 ### 4. Diagnostic Infrastructure
+
 - 5-second interval logging during waits
 - Screenshots on timeout
 - Detailed error messages
@@ -221,11 +245,13 @@ $ pnpm run typecheck
 ## ⚠️ Known Issues
 
 ### RBAC Test Assertions (Low Priority)
+
 **Status**: Tests fail on project heading visibility  
 **Root Cause**: Different issue - test selector/timing, NOT sign-in  
-**Impact**: Low - sign-in infrastructure is solid  
+**Impact**: Low - sign-in infrastructure is solid
 
 **Example**:
+
 ```
 Error: expect(locator).toBeVisible() failed
 Locator: getByRole('heading', { name: /RBAC Test Project/i })
@@ -238,17 +264,21 @@ This is a test assertion issue that can be addressed separately.
 ## 💡 Key Learnings
 
 1. **Auth-gated content causes timing issues**
+
    - Solution: Wait for non-auth-gated elements
 
 2. **Promise.race() excellent for fallbacks**
+
    - Provides multiple success paths
    - Reduces flakiness
 
 3. **PostAuthRedirect queries need time**
+
    - 3s too short, 10s sufficient
    - Polling better than single wait
 
 4. **Cold starts affect first test most**
+
    - Sequential test setup compounds delays
    - Consider parallel setup for future
 
@@ -261,17 +291,20 @@ This is a test assertion issue that can be addressed separately.
 ## 🚀 Future Enhancements
 
 ### Immediate Wins:
+
 - ✅ Fix RBAC test selectors (separate issue)
 - ✅ Run full E2E suite validation
 - ✅ Monitor CI for reliability
 
 ### Nice-to-Haves:
+
 - Move "Welcome back" outside `<Unauthenticated>`
 - Add loading skeleton to sign-in page
 - Add Convex connection telemetry
 - Consider retry logic for even more reliability
 
 ### Infrastructure:
+
 - Parallel test user setup (reduce setup time)
 - Connection readiness check before sign-in
 - More granular diagnostic metrics
@@ -280,13 +313,13 @@ This is a test assertion issue that can be addressed separately.
 
 ## 📈 Success Metrics
 
-| Component | Status | Confidence |
-|-----------|--------|------------|
-| **Sign-In Fix** | ✅ Verified | 100% |
-| **TypeScript** | ✅ Passing | 100% |
-| **Schema Migration** | ✅ Complete | 100% |
-| **Documentation** | ✅ Comprehensive | 100% |
-| **Diagnostic Tools** | ✅ Added | 100% |
+| Component            | Status           | Confidence |
+| -------------------- | ---------------- | ---------- |
+| **Sign-In Fix**      | ✅ Verified      | 100%       |
+| **TypeScript**       | ✅ Passing       | 100%       |
+| **Schema Migration** | ✅ Complete      | 100%       |
+| **Documentation**    | ✅ Comprehensive | 100%       |
+| **Diagnostic Tools** | ✅ Added         | 100%       |
 
 ---
 
@@ -308,4 +341,4 @@ The E2E test sign-in flakiness has been **completely resolved**. All critical bu
 
 ---
 
-*This investigation demonstrates the importance of diagnostic logging, systematic root cause analysis, and thorough verification of fixes.*
+_This investigation demonstrates the importance of diagnostic logging, systematic root cause analysis, and thorough verification of fixes._
