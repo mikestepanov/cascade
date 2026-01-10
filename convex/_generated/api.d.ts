@@ -96,6 +96,7 @@ import type * as projectTemplates from "../projectTemplates.js";
 import type * as projects from "../projects.js";
 import type * as prosemirror from "../prosemirror.js";
 import type * as pumble from "../pumble.js";
+import type * as purge from "../purge.js";
 import type * as rateLimiting from "../rateLimiting.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as rbac from "../rbac.js";
@@ -212,6 +213,7 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   prosemirror: typeof prosemirror;
   pumble: typeof pumble;
+  purge: typeof purge;
   rateLimiting: typeof rateLimiting;
   rateLimits: typeof rateLimits;
   rbac: typeof rbac;
