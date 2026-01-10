@@ -90,11 +90,9 @@ export const purgeData = mutation({
     let totalTablesProcessed = 0;
 
     for (const table of TABLES) {
-      console.log(`Checking table: ${table}`);
       const records = await ctx.db.query(table as any).take(TARGET_DELETES - totalDeleted);
 
       if (records.length > 0) {
-        console.log(`Found ${records.length} records in ${table}, deleting...`);
       }
 
       for (const record of records) {
@@ -103,7 +101,6 @@ export const purgeData = mutation({
       }
 
       if (records.length > 0) {
-        console.log(`Purged ${records.length} records from ${table}`);
       }
 
       totalTablesProcessed++;

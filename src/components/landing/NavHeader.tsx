@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { ROUTES } from "@/config/routes";
 import { NixeloLogo } from "./icons";
 
@@ -27,18 +28,28 @@ export function NavHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link
-            to={ROUTES.signin}
-            className="text-sm text-ui-text-tertiary hover:text-white transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            to={ROUTES.signup}
-            className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
-          >
-            Get Started
-          </Link>
+          <Unauthenticated>
+            <Link
+              to={ROUTES.signin}
+              className="text-sm text-ui-text-tertiary hover:text-white transition-colors"
+            >
+              Sign in
+            </Link>
+            <Link
+              to={ROUTES.signup}
+              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+            >
+              Get Started
+            </Link>
+          </Unauthenticated>
+          <Authenticated>
+            <Link
+              to={ROUTES.signup} // PostAuthRedirect handles the sub-redirect
+              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+            >
+              Go to App
+            </Link>
+          </Authenticated>
         </div>
       </nav>
     </header>

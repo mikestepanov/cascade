@@ -8,3 +8,4 @@ export { PostAuthRedirect } from "./PostAuthRedirect";
 export { ResetPasswordForm } from "./ResetPasswordForm";
 export { SignInForm } from "./SignInForm";
 export { SignUpForm } from "./SignUpForm";
+export { SmartAuthGuard } from "./SmartAuthGuard";

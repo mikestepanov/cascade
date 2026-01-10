@@ -14,37 +14,21 @@ function AppLayout() {
   const navigate = useNavigate();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
-  // Global auth gate - wait for auth to be ready before making any queries
-  const onboardingStatus = useQuery(
-    api.onboarding.getOnboardingStatus,
-    isAuthenticated ? undefined : "skip",
-  );
-
-  // Get user's companies to redirect to default
+  // Get user's companies to check if we need initialization
   const userCompanies = useQuery(
     api.companies.getUserCompanies,
     isAuthenticated ? undefined : "skip",
   );
 
-  // Determine redirect targets
-  const shouldRedirectToHome = !(isAuthLoading || isAuthenticated);
-  const shouldRedirectToOnboarding =
-    !isAuthLoading &&
-    isAuthenticated &&
-    onboardingStatus !== undefined &&
-    (onboardingStatus === null || !onboardingStatus.onboardingCompleted);
-
-  // Handle redirects in useEffect to avoid state updates during render
+  // Handle home redirect only (SmartAuthGuard handles onboarding/dashboard transitions)
   useEffect(() => {
-    if (shouldRedirectToHome) {
+    if (!(isAuthLoading || isAuthenticated)) {
       navigate({ to: ROUTES.home });
-    } else if (shouldRedirectToOnboarding) {
-      navigate({ to: ROUTES.onboarding });
     }
-  }, [shouldRedirectToHome, shouldRedirectToOnboarding, navigate]);
+  }, [isAuthLoading, isAuthenticated, navigate]);
 
   // Loading state
-  if (isAuthLoading || onboardingStatus === undefined || userCompanies === undefined) {
+  if (isAuthLoading || userCompanies === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <LoadingSpinner size="lg" />
@@ -53,17 +37,8 @@ function AppLayout() {
   }
 
   // Redirect to sign in if not authenticated
-  if (shouldRedirectToHome) {
+  if (!isAuthenticated) {
     return null;
-  }
-
-  // Redirect to onboarding if not completed
-  if (shouldRedirectToOnboarding) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
   }
 
   // User has no companies - initialize default company
