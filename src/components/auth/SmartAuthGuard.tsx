@@ -17,18 +17,27 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   useEffect(() => {
     if (redirectPath === undefined || !redirectPath) return;
 
+    const publicPaths = [ROUTES.home as string, ROUTES.signin as string, ROUTES.signup as string];
+    const isPublicPath = publicPaths.includes(location.pathname);
     const isOnboarding = location.pathname === ROUTES.onboarding;
     const shouldBeOnboarding = redirectPath === ROUTES.onboarding;
 
-    if (isOnboarding !== shouldBeOnboarding) {
+    // Redirect if:
+    // 1. User is on a public page (home, signin, signup)
+    // 2. User is on the wrong onboarding/dashboard state
+    const needsRedirect = isPublicPath || isOnboarding !== shouldBeOnboarding;
+
+    if (needsRedirect) {
       navigate({ to: redirectPath, replace: true });
     }
   }, [redirectPath, location.pathname, navigate]);
 
-  // Show loading while we determine the destination or if we are in the middle of a redirect
+  // Determine if we should show a loading spinner while redirecting
+  const publicPaths = [ROUTES.home as string, ROUTES.signin as string, ROUTES.signup as string];
+  const isPublicPath = publicPaths.includes(location.pathname);
   const isOnboarding = location.pathname === ROUTES.onboarding;
   const shouldBeOnboarding = redirectPath === ROUTES.onboarding;
-  const needsRedirect = redirectPath && isOnboarding !== shouldBeOnboarding;
+  const needsRedirect = redirectPath && (isPublicPath || isOnboarding !== shouldBeOnboarding);
 
   if (redirectPath === undefined || needsRedirect) {
     return (
