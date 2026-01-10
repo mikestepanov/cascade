@@ -654,7 +654,7 @@ describe("CustomFieldValues - Component Behavior", () => {
           isRequired: false,
         },
       ];
-      const testDate = "2025-01-15";
+      const testDate = "2026-01-15";
       const mockValues = [
         {
           fieldId: "field1" as Id<"customFields">,
