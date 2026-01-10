@@ -158,9 +158,7 @@ export class DashboardPage extends BasePage {
 
     // Modals - Global Search (not a dialog role, it's a fixed positioned div)
     // The modal contains "Search issues and documents..." placeholder input
-    this.globalSearchModal = page.locator(".fixed").filter({
-      has: page.getByPlaceholder(/search issues and documents/i),
-    });
+    this.globalSearchModal = page.getByTestId("global-search-modal");
     this.globalSearchInput = page.getByPlaceholder(/search issues and documents/i);
 
     // Notifications - PopoverContent with "Notifications" h3 heading
