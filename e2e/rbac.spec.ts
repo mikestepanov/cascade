@@ -16,7 +16,7 @@
  */
 
 import { RBAC_TEST_CONFIG } from "./config";
-import { clientSideNavigate, expect, hasAdminAuth, rbacTest } from "./fixtures";
+import { clientSideNavigate, expect, rbacTest } from "./fixtures";
 
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
@@ -34,7 +34,7 @@ rbacTest(
   "admin has full project access",
   async (
     { adminPage, adminProjectsPage, gotoRbacProject, rbacProjectKey, rbacCompanySlug },
-    testInfo,
+    _testInfo,
   ) => {
     // Verify admin auth is available (will throw from assertAuthStateValid in fixture if missing)
     // We no longer skip - if auth is missing, the test should fail.

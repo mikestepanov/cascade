@@ -90,17 +90,12 @@ export const purgeData = mutation({
     let totalTablesProcessed = 0;
 
     for (const table of TABLES) {
+      // biome-ignore lint/suspicious/noExplicitAny: dynamic table name from TABLES array
       const records = await ctx.db.query(table as any).take(TARGET_DELETES - totalDeleted);
-
-      if (records.length > 0) {
-      }
 
       for (const record of records) {
         await ctx.db.delete(record._id);
         totalDeleted++;
-      }
-
-      if (records.length > 0) {
       }
 
       totalTablesProcessed++;

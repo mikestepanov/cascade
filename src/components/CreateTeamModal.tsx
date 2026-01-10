@@ -45,7 +45,7 @@ export function CreateTeamModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !workspaceId || !workspaceSlug) return;
+    if (!(name.trim() && workspaceId && workspaceSlug)) return;
 
     setIsSubmitting(true);
     try {

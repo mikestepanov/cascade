@@ -54,10 +54,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
       return {
         utilizationRate: 0,
         averageRate: 0,
-          sortedUsers: [] as [
-            string,
-            { name: string; hours: number; billableHours: number; revenue: number },
-          ][],
+        sortedUsers: [] as [
+          string,
+          { name: string; hours: number; billableHours: number; revenue: number },
+        ][],
       };
     }
 
