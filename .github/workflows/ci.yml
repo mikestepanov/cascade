@@ -102,6 +102,7 @@ jobs:
         run: pnpm run build
         env:
           VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
