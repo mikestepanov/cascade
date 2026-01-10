@@ -1,7 +1,8 @@
 import { v } from "convex/values";
+import type { TableNames } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 
-const TABLES = [
+const TABLES: TableNames[] = [
   "documents",
   "documentVersions",
   "documentTemplates",
@@ -70,7 +71,7 @@ const TABLES = [
   "authSessions",
   "authRefreshTokens",
   "authVerificationCodes",
-] as const;
+];
 
 /**
  * Purge all data from the database.
@@ -90,8 +91,7 @@ export const purgeData = mutation({
     let totalTablesProcessed = 0;
 
     for (const table of TABLES) {
-      // biome-ignore lint/suspicious/noExplicitAny: dynamic table name from TABLES array
-      const records = await ctx.db.query(table as any).take(TARGET_DELETES - totalDeleted);
+      const records = await ctx.db.query(table).take(TARGET_DELETES - totalDeleted);
 
       for (const record of records) {
         await ctx.db.delete(record._id);
