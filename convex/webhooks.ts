@@ -31,6 +31,8 @@ export const createWebhook = mutation({
     // Only admins can create webhooks
     await assertIsProjectAdmin(ctx, args.projectId, userId);
 
+    validateWebhookUrl(args.url);
+
     const webhookId = await ctx.db.insert("webhooks", {
       projectId: args.projectId,
       name: args.name,
@@ -110,7 +112,10 @@ export const updateWebhook = mutation({
 
     const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
-    if (args.url !== undefined) updates.url = args.url;
+    if (args.url !== undefined) {
+      validateWebhookUrl(args.url);
+      updates.url = args.url;
+    }
     if (args.events !== undefined) updates.events = args.events;
     if (args.secret !== undefined) updates.secret = args.secret;
     if (args.isActive !== undefined) updates.isActive = args.isActive;
@@ -545,4 +550,61 @@ async function generateSignature(payload: string, secret: string): Promise<strin
   return Array.from(new Uint8Array(signature))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function validateWebhookUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      throw new Error("Invalid URL protocol. Must be http or https.");
+    }
+    const hostname = parsed.hostname.toLowerCase();
+
+    // Block localhost (including 127.x.x.x and IPv6 loopback)
+    // Note: URL.hostname for IPv6 includes brackets e.g., "[::1]"
+    if (
+      hostname === "localhost" ||
+      hostname === "::1" ||
+      hostname === "[::1]" ||
+      hostname.startsWith("127.")
+    ) {
+      throw new Error("Localhost URLs are not allowed.");
+    }
+
+    // Simple check to see if hostname looks like an IPv4 address
+    // (IPv6 is handled by [::1] check or generic private IP blocks if needed,
+    // but here we focus on preventing common IPv4 private ranges)
+    const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+
+    if (isIPv4) {
+      // Block private IPs
+      // 10.0.0.0/8
+      if (hostname.startsWith("10.")) {
+        throw new Error("Private IP addresses are not allowed.");
+      }
+      // 192.168.0.0/16
+      if (hostname.startsWith("192.168.")) {
+        throw new Error("Private IP addresses are not allowed.");
+      }
+      // 172.16.0.0/12
+      if (hostname.startsWith("172.")) {
+        const parts = hostname.split(".");
+        const secondOctet = parseInt(parts[1], 10);
+        if (secondOctet >= 16 && secondOctet <= 31) {
+          throw new Error("Private IP addresses are not allowed.");
+        }
+      }
+    }
+
+    // Block AWS metadata
+    if (hostname === "169.254.169.254") {
+      throw new Error("Metadata service URLs are not allowed.");
+    }
+  } catch (e) {
+    // Re-throw specific errors, otherwise generic invalid format
+    if (e instanceof Error && (e.message.includes("allowed") || e.message.includes("protocol"))) {
+      throw e;
+    }
+    throw new Error("Invalid URL format");
+  }
 }
