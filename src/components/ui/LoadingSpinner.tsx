@@ -1,4 +1,6 @@
+import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
+import { Typography } from "./Typography";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -16,13 +18,22 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
   return (
     <Flex direction="column" align="center" justify="center" gap="md">
       <output
-        className={`animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent ${sizeClasses[size]} ${className}`}
+        className={cn(
+          "animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent",
+          sizeClasses[size],
+          className,
+        )}
         aria-label="Loading"
       >
         <span className="sr-only">Loading...</span>
       </output>
       {message && (
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">{message}</p>
+        <Typography
+          variant="small"
+          className="text-ui-text-secondary dark:text-ui-text-secondary-dark"
+        >
+          {message}
+        </Typography>
       )}
     </Flex>
   );

@@ -1,5 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
+import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 import { PlayIcon } from "./icons";
 
 export function HeroSection() {
@@ -7,11 +10,11 @@ export function HeroSection() {
     <section className="px-6 pt-16 pb-24">
       <div className="max-w-4xl mx-auto text-center">
         {/* Tag */}
-        <div className="flex justify-center mb-8">
+        <Flex justify="center" className="mb-8">
           <span className="px-4 py-2 rounded-full border border-gray-700/50 text-xs text-ui-text-tertiary bg-gray-900/30 backdrop-blur-sm">
             Project Management · Time Tracking
           </span>
-        </div>
+        </Flex>
 
         {/* Headline */}
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
@@ -23,13 +26,13 @@ export function HeroSection() {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-ui-text-tertiary text-lg max-w-2xl mx-auto mb-10">
+        <Typography variant="lead" className="text-ui-text-tertiary max-w-2xl mx-auto mb-10">
           Experience the future of project management with integrated tracking, automation, and
           collaboration.
-        </p>
+        </Typography>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Flex direction="column" gap="md" align="center" justify="center" className="sm:flex-row">
           <Link
             to={ROUTES.signup}
             className="px-8 py-3.5 bg-linear-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
@@ -45,7 +48,7 @@ export function HeroSection() {
             Watch Demo
             <PlayIcon className="w-4 h-4" />
           </a>
-        </div>
+        </Flex>
       </div>
     </section>
   );

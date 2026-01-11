@@ -1,5 +1,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import { Flex } from "../Flex";
+import { Typography } from "../Typography";
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   label?: string;
@@ -25,7 +27,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 
     return (
       <div className="w-full">
-        <div className="flex items-center space-x-2">
+        <Flex align="center" gap="sm">
           <input
             ref={ref}
             type="checkbox"
@@ -53,22 +55,20 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               {label}
             </label>
           )}
-        </div>
+        </Flex>
         {error && (
-          <p
+          <Typography
+            variant="small"
             id={`${checkboxId}-error`}
-            className="mt-1 text-sm text-status-error dark:text-status-error"
+            className="mt-1 text-status-error dark:text-status-error"
           >
             {error}
-          </p>
+          </Typography>
         )}
         {helperText && !error && (
-          <p
-            id={`${checkboxId}-helper`}
-            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          >
+          <Typography variant="muted" id={`${checkboxId}-helper`} className="mt-1 text-xs">
             {helperText}
-          </p>
+          </Typography>
         )}
       </div>
     );

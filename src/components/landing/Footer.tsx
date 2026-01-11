@@ -1,3 +1,5 @@
+import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 import { NixeloLogo } from "./icons";
 
 export function Footer() {
@@ -7,14 +9,14 @@ export function Footer() {
         <div className="grid md:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <Flex align="center" gap="sm" className="mb-4">
               <NixeloLogo />
               <span className="text-xl font-semibold">nixelo</span>
-            </div>
-            <p className="text-ui-text-tertiary text-sm max-w-xs">
+            </Flex>
+            <Typography variant="muted" className="max-w-xs">
               Revolutionizing project management with intelligent automation and seamless
               collaboration.
-            </p>
+            </Typography>
           </div>
 
           {/* Links */}
@@ -68,8 +70,10 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-ui-text-secondary text-sm">© 2026 Nixelo. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <Typography variant="muted" className="text-ui-text-secondary">
+            © 2026 Nixelo. All rights reserved.
+          </Typography>
+          <Flex align="center" gap="xl">
             {/* Social Links */}
             <a
               href="https://www.facebook.com/nixeloapp/"
@@ -123,7 +127,7 @@ export function Footer() {
             >
               Cookies
             </a>
-          </div>
+          </Flex>
         </div>
       </div>
     </footer>

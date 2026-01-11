@@ -1,3 +1,7 @@
+import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
+import { Typography } from "./Typography";
+
 interface ColorPickerProps {
   value: string;
   onChange: (color: string) => void;
@@ -24,20 +28,24 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+      <Typography
+        as="div"
+        variant="small"
+        className="block font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+      >
         {label}
-      </div>
-      <div className="flex gap-2 flex-wrap items-center">
+      </Typography>
+      <Flex gap="sm" wrap align="center">
         {presetColors.map((presetColor) => (
           <button
             key={presetColor}
             type="button"
             onClick={() => onChange(presetColor)}
-            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark ${
-              value === presetColor
-                ? "ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110"
-                : ""
-            }`}
+            className={cn(
+              "w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark",
+              value === presetColor &&
+                "ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110",
+            )}
             style={{ backgroundColor: presetColor }}
             title={presetColor}
             aria-label={`Select color ${presetColor}`}
@@ -56,7 +64,7 @@ export function ColorPicker({
             Custom
           </span>
         </div>
-      </div>
+      </Flex>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
+import { Flex } from "./Flex";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export function ConfirmDialog({
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark">
         <AlertDialogHeader>
-          <div className="flex items-start gap-4">
+          <Flex align="start" gap="lg">
             <div className="text-4xl flex-shrink-0">{variantIcons[variant]}</div>
             <div className="flex-1">
               <AlertDialogTitle className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
@@ -58,7 +59,7 @@ export function ConfirmDialog({
                 {message}
               </AlertDialogDescription>
             </div>
-          </div>
+          </Flex>
         </AlertDialogHeader>
         <AlertDialogFooter className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark -mx-6 -mb-6 px-6 py-4 rounded-b-lg mt-4">
           <AlertDialogCancel
