@@ -4,9 +4,11 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 // Type for time entry with computed hours field
 type TimeEntryWithHours = Doc<"timeEntries"> & {
@@ -78,9 +80,9 @@ export function Timesheet() {
             <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               My Timesheet
             </h2>
-            <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Week of {formatDate(timesheet.startDate)}
-            </p>
+            </Typography>
           </div>
           <Flex gap="lg">
             <div className="text-right">
@@ -131,11 +133,12 @@ export function Timesheet() {
           return (
             <div
               key={day.dayKey}
-              className={`border rounded-lg p-3 ${
+              className={cn(
+                "border rounded-lg p-3",
                 isToday
                   ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                  : "border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-              }`}
+                  : "border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+              )}
             >
               {/* Day header */}
               <div className="mb-2">
@@ -202,9 +205,9 @@ export function Timesheet() {
       {timesheet.totalHours === 0 && (
         <div className="text-center py-12">
           <Calendar className="w-12 h-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-3" />
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             No time entries this week. Start a timer to begin tracking!
-          </p>
+          </Typography>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { Flex } from "../ui/Flex";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
@@ -46,7 +47,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         side="right"
-        className={`${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} p-0 flex flex-col bg-ui-bg-primary dark:bg-ui-bg-primary-dark`}
+        className={cn(
+          AI_CONFIG.panel.width.mobile,
+          AI_CONFIG.panel.width.tablet,
+          AI_CONFIG.panel.width.desktop,
+          "p-0 flex flex-col bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+        )}
       >
         {/* Header */}
         <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-linear-to-r from-brand-600 to-accent-600">
@@ -68,11 +74,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           <button
             type="button"
             onClick={() => handleTabChange("chat")}
-            className={`flex-1 px-4 py-3 font-medium text-sm transition-colors ${
+            className={cn(
+              "flex-1 px-4 py-3 font-medium text-sm transition-colors",
               activeTab === "chat"
                 ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
+                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+            )}
           >
             💬 Chat
             {chats && chats.length > 0 && (
@@ -84,11 +91,12 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           <button
             type="button"
             onClick={() => handleTabChange("suggestions")}
-            className={`flex-1 px-4 py-3 font-medium text-sm transition-colors relative ${
+            className={cn(
+              "flex-1 px-4 py-3 font-medium text-sm transition-colors relative",
               activeTab === "suggestions"
                 ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
+                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+            )}
           >
             💡 Suggestions
             {unreadSuggestions > 0 && (
@@ -102,9 +110,11 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         {/* Content */}
         <div className="flex-1 overflow-hidden">
           <div
-            className={`h-full transition-opacity duration-${AI_CONFIG.animations.tabTransition} ${
-              isAnimating ? "opacity-0" : "opacity-100"
-            }`}
+            className={cn(
+              "h-full transition-opacity",
+              `duration-${AI_CONFIG.animations.tabTransition}`,
+              isAnimating ? "opacity-0" : "opacity-100",
+            )}
           >
             <ErrorBoundary
               fallback={

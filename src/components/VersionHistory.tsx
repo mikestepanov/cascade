@@ -4,9 +4,11 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Clock, History, RotateCcw } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 /**
  * Get relative time string (e.g., "5 minutes ago")
@@ -99,10 +101,10 @@ export function VersionHistory({
               <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 No version history yet
               </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Versions are automatically saved as you edit. Make some changes to create the first
                 version.
-              </p>
+              </Typography>
             </div>
           ) : (
             <div className="space-y-2">
@@ -113,11 +115,12 @@ export function VersionHistory({
                 return (
                   <div
                     key={version._id}
-                    className={`p-4 rounded-lg border transition-colors ${
+                    className={cn(
+                      "p-4 rounded-lg border transition-colors",
                       isSelected
                         ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                        : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
-                    }`}
+                        : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                    )}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -139,9 +142,9 @@ export function VersionHistory({
                           <span>by {version.createdByName}</span>
                         </div>
                         {version.changeDescription && (
-                          <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <Typography className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                             {version.changeDescription}
-                          </p>
+                          </Typography>
                         )}
                       </div>
 
@@ -166,10 +169,10 @@ export function VersionHistory({
 
         {/* Footer */}
         <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Tip: Versions are saved automatically every minute when you edit. Up to 50 recent
             versions are kept.
-          </p>
+          </Typography>
         </div>
       </DialogContent>
     </Dialog>

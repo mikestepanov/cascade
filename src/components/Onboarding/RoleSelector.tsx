@@ -2,6 +2,7 @@ import { Check, User, Users } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
+import { Typography } from "../ui/Typography";
 
 interface RoleSelectorProps {
   onSelect: (role: "team_lead" | "team_member") => void;
@@ -45,9 +46,9 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
             {title}
           </h3>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             {description}
-          </p>
+          </Typography>
         </div>
         {selected && (
           <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">

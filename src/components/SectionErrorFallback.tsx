@@ -1,3 +1,5 @@
+import { Typography } from "./ui/Typography";
+
 interface Props {
   title: string;
   message?: string;
@@ -12,10 +14,10 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
         <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
           {title}
         </h2>
-        <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+        <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
           {message ||
             "This section encountered an error. Try reloading or contact support if the problem persists."}
-        </p>
+        </Typography>
         {onRetry && (
           <button
             type="button"

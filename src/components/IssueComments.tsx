@@ -8,6 +8,7 @@ import { CommentRenderer } from "./CommentRenderer";
 import { MentionInput } from "./MentionInput";
 import { Avatar } from "./ui/Avatar";
 import { Button } from "./ui/Button";
+import { Typography } from "./ui/Typography";
 
 interface IssueCommentsProps {
   issueId: Id<"issues">;
@@ -72,8 +73,10 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-            <p>No comments yet</p>
-            <p className="text-sm mt-1">Be the first to comment!</p>
+            <Typography variant="p">No comments yet</Typography>
+            <Typography variant="muted" className="mt-1">
+              Be the first to comment!
+            </Typography>
           </div>
         ) : (
           <>

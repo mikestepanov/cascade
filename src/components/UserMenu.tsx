@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/DropdownMenu";
+import { Typography } from "./ui/Typography";
 
 export function UserMenu() {
   const user = useQuery(api.users.getCurrent);
@@ -40,10 +41,12 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name || "User"}</p>
-            <p className="text-xs leading-none text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-sm font-medium leading-none">
+              {user.name || "User"}
+            </Typography>
+            <Typography className="text-xs leading-none text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
               {user.email}
-            </p>
+            </Typography>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

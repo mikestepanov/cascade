@@ -1,5 +1,7 @@
 import { memo } from "react";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 /**
  * Metric display card for analytics dashboard
@@ -20,20 +22,21 @@ export const MetricCard = memo(function MetricCard({
 }) {
   return (
     <div
-      className={`bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6 ${highlight ? "ring-2 ring-status-warning" : ""}`}
+      className={cn(
+        "bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6",
+        highlight && "ring-2 ring-status-warning",
+      )}
     >
       <Flex justify="between" align="center">
         <div>
-          <p className="text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-sm font-medium" color="secondary">
             {title}
-          </p>
-          <p className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-2">
-            {value}
-          </p>
+          </Typography>
+          <Typography className="text-3xl font-bold mt-2">{value}</Typography>
           {subtitle && (
-            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            <Typography variant="muted" className="text-xs mt-1">
               {subtitle}
-            </p>
+            </Typography>
           )}
         </div>
         <div className="text-4xl">{icon}</div>

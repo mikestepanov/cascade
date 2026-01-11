@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { showError } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { Typography } from "./ui/Typography";
 
@@ -143,16 +144,17 @@ export function NotificationCenter() {
           {!notifications || notifications.length === 0 ? (
             <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
               <div className="text-4xl mb-2">📭</div>
-              <p>No notifications</p>
+              <Typography>No notifications</Typography>
             </div>
           ) : (
             <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
               {notifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className={`p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors ${
-                    !notification.isRead ? "bg-status-info-bg dark:bg-brand-900/20" : ""
-                  }`}
+                  className={cn(
+                    "p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors",
+                    !notification.isRead && "bg-status-info-bg dark:bg-brand-900/20",
+                  )}
                 >
                   <div className="flex items-start gap-3">
                     {/* Icon */}
@@ -164,24 +166,24 @@ export function NotificationCenter() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                             {notification.title}
-                          </p>
-                          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                          </Typography>
+                          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                             {notification.message}
-                          </p>
+                          </Typography>
                           <div className="flex items-center gap-2 mt-1">
-                            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                               {formatTime(notification.createdAt)}
-                            </p>
+                            </Typography>
                             {notification.actorName && (
                               <>
                                 <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                   •
                                 </span>
-                                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                                   by {notification.actorName}
-                                </p>
+                                </Typography>
                               </>
                             )}
                           </div>

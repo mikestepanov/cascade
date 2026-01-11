@@ -2,6 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -75,7 +76,10 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 type="button"
                 onClick={() => navigateToWorkspace(project.key)}
                 {...projectNavigation.getItemProps(index)}
-                className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${projectNavigation.getItemProps(index).className}`}
+                className={cn(
+                  "w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up",
+                  projectNavigation.getItemProps(index).className,
+                )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="center" gap="sm" className="mb-1">

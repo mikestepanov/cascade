@@ -2,9 +2,11 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 interface BurnRateDashboardProps {
   projectId: Id<"projects">;
@@ -82,11 +84,12 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               key={range}
               type="button"
               onClick={() => setDateRange(range)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+              className={cn(
+                "px-3 py-1 text-sm font-medium rounded-lg transition-colors",
                 dateRange === range
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-              }`}
+                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+              )}
             >
               {ranges[range].label}
             </button>
@@ -131,9 +134,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           <div className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             {formatHours(burnRate.totalHours)}h
           </div>
-          <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
             {burnRate.entriesCount} time entries
-          </p>
+          </Typography>
         </div>
 
         <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
@@ -143,9 +146,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           <div className="text-3xl font-bold text-status-success dark:text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
-          <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
             {formatCurrency(burnRate.billableCost)} billable
-          </p>
+          </Typography>
         </div>
       </div>
 
@@ -157,9 +160,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
         {teamCosts.length === 0 ? (
           <div className="text-center p-8 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-            <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               No time entries for this period
-            </p>
+            </Typography>
           </div>
         ) : (
           <Flex direction="column" gap="sm">
@@ -238,7 +241,7 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
   };
 
   return (
-    <div className={`p-4 border rounded-lg ${colorClasses[color]}`}>
+    <div className={cn("p-4 border rounded-lg", colorClasses[color])}>
       <Flex align="center" gap="sm" className="mb-2">
         <span className="text-2xl">{icon}</span>
         <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">

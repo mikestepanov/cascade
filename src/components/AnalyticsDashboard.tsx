@@ -178,7 +178,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
               <BarChart data={velocityChartData} color="bg-accent-600 dark:bg-accent-500" />
             ) : (
               <div className="flex items-center justify-center h-full text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                <p>No completed sprints yet</p>
+                <Typography variant="p">No completed sprints yet</Typography>
               </div>
             )}
           </ChartCard>

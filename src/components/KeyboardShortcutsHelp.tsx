@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { KeyboardShortcut } from "./ui/KeyboardShortcut";
+import { Typography } from "./ui/Typography";
 
 interface KeyboardShortcutsHelpProps {
   open: boolean;
@@ -91,10 +92,10 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
           ))}
 
           <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <Typography variant="muted" className="text-sm">
               <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
               commands and features.
-            </p>
+            </Typography>
           </div>
         </div>
       </DialogContent>

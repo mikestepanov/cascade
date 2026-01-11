@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface SampleProjectModalProps {
   open: boolean;
@@ -38,10 +39,10 @@ export function SampleProjectModal({
           <DialogTitle>Welcome to Nixelo! 🎉</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Would you like us to create a sample project with demo issues to help you explore
             Nixelo?
-          </p>
+          </Typography>
           <Flex gap="md" className="pt-2">
             <Button onClick={handleCreateSample} variant="primary" className="flex-1">
               Yes, show me around!

@@ -8,6 +8,7 @@ import { Label } from "../ui/Label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Switch } from "../ui/Switch";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
+import { Typography } from "../ui/Typography";
 
 /**
  * User preferences tab
@@ -89,12 +90,12 @@ export function PreferencesTab() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   Theme
-                </p>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Select your preferred interface theme
-                </p>
+                </Typography>
               </div>
 
               <ToggleGroup
@@ -131,9 +132,9 @@ export function PreferencesTab() {
               <Label htmlFor="timezone" className="text-base">
                 Timezone
               </Label>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Your timestamp display preference
-              </p>
+              </Typography>
             </div>
             <div className="w-[240px]">
               <Select value={selectedTimezone} onValueChange={handleTimezoneChange}>
@@ -163,9 +164,9 @@ export function PreferencesTab() {
               <Label htmlFor="desktop-notifs" className="text-base">
                 Browser Push Notifications
               </Label>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Receive pop-up notifications when you are active
-              </p>
+              </Typography>
             </div>
             <Switch
               id="desktop-notifs"

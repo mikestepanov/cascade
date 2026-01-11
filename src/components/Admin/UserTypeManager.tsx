@@ -3,12 +3,14 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { Input, Select, Textarea } from "../ui/form";
+import { Typography } from "../ui/Typography";
 
 type EmploymentType = "employee" | "contractor" | "intern";
 
@@ -353,7 +355,10 @@ export function UserTypeManager() {
                           {config.name}
                         </h3>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded capitalize ${getTypeColor(config.type)}`}
+                          className={cn(
+                            "text-xs px-2 py-0.5 rounded capitalize",
+                            getTypeColor(config.type),
+                          )}
                         >
                           {config.type}
                         </span>
@@ -362,9 +367,9 @@ export function UserTypeManager() {
                   </Flex>
 
                   {config.description && (
-                    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+                    <Typography variant="p" color="secondary" className="text-sm mb-3">
                       {config.description}
-                    </p>
+                    </Typography>
                   )}
 
                   <Flex direction="column" gap="sm" className="text-sm">
@@ -447,9 +452,9 @@ export function UserTypeManager() {
                   </Flex>
                 ))}
                 {usersWithoutProfiles.length > 5 && (
-                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  <Typography variant="muted" className="text-xs">
                     +{usersWithoutProfiles.length - 5} more...
-                  </p>
+                  </Typography>
                 )}
               </Flex>
             </div>
@@ -483,7 +488,10 @@ export function UserTypeManager() {
                           </h4>
                           <Flex gap="sm" className="mt-1">
                             <span
-                              className={`text-xs px-2 py-0.5 rounded capitalize ${getTypeColor(profile.employmentType)}`}
+                              className={cn(
+                                "text-xs px-2 py-0.5 rounded capitalize",
+                                getTypeColor(profile.employmentType),
+                              )}
                             >
                               {profile.employmentType}
                             </span>

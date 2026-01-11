@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { Button } from "./ui/Button";
+import { Typography } from "./ui/Typography";
 
 interface Props {
   children: ReactNode;
@@ -42,9 +43,9 @@ export class ErrorBoundary extends Component<Props, State> {
               <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 Something went wrong
               </h1>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+              <Typography variant="muted" className="mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
-              </p>
+              </Typography>
               {this.state.error && (
                 <details className="text-left mb-6">
                   <summary className="cursor-pointer text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark">

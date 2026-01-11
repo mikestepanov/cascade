@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface FilterCheckboxGroupProps {
   label: string;
   options: string[];
@@ -20,7 +22,7 @@ export function FilterCheckboxGroup({
       <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
         {label}
       </div>
-      <div className={`space-y-2 ${maxHeight || ""}`}>
+      <div className={cn("space-y-2", maxHeight)}>
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2 cursor-pointer">
             <input

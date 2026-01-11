@@ -9,6 +9,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Checkbox } from "../ui/form/Checkbox";
+import { Typography } from "../ui/Typography";
 
 // =============================================================================
 // Schema & Constants
@@ -169,7 +170,9 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
               ))}
             </div>
             {selectedEvents.length === 0 && (
-              <p className="mt-1 text-sm text-status-error">Select at least one event</p>
+              <Typography className="mt-1 text-sm text-status-error">
+                Select at least one event
+              </Typography>
             )}
           </div>
 

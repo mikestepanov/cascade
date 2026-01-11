@@ -5,6 +5,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface AutomationRuleCardProps {
   rule: {
@@ -77,9 +78,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           </Flex>
 
           {rule.description && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+            <Typography variant="p" color="secondary" className="text-sm mb-3">
               {rule.description}
-            </p>
+            </Typography>
           )}
 
           <Flex gap="lg" align="center" className="text-sm">

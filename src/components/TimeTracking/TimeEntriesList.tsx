@@ -9,6 +9,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 import { TimeEntryModal } from "./TimeEntryModal";
 
 interface TimeEntriesListProps {
@@ -160,9 +161,9 @@ export function TimeEntriesList({
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     {entry.description && (
-                      <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                         {entry.description}
-                      </p>
+                      </Typography>
                     )}
 
                     <Flex

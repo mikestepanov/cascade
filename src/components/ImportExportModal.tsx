@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ExportPanel } from "./import-export/ExportPanel";
 import { ImportPanel } from "./import-export/ImportPanel";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/Dialog";
@@ -50,22 +51,24 @@ export function ImportExportModal({
             <button
               type="button"
               onClick={() => setMode("export")}
-              className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+              className={cn(
+                "flex-1 px-4 py-2 rounded-md font-medium transition-colors",
                 mode === "export"
                   ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-              }`}
+                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+              )}
             >
               📤 Export
             </button>
             <button
               type="button"
               onClick={() => setMode("import")}
-              className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+              className={cn(
+                "flex-1 px-4 py-2 rounded-md font-medium transition-colors",
                 mode === "import"
                   ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-              }`}
+                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+              )}
             >
               📥 Import
             </button>

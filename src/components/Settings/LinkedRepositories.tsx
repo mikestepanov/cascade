@@ -7,6 +7,7 @@ import { Github, Trash2 } from "@/lib/icons";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 /**
  * GitHub linked repositories management
@@ -70,9 +71,9 @@ export function LinkedRepositories() {
       {selectedWorkspace && (
         <Flex direction="column" gap="sm">
           {repositories && repositories.length === 0 && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
               No repositories linked to this project yet.
-            </p>
+            </Typography>
           )}
           {repositories?.map((repo) => (
             <Flex
@@ -84,13 +85,13 @@ export function LinkedRepositories() {
               <Flex gap="md" align="center">
                 <Github className="h-5 w-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
                 <div>
-                  <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {repo.repoFullName}
-                  </p>
-                  <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  </Typography>
+                  <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     {repo.syncPRs && "PRs"} {repo.syncPRs && repo.autoLinkCommits && "• "}
                     {repo.autoLinkCommits && "Auto-link commits"}
-                  </p>
+                  </Typography>
                 </div>
               </Flex>
               <Button variant="ghost" size="sm" onClick={() => handleUnlink(repo._id)}>

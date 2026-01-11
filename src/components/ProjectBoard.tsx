@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ActivityFeed } from "./ActivityFeed";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { AutomationRulesManager } from "./AutomationRulesManager";
@@ -19,6 +20,7 @@ import { BillingReport } from "./TimeTracker/BillingReport";
 import { Badge } from "./ui/Badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { SkeletonText } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 import { WebhooksManager } from "./WebhooksManager";
 
 interface ProjectBoardProps {
@@ -55,11 +57,12 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5 ${
+      className={cn(
+        "pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5",
         isActive
           ? "border-brand-600 text-brand-600 dark:text-brand-500"
-          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-      }`}
+          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+      )}
       aria-label={`${label} view`}
     >
       <span>{icon}</span>
@@ -132,12 +135,15 @@ function TabContent({
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Project Basics Section */}
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Project Basics
-            </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            </Typography>
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Configure fundamental project settings and templates
-            </p>
+            </Typography>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Labels Error" />}
@@ -161,12 +167,15 @@ function TabContent({
 
           {/* Integrations & Automation Section */}
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Integrations & Automation
-            </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            </Typography>
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Connect external services and automate workflows
-            </p>
+            </Typography>
             <div className="space-y-6">
               <ErrorBoundary
                 fallback={<SectionErrorFallback title="Webhooks Error" />}
@@ -190,12 +199,15 @@ function TabContent({
 
           {/* Advanced Section */}
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            >
               Advanced
-            </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            </Typography>
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Customize your project with additional metadata fields
-            </p>
+            </Typography>
             <ErrorBoundary
               fallback={<SectionErrorFallback title="Custom Fields Error" />}
               onError={(_error) => {
@@ -250,12 +262,15 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
       <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography
+              variant="h1"
+              className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark"
+            >
               {project.name}
-            </h1>
-            <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            </Typography>
+            <Typography className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
               {project.description}
-            </p>
+            </Typography>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <ExportButton

@@ -1,6 +1,7 @@
 import type { Doc } from "@convex/_generated/dataModel";
 import { useState } from "react";
 import { History } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { PresenceIndicator } from "./PresenceIndicator";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";
@@ -176,11 +177,12 @@ export function DocumentHeader({
               variant="ghost"
               size="sm"
               onClick={() => void onTogglePublic()}
-              className={`px-2 sm:px-3 py-1 min-h-0 ${
+              className={cn(
+                "px-2 sm:px-3 py-1 min-h-0",
                 document.isPublic
                   ? "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark hover:bg-status-success-bg dark:hover:bg-status-success-bg-dark hover:opacity-80"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-              }`}
+                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+              )}
             >
               {document.isPublic ? "Public" : "Private"}
             </Button>

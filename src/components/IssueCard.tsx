@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
@@ -71,13 +72,14 @@ export const IssueCard = memo(function IssueCard({
       draggable={canEdit && !selectionMode}
       onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
       onClick={handleClick}
-      className={`w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer ${
+      className={cn(
+        "w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
         isSelected
           ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
           : isFocused
             ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-500/50"
-            : "border-ui-border-primary dark:border-ui-border-primary-dark"
-      }`}
+            : "border-ui-border-primary dark:border-ui-border-primary-dark",
+      )}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
@@ -108,7 +110,7 @@ export const IssueCard = memo(function IssueCard({
           <div
             role="img"
             aria-label={`Priority: ${issue.priority}`}
-            className={`text-xs ${getPriorityColor(issue.priority)} cursor-help`}
+            className={cn("text-xs cursor-help", getPriorityColor(issue.priority))}
           >
             {getPriorityIcon(issue.priority)}
           </div>

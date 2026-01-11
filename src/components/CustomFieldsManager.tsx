@@ -9,6 +9,7 @@ import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 interface CustomFieldsManagerProps {
   projectId: Id<"projects">;
@@ -72,9 +73,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
           <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Custom Fields
           </h2>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography variant="p" color="secondary" className="text-sm">
             Add custom metadata fields to your issues
-          </p>
+          </Typography>
         </div>
         <Button onClick={handleCreate}>+ Add Field</Button>
       </Flex>
@@ -87,9 +88,9 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       ) : customFields.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-4xl mb-3">📋</div>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography variant="p" color="secondary">
             No custom fields yet. Add your first field to get started.
-          </p>
+          </Typography>
         </Card>
       ) : (
         <Flex direction="column" gap="md">

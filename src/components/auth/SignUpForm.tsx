@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { EmailVerificationForm } from "./EmailVerificationForm";
@@ -65,9 +66,10 @@ export function SignUpForm() {
       </div>
       <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div
-          className={`grid transition-all duration-300 ease-out ${
-            showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0"
-          }`}
+          className={cn(
+            "grid transition-all duration-300 ease-out",
+            showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0",
+          )}
         >
           <div className="overflow-hidden flex flex-col gap-form-field">
             <Input type="email" name="email" placeholder="Email" required={formReady} />

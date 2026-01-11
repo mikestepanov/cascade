@@ -10,6 +10,7 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { SkeletonProjectCard } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 
 interface SprintManagerProps {
   projectId: Id<"projects">;
@@ -166,14 +167,14 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
                     </span>
                   </div>
                   {sprint.goal && (
-                    <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+                    <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
                       {sprint.goal}
-                    </p>
+                    </Typography>
                   )}
                   {sprint.startDate && sprint.endDate && (
-                    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                       {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
-                    </p>
+                    </Typography>
                   )}
                 </div>
                 {canEdit && (

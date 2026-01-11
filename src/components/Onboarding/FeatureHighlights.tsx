@@ -1,4 +1,5 @@
 import { FileText, Kanban, Zap } from "lucide-react";
+import { Typography } from "../ui/Typography";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -15,9 +16,9 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
       <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
         {title}
       </h3>
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
         {description}
-      </p>
+      </Typography>
     </div>
   );
 }

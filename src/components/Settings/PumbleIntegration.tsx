@@ -72,9 +72,9 @@ export function PumbleIntegration() {
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Pumble Integration
               </h3>
-              <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Send notifications to Pumble channels when issues are created or updated
-              </p>
+              </Typography>
             </div>
           </Flex>
           <Button
@@ -167,10 +167,10 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
       <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
         No Pumble webhooks configured
       </h3>
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6 max-w-md mx-auto">
+      <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6 max-w-md mx-auto">
         Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
         or assigned.
-      </p>
+      </Typography>
       <Button
         onClick={onAddWebhook}
         variant="primary"
@@ -247,13 +247,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               </span>
             )}
           </Flex>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
             {maskedUrl}
-          </p>
+          </Typography>
           {project && (
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
               Project: {project.name}
-            </p>
+            </Typography>
           )}
         </div>
       </Flex>

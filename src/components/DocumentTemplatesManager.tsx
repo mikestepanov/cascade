@@ -5,12 +5,14 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
+import { Typography } from "./ui/Typography";
 
 // =============================================================================
 // Schema
@@ -198,11 +200,12 @@ export function DocumentTemplatesManager({
                   key={cat.value}
                   type="button"
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
                     selectedCategory === cat.value
                       ? "bg-brand-600 text-white"
-                      : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-                  }`}
+                      : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                  )}
                 >
                   {cat.label}
                 </button>
@@ -243,9 +246,9 @@ export function DocumentTemplatesManager({
                               {template.name}
                             </h4>
                             {template.description && (
-                              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark line-clamp-2">
+                              <Typography variant="muted" className="line-clamp-2">
                                 {template.description}
-                              </p>
+                              </Typography>
                             )}
                             <Badge
                               variant="primary"
@@ -286,9 +289,9 @@ export function DocumentTemplatesManager({
                                 {template.name}
                               </h4>
                               {template.description && (
-                                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark line-clamp-2 mb-2">
+                                <Typography variant="muted" className="line-clamp-2 mb-2">
                                   {template.description}
-                                </p>
+                                </Typography>
                               )}
                               <div className="flex gap-2">
                                 <Badge variant="neutral" size="md" className="capitalize">

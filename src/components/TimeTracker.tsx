@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { TimeEntryModal } from "./TimeTracking/TimeEntryModal";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
@@ -52,9 +53,10 @@ function TimeProgress({
         </div>
         <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all duration-300 ${
-              isOverEstimate ? "bg-status-error" : "bg-brand-600"
-            }`}
+            className={cn(
+              "h-2 rounded-full transition-all duration-300",
+              isOverEstimate ? "bg-status-error" : "bg-brand-600",
+            )}
             style={{
               width: `${Math.min((totalLoggedHours / estimatedHours) * 100, 100)}%`,
             }}
@@ -74,9 +76,9 @@ function TimeProgress({
   }
 
   return (
-    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+    <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
       No time logged yet
-    </p>
+    </Typography>
   );
 }
 
@@ -105,9 +107,9 @@ function TimeEntriesList({
                   {hours}h
                 </div>
                 {entry.description && (
-                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                  <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                     {entry.description}
-                  </p>
+                  </Typography>
                 )}
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
@@ -277,7 +279,7 @@ export function TimeTracker({
           rightIcon={
             <svg
               aria-hidden="true"
-              className={`w-4 h-4 transition-transform ${showEntries ? "rotate-180" : ""}`}
+              className={cn("w-4 h-4 transition-transform", showEntries ? "rotate-180" : "")}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

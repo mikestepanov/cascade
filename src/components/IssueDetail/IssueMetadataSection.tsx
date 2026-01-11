@@ -1,5 +1,6 @@
 import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface IssueMetadataProps {
   status: string;
@@ -30,39 +31,53 @@ export function IssueMetadataSection({
           <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Status:
           </span>
-          <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             {status}
-          </p>
+          </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Type:
           </span>
-          <p className="font-medium capitalize dark:text-white">{type}</p>
+          <Typography variant="p" className="font-medium capitalize dark:text-white">
+            {type}
+          </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Assignee:
           </span>
-          <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             {assignee?.name || "Unassigned"}
-          </p>
+          </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Reporter:
           </span>
-          <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             {reporter?.name || "Unknown"}
-          </p>
+          </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Story Points:
           </span>
-          <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             {storyPoints ?? "Not set"}
-          </p>
+          </Typography>
         </div>
       </div>
 

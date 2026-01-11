@@ -163,9 +163,9 @@ export function MemberOnboarding({
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Work on Issues
               </h4>
-              <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Drag issues across the board as you progress
-              </p>
+              </Typography>
             </div>
           </div>
 
@@ -175,9 +175,9 @@ export function MemberOnboarding({
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Collaborate on Docs
               </h4>
-              <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Edit documents together in real-time
-              </p>
+              </Typography>
             </div>
           </div>
 
@@ -187,9 +187,9 @@ export function MemberOnboarding({
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Track Time
               </h4>
-              <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Log time spent on tasks
-              </p>
+              </Typography>
             </div>
           </div>
 
@@ -199,9 +199,9 @@ export function MemberOnboarding({
               <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
                 Stay Updated
               </h4>
-              <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Get notified when mentioned or assigned
-              </p>
+              </Typography>
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ export function MemberOnboarding({
 
       {/* Keyboard shortcuts tip */}
       <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl p-4 text-center">
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <span className="font-medium">Pro tip:</span> Press{" "}
           <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-xs font-mono">
             Ctrl+K
@@ -219,7 +219,7 @@ export function MemberOnboarding({
             Cmd+K
           </kbd>{" "}
           to open the command palette
-        </p>
+        </Typography>
       </div>
 
       {/* Continue */}

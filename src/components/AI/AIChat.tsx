@@ -6,10 +6,12 @@ import type { Id } from "@convex/_generated/dataModel";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Skeleton } from "../ui/Skeleton";
+import { Typography } from "../ui/Typography";
 import { AI_CONFIG } from "./config";
 import { useAIChat } from "./hooks";
 
@@ -45,14 +47,15 @@ function MessageItem({
   return (
     <div
       key={`${chatId}-${message.createdAt}-${index}`}
-      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} group`}
+      className={cn("flex group", message.role === "user" ? "justify-end" : "justify-start")}
     >
       <div
-        className={`relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3 ${
+        className={cn(
+          "relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3",
           message.role === "user"
             ? "bg-brand-600 text-white"
-            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-        }`}
+            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+        )}
       >
         {/* Copy button for assistant messages */}
         {message.role === "assistant" && (
@@ -172,17 +175,20 @@ export const AIChat = React.memo(function AIChat({
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 AI Assistant
               </h3>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+              <Typography
+                variant="p"
+                className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4"
+              >
                 Ask me anything about your project, or use natural language commands.
-              </p>
+              </Typography>
               <Flex
                 direction="column"
                 gap="xs"
                 className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
               >
-                <p>💡 "What's our team velocity?"</p>
-                <p>💡 "Which issues are blocking the sprint?"</p>
-                <p>💡 "Summarize this week's progress"</p>
+                <Typography variant="muted">💡 "What's our team velocity?"</Typography>
+                <Typography variant="muted">💡 "Which issues are blocking the sprint?"</Typography>
+                <Typography variant="muted">💡 "Summarize this week's progress"</Typography>
               </Flex>
             </div>
           </Flex>
@@ -270,9 +276,9 @@ export const AIChat = React.memo(function AIChat({
             )}
           </Button>
         </Flex>
-        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2 hidden sm:block">
+        <Typography variant="muted" className="text-xs mt-2 hidden sm:block">
           Press Enter to send, Shift+Enter for new line
-        </p>
+        </Typography>
       </div>
     </Flex>
   );

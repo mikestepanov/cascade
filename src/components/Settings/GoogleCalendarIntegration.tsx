@@ -7,6 +7,7 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { Switch } from "../ui/Switch";
+import { Typography } from "../ui/Typography";
 
 /**
  * Google Calendar integration card
@@ -128,18 +129,18 @@ export function GoogleCalendarIntegration() {
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Google Calendar
               </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Sync calendar events between Nixelo and Google Calendar
-              </p>
+              </Typography>
               {calendarConnection && (
                 <Flex direction="column" gap="xs" className="mt-2">
-                  <p className="text-sm text-status-success dark:text-status-success">
+                  <Typography className="text-sm text-status-success dark:text-status-success">
                     ✓ Connected to {calendarConnection.providerAccountId}
-                  </p>
+                  </Typography>
                   {calendarConnection.lastSyncAt && (
-                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       Last synced: {new Date(calendarConnection.lastSyncAt).toLocaleString()}
-                    </p>
+                    </Typography>
                   )}
                 </Flex>
               )}
@@ -175,9 +176,9 @@ export function GoogleCalendarIntegration() {
                 <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                   Enable Sync
                 </h4>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                   Automatically sync events between Nixelo and Google Calendar
-                </p>
+                </Typography>
               </div>
               <Switch
                 checked={calendarConnection.syncEnabled}
@@ -208,12 +209,12 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           Bidirectional
-                        </p>
-                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        </Typography>
+                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                           Sync both ways (recommended)
-                        </p>
+                        </Typography>
                       </div>
                     </Flex>
                   </label>
@@ -233,12 +234,12 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           Import Only
-                        </p>
-                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        </Typography>
+                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                           Only import from Google → Nixelo
-                        </p>
+                        </Typography>
                       </div>
                     </Flex>
                   </label>
@@ -258,12 +259,12 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           Export Only
-                        </p>
-                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        </Typography>
+                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                           Only export from Nixelo → Google
-                        </p>
+                        </Typography>
                       </div>
                     </Flex>
                   </label>

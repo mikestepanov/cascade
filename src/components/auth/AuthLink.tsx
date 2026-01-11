@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 const linkStyles =
   "text-sm text-brand-500 hover:text-brand-400 hover:underline font-medium cursor-pointer transition-colors";
@@ -19,7 +20,7 @@ interface AuthLinkProps {
  */
 export function AuthLink({ to, children, className = "" }: AuthLinkProps) {
   return (
-    <Link to={to} className={`${linkStyles} ${className}`}>
+    <Link to={to} className={cn(linkStyles, className)}>
       {children}
     </Link>
   );
@@ -52,7 +53,7 @@ export function AuthLinkButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyles} ${disabledStyles} ${className}`}
+      className={cn(baseStyles, disabledStyles, className)}
     >
       {children}
     </button>

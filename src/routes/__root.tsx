@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
+import { Typography } from "../components/ui/Typography";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { promptInstall, register as registerServiceWorker } from "../lib/serviceWorker";
 
@@ -61,9 +62,9 @@ function RootComponent() {
               <h1 className="text-2xl font-bold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
                 Service Unavailable
               </h1>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
                 The application could not connect to the backend services. Please try again later.
-              </p>
+              </Typography>
             </div>
           </div>
         )}

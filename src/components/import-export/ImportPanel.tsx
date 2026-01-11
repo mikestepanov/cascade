@@ -3,10 +3,12 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Typography } from "../ui/Typography";
 
 interface ImportPanelProps {
   projectId: Id<"projects">;
@@ -86,11 +88,12 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setImportFormat("csv")}
-            className={`p-4 cursor-pointer transition-all ${
+            className={cn(
+              "p-4 cursor-pointer transition-all",
               importFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            }`}
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+            )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
@@ -107,11 +110,12 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
 
           <Card
             onClick={() => setImportFormat("json")}
-            className={`p-4 cursor-pointer transition-all ${
+            className={cn(
+              "p-4 cursor-pointer transition-all",
               importFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            }`}
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+            )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
@@ -139,9 +143,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
           className="block w-full text-sm text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg cursor-pointer bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark focus:outline-none"
         />
         {importFile && (
-          <p className="mt-2 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography variant="muted" className="mt-2">
             Selected: {importFile.name} ({(importFile.size / 1024).toFixed(2)} KB)
-          </p>
+          </Typography>
         )}
       </div>
 
@@ -149,7 +153,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
         <Flex gap="md" align="start">
           <div className="text-status-warning dark:text-status-warning text-xl">⚠️</div>
           <div className="text-sm text-status-warning dark:text-status-warning">
-            <p className="font-semibold mb-1">Import Requirements</p>
+            <Typography variant="p" className="font-semibold mb-1">
+              Import Requirements
+            </Typography>
             <ul className="list-disc list-inside space-y-1 text-status-warning/90 dark:text-status-warning/80">
               <li>CSV must have a header row with column names</li>
               <li>

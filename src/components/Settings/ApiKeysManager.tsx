@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, Key, Plus, Trash2, TrendingUp } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -13,6 +14,7 @@ import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Typography } from "../ui/Typography";
 
 /**
  * API Keys Manager
@@ -36,9 +38,9 @@ export function ApiKeysManager() {
                 API Keys
               </Flex>
             </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
-            </p>
+            </Typography>
           </div>
           <Button variant="primary" size="sm" onClick={() => setShowGenerateModal(true)}>
             <Flex gap="sm" align="center">
@@ -55,9 +57,9 @@ export function ApiKeysManager() {
             <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               No API keys yet
             </h4>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
               Generate your first API key to access Nixelo programmatically
-            </p>
+            </Typography>
             <Button
               variant="primary"
               size="sm"
@@ -80,7 +82,7 @@ export function ApiKeysManager() {
 
         {/* Documentation Link */}
         <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-200 dark:border-brand-800">
-          <p className="text-sm text-brand-900 dark:text-brand-100">
+          <Typography className="text-sm text-brand-900 dark:text-brand-100">
             📚 <strong>Need help?</strong> Check out the{" "}
             <a
               href="/docs/API.md"
@@ -91,7 +93,7 @@ export function ApiKeysManager() {
               API Documentation
             </a>{" "}
             for usage examples and integration guides.
-          </p>
+          </Typography>
         </div>
       </div>
 
@@ -379,12 +381,12 @@ function GenerateKeyModal({
                         className="mt-0.5"
                       />
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           {scope.label}
-                        </p>
-                        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        </Typography>
+                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                           {scope.description}
-                        </p>
+                        </Typography>
                       </div>
                     </label>
                   ))}
@@ -426,9 +428,9 @@ function GenerateKeyModal({
                 <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                   API Key Generated!
                 </h3>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
                   ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
-                </p>
+                </Typography>
 
                 {/* Generated Key Display */}
                 <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
@@ -439,9 +441,9 @@ function GenerateKeyModal({
 
                 {/* Copy Instructions */}
                 <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
-                  <p className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
+                  <Typography className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
                     Usage Example:
-                  </p>
+                  </Typography>
                   <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
                     curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                     https://nixelo.app/api/issues
@@ -492,48 +494,48 @@ function UsageStatsModal({
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
-            <p className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Loading statistics...
-            </p>
+            </Typography>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Overview Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Total Calls
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.totalCalls.toLocaleString()}
-                </p>
+                </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Last 24 Hours
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.last24Hours.toLocaleString()}
-                </p>
+                </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Success Rate
-                </p>
-                <p className="text-2xl font-bold text-status-success dark:text-status-success">
+                </Typography>
+                <Typography className="text-2xl font-bold text-status-success dark:text-status-success">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
                     : 100}
                   %
-                </p>
+                </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
                   Avg Response
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                   {stats.avgResponseTime}ms
-                </p>
+                </Typography>
               </div>
             </div>
 
@@ -543,15 +545,17 @@ function UsageStatsModal({
                 Recent Requests
               </h4>
               {stats.recentLogs.length === 0 ? (
-                <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark py-4 text-center">
+                <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark py-4 text-center">
                   No recent requests
-                </p>
+                </Typography>
               ) : (
                 <Flex direction="column" gap="sm" className="max-h-64 overflow-y-auto">
                   {stats.recentLogs.map((log: Doc<"apiUsageLogs">) => (
                     <div
                       key={log._id}
-                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm"
+                      className={cn(
+                        "p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm",
+                      )}
                     >
                       <Flex justify="between" align="center" className="mb-1">
                         <Flex gap="sm" align="center">
@@ -563,11 +567,12 @@ function UsageStatsModal({
                           </span>
                         </Flex>
                         <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded ${
+                          className={cn(
+                            "px-2 py-0.5 text-xs font-medium rounded",
                             log.statusCode < 400
                               ? "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success"
-                              : "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error"
-                          }`}
+                              : "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error",
+                          )}
                         >
                           {log.statusCode}
                         </span>

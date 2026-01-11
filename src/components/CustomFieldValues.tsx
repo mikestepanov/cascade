@@ -201,9 +201,12 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark uppercase tracking-wide">
+      <Typography
+        variant="h3"
+        className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark uppercase tracking-wide"
+      >
         Custom Fields
-      </h3>
+      </Typography>
 
       {customFields.map((field) => {
         const fieldValue = getFieldValue(field._id);
@@ -225,9 +228,12 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                   )}
                 </div>
                 {field.description && (
-                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5">
+                  <Typography
+                    variant="muted"
+                    className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5"
+                  >
                     {field.description}
-                  </p>
+                  </Typography>
                 )}
               </div>
               {!isEditing && (
