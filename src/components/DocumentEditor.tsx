@@ -11,6 +11,7 @@ import { DocumentHeader } from "./DocumentHeader";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { MarkdownPreviewModal } from "./ui/MarkdownPreviewModal";
 import { Skeleton, SkeletonText } from "./ui/Skeleton";
+import { Typography } from "./ui/Typography";
 import { VersionHistory } from "./VersionHistory";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -165,10 +166,12 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               <ErrorBoundary
                 fallback={
                   <div className="p-4 border border-status-error/20 bg-status-error/5 rounded-md text-status-error text-center">
-                    <p className="font-medium">Editor failed to load</p>
-                    <p className="text-sm opacity-80">
+                    <Typography variant="p" className="font-medium">
+                      Editor failed to load
+                    </Typography>
+                    <Typography variant="muted" className="opacity-80">
                       There was an issue initializing the rich text editor.
-                    </p>
+                    </Typography>
                   </div>
                 }
               >

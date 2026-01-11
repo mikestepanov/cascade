@@ -1,4 +1,5 @@
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 /**
  * Recent activity timeline for analytics dashboard
@@ -35,7 +36,7 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
               {activity.userName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="p">
                 <span className="font-medium">{activity.userName}</span> {activity.action}{" "}
                 {activity.field && (
                   <>
@@ -45,10 +46,10 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
                 <span className="font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-1 rounded">
                   {activity.issueKey}
                 </span>
-              </p>
-              <p className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs mt-1">
+              </Typography>
+              <Typography variant="muted" className="text-xs mt-1">
                 {new Date(activity.createdAt).toLocaleString()}
-              </p>
+              </Typography>
             </div>
           </Flex>
         ))}

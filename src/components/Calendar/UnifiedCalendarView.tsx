@@ -2,6 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
 import { Flex } from "../ui/Flex";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
+import { Typography } from "../ui/Typography";
 import { CalendarView } from "./CalendarView";
 import { RoadmapView } from "./RoadmapView";
 
@@ -38,9 +39,9 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
           </ToggleGroupItem>
         </ToggleGroup>
         {!projectId && viewType === "roadmap" && (
-          <p className="text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+          <Typography variant="muted" className="text-xs sm:text-sm mt-2">
             Select a project from the sidebar to view the roadmap
-          </p>
+          </Typography>
         )}
       </div>
 
@@ -57,8 +58,12 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
             className="h-full text-ui-text-secondary dark:text-ui-text-secondary-dark"
           >
             <div className="text-center">
-              <p className="text-lg font-medium mb-2">No Project Selected</p>
-              <p className="text-sm">Select a project from the sidebar to view the roadmap</p>
+              <Typography variant="p" className="text-lg font-medium mb-2">
+                No Project Selected
+              </Typography>
+              <Typography variant="p" className="text-sm">
+                Select a project from the sidebar to view the roadmap
+              </Typography>
             </div>
           </Flex>
         )}

@@ -1,3 +1,4 @@
+export { AppSplashScreen } from "./AppSplashScreen";
 export { AuthLink, AuthLinkButton } from "./AuthLink";
 export { AuthPageLayout } from "./AuthPageLayout";
 export { EmailVerificationForm } from "./EmailVerificationForm";

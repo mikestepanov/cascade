@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { EmailVerificationForm } from "./EmailVerificationForm";
@@ -57,7 +58,7 @@ export function SignUpForm() {
 
   return (
     <div className="w-full">
-      <GoogleAuthButton redirectTo={ROUTES.onboarding} text="Sign up with Google" />
+      <GoogleAuthButton redirectTo={ROUTES.app} text="Sign up with Google" />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
@@ -65,9 +66,10 @@ export function SignUpForm() {
       </div>
       <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div
-          className={`grid transition-all duration-300 ease-out ${
-            showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0"
-          }`}
+          className={cn(
+            "grid transition-all duration-300 ease-out",
+            showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0",
+          )}
         >
           <div className="overflow-hidden flex flex-col gap-form-field">
             <Input type="email" name="email" placeholder="Email" required={formReady} />

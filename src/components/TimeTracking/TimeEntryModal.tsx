@@ -5,11 +5,13 @@ import { Clock, Hourglass, Play } from "lucide-react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDateForInput, formatDurationHuman } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 import {
   calculateEntryTimes,
   validateContext,
@@ -45,11 +47,12 @@ function ModeToggleButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+      className={cn(
+        "flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
         isActive
           ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-      }`}
+          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+      )}
     >
       <Icon className="w-4 h-4" />
       {label}
@@ -176,15 +179,16 @@ function DurationModeFields({
           value={durationInput}
           onChange={(e) => onDurationChange(e.target.value)}
           placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark ${
+          className={cn(
+            "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark",
             isDurationInputValid
               ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-              : "border-status-error dark:border-status-error"
-          }`}
+              : "border-status-error dark:border-status-error",
+          )}
         />
-        <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
           Accepts: 1:30, 1.5, 1h 30m, 90m
-        </p>
+        </Typography>
         <Flex gap="sm" className="mt-2">
           <Button type="button" variant="secondary" size="sm" onClick={() => onQuickIncrement(15)}>
             +15m

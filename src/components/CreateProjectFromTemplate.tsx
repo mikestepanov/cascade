@@ -8,6 +8,7 @@ import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select, Textarea } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 interface CreateProjectFromTemplateProps {
   open: boolean;
@@ -122,9 +123,9 @@ export function CreateProjectFromTemplate({
         {step === "select" ? (
           // Template Selection
           <div className="space-y-6">
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <Typography variant="p" color="secondary">
               Start with a pre-configured template to save time and follow best practices
-            </p>
+            </Typography>
 
             {!templates ? (
               <div className="flex items-center justify-center py-8">
@@ -145,12 +146,15 @@ export function CreateProjectFromTemplate({
                         <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
                           {template.name}
                         </h3>
-                        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+                        <Typography variant="p" color="secondary" className="text-sm mb-3">
                           {template.description}
-                        </p>
+                        </Typography>
                         <div className="flex items-center gap-2">
                           <span
-                            className={`text-xs px-2 py-1 rounded ${getCategoryColor(template.category)}`}
+                            className={cn(
+                              "text-xs px-2 py-1 rounded",
+                              getCategoryColor(template.category),
+                            )}
                           >
                             {template.category}
                           </span>
@@ -177,10 +181,10 @@ export function CreateProjectFromTemplate({
                     <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                       {selectedTemplate.name}
                     </h3>
-                    <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography variant="p" color="secondary" className="text-sm">
                       {selectedTemplate.workflowStates.length} workflow states,{" "}
                       {selectedTemplate.defaultLabels.length} default labels
-                    </p>
+                    </Typography>
                   </div>
                 </div>
               </div>

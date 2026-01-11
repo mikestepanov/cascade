@@ -106,9 +106,9 @@ export function LeadOnboarding({
           <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
             Perfect for Team Leads
           </h1>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
+          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
             Here's what you can do with Nixelo
-          </p>
+          </Typography>
         </div>
 
         {/* Feature Highlights */}

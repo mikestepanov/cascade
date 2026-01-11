@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 type IssueType = "task" | "bug" | "story" | "epic";
 type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
@@ -53,13 +54,13 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
               {template.defaultPriority}
             </span>
           </Flex>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
             <span className="font-medium">Title:</span> {template.titleTemplate}
-          </p>
+          </Typography>
           {template.descriptionTemplate && (
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">
+            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">
               {template.descriptionTemplate}
-            </p>
+            </Typography>
           )}
           {template.defaultLabels && template.defaultLabels.length > 0 && (
             <Flex gap="xs" className="mt-2">

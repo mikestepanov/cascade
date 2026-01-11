@@ -7,6 +7,7 @@ import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 // Pure functions - no need to be inside component
 function formatCurrency(amount: number): string {
@@ -85,9 +86,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
           <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             Billing Report
           </h2>
-          <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             {project.name} {project.clientName && `• ${project.clientName}`}
-          </p>
+          </Typography>
         </div>
         <Flex gap="sm">
           <Select

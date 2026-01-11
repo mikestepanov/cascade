@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 import { Typography, type TypographyProps } from "./ui/Typography";
@@ -162,7 +163,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
         >
           {/* Timeline dot */}
           <Flex direction="column" align="center" className="flex-shrink-0">
-            <div className={`text-2xl ${compact ? "text-lg" : ""}`}>
+            <div className={cn("text-2xl", compact && "text-lg")}>
               {getActionIcon(activity.action)}
             </div>
             {!compact && index < activities.length - 1 && (
@@ -176,7 +177,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               <div className="flex-1 min-w-0">
                 <Typography
                   variant="p"
-                  className={`${compact ? "text-sm" : "text-base"} mb-0 mt-0`}
+                  className={cn(compact ? "text-sm" : "text-base", "mb-0 mt-0")}
                 >
                   <Typography as="span" className="font-medium">
                     {activity.userName}
@@ -200,7 +201,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               </div>
               <Typography
                 variant="muted"
-                className={`${compact ? "text-xs" : "text-sm"} flex-shrink-0`}
+                className={cn(compact ? "text-xs" : "text-sm", "flex-shrink-0")}
               >
                 {formatRelativeTime(activity.createdAt)}
               </Typography>

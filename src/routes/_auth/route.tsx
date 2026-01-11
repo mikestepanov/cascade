@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { SmartAuthGuard } from "@/components/auth";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { AppSplashScreen, SmartAuthGuard } from "@/components/auth";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -12,7 +12,8 @@ function AuthLayout() {
   return (
     <>
       <AuthLoading>
-        <LoadingContainer />
+        {/* Use the premium splash screen for the initial auth check */}
+        <AppSplashScreen />
       </AuthLoading>
       <Authenticated>
         <SmartAuthGuard>
@@ -23,14 +24,6 @@ function AuthLayout() {
         <UnauthenticatedGuard />
       </Unauthenticated>
     </>
-  );
-}
-
-function LoadingContainer() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-      <LoadingSpinner size="lg" />
-    </div>
   );
 }
 
@@ -46,7 +39,7 @@ function UnauthenticatedGuard() {
     Object.keys(window.localStorage).some((k) => k.includes("__convexAuthJWT_"));
 
   if (hasToken) {
-    return <LoadingContainer />;
+    return <AppSplashScreen />;
   }
 
   return <Navigate to={ROUTES.home} />;

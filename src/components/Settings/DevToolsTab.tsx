@@ -40,9 +40,9 @@ export function DevToolsTab() {
             <h3 className="font-medium text-status-info-text dark:text-status-info-text-dark">
               Test Account Tools
             </h3>
-            <p className="text-sm text-status-info-text dark:text-status-info-text-dark mt-1">
+            <Typography className="text-sm text-status-info-text dark:text-status-info-text-dark mt-1">
               These tools are only visible for test accounts (@inbox.mailtrap.io).
-            </p>
+            </Typography>
           </div>
         </div>
       </div>
@@ -105,9 +105,9 @@ export function DevToolsTab() {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Loading user info...
-          </p>
+          </Typography>
         )}
       </div>
     </div>

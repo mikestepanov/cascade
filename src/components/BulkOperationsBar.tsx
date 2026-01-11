@@ -7,6 +7,7 @@ import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
+import { Typography } from "./ui/Typography";
 
 interface BulkOperationsBarProps {
   projectId: Id<"projects">;
@@ -107,10 +108,15 @@ export function BulkOperationsBar({
           <Flex align="center" justify="between" gap="lg">
             {/* Selection Info */}
             <Flex align="center" gap="lg">
-              <p className="font-medium">
+              <Typography variant="p" className="font-medium text-white">
                 {count} issue{count !== 1 ? "s" : ""} selected
-              </p>
-              <Button variant="link" size="sm" onClick={onClearSelection}>
+              </Typography>
+              <Button
+                variant="link"
+                size="sm"
+                onClick={onClearSelection}
+                className="text-white hover:text-white/80"
+              >
                 Clear selection
               </Button>
             </Flex>

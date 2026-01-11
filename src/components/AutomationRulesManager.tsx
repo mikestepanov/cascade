@@ -10,6 +10,7 @@ import { Card } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 interface AutomationRulesManagerProps {
   projectId: Id<"projects">;
@@ -76,9 +77,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
           <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Automation Rules
           </h3>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          <Typography variant="p" color="secondary" className="text-sm mt-1">
             Automate workflows with trigger-based actions
-          </p>
+          </Typography>
         </div>
         <Button onClick={handleCreate}>+ Create Rule</Button>
       </Flex>
@@ -91,8 +92,12 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       ) : rules.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            <p className="mb-2">No automation rules yet</p>
-            <p className="text-sm">Create your first rule to automate repetitive tasks</p>
+            <Typography variant="p" className="mb-2">
+              No automation rules yet
+            </Typography>
+            <Typography variant="p" className="text-sm">
+              Create your first rule to automate repetitive tasks
+            </Typography>
           </div>
         </Card>
       ) : (

@@ -2,11 +2,13 @@ import { api } from "@convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 interface ProjectWizardProps {
   open: boolean;
@@ -112,9 +114,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
               <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Create Your First Project
               </h2>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Let's start by giving your project a name and a unique key.
-              </p>
+              </Typography>
 
               <div>
                 <label
@@ -154,10 +156,10 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                   className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark font-mono"
                   maxLength={10}
                 />
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
                   2-10 uppercase letters. This will prefix your issue keys (e.g.,{" "}
                   {projectKey || "KEY"}-123)
-                </p>
+                </Typography>
               </div>
 
               <Textarea
@@ -176,27 +178,28 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
               <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Choose Your Board Type
               </h2>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 How do you want to organize your work? You can change this later.
-              </p>
+              </Typography>
 
               <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => setBoardType("kanban")}
-                  className={`p-6 border-2 rounded-lg text-left transition-all ${
+                  className={cn(
+                    "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "kanban"
                       ? "border-brand-600 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400"
-                  }`}
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
+                  )}
                 >
                   <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
                     📊 Kanban
                   </h3>
-                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     Continuous flow of work through columns. Great for ongoing projects and support
                     teams.
-                  </p>
+                  </Typography>
                   <ul className="mt-3 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark space-y-1">
                     <li>✓ No time constraints</li>
                     <li>✓ Visualize workflow</li>
@@ -207,19 +210,20 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 <button
                   type="button"
                   onClick={() => setBoardType("scrum")}
-                  className={`p-6 border-2 rounded-lg text-left transition-all ${
+                  className={cn(
+                    "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "scrum"
                       ? "border-brand-600 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400"
-                  }`}
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
+                  )}
                 >
                   <h3 className="font-bold text-lg mb-2 text-ui-text-primary dark:text-ui-text-primary-dark">
                     🏃 Scrum
                   </h3>
-                  <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                     Work in sprints with defined goals. Great for product development and fixed
                     deadlines.
-                  </p>
+                  </Typography>
                   <ul className="mt-3 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark space-y-1">
                     <li>✓ Sprint planning</li>
                     <li>✓ Velocity tracking</li>
@@ -236,10 +240,10 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
               <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Customize Your Workflow
               </h2>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 These are the stages your issues will move through. You can customize them now or
                 use the defaults.
-              </p>
+              </Typography>
 
               <Flex direction="column" gap="md">
                 {workflowStates.map((state, index) => (
@@ -258,13 +262,14 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                       className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
                     />
                     <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      className={cn(
+                        "px-3 py-1 rounded-full text-sm font-medium",
                         state.category === "todo"
                           ? "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
                           : state.category === "inprogress"
                             ? "bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300"
-                            : "bg-status-success/10 dark:bg-status-success/30 text-status-success dark:text-status-success"
-                      }`}
+                            : "bg-status-success/10 dark:bg-status-success/30 text-status-success dark:text-status-success",
+                      )}
                     >
                       {state.category === "todo"
                         ? "To Do"
@@ -304,34 +309,34 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
               <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Ready to Create! 🎉
               </h2>
-              <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Here's a summary of your new project:
-              </p>
+              </Typography>
 
               <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 space-y-3">
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     Project Name:
                   </span>
-                  <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <Typography className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {projectName}
-                  </p>
+                  </Typography>
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     Project Key:
                   </span>
-                  <p className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <Typography className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                     {projectKey}
-                  </p>
+                  </Typography>
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                     Board Type:
                   </span>
-                  <p className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
+                  <Typography className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
                     {boardType}
-                  </p>
+                  </Typography>
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
@@ -350,10 +355,10 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 </div>
               </div>
 
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                 Click "Create Project" and we'll set everything up for you. You can start adding
                 issues right away!
-              </p>
+              </Typography>
             </div>
           )}
 

@@ -6,12 +6,14 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatTime } from "@/lib/formatting";
 import { Calendar, Check, Clock, LinkIcon, MapPin, Trash2, X } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { MeetingRecordingSection } from "../MeetingRecordingSection";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
@@ -109,10 +111,10 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
         <Flex direction="column" gap="lg">
           {/* Badges */}
           <Flex gap="sm" align="center">
-            <Badge size="md" className={`capitalize ${getEventTypeColor(event.eventType)}`}>
+            <Badge size="md" className={cn("capitalize", getEventTypeColor(event.eventType))}>
               {event.eventType}
             </Badge>
-            <Badge size="md" className={`capitalize ${getStatusColor(event.status)}`}>
+            <Badge size="md" className={cn("capitalize", getStatusColor(event.status))}>
               {event.status}
             </Badge>
           </Flex>
@@ -315,9 +317,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                 </Flex>
 
                 {attendance.totalAttendees === 0 && (
-                  <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center py-4">
+                  <Typography variant="muted" className="text-center py-4">
                     No attendees added to this meeting
-                  </p>
+                  </Typography>
                 )}
               </div>
             )}

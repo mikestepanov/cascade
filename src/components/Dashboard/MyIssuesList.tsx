@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { NAV_PATHS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import type { useListNavigation } from "@/hooks/useListNavigation";
+import { cn } from "@/lib/utils";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
@@ -78,11 +79,12 @@ export function MyIssuesList({
           <button
             type="button"
             onClick={() => onFilterChange("assigned")}
-            className={`pb-2 px-2 border-b-2 transition-colors ${
+            className={cn(
+              "pb-2 px-2 border-b-2 transition-colors",
               issueFilter === "assigned"
                 ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+            )}
             aria-label="Show assigned issues"
           >
             Assigned ({myIssues?.length || 0})
@@ -90,11 +92,12 @@ export function MyIssuesList({
           <button
             type="button"
             onClick={() => onFilterChange("created")}
-            className={`pb-2 px-2 border-b-2 transition-colors ${
+            className={cn(
+              "pb-2 px-2 border-b-2 transition-colors",
               issueFilter === "created"
                 ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+            )}
             aria-label="Show created issues"
           >
             Created ({myCreatedIssues?.length || 0})
@@ -132,7 +135,10 @@ export function MyIssuesList({
                 type="button"
                 onClick={() => navigateToWorkspace(issue.projectKey)}
                 {...issueNavigation.getItemProps(index)}
-                className={`w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up ${issueNavigation.getItemProps(index).className}`}
+                className={cn(
+                  "w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up",
+                  issueNavigation.getItemProps(index).className,
+                )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="start">

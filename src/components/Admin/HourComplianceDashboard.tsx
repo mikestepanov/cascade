@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -276,7 +277,10 @@ export function HourComplianceDashboard() {
                           </h4>
                           <Flex gap="sm" className="mt-1">
                             <span
-                              className={`text-xs px-2 py-0.5 rounded ${getStatusColor(record.status)}`}
+                              className={cn(
+                                "text-xs px-2 py-0.5 rounded",
+                                getStatusColor(record.status),
+                              )}
                             >
                               {getStatusLabel(record.status)}
                             </span>

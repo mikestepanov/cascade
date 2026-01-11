@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Flex } from "../ui/Flex";
 
@@ -141,11 +142,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             <button
               type="button"
               onClick={() => setTimeScale("week")}
-              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
+              className={cn(
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-l-md",
                 timeScale === "week"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-              } rounded-l-md`}
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+              )}
             >
               <span className="sm:hidden">W</span>
               <span className="hidden sm:inline">Week</span>
@@ -153,11 +155,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             <button
               type="button"
               onClick={() => setTimeScale("month")}
-              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
+              className={cn(
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border-primary dark:border-ui-border-primary-dark",
                 timeScale === "month"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-              } border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+              )}
             >
               <span className="sm:hidden">M</span>
               <span className="hidden sm:inline">Month</span>
@@ -165,11 +168,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             <button
               type="button"
               onClick={() => setTimeScale("quarter")}
-              className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm ${
+              className={cn(
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark",
                 timeScale === "quarter"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-              } rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark`}
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+              )}
             >
               <span className="sm:hidden">Q</span>
               <span className="hidden sm:inline">Quarter</span>
@@ -292,7 +296,10 @@ function renderDateBar(
 
   return (
     <div
-      className={`${color} rounded-full h-6 flex items-center justify-center text-white text-xs font-medium overflow-hidden whitespace-nowrap px-2`}
+      className={cn(
+        color,
+        "rounded-full h-6 flex items-center justify-center text-white text-xs font-medium overflow-hidden whitespace-nowrap px-2",
+      )}
       style={{
         marginLeft: `${leftPercent}%`,
         width: `${widthPercent}%`,

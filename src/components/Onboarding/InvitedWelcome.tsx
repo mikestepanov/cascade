@@ -1,6 +1,7 @@
 import { PartyPopper } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface InvitedWelcomeProps {
   inviterName: string;
@@ -23,12 +24,12 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
         <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
           Welcome to Nixelo!
         </h1>
-        <p className="text-lg text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <Typography className="text-lg text-ui-text-secondary dark:text-ui-text-secondary-dark">
           <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
             {inviterName}
           </span>{" "}
           invited you to collaborate
-        </p>
+        </Typography>
       </div>
 
       {/* Brief Description */}
@@ -67,9 +68,9 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
       </Flex>
 
       {/* Note */}
-      <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+      <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
         Your team lead will add you to projects. You'll see them on your dashboard.
-      </p>
+      </Typography>
     </div>
   );
 }

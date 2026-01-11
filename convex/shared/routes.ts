@@ -36,6 +36,9 @@ export const ROUTES = {
   /** Onboarding page */
   onboarding: "/onboarding" as const,
 
+  /** Gateway page */
+  app: "/app" as const,
+
   // ============================================
   // App routes (auth + company required)
   // ============================================

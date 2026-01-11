@@ -3,6 +3,7 @@ import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
@@ -32,9 +33,9 @@ function ProjectLayout() {
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             The project "{key}" doesn't exist or you don't have access to it.
-          </p>
+          </Typography>
         </div>
       </Flex>
     );

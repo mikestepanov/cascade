@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
@@ -258,9 +259,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                         setSelectedIssueKey(issue._id);
                         setSearchQuery("");
                       }}
-                      className={`w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0 ${
-                        selectedIssueKey === issue._id ? "bg-brand-50 dark:bg-brand-950" : ""
-                      }`}
+                      className={cn(
+                        "w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0",
+                        selectedIssueKey === issue._id && "bg-brand-50 dark:bg-brand-950",
+                      )}
                     >
                       <div className="flex items-center gap-2">
                         <Typography variant="span" className="text-sm">

@@ -3,6 +3,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 type FieldType = "text" | "number" | "select" | "multiselect" | "date" | "checkbox" | "url";
 
@@ -70,9 +71,9 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
               <span className="capitalize">{field.fieldType}</span>
             </Flex>
             {field.description && (
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+              <Typography variant="muted" className="mt-2">
                 {field.description}
-              </p>
+              </Typography>
             )}
             {field.options && field.options.length > 0 && (
               <Flex wrap gap="xs" className="mt-2">

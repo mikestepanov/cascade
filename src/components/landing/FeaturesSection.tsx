@@ -1,4 +1,6 @@
 import { FileText, PanelsTopLeft, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Typography } from "../ui/Typography";
 import { ArrowIcon } from "./icons";
 
 export function FeaturesSection() {
@@ -33,9 +35,9 @@ export function FeaturesSection() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Stop juggling tools. Start shipping.
           </h2>
-          <p className="text-ui-text-tertiary max-w-2xl mx-auto">
+          <Typography variant="lead" className="text-ui-text-tertiary max-w-2xl mx-auto">
             Project management shouldn't feel like a second job.
-          </p>
+          </Typography>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -73,18 +75,18 @@ function FeatureCard({
 
   return (
     <div
-      className={`
-        group relative p-6 rounded-2xl
-        bg-gradient-to-b from-gray-800/50 to-gray-900/50
-        border border-gray-700/40
-        backdrop-blur-md
-        transition-all duration-300
-        hover:shadow-xl ${glows[gradient]}
-        hover:-translate-y-1
-      `}
+      className={cn(
+        "group relative p-6 rounded-2xl",
+        "bg-linear-to-b from-gray-800/50 to-gray-900/50",
+        "border border-gray-700/40",
+        "backdrop-blur-md",
+        "transition-all duration-300",
+        "hover:shadow-xl hover:-translate-y-1",
+        glows[gradient],
+      )}
     >
       {/* Icon */}
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-[2px] mb-5`}>
+      <div className={cn("w-12 h-12 rounded-xl p-[2px] mb-5 bg-linear-to-br", gradients[gradient])}>
         <div className="w-full h-full rounded-xl bg-gray-900/90 flex items-center justify-center">
           {icon}
         </div>
@@ -92,7 +94,9 @@ function FeatureCard({
 
       {/* Content */}
       <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
-      <p className="text-ui-text-tertiary text-sm leading-relaxed mb-4">{description}</p>
+      <Typography variant="p" className="text-ui-text-tertiary text-sm leading-relaxed mb-4">
+        {description}
+      </Typography>
 
       {/* Link */}
       <a

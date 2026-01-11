@@ -6,6 +6,7 @@ import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
 import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import {
   Dialog,
@@ -217,7 +218,7 @@ export function CreateIssueModal({
               type="button"
               onClick={handleGenerateAISuggestions}
               disabled={isGeneratingAI}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-brand-600 to-accent-600 text-white text-sm font-medium rounded-lg hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isGeneratingAI ? (
                 <>
@@ -320,11 +321,12 @@ export function CreateIssueModal({
                     key={label._id}
                     type="button"
                     onClick={() => toggleLabel(label._id)}
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity ${
+                    className={cn(
+                      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity",
                       selectedLabels.includes(label._id)
                         ? "opacity-100 ring-2 ring-offset-2 ring-brand-600 dark:ring-brand-500"
-                        : "opacity-60 hover:opacity-80"
-                    }`}
+                        : "opacity-60 hover:opacity-80",
+                    )}
                     style={{ backgroundColor: label.color }}
                   >
                     {selectedLabels.includes(label._id) && <span className="mr-1">✓</span>}

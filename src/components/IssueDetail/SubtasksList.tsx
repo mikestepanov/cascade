@@ -7,6 +7,7 @@ import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 interface Subtask {
   _id: Id<"issues">;
@@ -161,9 +162,9 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
         </Flex>
       ) : (
         !isCreatingSubtask && (
-          <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark italic">
+          <Typography variant="muted" className="italic">
             No sub-tasks yet
-          </p>
+          </Typography>
         )
       )}
     </div>

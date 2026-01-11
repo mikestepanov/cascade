@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface WebhookCardProps {
   webhook: {
@@ -29,18 +30,19 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
               {webhook.name}
             </h4>
             <span
-              className={`text-xs px-2 py-0.5 rounded ${
+              className={cn(
+                "text-xs px-2 py-0.5 rounded",
                 webhook.isActive
                   ? "bg-status-success/10 text-status-success"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-              }`}
+                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+              )}
             >
               {webhook.isActive ? "Active" : "Inactive"}
             </span>
           </Flex>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 font-mono break-all">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 font-mono break-all">
             {webhook.url}
-          </p>
+          </Typography>
           <Flex wrap gap="xs">
             {webhook.events.map((event) => (
               <span
@@ -52,9 +54,9 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
             ))}
           </Flex>
           {webhook.lastTriggered && (
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2">
+            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2">
               Last triggered: {new Date(webhook.lastTriggered).toLocaleString()}
-            </p>
+            </Typography>
           )}
         </div>
 

@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
 import { Avatar } from "./ui/Avatar";
 import { Button } from "./ui/Button";
+import { Typography } from "./ui/Typography";
 
 interface IssueWatchersProps {
   issueId: Id<"issues">;
@@ -90,13 +91,13 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                  <Typography variant="p" className="font-medium truncate">
                     {watcher.userName}
-                  </p>
+                  </Typography>
                   {watcher.userEmail && (
-                    <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+                    <Typography variant="muted" size="xs" className="truncate">
                       {watcher.userEmail}
-                    </p>
+                    </Typography>
                   )}
                 </div>
               </div>

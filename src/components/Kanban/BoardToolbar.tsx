@@ -9,6 +9,7 @@ interface BoardToolbarProps {
   showControls?: boolean;
 }
 
+import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
 
 /**
@@ -84,11 +85,12 @@ export function BoardToolbar({
           <button
             type="button"
             onClick={onToggleSelectionMode}
-            className={`px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors ${
+            className={cn(
+              "px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors",
               selectionMode
                 ? "bg-primary text-white"
-                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-            }`}
+                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+            )}
             aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}
           >
             <span className="hidden sm:inline">

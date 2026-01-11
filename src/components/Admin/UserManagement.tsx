@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { useCompany } from "../../hooks/useCompanyContext";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
@@ -11,6 +12,7 @@ import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 /**
  * User row component for displaying user information in table
@@ -159,9 +161,12 @@ export function UserManagement() {
           <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
             User Management
           </h2>
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          <Typography
+            variant="p"
+            className="text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1"
+          >
             Manage user invitations and platform access
-          </p>
+          </Typography>
         </div>
         {activeTab === "invites" && (
           <Button onClick={() => setShowInviteForm(true)}>Invite User</Button>
@@ -174,22 +179,24 @@ export function UserManagement() {
           <button
             type="button"
             onClick={() => setActiveTab("invites")}
-            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+            className={cn(
+              "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "invites"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
-            }`}
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+            )}
           >
             Invitations
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("users")}
-            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+            className={cn(
+              "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "users"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
-            }`}
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+            )}
           >
             Users
           </button>
@@ -243,9 +250,12 @@ export function UserManagement() {
                       <SelectItem value="superAdmin">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <Typography
+                    variant="p"
+                    className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                  >
                     Super Admins have full system access and can manage all users
-                  </p>
+                  </Typography>
                 </div>
 
                 <Flex gap="md">
@@ -354,7 +364,10 @@ export function UserManagement() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <span
-                            className={`px-2 py-1 rounded text-xs font-medium capitalize ${getStatusBadge(invite.status)}`}
+                            className={cn(
+                              "px-2 py-1 rounded text-xs font-medium capitalize",
+                              getStatusBadge(invite.status),
+                            )}
                           >
                             {invite.status}
                           </span>

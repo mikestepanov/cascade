@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 export function WhyChooseSection() {
   const stats = [
@@ -12,12 +14,12 @@ export function WhyChooseSection() {
   return (
     <section className="px-6 py-24">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-gradient-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
+        <div className="bg-linear-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Teams actually like using it</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <Typography className="text-gray-400 max-w-2xl mx-auto">
               No training required. No "change management" needed. It just works.
-            </p>
+            </Typography>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -66,12 +68,14 @@ function StatItem({
 
   return (
     <div className="text-center">
-      <div className={`text-4xl md:text-5xl font-bold mb-2 ${colors[color].text}`}>{value}%</div>
-      <p className="text-gray-400 text-sm mb-4">{label}</p>
+      <div className={cn("text-4xl md:text-5xl font-bold mb-2", colors[color].text)}>{value}%</div>
+      <Typography variant="small" className="text-gray-400 mb-4">
+        {label}
+      </Typography>
       <Progress
         value={progress}
-        className={`h-1.5 ${colors[color].track}`}
-        indicatorClassName={`${colors[color].bar} transition-all duration-1000 ease-out`}
+        className={cn("h-1.5", colors[color].track)}
+        indicatorClassName={cn(colors[color].bar, "transition-all duration-1000 ease-out")}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import { FixedSizeList as List } from "react-window";
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { Skeleton } from "./ui/Skeleton";
@@ -115,11 +116,12 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
       return (
         <div
           style={style}
-          className={`flex items-center p-3 transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark ${
+          className={cn(
+            "flex items-center p-3 transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark",
             isSelected
               ? "bg-brand-50/50 dark:bg-brand-900/20 ring-1 ring-inset ring-brand-500/50 z-10"
-              : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-          }`}
+              : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+          )}
         >
           {/* Issue Info */}
           <div className="w-64 flex-shrink-0 pr-4">
@@ -128,18 +130,19 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               <button
                 type="button"
                 onClick={() => setSelectedIssue(issue._id)}
-                className={`text-sm font-medium truncate text-left ${
+                className={cn(
+                  "text-sm font-medium truncate text-left",
                   isSelected
                     ? "text-brand-700 dark:text-brand-300"
-                    : "text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400"
-                }`}
+                    : "text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400",
+                )}
               >
                 {issue.key}
               </button>
             </div>
-            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
               {issue.title}
-            </p>
+            </Typography>
           </div>
 
           {/* Timeline Bar */}
@@ -147,7 +150,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             {issue.dueDate && (
               <button
                 type="button"
-                className={`absolute h-6 rounded-full ${getRoadmapPriorityColor(issue.priority)} opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
+                className={cn(
+                  "absolute h-6 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2",
+                  getRoadmapPriorityColor(issue.priority),
+                )}
                 style={{
                   left: `${getPositionOnTimeline(issue.dueDate)}%`,
                   width: "5%", // Default width for single date
@@ -310,8 +316,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         <div className="flex-1">
           {filteredIssues.length === 0 ? (
             <div className="p-12 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              <p>No issues with due dates to display</p>
-              <p className="text-sm mt-1">Add due dates to issues to see them on the roadmap</p>
+              <Typography>No issues with due dates to display</Typography>
+              <Typography className="text-sm mt-1">
+                Add due dates to issues to see them on the roadmap
+              </Typography>
             </div>
           ) : (
             <List

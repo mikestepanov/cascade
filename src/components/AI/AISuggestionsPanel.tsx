@@ -9,6 +9,7 @@ import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";
 import { Skeleton } from "../ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
+import { Typography } from "../ui/Typography";
 import { SUGGESTION_METADATA, type SuggestionType } from "./config";
 import { useAISuggestions } from "./hooks";
 
@@ -34,7 +35,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          <p>Select a project to view AI suggestions</p>
+          <Typography variant="p">Select a project to view AI suggestions</Typography>
         </div>
       </Flex>
     );
@@ -48,7 +49,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
           type="button"
           onClick={handleGenerateInsights}
           disabled={isGenerating}
-          className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
+          className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
         >
           <Flex align="center" justify="center" gap="sm">
             {isGenerating ? (
@@ -107,10 +108,13 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
               <h3 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
                 No Suggestions Yet
               </h3>
-              <p className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+              <Typography
+                variant="p"
+                className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4"
+              >
                 Click "Generate AI Insights" to analyze your project and get AI-powered
                 recommendations.
-              </p>
+              </Typography>
             </div>
           </Flex>
         ) : (
@@ -158,13 +162,16 @@ const SuggestionCard = React.memo(function SuggestionCard({
               {new Date(suggestion.createdAt).toLocaleDateString()}
             </span>
           </Flex>
-          <p className="text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap break-words">
+          <Typography variant="p" className="whitespace-pre-wrap break-words">
             {suggestion.suggestion}
-          </p>
+          </Typography>
           {suggestion.reasoning && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+            <Typography
+              variant="muted"
+              className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2"
+            >
               <span className="font-medium">Reasoning:</span> {suggestion.reasoning}
-            </p>
+            </Typography>
           )}
           {suggestion.confidence !== undefined && (
             <div className="mt-2">

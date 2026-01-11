@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/issues/$key")({
   component: IssuePage,
@@ -61,13 +62,14 @@ function IssuePage() {
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm font-medium text-ui-text-secondary">{issue.key}</span>
           <span
-            className={`px-2 py-0.5 rounded text-xs font-medium ${
+            className={cn(
+              "px-2 py-0.5 rounded text-xs font-medium",
               issue.status === "done"
                 ? "bg-status-success-bg text-status-success-text"
                 : issue.status === "in-progress"
                   ? "bg-status-info-bg text-status-info-text"
-                  : "bg-ui-bg-tertiary text-ui-text-secondary"
-            }`}
+                  : "bg-ui-bg-tertiary text-ui-text-secondary",
+            )}
           >
             {issue.status}
           </span>

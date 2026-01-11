@@ -4,6 +4,7 @@
 
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 export interface AIErrorFallbackProps {
   error?: Error;
@@ -29,7 +30,12 @@ export function AIErrorFallback({
         <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
           {title}
         </h3>
-        <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">{message}</p>
+        <Typography
+          variant="p"
+          className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4"
+        >
+          {message}
+        </Typography>
 
         {error && process.env.NODE_ENV === "development" && (
           <details className="text-left text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded">

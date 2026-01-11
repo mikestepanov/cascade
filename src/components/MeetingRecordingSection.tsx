@@ -21,6 +21,7 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+import { Typography } from "./ui/Typography";
 
 // Status badge configuration - extracted to reduce component complexity
 interface StatusBadgeConfig {
@@ -109,9 +110,9 @@ function NoRecordingState({
 }) {
   return (
     <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4">
-      <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-3">
+      <Typography variant="muted" className="mb-3">
         Schedule a bot to join this meeting and automatically generate transcripts and summaries.
-      </p>
+      </Typography>
       <Button
         onClick={onSchedule}
         isLoading={isScheduling}
@@ -129,12 +130,15 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
     <div className="bg-brand-50 dark:bg-brand-900/20 rounded-lg p-4">
       <Flex justify="between" align="center">
         <div>
-          <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             Bot scheduled to join
-          </p>
-          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="muted" size="xs">
             "Nixelo Notetaker" will join when the meeting starts
-          </p>
+          </Typography>
         </div>
         <Button onClick={onCancel} variant="ghost" size="sm">
           <MicOff className="w-4 h-4 mr-1" />
@@ -148,10 +152,12 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
 function FailedState({ errorMessage, onRetry }: { errorMessage?: string; onRetry: () => void }) {
   return (
     <div className="bg-status-error-bg dark:bg-status-error-bg-dark rounded-lg p-4">
-      <p className="text-sm font-medium text-status-error">Recording failed</p>
-      <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+      <Typography variant="p" className="font-medium text-status-error">
+        Recording failed
+      </Typography>
+      <Typography variant="muted" size="xs" className="mt-1">
         {errorMessage || "An error occurred during recording"}
-      </p>
+      </Typography>
       <Button onClick={onRetry} variant="secondary" size="sm" className="mt-3">
         Try Again
       </Button>
@@ -166,12 +172,15 @@ function InProgressState({ status }: { status: string }) {
       <Flex gap="md" align="center">
         <LoadingSpinner size="sm" />
         <div>
-          <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography
+            variant="p"
+            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+          >
             {message}
-          </p>
-          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <Typography variant="muted" size="xs">
             This may take a few minutes
-          </p>
+          </Typography>
         </div>
       </Flex>
     </div>
@@ -340,9 +349,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
             Summary
           </h4>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            {summary.executiveSummary}
-          </p>
+          <Typography variant="muted">{summary.executiveSummary}</Typography>
         </div>
       )}
 

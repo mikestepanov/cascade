@@ -3,8 +3,10 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 import { BurnRateDashboard } from "./BurnRateDashboard";
 import { TimeEntriesList } from "./TimeEntriesList";
 import { UserRatesManagement } from "./UserRatesManagement";
@@ -60,9 +62,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
         <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
           Time Tracking
         </h1>
-        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
           Track time, analyze costs, and monitor burn rate
-        </p>
+        </Typography>
       </div>
 
       {/* Tabs */}
@@ -71,11 +73,12 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
           <button
             type="button"
             onClick={() => setActiveTab("entries")}
-            className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+            className={cn(
+              "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
               activeTab === "entries"
                 ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-            }`}
+                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+            )}
           >
             Time Entries
           </button>
@@ -84,22 +87,24 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
               <button
                 type="button"
                 onClick={() => setActiveTab("burn-rate")}
-                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                className={cn(
+                  "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "burn-rate"
                     ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                )}
               >
                 Burn Rate & Costs
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("rates")}
-                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                className={cn(
+                  "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "rates"
                     ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-                }`}
+                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                )}
               >
                 Hourly Rates
               </button>
@@ -202,9 +207,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
             <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
               Select a project
             </h3>
-            <p className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               Choose a project to view burn rate and cost analysis
-            </p>
+            </Typography>
           </div>
         )}
 

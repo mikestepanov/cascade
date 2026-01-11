@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
@@ -220,7 +221,12 @@ function WeekView({
               className="p-1 sm:p-2 text-center border-l border-ui-border-primary dark:border-ui-border-primary-dark"
             >
               <div
-                className={`text-xs font-medium ${isToday ? "text-brand-600 dark:text-brand-400" : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"}`}
+                className={cn(
+                  "text-xs font-medium",
+                  isToday
+                    ? "text-brand-600 dark:text-brand-400"
+                    : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark",
+                )}
               >
                 <span className="hidden sm:inline">
                   {day.toLocaleDateString("en-US", { weekday: "short" })}
@@ -230,11 +236,12 @@ function WeekView({
                 </span>
               </div>
               <div
-                className={`text-base sm:text-xl font-semibold ${
+                className={cn(
+                  "text-base sm:text-xl font-semibold",
                   isToday
                     ? "bg-brand-600 text-white w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mx-auto text-sm sm:text-xl"
-                    : "text-ui-text-primary dark:text-ui-text-primary-dark"
-                }`}
+                    : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                )}
               >
                 {day.getDate()}
               </div>
@@ -364,20 +371,22 @@ function MonthView({
           return (
             <div
               key={day.getTime()}
-              className={`border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] ${
+              className={cn(
+                "border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px]",
                 !isCurrentMonth
                   ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-              }`}
+                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+              )}
             >
               <div
-                className={`text-xs sm:text-sm font-medium mb-1 ${
+                className={cn(
+                  "text-xs sm:text-sm font-medium mb-1",
                   isToday
                     ? "bg-brand-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs"
                     : isCurrentMonth
                       ? "text-ui-text-primary dark:text-ui-text-primary-dark"
-                      : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-                }`}
+                      : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark",
+                )}
               >
                 {day.getDate()}
               </div>

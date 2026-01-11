@@ -6,10 +6,12 @@ import { z } from "zod";
 import { FormInput, FormTextarea, useAppForm } from "@/lib/form";
 import { Calendar, Clock, LinkIcon, MapPin } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 // =============================================================================
 // Schema
@@ -150,11 +152,12 @@ export function CreateEventModal({
                         key={type}
                         type="button"
                         onClick={() => form.setFieldValue("eventType", type)}
-                        className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${
+                        className={cn(
+                          "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
                             ? "bg-brand-600 text-white"
-                            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
-                        }`}
+                            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                        )}
                       >
                         {type}
                       </button>
@@ -277,9 +280,9 @@ export function CreateEventModal({
                           </Flex>
                         </label>
                         {isRequired && (
-                          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 ml-6">
+                          <Typography variant="muted" className="text-xs mt-1 ml-6">
                             Admins can mark who attended, was tardy, or missed this meeting
-                          </p>
+                          </Typography>
                         )}
                       </div>
                     )}

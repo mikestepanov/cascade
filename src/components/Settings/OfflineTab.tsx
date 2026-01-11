@@ -1,9 +1,11 @@
 import { toast } from "sonner";
 import { RefreshCw, Wifi, WifiOff } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { useOfflineSyncStatus, useOnlineStatus } from "../../hooks/useOffline";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 /**
  * Offline mode settings tab
@@ -19,7 +21,9 @@ export function OfflineTab() {
       <Card>
         <div className="p-6">
           <Flex gap="lg" align="center">
-            <div className={`p-3 rounded-lg ${isOnline ? "bg-status-success" : "bg-status-error"}`}>
+            <div
+              className={cn("p-3 rounded-lg", isOnline ? "bg-status-success" : "bg-status-error")}
+            >
               {isOnline ? (
                 <Wifi className="h-6 w-6 text-white" />
               ) : (
@@ -30,39 +34,44 @@ export function OfflineTab() {
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 Connection Status
               </h3>
-              <p
-                className={`text-sm mt-1 ${isOnline ? "text-status-success dark:text-status-success" : "text-status-error dark:text-status-error"}`}
+              <Typography
+                className={cn(
+                  "text-sm mt-1",
+                  isOnline
+                    ? "text-status-success dark:text-status-success"
+                    : "text-status-error dark:text-status-error",
+                )}
               >
                 {isOnline ? "✓ You are online" : "✗ You are offline"}
-              </p>
+              </Typography>
             </div>
           </Flex>
 
           <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Pending Changes
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   {isLoading ? "..." : count}
-                </p>
+                </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Sync Status
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   {isOnline ? "Ready" : "Paused"}
-                </p>
+                </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Storage
-                </p>
-                <p className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
                   IndexedDB
-                </p>
+                </Typography>
               </div>
             </div>
           </div>
@@ -79,45 +88,45 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   View Cached Content
-                </p>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Access recently viewed projects and issues while offline
-                </p>
+                </Typography>
               </div>
             </Flex>
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   Offline Edits
-                </p>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Make changes offline - they'll sync automatically when you're back online
-                </p>
+                </Typography>
               </div>
             </Flex>
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   Background Sync
-                </p>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Changes sync automatically in the background when connection is restored
-                </p>
+                </Typography>
               </div>
             </Flex>
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                   Install as App
-                </p>
-                <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                </Typography>
+                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
                   Install Nixelo as a standalone app on your device
-                </p>
+                </Typography>
               </div>
             </Flex>
           </Flex>
@@ -150,12 +159,12 @@ export function OfflineTab() {
                   className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
                 >
                   <div>
-                    <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                       {item.mutationType}
-                    </p>
-                    <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    </Typography>
+                    <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       {new Date(item.timestamp).toLocaleString()}
-                    </p>
+                    </Typography>
                   </div>
                   <span className="text-xs px-2 py-1 bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark rounded">
                     Pending
@@ -163,9 +172,9 @@ export function OfflineTab() {
                 </Flex>
               ))}
               {pending.length > 5 && (
-                <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center pt-2">
+                <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center pt-2">
                   +{pending.length - 5} more items
-                </p>
+                </Typography>
               )}
             </Flex>
           </div>

@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface WebhookLogsProps {
   webhookId: Id<"webhooks">;
@@ -80,9 +81,9 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
             <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
               No delivery logs yet
             </h3>
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
               Webhook deliveries will appear here once triggered
-            </p>
+            </Typography>
           </div>
         ) : (
           <div className="space-y-4">

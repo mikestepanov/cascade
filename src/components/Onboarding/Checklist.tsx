@@ -2,8 +2,10 @@ import { api } from "@convex/_generated/api";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";
+import { Typography } from "../ui/Typography";
 
 interface ChecklistItem {
   id: string;
@@ -91,9 +93,9 @@ export function OnboardingChecklist() {
             <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
               Getting Started
             </h3>
-            <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
               {completedCount} of {totalCount} complete
-            </p>
+            </Typography>
           </div>
         </Flex>
         <Flex gap="sm" align="center">
@@ -129,27 +131,29 @@ export function OnboardingChecklist() {
           {items.map((item) => (
             <Flex key={item.id} gap="md" align="start">
               <div
-                className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all ${
+                className={cn(
+                  "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all",
                   item.completed
                     ? "bg-status-success border-status-success"
-                    : "border-ui-border-secondary dark:border-ui-border-secondary-dark"
-                }`}
+                    : "border-ui-border-secondary dark:border-ui-border-secondary-dark",
+                )}
               >
                 {item.completed && <Check className="w-3 h-3 text-white" />}
               </div>
               <div className="flex-1">
-                <p
-                  className={`font-medium text-sm ${
+                <Typography
+                  className={cn(
+                    "font-medium text-sm",
                     item.completed
                       ? "text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-through"
-                      : "text-ui-text-primary dark:text-ui-text-primary-dark"
-                  }`}
+                      : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                  )}
                 >
                   {item.title}
-                </p>
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                </Typography>
+                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                   {item.description}
-                </p>
+                </Typography>
               </div>
             </Flex>
           ))}
@@ -157,12 +161,12 @@ export function OnboardingChecklist() {
           {/* Completion Message */}
           {allComplete && (
             <div className="mt-4 p-3 bg-status-success/10 dark:bg-status-success/20 rounded-lg border border-status-success/30 dark:border-status-success/50">
-              <p className="text-sm font-medium text-status-success dark:text-status-success">
+              <Typography className="text-sm font-medium text-status-success dark:text-status-success">
                 🎉 Congratulations! You've completed the basics.
-              </p>
-              <p className="text-xs text-status-success/90 dark:text-status-success/80 mt-1">
+              </Typography>
+              <Typography className="text-xs text-status-success/90 dark:text-status-success/80 mt-1">
                 You're ready to use Nixelo! Feel free to dismiss this checklist.
-              </p>
+              </Typography>
             </div>
           )}
         </Flex>

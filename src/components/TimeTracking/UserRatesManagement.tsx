@@ -3,11 +3,13 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
+import { Typography } from "../ui/Typography";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
@@ -78,9 +80,9 @@ export function UserRatesManagement() {
           <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
             Hourly Rates
           </h2>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
             Manage hourly rates for cost tracking and burn rate calculations
-          </p>
+          </Typography>
         </div>
         <Button onClick={() => setShowAddRate(true)} variant="primary">
           Set My Rate
@@ -102,11 +104,12 @@ export function UserRatesManagement() {
                       {rate.user?.name || "Unknown User"}
                     </h3>
                     <span
-                      className={`px-2 py-0.5 text-xs rounded ${
+                      className={cn(
+                        "px-2 py-0.5 text-xs rounded",
                         rate.rateType === "billable"
                           ? "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success"
-                          : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
-                      }`}
+                          : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+                      )}
                     >
                       {rate.rateType}
                     </span>
@@ -119,9 +122,9 @@ export function UserRatesManagement() {
                     )}
                   </div>
                   {rate.notes && (
-                    <p className="mt-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    <Typography className="mt-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                       {rate.notes}
-                    </p>
+                    </Typography>
                   )}
                 </div>
                 <div className="text-right">
@@ -156,9 +159,9 @@ export function UserRatesManagement() {
           <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
             No hourly rates set
           </h3>
-          <p className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <Typography className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
             Set your hourly rate to enable cost tracking and burn rate calculations
-          </p>
+          </Typography>
           <Button onClick={() => setShowAddRate(true)} variant="primary" className="mt-4">
             Set My Rate
           </Button>
@@ -198,9 +201,9 @@ export function UserRatesManagement() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+              <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
                 Project-specific rates override the default rate
-              </p>
+              </Typography>
             </div>
 
             {/* Rate Type */}
@@ -210,11 +213,12 @@ export function UserRatesManagement() {
               </div>
               <Flex gap="md">
                 <label
-                  className={`cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                  className={cn(
+                    "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "internal"
                       ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark"
-                  }`}
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                  )}
                 >
                   <Flex align="center" gap="sm">
                     <input
@@ -235,11 +239,12 @@ export function UserRatesManagement() {
                   </Flex>
                 </label>
                 <label
-                  className={`cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors ${
+                  className={cn(
+                    "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "billable"
                       ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark"
-                  }`}
+                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                  )}
                 >
                   <Flex align="center" gap="sm">
                     <input

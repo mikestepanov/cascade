@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 import { Button } from "./Button";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
 } from "./Dialog";
 import { Flex } from "./Flex";
+import { Typography } from "./Typography";
 
 interface MarkdownPreviewModalProps {
   open: boolean;
@@ -65,41 +67,49 @@ export function MarkdownPreviewModal({
           <Flex align="start" gap="sm">
             <span className="text-status-warning dark:text-status-warning text-lg">⚠️</span>
             <div className="flex-1">
-              <p className="text-sm font-medium text-status-warning dark:text-status-warning">
+              <Typography
+                variant="small"
+                className="font-medium text-status-warning dark:text-status-warning"
+              >
                 This will replace all current document content
-              </p>
-              <p className="text-xs text-status-warning/90 dark:text-status-warning/80 mt-1">
+              </Typography>
+              <Typography
+                variant="muted"
+                className="text-xs text-status-warning/90 dark:text-status-warning/80 mt-1"
+              >
                 Make sure you have a backup or export the current version first.
-              </p>
+              </Typography>
             </div>
           </Flex>
         </div>
 
         {/* Tab Selector */}
-        <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-4">
+        <Flex className="border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-4">
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={cn(
+              "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "preview"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
-            }`}
+                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+            )}
           >
             Preview
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("raw")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={cn(
+              "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "raw"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
-            }`}
+                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+            )}
           >
             Raw Markdown
           </button>
-        </div>
+        </Flex>
 
         {/* Content */}
         <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">

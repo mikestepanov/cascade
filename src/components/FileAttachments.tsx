@@ -3,9 +3,11 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useRef, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+import { Typography } from "./ui/Typography";
 
 interface FileAttachmentsProps {
   issueId: Id<"issues">;
@@ -127,11 +129,12 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={cn(
+          "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
           dragOver
             ? "border-brand-500 bg-brand-50 dark:bg-brand-950"
-            : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark"
-        }`}
+            : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+        )}
       >
         <input
           ref={fileInputRef}
@@ -143,9 +146,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         />
         <label htmlFor="file-upload" className="cursor-pointer">
           <div className="text-4xl mb-2">📎</div>
-          <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+          <Typography variant="muted" className="mb-2">
             Drag and drop files here, or click to browse
-          </p>
+          </Typography>
           <Button
             type="button"
             variant="secondary"
@@ -181,9 +184,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   >
                     {attachment.filename}
                   </a>
-                  <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  <Typography variant="muted" size="xs">
                     {new Date(attachment.uploadedAt).toLocaleDateString()}
-                  </p>
+                  </Typography>
                 </div>
               </Flex>
               <Flex align="center" gap="sm" className="flex-shrink-0">

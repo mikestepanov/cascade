@@ -2,7 +2,9 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Avatar } from "./ui/Avatar";
+import { Typography } from "./ui/Typography";
 
 interface MentionInputProps {
   projectId: Id<"projects">;
@@ -171,7 +173,10 @@ export function MentionInput({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none overflow-hidden ${className}`}
+        className={cn(
+          "w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none overflow-hidden",
+          className,
+        )}
         rows={3}
       />
 
@@ -183,21 +188,22 @@ export function MentionInput({
               type="button"
               key={member.userId}
               onClick={() => insertMention(member.userName, member.userId)}
-              className={`w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center gap-3 ${
-                index === selectedIndex ? "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark" : ""
-              }`}
+              className={cn(
+                "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center gap-3",
+                index === selectedIndex && "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+              )}
             >
               {/* Avatar */}
               <Avatar name={member.userName} size="md" />
 
               {/* User Info */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                <Typography variant="p" className="font-medium truncate">
                   {member.userName}
-                </p>
-                <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark capitalize">
+                </Typography>
+                <Typography variant="muted" size="xs" className="capitalize">
                   {member.role}
-                </p>
+                </Typography>
               </div>
             </button>
           ))}
@@ -205,9 +211,9 @@ export function MentionInput({
       )}
 
       {/* Helper text */}
-      <p className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+      <Typography variant="muted" size="xs" className="mt-1">
         Type @ to mention team members
-      </p>
+      </Typography>
     </div>
   );
 }

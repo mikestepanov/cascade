@@ -7,6 +7,7 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Input } from "../ui/form";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Typography } from "../ui/Typography";
 
 interface UserStats {
   projects: number;
@@ -165,7 +166,9 @@ export function ProfileHeader({
             <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
               {user.name || "Anonymous User"}
             </h2>
-            <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">{user.email}</p>
+            <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              {user.email}
+            </Typography>
             {isOwnProfile && (
               <Button onClick={onEditClick} variant="secondary" size="sm" className="mt-3">
                 Edit Profile

@@ -1,6 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 
 interface SearchResult {
   _id: Id<"issues">;
@@ -44,7 +46,7 @@ export function SearchResultsList({
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <p>Start typing to search issues</p>
+        <Typography variant="muted">Start typing to search issues</Typography>
       </div>
     );
   }
@@ -52,7 +54,7 @@ export function SearchResultsList({
   if (results.length === 0) {
     return (
       <div className="p-8 text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-        <p>No issues found matching your criteria</p>
+        <Typography variant="muted">No issues found matching your criteria</Typography>
       </div>
     );
   }
@@ -75,7 +77,10 @@ export function SearchResultsList({
                     {issue.key}
                   </span>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded ${getPriorityColor(issue.priority, "bg")}`}
+                    className={cn(
+                      "text-xs px-2 py-0.5 rounded",
+                      getPriorityColor(issue.priority, "bg"),
+                    )}
                   >
                     {issue.priority}
                   </span>

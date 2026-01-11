@@ -3,10 +3,12 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Typography } from "../ui/Typography";
 
 interface ExportPanelProps {
   projectId: Id<"projects">;
@@ -109,11 +111,12 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setExportFormat("csv")}
-            className={`p-4 cursor-pointer transition-all ${
+            className={cn(
+              "p-4 cursor-pointer transition-all",
               exportFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            }`}
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+            )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
@@ -130,11 +133,12 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
 
           <Card
             onClick={() => setExportFormat("json")}
-            className={`p-4 cursor-pointer transition-all ${
+            className={cn(
+              "p-4 cursor-pointer transition-all",
               exportFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
-            }`}
+                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+            )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
@@ -155,7 +159,9 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
         <Flex gap="md" align="start">
           <div className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</div>
           <div className="text-sm text-brand-800 dark:text-brand-200">
-            <p className="font-semibold mb-1">Export Information</p>
+            <Typography variant="p" className="font-semibold mb-1">
+              Export Information
+            </Typography>
             <ul className="list-disc list-inside space-y-1 text-brand-700 dark:text-brand-300">
               <li>CSV format is compatible with Excel, Google Sheets</li>
               <li>JSON format includes full issue data and metadata</li>

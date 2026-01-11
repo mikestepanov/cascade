@@ -6,6 +6,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 import { LinkedRepositories } from "./LinkedRepositories";
 
 // Get the Convex HTTP URL for GitHub OAuth
@@ -105,13 +106,13 @@ export function GitHubIntegration() {
               <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                 GitHub
               </h3>
-              <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                 Link repositories and track PRs and commits
-              </p>
+              </Typography>
               {githubConnection && (
-                <p className="text-sm text-status-success dark:text-status-success mt-2">
+                <Typography className="text-sm text-status-success dark:text-status-success mt-2">
                   ✓ Connected as @{githubConnection.githubUsername}
-                </p>
+                </Typography>
               )}
             </div>
           </Flex>

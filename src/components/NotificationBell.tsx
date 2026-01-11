@@ -2,8 +2,10 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Typography } from "./ui/Typography";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -137,12 +139,12 @@ export function NotificationBell() {
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
-                <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-center">
+                <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-center">
                   No notifications yet
-                </p>
-                <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center mt-1">
+                </Typography>
+                <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center mt-1">
                   We'll notify you when something happens
-                </p>
+                </Typography>
               </div>
             ) : (
               <div>
@@ -150,9 +152,10 @@ export function NotificationBell() {
                   <button
                     key={notification._id}
                     type="button"
-                    className={`w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors ${
-                      !notification.isRead ? "bg-brand-50 dark:bg-brand-900/20" : ""
-                    }`}
+                    className={cn(
+                      "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors",
+                      !notification.isRead && "bg-brand-50 dark:bg-brand-900/20",
+                    )}
                     onClick={() => handleNotificationClick(notification._id, notification.issueId)}
                   >
                     <div className="flex items-start gap-3">
@@ -160,12 +163,12 @@ export function NotificationBell() {
                         {getNotificationIcon(notification.type)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
                           {notification.title}
-                        </p>
-                        <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                        </Typography>
+                        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
                           {notification.message}
-                        </p>
+                        </Typography>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                             {formatTime(notification.createdAt)}

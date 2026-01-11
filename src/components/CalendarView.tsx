@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { Typography } from "./ui/Typography";
 
@@ -107,19 +108,21 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
     calendarDays.push(
       <div
         key={day}
-        className={`min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2 ${
+        className={cn(
+          "min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2",
           isTodayDate
             ? "bg-brand-50 dark:bg-brand-900/20"
-            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-        }`}
+            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+        )}
       >
         <div className="flex items-center justify-between mb-1">
           <span
-            className={`text-sm font-medium ${
+            className={cn(
+              "text-sm font-medium",
               isTodayDate
                 ? "bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center"
-                : "text-ui-text-primary dark:text-ui-text-primary-dark"
-            }`}
+                : "text-ui-text-primary dark:text-ui-text-primary-dark",
+            )}
           >
             {day}
           </span>
@@ -140,7 +143,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               title={issue.title}
             >
               <div className="flex items-center gap-1">
-                <div className={`w-2 h-2 rounded-full ${getPriorityColor(issue.priority)}`} />
+                <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
                 <span className="text-xs truncate flex-1">
                   {getTypeIcon(issue.type)} {issue.title}
                 </span>
@@ -148,9 +151,9 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
             </button>
           ))}
           {dayIssues.length > 3 && (
-            <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark pl-1.5">
+            <Typography variant="muted" className="text-xs pl-1.5">
               +{dayIssues.length - 3} more
-            </p>
+            </Typography>
           )}
         </div>
       </div>,

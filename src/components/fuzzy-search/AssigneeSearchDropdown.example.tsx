@@ -11,6 +11,7 @@ import { useQuery } from "convex/react";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { Avatar } from "../ui/Avatar";
 import { Flex } from "../ui/Flex";
+import { Typography } from "../ui/Typography";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
 
 interface AssigneeSearchDropdownProps {
@@ -134,9 +135,9 @@ export function AssigneeSearchDropdown({
       />
 
       {/* Helper text */}
-      <p className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+      <Typography variant="muted" size="xs" className="mt-1">
         Search by name or email • Supports typos
-      </p>
+      </Typography>
     </div>
   );
 }

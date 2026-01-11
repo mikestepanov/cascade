@@ -169,12 +169,12 @@ function OnboardingPage() {
 
       {/* Footer */}
       <footer className="p-6 text-center">
-        <p className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+        <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
           Need help?{" "}
           <a href="mailto:support@nixelo.com" className="text-primary-600 hover:underline">
             Contact support
           </a>
-        </p>
+        </Typography>
       </footer>
     </div>
   );

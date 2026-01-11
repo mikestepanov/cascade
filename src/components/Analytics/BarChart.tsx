@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 
 /**
@@ -26,7 +27,10 @@ export const BarChart = memo(function BarChart({
           </div>
           <div className="flex-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-6 relative">
             <div
-              className={`${color} h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
+              className={cn(
+                color,
+                "h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2",
+              )}
               style={{
                 width: `${(item.value / maxValue) * 100}%`,
                 minWidth: item.value > 0 ? "2rem" : "0",

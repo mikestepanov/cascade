@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
+import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import {
@@ -14,6 +15,7 @@ import {
   CommandList,
   CommandShortcut,
 } from "./ui/command";
+import { Typography } from "./ui/Typography";
 
 type SearchResult =
   | {
@@ -97,11 +99,12 @@ function SearchTab({
     <button
       type="button"
       onClick={onClick}
-      className={`pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+      className={cn(
+        "pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
         isActive
           ? "border-brand-500 text-brand-600 dark:text-brand-400"
-          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-      }`}
+          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+      )}
     >
       {label} {showCount && <span className="text-xs">({count})</span>}
     </button>
@@ -129,7 +132,9 @@ function SearchListContent({
   if (query.length < 2) {
     return (
       <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
-        <p className="text-sm">Type at least 2 characters to search</p>
+        <Typography variant="p" className="text-sm">
+          Type at least 2 characters to search
+        </Typography>
       </div>
     );
   }
@@ -138,7 +143,9 @@ function SearchListContent({
     return (
       <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
         <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
-        <p className="text-sm">Searching...</p>
+        <Typography variant="p" className="text-sm">
+          Searching...
+        </Typography>
       </div>
     );
   }
@@ -148,9 +155,9 @@ function SearchListContent({
       <CommandEmpty className="p-8">
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
-          <p className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
+          <Typography variant="p" className="font-medium">
             No results found
-          </p>
+          </Typography>
         </div>
       </CommandEmpty>
       {filteredResults.length > 0 && (
@@ -236,12 +243,12 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
               {result.type}
             </Badge>
           </div>
-          <p className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
+          <Typography variant="p" className="font-medium mt-1 truncate">
             {result.title}
-          </p>
-          <p className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1 line-clamp-2">
+          </Typography>
+          <Typography variant="muted" size="xs" className="mt-1 line-clamp-2">
             {result.description || "No description"}
-          </p>
+          </Typography>
         </div>
       </div>
     </CommandItem>

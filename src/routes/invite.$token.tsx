@@ -60,9 +60,9 @@ function InviteRoute() {
       <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
-          <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
             Loading invitation...
-          </p>
+          </Typography>
         </div>
       </div>
     );
@@ -269,19 +269,19 @@ function InviteRoute() {
                     "Accept Invitation"
                   )}
                 </Button>
-                <p className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                <Typography className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                   By accepting, you'll join the team and can start collaborating
-                </p>
+                </Typography>
               </div>
             </Authenticated>
 
             <Unauthenticated>
               {/* User is not logged in - show sign up/in form */}
               <div className="space-y-4">
-                <p className="text-sm text-center text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+                <Typography className="text-sm text-center text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
                   Sign in or create an account with{" "}
                   <span className="font-medium">{invite.email}</span> to accept this invitation
-                </p>
+                </Typography>
                 <SignInForm />
               </div>
             </Unauthenticated>
