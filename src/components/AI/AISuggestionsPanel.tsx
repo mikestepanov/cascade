@@ -48,7 +48,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
           type="button"
           onClick={handleGenerateInsights}
           disabled={isGenerating}
-          className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
+          className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
         >
           <Flex align="center" justify="center" gap="sm">
             {isGenerating ? (

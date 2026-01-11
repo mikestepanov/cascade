@@ -234,7 +234,7 @@ export function DocumentTemplatesManager({
                         key={template._id}
                         type="button"
                         onClick={() => onSelectTemplate?.(template._id)}
-                        className="p-4 bg-gradient-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
+                        className="p-4 bg-linear-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{template.icon}</span>

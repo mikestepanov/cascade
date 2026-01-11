@@ -37,7 +37,7 @@ export function NavHeader() {
             </Link>
             <Link
               to={ROUTES.signup}
-              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+              className="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
             >
               Get Started
             </Link>
@@ -45,7 +45,7 @@ export function NavHeader() {
           <Authenticated>
             <Link
               to={ROUTES.app}
-              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+              className="px-5 py-2.5 bg-linear-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
             >
               Go to App
             </Link>

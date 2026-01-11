@@ -17,7 +17,7 @@ export function HeroSection() {
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
           Revolutionize Your Workflow.
           <br />
-          <span className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
             Harmonize Your Team.
           </span>
         </h1>
@@ -32,7 +32,7 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to={ROUTES.signup}
-            className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+            className="px-8 py-3.5 bg-linear-to-r from-cyan-500 to-teal-400 rounded-full text-base font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
           >
             Get Started Free
           </Link>

@@ -49,7 +49,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         className={`${AI_CONFIG.panel.width.mobile} ${AI_CONFIG.panel.width.tablet} ${AI_CONFIG.panel.width.desktop} p-0 flex flex-col bg-ui-bg-primary dark:bg-ui-bg-primary-dark`}
       >
         {/* Header */}
-        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-gradient-to-r from-brand-600 to-accent-600">
+        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-linear-to-r from-brand-600 to-accent-600">
           <SheetHeader className="text-left">
             <Flex align="center" gap="md">
               <div className="text-2xl">🤖</div>

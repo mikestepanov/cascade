@@ -59,7 +59,7 @@ export function AIAssistantButton({
     <button
       type="button"
       onClick={onClick}
-      className={`fixed ${positionClasses} ${SIZE_CLASSES[size]} bg-gradient-to-r from-brand-600 to-accent-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30 group ${className}`}
+      className={`fixed ${positionClasses} ${SIZE_CLASSES[size]} bg-linear-to-r from-brand-600 to-accent-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30 group ${className}`}
       title={tooltipText}
       aria-label={ariaLabel}
     >

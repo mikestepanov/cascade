@@ -36,7 +36,7 @@ function StatCard({
 }: StatCardProps) {
   return (
     <Card
-      className={`bg-gradient-to-br ${gradientFrom} ${gradientTo} border-l-4 ${borderColor} animate-fade-in`}
+      className={`bg-linear-to-br ${gradientFrom} ${gradientTo} border-l-4 ${borderColor} animate-fade-in`}
     >
       <CardBody className="text-center">
         <div className={`text-sm font-medium ${textColor} mb-2`}>{title}</div>
@@ -56,8 +56,8 @@ function HighPriorityCard({ count }: { count: number }) {
     <Card
       className={`border-l-4 animate-fade-in ${
         hasHighPriority
-          ? "bg-gradient-to-br from-status-warning-bg to-ui-bg-primary dark:from-status-warning-bg-dark dark:to-ui-bg-primary-dark border-status-warning dark:border-status-warning"
-          : "bg-gradient-to-br from-ui-bg-secondary to-ui-bg-primary dark:from-ui-bg-secondary-dark dark:to-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark"
+          ? "bg-linear-to-br from-status-warning-bg to-ui-bg-primary dark:from-status-warning-bg-dark dark:to-ui-bg-primary-dark border-status-warning dark:border-status-warning"
+          : "bg-linear-to-br from-ui-bg-secondary to-ui-bg-primary dark:from-ui-bg-secondary-dark dark:to-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark"
       }`}
     >
       <CardBody className="text-center">

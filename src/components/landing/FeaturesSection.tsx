@@ -75,7 +75,7 @@ function FeatureCard({
     <div
       className={`
         group relative p-6 rounded-2xl
-        bg-gradient-to-b from-gray-800/50 to-gray-900/50
+        bg-linear-to-b from-gray-800/50 to-gray-900/50
         border border-gray-700/40
         backdrop-blur-md
         transition-all duration-300
@@ -84,7 +84,7 @@ function FeatureCard({
       `}
     >
       {/* Icon */}
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[gradient]} p-[2px] mb-5`}>
+      <div className={`w-12 h-12 rounded-xl bg-linear-to-br ${gradients[gradient]} p-[2px] mb-5`}>
         <div className="w-full h-full rounded-xl bg-gray-900/90 flex items-center justify-center">
           {icon}
         </div>

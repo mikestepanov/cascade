@@ -51,7 +51,7 @@ export function PumbleIntegration() {
         <Flex justify="between" align="start">
           <Flex gap="md" align="center">
             <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
