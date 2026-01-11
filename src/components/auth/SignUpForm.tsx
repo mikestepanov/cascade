@@ -57,7 +57,7 @@ export function SignUpForm() {
 
   return (
     <div className="w-full">
-      <GoogleAuthButton redirectTo={ROUTES.onboarding} text="Sign up with Google" />
+      <GoogleAuthButton redirectTo={ROUTES.app} text="Sign up with Google" />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>

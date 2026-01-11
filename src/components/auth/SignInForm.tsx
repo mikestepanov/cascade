@@ -30,7 +30,8 @@ export function SignInForm() {
 
     void signIn("password", formData)
       .then(() => {
-        // Auth state will update automatically and redirect
+        // Redirect to /app gateway to trigger SmartAuthGuard logic
+        navigate({ to: ROUTES.app });
       })
       .catch((error) => {
         const message = error.message.includes("Invalid password")
@@ -43,7 +44,7 @@ export function SignInForm() {
 
   return (
     <div className="w-full">
-      <GoogleAuthButton text="Sign in with Google" />
+      <GoogleAuthButton redirectTo={ROUTES.app} text="Sign in with Google" />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>

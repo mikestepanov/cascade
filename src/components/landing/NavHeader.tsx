@@ -44,7 +44,7 @@ export function NavHeader() {
           </Unauthenticated>
           <Authenticated>
             <Link
-              to={ROUTES.signup} // PostAuthRedirect handles the sub-redirect
+              to={ROUTES.app}
               className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full text-sm font-medium text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
             >
               Go to App
