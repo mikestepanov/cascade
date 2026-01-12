@@ -7,6 +7,7 @@ import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/form/Checkbox";
 import { Input } from "./ui/form/Input";
 import { Select } from "./ui/form/Select";
+import { Typography } from "./ui/Typography";
 
 interface CustomFieldValuesProps {
   issueId: Id<"issues">;
