@@ -605,19 +605,51 @@ export const listByProjectSmart = projectQuery({
 
     await Promise.all(
       workflowStates.map(async (state: { id: string; category: string }) => {
-        let q = ctx.db
-          .query("issues")
-          .withIndex("by_project_status_updated", (q) =>
-            q.eq("projectId", ctx.project._id).eq("status", state.id),
-          )
-          .filter(notDeleted);
+        let q: any; // Explicitly typed as any to allow flexible query building across branches
 
+        // Optimization: Use specific indexes based on whether we are filtering by sprint
+        // or just by project status. This avoids scanning unnecessary issues.
         if (args.sprintId) {
-          q = q.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
-        }
+          // Sprint View: Use by_project_sprint_status index
+          // This avoids scanning all project issues when we only want one sprint
+          q = ctx.db
+            .query("issues")
+            .withIndex("by_project_sprint_status", (q) =>
+              q
+                .eq("projectId", ctx.project._id)
+                .eq("sprintId", args.sprintId as Id<"sprints">)
+                .eq("status", state.id),
+            )
+            .filter(notDeleted);
 
-        if (state.category === "done") {
-          q = q.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
+          // For done column in sprints, we still respect the time window if requested,
+          // but typically sprint boards show all sprint issues.
+          if (state.category === "done") {
+            q = q.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
+          }
+        } else {
+          // Project View: Use by_project_status_updated index
+          if (state.category === "done") {
+            // Done Column: Use index range scan for updatedAt
+            // This avoids scanning the entire history of done issues (O(N) -> O(K))
+            q = ctx.db
+              .query("issues")
+              .withIndex("by_project_status_updated", (q) =>
+                q
+                  .eq("projectId", ctx.project._id)
+                  .eq("status", state.id)
+                  .gte("updatedAt", doneThreshold),
+              )
+              .filter(notDeleted);
+          } else {
+            // Active Columns: Standard status query
+            q = ctx.db
+              .query("issues")
+              .withIndex("by_project_status_updated", (q) =>
+                q.eq("projectId", ctx.project._id).eq("status", state.id),
+              )
+              .filter(notDeleted);
+          }
         }
 
         issuesByColumn[state.id] = await q.take(DEFAULT_PAGE_SIZE);
