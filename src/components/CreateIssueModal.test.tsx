@@ -20,7 +20,7 @@ vi.mock("@/lib/toast", () => ({
 
 // Mock array utilities
 vi.mock("@/lib/array-utils", () => ({
-  toggleInArray: vi.fn((arr: any[], item: any) => {
+  toggleInArray: vi.fn((arr: unknown[], item: unknown) => {
     if (arr.includes(item)) {
       return arr.filter((i) => i !== item);
     }

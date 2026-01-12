@@ -84,7 +84,13 @@ const { mockUseQuery } = vi.hoisted(() => ({
 
 // Mock child components
 vi.mock("./KanbanBoard", () => ({
-  KanbanBoard: ({ projectId, sprintId }: any) => (
+  KanbanBoard: ({
+    projectId,
+    sprintId,
+  }: {
+    projectId: Id<"projects">;
+    sprintId?: Id<"sprints">;
+  }) => (
     <div data-testid="kanban-board">
       KanbanBoard: {projectId} {sprintId && `Sprint: ${sprintId}`}
     </div>
@@ -92,13 +98,13 @@ vi.mock("./KanbanBoard", () => ({
 }));
 
 vi.mock("./SprintManager", () => ({
-  SprintManager: ({ projectId }: any) => (
+  SprintManager: ({ projectId }: { projectId: Id<"projects"> }) => (
     <div data-testid="sprint-manager">SprintManager: {projectId}</div>
   ),
 }));
 
 vi.mock("./AnalyticsDashboard", () => ({
-  AnalyticsDashboard: ({ projectId }: any) => (
+  AnalyticsDashboard: ({ projectId }: { projectId: Id<"projects"> }) => (
     <div data-testid="analytics-dashboard">AnalyticsDashboard: {projectId}</div>
   ),
 }));

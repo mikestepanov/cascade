@@ -605,20 +605,41 @@ export const listByProjectSmart = projectQuery({
 
     await Promise.all(
       workflowStates.map(async (state: { id: string; category: string }) => {
-        let q = ctx.db
-          .query("issues")
-          .withIndex("by_project_status_updated", (q) =>
-            q.eq("projectId", ctx.project._id).eq("status", state.id),
-          )
-          .filter(notDeleted);
+        const q = (() => {
+          if (args.sprintId) {
+            let query = ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
+              q
+                .eq("projectId", ctx.project._id)
+                .eq("sprintId", args.sprintId as Id<"sprints">)
+                .eq("status", state.id),
+            );
 
-        if (args.sprintId) {
-          q = q.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
-        }
+            if (state.category === "done") {
+              query = query.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
+            }
 
-        if (state.category === "done") {
-          q = q.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
-        }
+            return query.filter(notDeleted);
+          }
+
+          if (state.category === "done") {
+            return ctx.db
+              .query("issues")
+              .withIndex("by_project_status_updated", (q) =>
+                q
+                  .eq("projectId", ctx.project._id)
+                  .eq("status", state.id)
+                  .gte("updatedAt", doneThreshold),
+              )
+              .filter(notDeleted);
+          }
+
+          return ctx.db
+            .query("issues")
+            .withIndex("by_project_status_updated", (q) =>
+              q.eq("projectId", ctx.project._id).eq("status", state.id),
+            )
+            .filter(notDeleted);
+        })();
 
         issuesByColumn[state.id] = await q.take(DEFAULT_PAGE_SIZE);
       }),

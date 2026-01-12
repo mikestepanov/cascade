@@ -132,6 +132,16 @@ export async function checkRateLimit(
 /**
  * Create a standard API error response
  */
+// Standard security headers for all API responses
+const SECURITY_HEADERS = {
+  "Content-Type": "application/json",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none';",
+  "Referrer-Policy": "no-referrer",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+};
+
 export function createErrorResponse(
   statusCode: number,
   message: string,
@@ -147,9 +157,7 @@ export function createErrorResponse(
     }),
     {
       status: statusCode,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: SECURITY_HEADERS,
     },
   );
 }
@@ -160,8 +168,6 @@ export function createErrorResponse(
 export function createSuccessResponse(data: unknown, statusCode = 200): Response {
   return new Response(JSON.stringify(data), {
     status: statusCode,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: SECURITY_HEADERS,
   });
 }

@@ -12,7 +12,15 @@ vi.mock("@/hooks/useCompanyContext", () => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to, className }: any) => (
+  Link: ({
+    children,
+    to,
+    className,
+  }: {
+    children: React.ReactNode;
+    to: string;
+    className?: string;
+  }) => (
     <a href={to} className={className} data-testid="project-link">
       {children}
     </a>
@@ -25,7 +33,7 @@ const mockLoadMore = vi.fn();
 // Mock usePaginatedQuery with different return values
 const mockUsePaginatedQuery = vi.fn();
 vi.mock("convex/react", () => ({
-  usePaginatedQuery: (...args: any[]) => mockUsePaginatedQuery(...args),
+  usePaginatedQuery: (...args: unknown[]) => mockUsePaginatedQuery(...args),
 }));
 
 vi.mock("@convex/_generated/api", () => ({
@@ -37,7 +45,7 @@ vi.mock("@convex/_generated/api", () => ({
 }));
 
 vi.mock("./CreateProjectFromTemplate", () => ({
-  CreateProjectFromTemplate: ({ open }: any) =>
+  CreateProjectFromTemplate: ({ open }: { open: boolean }) =>
     open ? <div data-testid="create-project-modal">Create Project Modal</div> : null,
 }));
 
