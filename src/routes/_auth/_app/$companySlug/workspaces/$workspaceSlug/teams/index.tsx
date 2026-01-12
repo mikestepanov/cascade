@@ -10,7 +10,9 @@ import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
-export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/")({
+export const Route = createFileRoute(
+  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/",
+)({
   component: TeamsList,
 });
 
@@ -41,7 +43,7 @@ function TeamsList() {
   return (
     <Flex direction="column" gap="lg">
       {/* Header */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="between" align="center">
         <div>
           <Typography variant="h2">Teams</Typography>
           <Typography variant="p" color="secondary">
@@ -54,13 +56,14 @@ function TeamsList() {
       {/* Teams Grid */}
       {teams.length === 0 ? (
         <EmptyState
+          icon="👥"
           title="No teams yet"
           description="Create your first team to start organizing work"
           action={<Button variant="primary">+ Create Team</Button>}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team) => (
+          {teams.map((team: any) => (
             <Link
               key={team._id}
               to={ROUTE_PATTERNS.workspaces.teams.detail}

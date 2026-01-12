@@ -360,7 +360,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Key Points
           </h4>
           <ul className="space-y-1">
-            {summary.keyPoints.map((point) => (
+            {summary.keyPoints.map((point: string) => (
               <li
                 key={point}
                 className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"
@@ -380,7 +380,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Action Items
           </h4>
           <ul className="space-y-2">
-            {summary.actionItems.map((item, index) => (
+            {summary.actionItems.map((item: any, index: number) => (
               <li
                 key={`action-${index}-${item.description.slice(0, 20)}`}
                 className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"
@@ -413,7 +413,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Decisions Made
           </h4>
           <ul className="space-y-1">
-            {summary.decisions.map((decision) => (
+            {summary.decisions.map((decision: string) => (
               <li
                 key={decision}
                 className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"

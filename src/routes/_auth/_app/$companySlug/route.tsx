@@ -77,7 +77,7 @@ function CompanyLayout() {
   }
 
   // Check user has access to this company
-  const userCompany = userCompanies.find((c) => c._id === company._id);
+  const userCompany = userCompanies.find((c: any) => c._id === company._id);
 
   if (!userCompany) {
     return (

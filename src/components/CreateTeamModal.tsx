@@ -120,7 +120,7 @@ export function CreateTeamModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={isSubmitting}>
+            <Button type="submit" variant="primary" isLoading={isSubmitting}>
               Create Team
             </Button>
           </DialogFooter>

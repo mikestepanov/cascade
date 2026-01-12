@@ -453,7 +453,7 @@ export function TimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.page?.map((project) => (
+                {projects?.page?.map((project: any) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>
@@ -482,7 +482,7 @@ export function TimeEntryModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No issue</SelectItem>
-                  {projectIssues.map((issue) => (
+                  {projectIssues.map((issue: any) => (
                     <SelectItem key={issue._id} value={issue._id}>
                       {issue.key} - {issue.title}
                     </SelectItem>

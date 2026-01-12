@@ -27,7 +27,7 @@ describe("CustomFieldValues - Component Behavior", () => {
   // Helper to setup useQuery mocks that persist across re-renders
   const setupQueries = (customFieldsData: unknown, fieldValuesData: unknown) => {
     let callCount = 0;
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       // First call is customFields, second is fieldValues
       // Pattern repeats for re-renders
       return callCount++ % 2 === 0 ? customFieldsData : fieldValuesData;
@@ -40,7 +40,7 @@ describe("CustomFieldValues - Component Behavior", () => {
     // Setup mutations to return in sequence for the 2 useMutation calls
     // Component creates: setValue, removeValue
     let mutationCallCount = 0;
-    (useMutation as vi.Mock).mockImplementation(() => {
+    (useMutation as any).mockImplementation(() => {
       const mocks = [mockSetValue, mockRemoveValue];
       return mocks[mutationCallCount++ % 2];
     });

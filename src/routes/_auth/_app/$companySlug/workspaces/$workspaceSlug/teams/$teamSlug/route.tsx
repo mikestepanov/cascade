@@ -14,16 +14,16 @@ export const Route = createFileRoute(
 });
 
 function TeamLayout() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const { workspaceSlug, teamSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: workspaceSlug,
   });
 
   const team = useQuery(api.teams.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: teamSlug,
   });
 
@@ -49,7 +49,7 @@ function TeamLayout() {
       <div className="mb-6 text-sm">
         <Link
           to={ROUTE_PATTERNS.workspaces.list}
-          params={{ companySlug: company.slug }}
+          params={{ companySlug: companySlug }}
           className="text-blue-600 hover:underline"
         >
           Workspaces
@@ -57,7 +57,7 @@ function TeamLayout() {
         <span className="mx-2">/</span>
         <Link
           to={ROUTE_PATTERNS.workspaces.detail}
-          params={{ companySlug: company.slug, workspaceSlug }}
+          params={{ companySlug: companySlug, workspaceSlug }}
           className="text-blue-600 hover:underline"
         >
           {workspace.name}
@@ -84,21 +84,21 @@ function TeamLayout() {
         <nav className="flex gap-6">
           <Link
             to={ROUTE_PATTERNS.workspaces.teams.detail}
-            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
+            params={{ companySlug: companySlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
           >
             Projects
           </Link>
           <Link
             to={ROUTE_PATTERNS.workspaces.teams.calendar}
-            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
+            params={{ companySlug: companySlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Calendar
           </Link>
           <Link
             to={ROUTE_PATTERNS.workspaces.teams.settings}
-            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
+            params={{ companySlug: companySlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Settings

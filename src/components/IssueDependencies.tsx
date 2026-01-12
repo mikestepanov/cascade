@@ -120,7 +120,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Dependencies
           </h4>
           <div className="space-y-2">
-            {links.outgoing.map((link) => (
+            {links.outgoing.map((link: any) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
@@ -131,13 +131,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Typography variant="span" className="text-sm">
+                      <Typography as="span" className="text-sm">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
-                      <Typography variant="span" color="tertiary" className="text-sm font-mono">
+                      <Typography as="span" color="tertiary" className="text-sm font-mono">
                         {link.issue.key}
                       </Typography>
-                      <Typography variant="span" className="text-sm truncate">
+                      <Typography as="span" className="text-sm truncate">
                         {link.issue.title}
                       </Typography>
                     </div>
@@ -164,7 +164,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Referenced By
           </h4>
           <div className="space-y-2">
-            {links.incoming.map((link) => (
+            {links.incoming.map((link: any) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
@@ -175,13 +175,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Typography variant="span" className="text-sm">
+                      <Typography as="span" className="text-sm">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
-                      <Typography variant="span" color="tertiary" className="text-sm font-mono">
+                      <Typography as="span" color="tertiary" className="text-sm font-mono">
                         {link.issue.key}
                       </Typography>
-                      <Typography variant="span" className="text-sm truncate">
+                      <Typography as="span" className="text-sm truncate">
                         {link.issue.title}
                       </Typography>
                     </div>
@@ -251,7 +251,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
               <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
                 {searchResults.page
                   .filter((issue) => issue._id !== issueId)
-                  .map((issue) => (
+                  .map((issue: any) => (
                     <button
                       type="button"
                       key={issue._id}
@@ -265,13 +265,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       )}
                     >
                       <div className="flex items-center gap-2">
-                        <Typography variant="span" className="text-sm">
+                        <Typography as="span" className="text-sm">
                           {getTypeIcon(issue.type)}
                         </Typography>
-                        <Typography variant="span" color="tertiary" className="text-sm font-mono">
+                        <Typography as="span" color="tertiary" className="text-sm font-mono">
                           {issue.key}
                         </Typography>
-                        <Typography variant="span" className="text-sm truncate">
+                        <Typography as="span" className="text-sm truncate">
                           {issue.title}
                         </Typography>
                       </div>

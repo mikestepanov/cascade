@@ -8,7 +8,7 @@ import { useState } from "react";
 export function useEntityForm<T extends Record<string, unknown>>(defaultValues: T) {
   const [formData, setFormData] = useState<T>(defaultValues);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<Id<string> | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const updateField = <K extends keyof T>(field: K, value: T[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -20,7 +20,7 @@ export function useEntityForm<T extends Record<string, unknown>>(defaultValues: 
     setEditingId(null);
   };
 
-  const loadForEdit = (item: T & { _id: Id<string> }) => {
+  const loadForEdit = (item: T & { _id: string }) => {
     const { _id, ...data } = item;
     setFormData(data as T);
     setEditingId(_id);

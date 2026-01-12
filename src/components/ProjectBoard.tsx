@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -251,7 +251,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
     );
   }
 
-  const activeSprint = sprints?.find((sprint) => sprint.status === "active");
+  const activeSprint = sprints?.find((sprint: Doc<"sprints">) => sprint.status === "active");
 
   return (
     <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
@@ -388,7 +388,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="active">Active Sprint</SelectItem>
-                {sprints?.map((sprint) => (
+                {sprints?.map((sprint: Doc<"sprints">) => (
                   <SelectItem key={sprint._id} value={sprint._id}>
                     {sprint.name} ({sprint.status})
                   </SelectItem>

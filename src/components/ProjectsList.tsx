@@ -47,7 +47,7 @@ export function ProjectsList() {
   return (
     <Flex direction="column" gap="lg">
       {/* Header */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="between" align="center">
         <div>
           <Typography variant="h2">Projects</Typography>
           <Typography variant="p" color="secondary">
@@ -62,6 +62,7 @@ export function ProjectsList() {
       {/* Projects Grid */}
       {projects.length === 0 ? (
         <EmptyState
+          icon="📁"
           title="No projects yet"
           description="Create your first project to organize work"
           action={
@@ -80,7 +81,7 @@ export function ProjectsList() {
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">
-                  <Flex justify="space-between" align="start">
+                  <Flex justify="between" align="start">
                     <Typography variant="h3">{project.name}</Typography>
                     <Typography variant="inlineCode">{project.key}</Typography>
                   </Flex>

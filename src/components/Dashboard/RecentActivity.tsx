@@ -53,7 +53,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
           <EmptyState icon="📊" title="No activity" description="No recent activity to show" />
         ) : (
           <Flex direction="column" gap="md" className="max-h-[400px] overflow-y-auto">
-            {activities.map((activity, activityIndex) => (
+            {activities.map((activity: any, activityIndex: number) => (
               <div
                 key={activity._id}
                 className="relative animate-slide-up"

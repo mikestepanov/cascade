@@ -12,12 +12,12 @@ export const Route = createFileRoute(
 });
 
 function TeamHome() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const { workspaceSlug, teamSlug } = Route.useParams();
   const navigate = useNavigate();
 
   const team = useQuery(api.teams.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: teamSlug,
   });
 
@@ -26,11 +26,11 @@ function TeamHome() {
     if (team) {
       navigate({
         to: ROUTE_PATTERNS.workspaces.teams.projects.list,
-        params: { companySlug: company.slug, workspaceSlug, teamSlug },
+        params: { companySlug, workspaceSlug, teamSlug },
         replace: true,
       });
     }
-  }, [team, company.slug, workspaceSlug, teamSlug, navigate]);
+  }, [team, companySlug, workspaceSlug, teamSlug, navigate]);
 
   return null;
 }

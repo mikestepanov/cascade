@@ -31,6 +31,13 @@ const typographyVariants = cva("text-ui-text-primary dark:text-ui-text-primary-d
       info: "text-status-info dark:text-status-info-text-dark",
       accent: "text-accent-600 dark:text-accent-400",
     },
+    size: {
+      xs: "text-xs",
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg",
+      xl: "text-xl",
+    },
   },
   defaultVariants: {
     variant: "p",
@@ -38,15 +45,20 @@ const typographyVariants = cva("text-ui-text-primary dark:text-ui-text-primary-d
 });
 
 export interface TypographyProps
-  extends React.HTMLAttributes<HTMLElement>,
+  extends Omit<React.HTMLAttributes<HTMLElement>, "color">,
     VariantProps<typeof typographyVariants> {
   as?: React.ElementType;
 }
 
-export function Typography({ className, variant, color, as, ...props }: TypographyProps) {
+export function Typography({ className, variant, color, size, as, ...props }: TypographyProps) {
   const Component = as || mapVariantToTag(variant);
 
-  return <Component className={cn(typographyVariants({ variant, color, className }))} {...props} />;
+  return (
+    <Component
+      className={cn(typographyVariants({ variant, color, size, className }))}
+      {...props}
+    />
+  );
 }
 
 function mapVariantToTag(variant: TypographyProps["variant"]): React.ElementType {

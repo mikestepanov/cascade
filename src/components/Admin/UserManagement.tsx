@@ -352,7 +352,7 @@ export function UserManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {invites.map((invite) => (
+                    {invites.map((invite: any) => (
                       <tr key={invite._id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
                           {invite.email}
@@ -472,7 +472,7 @@ export function UserManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {users.map((user) => (
+                    {users.map((user: any) => (
                       <UserRow key={user._id} user={user} />
                     ))}
                   </tbody>

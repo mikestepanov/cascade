@@ -50,14 +50,14 @@ describe("AutomationRulesManager - Component Behavior", () => {
     // This is a limitation of mocking at the hook level - we can't distinguish
     // between create, update, and remove mutations since they're all called via useMutation()
     // Return mockUpdateRule for most cases since it's used most frequently
-    (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
+    (useMutation as any).mockReturnValue(mockUpdateRule);
 
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
   });
 
   describe("Empty State", () => {
     it("should show empty state message when no rules exist", () => {
-      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([]);
+      (useQuery as any).mockReturnValue([]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 

@@ -73,7 +73,7 @@ export function CreateEventModal({
       isRequired: false,
     },
     validators: { onChange: createEventSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: z.infer<typeof createEventSchema> }) => {
       try {
         // Parse start and end times
         const [startHour, startMinute] = value.startTime.split(":").map(Number);

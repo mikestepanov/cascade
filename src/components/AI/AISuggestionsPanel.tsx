@@ -72,7 +72,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
         <ToggleGroup
           type="single"
           value={selectedType ?? "all"}
-          onValueChange={(value) =>
+          onValueChange={(value: string) =>
             setSelectedType(value === "all" ? undefined : (value as SuggestionType))
           }
           className="mt-3 flex-wrap"

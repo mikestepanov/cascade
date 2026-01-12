@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input, Select, Textarea } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Typography } from "./ui/Typography";
+import { cn } from "@/lib/utils";
 
 interface CreateProjectFromTemplateProps {
   open: boolean;

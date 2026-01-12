@@ -139,7 +139,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
             />
           ) : (
             <Flex direction="column" gap="sm">
-              {labels.map((label) => (
+              {labels.map((label: any) => (
                 <Flex
                   key={label._id}
                   justify="between"

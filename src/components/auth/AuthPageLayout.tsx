@@ -51,13 +51,13 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
           {children}
           <div className="mt-6 text-center text-xs text-ui-text-tertiary">
             By continuing, you acknowledge that you understand and agree to the{" "}
-            <Link to={ROUTE_PATTERNS.terms} className="underline hover:text-ui-text-secondary">
+            <a href="/terms" className="underline hover:text-ui-text-secondary">
               Terms & Conditions
-            </Link>{" "}
+            </a>{" "}
             and{" "}
-            <Link to={ROUTE_PATTERNS.privacy} className="underline hover:text-ui-text-secondary">
+            <a href="/privacy" className="underline hover:text-ui-text-secondary">
               Privacy Policy
-            </Link>
+            </a>
           </div>
         </div>
       </div>

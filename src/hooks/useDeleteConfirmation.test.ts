@@ -11,7 +11,7 @@ vi.mock("../lib/toast", () => ({
 import { showError, showSuccess } from "../lib/toast";
 
 // Create a mock ID type that matches Convex Id structure
-type MockId = string & { __tableName: "testTable" };
+type MockId = string & { __tableName: "issues" };
 const createMockId = (value: string): MockId => value as MockId;
 
 describe("useDeleteConfirmation", () => {
@@ -21,13 +21,13 @@ describe("useDeleteConfirmation", () => {
 
   describe("Initial State", () => {
     it("should start with deleteId as null", () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       expect(result.current.deleteId).toBeNull();
     });
 
     it("should start with isDeleting as false", () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       expect(result.current.isDeleting).toBe(false);
     });
@@ -35,7 +35,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("confirmDelete", () => {
     it("should set deleteId when called", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
 
@@ -49,7 +49,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should update deleteId when called multiple times", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId1 = createMockId("test-id-1");
       const mockId2 = createMockId("test-id-2");
@@ -72,7 +72,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("cancelDelete", () => {
     it("should set deleteId to null", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
 
@@ -92,7 +92,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should work when deleteId is already null", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       act(() => {
         result.current.cancelDelete();
@@ -106,7 +106,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("executeDelete - Success", () => {
     it("should call deleteFn with the deleteId", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
@@ -128,7 +128,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should show success toast on successful delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
@@ -151,7 +151,7 @@ describe("useDeleteConfirmation", () => {
 
     it("should show custom success message when provided", async () => {
       const { result } = renderHook(() =>
-        useDeleteConfirmation<"testTable">({
+        useDeleteConfirmation<"issues">({
           successMessage: "Item removed!",
         }),
       );
@@ -178,7 +178,7 @@ describe("useDeleteConfirmation", () => {
     it("should call onSuccess callback on successful delete", async () => {
       const onSuccess = vi.fn();
       const { result } = renderHook(() =>
-        useDeleteConfirmation<"testTable">({
+        useDeleteConfirmation<"issues">({
           onSuccess,
         }),
       );
@@ -203,7 +203,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should reset deleteId to null after successful delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
@@ -225,7 +225,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should set isDeleting to false after successful delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
@@ -249,7 +249,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("executeDelete - Error", () => {
     it("should show error toast on failed delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const error = new Error("Delete failed");
@@ -273,7 +273,7 @@ describe("useDeleteConfirmation", () => {
 
     it("should show custom error message when provided", async () => {
       const { result } = renderHook(() =>
-        useDeleteConfirmation<"testTable">({
+        useDeleteConfirmation<"issues">({
           errorMessage: "Could not remove item",
         }),
       );
@@ -301,7 +301,7 @@ describe("useDeleteConfirmation", () => {
     it("should call onError callback on failed delete", async () => {
       const onError = vi.fn();
       const { result } = renderHook(() =>
-        useDeleteConfirmation<"testTable">({
+        useDeleteConfirmation<"issues">({
           onError,
         }),
       );
@@ -327,7 +327,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should NOT reset deleteId on failed delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockRejectedValue(new Error("Delete failed"));
@@ -350,7 +350,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should set isDeleting to false after failed delete", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockRejectedValue(new Error("Delete failed"));
@@ -374,7 +374,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("executeDelete - No deleteId", () => {
     it("should not call deleteFn when deleteId is null", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
@@ -388,7 +388,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should not show any toast when deleteId is null", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const deleteFn = vi.fn().mockResolvedValue(undefined);
 
@@ -405,7 +405,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("isDeleting State", () => {
     it("should set isDeleting to false after delete completes", async () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       const mockId = createMockId("test-id-123");
       const deleteFn = vi.fn().mockResolvedValue(undefined);
@@ -433,7 +433,7 @@ describe("useDeleteConfirmation", () => {
 
   describe("Return Value Shape", () => {
     it("should return object with expected properties", () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       expect(result.current).toHaveProperty("deleteId");
       expect(result.current).toHaveProperty("isDeleting");
@@ -443,7 +443,7 @@ describe("useDeleteConfirmation", () => {
     });
 
     it("should return functions for confirmDelete, cancelDelete, executeDelete", () => {
-      const { result } = renderHook(() => useDeleteConfirmation<"testTable">());
+      const { result } = renderHook(() => useDeleteConfirmation<"issues">());
 
       expect(typeof result.current.confirmDelete).toBe("function");
       expect(typeof result.current.cancelDelete).toBe("function");

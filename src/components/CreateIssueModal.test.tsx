@@ -63,13 +63,13 @@ describe("CreateIssueModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as vi.Mock).mockReturnValue(mockCreateIssue);
-    (useAction as vi.Mock).mockReturnValue(vi.fn());
+    (useMutation as any).mockReturnValue(mockCreateIssue);
+    (useAction as any).mockReturnValue(vi.fn());
     // Mock useQuery to return values in order:
     // 1st call: api.projects.getProject -> mockProject
     // 2nd call: api.templates.list -> mockTemplates
     // 3rd call: api.labels.list -> mockLabels
-    (useQuery as vi.Mock)
+    (useQuery as any)
       .mockReturnValueOnce(mockProject)
       .mockReturnValueOnce(mockTemplates)
       .mockReturnValueOnce(mockLabels);
@@ -105,7 +105,7 @@ describe("CreateIssueModal", () => {
 
     // Use mockImplementation to handle re-renders from user interactions
     let callCount = 0;
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       callCount++;
       const callIndex = (callCount - 1) % 3; // Cycle through 3 queries
       return [mockProject, mockTemplates, mockLabels][callIndex];

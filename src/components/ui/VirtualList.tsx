@@ -6,7 +6,9 @@
  */
 
 import { forwardRef, useCallback, useEffect, useRef } from "react";
-import { FixedSizeList, type ListChildComponentProps } from "react-window";
+import * as ReactWindow from "react-window";
+const FixedSizeList = (ReactWindow as any).FixedSizeList;
+type ListChildComponentProps<T = any> = any;
 import { cn } from "@/lib/utils";
 
 export interface VirtualListProps<T> {
@@ -71,7 +73,7 @@ function VirtualListInner<T>(
     onEndReached,
     endReachedThreshold = 100,
   }: VirtualListProps<T>,
-  ref: React.ForwardedRef<FixedSizeList<ItemData<T>>>,
+  ref: React.ForwardedRef<ReactWindow.FixedSizeList<ItemData<T>>>,
 ) {
   // Track if onEndReached has been called to prevent multiple calls
   const endReachedCalledRef = useRef(false);
@@ -135,5 +137,5 @@ function VirtualListInner<T>(
 
 // Export with proper typing for forwardRef with generics
 export const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: React.ForwardedRef<FixedSizeList<ItemData<T>>> },
+  props: VirtualListProps<T> & { ref?: React.ForwardedRef<ReactWindow.FixedSizeList<ItemData<T>>> },
 ) => React.ReactElement;

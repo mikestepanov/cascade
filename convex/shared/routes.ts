@@ -16,13 +16,13 @@ export const ROUTE_PATTERNS = {
   dashboard: "/$companySlug/dashboard" as const,
 
   documents: {
-    list: "/$companySlug/documents/" as const,
+    list: "/$companySlug/documents" as const,
     detail: "/$companySlug/documents/$id" as const,
     templates: "/$companySlug/documents/templates" as const,
   },
 
   workspaces: {
-    list: "/$companySlug/workspaces/" as const,
+    list: "/$companySlug/workspaces" as const,
     detail: "/$companySlug/workspaces/$workspaceSlug" as const,
     layout: "/$companySlug/workspaces/$workspaceSlug" as const,
     board: "/$companySlug/workspaces/$workspaceSlug/board" as const,
@@ -30,7 +30,7 @@ export const ROUTE_PATTERNS = {
     settings: "/$companySlug/workspaces/$workspaceSlug/settings" as const,
 
     teams: {
-      list: "/$companySlug/workspaces/$workspaceSlug/teams/" as const,
+      list: "/$companySlug/workspaces/$workspaceSlug/teams" as const,
       detail: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug" as const,
       layout: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug" as const,
       board: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/board" as const,
@@ -40,7 +40,7 @@ export const ROUTE_PATTERNS = {
       settings: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/settings" as const,
 
       projects: {
-        list: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/" as const,
+        list: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects" as const,
         layout: "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key" as const,
         board:
           "/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/board" as const,
@@ -56,7 +56,7 @@ export const ROUTE_PATTERNS = {
   },
 
   projects: {
-    list: "/$companySlug/projects/" as const,
+    list: "/$companySlug/projects" as const,
     layout: "/$companySlug/projects/$key" as const,
     board: "/$companySlug/projects/$key/board" as const,
     calendar: "/$companySlug/projects/$key/calendar" as const,

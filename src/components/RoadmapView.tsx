@@ -2,7 +2,8 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FixedSizeList as List } from "react-window";
+import * as ReactWindow from "react-window";
+const List = (ReactWindow as any).FixedSizeList;
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getTypeIcon } from "@/lib/issue-utils";
@@ -39,19 +40,19 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const issues = useQuery(api.issues.listRoadmapIssues, { projectId, sprintId });
   const project = useQuery(api.projects.getProject, { id: projectId });
 
-  // Filter epics and regular issues
-  const epics = issues?.filter((issue) => issue.type === "epic") || [];
+  // Filter epics and regular issue: anys
+  const epics = issues?.filter((issue: any) => issue.type === "epic") || [];
   const filteredIssues = useMemo(() => {
     if (!issues) return [];
 
-    let filtered = issues.filter((issue) => issue.type !== "epic");
+    let filtered = issues.filter((issue: any) => issue.type !== "epic");
 
     if (filterEpic !== "all") {
-      filtered = filtered.filter((issue) => issue.epicId === filterEpic);
+      filtered = filtered.filter((issue: any) => issue.epicId === filterEpic);
     }
 
-    // Only show issues with due dates
-    filtered = filtered.filter((issue) => issue.dueDate);
+    // Only show issue: anys with due dates
+    filtered = filtered.filter((issue: any) => issue.dueDate);
 
     return filtered;
   }, [issues, filterEpic]);
@@ -86,7 +87,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<List>(null);
+  const listRef = useRef<any>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
     onSelect: (issue) => setSelectedIssue(issue._id),
@@ -228,13 +229,15 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                   <Skeleton className="h-3 w-32" />
                 </div>
                 <div className="flex-1 relative h-8">
-                  <Skeleton
-                    className={`absolute h-6 rounded-full opacity-50`}
+                  <div
+                    className="absolute h-6"
                     style={{
                       left: `${(i * 13) % 70}%`, // Deterministic position
                       width: `${10 + ((i * 3) % 10)}%`,
                     }}
-                  />
+                  >
+                    <Skeleton className="h-full w-full rounded-full opacity-50" />
+                  </div>
                 </div>
               </div>
             ))}

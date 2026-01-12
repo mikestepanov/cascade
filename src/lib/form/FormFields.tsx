@@ -1,4 +1,4 @@
-import type { FieldApi } from "@tanstack/react-form";
+// import type { FieldApi } from "@tanstack/react-form";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import type { CheckboxProps } from "@/components/ui/form/Checkbox";
 import type { InputProps } from "@/components/ui/form/Input";
@@ -9,7 +9,7 @@ import type { TextareaProps } from "@/components/ui/form/Textarea";
  * Get the first error message from field state
  */
 function getFieldError(
-  field: FieldApi<unknown, string, unknown, unknown, unknown>,
+  field: any,
 ): string | undefined {
   const errors = field.state.meta.errors;
   if (!errors || errors.length === 0) return undefined;
@@ -27,7 +27,7 @@ function getFieldError(
  * Props for form field wrappers
  */
 interface BaseFieldProps<TData, TName extends string> {
-  field: FieldApi<TData, TName, unknown, unknown, unknown>;
+  field: any;
   label?: string;
   helperText?: string;
 }

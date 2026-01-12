@@ -108,7 +108,7 @@ export function VersionHistory({
             </div>
           ) : (
             <div className="space-y-2">
-              {versions.map((version, index) => {
+              {versions.map((version: any, index: number) => {
                 const isLatest = index === 0;
                 const isSelected = selectedVersionId === version._id;
 

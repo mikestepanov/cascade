@@ -3,13 +3,20 @@ import { Flex } from "./Flex";
 import { Typography } from "./Typography";
 
 interface LoadingSpinnerProps {
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   message?: string;
+  color?: string;
 }
 
-export function LoadingSpinner({ size = "md", className = "", message }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = "md",
+  className = "",
+  message,
+  color,
+}: LoadingSpinnerProps) {
   const sizeClasses = {
+    xs: "h-3 w-3 border",
     sm: "h-4 w-4 border-2",
     md: "h-8 w-8 border-2",
     lg: "h-12 w-12 border-3",

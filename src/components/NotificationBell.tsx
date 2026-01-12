@@ -148,7 +148,7 @@ export function NotificationBell() {
               </div>
             ) : (
               <div>
-                {notifications.map((notification) => (
+                {notifications.map((notification: any) => (
                   <button
                     key={notification._id}
                     type="button"

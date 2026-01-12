@@ -85,7 +85,7 @@ export function TimeEntriesList({
 
   // Group entries by date
   const groupedEntries: Record<string, typeof entries> = {};
-  entries.forEach((entry) => {
+  entries.forEach((entry: any) => {
     const dateKey = formatDate(entry.date);
     if (!groupedEntries[dateKey]) {
       groupedEntries[dateKey] = [];
@@ -116,8 +116,8 @@ export function TimeEntriesList({
       </Flex>
 
       {Object.entries(groupedEntries).map(([date, dateEntries]) => {
-        const totalDuration = dateEntries.reduce((sum, e) => sum + e.duration, 0);
-        const totalCost = dateEntries.reduce((sum, e) => sum + (e.totalCost || 0), 0);
+        const totalDuration = dateEntries.reduce((sum: number, e: any) => sum + e.duration, 0);
+        const totalCost = dateEntries.reduce((sum: number, e: any) => sum + (e.totalCost || 0), 0);
 
         return (
           <Flex key={date} direction="column" gap="sm">
@@ -142,7 +142,7 @@ export function TimeEntriesList({
 
             {/* Entries for this date */}
             <Flex direction="column" gap="sm">
-              {dateEntries.map((entry) => (
+              {dateEntries.map((entry: any) => (
                 <div
                   key={entry._id}
                   className="flex items-start gap-4 p-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark transition-colors"

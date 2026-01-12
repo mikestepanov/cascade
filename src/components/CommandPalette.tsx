@@ -42,7 +42,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
   // Group commands
   const groupedCommands = commands.reduce(
-    (acc, cmd) => {
+    (acc: Record<string, CommandAction[]>, cmd: CommandAction) => {
       const group = cmd.group || "Other";
       if (!acc[group]) acc[group] = [];
       acc[group].push(cmd);

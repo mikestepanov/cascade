@@ -21,9 +21,13 @@ interface Issue {
   key: string;
   status: string;
   priority: "lowest" | "low" | "medium" | "high" | "highest";
-  type: "task" | "bug" | "story" | "epic";
+  type: "task" | "bug" | "story" | "epic" | "subtask";
   order: number;
-  assignee?: { name: string } | null;
+  assignee?: {
+    _id: Id<"users">;
+    name: string;
+    image?: string;
+  } | null;
   labels: LabelInfo[];
 }
 
@@ -37,7 +41,7 @@ interface KanbanColumnProps {
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, stateId: string) => void;
   onDragStart: (e: React.DragEvent, issueId: Id<"issues">) => void;
-  onCreateIssue: (stateId: string) => void;
+  onCreateIssue?: (stateId: string) => void;
   onIssueClick: (issueId: Id<"issues">) => void;
   onToggleSelect: (issueId: Id<"issues">) => void;
   focusedIssueId?: Id<"issues"> | null;
@@ -81,7 +85,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   // Memoize handlers that use state.id to preserve memo() benefits
   const handleDrop = useCallback((e: React.DragEvent) => onDrop(e, state.id), [onDrop, state.id]);
 
-  const handleCreateIssue = useCallback(() => onCreateIssue(state.id), [onCreateIssue, state.id]);
+  const handleCreateIssue = useCallback(() => onCreateIssue?.(state.id), [onCreateIssue, state.id]);
 
   const handleLoadMore = useCallback(() => onLoadMore?.(state.id), [onLoadMore, state.id]);
 

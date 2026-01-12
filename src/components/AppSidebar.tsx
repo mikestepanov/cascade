@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { CreateTeamModal } from "@/components/CreateTeamModal";
 import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
@@ -233,7 +233,7 @@ export function AppSidebar() {
                 icon={Copy}
               />
               <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
-              {(documents?.documents ?? []).slice(0, 10).map((doc) => (
+              {(documents?.documents ?? []).slice(0, 10).map((doc: any) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTE_PATTERNS.documents.detail}
@@ -263,8 +263,8 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-projects"
             >
-              {workspaces?.map((workspace) => {
-                const workspaceTeams = teams?.filter((t) => t.workspaceId === workspace._id) || [];
+              {workspaces?.map((workspace: any) => {
+                const workspaceTeams = teams?.filter((t: any) => t.workspaceId === workspace._id) || [];
                 const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
 
                 return (
@@ -306,7 +306,7 @@ export function AppSidebar() {
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
-                      workspaceTeams.map((team) => (
+                      workspaceTeams.map((team: any) => (
                         <SidebarTeamItem
                           key={team._id}
                           team={team}
@@ -369,6 +369,7 @@ type NavItemProps<TTo extends string> = LinkProps<TTo> & {
   isActive: boolean;
   isCollapsed: boolean;
   "data-tour"?: string;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 function NavItem<TTo extends string>({
@@ -385,11 +386,11 @@ function NavItem<TTo extends string>({
 }: NavItemProps<TTo>) {
   const content = (
     <Link
-      to={to}
-      params={params}
-      search={search}
+      to={to as any}
+      params={params as any}
+      search={search as any}
       onClick={onClick}
-      {...props}
+      {...(props as any)}
       data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
@@ -426,7 +427,7 @@ type CollapsibleSectionProps<TTo extends string> = {
   isActive: boolean;
   isCollapsed: boolean;
   onAdd: () => void;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   children: React.ReactNode;
   "data-tour"?: string;
 } & (
@@ -454,7 +455,10 @@ function CollapsibleSection<TTo extends string>({
       <Tooltip content={label} side="right">
         {isLink ? (
           <Link
-            {...props}
+            {...(props as any)}
+            to={(props as any).to}
+            params={(props as any).params}
+            search={(props as any).search}
             data-tour={dataTour}
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
@@ -503,7 +507,7 @@ function CollapsibleSection<TTo extends string>({
         </Button>
         {isLink ? (
           <Link
-            {...props}
+            {...(props as any)}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
               isActive
@@ -549,6 +553,7 @@ type NavSubItemProps<TTo extends string> = LinkProps<TTo> & {
   label: string;
   isActive: boolean;
   icon?: React.ComponentType<{ className?: string }>;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 function NavSubItem<TTo extends string>({
@@ -562,10 +567,9 @@ function NavSubItem<TTo extends string>({
 }: NavSubItemProps<TTo>) {
   return (
     <Link
-      to={to}
-      params={params}
-      onClick={onClick}
-      {...props}
+      to={to as any}
+      params={params as any}
+      {...(props as any)}
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive

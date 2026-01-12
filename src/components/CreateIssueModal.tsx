@@ -80,7 +80,7 @@ export function CreateIssueModal({
       storyPoints: "",
     },
     validators: { onChange: createIssueSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: any }) => {
       try {
         await createIssue({
           projectId,
@@ -117,8 +117,8 @@ export function CreateIssueModal({
     // Apply default labels if they exist
     if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
       const labelIds = labels
-        .filter((label) => template.defaultLabels?.includes(label.name))
-        .map((label) => label._id);
+        .filter((label: any) => template.defaultLabels?.includes(label.name))
+        .map((label: any) => label._id);
       setSelectedLabels(labelIds);
     }
   }, [selectedTemplate, templates, labels, form]);
@@ -159,8 +159,8 @@ export function CreateIssueModal({
 
       if (suggestions.labels && suggestions.labels.length > 0 && labels) {
         const suggestedLabelIds = labels
-          .filter((label) => suggestions.labels.includes(label.name))
-          .map((label) => label._id);
+          .filter((label: any) => suggestions.labels.includes(label.name))
+          .map((label: any) => label._id);
         setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
       }
 
@@ -197,7 +197,7 @@ export function CreateIssueModal({
               onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
             >
               <option value="">Start from scratch</option>
-              {templates.map((template) => (
+              {templates.map((template: any) => (
                 <option key={template._id} value={template._id}>
                   {template.name} ({template.type})
                 </option>
@@ -288,7 +288,7 @@ export function CreateIssueModal({
             {(field) => (
               <FormSelect field={field} label="Assignee">
                 <option value="">Unassigned</option>
-                {project.members.map((member) => (
+                {project.members.map((member: any) => (
                   <option key={member._id} value={member._id}>
                     {member.name}
                   </option>

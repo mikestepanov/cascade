@@ -9,7 +9,7 @@ interface Issue {
   _id: Id<"issues">;
   key: string;
   title: string;
-  type: "task" | "bug" | "story" | "epic";
+  type: "task" | "bug" | "story" | "epic" | "subtask";
   priority: "lowest" | "low" | "medium" | "high" | "highest";
   assignee?: {
     _id: Id<"users">;
@@ -58,7 +58,7 @@ export const IssueCard = memo(function IssueCard({
     }
   };
 
-  const handleCheckboxClick = (e: React.MouseEvent) => {
+  const handleCheckboxClick = (e: React.SyntheticEvent) => {
     e.stopPropagation();
     if (onToggleSelect) {
       onToggleSelect(issue._id);
@@ -90,7 +90,7 @@ export const IssueCard = memo(function IssueCard({
               type="checkbox"
               aria-label={`Select issue ${issue.key}`}
               checked={isSelected}
-              onChange={handleCheckboxClick}
+              onChange={handleCheckboxClick as any}
               onClick={handleCheckboxClick}
               className="w-4 h-4 text-brand-600 border-ui-border-primary rounded focus:ring-brand-500 cursor-pointer"
             />
@@ -131,7 +131,7 @@ export const IssueCard = memo(function IssueCard({
           {issue.labels.slice(0, 3).map((label) => (
             <Typography
               key={label.name}
-              variant="caption"
+              variant="small"
               className="px-1.5 py-0.5 font-medium rounded-md text-white border-none"
               style={{ backgroundColor: label.color }}
             >
@@ -139,7 +139,7 @@ export const IssueCard = memo(function IssueCard({
             </Typography>
           ))}
           {issue.labels.length > 3 && (
-            <Typography variant="caption" color="secondary" className="px-1.5 py-0.5 border-none">
+            <Typography variant="small" color="secondary" className="px-1.5 py-0.5 border-none">
               +{issue.labels.length - 3}
             </Typography>
           )}

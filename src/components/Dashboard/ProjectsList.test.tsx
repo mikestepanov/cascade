@@ -19,7 +19,7 @@ vi.mock("@/hooks/useCompanyContext", () => ({
 
 // Mock navigation hook
 const mockWorkspaceNavigation = {
-  listRef: { current: null },
+  listRef: { current: null } as any,
   getItemProps: (index: number) => ({
     tabIndex: index === 0 ? 0 : -1,
     className: index === 0 ? "focused" : "",

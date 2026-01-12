@@ -262,7 +262,7 @@ export function HourComplianceDashboard() {
             />
           ) : (
             <div className="space-y-3">
-              {records.map((record) => (
+              {records.map((record: any) => (
                 <div
                   key={record._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"

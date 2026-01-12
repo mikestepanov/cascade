@@ -21,23 +21,14 @@
 import type {
   ExpressionOrValue,
   FilterBuilder,
-  GenericDocument,
-  GenericTableIndexes,
-  GenericTableSearchIndexes,
-  GenericTableVectorIndexes,
+  GenericTableInfo,
 } from "convex/server";
 import type { Id } from "../_generated/dataModel";
 
 // Loose type for dynamic table access
 
 // Loose type for dynamic table access
-type AnyTableInfo = {
-  document: GenericDocument;
-  fieldPaths: string;
-  indexes: GenericTableIndexes;
-  searchIndexes: GenericTableSearchIndexes;
-  vectorIndexes: GenericTableVectorIndexes;
-};
+type AnyTableInfo = GenericTableInfo;
 
 export interface SoftDeletable {
   isDeleted?: boolean;

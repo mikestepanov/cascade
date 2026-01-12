@@ -128,7 +128,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   let workflowStates: typeof project.workflowStates = [];
 
   if (isProjectMode && project) {
-    workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
+    workflowStates = project.workflowStates.sort((a: any, b: any) => a.order - b.order);
   } else if (isTeamMode && smartWorkflowStates) {
     workflowStates = smartWorkflowStates.map((s) => ({
       ...s,
@@ -174,7 +174,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onDragStart={handleDragStart}
-              onCreateIssue={isTeamMode || !canEdit ? undefined : handleCreateIssue}
+              onCreateIssue={isTeamMode || !canEdit ? undefined : (handleCreateIssue as any)}
               onIssueClick={setSelectedIssue}
               onToggleSelect={handleToggleSelect}
               hiddenCount={counts.hidden}
