@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import { useNavigate } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
@@ -43,7 +43,10 @@ export function Dashboard() {
 
   // Navigation helper for keyboard navigation callbacks
   const navigateToWorkspace = (projectKey: string) => {
-    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    navigate({
+      to: ROUTE_PATTERNS.projects.board,
+      params: { companySlug, key: projectKey },
+    });
   };
 
   // Keyboard navigation for issue list

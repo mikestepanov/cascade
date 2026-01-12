@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/issues/$key")({
@@ -38,7 +38,8 @@ function IssuePage() {
             The issue "{key}" does not exist or you don't have access to it.
           </Typography>
           <Link
-            to={ROUTES.dashboard(companySlug)}
+            to={ROUTE_PATTERNS.dashboard}
+            params={{ companySlug }}
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
           >
             Back to dashboard
@@ -52,7 +53,8 @@ function IssuePage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-4">
         <Link
-          to={ROUTES.projects.board(companySlug, projectKey)}
+          to={ROUTE_PATTERNS.projects.board}
+          params={{ companySlug, key: projectKey }}
           className="text-sm text-primary-600 hover:text-primary-700"
         >
           ← Back to {projectKey} board

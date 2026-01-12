@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key")({
@@ -45,11 +45,31 @@ function ProjectLayout() {
   const isAdmin = userRole === "admin" || project.ownerId === user?._id;
 
   const tabs = [
-    { name: "Board", href: ROUTES.projects.board(companySlug, key) },
-    { name: "Calendar", href: ROUTES.projects.calendar(companySlug, key) },
-    { name: "Timesheet", href: ROUTES.projects.timesheet(companySlug, key) },
+    {
+      name: "Board",
+      to: ROUTE_PATTERNS.projects.board,
+      params: { companySlug, key },
+    },
+    {
+      name: "Calendar",
+      to: ROUTE_PATTERNS.projects.calendar,
+      params: { companySlug, key },
+    },
+    {
+      name: "Timesheet",
+      to: ROUTE_PATTERNS.projects.timesheet,
+      params: { companySlug, key },
+    },
     // Only show Settings tab to admins
-    ...(isAdmin ? [{ name: "Settings", href: ROUTES.projects.settings(companySlug, key) }] : []),
+    ...(isAdmin
+      ? [
+          {
+            name: "Settings",
+            to: ROUTE_PATTERNS.projects.settings,
+            params: { companySlug, key },
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -60,7 +80,8 @@ function ProjectLayout() {
           {tabs.map((tab) => (
             <Link
               key={tab.name}
-              to={tab.href}
+              to={tab.to}
+              params={tab.params}
               className="border-b-2 py-3 px-1 text-sm font-medium transition-colors"
               activeProps={{
                 className:

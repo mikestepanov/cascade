@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
@@ -30,7 +30,10 @@ export function ProjectsList() {
 
   const handleProjectCreated = async (_projectId: string, projectKey: string) => {
     setIsCreateOpen(false);
-    await navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    await navigate({
+      to: ROUTE_PATTERNS.projects.board,
+      params: { companySlug, key: projectKey },
+    });
   };
 
   if (status === "LoadingFirstPage") {
@@ -70,7 +73,11 @@ export function ProjectsList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <Link key={project._id} to={ROUTES.projects.board(companySlug, project.key)}>
+            <Link
+              key={project._id}
+              to={ROUTE_PATTERNS.projects.board}
+              params={{ companySlug, key: project.key }}
+            >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">
                   <Flex justify="space-between" align="start">

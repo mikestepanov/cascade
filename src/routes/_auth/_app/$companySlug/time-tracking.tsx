@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { TimeTrackingPage } from "@/components/TimeTracking/TimeTrackingPage";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/time-tracking")({
   component: TimeTrackingPageRoute,
@@ -18,7 +18,10 @@ function TimeTrackingPageRoute() {
   // Redirect non-admins to dashboard
   useEffect(() => {
     if (isAdmin === false) {
-      navigate({ to: ROUTES.dashboard(companySlug) });
+      navigate({
+        to: ROUTE_PATTERNS.dashboard,
+        params: { companySlug },
+      });
     }
   }, [isAdmin, companySlug, navigate]);
 

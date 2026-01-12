@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/")({
@@ -63,7 +63,8 @@ function TeamsList() {
           {teams.map((team) => (
             <Link
               key={team._id}
-              to={ROUTES.workspaces.teams.detail(companySlug, workspaceSlug, team.slug)}
+              to={ROUTE_PATTERNS.workspaces.teams.detail}
+              params={{ companySlug, workspaceSlug, teamSlug: team.slug }}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">

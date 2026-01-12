@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
@@ -47,12 +47,17 @@ function TeamLayout() {
     <div className="container mx-auto p-6">
       {/* Breadcrumb */}
       <div className="mb-6 text-sm">
-        <Link to={ROUTES.workspaces.list(company.slug)} className="text-blue-600 hover:underline">
+        <Link
+          to={ROUTE_PATTERNS.workspaces.list}
+          params={{ companySlug: company.slug }}
+          className="text-blue-600 hover:underline"
+        >
           Workspaces
         </Link>
         <span className="mx-2">/</span>
         <Link
-          to={ROUTES.workspaces.detail(company.slug, workspaceSlug)}
+          to={ROUTE_PATTERNS.workspaces.detail}
+          params={{ companySlug: company.slug, workspaceSlug }}
           className="text-blue-600 hover:underline"
         >
           {workspace.name}
@@ -78,19 +83,22 @@ function TeamLayout() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-6">
           <Link
-            to={ROUTES.workspaces.teams.detail(company.slug, workspaceSlug, teamSlug)}
+            to={ROUTE_PATTERNS.workspaces.teams.detail}
+            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
           >
             Projects
           </Link>
           <Link
-            to={ROUTES.workspaces.teams.calendar(company.slug, workspaceSlug, teamSlug)}
+            to={ROUTE_PATTERNS.workspaces.teams.calendar}
+            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Calendar
           </Link>
           <Link
-            to={ROUTES.workspaces.teams.settings(company.slug, workspaceSlug, teamSlug)}
+            to={ROUTE_PATTERNS.workspaces.teams.settings}
+            params={{ companySlug: company.slug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Settings

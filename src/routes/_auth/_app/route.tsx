@@ -4,7 +4,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -23,7 +23,7 @@ function AppLayout() {
   // Handle home redirect only (SmartAuthGuard handles onboarding/dashboard transitions)
   useEffect(() => {
     if (!(isAuthLoading || isAuthenticated)) {
-      navigate({ to: ROUTES.home });
+      navigate({ to: ROUTE_PATTERNS.home });
     }
   }, [isAuthLoading, isAuthenticated, navigate]);
 
@@ -65,7 +65,11 @@ function InitializeCompany() {
         const result = await initializeDefaultCompany({});
         // Navigate to the new company's dashboard
         if (result.slug) {
-          navigate({ to: ROUTES.dashboard(result.slug), replace: true });
+          navigate({
+            to: ROUTE_PATTERNS.dashboard,
+            params: { companySlug: result.slug },
+            replace: true,
+          });
         } else {
           // Fallback: reload to trigger company query refresh
           window.location.reload();

@@ -3,7 +3,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLink, AuthPageLayout, ResetPasswordForm, SmartAuthGuard } from "@/components/auth";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
 export const Route = createFileRoute("/forgot-password")({
@@ -90,7 +90,7 @@ function ForgotPasswordPage() {
         </button>
       </form>
       <div className="text-center text-sm text-ui-text-tertiary mt-4">
-        <AuthLink to={ROUTES.signin}>Back to sign in</AuthLink>
+        <AuthLink to={ROUTE_PATTERNS.signin}>Back to sign in</AuthLink>
       </div>
     </AuthPageLayout>
   );

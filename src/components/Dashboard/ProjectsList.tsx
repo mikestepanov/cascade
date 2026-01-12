@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
@@ -38,11 +38,14 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
   const { companySlug } = useCompany();
 
   const navigateToWorkspace = (projectKey: string) => {
-    navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    navigate({
+      to: ROUTE_PATTERNS.projects.board,
+      params: { companySlug, key: projectKey },
+    });
   };
 
   const navigateToWorkspaces = () => {
-    navigate({ to: ROUTES.workspaces.list(companySlug) });
+    navigate({ to: ROUTE_PATTERNS.workspaces.list, params: { companySlug } });
   };
   const count = projects?.length || 0;
   const workspacesLabel = count === 1 ? "project" : "projects";

@@ -1,7 +1,7 @@
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { AppSplashScreen, SmartAuthGuard } from "@/components/auth";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
@@ -42,5 +42,5 @@ function UnauthenticatedGuard() {
     return <AppSplashScreen />;
   }
 
-  return <Navigate to={ROUTES.home} />;
+  return <Navigate to={ROUTE_PATTERNS.home} />;
 }

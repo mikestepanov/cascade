@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
@@ -25,7 +25,10 @@ function WorkspacesList() {
   });
 
   const handleWorkspaceCreated = (_workspaceId: string, slug: string) => {
-    navigate({ to: ROUTES.workspaces.teams.list(companySlug, slug) });
+    navigate({
+      to: ROUTE_PATTERNS.workspaces.teams.list,
+      params: { companySlug, workspaceSlug: slug },
+    });
   };
 
   if (workspaces === undefined) {
@@ -72,7 +75,11 @@ function WorkspacesList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workspaces.map((workspace) => (
-              <Link key={workspace._id} to={ROUTES.workspaces.detail(companySlug, workspace.slug)}>
+              <Link
+                key={workspace._id}
+                to={ROUTE_PATTERNS.workspaces.detail}
+                params={{ companySlug, workspaceSlug: workspace.slug }}
+              >
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <Flex direction="column" gap="md">
                     <Flex align="center" gap="sm">
