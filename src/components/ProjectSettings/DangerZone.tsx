@@ -3,7 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { useState } from "react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -43,7 +43,7 @@ export function DangerZone({
     try {
       await deleteProject({ projectId });
       showSuccess("Project deleted successfully");
-      navigate({ to: ROUTES.projects.list(companySlug) });
+      navigate({ to: ROUTE_PATTERNS.projects.list, params: { companySlug } });
     } catch (error) {
       showError(error, "Failed to delete project");
       setIsDeleting(false);

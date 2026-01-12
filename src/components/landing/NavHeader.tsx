@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { NixeloLogo } from "./icons";
 
 export function NavHeader() {

@@ -44,5 +44,5 @@
  */
 
 export { FormCheckbox, FormInput, FormSelect, FormTextarea } from "./FormFields";
-export type { AppFormOptions, FormFieldProps } from "./types";
+export type { AppForm, AppFormOptions, FormFieldProps } from "./types";
 export { useAppForm } from "./useAppForm";

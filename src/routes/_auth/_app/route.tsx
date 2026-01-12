@@ -4,7 +4,7 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,

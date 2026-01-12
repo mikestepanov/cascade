@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Unauthenticated } from "convex/react";
 import { AuthLink, AuthPageLayout, SignInForm, SmartAuthGuard } from "@/components/auth";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/signin")({
   component: SignInRoute,

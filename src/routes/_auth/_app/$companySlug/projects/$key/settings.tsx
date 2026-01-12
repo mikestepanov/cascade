@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { ProjectSettings } from "@/components/ProjectSettings";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/projects/$key/settings")({

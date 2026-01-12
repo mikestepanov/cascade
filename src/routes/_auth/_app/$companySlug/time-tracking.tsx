@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { TimeTrackingPage } from "@/components/TimeTracking/TimeTrackingPage";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/time-tracking")({
   component: TimeTrackingPageRoute,

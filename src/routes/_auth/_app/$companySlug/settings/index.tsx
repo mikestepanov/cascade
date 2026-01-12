@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/settings/")({
   beforeLoad: ({ params }) => {

@@ -10,7 +10,7 @@ interface Activity {
   userName: string;
   action: string;
   field?: string;
-  issueKey: string;
+  issueKey?: string;
   createdAt: number;
 }
 

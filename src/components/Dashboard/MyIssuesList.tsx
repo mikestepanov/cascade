@@ -1,6 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
-import { NAV_PATHS } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import type { useListNavigation } from "@/hooks/useListNavigation";
 import { cn } from "@/lib/utils";
@@ -56,14 +56,14 @@ export function MyIssuesList({
 
   const navigateToWorkspace = (projectKey: string) => {
     navigate({
-      to: NAV_PATHS.projects.board,
+      to: ROUTE_PATTERNS.projects.board,
       params: { companySlug, key: projectKey },
     });
   };
 
   const navigateToWorkspaces = () => {
     navigate({
-      to: NAV_PATHS.workspaces.list,
+      to: ROUTE_PATTERNS.workspaces.list,
       params: { companySlug },
     });
   };

@@ -389,7 +389,7 @@ function NavItem<TTo extends string>({
       params={params}
       search={search}
       onClick={onClick}
-      {...(props as any)}
+      {...props}
       data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
@@ -453,9 +453,8 @@ function CollapsibleSection<TTo extends string>({
     return (
       <Tooltip content={label} side="right">
         {isLink ? (
-          // @ts-expect-error - Dynamic props spreading with generics is hard for TS to verify perfectly without heavy casting
           <Link
-            {...(props as any)}
+            {...props}
             data-tour={dataTour}
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
@@ -504,7 +503,7 @@ function CollapsibleSection<TTo extends string>({
         </Button>
         {isLink ? (
           <Link
-            {...(props as any)}
+            {...props}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
               isActive
@@ -566,7 +565,7 @@ function NavSubItem<TTo extends string>({
       to={to}
       params={params}
       onClick={onClick}
-      {...(props as any)}
+      {...props}
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive

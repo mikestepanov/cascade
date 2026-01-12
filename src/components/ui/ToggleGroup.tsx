@@ -60,7 +60,9 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
 interface ToggleGroupProps
   extends React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>,
     VariantProps<typeof toggleGroupVariants>,
-    VariantProps<typeof toggleGroupItemVariants> {}
+    VariantProps<typeof toggleGroupItemVariants> {
+  children?: React.ReactNode;
+}
 
 const ToggleGroup = React.forwardRef<
   React.ElementRef<typeof ToggleGroupPrimitive.Root>,

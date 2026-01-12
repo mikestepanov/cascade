@@ -6,7 +6,7 @@ import { useState } from "react";
 import { SignInForm, SmartAuthGuard } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
 
 export const Route = createFileRoute("/invite/$token")({

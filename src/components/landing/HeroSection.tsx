@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { PlayIcon } from "./icons";

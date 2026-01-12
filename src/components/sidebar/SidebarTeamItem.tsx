@@ -4,7 +4,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { ROUTE_PATTERNS, ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 interface SidebarTeamItemProps {

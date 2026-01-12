@@ -45,7 +45,7 @@ export const loggedInUser = query({
   },
 });
 
-import { ROUTES } from "./shared/routes";
+import { ROUTE_PATTERNS } from "./shared/routes";
 
 /**
  * Get the recommended destination for a user after they authenticate.
@@ -66,7 +66,7 @@ export const getRedirectDestination = query({
     const onboardingIncomplete = !onboarding?.onboardingCompleted;
 
     if (onboardingIncomplete) {
-      return ROUTES.onboarding;
+      return ROUTE_PATTERNS.onboarding;
     }
 
     // 2. Check for companies
@@ -78,11 +78,11 @@ export const getRedirectDestination = query({
     if (membership) {
       const company = await ctx.db.get(membership.companyId);
       if (company?.slug) {
-        return ROUTES.dashboard(company.slug);
+        return `/${company.slug}/dashboard`;
       }
     }
 
     // Fallback: This shouldn't happen if onboarding is completed correctly
-    return ROUTES.onboarding;
+    return ROUTE_PATTERNS.onboarding;
   },
 });

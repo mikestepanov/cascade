@@ -1,7 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
@@ -58,7 +58,7 @@ export function SignUpForm() {
 
   return (
     <div className="w-full">
-      <GoogleAuthButton redirectTo={ROUTES.app} text="Sign up with Google" />
+      <GoogleAuthButton redirectTo={ROUTE_PATTERNS.app} text="Sign up with Google" />
       <div className="flex items-center justify-center my-4">
         <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>

@@ -1,11 +1,13 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { FormState } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { FormTextarea, useAppForm } from "@/lib/form";
+import { type AppForm, FormTextarea, useAppForm } from "@/lib/form";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -19,6 +21,9 @@ import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTime
 // =============================================================================
 // Types & Schema
 // =============================================================================
+
+type ProjectItem = FunctionReturnType<typeof api.projects.getCurrentUserProjects>["page"][number];
+type IssueItem = FunctionReturnType<typeof api.issues.listSelectableIssues>[number];
 
 type EntryMode = "duration" | "timeRange";
 
@@ -135,7 +140,9 @@ export function ManualTimeEntryModal({
     projectId ? { projectId } : "skip",
   );
 
-  const form = useAppForm({
+  type TimeEntryForm = z.infer<typeof timeEntrySchema>;
+
+  const form: AppForm<TimeEntryForm> = useAppForm<TimeEntryForm>({
     defaultValues: {
       date: formatDateForInput(Date.now()),
       startTime: "09:00",
@@ -189,10 +196,12 @@ export function ManualTimeEntryModal({
   });
 
   // Subscribe to form values for derived calculations
-  const date = form.useStore((state) => state.values.date);
-  const startTime = form.useStore((state) => state.values.startTime);
-  const endTime = form.useStore((state) => state.values.endTime);
-  const durationInput = form.useStore((state) => state.values.durationInput);
+  const date = form.useStore((state: { values: TimeEntryForm }) => state.values.date);
+  const startTime = form.useStore((state: { values: TimeEntryForm }) => state.values.startTime);
+  const endTime = form.useStore((state: { values: TimeEntryForm }) => state.values.endTime);
+  const durationInput = form.useStore(
+    (state: { values: TimeEntryForm }) => state.values.durationInput,
+  );
 
   // Parse duration input when it changes
   useEffect(() => {
@@ -444,7 +453,7 @@ export function ManualTimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.page?.map((project) => (
+                {projects?.page?.map((project: ProjectItem) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>
@@ -473,7 +482,7 @@ export function ManualTimeEntryModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No issue</SelectItem>
-                  {projectIssues.map((issue) => (
+                  {projectIssues.map((issue: IssueItem) => (
                     <SelectItem key={issue._id} value={issue._id}>
                       {issue.key} - {issue.title}
                     </SelectItem>
