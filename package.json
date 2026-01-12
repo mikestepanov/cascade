@@ -20,7 +20,7 @@
     "lint:check": "biome check .",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "typecheck": "tsc -p convex -noEmit && tsc -p . -noEmit",
+    "typecheck": "tsc -b . --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",

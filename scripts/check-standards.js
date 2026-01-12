@@ -45,69 +45,61 @@ function checkFile(filePath) {
   const content = fs.readFileSync(filePath, "utf-8");
   const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
 
-  function visit(node) {
-    // 1. Check for raw <p> tags
+  function checkParagraphTag(node, filePath) {
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const tagName = node.tagName.getText();
       if (tagName === "p") {
         reportError(filePath, node, "Use <Typography> component instead of raw <p> tags.");
       }
     }
+  }
 
-    // 2. Check className attributes
-    if (ts.isJsxAttribute(node) && node.name.getText() === "className") {
-      if (node.initializer && ts.isJsxExpression(node.initializer)) {
-        const expr = node.initializer.expression;
+  function checkClassNameConcatenation(node, filePath) {
+    if (node.initializer && ts.isJsxExpression(node.initializer)) {
+      const expr = node.initializer.expression;
 
-        // Check for template literals inside className: className={`... ${...}`}
-        if (expr && ts.isTemplateExpression(expr)) {
-          reportError(
-            filePath,
-            node,
-            "Avoid manual string concatenation in className. Use cn() utility instead.",
-          );
-        }
-
-        // Check for manual concatenation: className={"..." + "..."}
-        if (expr && ts.isBinaryExpression(expr)) {
-          reportError(
-            filePath,
-            node,
-            "Avoid manual string concatenation in className. Use cn() utility instead.",
-          );
-        }
-      }
-
-      // 3. Check for specific 'flex' usage in string literals could be <Flex>
-      // This is heuristic: if className contains "flex" and "items-center" or "justify-...", suggest <Flex>
-      // We look at StringLiteral inside className="..." or className={"..."}
-      let classText = "";
-      if (node.initializer && ts.isStringLiteral(node.initializer)) {
-        classText = node.initializer.text;
-      } else if (
-        node.initializer &&
-        ts.isJsxExpression(node.initializer) &&
-        node.initializer.expression &&
-        ts.isStringLiteral(node.initializer.expression)
-      ) {
-        classText = node.initializer.expression.text;
-      }
-
-      const hasFlex = classText.includes("flex");
-      const hasAlignment = classText.includes("items-") || classText.includes("justify-");
-      // Only flag if it's a simple flex container to avoid false positives on complex layouts
-      // This is a naive check; might want to disable "flex" check if it's too noisy
-      // For now, let's keep it disabled or strict? User asked for "using flex classname instead of Flex component"
-      // Let's flag if we see "flex" AND alignment, as that's exactly what <Flex> does.
-
-      // Excluding specific commonly used non-layout flexes if needed, or stick to strict.
-      if (hasFlex && hasAlignment && !classText.includes("hidden")) {
-        // hidden often implies responsive toggling where <Flex> might be trickier without props
-        // This is a warning/suggestion
-        // reportError(filePath, node, "Consider using <Flex> component for flex layouts.", "warning");
+      // Check for template literals or binary expressions (manual concatenation)
+      if (expr && (ts.isTemplateExpression(expr) || ts.isBinaryExpression(expr))) {
+        reportError(
+          filePath,
+          node,
+          "Avoid manual string concatenation in className. Use cn() utility instead.",
+        );
       }
     }
+  }
 
+  function checkFlexHeuristic(node, _filePath) {
+    // Check for "flex" usage heuristic
+    let classText = "";
+    if (node.initializer && ts.isStringLiteral(node.initializer)) {
+      classText = node.initializer.text;
+    } else if (
+      node.initializer &&
+      ts.isJsxExpression(node.initializer) &&
+      node.initializer.expression &&
+      ts.isStringLiteral(node.initializer.expression)
+    ) {
+      classText = node.initializer.expression.text;
+    }
+
+    const hasFlex = classText.includes("flex");
+    const hasAlignment = classText.includes("items-") || classText.includes("justify-");
+
+    if (hasFlex && hasAlignment && !classText.includes("hidden")) {
+      // Logic for suggesting <Flex> component could go here if enabled
+    }
+  }
+
+  function checkClassName(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+    checkClassNameConcatenation(node, filePath);
+    checkFlexHeuristic(node, filePath);
+  }
+
+  function visit(node) {
+    checkParagraphTag(node, filePath);
+    checkClassName(node, filePath);
     ts.forEachChild(node, visit);
   }
 
