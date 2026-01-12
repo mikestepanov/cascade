@@ -106,8 +106,9 @@ export const rbacTest = base.extend<RbacFixtures>({
     assertAuthStateValid("admin", workerIndex);
 
     const context = await browser.newContext({ storageState: authPath });
-    (context as any)._role = "admin";
-    (context as any)._workerIndex = workerIndex;
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "admin";
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
+      workerIndex;
     await use(context);
     await context.close();
   },
@@ -116,8 +117,9 @@ export const rbacTest = base.extend<RbacFixtures>({
     assertAuthStateValid("editor", workerIndex);
     const authPath = getAuthPath("editor", workerIndex);
     const context = await browser.newContext({ storageState: authPath });
-    (context as any)._role = "editor";
-    (context as any)._workerIndex = workerIndex;
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "editor";
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
+      workerIndex;
     await use(context);
     await context.close();
   },
@@ -126,8 +128,9 @@ export const rbacTest = base.extend<RbacFixtures>({
     assertAuthStateValid("viewer", workerIndex);
     const authPath = getAuthPath("viewer", workerIndex);
     const context = await browser.newContext({ storageState: authPath });
-    (context as any)._role = "viewer";
-    (context as any)._workerIndex = workerIndex;
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "viewer";
+    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
+      workerIndex;
     await use(context);
     await context.close();
   },
@@ -211,8 +214,9 @@ export const rbacTest = base.extend<RbacFixtures>({
       const targetUrl = `/${rbacCompanySlug}/projects/${rbacProjectKey}/board`;
 
       // 1. Identify role and prepare JWT
-      const role = (page.context() as any)._role as UserRole;
-      const workerIndex = (page.context() as any)._workerIndex ?? 0;
+      const role = (page.context() as BrowserContext & { _role?: string })._role as UserRole;
+      const workerIndex =
+        (page.context() as BrowserContext & { _workerIndex?: number })._workerIndex ?? 0;
 
       if (role) {
         const authPath = getAuthPath(role, workerIndex);
@@ -223,8 +227,8 @@ export const rbacTest = base.extend<RbacFixtures>({
           if (originState?.localStorage) {
             // Convex uses dynamic keys like __convexAuthJWT_httpsmajestic...
             // Find any key that looks like a JWT store
-            const convexJwt = originState.localStorage.find((item: any) =>
-              item.name.includes("__convexAuthJWT_"),
+            const convexJwt = originState.localStorage.find(
+              (item: { name: string; value: string }) => item.name.includes("__convexAuthJWT_"),
             );
 
             if (convexJwt) {
@@ -243,8 +247,8 @@ export const rbacTest = base.extend<RbacFixtures>({
               console.warn(`[Test Manual] No JWT found in ${authPath}`);
             }
           }
-        } catch (e: any) {
-          console.error(`[Test Manual] Token prep failed: ${e?.message || e}`);
+        } catch (e) {
+          console.error(`[Test Manual] Token prep failed: ${(e as Error)?.message || e}`);
         }
       }
 
@@ -255,7 +259,11 @@ export const rbacTest = base.extend<RbacFixtures>({
       await page
         .waitForFunction(
           () => {
-            const convex = (window as any).__convex_test_client;
+            const convex = (
+              window as Window & {
+                __convex_test_client?: { connectionState: () => { isWebSocketConnected: boolean } };
+              }
+            ).__convex_test_client;
             return convex?.connectionState().isWebSocketConnected;
           },
           { timeout: 15000 },

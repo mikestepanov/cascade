@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { test as base, expect } from "@playwright/test";
+import { test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, TEST_USERS } from "../config";
 import {
   AuthPage,
@@ -57,7 +57,7 @@ export type AuthFixtures = {
 
 export const authenticatedTest = base.extend<AuthFixtures>({
   storageState: async ({}, use, testInfo) => {
-    let state: any;
+    let state: unknown;
     try {
       const authPath = getAuthStatePath(testInfo.parallelIndex);
       if (fs.existsSync(authPath)) {
@@ -189,7 +189,10 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   },
 
   monitorAuthState: [
-    async ({ ensureAuthenticated, page }: any, use: () => Promise<void>) => {
+    async (
+      { ensureAuthenticated, page }: { ensureAuthenticated: () => Promise<void>; page: Page },
+      use: () => Promise<void>,
+    ) => {
       await page.context().addInitScript(() => {
         try {
           Object.defineProperty(navigator, "onLine", { get: () => true });
