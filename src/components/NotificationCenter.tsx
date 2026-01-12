@@ -189,7 +189,6 @@ export function NotificationCenter() {
                           </div>
                         </div>
 
-                        {/* Actions */}
                         <div className="flex gap-1">
                           {!notification.isRead && (
                             <button
@@ -197,6 +196,7 @@ export function NotificationCenter() {
                               onClick={() => handleMarkAsRead(notification._id)}
                               className="p-1 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded"
                               title="Mark as read"
+                              aria-label="Mark as read"
                             >
                               <svg
                                 aria-hidden="true"
@@ -217,6 +217,7 @@ export function NotificationCenter() {
                             onClick={() => handleDelete(notification._id)}
                             className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-bg-dark rounded"
                             title="Delete"
+                            aria-label="Delete notification"
                           >
                             <svg
                               aria-hidden="true"
