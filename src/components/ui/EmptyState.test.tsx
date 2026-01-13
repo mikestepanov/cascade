@@ -41,17 +41,6 @@ describe("EmptyState", () => {
 
       expect(screen.queryByRole("button")).not.toBeInTheDocument();
     });
-
-    it("should render children when provided", () => {
-      render(
-        <EmptyState icon="📦" title="Empty">
-          <div data-testid="custom-content">Custom Content</div>
-        </EmptyState>,
-      );
-
-      expect(screen.getByTestId("custom-content")).toBeInTheDocument();
-      expect(screen.getByText("Custom Content")).toBeInTheDocument();
-    });
   });
 
   describe("Action Button Interactions", () => {
@@ -144,26 +133,13 @@ describe("EmptyState", () => {
           title="All Props"
           description="Testing all properties"
           action={action}
-        >
-          <div>Custom children</div>
-        </EmptyState>,
+        />,
       );
 
       expect(screen.getByText("✨")).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "All Props" })).toBeInTheDocument();
       expect(screen.getByText("Testing all properties")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
-      expect(screen.getByText("Custom children")).toBeInTheDocument();
-    });
-
-    it("should work with children but no action", () => {
-      render(
-        <EmptyState icon="🎨" title="Custom Children">
-          <button type="button">Custom Button</button>
-        </EmptyState>,
-      );
-
-      expect(screen.getByRole("button", { name: "Custom Button" })).toBeInTheDocument();
     });
   });
 
@@ -359,20 +335,6 @@ describe("EmptyState", () => {
       expect(screen.getByRole("heading", { name: "No Tasks Yet" })).toBeInTheDocument();
       expect(screen.getByText("Get started by creating your first task")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Create First Task" })).toBeInTheDocument();
-    });
-
-    it("should display empty state with custom content", () => {
-      render(
-        <EmptyState icon="📂" title="Empty Folder">
-          <div className="mt-4">
-            <p>You can drag and drop files here</p>
-            <button type="button">Browse Files</button>
-          </div>
-        </EmptyState>,
-      );
-
-      expect(screen.getByText("You can drag and drop files here")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Browse Files" })).toBeInTheDocument();
     });
   });
 });

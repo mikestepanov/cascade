@@ -11,10 +11,9 @@ interface EmptyStateProps {
         label: string;
         onClick: () => void;
       };
-  children?: ReactNode;
 }
 
-export function EmptyState({ icon, title, description, action, children }: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   const renderAction = () => {
     if (!action) return null;
 
@@ -40,7 +39,6 @@ export function EmptyState({ icon, title, description, action, children }: Empty
         </p>
       )}
       {renderAction()}
-      {children}
     </div>
   );
 }
