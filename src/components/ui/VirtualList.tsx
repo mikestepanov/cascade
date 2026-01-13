@@ -89,7 +89,7 @@ function VirtualListInner<T>(
     onEndReached,
     endReachedThreshold = 100,
   }: VirtualListProps<T>,
-  ref: React.ForwardedRef<any>,
+  ref: React.ForwardedRef<unknown>,
 ) {
   // Track if onEndReached has been called to prevent multiple calls
   const endReachedCalledRef = useRef(false);

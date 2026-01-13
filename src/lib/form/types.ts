@@ -1,10 +1,9 @@
-import type { FieldApi, FormApi, FormOptions } from "@tanstack/react-form";
 import type { ZodType } from "zod";
 
 /**
  * Generic field props for form field wrappers
  */
-export interface FormFieldProps<TData, TName extends keyof TData & string> {
+export interface FormFieldProps<TData, _TName extends keyof TData & string> {
   // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
   field: any;
   label?: string;
@@ -32,4 +31,4 @@ export interface AppFormOptions<TData extends Record<string, unknown>>
  * Type for the form instance returned by useAppForm
  */
 // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
-export type AppForm<TData extends Record<string, unknown>> = any;
+export type AppForm<_TData extends Record<string, unknown>> = any;

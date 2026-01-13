@@ -25,6 +25,7 @@ function getFieldError(field: { state: { meta: { errors: string[] } } }): string
  * Props for form field wrappers
  */
 interface BaseFieldProps<_TData, _TName extends string> {
+  // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
   field: any; // Complex TanStack Form type
   label?: string;
   helperText?: string;

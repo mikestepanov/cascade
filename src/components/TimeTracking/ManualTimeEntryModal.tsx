@@ -595,7 +595,6 @@ export function ManualTimeEntryModal({
           {/* Billable */}
           <form.Field name="billable">
             {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
             {(field: any) => (
               <div>
                 <label className="cursor-pointer">

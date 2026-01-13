@@ -14,13 +14,18 @@ interface EmptyStateProps {
   children?: ReactNode;
 }
 
-export function EmptyState({ icon, title, description, action, children }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  children: _children,
+}: EmptyStateProps) {
   const renderAction = () => {
     if (!action) return null;
-    if (
-      typeof action === "object" &&
-      action !== null &&
-      "label" in action &&
+
+    // Check if action is a button configuration object
+    if (typeof action === "object" && action !== null && "label" in action && "onClick" in action) {
       const act = action as { label: string; onClick: () => void };
       if (typeof act.label === "string" && typeof act.onClick === "function") {
         return <Button onClick={act.onClick}>{act.label}</Button>;
