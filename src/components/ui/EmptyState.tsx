@@ -14,13 +14,7 @@ interface EmptyStateProps {
   children?: ReactNode;
 }
 
-export function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-  children: _children,
-}: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action, children }: EmptyStateProps) {
   const renderAction = () => {
     if (!action) return null;
 
