@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { WorkflowStateDisplay as WorkflowState } from "@convex/shared/types";
 import { useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
@@ -17,15 +18,6 @@ interface KanbanBoardProps {
   projectId?: Id<"projects">;
   teamId?: Id<"teams">;
   sprintId?: Id<"sprints">;
-}
-
-interface WorkflowState {
-  id: string;
-  name: string;
-  color: string;
-  category: "todo" | "inprogress" | "done" | "canceled";
-  order: number;
-  description?: string;
 }
 
 export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {

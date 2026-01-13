@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { WorkflowState } from "@convex/shared/types";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -9,13 +10,6 @@ import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { Input, Select } from "../ui/form";
 import { Typography } from "../ui/Typography";
-
-interface WorkflowState {
-  id: string;
-  name: string;
-  category: "todo" | "inprogress" | "done";
-  order: number;
-}
 
 interface WorkflowSettingsProps {
   projectId: Id<"projects">;

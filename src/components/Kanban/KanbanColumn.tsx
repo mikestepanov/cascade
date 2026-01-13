@@ -1,19 +1,12 @@
 import type { Id } from "@convex/_generated/dataModel";
+import type { WorkflowState } from "@convex/shared/types";
 import { memo, useCallback, useMemo } from "react";
 import { ANIMATION } from "@/lib/constants";
+import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";
 import { LoadMoreButton } from "../ui/LoadMoreButton";
 import { PaginationInfo } from "../ui/PaginationInfo";
-
-interface WorkflowState {
-  id: string;
-  name: string;
-  category: string;
-  order: number;
-}
-
-import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 
 interface Issue {
   _id: Id<"issues">;
