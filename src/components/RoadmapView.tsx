@@ -2,10 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import * as ReactWindow from "react-window";
-
-// biome-ignore lint/suspicious/noExplicitAny: ReactWindow types are not fully compatible
-const List = (ReactWindow as any).FixedSizeList;
+import { FixedSizeList } from "react-window";
 
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
@@ -90,7 +87,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<ReactWindow.FixedSizeList>(null);
+  const listRef = useRef<FixedSizeList>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
     onSelect: (issue: Doc<"issues">) => setSelectedIssue(issue._id),
@@ -328,7 +325,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               </Typography>
             </div>
           ) : (
-            <List
+            <FixedSizeList
               ref={listRef}
               height={600} // This should ideally be dynamic, but 600 is a safe default for now
               itemCount={filteredIssues.length}
@@ -337,7 +334,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               itemData={{ issues: filteredIssues, selectedIndex }}
             >
               {Row}
-            </List>
+            </FixedSizeList>
           )}
         </div>
       </div>

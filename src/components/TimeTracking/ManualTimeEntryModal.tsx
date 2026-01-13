@@ -266,8 +266,7 @@ export function ManualTimeEntryModal({
 
           {/* Date */}
           <form.Field name="date">
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-            {(field: any) => (
+            {(field) => (
               <div>
                 <label
                   htmlFor="time-entry-date"
@@ -291,8 +290,7 @@ export function ManualTimeEntryModal({
           {/* Duration Mode */}
           {entryMode === "duration" && (
             <form.Field name="durationInput">
-              {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-              {(field: any) => (
+              {(field) => (
                 <div>
                   <label
                     htmlFor="time-entry-duration"
@@ -382,8 +380,7 @@ export function ManualTimeEntryModal({
             <>
               <div className="grid grid-cols-2 gap-4">
                 <form.Field name="startTime">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-                  {(field: any) => (
+                  {(field) => (
                     <div>
                       <label
                         htmlFor="time-entry-start"
@@ -403,8 +400,7 @@ export function ManualTimeEntryModal({
                   )}
                 </form.Field>
                 <form.Field name="endTime">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-                  {(field: any) => (
+                  {(field) => (
                     <div>
                       <label
                         htmlFor="time-entry-end"
@@ -497,8 +493,7 @@ export function ManualTimeEntryModal({
 
           {/* Description */}
           <form.Field name="description">
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-            {(field: any) => (
+            {(field) => (
               <FormTextarea
                 field={field}
                 label="Description"
@@ -510,8 +505,7 @@ export function ManualTimeEntryModal({
 
           {/* Activity */}
           <form.Field name="activity">
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-            {(field: any) => (
+            {(field) => (
               <div>
                 <label
                   htmlFor="time-entry-activity"
@@ -594,8 +588,7 @@ export function ManualTimeEntryModal({
 
           {/* Billable */}
           <form.Field name="billable">
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form field type complex */}
-            {(field: any) => (
+            {(field) => (
               <div>
                 <label className="cursor-pointer">
                   <Flex align="center" gap="sm">
@@ -618,8 +611,7 @@ export function ManualTimeEntryModal({
           </form.Field>
 
           <DialogFooter>
-            {/* biome-ignore lint/suspicious/noExplicitAny: TanStack Form state type complex */}
-            <form.Subscribe selector={(state: any) => state.isSubmitting}>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting: boolean) => (
                 <>
                   <Button onClick={() => onOpenChange(false)} variant="secondary" type="button">

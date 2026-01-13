@@ -16,11 +16,11 @@ describe("UnsubscribePage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useMutation as any).mockReturnValue(mockUnsubscribe);
+    vi.mocked(useMutation).mockReturnValue(mockUnsubscribe);
   });
 
   it("renders loading state initially", () => {
-    (useQuery as any).mockReturnValue(undefined); // Loading state for getUserFromToken
+    vi.mocked(useQuery).mockReturnValue(undefined); // Loading state for getUserFromToken
 
     render(<UnsubscribePage token={mockToken} />);
 
@@ -29,7 +29,7 @@ describe("UnsubscribePage", () => {
   });
 
   it("renders success state when unsubscribe is successful", async () => {
-    (useQuery as any).mockReturnValue(mockUser); // Token is valid
+    vi.mocked(useQuery).mockReturnValue(mockUser); // Token is valid
     mockUnsubscribe.mockResolvedValue(undefined); // Unsubscribe successful
 
     render(<UnsubscribePage token={mockToken} />);
@@ -43,7 +43,7 @@ describe("UnsubscribePage", () => {
   });
 
   it("renders invalid state when token is invalid", async () => {
-    (useQuery as any).mockReturnValue(null); // Token is invalid
+    vi.mocked(useQuery).mockReturnValue(null); // Token is invalid
 
     render(<UnsubscribePage token={mockToken} />);
 
@@ -58,7 +58,7 @@ describe("UnsubscribePage", () => {
   });
 
   it("renders error state when unsubscribe fails", async () => {
-    (useQuery as any).mockReturnValue(mockUser); // Token is valid
+    vi.mocked(useQuery).mockReturnValue(mockUser); // Token is valid
     mockUnsubscribe.mockRejectedValue(new Error("Network error")); // Unsubscribe failed
 
     render(<UnsubscribePage token={mockToken} />);

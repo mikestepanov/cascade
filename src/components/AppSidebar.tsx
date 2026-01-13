@@ -387,15 +387,11 @@ function NavItem<TTo extends string>({
 }: NavItemProps<TTo>) {
   const content = (
     <Link
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      to={to as any}
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      params={params as any}
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      search={search as any}
+      to={to}
+      params={params}
+      search={search}
       onClick={onClick}
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      {...(props as any)}
+      {...props}
       data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
@@ -460,14 +456,10 @@ function CollapsibleSection<TTo extends string>({
       <Tooltip content={label} side="right">
         {isLink ? (
           <Link
-            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-            {...(props as any)}
-            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-            to={(props as any).to}
-            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-            params={(props as any).params}
-            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-            search={(props as any).search}
+            {...props}
+            to={props.to}
+            params={props.params}
+            search={props.search}
             data-tour={dataTour}
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
@@ -516,8 +508,7 @@ function CollapsibleSection<TTo extends string>({
         </Button>
         {isLink ? (
           <Link
-            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-            {...(props as any)}
+            {...props}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
               isActive
@@ -577,12 +568,9 @@ function NavSubItem<TTo extends string>({
 }: NavSubItemProps<TTo>) {
   return (
     <Link
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      to={to as any}
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      params={params as any}
-      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
-      {...(props as any)}
+      to={to}
+      params={params}
+      {...props}
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive

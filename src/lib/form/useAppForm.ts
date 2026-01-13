@@ -36,6 +36,5 @@ export function useAppForm<TData extends Record<string, unknown>>(options: AppFo
           onSubmit: validators.onSubmit,
         }
       : undefined,
-    // biome-ignore lint/suspicious/noExplicitAny: Internal hook typing complexity
-  } as any);
+  });
 }

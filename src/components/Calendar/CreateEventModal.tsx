@@ -121,8 +121,7 @@ export function CreateEventModal({
           }}
         >
           <form.Subscribe
-            // biome-ignore lint/suspicious/noExplicitAny: TanStack Form selector types are complex
-            selector={(state: any) => [
+            selector={(state) => [
               state.values.eventType,
               state.values.allDay,
               state.values.isRequired,

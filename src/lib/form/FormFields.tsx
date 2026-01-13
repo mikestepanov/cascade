@@ -1,4 +1,4 @@
-// import type { FieldApi } from "@tanstack/react-form";
+import type { FieldApi } from "@tanstack/react-form";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import type { CheckboxProps } from "@/components/ui/form/Checkbox";
 import type { InputProps } from "@/components/ui/form/Input";
@@ -24,9 +24,8 @@ function getFieldError(field: { state: { meta: { errors: string[] } } }): string
 /**
  * Props for form field wrappers
  */
-interface BaseFieldProps<_TData, _TName extends string> {
-  // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
-  field: any; // Complex TanStack Form type
+interface BaseFieldProps<TData, TName extends string> {
+  field: FieldApi<TData, TName, any, any>; // Complex TanStack Form type
   label?: string;
   helperText?: string;
 }
