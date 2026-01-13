@@ -130,8 +130,8 @@ describe("ProjectsList", () => {
 
     customRender(<ProjectsList />);
 
-    const createButton = screen.getByText("+ Create Project");
-    fireEvent.click(createButton);
+    const createButtons = screen.getAllByText("+ Create Project");
+    fireEvent.click(createButtons[0]);
 
     expect(screen.getByTestId("create-project-modal")).toBeInTheDocument();
   });

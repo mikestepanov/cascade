@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { Link, type LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
@@ -233,7 +233,7 @@ export function AppSidebar() {
                 icon={Copy}
               />
               <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
-              {(documents?.documents ?? []).slice(0, 10).map((doc: any) => (
+              {(documents?.documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTE_PATTERNS.documents.detail}
@@ -263,8 +263,9 @@ export function AppSidebar() {
               onClick={handleNavClick}
               data-tour="nav-projects"
             >
-              {workspaces?.map((workspace: any) => {
-                const workspaceTeams = teams?.filter((t: any) => t.workspaceId === workspace._id) || [];
+              {workspaces?.map((workspace: Doc<"workspaces">) => {
+                const workspaceTeams =
+                  teams?.filter((t: Doc<"teams">) => t.workspaceId === workspace._id) || [];
                 const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
 
                 return (
@@ -306,7 +307,7 @@ export function AppSidebar() {
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
-                      workspaceTeams.map((team: any) => (
+                      workspaceTeams.map((team: Doc<"teams">) => (
                         <SidebarTeamItem
                           key={team._id}
                           team={team}
@@ -386,10 +387,14 @@ function NavItem<TTo extends string>({
 }: NavItemProps<TTo>) {
   const content = (
     <Link
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       to={to as any}
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       params={params as any}
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       search={search as any}
       onClick={onClick}
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       {...(props as any)}
       data-tour={dataTour}
       className={cn(
@@ -455,9 +460,13 @@ function CollapsibleSection<TTo extends string>({
       <Tooltip content={label} side="right">
         {isLink ? (
           <Link
+            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
             {...(props as any)}
+            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
             to={(props as any).to}
+            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
             params={(props as any).params}
+            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
             search={(props as any).search}
             data-tour={dataTour}
             className={cn(
@@ -507,6 +516,7 @@ function CollapsibleSection<TTo extends string>({
         </Button>
         {isLink ? (
           <Link
+            // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
             {...(props as any)}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
@@ -567,8 +577,11 @@ function NavSubItem<TTo extends string>({
 }: NavSubItemProps<TTo>) {
   return (
     <Link
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       to={to as any}
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       params={params as any}
+      // biome-ignore lint/suspicious/noExplicitAny: Dynamic link handling requires strict type bypass
       {...(props as any)}
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",

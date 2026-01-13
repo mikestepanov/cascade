@@ -9,19 +9,7 @@
  *   await cascadeSoftDelete(ctx, "issues", issueId, userId, now);
  */
 
-import type {
-  GenericDatabaseWriter,
-  GenericDataModel,
-  GenericTableInfo,
-} from "convex/server";
-
-import type { Id, TableNames } from "../_generated/dataModel";
-import type { MutationCtx } from "../_generated/server";
-
 // Loose type for dynamic table access
-
-// Loose type for dynamic table access
-type AnyTableInfo = GenericTableInfo;
 type AnyDataModel = GenericDataModel;
 
 /**

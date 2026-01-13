@@ -24,7 +24,7 @@ interface WorkspacesListProps {
     listRef: React.RefObject<HTMLDivElement | null>;
     getItemProps: (index: number) => {
       className: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
   };
 }

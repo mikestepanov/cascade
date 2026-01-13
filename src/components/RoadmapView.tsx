@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as ReactWindow from "react-window";
 
+// biome-ignore lint/suspicious/noExplicitAny: ReactWindow types are not fully compatible
 const List = (ReactWindow as any).FixedSizeList;
 
 import { useListNavigation } from "@/hooks/useListNavigation";
@@ -89,7 +90,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<any>(null);
+  const listRef = useRef<ReactWindow.FixedSizeList>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
     onSelect: (issue: Doc<"issues">) => setSelectedIssue(issue._id),

@@ -90,7 +90,7 @@ export const IssueCard = memo(function IssueCard({
               type="checkbox"
               aria-label={`Select issue ${issue.key}`}
               checked={isSelected}
-              onChange={handleCheckboxClick as any}
+              onChange={handleCheckboxClick}
               onClick={handleCheckboxClick}
               className="w-4 h-4 text-brand-600 border-ui-border-primary rounded focus:ring-brand-500 cursor-pointer"
             />

@@ -13,7 +13,7 @@ export function LoadingSpinner({
   size = "md",
   className = "",
   message,
-  color,
+  _color,
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     xs: "h-3 w-3 border",

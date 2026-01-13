@@ -5,6 +5,7 @@ import type { ZodType } from "zod";
  * Generic field props for form field wrappers
  */
 export interface FormFieldProps<TData, TName extends keyof TData & string> {
+  // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
   field: any;
   label?: string;
   helperText?: string;
@@ -14,6 +15,7 @@ export interface FormFieldProps<TData, TName extends keyof TData & string> {
  * App-specific form options with Zod validation support
  */
 export interface AppFormOptions<TData extends Record<string, unknown>>
+  // biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
   extends Omit<any, "validatorAdapter"> {
   /**
    * Zod schema for form validation
@@ -29,4 +31,5 @@ export interface AppFormOptions<TData extends Record<string, unknown>>
 /**
  * Type for the form instance returned by useAppForm
  */
+// biome-ignore lint/suspicious/noExplicitAny: Complex TanStack Form type
 export type AppForm<TData extends Record<string, unknown>> = any;

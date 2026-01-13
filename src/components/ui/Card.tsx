@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 

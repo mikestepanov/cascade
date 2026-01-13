@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { Button } from "@/components/ui/Button";
@@ -10,9 +11,7 @@ import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
-export const Route = createFileRoute(
-  "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/",
-)({
+export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/")({
   component: TeamsList,
 });
 
@@ -63,7 +62,7 @@ function TeamsList() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team: any) => (
+          {teams.map((team: Doc<"teams">) => (
             <Link
               key={team._id}
               to={ROUTE_PATTERNS.workspaces.teams.detail}

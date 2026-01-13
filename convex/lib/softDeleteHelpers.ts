@@ -18,11 +18,7 @@
  *     .collect();
  */
 
-import type {
-  ExpressionOrValue,
-  FilterBuilder,
-  GenericTableInfo,
-} from "convex/server";
+import type { ExpressionOrValue, FilterBuilder, GenericTableInfo } from "convex/server";
 import type { Id } from "../_generated/dataModel";
 
 // Loose type for dynamic table access

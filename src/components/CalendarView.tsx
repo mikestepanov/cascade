@@ -134,7 +134,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
         </div>
 
         <div className="space-y-1">
-          {(dayIssues ?? []).slice(0, 3).map((issue: any) => (
+          {(dayIssues ?? []).slice(0, 3).map((issue: Doc<"issues">) => (
             <button
               type="button"
               key={issue._id}

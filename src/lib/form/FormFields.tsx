@@ -8,9 +8,7 @@ import type { TextareaProps } from "@/components/ui/form/Textarea";
 /**
  * Get the first error message from field state
  */
-function getFieldError(
-  field: any,
-): string | undefined {
+function getFieldError(field: { state: { meta: { errors: string[] } } }): string | undefined {
   const errors = field.state.meta.errors;
   if (!errors || errors.length === 0) return undefined;
 
@@ -26,8 +24,8 @@ function getFieldError(
 /**
  * Props for form field wrappers
  */
-interface BaseFieldProps<TData, TName extends string> {
-  field: any;
+interface BaseFieldProps<_TData, _TName extends string> {
+  field: any; // Complex TanStack Form type
   label?: string;
   helperText?: string;
 }

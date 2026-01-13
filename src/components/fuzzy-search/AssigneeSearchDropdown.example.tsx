@@ -55,7 +55,7 @@ export function AssigneeSearchDropdown({
   const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);
 
   // Get selected user details
-  const selectedUser = members?.find((m: any) => m._id === value);
+  const selectedUser = members?.find((m) => m._id === value);
 
   if (!members) {
     return (
@@ -98,12 +98,12 @@ export function AssigneeSearchDropdown({
         results={results}
         query={query}
         onSearch={search}
-        onSelect={(user: any) => {
+        onSelect={(user: Doc<"users">) => {
           onChange(user._id);
           clear();
         }}
         onClear={() => onChange(null)}
-        getKey={(user: any) => user._id}
+        getKey={(user: Doc<"users">) => user._id}
         placeholder={placeholder}
         showScore={false}
         isLoading={isDebouncing}

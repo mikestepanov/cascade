@@ -60,7 +60,17 @@ export function DocumentTemplatesManager({
       isPublic: false,
     },
     validators: { onChange: templateSchema },
-    onSubmit: async ({ value }: { value: any }) => {
+    onSubmit: async ({
+      value,
+    }: {
+      value: {
+        name: string;
+        description?: string;
+        category: string;
+        icon: string;
+        [key: string]: unknown;
+      };
+    }) => {
       try {
         const templateData = {
           name: value.name.trim(),
@@ -157,8 +167,8 @@ export function DocumentTemplatesManager({
   ];
 
   // Group templates by built-in vs custom
-  const builtInTemplates = templates?.filter((t: any) => t.isBuiltIn) || [];
-  const customTemplates = templates?.filter((t: any) => !t.isBuiltIn) || [];
+  const builtInTemplates = templates?.filter((t: Doc<"documentTemplates">) => t.isBuiltIn) || [];
+  const customTemplates = templates?.filter((t: Doc<"documentTemplates">) => !t.isBuiltIn) || [];
 
   return (
     <>
@@ -232,7 +242,7 @@ export function DocumentTemplatesManager({
                     Built-in Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {builtInTemplates.map((template: any) => (
+                    {builtInTemplates.map((template: Doc<"documentTemplates">) => (
                       <button
                         key={template._id}
                         type="button"
@@ -272,7 +282,7 @@ export function DocumentTemplatesManager({
                     Custom Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {customTemplates.map((template: any) => (
+                    {customTemplates.map((template: Doc<"documentTemplates">) => (
                       <div
                         key={template._id}
                         className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors border border-ui-border-primary dark:border-ui-border-primary-dark"

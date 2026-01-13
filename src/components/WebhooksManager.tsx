@@ -91,7 +91,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
             />
           ) : (
             <div className="space-y-3">
-              {webhooks.map((webhook: any) => (
+              {webhooks.map((webhook) => (
                 <WebhookCard
                   key={webhook._id}
                   webhook={webhook}

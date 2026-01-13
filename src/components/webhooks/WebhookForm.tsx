@@ -61,7 +61,7 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
       secret: "",
     },
     validators: { onChange: webhookSchema },
-    onSubmit: async ({ value }: any) => {
+    onSubmit: async ({ value }) => {
       if (selectedEvents.length === 0) {
         showError("Select at least one event");
         return;

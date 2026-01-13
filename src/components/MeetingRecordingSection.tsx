@@ -380,7 +380,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Action Items
           </h4>
           <ul className="space-y-2">
-            {summary.actionItems.map((item: any, index: number) => (
+            {summary.actionItems.map((item: { description: string }, index: number) => (
               <li
                 key={`action-${index}-${item.description.slice(0, 20)}`}
                 className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"

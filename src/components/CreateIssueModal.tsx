@@ -117,7 +117,7 @@ export function CreateIssueModal({
   useEffect(() => {
     if (!(selectedTemplate && templates)) return;
 
-    const template = templates.find((t: any) => t._id === selectedTemplate);
+    const template = templates.find((t: Doc<"issueTemplates">) => t._id === selectedTemplate);
     if (!template) return;
 
     form.setFieldValue("type", template.type);
@@ -128,8 +128,8 @@ export function CreateIssueModal({
     // Apply default labels if they exist
     if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
       const labelIds = labels
-        .filter((label: any) => template.defaultLabels?.includes(label.name))
-        .map((label: any) => label._id);
+        .filter((label: Doc<"labels">) => template.defaultLabels?.includes(label.name))
+        .map((label: Doc<"labels">) => label._id);
       setSelectedLabels(labelIds);
     }
   }, [selectedTemplate, templates, labels, form]);
@@ -170,8 +170,8 @@ export function CreateIssueModal({
 
       if (suggestions.labels && suggestions.labels.length > 0 && labels) {
         const suggestedLabelIds = labels
-          .filter((label: any) => suggestions.labels.includes(label.name))
-          .map((label: any) => label._id);
+          .filter((label: Doc<"labels">) => suggestions.labels.includes(label.name))
+          .map((label: Doc<"labels">) => label._id);
         setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
       }
 
@@ -208,7 +208,7 @@ export function CreateIssueModal({
               onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
             >
               <option value="">Start from scratch</option>
-              {templates.map((template: any) => (
+              {templates.map((template: Doc<"issueTemplates">) => (
                 <option key={template._id} value={template._id}>
                   {template.name} ({template.type})
                 </option>
@@ -299,7 +299,7 @@ export function CreateIssueModal({
             {(field) => (
               <FormSelect field={field} label="Assignee">
                 <option value="">Unassigned</option>
-                {project.members.map((member: any) => (
+                {project.members.map((member: Doc<"users">) => (
                   <option key={member._id} value={member._id}>
                     {member.name}
                   </option>

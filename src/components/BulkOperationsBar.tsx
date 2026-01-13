@@ -180,7 +180,7 @@ export function BulkOperationsBar({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {members?.map((member: any) => (
+                      {members?.map((member: { userId: string; userName: string }) => (
                         <SelectItem key={member.userId} value={member.userId}>
                           {member.userName}
                         </SelectItem>

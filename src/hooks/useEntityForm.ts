@@ -1,4 +1,3 @@
-import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
 
 /**

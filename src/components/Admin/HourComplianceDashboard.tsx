@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -262,7 +262,7 @@ export function HourComplianceDashboard() {
             />
           ) : (
             <div className="space-y-3">
-              {records.map((record: any) => (
+              {records.map((record: Doc<"hourComplianceRecords"> & { userName?: string }) => (
                 <div
                   key={record._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"

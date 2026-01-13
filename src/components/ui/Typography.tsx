@@ -54,10 +54,7 @@ export function Typography({ className, variant, color, size, as, ...props }: Ty
   const Component = as || mapVariantToTag(variant);
 
   return (
-    <Component
-      className={cn(typographyVariants({ variant, color, size, className }))}
-      {...props}
-    />
+    <Component className={cn(typographyVariants({ variant, color, size, className }))} {...props} />
   );
 }
 

@@ -352,68 +352,72 @@ export function UserManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {invites.map((invite: any) => (
-                      <tr key={invite._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                          {invite.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 capitalize">
-                            {invite.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            className={cn(
-                              "px-2 py-1 rounded text-xs font-medium capitalize",
-                              getStatusBadge(invite.status),
-                            )}
-                          >
-                            {invite.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {invite.inviterName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {formatDate(invite.createdAt)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                          {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <Flex justify="end" gap="sm">
-                            {invite.status === "pending" && (
-                              <>
-                                <Button
-                                  onClick={() => handleResendInvite(invite._id)}
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
-                                  aria-label="Resend invitation"
-                                >
-                                  Resend
-                                </Button>
-                                <Button
-                                  onClick={() => handleRevokeInvite(invite._id)}
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-status-error hover:text-status-error dark:hover:text-status-error"
-                                  aria-label="Revoke invitation"
-                                >
-                                  Revoke
-                                </Button>
-                              </>
-                            )}
-                            {invite.status === "accepted" && invite.acceptedByName && (
-                              <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-xs">
-                                Accepted by {invite.acceptedByName}
-                              </span>
-                            )}
-                          </Flex>
-                        </td>
-                      </tr>
-                    ))}
+                    {invites.map(
+                      (
+                        invite: Doc<"invites"> & { acceptedByName?: string; inviterName?: string },
+                      ) => (
+                        <tr key={invite._id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {invite.email}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 capitalize">
+                              {invite.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span
+                              className={cn(
+                                "px-2 py-1 rounded text-xs font-medium capitalize",
+                                getStatusBadge(invite.status),
+                              )}
+                            >
+                              {invite.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {invite.inviterName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {formatDate(invite.createdAt)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                            {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <Flex justify="end" gap="sm">
+                              {invite.status === "pending" && (
+                                <>
+                                  <Button
+                                    onClick={() => handleResendInvite(invite._id)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
+                                    aria-label="Resend invitation"
+                                  >
+                                    Resend
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleRevokeInvite(invite._id)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-status-error hover:text-status-error dark:hover:text-status-error"
+                                    aria-label="Revoke invitation"
+                                  >
+                                    Revoke
+                                  </Button>
+                                </>
+                              )}
+                              {invite.status === "accepted" && invite.acceptedByName && (
+                                <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-xs">
+                                  Accepted by {invite.acceptedByName}
+                                </span>
+                              )}
+                            </Flex>
+                          </td>
+                        </tr>
+                      ),
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -472,9 +476,16 @@ export function UserManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {users.map((user: any) => (
-                      <UserRow key={user._id} user={user} />
-                    ))}
+                    {users.map(
+                      (
+                        user: Doc<"users"> & {
+                          projectsCreated: number;
+                          projectMemberships: number;
+                        },
+                      ) => (
+                        <UserRow key={user._id} user={user} />
+                      ),
+                    )}
                   </tbody>
                 </table>
               </div>

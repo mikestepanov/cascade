@@ -267,7 +267,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
 // Render a date bar for an item
 function renderDateBar(
-  item: { startDate: number; endDate: number; [key: string]: any },
+  item: { startDate: number; endDate: number; [key: string]: unknown },
   rangeStart: Date,
   rangeEnd: Date,
   _columnCount: number,

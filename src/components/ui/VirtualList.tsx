@@ -5,14 +5,22 @@
  * Perfect for Kanban columns with 50+ cards.
  */
 
-import type { CSSProperties, ElementType } from "react";
+import {
+  type CSSProperties,
+  type ElementType,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import * as ReactWindow from "react-window";
+import { cn } from "@/lib/utils";
 
 // Manually define the props interface since default export types are failing
 export interface ListChildComponentProps<T = unknown> {
   index: number;
   style: CSSProperties;
-  data: T[];
+  data: T;
   isScrolling?: boolean;
 }
 
@@ -145,5 +153,5 @@ function VirtualListInner<T>(
 
 // Export with proper typing for forwardRef with generics
 export const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: React.ForwardedRef<any> },
+  props: VirtualListProps<T> & { ref?: React.ForwardedRef<unknown> },
 ) => React.ReactElement;

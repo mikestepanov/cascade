@@ -33,7 +33,7 @@ export function MentionInput({
 
   // Filter members based on mention search
   const filteredMembers =
-    members?.filter((member: any) =>
+    members?.filter((member: Doc<"users"> & { userName: string }) =>
       member.userName.toLowerCase().includes(mentionSearch.toLowerCase()),
     ) || [];
 
@@ -183,7 +183,7 @@ export function MentionInput({
       {/* Mention Suggestions Dropdown */}
       {showSuggestions && filteredMembers.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
-          {filteredMembers.map((member: any, index: number) => (
+          {filteredMembers.map((member, index: number) => (
             <button
               type="button"
               key={member.userId}

@@ -148,7 +148,7 @@ export function NotificationCenter() {
             </div>
           ) : (
             <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-              {notifications.map((notification: any) => (
+              {notifications.map((notification: Doc<"notifications">) => (
                 <div
                   key={notification._id}
                   className={cn(

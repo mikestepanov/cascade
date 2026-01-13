@@ -1,8 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
-import { cn } from "@/lib/utils";
 
 interface WebhookCardProps {
   webhook: {

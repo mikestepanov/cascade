@@ -342,7 +342,7 @@ export function UserTypeManager() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {configs.map((config: any) => (
+              {configs.map((config: Doc<"userTypeConfigs">) => (
                 <div
                   key={config.type}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
@@ -436,7 +436,7 @@ export function UserTypeManager() {
                 Unassigned Users ({usersWithoutProfiles.length})
               </h4>
               <Flex direction="column" gap="sm">
-                {usersWithoutProfiles.slice(0, 5).map((user: any) => (
+                {usersWithoutProfiles.slice(0, 5).map((user: Doc<"users">) => (
                   <Flex
                     key={user._id}
                     justify="between"
@@ -473,7 +473,7 @@ export function UserTypeManager() {
             />
           ) : (
             <div className="space-y-3">
-              {profiles.map((profile: any) => (
+              {profiles.map((profile: Doc<"userProfiles"> & { user?: Doc<"users"> }) => (
                 <div
                   key={profile._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"

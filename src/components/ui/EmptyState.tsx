@@ -21,13 +21,10 @@ export function EmptyState({ icon, title, description, action, children }: Empty
       typeof action === "object" &&
       action !== null &&
       "label" in action &&
-      typeof (action as any).label === "string" &&
-      "onClick" in action &&
-      typeof (action as any).onClick === "function"
-    ) {
-      return (
-        <Button onClick={(action as any).onClick}>{(action as any).label}</Button>
-      );
+      const act = action as { label: string; onClick: () => void };
+      if (typeof act.label === "string" && typeof act.onClick === "function") {
+        return <Button onClick={act.onClick}>{act.label}</Button>;
+      }
     }
     return action as ReactNode;
   };

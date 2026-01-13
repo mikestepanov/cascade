@@ -1,9 +1,9 @@
 import type {
   FilterBuilder,
   GenericDocument,
+  GenericTableInfo,
   PaginationOptions,
   PaginationResult,
-  GenericTableInfo,
 } from "convex/server";
 import type { QueryCtx } from "../_generated/server";
 
