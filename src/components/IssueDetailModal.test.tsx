@@ -107,7 +107,7 @@ describe("IssueDetailModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useMutation).mockReturnValue(mockUpdateIssue);
+    vi.mocked(useMutation).mockReturnValue(mockUpdateIssue as any);
   });
 
   it("should show loading state when issue is undefined", () => {
@@ -271,7 +271,7 @@ describe("IssueDetailModal", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockUpdateIssue).toHaveBeenCalledWith({
+      expect(mockUpdateIssue as any).toHaveBeenCalledWith({
         id: mockIssueId,
         title: "Updated title",
         description: "Users cannot login with valid credentials",

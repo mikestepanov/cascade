@@ -364,7 +364,8 @@ export function AppSidebar() {
 }
 
 // Nav Item Component
-type NavItemProps<TTo extends string> = LinkProps<TTo> & {
+type NavItemProps = Omit<LinkProps<string>, "to"> & {
+  to: string; // Explicitly passed
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   isActive: boolean;
@@ -373,7 +374,7 @@ type NavItemProps<TTo extends string> = LinkProps<TTo> & {
   onClick?: (event: React.MouseEvent) => void;
 };
 
-function NavItem<TTo extends string>({
+function NavItem({
   icon: Icon,
   label,
   isActive,
@@ -384,10 +385,10 @@ function NavItem<TTo extends string>({
   search,
   onClick,
   ...props
-}: NavItemProps<TTo>) {
+}: NavItemProps) {
   const content = (
     <Link
-      to={to}
+      to={to as any}
       params={params}
       search={search}
       onClick={onClick}
@@ -420,7 +421,8 @@ function NavItem<TTo extends string>({
 
 // Collapsible Section Component
 // We use a union validation here: either it acts as a link (with valid to/params) or it doesn't.
-type CollapsibleSectionProps<TTo extends string> = {
+// CollapsibleSection Component
+type CollapsibleSectionProps = {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   isExpanded: boolean;
@@ -432,11 +434,11 @@ type CollapsibleSectionProps<TTo extends string> = {
   children: React.ReactNode;
   "data-tour"?: string;
 } & (
-  | (LinkProps<TTo> & { to: TTo }) // If 'to' is present, it must be a valid LinkProps
+  | (Omit<LinkProps<string>, "to"> & { to: string }) // If 'to' is present, it must be a valid LinkProps
   | { to?: never; params?: never; search?: never } // If 'to' is absent, params/search/activeProps must be absent
 );
 
-function CollapsibleSection<TTo extends string>({
+function CollapsibleSection({
   icon: Icon,
   label,
   isExpanded,
@@ -447,7 +449,7 @@ function CollapsibleSection<TTo extends string>({
   children,
   "data-tour": dataTour,
   ...props
-}: CollapsibleSectionProps<TTo>) {
+}: CollapsibleSectionProps) {
   // Safe type narrowing check
   const isLink = "to" in props && !!props.to;
 
@@ -457,7 +459,7 @@ function CollapsibleSection<TTo extends string>({
         {isLink ? (
           <Link
             {...props}
-            to={props.to}
+            to={props.to as any}
             params={props.params}
             search={props.search}
             data-tour={dataTour}
@@ -509,6 +511,7 @@ function CollapsibleSection<TTo extends string>({
         {isLink ? (
           <Link
             {...props}
+            to={props.to as any}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
               isActive
@@ -550,14 +553,15 @@ function CollapsibleSection<TTo extends string>({
 }
 
 // Sub-item Component
-type NavSubItemProps<TTo extends string> = LinkProps<TTo> & {
+type NavSubItemProps = Omit<LinkProps<string>, "to"> & {
+  to: string;
   label: string;
   isActive: boolean;
   icon?: React.ComponentType<{ className?: string }>;
   onClick?: (event: React.MouseEvent) => void;
 };
 
-function NavSubItem<TTo extends string>({
+function NavSubItem({
   label,
   isActive,
   icon: Icon,
@@ -565,10 +569,10 @@ function NavSubItem<TTo extends string>({
   params,
   onClick,
   ...props
-}: NavSubItemProps<TTo>) {
+}: NavSubItemProps) {
   return (
     <Link
-      to={to}
+      to={to as any}
       params={params}
       {...props}
       className={cn(

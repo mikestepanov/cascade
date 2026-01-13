@@ -342,7 +342,7 @@ export function UserTypeManager() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {configs.map((config: Doc<"userTypeConfigs">) => (
+              {configs.map((config: Doc<"employmentTypeConfigs">) => (
                 <div
                   key={config.type}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
@@ -545,7 +545,11 @@ export function UserTypeManager() {
                     </div>
 
                     <Flex gap="sm" className="ml-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditProfile(profile)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditProfile({ ...profile, user: profile.user || null, manager: null })}
+                      >
                         Edit
                       </Button>
                       <Button

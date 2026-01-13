@@ -6,10 +6,10 @@
  */
 
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import { Avatar } from "@/components/ui/Avatar";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
-import { Avatar } from "../ui/Avatar";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
@@ -54,9 +54,6 @@ export function AssigneeSearchDropdown({
   // Step 2: Apply fuzzy search on loaded data
   const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);
 
-  // Get selected user details
-  const selectedUser = members?.find((m) => m._id === value);
-
   if (!members) {
     return (
       <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
@@ -64,6 +61,9 @@ export function AssigneeSearchDropdown({
       </div>
     );
   }
+
+  // Get selected user details
+  const selectedUser = members.find((m: Doc<"users">) => m._id === value);
 
   return (
     <div className={className}>
@@ -162,3 +162,4 @@ export function AssigneeSearchDropdown({
  * }
  * ```
  */
+

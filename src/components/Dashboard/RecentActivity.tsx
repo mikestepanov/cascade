@@ -1,4 +1,3 @@
-import type { Doc } from "@convex/_generated/dataModel";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -54,7 +53,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
           <EmptyState icon="📊" title="No activity" description="No recent activity to show" />
         ) : (
           <Flex direction="column" gap="md" className="max-h-[400px] overflow-y-auto">
-            {activities.map((activity: Doc<"auditLogs">, activityIndex: number) => (
+            {activities.map((activity: Activity, activityIndex: number) => (
               <div
                 key={activity._id}
                 className="relative animate-slide-up"

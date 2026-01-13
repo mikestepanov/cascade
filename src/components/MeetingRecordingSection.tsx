@@ -380,28 +380,33 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             Action Items
           </h4>
           <ul className="space-y-2">
-            {summary.actionItems.map((item: { description: string }, index: number) => (
-              <li
-                key={`action-${index}-${item.description.slice(0, 20)}`}
-                className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"
-              >
-                <Flex justify="between" align="start">
-                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {item.description}
-                  </span>
-                  {item.assignee && (
-                    <Badge size="sm" className="ml-2 shrink-0">
-                      {item.assignee}
-                    </Badge>
+            {summary.actionItems.map(
+              (
+                item: { description: string; assignee?: string; dueDate?: string },
+                index: number,
+              ) => (
+                <li
+                  key={`action-${index}-${item.description.slice(0, 20)}`}
+                  className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"
+                >
+                  <Flex justify="between" align="start">
+                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                      {item.description}
+                    </span>
+                    {item.assignee && (
+                      <Badge size="sm" className="ml-2 shrink-0">
+                        {item.assignee}
+                      </Badge>
+                    )}
+                  </Flex>
+                  {item.dueDate && (
+                    <span className="text-xs text-ui-text-tertiary mt-1 block">
+                      Due: {item.dueDate}
+                    </span>
                   )}
-                </Flex>
-                {item.dueDate && (
-                  <span className="text-xs text-ui-text-tertiary mt-1 block">
-                    Due: {item.dueDate}
-                  </span>
-                )}
-              </li>
-            ))}
+                </li>
+              ),
+            )}
           </ul>
         </div>
       )}

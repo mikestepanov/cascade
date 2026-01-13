@@ -16,11 +16,19 @@ describe("UnsubscribePage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useMutation).mockReturnValue(mockUnsubscribe);
+    // Set up mutation mocks
+    vi.mocked(useMutation).mockImplementation(() => {
+      return mockUnsubscribe as any;
+    });
+
+    // Default mock for useQuery (loading state)
+    vi.mocked(useQuery).mockImplementation(() => {
+      return undefined as any;
+    });
   });
 
   it("renders loading state initially", () => {
-    vi.mocked(useQuery).mockReturnValue(undefined); // Loading state for getUserFromToken
+    // useQuery is already mocked to return undefined (loading) in beforeEach
 
     render(<UnsubscribePage token={mockToken} />);
 

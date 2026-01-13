@@ -129,7 +129,7 @@ export function MyIssuesList({
             className="max-h-[600px] overflow-y-auto"
             ref={issueNavigation.listRef}
           >
-            {displayIssues.map((issue: Doc<"issues">, index: number) => (
+            {displayIssues.map((issue, index) => (
               <button
                 key={issue._id}
                 type="button"

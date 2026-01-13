@@ -128,7 +128,9 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   let workflowStates: typeof project.workflowStates = [];
 
   if (isProjectMode && project) {
-    workflowStates = project.workflowStates.sort((a, b) => a.order - b.order);
+    workflowStates = project.workflowStates.sort(
+      (a: { order: number }, b: { order: number }) => a.order - b.order,
+    );
   } else if (isTeamMode && smartWorkflowStates) {
     workflowStates = smartWorkflowStates.map((s) => ({
       ...s,
@@ -155,7 +157,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
       />
 
       <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6 px-4 lg:px-6 pb-6 lg:overflow-x-auto -webkit-overflow-scrolling-touch">
-        {workflowStates.map((state, columnIndex: number) => {
+        {workflowStates.map((state: any, columnIndex: number) => {
           const counts = statusCounts[state.id] || {
             total: 0,
             loaded: 0,

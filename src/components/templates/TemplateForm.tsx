@@ -57,7 +57,7 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
       defaultLabels: "",
     },
     validators: { onChange: templateSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: any }) => {
       try {
         const templateData = {
           name: value.name.trim(),

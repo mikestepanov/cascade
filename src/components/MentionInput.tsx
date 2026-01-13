@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -183,7 +183,7 @@ export function MentionInput({
       {/* Mention Suggestions Dropdown */}
       {showSuggestions && filteredMembers.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 w-64 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
-          {filteredMembers.map((member, index: number) => (
+          {filteredMembers.map((member: Doc<"users"> & { userName: string }, index: number) => (
             <button
               type="button"
               key={member.userId}
@@ -217,3 +217,4 @@ export function MentionInput({
     </div>
   );
 }
+

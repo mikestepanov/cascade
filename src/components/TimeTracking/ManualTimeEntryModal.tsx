@@ -152,7 +152,7 @@ export function ManualTimeEntryModal({
       billable: false,
     },
     validators: { onChange: timeEntrySchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: any }) => {
       const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
 
       // Validate using extracted helper
@@ -266,7 +266,7 @@ export function ManualTimeEntryModal({
 
           {/* Date */}
           <form.Field name="date">
-            {(field) => (
+            {(field: any) => (
               <div>
                 <label
                   htmlFor="time-entry-date"
@@ -290,7 +290,7 @@ export function ManualTimeEntryModal({
           {/* Duration Mode */}
           {entryMode === "duration" && (
             <form.Field name="durationInput">
-              {(field) => (
+              {(field: any) => (
                 <div>
                   <label
                     htmlFor="time-entry-duration"
@@ -380,7 +380,7 @@ export function ManualTimeEntryModal({
             <>
               <div className="grid grid-cols-2 gap-4">
                 <form.Field name="startTime">
-                  {(field) => (
+                  {(field: any) => (
                     <div>
                       <label
                         htmlFor="time-entry-start"
@@ -400,7 +400,7 @@ export function ManualTimeEntryModal({
                   )}
                 </form.Field>
                 <form.Field name="endTime">
-                  {(field) => (
+                  {(field: any) => (
                     <div>
                       <label
                         htmlFor="time-entry-end"
@@ -493,7 +493,7 @@ export function ManualTimeEntryModal({
 
           {/* Description */}
           <form.Field name="description">
-            {(field) => (
+            {(field: any) => (
               <FormTextarea
                 field={field}
                 label="Description"
@@ -505,7 +505,7 @@ export function ManualTimeEntryModal({
 
           {/* Activity */}
           <form.Field name="activity">
-            {(field) => (
+            {(field: any) => (
               <div>
                 <label
                   htmlFor="time-entry-activity"
@@ -588,7 +588,7 @@ export function ManualTimeEntryModal({
 
           {/* Billable */}
           <form.Field name="billable">
-            {(field) => (
+            {(field: any) => (
               <div>
                 <label className="cursor-pointer">
                   <Flex align="center" gap="sm">
@@ -611,7 +611,7 @@ export function ManualTimeEntryModal({
           </form.Field>
 
           <DialogFooter>
-            <form.Subscribe selector={(state) => state.isSubmitting}>
+            <form.Subscribe selector={(state: any) => state.isSubmitting}>
               {(isSubmitting: boolean) => (
                 <>
                   <Button onClick={() => onOpenChange(false)} variant="secondary" type="button">

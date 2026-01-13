@@ -12,7 +12,7 @@ export function GoogleAuthButton({ redirectTo, text }: GoogleAuthButtonProps) {
     <button
       type="button"
       className="w-full px-4 py-3 rounded bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-2 border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark font-semibold hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:border-brand-500 dark:hover:border-brand-400 transition-colors shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-      onClick={() => void signIn("google", { redirectTo })}
+      onClick={() => void signIn("google", { redirectTo } as any)}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
         <path

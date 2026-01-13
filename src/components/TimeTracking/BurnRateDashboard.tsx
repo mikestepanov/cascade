@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,13 @@ import { Typography } from "../ui/Typography";
 
 interface BurnRateDashboardProps {
   projectId: Id<"projects">;
+}
+
+interface UserWithBurnRate {
+  cost: number;
+  user?: Doc<"users">;
+  hours: number;
+  billableHours: number;
 }
 
 export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
@@ -152,6 +159,8 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
         </div>
       </div>
 
+
+
       {/* Team Costs Breakdown */}
       <div>
         <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
@@ -166,7 +175,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           </div>
         ) : (
           <Flex direction="column" gap="sm">
-            {teamCosts.map((member: { cost: number; user?: Doc<"users"> }) => {
+            {(teamCosts as unknown as UserWithBurnRate[]).map((member) => {
               const percentOfTotal =
                 burnRate.totalCost > 0 ? (member.cost / burnRate.totalCost) * 100 : 0;
 
@@ -194,13 +203,19 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                             {member.user?.name || "Unknown"}
                           </div>
                           <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                            {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
-                            billable)
+                            {formatHours(member.hours)}h total (
+                            {formatHours(member.billableHours)}h billable)
                           </div>
                         </div>
                       </Flex>
 
-                      <div className="text-right">
+                      <div className="flex flex-col items-end">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {formatHours(member.hours)}
+                        </div>
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          {formatHours(member.billableHours)}
+                        </div>
                         <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
                           {formatCurrency(member.cost)}
                         </div>

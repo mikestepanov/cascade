@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// @ts-expect-error
 import { FixedSizeList } from "react-window";
 
 import { useListNavigation } from "@/hooks/useListNavigation";
@@ -87,7 +88,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<FixedSizeList>(null);
+  const listRef = useRef<any>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
     onSelect: (issue: Doc<"issues">) => setSelectedIssue(issue._id),

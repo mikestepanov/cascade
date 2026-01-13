@@ -302,7 +302,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         value={attendee.status || ""}
                         onValueChange={(value) =>
                           handleMarkAttendance(
-                            attendee.userId,
+                            attendee.userId as Id<"users">,
                             value as "present" | "tardy" | "absent",
                           )
                         }

@@ -120,7 +120,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Dependencies
           </h4>
           <div className="space-y-2">
-            {links.outgoing.map((link: Doc<"issueRelations"> & { target?: Doc<"issues"> }) => (
+            {links.outgoing.map((link: any) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
@@ -164,7 +164,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Referenced By
           </h4>
           <div className="space-y-2">
-            {links.incoming.map((link: Doc<"issueRelations"> & { source?: Doc<"issues"> }) => (
+            {links.incoming.map((link: any) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"

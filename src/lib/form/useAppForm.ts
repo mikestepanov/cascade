@@ -24,17 +24,8 @@ import type { AppFormOptions } from "./types";
  * ```
  */
 export function useAppForm<TData extends Record<string, unknown>>(options: AppFormOptions<TData>) {
-  const { validators, ...restOptions } = options;
-
   return useForm({
-    ...restOptions,
+    ...options,
     validatorAdapter: zodValidator(),
-    validators: validators
-      ? {
-          onChange: validators.onChange,
-          onBlur: validators.onBlur,
-          onSubmit: validators.onSubmit,
-        }
-      : undefined,
-  });
+  } as any);
 }

@@ -1,11 +1,15 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { showError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { Typography } from "./ui/Typography";
+
+interface NotificationWithActor extends Doc<"notifications"> {
+  actorName?: string;
+}
 
 // Pure functions - no need to be inside component
 function getNotificationIcon(type: string): string {
@@ -44,11 +48,12 @@ function formatTime(timestamp: number): string {
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { results: notifications } = usePaginatedQuery(
+  const { results: notificationsRaw } = usePaginatedQuery(
     api.notifications.list,
     {},
     { initialNumItems: 20 },
   );
+  const notifications = notificationsRaw as unknown as NotificationWithActor[];
   const unreadCount = useQuery(api.notifications.getUnreadCount, {});
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
@@ -148,7 +153,7 @@ export function NotificationCenter() {
             </div>
           ) : (
             <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-              {notifications.map((notification: Doc<"notifications">) => (
+              {notifications.map((notification) => (
                 <div
                   key={notification._id}
                   className={cn(
