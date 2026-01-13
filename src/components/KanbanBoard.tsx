@@ -19,6 +19,15 @@ interface KanbanBoardProps {
   sprintId?: Id<"sprints">;
 }
 
+interface WorkflowState {
+  id: string;
+  name: string;
+  color: string;
+  category: "todo" | "inprogress" | "done" | "canceled";
+  order: number;
+  description?: string;
+}
+
 export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
@@ -125,7 +134,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   }
 
   // Determine Workflow States
-  let workflowStates: typeof project.workflowStates = [];
+  let workflowStates: WorkflowState[] = [];
 
   if (isProjectMode && project) {
     workflowStates = project.workflowStates.sort(
@@ -157,7 +166,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
       />
 
       <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6 px-4 lg:px-6 pb-6 lg:overflow-x-auto -webkit-overflow-scrolling-touch">
-        {workflowStates.map((state: any, columnIndex: number) => {
+        {workflowStates.map((state, columnIndex: number) => {
           const counts = statusCounts[state.id] || {
             total: 0,
             loaded: 0,

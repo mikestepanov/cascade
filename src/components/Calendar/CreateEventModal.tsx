@@ -121,7 +121,7 @@ export function CreateEventModal({
           }}
         >
           <form.Subscribe
-            selector={(state: any) => [
+            selector={(state) => [
               state.values.eventType,
               state.values.allDay,
               state.values.isRequired,

@@ -157,7 +157,7 @@ export function TimeTracker({
 
   // Calculate total hours from entries (convert seconds to hours)
   const totalLoggedHours = timeEntries
-    ? timeEntries.reduce((acc: any, entry: any) => acc + (entry.duration || 0), 0) / 3600
+    ? timeEntries.reduce((acc, entry) => acc + (entry.duration || 0), 0) / 3600
     : 0;
 
   const handleStartTimer = async () => {

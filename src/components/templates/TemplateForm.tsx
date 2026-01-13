@@ -57,7 +57,7 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
       defaultLabels: "",
     },
     validators: { onChange: templateSchema },
-    onSubmit: async ({ value }: { value: any }) => {
+    onSubmit: async ({ value }: { value: z.infer<typeof templateSchema> }) => {
       try {
         const templateData = {
           name: value.name.trim(),

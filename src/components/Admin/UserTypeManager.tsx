@@ -548,7 +548,13 @@ export function UserTypeManager() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditProfile({ ...profile, user: profile.user || null, manager: null })}
+                        onClick={() =>
+                          handleEditProfile({
+                            ...profile,
+                            user: profile.user || null,
+                            manager: null,
+                          })
+                        }
                       >
                         Edit
                       </Button>

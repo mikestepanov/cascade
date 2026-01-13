@@ -28,6 +28,7 @@ interface BillingStats {
   cost: number;
   name: string;
   revenue: number;
+  totalCost?: number;
 }
 
 interface BillingReportProps {
@@ -64,10 +65,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
       return {
         utilizationRate: 0,
         averageRate: 0,
-        sortedUsers: [] as [
-          string,
-          { name: string; hours: number; billableHours: number; revenue: number },
-        ][],
+        sortedUsers: [] as [string, BillingStats][],
       };
     }
 
@@ -75,7 +73,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
       billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
     const avgRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
     const sorted = Object.entries(billing.byUser).sort(
-      (a: any, b: any) => b[1].totalCost - a[1].totalCost,
+      (a: [string, BillingStats], b: [string, BillingStats]) =>
+        (b[1].totalCost || 0) - (a[1].totalCost || 0),
     );
 
     return { utilizationRate: utilRate, averageRate: avgRate, sortedUsers: sorted };

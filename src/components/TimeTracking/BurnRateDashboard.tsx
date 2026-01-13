@@ -159,8 +159,6 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
         </div>
       </div>
 
-
-
       {/* Team Costs Breakdown */}
       <div>
         <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
@@ -203,8 +201,8 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                             {member.user?.name || "Unknown"}
                           </div>
                           <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                            {formatHours(member.hours)}h total (
-                            {formatHours(member.billableHours)}h billable)
+                            {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
+                            billable)
                           </div>
                         </div>
                       </Flex>

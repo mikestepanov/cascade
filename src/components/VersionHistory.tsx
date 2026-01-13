@@ -26,6 +26,14 @@ function getRelativeTimeString(diffMs: number): string | null {
   return null;
 }
 
+interface DocumentVersion {
+  _id: Id<"documentVersions">;
+  title: string;
+  createdAt: number;
+  createdByName: string;
+  changeDescription?: string;
+}
+
 interface VersionHistoryProps {
   documentId: Id<"documents">;
   open: boolean;
@@ -108,7 +116,7 @@ export function VersionHistory({
             </div>
           ) : (
             <div className="space-y-2">
-              {versions.map((version: any, index: number) => {
+              {versions.map((version: DocumentVersion, index: number) => {
                 const isLatest = index === 0;
                 const isSelected = selectedVersionId === version._id;
 

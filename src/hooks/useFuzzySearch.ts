@@ -282,7 +282,9 @@ export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOp
  * const { results, search, query } = useUserFuzzySearch(members);
  * ```
  */
-export function useUserFuzzySearch<T extends { name?: string; email?: string }>(users: T[] | undefined) {
+export function useUserFuzzySearch<T extends { name?: string; email?: string }>(
+  users: T[] | undefined,
+) {
   return useFuzzySearch(users, {
     keys: [
       { name: "name", weight: 2 }, // Prioritize name matches

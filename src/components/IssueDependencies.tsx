@@ -11,6 +11,10 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input, Select } from "./ui/form";
 import { Typography } from "./ui/Typography";
 
+type IssueLinkWithDetails = Doc<"issueLinks"> & {
+  issue: Pick<Doc<"issues">, "type" | "key" | "title"> | null;
+};
+
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
   projectId: Id<"projects">;
@@ -120,7 +124,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Dependencies
           </h4>
           <div className="space-y-2">
-            {links.outgoing.map((link: any) => (
+            {links.outgoing.map((link: IssueLinkWithDetails) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
@@ -164,7 +168,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             Referenced By
           </h4>
           <div className="space-y-2">
-            {links.incoming.map((link: any) => (
+            {links.incoming.map((link: IssueLinkWithDetails) => (
               <div
                 key={link._id}
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"

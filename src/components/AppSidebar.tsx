@@ -388,6 +388,7 @@ function NavItem({
 }: NavItemProps) {
   const content = (
     <Link
+      // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
       to={to as any}
       params={params}
       search={search}
@@ -459,6 +460,7 @@ function CollapsibleSection({
         {isLink ? (
           <Link
             {...props}
+            // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
             to={props.to as any}
             params={props.params}
             search={props.search}
@@ -511,6 +513,7 @@ function CollapsibleSection({
         {isLink ? (
           <Link
             {...props}
+            // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
             to={props.to as any}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
@@ -572,6 +575,7 @@ function NavSubItem({
 }: NavSubItemProps) {
   return (
     <Link
+      // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
       to={to as any}
       params={params}
       {...props}

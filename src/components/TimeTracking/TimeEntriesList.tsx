@@ -119,8 +119,6 @@ export function TimeEntriesList({
     );
   }
 
-
-
   return (
     <Flex direction="column" gap="xl">
       {/* Add Time Entry Button */}

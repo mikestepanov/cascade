@@ -88,7 +88,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<any>(null);
+  const listRef = useRef<FixedSizeList>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
     onSelect: (issue: Doc<"issues">) => setSelectedIssue(issue._id),

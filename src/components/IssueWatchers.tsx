@@ -10,6 +10,12 @@ interface IssueWatchersProps {
   issueId: Id<"issues">;
 }
 
+interface Watcher {
+  _id: string;
+  userName: string;
+  userEmail?: string;
+}
+
 export function IssueWatchers({ issueId }: IssueWatchersProps) {
   const watchers = useQuery(api.watchers.getWatchers, { issueId });
   const isWatching = useQuery(api.watchers.isWatching, { issueId });
@@ -81,7 +87,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
             Watchers ({watchers.length})
           </h4>
           <div className="space-y-2">
-            {watchers.map((watcher: any) => (
+            {watchers.map((watcher: Watcher) => (
               <div
                 key={watcher._id}
                 className="flex items-center gap-3 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
