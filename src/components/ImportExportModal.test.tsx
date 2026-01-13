@@ -2,7 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
 import { render, screen, waitFor } from "@/test/custom-render";
 import { ImportExportModal } from "./ImportExportModal";
@@ -187,7 +187,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       // Mock useQuery to return CSV data when called
-      (useQuery as any).mockImplementation((_apiRef, args) => {
+      (useQuery as unknown as Mock).mockImplementation((_apiRef: unknown, args: unknown) => {
         // Return undefined initially, then return data when isExporting becomes true
         if (args === "skip") return undefined;
         return "key,title\nTEST-1,Issue";

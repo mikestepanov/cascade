@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -250,8 +250,8 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             {searchResults?.page && searchResults.page.length > 0 && (
               <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
                 {searchResults.page
-                  .filter((issue) => issue._id !== issueId)
-                  .map((issue: any) => (
+                  .filter((issue: Doc<"issues">) => issue._id !== issueId)
+                  .map((issue: Doc<"issues">) => (
                     <button
                       type="button"
                       key={issue._id}

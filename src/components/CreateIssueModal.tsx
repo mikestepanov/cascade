@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -80,7 +80,18 @@ export function CreateIssueModal({
       storyPoints: "",
     },
     validators: { onChange: createIssueSchema },
-    onSubmit: async ({ value }: { value: any }) => {
+    onSubmit: async ({
+      value,
+    }: {
+      value: {
+        title: string;
+        description: string;
+        type: "task" | "bug" | "story" | "epic";
+        priority: "lowest" | "low" | "medium" | "high" | "highest";
+        assigneeId: string;
+        storyPoints: string;
+      };
+    }) => {
       try {
         await createIssue({
           projectId,
@@ -106,7 +117,7 @@ export function CreateIssueModal({
   useEffect(() => {
     if (!(selectedTemplate && templates)) return;
 
-    const template = templates.find((t) => t._id === selectedTemplate);
+    const template = templates.find((t: any) => t._id === selectedTemplate);
     if (!template) return;
 
     form.setFieldValue("type", template.type);
@@ -128,7 +139,7 @@ export function CreateIssueModal({
   };
 
   const handleGenerateAISuggestions = async () => {
-    const title = form.getFieldValue("title");
+    const title = form.getFieldValue("title") as string;
     const description = form.getFieldValue("description");
 
     if (!title?.trim()) {
@@ -146,7 +157,7 @@ export function CreateIssueModal({
       });
 
       // Apply AI suggestions
-      if (suggestions.description && !description?.trim()) {
+      if (suggestions.description && !(description as string)?.trim()) {
         form.setFieldValue("description", suggestions.description);
       }
 
@@ -316,7 +327,7 @@ export function CreateIssueModal({
             <div>
               <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
               <div className="flex flex-wrap gap-2">
-                {labels.map((label) => (
+                {labels.map((label: Doc<"labels">) => (
                   <button
                     key={label._id}
                     type="button"

@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
@@ -183,7 +184,7 @@ export function useCommands({
     },
 
     // Projects navigation
-    ...(projects?.map((project) => ({
+    ...(projects?.map((project: Doc<"projects">) => ({
       id: `project-${project._id}`,
       label: project.name,
       icon: "⬜",
@@ -239,20 +240,22 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.page?.slice(0, 5)?.map((issue) => ({
-      id: `issue-${issue._id}`,
-      label: issue.title,
-      icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
-      description: `${issue.key} • ${issue.projectName}`,
-      keywords: [issue.key, issue.projectName || ""],
-      action: () => {
-        navigate({
-          to: ROUTE_PATTERNS.projects.board,
-          params: { companySlug, key: issue.projectKey },
-        });
-      },
-      group: "Recent Issues",
-    })) ?? []),
+    ...(myIssues?.page
+      ?.slice(0, 5)
+      ?.map((issue: Doc<"issues"> & { projectName?: string; projectKey: string }) => ({
+        id: `issue-${issue._id}`,
+        label: issue.title,
+        icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
+        description: `${issue.key} • ${issue.projectName}`,
+        keywords: [issue.projectKey, issue.projectName || ""],
+        action: () => {
+          navigate({
+            to: ROUTE_PATTERNS.projects.board,
+            params: { companySlug, key: issue.projectKey },
+          });
+        },
+        group: "Recent Issues",
+      })) ?? []),
   ];
 
   return commands;
