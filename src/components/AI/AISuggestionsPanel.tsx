@@ -24,7 +24,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
     isGenerating,
     selectedType,
     suggestions,
-    _unreadCount,
+    unreadCount: _unreadCount,
     setSelectedType,
     handleGenerateInsights,
     handleAcceptSuggestion,

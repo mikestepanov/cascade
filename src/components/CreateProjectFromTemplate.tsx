@@ -1,15 +1,15 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useCompany } from "../hooks/useCompanyContext";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select, Textarea } from "./ui/form";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Typography } from "./ui/Typography";
-import { cn } from "@/lib/utils";
 
 interface CreateProjectFromTemplateProps {
   open: boolean;
@@ -134,7 +134,7 @@ export function CreateProjectFromTemplate({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {templates.map((template) => (
+                {templates.map((template: Doc<"projectTemplates">) => (
                   <button
                     type="button"
                     key={template._id}
@@ -198,7 +198,10 @@ export function CreateProjectFromTemplate({
                   label="Workspace"
                   value={selectedWorkspaceId || ""}
                   onChange={(e) => setSelectedWorkspaceId(e.target.value as Id<"workspaces">)}
-                  options={workspaces.map((ws) => ({ value: ws._id, label: ws.name }))}
+                  options={workspaces.map((ws: Doc<"workspaces">) => ({
+                    value: ws._id,
+                    label: ws.name,
+                  }))}
                   required
                 />
               )}

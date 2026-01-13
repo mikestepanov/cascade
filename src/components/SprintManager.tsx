@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { formatDate } from "@/lib/dates";
@@ -148,7 +148,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
             No sprints created yet. Create your first sprint to get started.
           </div>
         ) : (
-          sprints.map((sprint) => (
+          sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
             <div
               key={sprint._id}
               className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4"

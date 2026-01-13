@@ -13,6 +13,8 @@ import { Typography } from "../ui/Typography";
 // Type for time entry with computed hours field
 type TimeEntryWithHours = Doc<"timeEntries"> & {
   hours: number;
+  projectKey?: string;
+  issueKey?: string;
 };
 
 export function Timesheet() {

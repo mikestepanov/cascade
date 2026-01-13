@@ -28,7 +28,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   const roadmapItems = [
     ...(sprints
       ?.filter(
-        (sprint: Doc<"sprints">): sprint is typeof sprint & { startDate: number; endDate: number } =>
+        (
+          sprint: Doc<"sprints">,
+        ): sprint is typeof sprint & { startDate: number; endDate: number } =>
           sprint.startDate !== undefined && sprint.endDate !== undefined,
       )
       .map((sprint: Doc<"sprints">) => ({
@@ -40,7 +42,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
         status: sprint.status,
       })) || []),
     ...(issues
-      ?.filter((issue: Doc<"issues">): issue is typeof issue & { dueDate: number } => issue.dueDate !== undefined)
+      ?.filter(
+        (issue: Doc<"issues">): issue is typeof issue & { dueDate: number } =>
+          issue.dueDate !== undefined,
+      )
       .map((issue: Doc<"issues">) => ({
         type: "issue" as const,
         id: issue._id,
@@ -262,7 +267,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
 // Render a date bar for an item
 function renderDateBar(
-  item: { startDate: number; endDate: number },
+  item: { startDate: number; endDate: number; [key: string]: any },
   rangeStart: Date,
   rangeEnd: Date,
   _columnCount: number,

@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
@@ -59,7 +60,7 @@ export function Dashboard() {
   // Keyboard navigation for projects list
   const projectNavigation = useListNavigation({
     items: myProjects || [],
-    onSelect: (project) => navigateToWorkspace(project.key),
+    onSelect: (project: Doc<"projects">) => navigateToWorkspace(project.key),
     enabled: !!myProjects && myProjects.length > 0,
   });
 

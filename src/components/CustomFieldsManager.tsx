@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -94,7 +94,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
         </Card>
       ) : (
         <Flex direction="column" gap="md">
-          {customFields.map((field) => (
+          {customFields.map((field: Doc<"customFields">) => (
             <CustomFieldCard
               key={field._id}
               field={field}

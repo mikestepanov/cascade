@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { useCompany } from "@/hooks/useCompanyContext";
@@ -135,7 +135,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Projects</SelectItem>
-                {projects?.page?.map((project) => (
+                {projects?.page?.map((project: Doc<"projects">) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>

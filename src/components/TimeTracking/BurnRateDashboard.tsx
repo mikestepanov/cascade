@@ -166,7 +166,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           </div>
         ) : (
           <Flex direction="column" gap="sm">
-            {teamCosts.map((member) => {
+            {teamCosts.map((member: any) => {
               const percentOfTotal =
                 burnRate.totalCost > 0 ? (member.cost / burnRate.totalCost) * 100 : 0;
 

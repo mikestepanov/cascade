@@ -36,5 +36,5 @@ export function useAppForm<TData extends Record<string, unknown>>(options: AppFo
           onSubmit: validators.onSubmit,
         }
       : undefined,
-  });
+  } as any);
 }

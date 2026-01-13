@@ -21,10 +21,10 @@ interface Project {
 interface WorkspacesListProps {
   projects: Project[] | undefined;
   projectNavigation: {
-    listRef: React.RefObject<HTMLDivElement>;
+    listRef: React.RefObject<HTMLDivElement | null>;
     getItemProps: (index: number) => {
-      tabIndex: number;
       className: string;
+      [key: string]: any;
     };
   };
 }

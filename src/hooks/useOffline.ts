@@ -9,7 +9,9 @@ export function useOnlineStatus() {
 
   useEffect(() => {
     const unsubscribe = offlineStatus.subscribe(setIsOnline);
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return isOnline;

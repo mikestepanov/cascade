@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
@@ -56,7 +56,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   // Group issues by date
   const issuesByDate = useMemo(() => {
     const byDate: Record<string, typeof issues> = {};
-    issues?.forEach((issue) => {
+    issues?.forEach((issue: Doc<"issues">) => {
       if (issue.dueDate) {
         const dateKey = new Date(issue.dueDate).toDateString();
         if (!byDate[dateKey]) byDate[dateKey] = [];

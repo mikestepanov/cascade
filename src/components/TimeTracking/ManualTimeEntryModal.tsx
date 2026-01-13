@@ -612,8 +612,8 @@ export function ManualTimeEntryModal({
           </form.Field>
 
           <DialogFooter>
-            <form.Subscribe selector={(state) => state.isSubmitting}>
-              {(isSubmitting) => (
+            <form.Subscribe selector={(state: any) => state.isSubmitting}>
+              {(isSubmitting: boolean) => (
                 <>
                   <Button onClick={() => onOpenChange(false)} variant="secondary" type="button">
                     Cancel

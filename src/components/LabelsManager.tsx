@@ -22,6 +22,7 @@ interface LabelsManagerProps {
 interface LabelFormData {
   name: string;
   color: string;
+  [key: string]: unknown;
 }
 
 // Default to brand-500 color from theme

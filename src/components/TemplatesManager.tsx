@@ -96,7 +96,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
             />
           ) : (
             <div className="space-y-3">
-              {templates.map((template) => (
+              {templates.map((template: IssueTemplate) => (
                 <TemplateCard
                   key={template._id}
                   template={template}

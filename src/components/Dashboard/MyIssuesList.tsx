@@ -177,9 +177,7 @@ export function MyIssuesList({
                   onClick={() => loadMore(20)}
                   isLoading={isLoadingMore}
                   className="w-full"
-                >
-                  Load More Issues
-                </LoadMoreButton>
+                />
               </div>
             )}
           </Flex>

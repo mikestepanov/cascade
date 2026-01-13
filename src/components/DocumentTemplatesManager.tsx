@@ -430,7 +430,7 @@ export function DocumentTemplatesManager({
                     <input
                       type="checkbox"
                       id="isPublic"
-                      checked={field.state.value}
+                      checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
                       className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"

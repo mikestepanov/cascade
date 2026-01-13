@@ -158,7 +158,7 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
             key={key}
             className={cn(
               "ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark rounded-full",
-              index > 0 && overlapClasses[(size as any) || "md"],
+              index > 0 && overlapClasses[size as keyof typeof overlapClasses],
             )}
           >
             {child}
@@ -171,7 +171,7 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
           justify="center"
           className={cn(
             "rounded-full font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark ring-2 ring-ui-bg-primary dark:ring-ui-bg-primary-dark",
-            overlapClasses[(size as any) || "md"],
+            overlapClasses[(size as keyof typeof overlapClasses) || "md"],
             size === "xs" && "w-5 h-5 text-xs",
             size === "sm" && "w-6 h-6 text-xs",
             size === "md" && "w-8 h-8 text-xs",

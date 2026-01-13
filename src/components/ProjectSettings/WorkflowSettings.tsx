@@ -240,7 +240,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                       ? "To Do"
                       : "Done"}
                 </Typography>
-                <Flex gap="sm" wrap="wrap">
+                <Flex gap="sm" wrap>
                   {groupedStates[category].map((state) => (
                     <Badge key={state.id} className={CATEGORY_COLORS[state.category]}>
                       {state.name}

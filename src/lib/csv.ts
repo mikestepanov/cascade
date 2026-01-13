@@ -120,6 +120,7 @@ export interface IssueCSVRow {
   loggedHours: string;
   labels: string;
   description: string;
+  [key: string]: unknown;
 }
 
 export function issuesToCSV(

@@ -214,8 +214,8 @@ describe("Hybrid Search Integration", () => {
       result.current.search("jhon");
 
       // Should find John despite typo
-      const johnResult = result.current.results.find((r) => r.item.name.includes("John"));
-      expect(johnResult).toBeDefined();
+      const johnResult = result.current.results.find((r) => r.item?.name?.includes("John"));
+      expect(johnResult?.item.name).toBeDefined();
     });
 
     it("should support project switcher pattern", async () => {

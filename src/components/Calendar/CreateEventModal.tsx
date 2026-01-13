@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { z } from "zod";
@@ -121,7 +121,7 @@ export function CreateEventModal({
           }}
         >
           <form.Subscribe
-            selector={(state) => [
+            selector={(state: any) => [
               state.values.eventType,
               state.values.allDay,
               state.values.isRequired,
@@ -181,7 +181,7 @@ export function CreateEventModal({
                           <input
                             id="event-date"
                             type="date"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             required
@@ -205,7 +205,7 @@ export function CreateEventModal({
                           <input
                             id="event-start-time"
                             type="time"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
@@ -228,7 +228,7 @@ export function CreateEventModal({
                           <input
                             id="event-end-time"
                             type="time"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
@@ -248,7 +248,7 @@ export function CreateEventModal({
                         <Flex gap="sm" align="center" className="cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={field.state.value}
+                            checked={field.state.value as boolean}
                             onChange={(e) => field.handleChange(e.target.checked)}
                             className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                           />
@@ -270,7 +270,7 @@ export function CreateEventModal({
                           <Flex gap="sm" align="center" className="cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={field.state.value}
+                              checked={field.state.value as boolean}
                               onChange={(e) => field.handleChange(e.target.checked)}
                               className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                             />
@@ -315,7 +315,7 @@ export function CreateEventModal({
                       <input
                         id="event-location"
                         type="text"
-                        value={field.state.value ?? ""}
+                        value={(field.state.value as string) ?? ""}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -340,7 +340,7 @@ export function CreateEventModal({
                         <input
                           id="event-meeting-url"
                           type="url"
-                          value={field.state.value ?? ""}
+                          value={(field.state.value as string) ?? ""}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -372,7 +372,7 @@ export function CreateEventModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No project</SelectItem>
-                      {projects?.map((project) => (
+                      {projects?.map((project: Doc<"projects">) => (
                         <SelectItem key={project._id} value={project._id}>
                           {project.name} ({project.key})
                         </SelectItem>

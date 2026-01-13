@@ -151,7 +151,7 @@ export function highlightMatches(
 export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOptions) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Debounce query updates
   useEffect(() => {

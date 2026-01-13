@@ -34,10 +34,10 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Viewer" },
 ];
 
-const ROLE_BADGE_VARIANTS: Record<string, "default" | "secondary" | "outline"> = {
-  admin: "default",
+const ROLE_BADGE_VARIANTS: Record<string, "brand" | "secondary" | "neutral"> = {
+  admin: "brand",
   editor: "secondary",
-  viewer: "outline",
+  viewer: "neutral",
 };
 
 export function MemberManagement({
@@ -185,17 +185,12 @@ export function MemberManagement({
                 className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <Flex gap="md" align="center">
-                  <Avatar
-                    src={member.image}
-                    alt={member.name}
-                    fallback={member.name.charAt(0).toUpperCase()}
-                    size="sm"
-                  />
+                  <Avatar src={member.image} alt={member.name} size="sm" />
                   <div>
                     <Flex gap="sm" align="center">
                       <Typography variant="small">{member.name}</Typography>
                       {isOwner(member._id) && (
-                        <Badge variant="default" size="sm">
+                        <Badge variant="primary" size="sm">
                           Owner
                         </Badge>
                       )}
@@ -243,13 +238,13 @@ export function MemberManagement({
       </Card>
 
       <ConfirmDialog
-        open={!!memberToRemove}
-        onOpenChange={(open) => !open && setMemberToRemove(null)}
+        isOpen={!!memberToRemove}
+        onClose={() => setMemberToRemove(null)}
         title="Remove Member"
-        description={`Are you sure you want to remove ${memberToRemove?.name} from this project? They will lose access to all project resources.`}
         confirmLabel="Remove"
         onConfirm={handleRemoveMember}
         variant="danger"
+        message={`Are you sure you want to remove ${memberToRemove?.name} from this project? They will lose access to all project resources.`}
       />
     </>
   );

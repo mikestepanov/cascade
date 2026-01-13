@@ -265,7 +265,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                 </Flex>
 
                 <Flex direction="column" gap="sm">
-                  {attendance.attendees.map((attendee) => (
+                  {attendance.attendees.map((attendee: any) => (
                     <Flex
                       key={attendee.userId}
                       justify="between"
